@@ -313,6 +313,18 @@ void ThemeSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
                                                            std::move(done));
 }
 
+void ThemeSyncableService::WillStartInitialSync() {
+  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
+      base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
+    // Save current theme specifics to pref. This is used to restore the local
+    // theme upon signout.
+    profile_->GetPrefs()->SetString(
+        prefs::kSavedLocalTheme,
+        base::Base64Encode(
+            GetThemeSpecificsFromCurrentTheme().SerializeAsString()));
+  }
+}
+
 std::optional<syncer::ModelError>
 ThemeSyncableService::MergeDataAndStartSyncing(
     syncer::DataType type,
@@ -331,21 +343,6 @@ ThemeSyncableService::MergeDataAndStartSyncing(
                            static_cast<int>(initial_sync_data.size())));
   }
 
-  sync_pb::ThemeSpecifics current_specifics =
-      GetThemeSpecificsFromCurrentTheme();
-  // TODO(crbug.com/348173250): MergeDataAndStartSyncing is also called on
-  // browser startup, in which case the pref should not be updated with the
-  // current theme. Plumb a new method in SyncableService to distinguish between
-  // sync start and browser startup.
-  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
-      base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
-    // Save current theme specifics to pref. This is used to restore the local
-    // theme upon signout.
-    profile_->GetPrefs()->SetString(
-        prefs::kSavedLocalTheme,
-        base::Base64Encode(current_specifics.SerializeAsString()));
-  }
-
   if (!IsCurrentThemeSyncable()) {
     // Current theme is unsyncable - don't overwrite from sync data, and don't
     // save the unsyncable theme to sync data.
@@ -353,6 +350,8 @@ ThemeSyncableService::MergeDataAndStartSyncing(
     return std::nullopt;
   }
 
+  const sync_pb::ThemeSpecifics current_specifics =
+      GetThemeSpecificsFromCurrentTheme();
   // Find the last SyncData that has theme data and set the current theme from
   // it. If SyncData doesn't have a theme, but there is a current theme, it will
   // not reset it.

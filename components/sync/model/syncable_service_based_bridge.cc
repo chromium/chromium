@@ -263,6 +263,7 @@ std::optional<ModelError> SyncableServiceBasedBridge::MergeFullSyncData(
   StoreAndConvertRemoteChanges(std::move(metadata_change_list),
                                std::move(entity_change_list));
 
+  syncable_service_->WillStartInitialSync();
   // We ignore the output of previous call of StoreAndConvertRemoteChanges() at
   // this point and let StartSyncableService() read from |in_memory_store_|,
   // which has been updated above as part of StoreAndConvertRemoteChanges().
