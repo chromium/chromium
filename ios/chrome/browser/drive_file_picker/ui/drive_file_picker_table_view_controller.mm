@@ -688,6 +688,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setTitle:(NSString*)title {
+  _isShowingLogoTitle = NO;
   if (!title) {
     self.navigationItem.titleView = nil;
     return;
@@ -700,7 +701,6 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   titleLabel.adjustsFontSizeToFitWidth = YES;
   titleLabel.minimumScaleFactor = 0.1;
   self.navigationItem.titleView = titleLabel;
-  _isShowingLogoTitle = NO;
 }
 
 - (void)setRootTitle {
