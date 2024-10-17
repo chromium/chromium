@@ -872,7 +872,7 @@ void PrivacySandboxSettingsImpl::OnCookiesCleared() {
 
 void PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged() {
   for (auto& observer : observers_) {
-    observer.OnFirstPartySetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
+    observer.OnRelatedWebsiteSetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
   }
 }
 
@@ -889,7 +889,7 @@ void PrivacySandboxSettingsImpl::OnCookieControlsModePrefChanged() {
   }
 
   for (Observer& obs : observers_) {
-    obs.OnFirstPartySetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
+    obs.OnRelatedWebsiteSetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
   }
 }
 
@@ -1000,7 +1000,7 @@ bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowedForContext(
 
 void PrivacySandboxSettingsImpl::OnBlockAllThirdPartyCookiesChanged() {
   for (auto& observer : observers_) {
-    observer.OnFirstPartySetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
+    observer.OnRelatedWebsiteSetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
   }
 }
 

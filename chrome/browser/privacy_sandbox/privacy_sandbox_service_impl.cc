@@ -431,7 +431,7 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
 
   // Check for FPS pref init at each startup.
   // TODO(crbug.com/40234448): Remove this logic when most users have run init.
-  MaybeInitializeFirstPartySetsPref();
+  MaybeInitializeRelatedWebsiteSetsPref();
 
   // Record preference state for UMA at each startup.
   LogPrivacySandboxState();
@@ -1359,10 +1359,11 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
   }
 }
 
-void PrivacySandboxServiceImpl::MaybeInitializeFirstPartySetsPref() {
+void PrivacySandboxServiceImpl::MaybeInitializeRelatedWebsiteSetsPref() {
   // If initialization has already run, it is not required.
   if (pref_service_->GetBoolean(
-          prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized)) {
+          prefs::
+              kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized)) {
     return;
   }
 
@@ -1384,7 +1385,8 @@ void PrivacySandboxServiceImpl::MaybeInitializeFirstPartySetsPref() {
   }
 
   pref_service_->SetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized, true);
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized,
+      true);
 }
 
 void PrivacySandboxServiceImpl::RecordUpdatedTopicsConsent(

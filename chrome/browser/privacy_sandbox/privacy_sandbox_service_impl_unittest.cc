@@ -196,11 +196,9 @@ class TestInterestGroupManager : public content::InterestGroupManager {
 // preferences, returning them to their default value.
 void ClearRwsUserPrefs(
     sync_preferences::TestingPrefServiceSyncable* pref_service) {
-  // TODO(crbug.com/372939948): Migrate First Party Sets (FPS) to Related
-  // Website Sets (RWS) in PrivacySandboxPrefs
   pref_service->RemoveUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
   pref_service->RemoveUserPref(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized);
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized);
 }
 
 std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
@@ -1455,7 +1453,7 @@ TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
   EXPECT_TRUE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_FALSE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 
   // If the UI is available, the user blocks 3PC, and the pref has not been
   // previously init, it should be.
@@ -1468,7 +1466,7 @@ TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 
   // Once the pref has been init, it should not be re-init, and updated user
   // cookie settings should not impact it.
@@ -1481,7 +1479,7 @@ TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
   EXPECT_TRUE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
@@ -1491,7 +1489,7 @@ TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
   EXPECT_TRUE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 
   // Blocking all cookies should also init the RWS pref to off.
   ClearRwsUserPrefs(prefs());
@@ -1504,7 +1502,7 @@ TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 }
 
 TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {

@@ -55,9 +55,9 @@ class PrivacySandboxSettings : public KeyedService {
    public:
     virtual void OnTopicsDataAccessibleSinceUpdated() {}
 
-    // Fired when the First-Party Sets changes to being `enabled` as a result of
-    // the kPrivacySandboxFirstPartySets preference changing.
-    virtual void OnFirstPartySetsEnabledChanged(bool enabled) {}
+    // Fired when the Related Website Sets changes to being `enabled` as a
+    // result of the kPrivacySandboxRelatedWebsiteSets preference changing.
+    virtual void OnRelatedWebsiteSetsEnabledChanged(bool enabled) {}
   };
 
   class Delegate {
@@ -361,7 +361,7 @@ class PrivacySandboxSettings : public KeyedService {
   // Overrides the internal delegate for test purposes.
   virtual void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) = 0;
 
-  // Source of truth for whether related websites are enabled.
+  // Source of truth for whether related website sets are enabled.
   virtual bool AreRelatedWebsiteSetsEnabled() const = 0;
 };
 

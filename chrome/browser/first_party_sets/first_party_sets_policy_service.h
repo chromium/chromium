@@ -74,18 +74,18 @@ class FirstPartySetsPolicyService
   //
   // NotifyReady will be called on `access_delegate` in the following cases:
   // - when site-data is cleared
-  // - upon OnFirstPartySetsEnabledChanged observations (if site-data has
+  // - upon OnRelatedWebsiteSetsEnabledChanged observations (if site-data has
   //   already been, or didn't need to be, cleared) and if `config` is ready
   // - by this method if `config_` has already been computed
   //
   // SetEnabled will be called on `access_delegate` when the First-Party Sets
-  // enabled pref changes, as observed by OnFirstPartySetsEnabledChanged.
+  // enabled pref changes, as observed by OnRelatedWebsiteSetsEnabledChanged.
   void AddRemoteAccessDelegate(
       mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
           access_delegate);
 
   // PrivacySandboxSettings::Observer
-  void OnFirstPartySetsEnabledChanged(bool enabled) override;
+  void OnRelatedWebsiteSetsEnabledChanged(bool enabled) override;
 
   // Stores the callback to be invoked when this service is ready to do so. Must
   // not be called when FPS is not enabled or the service is already ready.

@@ -323,11 +323,9 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       bool third_party_cookies_blocked,
       bool is_chrome_build);
 
-  // Checks to see if initialization of the user's FPS pref is required, and if
+  // Checks to see if initialization of the user's RWS pref is required, and if
   // so, sets the default value based on the user's current cookie settings.
-  // TODO(crbug.com/372939948): Migrate First Party Sets (FPS) to Related
-  // Website Sets (RWS) in PrivacySandboxPrefs
-  void MaybeInitializeFirstPartySetsPref();
+  void MaybeInitializeRelatedWebsiteSetsPref();
 
   // Updates the preferences which store the current Topics consent information.
   void RecordUpdatedTopicsConsent(

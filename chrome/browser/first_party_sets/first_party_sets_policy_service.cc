@@ -178,7 +178,8 @@ void FirstPartySetsPolicyService::AddRemoteAccessDelegate(
   access_delegates_.Add(std::move(access_delegate));
 }
 
-void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
+void FirstPartySetsPolicyService::OnRelatedWebsiteSetsEnabledChanged(
+    bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (service_state_ == ServiceState::kPermanentlyDisabled ||
       service_state_ == ServiceState::kPermanentlyEnabled) {
