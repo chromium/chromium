@@ -68,8 +68,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
       const LayerMemberReference& layer_member_reference,
       uint32_t layer_member_id);
 
-  // Returns whether the layer that's associated with the `layer_id` is active.
-  // If not, for the same `layer_id`, IsLayerMemberActive() and
+  // Checks if the client's slot for that layer is associated with a layer
+  // member. Returns whether the layer that's associated with the `layer_id` is
+  // active. If not, for the same `layer_id`, IsLayerMemberActive() and
   // ActiveLayerMemberDependsOnHighEntropy() will always be false, and
   // GetRemainderEntropy() will return an entropy provider that always
   // randomizes to a fixed value (revealing no entropy).
