@@ -234,7 +234,9 @@ def run_profdata_merge(output_path, input_files, args: OptionsNamespace):
             _LOGGER.warning(f'Skipping due to size <1MB: {f}')
         else:
             filtered_input_files.append(f)
-    assert filtered_input_files, 'No valid profraw/profdata file after filter.'
+
+    if not filtered_input_files:
+        raise MergeError('No valid profraw/profdata file after filter.')
 
     cmd = [_PROFDATA, 'merge', '-o', output_path
            ] + extra_args + filtered_input_files
