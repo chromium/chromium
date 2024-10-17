@@ -59,6 +59,16 @@
 
 namespace headless {
 
+namespace features {
+
+// Enables prerendering (Speculation Rules API) in the headless mode. This is
+// enabled by default but kept as a kill-switch.
+BASE_FEATURE(kPrerender2InHeadlessMode,
+             "Prerender2InHeadlessMode",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace features
+
 namespace {
 
 void UpdatePrefsFromSystemSettings(blink::RendererPreferences* prefs) {
@@ -219,6 +229,14 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
       content::WebContents& web_contents) override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     return command_line->HasSwitch(switches::kEnableBackForwardCache);
+  }
+
+  content::PreloadingEligibility IsPrerender2Supported(
+      content::WebContents& web_contents) override {
+    return base::FeatureList::IsEnabled(features::kPrerender2InHeadlessMode)
+               ? content::PreloadingEligibility::kEligible
+               : content::PreloadingEligibility::
+                     kPreloadingUnsupportedByWebContents;
   }
 
   void RequestPointerLock(content::WebContents* web_contents,

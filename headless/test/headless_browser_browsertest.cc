@@ -35,7 +35,9 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -734,6 +736,76 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, BadgingAPI) {
       browser_context->CreateWebContentsBuilder().SetInitialURL(url).Build();
 
   EXPECT_TRUE(WaitForLoad(web_contents));
+}
+
+class PrerenderHeadlessBrowserTest : public HeadlessBrowserTest {
+ public:
+  PrerenderHeadlessBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&PrerenderHeadlessBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+
+  void SetUp() override {
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
+    HeadlessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    headless_browser_context_ =
+        browser()->CreateBrowserContextBuilder().Build();
+    headless_web_contents_ =
+        headless_browser_context_->CreateWebContentsBuilder().Build();
+    HeadlessBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    headless_browser_context_ = nullptr;
+    headless_web_contents_ = nullptr;
+    HeadlessBrowserTest::TearDownOnMainThread();
+  }
+
+  content::WebContents* web_contents() {
+    return HeadlessWebContentsImpl::From(headless_web_contents_)
+        ->web_contents();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+ private:
+  raw_ptr<HeadlessBrowserContext> headless_browser_context_ = nullptr;
+  raw_ptr<HeadlessWebContents> headless_web_contents_ = nullptr;
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Test that prerendering works with the headless mode.
+IN_PROC_BROWSER_TEST_F(PrerenderHeadlessBrowserTest, PrerenderAndActivate) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/blank.html?prerender");
+  prerender_helper().AddPrerender(prerender_url);
+
+  // Activate.
+  content::TestActivationManager activation_manager(web_contents(),
+                                                    prerender_url);
+  ASSERT_TRUE(
+      content::ExecJs(web_contents()->GetPrimaryMainFrame(),
+                      content::JsReplace("location = $1", prerender_url)));
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      /* kFinalStatusActivated */ 0, 1);
 }
 
 class HeadlessBrowserTestWithExplicitlyAllowedPorts
