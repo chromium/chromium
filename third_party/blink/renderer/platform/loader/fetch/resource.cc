@@ -22,11 +22,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
 #include <stdint.h>
@@ -93,12 +88,10 @@ void GetSharedBufferMemoryDump(SharedBuffer* buffer,
       dump->Guid(), String(WTF::Partitions::kAllocatedObjectPoolName));
 }
 
-}  // namespace
-
 // These response headers are not copied from a revalidated response to the
 // cached response headers. For compatibility, this list is based on Chromium's
 // net/http/http_response_headers.cc.
-const char* const kHeadersToIgnoreAfterRevalidation[] = {
+const auto kHeadersToIgnoreAfterRevalidation = std::to_array<const char*>({
     "allow",
     "connection",
     "etag",
@@ -113,30 +106,29 @@ const char* const kHeadersToIgnoreAfterRevalidation[] = {
     "www-authenticate",
     "x-frame-options",
     "x-xss-protection",
-};
+});
 
 // Some header prefixes mean "Don't copy this header from a 304 response.".
 // Rather than listing all the relevant headers, we can consolidate them into
 // this list, also grabbed from Chromium's net/http/http_response_headers.cc.
-const char* const kHeaderPrefixesToIgnoreAfterRevalidation[] = {
-    "content-", "x-content-", "x-webkit-"};
+const auto kHeaderPrefixesToIgnoreAfterRevalidation =
+    std::to_array<const char*>({"content-", "x-content-", "x-webkit-"});
 
-static inline bool ShouldUpdateHeaderAfterRevalidation(
-    const AtomicString& header) {
-  for (size_t i = 0; i < std::size(kHeadersToIgnoreAfterRevalidation); i++) {
-    if (EqualIgnoringASCIICase(header, kHeadersToIgnoreAfterRevalidation[i]))
+inline bool ShouldUpdateHeaderAfterRevalidation(const AtomicString& header) {
+  for (const auto* header_to_ignore : kHeadersToIgnoreAfterRevalidation) {
+    if (EqualIgnoringASCIICase(header, header_to_ignore)) {
       return false;
+    }
   }
-  for (size_t i = 0; i < std::size(kHeaderPrefixesToIgnoreAfterRevalidation);
-       i++) {
-    if (header.StartsWithIgnoringASCIICase(
-            kHeaderPrefixesToIgnoreAfterRevalidation[i]))
+  for (const auto* header_prefix_to_ignore :
+       kHeaderPrefixesToIgnoreAfterRevalidation) {
+    if (header.StartsWithIgnoringASCIICase(header_prefix_to_ignore)) {
       return false;
+    }
   }
   return true;
 }
 
-namespace {
 const base::Clock* g_clock_for_testing = nullptr;
 
 }  // namespace

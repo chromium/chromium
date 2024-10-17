@@ -45,8 +45,7 @@ class PLATFORM_EXPORT CachedMetadataSender {
                                   WTF::String,
                                   base::Time,
                                   const String&,
-                                  const uint8_t*,
-                                  size_t);
+                                  base::span<const uint8_t>);
 
   virtual ~CachedMetadataSender() = default;
   virtual void Send(CodeCacheHost* code_cache_host,

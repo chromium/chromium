@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/cors/cors_error_string.h"
 
 #include <initializer_list>
@@ -91,8 +86,9 @@ String GetErrorString(const network::CorsErrorStatus& status,
   const char* resource_kind_raw =
       Resource::ResourceTypeToString(resource_type, initiator_name);
   String resource_kind(resource_kind_raw);
-  if (strlen(resource_kind_raw) >= 2 && IsASCIILower(resource_kind_raw[1]))
+  if (resource_kind.length() >= 2 && IsASCIILower(resource_kind[1])) {
     resource_kind = resource_kind.LowerASCII();
+  }
 
   Append(builder, {"Access to ", resource_kind, " at '",
                    last_request_url.GetString(), "' "});

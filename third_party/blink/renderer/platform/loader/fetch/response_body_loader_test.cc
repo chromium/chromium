@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
 
 #include <memory>
@@ -449,8 +444,8 @@ TEST_F(ResponseBodyLoaderTest, DrainAsDataPipe) {
   ASSERT_TRUE(client);
   EXPECT_TRUE(body_loader->IsDrained());
 
-  client_for_draining->DidReceiveData(base::make_span("xyz", 3u));
-  client_for_draining->DidReceiveData(base::make_span("abc", 3u));
+  client_for_draining->DidReceiveData(base::span_from_cstring("xyz"));
+  client_for_draining->DidReceiveData(base::span_from_cstring("abc"));
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
@@ -722,8 +717,8 @@ TEST_F(ResponseBodyLoaderTest, DrainAsDataPipeAndReportError) {
   ASSERT_TRUE(client);
   EXPECT_TRUE(body_loader->IsDrained());
 
-  client_for_draining->DidReceiveData(base::make_span("xyz", 3u));
-  client_for_draining->DidReceiveData(base::make_span("abc", 3u));
+  client_for_draining->DidReceiveData(base::span_from_cstring("xyz"));
+  client_for_draining->DidReceiveData(base::span_from_cstring("abc"));
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
