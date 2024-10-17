@@ -10,7 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
+import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 
@@ -99,14 +99,14 @@ public class AwContentsLifecycleNotifier {
         mAppState = appState;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            TrackExitReasonsOfInterest.updateAppState();
+            TrackExitReasons.updateAppState();
         }
     }
 
     @CalledByNative
     public static void initialize() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            TrackExitReasonsOfInterest.finishTrackingStartup(getInstance()::getAppState);
+            TrackExitReasons.finishTrackingStartup(getInstance()::getAppState);
         }
     }
 }

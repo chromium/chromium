@@ -680,7 +680,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/metrics/AwSiteVisitLogger.java",
     "java/src/org/chromium/android_webview/metrics/HistogramsAllowlist.java",
     "java/src/org/chromium/android_webview/metrics/MetricsFilteringDecorator.java",
-    "java/src/org/chromium/android_webview/metrics/TrackExitReasonsOfInterest.java",
+    "java/src/org/chromium/android_webview/metrics/TrackExitReasons.java",
     "java/src/org/chromium/android_webview/permission/AwGeolocationCallback.java",
     "java/src/org/chromium/android_webview/permission/AwPermissionRequest.java",
     "java/src/org/chromium/android_webview/policy/AwPolicyProvider.java",

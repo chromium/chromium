@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 /** Tracks and logs the most recent exit reasons in embedding WebView apps. */
 @RequiresApi(Build.VERSION_CODES.R)
 @JNINamespace("android_webview")
-public class TrackExitReasonsOfInterest {
+public class TrackExitReasons {
     private static final String TAG = "TrackExitReasons";
     private static final String FILE_NAME = "last-exit-info";
     private static final String KEY_PID = "pid";

@@ -47,7 +47,7 @@ import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
-import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
+import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.BuildInfo;
@@ -187,7 +187,7 @@ public class WebViewChromiumAwInit {
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                TrackExitReasonsOfInterest.startTrackingStartup();
+                TrackExitReasons.startTrackingStartup();
             }
 
             final Context context = ContextUtils.getApplicationContext();

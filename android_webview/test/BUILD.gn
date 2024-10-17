@@ -746,7 +746,7 @@ robolectric_binary("android_webview_junit_tests") {
     "../junit/src/org/chromium/android_webview/robolectric/metrics/AwNonembeddedUmaReplayerTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/metrics/AwOriginVisitLoggerTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/metrics/AwSiteVisitLoggerTest.java",
-    "../junit/src/org/chromium/android_webview/robolectric/metrics/TrackExitReasonsOfInterestTest.java",
+    "../junit/src/org/chromium/android_webview/robolectric/metrics/TrackExitReasonsTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/nonembedded/AwComponentUpdateServiceSafeModeTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/nonembedded/NetworkFetcherTaskTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/nonembedded/crash/CrashInfoTest.java",

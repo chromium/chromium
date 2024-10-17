@@ -23,8 +23,8 @@ import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.AppState;
-import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
-import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest.AppStateData;
+import org.chromium.android_webview.metrics.TrackExitReasons;
+import org.chromium.android_webview.metrics.TrackExitReasons.AppStateData;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
@@ -42,10 +42,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/** Junit tests for TrackExitReasonsOfInterest. */
+/** Junit tests for TrackExitReasons. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30, manifest = Config.NONE)
-public class TrackExitReasonsOfInterestTest {
+public class TrackExitReasonsTest {
     private static final String TAG = "ExitReasonsTest";
     private MockAwContentsLifecycleNotifier mMockNotifier = new MockAwContentsLifecycleNotifier();
 
@@ -90,9 +90,8 @@ public class TrackExitReasonsOfInterestTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testReadDataWhenThereIsNoFile() {
-        assertFalse(
-                "File should initially not exist", TrackExitReasonsOfInterest.getFile().exists());
-        List<AppStateData> dataList = TrackExitReasonsOfInterest.readData();
+        assertFalse("File should initially not exist", TrackExitReasons.getFile().exists());
+        List<AppStateData> dataList = TrackExitReasons.readData();
         assertEquals("Data list should be empty because there is no file", 0, dataList.size());
     }
 
@@ -103,14 +102,12 @@ public class TrackExitReasonsOfInterestTest {
         int pid = 42;
         long timeMillis = 5L;
         @AppState int state = AppState.BACKGROUND;
-        TrackExitReasonsOfInterest.setPidForTest(pid);
-        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(timeMillis);
-        TrackExitReasonsOfInterest.writeState(state);
+        TrackExitReasons.setPidForTest(pid);
+        TrackExitReasons.setCurrentTimeMillisForTest(timeMillis);
+        TrackExitReasons.writeState(state);
 
-        assertTrue(
-                "File should exist after writing to it",
-                TrackExitReasonsOfInterest.getFile().exists());
-        List<AppStateData> dataList = TrackExitReasonsOfInterest.readData();
+        assertTrue("File should exist after writing to it", TrackExitReasons.getFile().exists());
+        List<AppStateData> dataList = TrackExitReasons.readData();
         assertEquals("Data list should have one entry after writing app state", 1, dataList.size());
         AppStateData data = dataList.get(0);
         assertEquals("Process id should be stored in file", pid, data.mPid);
@@ -123,25 +120,21 @@ public class TrackExitReasonsOfInterestTest {
     @Feature({"AndroidWebView"})
     public void testWriteLargeThenSmallData() throws IOException, FileNotFoundException {
         List<AppStateData> largeDataList = new ArrayList<>();
-        for (int i = 1; i <= TrackExitReasonsOfInterest.MAX_DATA_LIST_SIZE; i++) {
+        for (int i = 1; i <= TrackExitReasons.MAX_DATA_LIST_SIZE; i++) {
             largeDataList.add(new AppStateData(i, i, AppState.STARTUP));
         }
-        TrackExitReasonsOfInterest.writeData(largeDataList, null);
+        TrackExitReasons.writeData(largeDataList, null);
 
-        assertEquals(
-                TrackExitReasonsOfInterest.MAX_DATA_LIST_SIZE,
-                TrackExitReasonsOfInterest.readData().size());
+        assertEquals(TrackExitReasons.MAX_DATA_LIST_SIZE, TrackExitReasons.readData().size());
         int largeFileSize =
-                FileUtils.readStream(new FileInputStream(TrackExitReasonsOfInterest.getFile()))
-                        .length;
+                FileUtils.readStream(new FileInputStream(TrackExitReasons.getFile())).length;
 
         List<AppStateData> smallDataList = List.of(new AppStateData(42, 42, AppState.FOREGROUND));
-        TrackExitReasonsOfInterest.writeData(smallDataList, null);
+        TrackExitReasons.writeData(smallDataList, null);
 
-        assertEquals(1, TrackExitReasonsOfInterest.readData().size());
+        assertEquals(1, TrackExitReasons.readData().size());
         int smallFileSize =
-                FileUtils.readStream(new FileInputStream(TrackExitReasonsOfInterest.getFile()))
-                        .length;
+                FileUtils.readStream(new FileInputStream(TrackExitReasons.getFile())).length;
 
         assertTrue(
                 "Large file size ("
@@ -159,7 +152,7 @@ public class TrackExitReasonsOfInterestTest {
         int previousPid = 42;
         long previousTimeMillis = 5L;
         long currentTimeMillis = 7L;
-        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(currentTimeMillis);
+        TrackExitReasons.setCurrentTimeMillisForTest(currentTimeMillis);
 
         for (int systemReason = 0; systemReason < ExitReason.NUM_ENTRIES; systemReason++) {
             for (@AppState int state = 0; state <= AppState.STARTUP; state++) {
@@ -172,22 +165,21 @@ public class TrackExitReasonsOfInterestTest {
                 var histogramWatcher =
                         HistogramWatcher.newBuilder()
                                 .expectIntRecord(
-                                        TrackExitReasonsOfInterest.UMA_COUNTS
+                                        TrackExitReasons.UMA_COUNTS
                                                 + "."
-                                                + TrackExitReasonsOfInterest.sUmaSuffixMap.get(
-                                                        state),
+                                                + TrackExitReasons.sUmaSuffixMap.get(state),
                                         ProcessExitReasonFromSystem.convertToExitReason(
                                                 systemReason))
                                 .expectIntRecord(
-                                        TrackExitReasonsOfInterest.UMA_COUNTS,
+                                        TrackExitReasons.UMA_COUNTS,
                                         ProcessExitReasonFromSystem.convertToExitReason(
                                                 systemReason))
                                 .expectIntRecord(
-                                        TrackExitReasonsOfInterest.UMA_DELTA,
+                                        TrackExitReasons.UMA_DELTA,
                                         (int) (currentTimeMillis - previousTimeMillis))
                                 .build();
 
-                assertNotEquals(-1, TrackExitReasonsOfInterest.findExitReasonAndLog(data));
+                assertNotEquals(-1, TrackExitReasons.findExitReasonAndLog(data));
                 histogramWatcher.assertExpected();
             }
         }
@@ -207,12 +199,12 @@ public class TrackExitReasonsOfInterestTest {
         // There should be nothing logged for unexpected system exit reasons.
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectNoRecords(TrackExitReasonsOfInterest.UMA_COUNTS + ".DESTROYED")
-                        .expectNoRecords(TrackExitReasonsOfInterest.UMA_COUNTS)
-                        .expectNoRecords(TrackExitReasonsOfInterest.UMA_DELTA)
+                        .expectNoRecords(TrackExitReasons.UMA_COUNTS + ".DESTROYED")
+                        .expectNoRecords(TrackExitReasons.UMA_COUNTS)
+                        .expectNoRecords(TrackExitReasons.UMA_DELTA)
                         .build();
 
-        assertEquals(-1, TrackExitReasonsOfInterest.findExitReasonAndLog(data));
+        assertEquals(-1, TrackExitReasons.findExitReasonAndLog(data));
         histogramWatcher.assertExpected();
     }
 
@@ -220,10 +212,10 @@ public class TrackExitReasonsOfInterestTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testUpdateAppStateWritesFileOnlyIfAppStateChanged() throws TimeoutException {
-        TrackExitReasonsOfInterest.setStateSupplier(mMockNotifier::getAppState);
+        TrackExitReasons.setStateSupplier(mMockNotifier::getAppState);
         mMockNotifier.mState = AppState.UNKNOWN;
         long timeMillis = 5L;
-        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(timeMillis);
+        TrackExitReasons.setCurrentTimeMillisForTest(timeMillis);
 
         // The first call writes the file with the initial state.
         CallbackHelper writeFinished = new CallbackHelper();
@@ -232,32 +224,32 @@ public class TrackExitReasonsOfInterestTest {
                     writeFinished.notifyCalled();
                 };
         int calls = writeFinished.getCallCount();
-        TrackExitReasonsOfInterest.updateAppState(resultCallback);
+        TrackExitReasons.updateAppState(resultCallback);
         writeFinished.waitForCallback(calls);
 
-        AppStateData data = TrackExitReasonsOfInterest.readData().get(0);
+        AppStateData data = TrackExitReasons.readData().get(0);
         assertEquals(timeMillis, data.mTimeMillis);
         assertEquals(AppState.UNKNOWN, data.mState);
 
         // The second call also writes the file because the app state has changed.
         mMockNotifier.mState = AppState.FOREGROUND;
-        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(++timeMillis);
+        TrackExitReasons.setCurrentTimeMillisForTest(++timeMillis);
         calls = writeFinished.getCallCount();
-        TrackExitReasonsOfInterest.updateAppState(resultCallback);
+        TrackExitReasons.updateAppState(resultCallback);
         writeFinished.waitForCallback(calls);
 
-        data = TrackExitReasonsOfInterest.readData().get(0);
+        data = TrackExitReasons.readData().get(0);
         assertEquals(timeMillis, data.mTimeMillis);
         assertEquals(AppState.FOREGROUND, data.mState);
 
         // The third call does not write the file because the app state has not changed, the
         // previous time is still in the file.
-        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(++timeMillis);
+        TrackExitReasons.setCurrentTimeMillisForTest(++timeMillis);
         calls = writeFinished.getCallCount();
-        TrackExitReasonsOfInterest.updateAppState(resultCallback);
+        TrackExitReasons.updateAppState(resultCallback);
         writeFinished.waitForCallback(calls);
 
-        data = TrackExitReasonsOfInterest.readData().get(0);
+        data = TrackExitReasons.readData().get(0);
         assertEquals(timeMillis - 1, data.mTimeMillis);
         assertEquals(AppState.FOREGROUND, data.mState);
     }
@@ -269,9 +261,9 @@ public class TrackExitReasonsOfInterestTest {
         // If an app exits during early startup repeatedly, new data keeps getting added to the file
         // without getting logged to UMA and removed from the file. We do not want the file to have
         // unbounded growth, so there is a limit.
-        for (int i = 1; i <= TrackExitReasonsOfInterest.MAX_DATA_LIST_SIZE + 1; i++) {
-            TrackExitReasonsOfInterest.setPidForTest(i);
-            TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(i);
+        for (int i = 1; i <= TrackExitReasons.MAX_DATA_LIST_SIZE + 1; i++) {
+            TrackExitReasons.setPidForTest(i);
+            TrackExitReasons.setCurrentTimeMillisForTest(i);
 
             CallbackHelper writeFinished = new CallbackHelper();
             Callback<Boolean> resultCallback =
@@ -279,17 +271,16 @@ public class TrackExitReasonsOfInterestTest {
                         writeFinished.notifyCalled();
                     };
             int calls = writeFinished.getCallCount();
-            TrackExitReasonsOfInterest.startTrackingStartup(resultCallback);
+            TrackExitReasons.startTrackingStartup(resultCallback);
             writeFinished.waitForCallback(calls);
 
-            if (i <= TrackExitReasonsOfInterest.MAX_DATA_LIST_SIZE) {
-                assertEquals(i, TrackExitReasonsOfInterest.readData().size());
+            if (i <= TrackExitReasons.MAX_DATA_LIST_SIZE) {
+                assertEquals(i, TrackExitReasons.readData().size());
             } else {
                 assertEquals(
-                        TrackExitReasonsOfInterest.MAX_DATA_LIST_SIZE,
-                        TrackExitReasonsOfInterest.readData().size());
+                        TrackExitReasons.MAX_DATA_LIST_SIZE, TrackExitReasons.readData().size());
             }
-            try (FileInputStream fis = new FileInputStream(TrackExitReasonsOfInterest.getFile())) {
+            try (FileInputStream fis = new FileInputStream(TrackExitReasons.getFile())) {
                 assertTrue(
                         "File should not be larger than 4KB",
                         FileUtils.readStream(fis).length <= 4096);
@@ -315,20 +306,20 @@ public class TrackExitReasonsOfInterestTest {
         int calls;
 
         List<AppStateData> dataList;
-        TrackExitReasonsOfInterest.setStateSupplier(mMockNotifier::getAppState);
+        TrackExitReasons.setStateSupplier(mMockNotifier::getAppState);
 
         ProcessExitReasonFromSystem.setActivityManagerForTest(
                 createMockActivityManager(previousPid, systemReason));
 
         // Set previous state and write it to file, this overwrites its contents.
-        TrackExitReasonsOfInterest.setPidForTest(previousPid);
-        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(previousTimeMillis);
+        TrackExitReasons.setPidForTest(previousPid);
+        TrackExitReasons.setCurrentTimeMillisForTest(previousTimeMillis);
         mMockNotifier.mState = AppState.DESTROYED;
         calls = writeFinished.getCallCount();
-        TrackExitReasonsOfInterest.updateAppState(resultCallback);
+        TrackExitReasons.updateAppState(resultCallback);
         writeFinished.waitForCallback(calls);
 
-        dataList = TrackExitReasonsOfInterest.readData();
+        dataList = TrackExitReasons.readData();
         assertEquals(1, dataList.size());
         assertEquals(previousPid, dataList.get(0).mPid);
         assertEquals(previousTimeMillis, dataList.get(0).mTimeMillis);
@@ -336,13 +327,13 @@ public class TrackExitReasonsOfInterestTest {
 
         // Set current state and start tracking startup, the current state is appended
         // to the file and it is STARTUP.
-        TrackExitReasonsOfInterest.setPidForTest(currentPid);
-        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(currentTimeMillis);
+        TrackExitReasons.setPidForTest(currentPid);
+        TrackExitReasons.setCurrentTimeMillisForTest(currentTimeMillis);
         calls = writeFinished.getCallCount();
-        TrackExitReasonsOfInterest.startTrackingStartup(resultCallback);
+        TrackExitReasons.startTrackingStartup(resultCallback);
         writeFinished.waitForCallback(calls);
 
-        dataList = TrackExitReasonsOfInterest.readData();
+        dataList = TrackExitReasons.readData();
         assertEquals(2, dataList.size());
         AppStateData currentData = null;
         for (AppStateData data : dataList) {
@@ -356,24 +347,23 @@ public class TrackExitReasonsOfInterestTest {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
-                                TrackExitReasonsOfInterest.UMA_COUNTS + ".DESTROYED",
+                                TrackExitReasons.UMA_COUNTS + ".DESTROYED",
                                 ProcessExitReasonFromSystem.convertToExitReason(systemReason))
                         .expectIntRecord(
-                                TrackExitReasonsOfInterest.UMA_COUNTS,
+                                TrackExitReasons.UMA_COUNTS,
                                 ProcessExitReasonFromSystem.convertToExitReason(systemReason))
                         .expectIntRecord(
-                                TrackExitReasonsOfInterest.UMA_DELTA,
+                                TrackExitReasons.UMA_DELTA,
                                 (int) (currentTimeMillis - previousTimeMillis))
                         .build();
 
         calls = writeFinished.getCallCount();
         mMockNotifier.mState = AppState.FOREGROUND;
-        TrackExitReasonsOfInterest.finishTrackingStartup(
-                mMockNotifier::getAppState, resultCallback);
+        TrackExitReasons.finishTrackingStartup(mMockNotifier::getAppState, resultCallback);
         writeFinished.waitForCallback(calls);
 
         histogramWatcher.assertExpected();
-        dataList = TrackExitReasonsOfInterest.readData();
+        dataList = TrackExitReasons.readData();
         assertEquals(1, dataList.size());
         assertEquals(currentPid, dataList.get(0).mPid);
         assertEquals(currentTimeMillis, dataList.get(0).mTimeMillis);
