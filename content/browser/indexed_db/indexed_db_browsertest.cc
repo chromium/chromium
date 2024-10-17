@@ -783,9 +783,9 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LevelDBLogFileTest) {
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    int64_t size;
-    EXPECT_TRUE(base::GetFileSize(log_file_path, &size));
-    EXPECT_GT(size, 0);
+    std::optional<int64_t> size = base::GetFileSize(log_file_path);
+    ASSERT_TRUE(size.has_value());
+    EXPECT_GT(size.value(), 0);
   }
 }
 
@@ -918,8 +918,7 @@ void CorruptDatabase(const base::FilePath& idb_data_path) {
                                   base::FileEnumerator::FILES);
   for (base::FilePath idb_file = enumerator.Next(); !idb_file.empty();
        idb_file = enumerator.Next()) {
-    int64_t size(0);
-    GetFileSize(idb_file, &size);
+    int64_t size = base::GetFileSize(idb_file).value_or(0);
 
     if (idb_file.Extension() == FILE_PATH_LITERAL(".ldb")) {
       num_files++;

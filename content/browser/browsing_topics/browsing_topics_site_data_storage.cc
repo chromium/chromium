@@ -257,9 +257,9 @@ bool BrowsingTopicsSiteDataStorage::LazyInit() {
     return false;
   }
 
-  int64_t file_size = 0L;
-  if (base::GetFileSize(path_to_database_, &file_size)) {
-    int64_t file_size_kb = file_size / 1024;
+  std::optional<int64_t> file_size = base::GetFileSize(path_to_database_);
+  if (file_size.has_value()) {
+    int64_t file_size_kb = file_size.value() / 1024;
     base::UmaHistogramCounts1M("BrowsingTopics.SiteDataStorage.FileSize.KB",
                                file_size_kb);
   }

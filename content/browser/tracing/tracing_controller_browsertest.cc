@@ -156,9 +156,9 @@ class TracingControllerTest : public ContentBrowserTest {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       EXPECT_TRUE(PathExists(file_path));
-      int64_t file_size;
-      base::GetFileSize(file_path, &file_size);
-      EXPECT_GT(file_size, 0);
+      std::optional<int64_t> file_size = base::GetFileSize(file_path);
+      ASSERT_TRUE(file_size.has_value());
+      EXPECT_GT(file_size.value(), 0);
     }
     std::move(quit_callback).Run();
     last_actual_recording_file_path_ = file_path;

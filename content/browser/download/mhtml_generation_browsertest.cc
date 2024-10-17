@@ -479,9 +479,11 @@ class MHTMLGenerationTest : public ContentBrowserTest,
 
   int64_t ReadFileSizeFromDisk(base::FilePath path) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    int64_t file_size;
-    if (!base::GetFileSize(path, &file_size)) return -1;
-    return file_size;
+    std::optional<int64_t> file_size = base::GetFileSize(path);
+    if (!file_size.has_value()) {
+      return -1;
+    }
+    return file_size.value();
   }
 
   CompareResult TestOriginalVsSavedPage(const GURL& url,

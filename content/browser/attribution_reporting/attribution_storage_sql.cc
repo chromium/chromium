@@ -229,12 +229,11 @@ std::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement, int col) {
 constexpr int kSourceColumnCount = 21;
 
 int64_t GetStorageFileSizeKB(const base::FilePath& path_to_database) {
-  int64_t file_size = -1;
-  if (!path_to_database.empty() &&
-      base::GetFileSize(path_to_database, &file_size)) {
-    file_size = file_size / 1024;
+  std::optional<int64_t> file_size = base::GetFileSize(path_to_database);
+  if (!file_size.has_value()) {
+    return -1;
   }
-  return file_size;
+  return file_size.value() / 1024;
 }
 
 }  // namespace
