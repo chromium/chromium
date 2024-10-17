@@ -65,6 +65,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="WhatsNewModule">
   <variant name="FamilyLink" summary="the module for Family Link"/>
+  <variant name="GANslate" summary="the module for GANslate"/>
   <variant name="GeminiSiteSearchShortcut"
       summary="the module for Gemini Site Search Shortcut"/>
   <variant name="GenerativeTheming"
