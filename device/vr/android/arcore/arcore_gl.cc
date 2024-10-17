@@ -278,8 +278,10 @@ void ArCoreGl::Initialize(
 
   DVLOG(3) << "ar_image_transport_->Initialize()...";
   ar_image_transport_->Initialize(
-      webxr_.get(), base::BindOnce(&ArCoreGl::OnArImageTransportReady,
-                                   weak_ptr_factory_.GetWeakPtr()));
+      webxr_.get(),
+      base::BindOnce(&ArCoreGl::OnArImageTransportReady,
+                     weak_ptr_factory_.GetWeakPtr()),
+      false);
 
   if (use_ar_compositor_) {
     InitializeArCompositor(main_thread_task_runner, surface_handle, root_window,

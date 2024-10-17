@@ -114,7 +114,15 @@ void CardboardImageTransport::Render(WebXrPresentationState* webxr,
   // intentionally inverted here. However, this inversion is already accounted
   // for in the non-shared buffer mode where we swap the texture to a surface
   // beforehand.
-  if (UseSharedBuffer()) {
+  bool should_flip = UseSharedBuffer();
+  // WebGPU adds another wrinkle, because it produces textures that are flipped
+  // relative to WebGL. So WebGPU-produced textures should always be use an
+  // inverted orientation compared to what WebGL would have used.
+  if (IsWebGPUSession()) {
+    should_flip = !should_flip;
+  }
+
+  if (should_flip) {
     left_eye_description_.top_v = left_bounds.bottom();
     left_eye_description_.bottom_v = left_bounds.y();
     right_eye_description_.top_v = right_bounds.bottom();

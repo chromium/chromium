@@ -15,6 +15,7 @@
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
 #include "device/vr/android/cardboard/cardboard_render_loop.h"
 #include "device/vr/android/xr_activity_state_handler.h"
+#include "device/vr/public/cpp/features.h"
 
 namespace device {
 
@@ -49,7 +50,16 @@ CardboardDevice::CardboardDevice(
       compositor_delegate_provider_(std::move(compositor_delegate_provider)),
       activity_state_handler_factory_(
           std::move(activity_state_handler_factory)) {
-  SetSupportedFeatures(GetSupportedFeatures());
+  std::vector<mojom::XRSessionFeature> device_features(GetSupportedFeatures());
+
+  // Only support WebGPU sessions if the appropriate feature flag is enabled
+  // and shared buffers will be used.
+  if (base::FeatureList::IsEnabled(features::kWebXrIncubations) &&
+      CardboardImageTransport::UseSharedBuffer()) {
+    device_features.emplace_back(mojom::XRSessionFeature::WEBGPU);
+  }
+
+  SetSupportedFeatures(device_features);
 }
 
 CardboardDevice::~CardboardDevice() {

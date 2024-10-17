@@ -78,9 +78,12 @@ void XrImageTransportBase::DestroySharedBuffers(WebXrPresentationState* webxr) {
 }
 
 void XrImageTransportBase::Initialize(WebXrPresentationState* webxr,
-                                      XrInitStatusCallback callback) {
+                                      XrInitStatusCallback callback,
+                                      bool webgpu_session) {
   CHECK(IsOnGlThread());
   DVLOG(2) << __func__;
+
+  webgpu_session_ = webgpu_session;
 
   DoRuntimeInitialization(UseSharedBuffer() ? SharedBufferTextureTarget()
                                             : GL_TEXTURE_EXTERNAL_OES);
@@ -219,6 +222,13 @@ bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
   gpu::SharedImageUsageSet shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+
+  // If the XRSession is producing frames with WebGPU then the appropriate usage
+  // also needs to be added.
+  if (IsWebGPUSession()) {
+    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  }
 
   // Create a new AHardwareBuffer backed handle.
   buffer->scoped_ahb_handle =
