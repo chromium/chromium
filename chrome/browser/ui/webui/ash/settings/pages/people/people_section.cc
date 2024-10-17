@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/people/people_section.h"
 
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/edusumer/graduation_utils.h"
@@ -126,6 +128,18 @@ const std::vector<SearchConcept>& GetParentalSearchConcepts() {
        {.setting = mojom::Setting::kSetUpParentalControls},
        {IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS_ALT1,
         IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS_ALT2, SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetGraduationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_GRADUATION,
+       mojom::kPeopleSectionPath,
+       mojom::SearchResultIcon::kGraduation,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kGraduation}},
   });
   return *tags;
 }
@@ -476,12 +490,10 @@ void AddGraduationStrings(content::WebUIDataSource* html_source,
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  bool is_graduation_app_enabled =
-      profile->GetProfilePolicyConnector()->IsManaged() &&
-      graduation::IsEligibleForGraduation(profile->GetPrefs());
+  html_source->AddBoolean("isGraduationAppEnabled",
+                          ShouldShowGraduationAppSetting(profile));
   html_source->AddBoolean("isGraduationFlagEnabled",
                           features::IsGraduationEnabled());
-  html_source->AddBoolean("isGraduationAppEnabled", is_graduation_app_enabled);
 }
 
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
@@ -544,6 +556,10 @@ PeopleSection::PeopleSection(Profile* profile,
   // dynamically during a user session.
   if (ShouldShowParentalControlSettings(profile)) {
     updater.AddSearchTags(GetParentalSearchConcepts());
+  }
+  if (features::IsGraduationEnabled() &&
+      ShouldShowGraduationAppSetting(profile)) {
+    updater.AddSearchTags(GetGraduationSearchConcepts());
   }
 }
 
@@ -670,6 +686,7 @@ bool PeopleSection::LogMetric(mojom::Setting setting,
 
 void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kSetUpParentalControls);
+  generator->RegisterTopLevelSetting(mojom::Setting::kGraduation);
 
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE, mojom::Subpage::kMyAccounts,

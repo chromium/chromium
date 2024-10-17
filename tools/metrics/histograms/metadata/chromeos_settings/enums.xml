@@ -167,6 +167,7 @@ chromium-metrics-reviews@google.com.
   <int value="317" label="Autocomplete Searches and URLs"/>
   <int value="318" label="Make Searches and Browsing Better"/>
   <int value="319" label="Google Drive Search Suggestions"/>
+  <int value="320" label="Graduation"/>
   <int value="400" label="Touchpad: Tap-To-Click"/>
   <int value="401" label="Touchpad: Tap Dragging"/>
   <int value="402" label="Touchpad: Reverse Scrolling"/>

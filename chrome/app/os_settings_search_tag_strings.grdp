@@ -525,6 +525,9 @@
   <message name="IDS_OS_SETTINGS_TAG_LOCAL_DATA_RECOVERY" desc="Text for search result item which, when clicked, navigates the user to Local Data Recovery toggle.">
     Local Data Recovery
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_GRADUATION" desc="Text for search result item which, when clicked, navigates to the setting that opens the Content Transfer app.">
+    Content Transfer
+  </message>
 
   <!-- Kerberos section. -->
   <message name="IDS_OS_SETTINGS_TAG_KERBEROS_SECTION" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) settings section.">

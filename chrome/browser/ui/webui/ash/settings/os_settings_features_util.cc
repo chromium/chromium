@@ -7,6 +7,7 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/edusumer/graduation_utils.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::settings {
@@ -78,6 +80,16 @@ bool ShouldShowMultitasking() {
 
 bool ShouldShowMultitaskingInPersonalization() {
   return !ash::features::IsOsSettingsRevampWayfindingEnabled();
+}
+
+bool ShouldShowGraduationAppSetting(Profile* profile) {
+  // Graduation is available for non-consumer managed users that have the
+  // Graduation policy set.
+  PrefService* pref_service = profile->GetPrefs();
+  CHECK(pref_service);
+  return profile->GetProfilePolicyConnector()->IsManaged() &&
+         !supervised_user::IsSubjectToParentalControls(*pref_service) &&
+         graduation::IsEligibleForGraduation(pref_service);
 }
 
 }  // namespace ash::settings

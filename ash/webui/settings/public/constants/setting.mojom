@@ -102,6 +102,7 @@ enum Setting {
   kImproveSearchSuggestions = 317,
   kMakeSearchesAndBrowsingBetter = 318,
   kGoogleDriveSearchSuggestions = 319,
+  kGraduation = 320,
 
   // Device section.
   kTouchpadTapToClick = 400,

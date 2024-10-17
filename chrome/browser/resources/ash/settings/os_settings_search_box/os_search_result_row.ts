@@ -745,6 +745,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kGooglePlay:
         return isRevampEnabled ? 'os-settings:google-play-revamp' :
                                  'os-settings:google-play';
+      case SearchResultIcon.kGraduation:
+        return 'os-settings:graduation';
       case SearchResultIcon.kHearing:
         return 'os-settings:a11y-hearing';
       case SearchResultIcon.kHelp:

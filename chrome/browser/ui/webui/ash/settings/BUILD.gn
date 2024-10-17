@@ -100,6 +100,7 @@ static_library("settings") {
     "//components/policy/core/common",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/supervised_user/core/browser",
     "//components/user_manager",
     "//ui/base/ime/ash",
     "//ui/gfx",

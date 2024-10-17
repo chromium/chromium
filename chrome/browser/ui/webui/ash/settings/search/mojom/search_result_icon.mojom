@@ -38,6 +38,7 @@ enum SearchResultIcon {
   kGeolocation,
   kGoogleDrive,
   kGooglePlay,
+  kGraduation,
   kHearing,
   kHelp,
   kHelpMeRead,
