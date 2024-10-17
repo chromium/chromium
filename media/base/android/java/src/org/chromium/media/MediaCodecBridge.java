@@ -812,6 +812,14 @@ class MediaCodecBridge {
 
     @CalledByNative
     protected void releaseOutputBuffer(int index, boolean render) {
+        if (mUseAsyncApi) {
+            synchronized (this) {
+                if (mPendingError) {
+                    Log.e(TAG, "Skipping releaseOutputBuffer() due to codec errors.");
+                    return;
+                }
+            }
+        }
         try {
             mMediaCodec.releaseOutputBuffer(index, render);
         } catch (IllegalStateException e) {
