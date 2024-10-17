@@ -19,6 +19,7 @@ using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
 using optimization_guide::OptimizationGuideModelExecutionError;
 using optimization_guide::OptimizationGuideModelStreamingExecutionResult;
+using optimization_guide::SessionConfigParams;
 using optimization_guide::proto::Answer;
 using optimization_guide::proto::HistoryAnswerRequest;
 using optimization_guide::proto::Passage;
@@ -268,11 +269,13 @@ void MlAnswerer::ComputeAnswer(std::string query,
       base::BindOnce(&MlAnswerer::SessionManager::OnSessionsStarted,
                      session_manager_->GetWeakPtr()));
 
+  const SessionConfigParams session_config{
+      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly};
   // Start a session for each URL.
   for (const auto& url_and_passages : context.url_passages_map) {
     std::unique_ptr<Session> session = model_executor_->StartSession(
         optimization_guide::ModelBasedCapabilityKey::kHistorySearch,
-        /*config_params=*/std::nullopt);
+        session_config);
     if (session == nullptr) {
       session_manager_->FinishAndResetSessions(AnswererResult(
           ComputeAnswerStatus::kModelUnavailable, query, Answer()));
