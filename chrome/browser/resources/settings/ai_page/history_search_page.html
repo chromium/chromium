@@ -84,7 +84,8 @@
         learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
         pref="{{prefs.optimization_guide.history_search_setting_state}}"
         numeric-unchecked-values="[[numericUncheckedValues_]]"
-        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]">
+        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+        on-settings-boolean-control-change="onHistorySearchToggleChange_">
     </settings-toggle-button>
   </div>
   <div class="settings-columned-section">

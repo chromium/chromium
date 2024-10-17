@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {AiPageTabOrganizationInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+
 import {getTemplate} from './ai_tab_organization_subpage.html.js';
-import {FeatureOptInState} from './constants.js';
+import {AiPageActions} from './constants.js';
 
-const SettingsAiTabOrganizationSubpageElementBase = PrefsMixin(PolymerElement);
-
-export class SettingsAiTabOrganizationSubpageElement extends
-    SettingsAiTabOrganizationSubpageElementBase {
+export class SettingsAiTabOrganizationSubpageElement extends PolymerElement {
   static get is() {
     return 'settings-ai-tab-organization-subpage';
   }
@@ -20,24 +19,20 @@ export class SettingsAiTabOrganizationSubpageElement extends
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
-      featureOptInStateEnum_: {
-        type: Object,
-        value: FeatureOptInState,
-      },
+  private recordInteractionMetrics_(
+      interaction: AiPageTabOrganizationInteractions, action: string) {
+    this.metricsBrowserProxy_.recordAiPageTabOrganizationInteractions(
+        interaction);
+    this.metricsBrowserProxy_.recordAction(action);
+  }
 
-      numericUncheckedValues_: {
-        type: Array,
-        value: () =>
-            [FeatureOptInState.DISABLED, FeatureOptInState.NOT_INITIALIZED],
-      },
-    };
+  private onLearnMoreClick_() {
+    this.recordInteractionMetrics_(
+        AiPageTabOrganizationInteractions.LEARN_MORE_LINK_CLICKED,
+        AiPageActions.TAB_ORGANIZATION_LEARN_MORE_CLICKED);
   }
 }
 

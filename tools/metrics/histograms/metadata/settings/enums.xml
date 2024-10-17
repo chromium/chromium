@@ -267,6 +267,36 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Restore the last session and open URLs"/>
 </enum>
 
+<!-- LINT.IfChange(SettingsAiPageCompareInteractions) -->
+
+<enum name="SettingsAiPageCompareInteractions">
+  <int value="0" label="Feature link clicked"/>
+  <int value="1" label="Learn more link clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageCompareInteractions) -->
+
+<!-- LINT.IfChange(SettingsAiPageComposeInteractions) -->
+
+<enum name="SettingsAiPageComposeInteractions">
+  <int value="0" label="Learn more link clicked"/>
+  <int value="1" label="Compose proactive nudge enabled"/>
+  <int value="2" label="Compose proactive nudge disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageComposeInteractions) -->
+
+<!-- LINT.IfChange(SettingsAiPageHistorySearchInteractions) -->
+
+<enum name="SettingsAiPageHistorySearchInteractions">
+  <int value="0" label="History Search enabled"/>
+  <int value="1" label="History Search disabled"/>
+  <int value="2" label="Feature link clicked"/>
+  <int value="3" label="Learn more link clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageHistorySearchInteractions) -->
+
 <!-- LINT.IfChange(SettingsAiPageInteractions) -->
 
 <enum name="SettingsAiPageInteractions">
@@ -278,6 +308,14 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageInteractions) -->
+
+<!-- LINT.IfChange(SettingsAiPageTabOrganizationInteractions) -->
+
+<enum name="SettingsAiPageTabOrganizationInteractions">
+  <int value="0" label="Learn more link clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageTabOrganizationInteractions) -->
 
 <enum name="SettingsClearBrowsingDataTimePeriod">
   <int value="0" label="Last hour"/>

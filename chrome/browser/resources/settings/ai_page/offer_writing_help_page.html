@@ -28,7 +28,8 @@
       <div class="secondary">
         $i18n{aiComposeSublabelV2}$i18n{sentenceEnd}
         <a href="$i18n{composeLearnMorePageURL}"
-            aria-label="$i18n{aiComposeSettingLearnMoreA11y}" target="_blank">
+            aria-label="$i18n{aiComposeSettingLearnMoreA11y}"
+            on-click="onLearnMoreClick_" target="_blank">
           $i18n{learnMore}
         </a>
       </div>
@@ -70,7 +71,8 @@
           enableAiSettingsPageRefresh_)]]"
       pref="{{prefs.compose.proactive_nudge_enabled}}"
       label="$i18n{offerWritingHelpToggleLabel}"
-      sub-label="$i18n{offerWritingHelpToggleSublabel}">
+      sub-label="$i18n{offerWritingHelpToggleSublabel}"
+      on-settings-boolean-control-change="onComposeProactiveNudgeToggleChange_">
   </settings-toggle-button>
   <div class="cr-row">
     <div id="disabledSitesHeading" class="flex">

@@ -10,8 +10,12 @@ import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_prope
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {AiPageComposeInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
+import {AiPageActions} from './constants.js';
 import {getTemplate} from './offer_writing_help_page.html.js';
 
 export const COMPOSE_PROACTIVE_NUDGE_PREF = 'compose.proactive_nudge_enabled';
@@ -61,6 +65,34 @@ export class SettingsOfferWritingHelpPageElement extends
   private enableAiSettingsPageRefresh_: boolean;
   private enableComposeProactiveNudge_: boolean;
   private disabledSitesLabel_: string;
+
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+
+  private recordInteractionMetrics_(
+      interaction: AiPageComposeInteractions, action: string) {
+    this.metricsBrowserProxy_.recordAiPageComposeInteractions(interaction);
+    this.metricsBrowserProxy_.recordAction(action);
+  }
+
+  private onLearnMoreClick_() {
+    this.recordInteractionMetrics_(
+        AiPageComposeInteractions.LEARN_MORE_LINK_CLICKED,
+        AiPageActions.COMPOSE_LEARN_MORE_CLICKED);
+  }
+
+  private onComposeProactiveNudgeToggleChange_(e: Event) {
+    const toggle = e.target as SettingsToggleButtonElement;
+    if (toggle.checked) {
+      this.recordInteractionMetrics_(
+          AiPageComposeInteractions.COMPOSE_PROACTIVE_NUDGE_ENABLED,
+          AiPageActions.COMPOSE_PROACTIVE_NUDGE_ENABLED);
+      return;
+    }
+    this.recordInteractionMetrics_(
+        AiPageComposeInteractions.COMPOSE_PROACTIVE_NUDGE_DISABLED,
+        AiPageActions.COMPOSE_PROACTIVE_NUDGE_DISABLED);
+  }
 
   private hasSites_(): boolean {
     return this.siteList_.length > 0;

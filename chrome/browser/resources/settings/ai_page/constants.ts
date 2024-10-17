@@ -19,3 +19,21 @@ export enum SettingsAiPageFeaturePrefName {
   TAB_ORGANIZATION = 'optimization_guide.tab_organization_setting_state',
   WALLPAPER_SEARCH = 'optimization_guide.wallpaper_search_setting_state',
 }
+
+export enum AiPageActions {
+  HISTORY_SEARCH_ENABLED = 'Settings.AiPage.HistorySearch.Enabled',
+  HISTORY_SEARCH_DISABLED = 'Settings.AiPage.HistorySearch.Disabled',
+  HISTORY_SEARCH_FEATURE_LINK_CLICKED =
+      'Settings.AiPage.HistorySearch.FeatureLinkClicked',
+  HISTORY_SEARCH_LEARN_MORE_CLICKED =
+      'Settings.AiPage.HistorySearch.LearnMoreClicked',
+  COMPARE_FEATURE_LINK_CLICKED = 'Settings.AiPage.Compare.FeatureLinkClicked',
+  COMPARE_LEARN_MORE_CLICKED = 'Settings.AiPage.Compare.LearnMoreClicked',
+  COMPOSE_LEARN_MORE_CLICKED = 'Settings.AiPage.Compose.LearnMoreClicked',
+  COMPOSE_PROACTIVE_NUDGE_ENABLED =
+      'Settings.AiPage.Compose.ProactiveNudgeEnabled',
+  COMPOSE_PROACTIVE_NUDGE_DISABLED =
+      'Settings.AiPage.Compose.ProactiveNudgeDisabled',
+  TAB_ORGANIZATION_LEARN_MORE_CLICKED =
+      'Settings.AiPage.TabOrganization.LearnMoreClicked',
+}

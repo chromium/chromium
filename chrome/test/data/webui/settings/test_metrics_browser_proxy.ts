@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AiPageInteractions, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
+import type {AiPageCompareInteractions, AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageTabOrganizationInteractions, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -42,6 +42,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordFeatureNotificationsChange',
       // </if>
       'recordAiPageInteractions',
+      'recordAiPageHistorySearchInteractions',
+      'recordAiPageCompareInteractions',
+      'recordAiPageComposeInteractions',
+      'recordAiPageTabOrganizationInteractions',
     ]);
   }
 
@@ -203,5 +207,23 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordAiPageInteractions(interaction: AiPageInteractions) {
     this.methodCalled('recordAiPageInteractions', interaction);
+  }
+
+  recordAiPageHistorySearchInteractions(interaction:
+                                            AiPageHistorySearchInteractions) {
+    this.methodCalled('recordAiPageHistorySearchInteractions', interaction);
+  }
+
+  recordAiPageCompareInteractions(interaction: AiPageCompareInteractions) {
+    this.methodCalled('recordAiPageCompareInteractions', interaction);
+  }
+
+  recordAiPageComposeInteractions(interaction: AiPageComposeInteractions) {
+    this.methodCalled('recordAiPageComposeInteractions', interaction);
+  }
+
+  recordAiPageTabOrganizationInteractions(
+      interaction: AiPageTabOrganizationInteractions) {
+    this.methodCalled('recordAiPageTabOrganizationInteractions', interaction);
   }
 }

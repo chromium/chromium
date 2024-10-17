@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsOfferWritingHelpPageElement} from 'chrome://settings/lazy_load.js';
-import {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF} from 'chrome://settings/lazy_load.js';
+import {AiPageActions, COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {AiPageComposeInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
+// clang-format on
+
 suite('ComposePage', function() {
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
   let page: SettingsOfferWritingHelpPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -21,11 +27,22 @@ suite('ComposePage', function() {
   });
 
   function createPage() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-offer-writing-help-page');
     page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
     return flushTasks();
+  }
+
+  async function assertFeatureInteractionMetrics(
+      interaction: AiPageComposeInteractions, action: AiPageActions) {
+    const result =
+        await metricsBrowserProxy.whenCalled('recordAiPageComposeInteractions');
+    assertEquals(interaction, result);
+
+    assertEquals(action, await metricsBrowserProxy.whenCalled('recordAction'));
   }
 
   // Test that interacting with the main toggle updates the corresponding pref.
@@ -41,8 +58,17 @@ suite('ComposePage', function() {
 
     // Check enabled case.
     mainToggle.click();
+    await assertFeatureInteractionMetrics(
+        AiPageComposeInteractions.COMPOSE_PROACTIVE_NUDGE_ENABLED,
+        AiPageActions.COMPOSE_PROACTIVE_NUDGE_ENABLED);
     assertEquals(true, page.getPref(COMPOSE_PROACTIVE_NUDGE_PREF).value);
     assertTrue(mainToggle.checked);
+
+    metricsBrowserProxy.reset();
+    mainToggle.click();
+    await assertFeatureInteractionMetrics(
+        AiPageComposeInteractions.COMPOSE_PROACTIVE_NUDGE_DISABLED,
+        AiPageActions.COMPOSE_PROACTIVE_NUDGE_DISABLED);
   });
 
   test('DisabledSitesListUpdate', function() {
@@ -131,6 +157,11 @@ suite('ComposePage', function() {
     assertTrue(!!learnMoreLink);
     assertEquals(
         learnMoreLink.href, loadTimeData.getString('composeLearnMorePageURL'));
+
+    learnMoreLink.click();
+    await assertFeatureInteractionMetrics(
+        AiPageComposeInteractions.LEARN_MORE_LINK_CLICKED,
+        AiPageActions.COMPOSE_LEARN_MORE_CLICKED);
   });
 });
 
