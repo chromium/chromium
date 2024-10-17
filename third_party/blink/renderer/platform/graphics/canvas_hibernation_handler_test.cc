@@ -126,6 +126,14 @@ void DrawSomething(Canvas2DLayerBridge* bridge) {
   provider->FlushCanvas(FlushReason::kTesting);
 }
 
+void Draw(CanvasResourceHost& host) {
+  CanvasResourceProvider* provider = host.GetOrCreateCanvasResourceProvider(
+      host.GetRasterMode() == RasterMode::kGPU ? RasterModeHint::kPreferGPU
+                                               : RasterModeHint::kPreferCPU);
+  provider->Canvas().drawLine(0, 0, 2, 2, cc::PaintFlags());
+  provider->FlushCanvas(FlushReason::kTesting);
+}
+
 class TestSingleThreadTaskRunner : public base::SingleThreadTaskRunner {
  public:
   bool PostDelayedTask(const base::Location& from_here,
@@ -191,14 +199,15 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 200), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
+  CanvasHibernationHandler handler;
+  FakeCanvasResourceHost host(gfx::Size(300, 200));
+  host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
-  auto& handler = bridge->GetHibernationHandler();
+  Draw(host);
+
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
-  SetPageVisible(Host(), &handler, platform, false);
+  SetPageVisible(&host, &handler, platform, false);
 
   EXPECT_TRUE(handler.IsHibernating());
   // Triggers a delayed task for encoding.
@@ -231,16 +240,16 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
       "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime", 0);
 
   // It should be possible to decompress the encoded image.
-  EXPECT_TRUE(bridge->GetHibernationHandler().GetImage());
+  EXPECT_TRUE(handler.GetImage());
   histogram_tester.ExpectTotalCount(
       "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime", 1);
 
-  SetPageVisible(Host(), &handler, platform, true);
+  SetPageVisible(&host, &handler, platform, true);
   EXPECT_FALSE(handler.is_encoded());
 
-  EXPECT_TRUE(Host()->GetRasterMode() == RasterMode::kGPU);
+  EXPECT_TRUE(host.GetRasterMode() == RasterMode::kGPU);
   EXPECT_FALSE(handler.IsHibernating());
-  EXPECT_TRUE(Host()->IsResourceValid());
+  EXPECT_TRUE(host.IsResourceValid());
 }
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {
