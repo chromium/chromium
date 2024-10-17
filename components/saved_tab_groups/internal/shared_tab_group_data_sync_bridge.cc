@@ -7,6 +7,7 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -32,6 +33,7 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/model/model_error.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -518,10 +520,12 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_ADD:
       case syncer::EntityChange::ACTION_UPDATE: {
         if (change->data().specifics.shared_tab_group_data().has_tab_group()) {
-          AddGroupToLocalStorage(
-              change->data().specifics.shared_tab_group_data(),
-              change->data().collaboration_id, metadata_change_list.get(),
-              write_batch.get());
+          if (std::optional<syncer::ModelError> error = AddGroupToLocalStorage(
+                  change->data().specifics.shared_tab_group_data(),
+                  change->data().collaboration_id, metadata_change_list.get(),
+                  write_batch.get())) {
+            return error;
+          }
         } else if (change->data().specifics.shared_tab_group_data().has_tab()) {
           // Postpone tab updates until all remote groups are added.
           tab_updates.push_back(std::move(change));
@@ -563,9 +567,13 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
   // Process tab updates after applying deletions so that tab updates having
   // deleted groups will be stored to `tabs_missing_groups_`.
   for (const std::unique_ptr<syncer::EntityChange>& change : tab_updates) {
-    ApplyRemoteTabUpdate(change->data().specifics.shared_tab_group_data(),
-                         metadata_change_list.get(), write_batch.get(),
-                         tab_ids_with_pending_model_update);
+    if (std::optional<syncer::ModelError> error = ApplyRemoteTabUpdate(
+            change->data().specifics.shared_tab_group_data(),
+            metadata_change_list.get(), write_batch.get(),
+            tab_ids_with_pending_model_update,
+            change->data().collaboration_id)) {
+      return error;
+    }
 
     // The tab update has been applied to the model.
     tab_ids_with_pending_model_update.erase(base::Uuid::ParseLowercase(
@@ -949,7 +957,8 @@ void SharedTabGroupDataSyncBridge::OnDatabaseSave(
   }
 }
 
-void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
+std::optional<syncer::ModelError>
+SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
     const std::string& collaboration_id,
     syncer::MetadataChangeList* metadata_change_list,
@@ -957,7 +966,7 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
   base::Uuid group_guid = base::Uuid::ParseLowercase(specifics.guid());
   if (!group_guid.is_valid()) {
     // Ignore remote updates having invalid data.
-    return;
+    return std::nullopt;
   }
 
   CHECK(specifics.has_tab_group());
@@ -970,7 +979,7 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
     StoreSharedGroup(write_batch, specifics, proto::LocalSharedTabGroupData());
     model_wrapper_->AddGroup(
         SpecificsToSharedTabGroup(specifics, collaboration_id));
-    return;
+    return std::nullopt;
   }
 
   // Update the existing group with remote data.
@@ -985,8 +994,11 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
               specifics.update_time_windows_epoch_micros()));
   CHECK(existing_group);
 
-  // TODO(crbug.com/319521964): consider checking that collaboration ID never
-  // changes.
+  if (existing_group->collaboration_id() != collaboration_id) {
+    // Shared tab groups should never change collaboration IDs.
+    return syncer::ModelError(
+        FROM_HERE, "Unexpected collaboration ID for a remote group.");
+  }
 
   // Create new specifics in case some fields were merged.
   sync_pb::SharedTabGroupDataSpecifics updated_specifics =
@@ -994,13 +1006,17 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
 
   StoreSharedGroup(write_batch, updated_specifics,
                    GroupToLocalOnlyData(*existing_group));
+
+  return std::nullopt;
 }
 
-void SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
+std::optional<syncer::ModelError>
+SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
     syncer::MetadataChangeList* metadata_change_list,
     syncer::DataTypeStore::WriteBatch* write_batch,
-    const std::set<base::Uuid>& tab_ids_with_pending_model_update) {
+    const std::set<base::Uuid>& tab_ids_with_pending_model_update,
+    std::string_view collaboration_id) {
   CHECK(specifics.has_tab());
 
   base::Uuid tab_guid = base::Uuid::ParseLowercase(specifics.guid());
@@ -1009,11 +1025,25 @@ void SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
       base::Uuid::ParseLowercase(specifics.tab().shared_tab_group_guid());
   if (!group_guid.is_valid()) {
     // Ignore tab with invalid data.
-    return;
+    return std::nullopt;
   }
 
   const SavedTabGroup* existing_group = model_wrapper_->GetGroup(group_guid);
-  if (existing_group && existing_group->ContainsTab(tab_guid)) {
+  if (!existing_group) {
+    // The tab does not have a corresponding group. This can happen when sync
+    // sends the tab data before the group data. In this case, the tab is stored
+    // in case the group comes in later.
+    // TODO(crbug.com/370719750): keep tabs with no groups.
+    return std::nullopt;
+  }
+
+  if (existing_group->collaboration_id() != collaboration_id) {
+    // Shared tabs must have the same collaboration ID as their group.
+    return syncer::ModelError(FROM_HERE,
+                              "Unexpected collaboration ID for a remote tab.");
+  }
+
+  if (existing_group->ContainsTab(tab_guid)) {
     const std::optional<int> current_tab_index =
         existing_group->GetIndexOfTab(tab_guid);
     CHECK(current_tab_index.has_value());
@@ -1032,7 +1062,7 @@ void SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
 
     // Write result to the store.
     StoreSharedTab(write_batch, std::move(merged_entry));
-    return;
+    return std::nullopt;
   }
 
   // Tabs are stored to the local storage regardless of the existence of its
@@ -1042,20 +1072,15 @@ void SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
   // metadata.
   StoreSharedTab(write_batch, specifics);
 
-  if (existing_group) {
-    // This is a new tab for the group.
-    model_wrapper_->AddTabToGroup(
-        existing_group->saved_guid(),
-        SpecificsToSharedTabGroupTab(
-            specifics, PositionToInsertRemoteTab(
-                           specifics.tab().unique_position(), *existing_group,
-                           tab_ids_with_pending_model_update)));
-  } else {
-    // The tab does not have a corresponding group. This can happen when sync
-    // sends the tab data before the group data. In this case, the tab is stored
-    // in case the group comes in later.
-    // TODO(crbug.com/370719750): keep tabs with no groups.
-  }
+  // This is a new tab for the group.
+  model_wrapper_->AddTabToGroup(
+      existing_group->saved_guid(),
+      SpecificsToSharedTabGroupTab(
+          specifics, PositionToInsertRemoteTab(
+                         specifics.tab().unique_position(), *existing_group,
+                         tab_ids_with_pending_model_update)));
+
+  return std::nullopt;
 }
 
 void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(

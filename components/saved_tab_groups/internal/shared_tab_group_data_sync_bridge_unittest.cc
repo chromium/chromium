@@ -372,12 +372,12 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   }
 
   // Applies remote incremental update with a single change.
-  void ApplySingleEntityChange(
+  std::optional<syncer::ModelError> ApplySingleEntityChange(
       std::unique_ptr<syncer::EntityChange> entity_change) {
     syncer::EntityChangeList change_list;
     change_list.push_back(std::move(entity_change));
-    bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
-                                          std::move(change_list));
+    return bridge()->ApplyIncrementalSyncChanges(
+        bridge()->CreateMetadataChangeList(), std::move(change_list));
   }
 
   sync_pb::UniquePosition GetMockedUniquePosition(
@@ -1586,6 +1586,35 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAssignLocalGroupId) {
   ASSERT_THAT(model()->Get(group.saved_guid()), NotNull());
 
   EXPECT_EQ(model()->Get(group.saved_guid())->local_group_id(), std::nullopt);
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldReturnErrorOnUnexpectedCollaborationId) {
+  const std::string kCollaborationId = "collaboration";
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(kCollaborationId);
+  group.AddTabLocally(test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0));
+  model()->Add(group);
+
+  sync_pb::SharedTabGroupDataSpecifics group_update_specifics =
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
+  group_update_specifics.set_guid(group.saved_guid().AsLowercaseString());
+  EXPECT_NE(ApplySingleEntityChange(CreateUpdateEntityChange(
+                group_update_specifics, "unexpected_collaboration_id")),
+            std::nullopt);
+
+  sync_pb::SharedTabGroupDataSpecifics tab_update_specifics = MakeTabSpecifics(
+      "tab", GURL("http://google.com/1"),
+      /*group_id=*/group.saved_guid(), GenerateRandomUniquePosition());
+  tab_update_specifics.set_guid(
+      group.saved_tabs()[0].saved_tab_guid().AsLowercaseString());
+  EXPECT_NE(ApplySingleEntityChange(CreateUpdateEntityChange(
+                tab_update_specifics, "unexpected_collaboration_id")),
+            std::nullopt);
 }
 
 // The number of tabs to test the correct ordering of remote updates.

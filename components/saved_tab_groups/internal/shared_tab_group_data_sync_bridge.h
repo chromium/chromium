@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -113,16 +114,17 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // may have been sent before their groups have arrived. In this case, the tabs
   // are saved in the DataTypeStore but not in the model (and instead cached in
   // this class).
-  void AddGroupToLocalStorage(
+  std::optional<syncer::ModelError> AddGroupToLocalStorage(
       const sync_pb::SharedTabGroupDataSpecifics& specifics,
       const std::string& collaboration_id,
       syncer::MetadataChangeList* metadata_change_list,
       syncer::DataTypeStore::WriteBatch* write_batch);
-  void ApplyRemoteTabUpdate(
+  std::optional<syncer::ModelError> ApplyRemoteTabUpdate(
       const sync_pb::SharedTabGroupDataSpecifics& specifics,
       syncer::MetadataChangeList* metadata_change_list,
       syncer::DataTypeStore::WriteBatch* write_batch,
-      const std::set<base::Uuid>& tab_ids_with_pending_model_update);
+      const std::set<base::Uuid>& tab_ids_with_pending_model_update,
+      std::string_view collaboration_id);
 
   // Removes all data assigned to `storage_key` from local storage
   // (SavedTabGroupModel, and DataTypeStore). If a group is removed, all its
