@@ -205,43 +205,6 @@ void DrawSomething(Canvas2DLayerBridge* bridge) {
   provider->FlushCanvas(FlushReason::kTesting);
 }
 
-TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
-  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
-  const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
-                                     ->ContextProvider()
-                                     ->GetCapabilities())
-      .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
-
-  viz::TransferableResource resources[3];
-  viz::ReleaseCallback callbacks[3];
-  cc::PaintFlags flags;
-
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  Canvas().drawLine(0, 0, 2, 2, flags);
-  DrawSomething(bridge.get());
-  ASSERT_TRUE(Host()->PrepareTransferableResource(nullptr, &resources[0],
-                                                  &callbacks[0]));
-
-  Canvas().drawLine(0, 0, 2, 2, flags);
-  DrawSomething(bridge.get());
-  ASSERT_TRUE(Host()->PrepareTransferableResource(nullptr, &resources[1],
-                                                  &callbacks[1]));
-  EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
-
-  // Now release the first resource and draw again. It should be reused due to
-  // recycling.
-  std::move(callbacks[0]).Run(gpu::SyncToken(), false);
-  Canvas().drawLine(0, 0, 2, 2, flags);
-  DrawSomething(bridge.get());
-  ASSERT_TRUE(Host()->PrepareTransferableResource(nullptr, &resources[2],
-                                                  &callbacks[2]));
-  EXPECT_EQ(resources[0].mailbox(), resources[2].mailbox());
-
-  std::move(callbacks[1]).Run(gpu::SyncToken(), false);
-  std::move(callbacks[2]).Run(gpu::SyncToken(), false);
-}
-
 TEST_F(Canvas2DLayerBridgeTest,
        PrepareTransferableResourceTracksCanvasChanges) {
   gfx::Size size(300, 300);

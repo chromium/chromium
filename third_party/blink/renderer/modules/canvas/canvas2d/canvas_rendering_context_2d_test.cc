@@ -2587,6 +2587,39 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
   }
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated, ResourceRecycling) {
+  CreateContext(kNonOpaque);
+
+  viz::TransferableResource resources[3];
+  viz::ReleaseCallback callbacks[3];
+  cc::PaintFlags flags;
+
+  Context2D()->fillRect(3, 3, 1, 1);
+
+  // Invoking PrepareTransferableResource() has a precondition that a CC layer
+  // be present.
+  CanvasElement().GetOrCreateCcLayerIfNeeded();
+
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
+      nullptr, &resources[0], &callbacks[0]));
+
+  Context2D()->fillRect(3, 3, 1, 1);
+
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
+      nullptr, &resources[1], &callbacks[1]));
+  EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
+
+  // Now release the first resource and draw again. It should be reused due to
+  // recycling.
+  std::move(callbacks[0]).Run(gpu::SyncToken(), false);
+
+  Context2D()->fillRect(3, 3, 1, 1);
+
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
+      nullptr, &resources[2], &callbacks[2]));
+  EXPECT_EQ(resources[0].mailbox(), resources[2].mailbox());
+}
+
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoResourceRecyclingWhenPageHidden) {
   CreateContext(kNonOpaque);
