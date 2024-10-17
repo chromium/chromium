@@ -373,14 +373,12 @@ void PlusAddressHttpClientImpl::PreallocatePlusAddressesInternal(
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
+base::expected<void, PlusAddressRequestError>
+PlusAddressHttpClientImpl::ProcessNetworkResponse(
     UrlLoaderList::iterator it,
     PlusAddressNetworkRequestType type,
     base::TimeTicks request_start,
-    PlusAddressRequestCallback on_completed,
-    std::unique_ptr<std::string> response) {
-  // TODO(crbug.com/322279583): Combine the overlapping code here and in
-  // `OnReserveOrConfirmPlusAddressComplete`.
+    base::optional_ref<const std::string> response) {
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   loaders_.erase(it);
 
@@ -398,19 +396,32 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
   }
 
   if (net_error == net::ERR_TIMED_OUT) {
-    std::move(on_completed)
-        .Run(base::unexpected(PlusAddressRequestError(
-            PlusAddressRequestErrorType::kClientTimeout)));
-    return;
+    return base::unexpected(
+        PlusAddressRequestError(PlusAddressRequestErrorType::kClientTimeout));
   }
 
   if (!response) {
-    std::move(on_completed)
-        .Run(base::unexpected(
-            PlusAddressRequestError::AsNetworkError(response_code)));
+    return base::unexpected(
+        PlusAddressRequestError::AsNetworkError(response_code));
+  }
+
+  metrics::RecordNetworkRequestResponseSize(type, response->size());
+  return base::ok();
+}
+
+void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
+    UrlLoaderList::iterator it,
+    PlusAddressNetworkRequestType type,
+    base::TimeTicks request_start,
+    PlusAddressRequestCallback on_completed,
+    std::unique_ptr<std::string> response) {
+  if (base::expected<void, PlusAddressRequestError> result =
+          ProcessNetworkResponse(it, type, request_start, response.get());
+      !result.has_value()) {
+    std::move(on_completed).Run(base::unexpected(result.error()));
     return;
   }
-  metrics::RecordNetworkRequestResponseSize(type, response->size());
+
   // Parse the response & return it via callback.
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
@@ -434,43 +445,15 @@ void PlusAddressHttpClientImpl::OnPreallocationComplete(
     base::TimeTicks request_start,
     PreallocatePlusAddressesCallback on_completed,
     std::unique_ptr<std::string> response) {
-  // TODO(crbug.com/322279583): Combine the overlapping code here and in
-  // `OnReserveOrConfirmPlusAddressComplete`.
-  std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
-  loaders_.erase(it);
-
-  const std::optional<int> net_error =
-      loader ? loader->NetError() : std::optional<int>();
-  const std::optional<int> response_code = GetResponseCode(loader.get());
-
-  metrics::RecordNetworkRequestLatency(
-      PlusAddressNetworkRequestType::kPreallocate,
-      base::TimeTicks::Now() - request_start);
-  if (net_error) {
-    metrics::RecordNetErrorCode(PlusAddressNetworkRequestType::kPreallocate,
-                                *net_error);
-  }
-  if (response_code) {
-    metrics::RecordNetworkRequestResponseCode(
-        PlusAddressNetworkRequestType::kPreallocate, *response_code);
-  }
-
-  if (net_error == net::ERR_TIMED_OUT) {
-    std::move(on_completed)
-        .Run(base::unexpected(PlusAddressRequestError(
-            PlusAddressRequestErrorType::kClientTimeout)));
+  if (base::expected<void, PlusAddressRequestError> result =
+          ProcessNetworkResponse(it,
+                                 PlusAddressNetworkRequestType::kPreallocate,
+                                 request_start, response.get());
+      !result.has_value()) {
+    std::move(on_completed).Run(base::unexpected(result.error()));
     return;
   }
 
-  if (!response) {
-    std::move(on_completed)
-        .Run(base::unexpected(
-            PlusAddressRequestError::AsNetworkError(response_code)));
-    return;
-  }
-
-  metrics::RecordNetworkRequestResponseSize(
-      PlusAddressNetworkRequestType::kPreallocate, response->size());
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
       base::BindOnce(&ParsePreallocatedPlusAddresses)
