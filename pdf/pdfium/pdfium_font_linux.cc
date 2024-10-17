@@ -252,8 +252,15 @@ void DeleteFont(FPDF_SYSFONTINFO*, void* font_id) {
   GetBlinkFontMapper().DeleteFont(font_id);
 }
 
-FPDF_SYSFONTINFO g_font_info = {1,           0, EnumFonts, MapFont,   0,
-                                GetFontData, 0, 0,         DeleteFont};
+FPDF_SYSFONTINFO g_font_info = {.version = 1,
+                                .Release = nullptr,
+                                .EnumFonts = EnumFonts,
+                                .MapFont = MapFont,
+                                .GetFont = nullptr,
+                                .GetFontData = GetFontData,
+                                .GetFaceName = nullptr,
+                                .GetFontCharset = nullptr,
+                                .DeleteFont = DeleteFont};
 
 }  // namespace
 
