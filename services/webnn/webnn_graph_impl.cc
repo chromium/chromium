@@ -96,9 +96,13 @@ bool ValidateWebNNTensorsUsage(
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     base::flat_map<std::string, OperandDescriptor> input_names_to_descriptors,
     base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors,
+    base::flat_map<uint64_t, base::flat_set<size_t>>
+        operand_to_dependent_operations,
     base::PassKey<WebNNGraphBuilderImpl> pass_key)
     : input_names_to_descriptors(std::move(input_names_to_descriptors)),
-      output_names_to_descriptors(std::move(output_names_to_descriptors)) {}
+      output_names_to_descriptors(std::move(output_names_to_descriptors)),
+      operand_to_dependent_operations(
+          std::move(operand_to_dependent_operations)) {}
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     ComputeResourceInfo&&) = default;
