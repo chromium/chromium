@@ -237,7 +237,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kCloseTabs];
 
-  if (![self isRunningTest:@selector(testInactiveTabsForDeletion)]) {
+  if (![self isRunningTest:@selector(DISABLED_testInactiveTabsForDeletion)]) {
     GREYAssertNil([MetricsAppInterface setupHistogramTester],
                   @"Cannot setup histogram tester.");
     [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
@@ -262,7 +262,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kCloseTabs];
 
-  if (![self isRunningTest:@selector(testInactiveTabsForDeletion)]) {
+  if (![self isRunningTest:@selector(DISABLED_testInactiveTabsForDeletion)]) {
     [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
     GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                   @"Cannot reset histogram tester.");
@@ -960,7 +960,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 // browsing data row when tabs are selected as a data type for deletion. It also
 // tests that the inactive tabs get closed when the deletion of tabs is
 // selected.
-- (void)testInactiveTabsForDeletion {
+// TODO(crbug.com/374048360): Re-enable test.
+- (void)DISABLED_testInactiveTabsForDeletion {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
                            @"only supported on iPhone.");
