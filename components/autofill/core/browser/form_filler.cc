@@ -516,9 +516,8 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                       field.global_id(), value);
 }
 
-void FormFiller::FillOrPreviewFormExperimental(
+void FormFiller::FillOrPreviewFormWithPredictionImprovements(
     mojom::ActionPersistence action_persistence,
-    FillingProduct filling_product,
     const FieldTypeSet& field_types_to_fill,
     const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
     const FormData& form,
@@ -541,7 +540,8 @@ void FormFiller::FillOrPreviewFormExperimental(
       GetFieldFillingSkipReasons(
           result_fields, form_structure, autofill_trigger_field,
           field_types_to_fill,
-          /*type_groups_originally_filled=*/std::nullopt, filling_product,
+          /*type_groups_originally_filled=*/std::nullopt,
+          FillingProduct::kPredictionImprovements,
           /*skip_unrecognized_autocomplete_fields=*/false,
           /*is_refill=*/false,
           /*is_expired_credit_card=*/false);
@@ -571,7 +571,8 @@ void FormFiller::FillOrPreviewFormExperimental(
       // TODO(crbug.com/40227496): Set also `AutofillField::value_` here.
       AutofillField& autofill_field = *form_structure.field(i);
       autofill_field.set_is_autofilled(true);
-      autofill_field.set_filling_product(filling_product);
+      autofill_field.set_filling_product(
+          FillingProduct::kPredictionImprovements);
     }
 
     const bool autofilled_value_did_not_change =

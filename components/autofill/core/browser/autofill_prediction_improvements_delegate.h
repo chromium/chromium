@@ -99,6 +99,14 @@ class AutofillPredictionImprovementsDelegate {
       const FormData& form,
       const FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) = 0;
+
+  virtual void OnFormSeen(const FormStructure& form) = 0;
+
+  virtual void OnDidFillSuggestion(autofill::FormGlobalId form_id) = 0;
+
+  // Called when the user manually edits a field that was filled using
+  // prediction improvements.
+  virtual void OnEditedAutofilledField(autofill::FormGlobalId form_id) = 0;
 };
 
 }  // namespace autofill

@@ -1323,6 +1323,12 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     if (logger) {
       logger->OnEditedAutofilledField();
     }
+    if (AutofillPredictionImprovementsDelegate* delegate =
+            client().GetAutofillPredictionImprovementsDelegate();
+        delegate && autofill_field->filling_product() ==
+                        FillingProduct::kPredictionImprovements) {
+      delegate->OnEditedAutofilledField(form.global_id());
+    }
   }
 
   UpdateInitialInteractionTimestamp(timestamp);
@@ -1986,9 +1992,8 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
                                   autofill_field, trigger_details);
 }
 
-void BrowserAutofillManager::FillOrPreviewFormExperimental(
+void BrowserAutofillManager::FillOrPreviewFormWithPredictionImprovements(
     mojom::ActionPersistence action_persistence,
-    FillingProduct filling_product,
     const FieldTypeSet& field_types_to_fill,
     const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
     const FormData& form,
@@ -2000,10 +2005,13 @@ void BrowserAutofillManager::FillOrPreviewFormExperimental(
                              &autofill_trigger_field)) {
     return;
   }
-  form_filler_->FillOrPreviewFormExperimental(
-      action_persistence, filling_product, field_types_to_fill,
-      ignorable_skip_reasons, form, trigger_field, *form_structure,
-      *autofill_trigger_field, values_to_fill);
+  form_filler_->FillOrPreviewFormWithPredictionImprovements(
+      action_persistence, field_types_to_fill, ignorable_skip_reasons, form,
+      trigger_field, *form_structure, *autofill_trigger_field, values_to_fill);
+  if (AutofillPredictionImprovementsDelegate* delegate =
+          client().GetAutofillPredictionImprovementsDelegate()) {
+    delegate->OnDidFillSuggestion(form.global_id());
+  }
 }
 
 void BrowserAutofillManager::FillOrPreviewField(
@@ -3172,6 +3180,12 @@ void BrowserAutofillManager::OnFormProcessed(
     autofill_optimization_guide->OnDidParseForm(
         form_structure, client().GetPersonalDataManager());
   }
+
+  if (AutofillPredictionImprovementsDelegate* delegate =
+          client().GetAutofillPredictionImprovementsDelegate()) {
+    delegate->OnFormSeen(form_structure);
+  }
+
   // If a form with the same FormGlobalId was previously filled, the structure
   // of the form changed, and there has not been a refill attempt on that form
   // yet, start the process of triggering a refill.

@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -65,6 +66,12 @@ class MockAutofillPredictionImprovementsDelegate
                const FormData& form,
                const FormFieldData& trigger_field,
                UpdateSuggestionsCallback update_suggestions_callback),
+              (override));
+  MOCK_METHOD(void, OnFormSeen, (const FormStructure& form), (override));
+  MOCK_METHOD(void, OnDidFillSuggestion, (FormGlobalId form_id), (override));
+  MOCK_METHOD(void,
+              OnEditedAutofilledField,
+              (FormGlobalId form_id),
               (override));
 };
 

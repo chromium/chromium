@@ -1416,9 +1416,8 @@ void AutofillExternalDelegate::FillPredictionImprovements(
     // Full form filling.
     Suggestion::PredictionImprovementsPayload payload =
         suggestion.GetPayload<Suggestion::PredictionImprovementsPayload>();
-    manager_->FillOrPreviewFormExperimental(
-        mojom::ActionPersistence::kFill,
-        FillingProduct::kPredictionImprovements, payload.field_types_to_fill,
+    manager_->FillOrPreviewFormWithPredictionImprovements(
+        mojom::ActionPersistence::kFill, payload.field_types_to_fill,
         payload.ignorable_skip_reasons, query_form_, query_field_,
         payload.values_to_fill);
   }

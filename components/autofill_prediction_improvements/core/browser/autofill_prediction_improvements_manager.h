@@ -97,6 +97,9 @@ class AutofillPredictionImprovementsManager
       const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) override;
+  void OnFormSeen(const autofill::FormStructure& form) override;
+  void OnDidFillSuggestion(autofill::FormGlobalId form_id) override;
+  void OnEditedAutofilledField(autofill::FormGlobalId form_id) override;
 
   // Methods for strike counting of rejected forms.
   bool IsFormBlockedForImport(const autofill::FormStructure& form) const;
