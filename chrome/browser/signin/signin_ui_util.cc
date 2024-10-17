@@ -437,7 +437,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 }
 
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
-    signin::IdentityManager* identity_manager,
+    const signin::IdentityManager* identity_manager,
     bool restrict_to_accounts_eligible_for_sync) {
   // Fetch account ids for accounts that have a token and are in cookie jar.
   std::vector<AccountInfo> accounts_with_tokens =
@@ -486,7 +486,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 AccountInfo GetSingleAccountForPromos(
-    signin::IdentityManager* identity_manager) {
+    const signin::IdentityManager* identity_manager) {
   std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
       identity_manager, /*restrict_to_accounts_eligible_for_sync=*/true);
   if (!accounts.empty())
