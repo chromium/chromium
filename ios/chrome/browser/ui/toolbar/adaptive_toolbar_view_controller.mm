@@ -176,27 +176,32 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   [self.view.collapsedToolbarButton
       addGestureRecognizer:hoverGestureRecognizer];
 
-  [self traitCollectionDidChange:nil];
+  [self updateUIOnTraitChange:nil];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+      UITraitPreferredContentSizeCategory.class
+    ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateUIOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  // Progress bar and buttons visibility.
-  [self updateAllButtonsVisibility];
-  if (IsRegularXRegularSizeClass(self)) {
-    [self.view.progressBar setHidden:YES animated:NO completion:nil];
-  } else if (self.loading && self.hasOmnibox) {
-    [self.view.progressBar setHidden:NO animated:NO completion:nil];
+  if (@available(iOS 17, *)) {
+    return;
   }
 
-  // Restore locationBarContainer height with previous fullscreen progress.
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateLocationBarHeightForFullscreenProgress:
-              self.previousFullscreenProgress];
-  }
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
@@ -561,6 +566,24 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 // Exits fullscreen.
 - (void)exitFullscreen {
   [self.adaptiveDelegate exitFullscreen];
+}
+
+// Modifies the UI based on the UITraits that changed on the device.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  // Progress bar and buttons visibility.
+  [self updateAllButtonsVisibility];
+  if (IsRegularXRegularSizeClass(self)) {
+    [self.view.progressBar setHidden:YES animated:NO completion:nil];
+  } else if (self.loading && self.hasOmnibox) {
+    [self.view.progressBar setHidden:NO animated:NO completion:nil];
+  }
+
+  // Restore locationBarContainer height with previous fullscreen progress.
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateLocationBarHeightForFullscreenProgress:
+              self.previousFullscreenProgress];
+  }
 }
 
 @end
