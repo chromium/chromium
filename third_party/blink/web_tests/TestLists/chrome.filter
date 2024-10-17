@@ -15,4 +15,4 @@ external/wpt/html/webappapis/system-state-and-capabilities/*
 
 # crbug.com/40279363 run_bounce_tracking_mitigations and the bounce tracking
 # mitigations feature are not implemented for content shell yet.
-wpt_internal/nav-tracking-mitigations/stateful-client-bounce.sub.https.html
+external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html

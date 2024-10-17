@@ -2680,7 +2680,6 @@ crbug.com/368657256 external/wpt/css/css-text-decor/text-emphasis-position-auto-
 crbug.com/368512272 [ Mac12 ] external/wpt/fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.worker.html [ Timeout ]
 crbug.com/368512272 [ Mac12 ] external/wpt/fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.html [ Failure Pass ]
 crbug.com/368512272 [ Mac12-arm64 ] external/wpt/fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.html [ Failure Pass ]
-crbug.com/368464070 external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Timeout ]
 crbug.com/368131302 external/wpt/css/css-sizing/intrinsic-percent-replaced-022.html [ Failure ]
 crbug.com/368131302 external/wpt/css/css-sizing/intrinsic-percent-replaced-023.html [ Failure ]
 crbug.com/368076862 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?flac [ Timeout ]
