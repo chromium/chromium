@@ -23406,6 +23406,33 @@
             ]
         }
     ],
+    "ToastStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWith10sDuration_20241017",
+                    "params": {
+                        "toast_timeout": "10s",
+                        "toast_without_action_timeout": "10s"
+                    },
+                    "enable_features": [
+                        "ImageCopiedToast",
+                        "LinkCopiedToast",
+                        "LinkToHighlightCopiedToast",
+                        "ReadingListToast",
+                        "ToastFramework"
+                    ]
+                }
+            ]
+        }
+    ],
     "ToolbarPinning": [
         {
             "platforms": [
@@ -23421,33 +23448,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ToolbarPinning"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TopChromeToast": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWith10sDuration",
-                    "params": {
-                        "toast_timeout": "10s",
-                        "toast_without_action_timeout": "10s"
-                    },
-                    "enable_features": [
-                        "ImageCopiedToast",
-                        "LinkCopiedToast",
-                        "LinkToHighlightCopiedToast",
-                        "ReadingListToast",
-                        "ToastFramework"
                     ]
                 }
             ]
