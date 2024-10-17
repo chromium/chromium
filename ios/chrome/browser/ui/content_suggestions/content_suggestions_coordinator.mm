@@ -657,10 +657,19 @@ using segmentation_platform::TipIdentifier;
                           BrowserCoordinatorCommands)
           showOmniboxPositionChoice];
       break;
-    case TipIdentifier::kEnhancedSafeBrowsing:
-      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                          SettingsCommands) showSafeBrowsingSettings];
+    case TipIdentifier::kEnhancedSafeBrowsing: {
+      if (TipsSafeBrowsingExperimentTypeEnabled() ==
+          TipsSafeBrowsingExperimentType::kShowSafeBrowsingSettingsPage) {
+        [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            SettingsCommands) showSafeBrowsingSettings];
+      } else {
+        [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            BrowserCoordinatorCommands)
+            showEnhancedSafeBrowsingPromo];
+      }
+
       break;
+    }
     case TipIdentifier::kSavePasswords:
     case TipIdentifier::kAutofillPasswords:
       // TODO(crbug.com/372491399): Implement animated promo screens for
