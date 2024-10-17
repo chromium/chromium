@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+
 struct ChooseFileEvent;
 
 // The different first level options the user can select.
@@ -53,11 +55,30 @@ enum class DriveFilePickerSearchState {
 // The size of the currently selected file.
 @property(nonatomic, assign) uint64_t fileSize;
 
+// Whether a search was triggered during the flow.
+@property(nonatomic, assign) BOOL triggeredSearch;
+
+// A counter to track the number of subfolders browsed during a search, if the
+// number is positive, the current navigation was initiated from a search.
+@property(nonatomic, assign) NSInteger searchSubFolderCounter;
+
 // Report the metrics at the start of the flow.
 - (void)reportActivationMetricsForEvent:(const ChooseFileEvent&)event;
 
 // Report the metrics at the end of the flow.
 - (void)reportOutcomeMetrics;
+
+// Reports the sorting changes.
+- (void)reportSortingCriteriaChange:(DriveItemsSortingType)criteria
+                      withDirection:(DriveItemsSortingOrder)direction;
+
+// Reports the filter changes.
+- (void)reportFilterChange:(DriveFilePickerFilter)filter;
+
+// Reports the account change, success/failure is relevant when adding a new
+// identity.
+- (void)reportAccountChangeWithSuccess:(BOOL)success
+                          isAccountNew:(BOOL)isAccountNew;
 
 @end
 

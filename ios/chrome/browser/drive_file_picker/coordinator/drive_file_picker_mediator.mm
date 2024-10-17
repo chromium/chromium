@@ -395,6 +395,8 @@ NSString* kDriveIconRepositoryPrefix =
   }
   _sortingCriteria = criteria;
   _sortingDirection = direction;
+  [_metricsHelper reportSortingCriteriaChange:_sortingCriteria
+                                withDirection:_sortingDirection];
   [self.delegate browseDriveCollectionWithMediator:self
                                    didUpdateFilter:_filter
                                    sortingCriteria:criteria
@@ -516,6 +518,7 @@ NSString* kDriveIconRepositoryPrefix =
     return;
   }
   _filter = filter;
+  [_metricsHelper reportFilterChange:_filter];
   [self.delegate browseDriveCollectionWithMediator:self
                                    didUpdateFilter:_filter
                                    sortingCriteria:_sortingCriteria
@@ -666,12 +669,16 @@ NSString* kDriveIconRepositoryPrefix =
     // If search items are hidden, then ensure the search bar is defocused and
     // the search text is cleared.
     _searchBarFocused = NO;
+    _metricsHelper.searchSubFolderCounter -= 1;
     [self.consumer setSearchBarFocused:NO searchText:nil];
     _searchText = nil;
     _metricsHelper.searchingState = DriveFilePickerSearchState::kNotSearching;
   } else {
+    _metricsHelper.triggeredSearch = YES;
+    _metricsHelper.searchSubFolderCounter += 1;
     _metricsHelper.searchingState = DriveFilePickerSearchState::kSearchRecent;
   }
+
   // When switching between search items and non-search items, the list of items
   // is cleared and the loading indicator is presented.
   [self clearItemsAndShowLoadingIndicator];

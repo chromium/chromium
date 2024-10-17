@@ -164,12 +164,12 @@
 }
 
 - (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+  if (selectedIdentity == _currentIdentity) {
+    return;
+  }
   CHECK(_mediator);
-  _currentIdentity = selectedIdentity;
-  [_navigationController popToRootViewControllerAnimated:YES];
-  [_childBrowseCoordinator stop];
-  _childBrowseCoordinator = nil;
-  [_mediator setSelectedIdentity:selectedIdentity];
+  [_metricsHelper reportAccountChangeWithSuccess:YES isAccountNew:NO];
+  [self updateCurrentIdentityWithIdentity:selectedIdentity];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -320,7 +320,9 @@
                callback:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
                  if (result == SigninCoordinatorResultSuccess) {
-                   [weakSelf setSelectedIdentity:completionInfo.identity];
+                   [weakSelf addAndSelectNewIdentity:completionInfo.identity];
+                 } else {
+                   [weakSelf reportAddingIdentityFailure];
                  }
                }];
   [applicationCommandsHandler showSignin:addAccountCommand
@@ -379,6 +381,28 @@
   [_navigationController presentViewController:discardSelectionAlertController
                                       animated:YES
                                     completion:nil];
+}
+
+// Updates the current identity with a new identity. The new identity can be an
+// already registered or a newly added identity.
+- (void)updateCurrentIdentityWithIdentity:(id<SystemIdentity>)identity {
+  _currentIdentity = identity;
+  [_navigationController popToRootViewControllerAnimated:YES];
+  [_childBrowseCoordinator stop];
+  _childBrowseCoordinator = nil;
+  [_mediator setSelectedIdentity:identity];
+}
+
+// Adds a new identity to be the current identity.
+- (void)addAndSelectNewIdentity:(id<SystemIdentity>)identity {
+  CHECK(_mediator);
+  [_metricsHelper reportAccountChangeWithSuccess:YES isAccountNew:YES];
+  [self updateCurrentIdentityWithIdentity:identity];
+}
+
+// Reports adding a new identity failure.
+- (void)reportAddingIdentityFailure {
+  [_metricsHelper reportAccountChangeWithSuccess:NO isAccountNew:YES];
 }
 
 @end

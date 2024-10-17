@@ -1392,6 +1392,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.FilePicker.Drive.AccountSelection"
+    enum="IOSFilePickerDriveAccountSelection" expires_after="2025-10-10">
+  <owner>qpubert@google.com</owner>
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Report the outcome of changing an account within Drive File Picker.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FilePicker.Drive.Displayed"
     enum="IOSFilePickerDriveDisplayed" expires_after="2025-10-10">
   <owner>qpubert@google.com</owner>
@@ -1403,12 +1413,38 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.FilePicker.Drive.Filter" enum="IOSFilePickerDriveFilter"
+    expires_after="2025-10-10">
+  <owner>qpubert@google.com</owner>
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Report the selected filter to apply logged on every filter change.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FilePicker.Drive.Outcome" enum="IOSFilePickerDriveOutcome"
     expires_after="2025-10-10">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>The outcome of Drive file picker flow.</summary>
+</histogram>
+
+<histogram name="IOS.FilePicker.Drive.SearchOutcome"
+    enum="IOSFilePickerDriveSearchOutcome" expires_after="2025-10-10">
+  <owner>qpubert@google.com</owner>
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>Report the outcome of searching once per file picker flow.</summary>
+</histogram>
+
+<histogram name="IOS.FilePicker.Drive.Sorting" enum="IOSFilePickerDriveSorting"
+    expires_after="2025-10-10">
+  <owner>qpubert@google.com</owner>
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>Report the selected sorting order to apply.</summary>
 </histogram>
 
 <histogram name="IOS.FilePicker.Drive.SubmittedFileSize" units="MB"

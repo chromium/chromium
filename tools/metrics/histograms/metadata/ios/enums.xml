@@ -335,12 +335,27 @@ the generic promo launch. -->
   <int value="3" label="Skipped Default Browser Settings For NTP"/>
 </enum>
 
+<enum name="IOSFilePickerDriveAccountSelection">
+  <int value="0" label="Change account"/>
+  <int value="1" label="Add account success"/>
+  <int value="2" label="Add account failure"/>
+</enum>
+
 <enum name="IOSFilePickerDriveDisplayed">
   <int value="0" label="The Drive element was displayed"/>
   <int value="1" label="The tab was killed"/>
   <int value="2" label="The feature was disabled"/>
   <int value="3" label="The tab was OTR"/>
   <int value="4" label="The user was not signed in"/>
+</enum>
+
+<enum name="IOSFilePickerDriveFilter">
+  <int value="0" label="Select Archives"/>
+  <int value="1" label="Select Audio"/>
+  <int value="2" label="Select Videos"/>
+  <int value="3" label="Select Photos and Images"/>
+  <int value="4" label="Select PDFs"/>
+  <int value="5" label="Select Enable All"/>
 </enum>
 
 <enum name="IOSFilePickerDriveOutcome">
@@ -357,6 +372,24 @@ the generic promo launch. -->
   <int value="10" label="Submitted from Shared Drives"/>
   <int value="11" label="Submitted from Recent"/>
   <int value="12" label="Submitted from Starred"/>
+</enum>
+
+<enum name="IOSFilePickerDriveSearchOutcome">
+  <int value="0" label="Submitted search item"/>
+  <int value="1" label="Submitted search subitem"/>
+  <int value="2" label="Submitted non search item"/>
+  <int value="3" label="Submitted without triggering search"/>
+  <int value="4" label="Cancel without triggering search"/>
+  <int value="5" label="Cancel after triggering search"/>
+</enum>
+
+<enum name="IOSFilePickerDriveSorting">
+  <int value="0" label="Sorted by name ascending"/>
+  <int value="1" label="Sorted by name descending"/>
+  <int value="2" label="Sorted by opened time ascending"/>
+  <int value="3" label="Sorted by modified time descending"/>
+  <int value="4" label="Sorted by modified time ascending"/>
+  <int value="5" label="Cancel sorting selection"/>
 </enum>
 
 <enum name="IOSFilePickerInstallError">
