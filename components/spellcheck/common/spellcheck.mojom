@@ -65,7 +65,6 @@ interface SpellCheckHost {
   DisconnectSessionBridge();
 
   // Checks the correctness of a word with a platform-specific spell checker.
-  // TODO(groby): This needs to originate from SpellcheckProvider.
   [EnableIf=USE_BROWSER_SPELLCHECKER_AND_SPELLING_SERVICE, Sync]
   CheckSpelling(mojo_base.mojom.String16 word) => (bool correct);
 
