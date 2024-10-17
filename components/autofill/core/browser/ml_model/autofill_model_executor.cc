@@ -26,27 +26,24 @@ bool AutofillModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const AutofillModelEncoder::ModelInput& input) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillModelPredictions));
+
+  // `input_tensors[0]` has shape (batch_size, max_number_of_fields,
+  // tokens_per_field) where the batch size is set to 1. The second and third
+  // dimensions hold the values of the vectorized field labels.
+  CHECK_EQ(input_tensors[0]->dims->size, 3);
+  const size_t maximum_number_of_fields = input_tensors[0]->dims->data[1];
+  const size_t output_sequence_length = input_tensors[0]->dims->data[2];
+
   CHECK_EQ(2u, input_tensors.size());
   CHECK_EQ(kTfLiteFloat32, input_tensors[0]->type);
   CHECK_EQ(kTfLiteBool, input_tensors[1]->type);
-  size_t fields_count =
-      std::min(input.size(), AutofillModelEncoder::kModelMaxNumberOfFields);
-  // `input_tensors[0]` is a 3D vector. The first dimension is used for
-  // batching, which the ML model declares with size 1 so only one form
-  // is consumed at a time. The second and third dimensions hold the
-  // values of the vectorized field labels.
+  size_t fields_count = std::min(input.size(), maximum_number_of_fields);
   {
-    CHECK_EQ(input_tensors[0]->dims->size, 3);
-    CHECK_EQ(input_tensors[0]->dims->data[1],
-             static_cast<int>(AutofillModelEncoder::kModelMaxNumberOfFields));
-    CHECK_EQ(input_tensors[0]->dims->data[2],
-             static_cast<int>(AutofillModelEncoder::kOutputSequenceLength));
-    // Initialize with vectors having the first element = 1 which is what the
-    // model expects for empty fields.
-    std::vector<float> empty_field(AutofillModelEncoder::kOutputSequenceLength);
-    empty_field[0] = 1;
-    std::vector<std::vector<float>> encoded_input(
-        AutofillModelEncoder::kModelMaxNumberOfFields, empty_field);
+    // Initialize with vectors with zeros which is what the model expects for
+    // empty fields.
+    std::vector<float> empty_field(output_sequence_length);
+    std::vector<std::vector<float>> encoded_input(maximum_number_of_fields,
+                                                  empty_field);
 
     for (size_t i = 0; i < fields_count; ++i) {
       base::ranges::transform(input[i], encoded_input[i].begin(),
@@ -55,20 +52,21 @@ bool AutofillModelExecutor::Preprocess(
                               });
     }
     // Populate tensors with the vectorized field labels.
-    for (size_t i = 0; i < AutofillModelEncoder::kModelMaxNumberOfFields; ++i) {
+    for (size_t i = 0; i < maximum_number_of_fields; ++i) {
       base::ranges::copy(encoded_input[i],
                          tflite::GetTensorData<float>(input_tensors[0]) +
-                             i * AutofillModelEncoder::kOutputSequenceLength);
+                             i * output_sequence_length);
     }
   }
-  // `input_tensors[1]` is a 2D vector of boolean values. The first dimension
-  // is used for batching, which the ML model declares with size 1 so only one
-  // form is consumed at a time. The second dimension contains boolean elements
-  // where each value corresponds to whether there is a form field in the form
-  // in this index or not.
+  // `input_tensors[1]` is a boolean mask of shape
+  // (batch_size, number_of_fields) indicating which fields are valid or the
+  // result of padding to a length of `max_number_of_fields` (those fields
+  // should be ignored).
+  // batch_size is 1, and `GetTensorData(input_tensors[1])[i]` should be 1 iff
+  // field `i` in the input is *not* padding.
   {
     CHECK_EQ(input_tensors[1]->dims->size, 2);
-    for (size_t i = 0; i < AutofillModelEncoder::kModelMaxNumberOfFields; ++i) {
+    for (size_t i = 0; i < maximum_number_of_fields; ++i) {
       tflite::GetTensorData<bool>(input_tensors[1])[i] = i < fields_count;
     }
   }
@@ -84,11 +82,10 @@ AutofillModelExecutor::Postprocess(
   // the model, for all `kModelExecutorMaxNumberOfFields`.
   CHECK_EQ(1u, output_tensors.size());
   CHECK_EQ(kTfLiteFloat32, output_tensors[0]->type);
-  CHECK_EQ(output_tensors[0]->dims->data[1],
-           static_cast<int>(AutofillModelEncoder::kModelMaxNumberOfFields));
+  const size_t maximum_number_of_fields = output_tensors[0]->dims->data[1];
   const size_t num_outputs = output_tensors[0]->dims->data[2];
-  AutofillModelEncoder::ModelOutput model_predictions;
-  for (size_t i = 0; i < AutofillModelEncoder::kModelMaxNumberOfFields; ++i) {
+  AutofillModelEncoder::ModelOutput model_predictions(maximum_number_of_fields);
+  for (size_t i = 0; i < maximum_number_of_fields; ++i) {
     model_predictions[i].resize(num_outputs);
     const float* data_bgn =
         tflite::GetTensorData<float>(output_tensors[0]) + i * num_outputs;

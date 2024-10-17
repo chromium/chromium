@@ -10,6 +10,55 @@ option java_outer_classname = "AutofillFieldClassificationModelMetadata";
 
 package optimization_guide.proto;
 
+message AutofillFieldClassificationEncodingParameters {
+  // Per-field features that can be included in the model input.
+  enum AutofillFieldClassificationFeature {
+    // Don't use.
+    FEATURE_UNKNOWN = 0;
+    // The label of the field.
+    FEATURE_LABEL = 1;
+    // The placeholder in the field.
+    FEATURE_PLACEHOLDER = 2;
+    // The autocomplete attribute of the field.
+    FEATURE_AUTOCOMPLETE = 3;
+    // The id attribute of the field.
+    FEATURE_ID = 4;
+    // The name attribute of the field (not FormFieldData::name() which falls
+    // back to the id attribute if the name attribute does not exist).
+    FEATURE_NAME = 5;
+  }
+
+  // Maximum number of form fields for which the model can predict types.
+  // When calling the executor with a larger form, predictions are only returned
+  // for the first `maximum_number_of_fields` many fields.
+  int32 maximum_number_of_fields = 1;
+
+  // Max tokens per field per feature.
+  int32 max_tokens_per_feature = 2;
+
+  // The features provided to the model in the order they are presented to the
+  // model.
+  repeated AutofillFieldClassificationFeature features = 3;
+
+  // Pre-processing of feature strings:
+  // labels, name, id attributes, etc. are preprocessed by the following steps:
+
+  // Split a camelCase or UpperCamelCase string into separate words with
+  // spaces in between.
+  bool split_on_camel_case = 4;
+
+  // If true, map the string to lowercase.
+  bool lowercase = 5;
+
+  // Replace all characters listed in `replace_chars_with_whitespace` with a
+  // single space. If empty, this step is skipped.
+  string replace_chars_with_whitespace = 6;
+
+  // Replace all characters listed in `remove_chars` with the empty string.
+  // If empty, this step is skipped.
+  string remove_chars = 7;
+}
+
 // Metadata for OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION.
 message AutofillFieldClassificationModelMetadata {
   // The dictionary used for vectorization of the input labels. The strings
@@ -32,4 +81,7 @@ message AutofillFieldClassificationModelMetadata {
   // The version of the input, based on which the relevant model
   // version will be used from server.
   optional int64 input_version = 4;
+
+  // Encoding parameters, used for input versions >= 3.
+  AutofillFieldClassificationEncodingParameters encoding_parameters = 5;
 }

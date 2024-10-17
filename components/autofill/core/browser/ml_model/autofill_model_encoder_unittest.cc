@@ -23,6 +23,18 @@ namespace autofill {
 using TokenId = AutofillModelEncoder::TokenId;
 using testing::ElementsAre;
 
+namespace {
+// Representation of an empty string.
+constexpr TokenId kEmpty = TokenId(0);
+// Representation of a token that is not in the dictionary.
+constexpr TokenId kUnknown = TokenId(1);
+// Representation of the token "number" (may change if the test model changes).
+constexpr TokenId kNumber = TokenId(14);
+// Representation of the CLS ("classification") token, which is where the
+// model produces the output.
+constexpr TokenId kCLS = TokenId(15);
+}  // namespace
+
 class AutofillModelEncoderTest : public testing::Test {
  public:
   void SetUp() override {
@@ -48,7 +60,8 @@ class AutofillModelEncoderTest : public testing::Test {
     std::string proto_content;
     EXPECT_TRUE(base::ReadFileToString(file_path, &proto_content));
     EXPECT_TRUE(metadata.ParseFromString(proto_content));
-    return AutofillModelEncoder(metadata.input_token());
+    return AutofillModelEncoder(metadata.input_token(),
+                                metadata.encoding_parameters());
   }
 
   AutofillModelEncoder encoder_;
@@ -58,54 +71,44 @@ class AutofillModelEncoderTest : public testing::Test {
 };
 
 TEST_F(AutofillModelEncoderTest, TokensMappedCorrectly) {
-  EXPECT_EQ(encoder_.TokenToId(u"number"), TokenId(22));
+  EXPECT_EQ(encoder_.TokenToId(u"number"), kNumber);
 }
 
 // Tests that words out of vocabulary return 1.
 TEST_F(AutofillModelEncoderTest, WordOutOfVocab) {
-  EXPECT_EQ(encoder_.TokenToId(u"OutOfVocab"), TokenId(1));
+  EXPECT_EQ(encoder_.TokenToId(u"OutOfVocab"), kUnknown);
 }
 
 // Tests that empty strings return 0 for padding.
 TEST_F(AutofillModelEncoderTest, EmptyToken) {
-  EXPECT_EQ(encoder_.TokenToId(u""), TokenId(0));
+  EXPECT_EQ(encoder_.TokenToId(u""), kEmpty);
 }
 
 TEST_F(AutofillModelEncoderTest, InputEncodedCorrectly) {
-  EXPECT_THAT(
-      encoder_.TokenizeAttribute(u"Phone 'number"),
-      ElementsAre(TokenId(1), TokenId(22), TokenId(0), TokenId(0), TokenId(0)));
+  EXPECT_THAT(encoder_.EncodeAttribute(u"Phone 'number"),
+              ElementsAre(kUnknown, kNumber, kEmpty, kEmpty, kEmpty));
 }
 
 // If a field label has more than one consecutive whitespace, they
 // should all be removed without any empty strings.
 TEST_F(AutofillModelEncoderTest, InputHasMoreThanOneWhitespace) {
-  EXPECT_THAT(
-      encoder_.TokenizeAttribute(u"Phone   &number  "),
-      ElementsAre(TokenId(1), TokenId(22), TokenId(0), TokenId(0), TokenId(0)));
+  EXPECT_EQ(encoder_.EncodeAttribute(u"Phone   &number  "),
+            encoder_.EncodeAttribute(u"Phone number"));
 }
 
 TEST_F(AutofillModelEncoderTest, ReplaceSpecialWithWhitespace) {
-  EXPECT_THAT(
-      encoder_.TokenizeAttribute(u"Phone \u3164 number \xa0"),
-      ElementsAre(TokenId(1), TokenId(22), TokenId(0), TokenId(0), TokenId(0)));
+  EXPECT_EQ(encoder_.EncodeAttribute(u"Phone \u3164 number \xa0"),
+            encoder_.EncodeAttribute(u"Phone number"));
 }
 
-// If a field label has more words than the kAttributeOutputSequenceLength,
-// only the first kOutputSequenceLength many words should be used and the
+// If a field label has more words than
+// `AutofillFieldClassificationEncodingParameters::max_tokens_per_feature`,
+// only the first `max_tokens_per_feature` many words should be used and the
 // rest are ignored.
 TEST_F(AutofillModelEncoderTest, InputHasMoreWordsThanOutputSequenceLength) {
   EXPECT_THAT(
-      encoder_.TokenizeAttribute(u"City Number Phone Address Card Last Zip "),
-      ElementsAre(TokenId(1), TokenId(22), TokenId(1), TokenId(1), TokenId(1)));
-}
-
-TEST_F(AutofillModelEncoderTest, AttributeEncodedCorrectly) {
-  EXPECT_THAT(encoder_.EncodeAttribute(
-                  u"Phone \u3164 number \xa0",
-                  AutofillModelEncoder::FieldAttributeIdentifier::kPlaceholder),
-              ElementsAre(TokenId(46), TokenId(1), TokenId(22), TokenId(0),
-                          TokenId(0), TokenId(0)));
+      encoder_.EncodeAttribute(u"City Number Phone Address Card Last Zip "),
+      ElementsAre(kUnknown, kNumber, kUnknown, kUnknown, kUnknown));
 }
 
 TEST_F(AutofillModelEncoderTest, InputConstructedCorrectly) {
@@ -113,12 +116,16 @@ TEST_F(AutofillModelEncoderTest, InputConstructedCorrectly) {
   field.set_label(u"Phone 'number");
   field.set_placeholder(u"Phone 'number");
   field.set_autocomplete_attribute("Phone 'number");
-  EXPECT_THAT(
-      encoder_.EncodeField(field),
-      ElementsAre(TokenId(45), TokenId(1), TokenId(22), TokenId(0), TokenId(0),
-                  TokenId(0), TokenId(47), TokenId(1), TokenId(22), TokenId(0),
-                  TokenId(0), TokenId(0), TokenId(46), TokenId(1), TokenId(22),
-                  TokenId(0), TokenId(0), TokenId(0)));
+  EXPECT_THAT(encoder_.EncodeField(field),
+              ElementsAre(
+                  // CLS
+                  kCLS,
+                  // FEATURE_LABEL
+                  kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
+                  // FEATURE_PLACEHOLDER
+                  kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
+                  // FEATURE_AUTOCOMPLETE
+                  kUnknown, kNumber, kEmpty, kEmpty, kEmpty));
 }
 
 TEST_F(AutofillModelEncoderTest, FormEncodedCorrectly) {
@@ -137,16 +144,24 @@ TEST_F(AutofillModelEncoderTest, FormEncodedCorrectly) {
            }}}));
   EXPECT_THAT(
       encoder_.EncodeForm(form),
-      ElementsAre(ElementsAre(TokenId(45), TokenId(1), TokenId(22), TokenId(0),
-                              TokenId(0), TokenId(0), TokenId(47), TokenId(1),
-                              TokenId(22), TokenId(0), TokenId(0), TokenId(0),
-                              TokenId(46), TokenId(1), TokenId(22), TokenId(0),
-                              TokenId(0), TokenId(0)),
-                  ElementsAre(TokenId(45), TokenId(1), TokenId(22), TokenId(1),
-                              TokenId(1), TokenId(1), TokenId(47), TokenId(1),
-                              TokenId(22), TokenId(1), TokenId(1), TokenId(1),
-                              TokenId(46), TokenId(1), TokenId(22), TokenId(1),
-                              TokenId(1), TokenId(1))));
+      ElementsAre(ElementsAre(
+                      // CLS
+                      kCLS,
+                      // FEATURE_LABEL
+                      kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
+                      // FEATURE_PLACEHOLDER
+                      kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
+                      // FEATURE_AUTOCOMPLETE
+                      kUnknown, kNumber, kEmpty, kEmpty, kEmpty),
+                  ElementsAre(
+                      // CLS
+                      kCLS,
+                      // FEATURE_LABEL
+                      kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
+                      // FEATURE_PLACEHOLDER
+                      kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
+                      // FEATURE_AUTOCOMPLETE
+                      kUnknown, kNumber, kUnknown, kUnknown, kUnknown)));
 }
 
 }  // namespace autofill

@@ -123,7 +123,8 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
     // the server-side and might change in the future, it might fail.
     return;
   }
-  state.encoder = AutofillModelEncoder(state.metadata.input_token());
+  state.encoder = AutofillModelEncoder(state.metadata.input_token(),
+                                       state.metadata.encoding_parameters());
   state_.emplace(std::move(state));
 }
 

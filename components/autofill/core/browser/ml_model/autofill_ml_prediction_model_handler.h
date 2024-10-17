@@ -33,7 +33,7 @@ class AutofillMlPredictionModelHandler
  public:
   // The version of the input, based on which the relevant model
   // version will be used by the server.
-  static constexpr int64_t kAutofillModelInputVersion = 2;
+  static constexpr int64_t kAutofillModelInputVersion = 3;
 
   explicit AutofillMlPredictionModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider);
@@ -43,10 +43,9 @@ class AutofillMlPredictionModelHandler
   // from the model and sets the model predictions with the FormStructure
   // using `HeuristicSource::kMachineLearning`. Once done, the `callback` is
   // triggered on the UI sequence and returns the `form_structure`.
-  // If `form_structure` has more than
-  // `AutofillModelEncoder::kModelMaxNumberOfFields` fields, it sets predictions
-  // for the first `AutofillModelEncoder::kModelMaxNumberOfFields` fields in the
-  // form.
+  // If `form_structure` has more than `maximum_number_of_fields` (see model
+  // metadata) fields, it sets predictions for the first
+  // `maximum_number_of_fields` fields in the form.
   void GetModelPredictionsForForm(
       std::unique_ptr<FormStructure> form_structure,
       base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback);

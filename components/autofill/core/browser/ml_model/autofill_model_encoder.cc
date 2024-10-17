@@ -5,10 +5,12 @@
 #include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,7 +28,10 @@ constexpr AutofillModelEncoder::TokenId kUnknownTokenId =
 }  // namespace
 
 AutofillModelEncoder::AutofillModelEncoder(
-    const google::protobuf::RepeatedPtrField<std::string>& tokens) {
+    const google::protobuf::RepeatedPtrField<std::string>& tokens,
+    optimization_guide::proto::AutofillFieldClassificationEncodingParameters
+        encoding_parameters)
+    : encoding_parameters_(std::move(encoding_parameters)) {
   std::vector<std::pair<std::u16string, AutofillModelEncoder::TokenId>>
       entries = {
           // Index 0 is reserved for padding to `kOutputSequenceLength`.
@@ -58,70 +63,66 @@ AutofillModelEncoder::TokenId AutofillModelEncoder::TokenToId(
   return match->second;
 }
 
-std::vector<std::array<AutofillModelEncoder::TokenId,
-                       AutofillModelEncoder::kOutputSequenceLength>>
+std::vector<std::vector<AutofillModelEncoder::TokenId>>
 AutofillModelEncoder::EncodeForm(const FormStructure& form) const {
-  std::vector<std::array<TokenId, kOutputSequenceLength>> encoded_form(
-      form.fields().size());
+  std::vector<std::vector<TokenId>> encoded_form(form.field_count());
   for (size_t i = 0; i < form.field_count(); ++i) {
     encoded_form[i] = EncodeField(*form.field(i));
   }
   return encoded_form;
 }
 
-std::array<AutofillModelEncoder::TokenId,
-           AutofillModelEncoder::kOutputSequenceLength>
-AutofillModelEncoder::EncodeField(const AutofillField& field) const {
-  using EncodedAttribute = std::array<TokenId, kAttributeOutputSequenceLength>;
-  std::vector<EncodedAttribute> encoded_attributes = {
-      EncodeAttribute(field.label(), FieldAttributeIdentifier::kLabel),
-      EncodeAttribute(base::UTF8ToUTF16(field.autocomplete_attribute()),
-                      FieldAttributeIdentifier::kAutocomplete),
-      EncodeAttribute(field.placeholder(),
-                      FieldAttributeIdentifier::kPlaceholder),
-  };
+std::vector<AutofillModelEncoder::TokenId> AutofillModelEncoder::EncodeField(
+    const AutofillField& field) const {
+  // Protobuf does not generate an `enum class`. Therefore, this points to the
+  // wrapping container class.
+  using FeaturesEnum =
+      optimization_guide::proto::AutofillFieldClassificationEncodingParameters;
 
-  // Concatenate the encoded attributes to one output of length
-  // `kOutputSequenceLength`.
-  std::array<TokenId, kOutputSequenceLength> output;
-  auto it = output.begin();
-  for (EncodedAttribute& encoded_attribute : encoded_attributes) {
-    it = base::ranges::move(encoded_attribute, it);
+  auto encode = [&](int feature) -> std::vector<TokenId> {
+    static_assert(FeaturesEnum::AutofillFieldClassificationFeature_MAX ==
+                      FeaturesEnum::FEATURE_NAME,
+                  "Update the switch when adding more features");
+    switch (feature) {
+      case FeaturesEnum::FEATURE_UNKNOWN:
+        return {};
+      case FeaturesEnum::FEATURE_LABEL:
+        return EncodeAttribute(field.label());
+      case FeaturesEnum::FEATURE_AUTOCOMPLETE:
+        return EncodeAttribute(
+            base::UTF8ToUTF16(field.autocomplete_attribute()));
+      case FeaturesEnum::FEATURE_PLACEHOLDER:
+        return EncodeAttribute(field.placeholder());
+      case FeaturesEnum::FEATURE_ID:
+        return EncodeAttribute(field.id_attribute());
+      case FeaturesEnum::FEATURE_NAME:
+        return EncodeAttribute(field.name_attribute());
+    }
+    return {};
+  };
+  std::vector<TokenId> output;
+  output.reserve(1 + encoding_parameters_.features_size() *
+                         encoding_parameters_.max_tokens_per_feature());
+  output.emplace_back(cls_token());
+  for (int feature : encoding_parameters_.features()) {
+    base::ranges::move(encode(feature), std::back_inserter(output));
   }
   return output;
 }
 
-std::array<AutofillModelEncoder::TokenId,
-           AutofillModelEncoder::kAttributeOutputSequenceLength>
-AutofillModelEncoder::EncodeAttribute(
-    std::u16string_view input,
-    FieldAttributeIdentifier attribute_identifier) const {
-  std::array<AutofillModelEncoder::TokenId,
-             AutofillModelEncoder::kAttributeOutputSequenceLength - 1>
-      tokenized_attribute = TokenizeAttribute(input);
-  std::array<AutofillModelEncoder::TokenId,
-             AutofillModelEncoder::kAttributeOutputSequenceLength>
-      output;
-  output[0] = EncodeAttributeIdentifier(attribute_identifier);
-  base::ranges::move(tokenized_attribute, output.begin() + 1);
-  return output;
-}
-
-std::array<AutofillModelEncoder::TokenId,
-           AutofillModelEncoder::kAttributeOutputSequenceLength - 1>
-AutofillModelEncoder::TokenizeAttribute(std::u16string_view input) const {
+std::vector<AutofillModelEncoder::TokenId>
+AutofillModelEncoder::EncodeAttribute(std::u16string_view input) const {
   std::u16string standardized_input = base::ToLowerASCII(input);
   base::RemoveChars(standardized_input, kSpecialChars, &standardized_input);
   std::vector<std::u16string> split_string =
       base::SplitString(standardized_input, kWhitespaceChars,
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  // Padding the output to be of size `kAttributeOutputSequenceLength`.
-  split_string.resize(kAttributeOutputSequenceLength - 1, u"");
-  std::array<TokenId, kAttributeOutputSequenceLength - 1> output;
-  base::ranges::transform(
-      split_string, output.begin(),
-      [&](std::u16string_view token) { return TokenToId(token); });
-  return output;
+  // Padding the output to be of size `max_tokens_per_feature`.
+  split_string.resize(encoding_parameters_.max_tokens_per_feature(), u"");
+
+  return base::ToVector(split_string, [&](std::u16string_view token) {
+    return TokenToId(token);
+  });
 }
 
 }  // namespace autofill

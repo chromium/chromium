@@ -75,14 +75,24 @@ TEST_F(AutofillModelExecutorTest, ExecuteModel) {
   // executor works in terms of tokenized fields, this is represented as a
   // two arrays of tokens. The TokenIds are completely arbitrary.
   AutofillModelEncoder::ModelInput input = {
-      {TokenId(1795), TokenId(1), TokenId(2), TokenId(3), TokenId(4),
-       TokenId(5), TokenId(1797), TokenId(1), TokenId(2), TokenId(3),
-       TokenId(4), TokenId(5), TokenId(1797), TokenId(1), TokenId(2),
-       TokenId(3), TokenId(4), TokenId(5)},
-      {TokenId(1795), TokenId(2), TokenId(3), TokenId(4), TokenId(5),
-       TokenId(6), TokenId(1797), TokenId(2), TokenId(3), TokenId(4),
-       TokenId(5), TokenId(6), TokenId(1796), TokenId(2), TokenId(3),
-       TokenId(4), TokenId(5), TokenId(6)}};
+      {
+          TokenId(14),  // CLS
+          TokenId(1), TokenId(2), TokenId(3), TokenId(4),
+          TokenId(5),  // Attrib. 1
+          TokenId(2), TokenId(3), TokenId(4), TokenId(5),
+          TokenId(1),  // Attrib. 2
+          TokenId(3), TokenId(4), TokenId(5), TokenId(5),
+          TokenId(5),  // Attrib. 3
+      },
+      {
+          TokenId(14),  // CLS
+          TokenId(1), TokenId(3), TokenId(4), TokenId(5),
+          TokenId(6),  // Attrib. 1
+          TokenId(3), TokenId(4), TokenId(5), TokenId(6),
+          TokenId(2),  // Attrib. 2
+          TokenId(4), TokenId(5), TokenId(6), TokenId(6),
+          TokenId(6),  // Attrib. 3
+      }};
   base::test::TestFuture<
       const std::optional<AutofillModelEncoder::ModelOutput>&>
       predictions;
