@@ -73,6 +73,7 @@ public class SiteSettingsCategory {
         Type.ZOOM,
         Type.STORAGE_ACCESS,
         Type.TRACKING_PROTECTION,
+        Type.FILE_EDITING,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -111,9 +112,10 @@ public class SiteSettingsCategory {
         int STORAGE_ACCESS = 29;
         int TRACKING_PROTECTION = 30;
         int HAND_TRACKING = 31;
+        int FILE_EDITING = 32;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 32;
+        int NUM_ENTRIES = 33;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -220,6 +222,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.REQUEST_DESKTOP_SITE;
             case Type.DEVICE_LOCATION:
                 return ContentSettingsType.GEOLOCATION;
+            case Type.FILE_EDITING:
+                return ContentSettingsType.FILE_SYSTEM_WRITE_GUARD;
             case Type.FEDERATED_IDENTITY_API:
                 return ContentSettingsType.FEDERATED_IDENTITY_API;
             case Type.HAND_TRACKING:
@@ -305,6 +309,8 @@ public class SiteSettingsCategory {
                 return "device_location";
             case Type.FEDERATED_IDENTITY_API:
                 return "federated_identity_api";
+            case Type.FILE_EDITING:
+                return "file_editing";
             case Type.HAND_TRACKING:
                 return "hand_tracking";
             case Type.IDLE_DETECTION:
