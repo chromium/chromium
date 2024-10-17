@@ -3704,6 +3704,11 @@ const CSSValue* FlexBasis::ParseSingleValue(
           stream.Peek().Id())) {
     return css_parsing_utils::ConsumeIdent(stream);
   }
+  // TODO(crbug.com/41253915): Enable this with tests.
+  // if (RuntimeEnabledFeatures::LayoutStretchEnabled() &&
+  //     CSSValueID::kStretch == stream.Peek().Id()) {
+  //   return css_parsing_utils::ConsumeIdent(stream);
+  // }
   return css_parsing_utils::ConsumeLengthOrPercent(
       stream, context, CSSPrimitiveValue::ValueRange::kNonNegative,
       css_parsing_utils::UnitlessQuirk::kForbid, kCSSAnchorQueryTypesNone,

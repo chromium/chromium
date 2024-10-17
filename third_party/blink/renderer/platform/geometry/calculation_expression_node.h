@@ -192,6 +192,7 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
     kWebkitMaxContent,
     kFitContent,
     kWebkitFitContent,
+    kStretch,
     kWebkitFillAvailable,
   };
 

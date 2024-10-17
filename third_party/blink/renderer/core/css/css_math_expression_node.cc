@@ -1150,6 +1150,7 @@ CalculationExpressionSizingKeywordNode::Keyword CSSValueIDToSizingKeyword(
     KEYWORD_CASE(kWebkitMaxContent)
     KEYWORD_CASE(kFitContent)
     KEYWORD_CASE(kWebkitFitContent)
+    KEYWORD_CASE(kStretch)
     KEYWORD_CASE(kWebkitFillAvailable)
 
 #undef KEYWORD_CASE
@@ -1179,6 +1180,7 @@ CSSValueID SizingKeywordToCSSValueID(
     KEYWORD_CASE(kWebkitMaxContent)
     KEYWORD_CASE(kFitContent)
     KEYWORD_CASE(kWebkitFitContent)
+    KEYWORD_CASE(kStretch)
     KEYWORD_CASE(kWebkitFillAvailable)
 
 #undef KEYWORD_CASE

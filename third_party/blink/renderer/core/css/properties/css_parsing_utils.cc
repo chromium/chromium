@@ -6598,6 +6598,10 @@ bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context) {
     }
     return true;
   }
+  if (RuntimeEnabledFeatures::LayoutStretchEnabled() &&
+      id == CSSValueID::kStretch) {
+    return true;
+  }
   return false;
 }
 

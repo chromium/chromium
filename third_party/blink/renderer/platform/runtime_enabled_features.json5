@@ -2552,6 +2552,10 @@
       base_feature: "LayoutNGShapeCache",
     },
     {
+      name: "LayoutStretch",
+      status: "experimental",
+    },
+    {
       name: "LazyInitializeMediaControls",
       base_feature: "none",
       public: true,

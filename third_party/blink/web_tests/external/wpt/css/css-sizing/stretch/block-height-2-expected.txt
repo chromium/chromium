@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] [data-expected-height] 2
+  assert_equals: \n<div style="height: stretch; margin: 25px 0px 75px 0px; outline: 2px dashed blue;" data-expected-height="300"></div>\nheight expected 300 but got 200
+Harness: the test ran to completion.
+

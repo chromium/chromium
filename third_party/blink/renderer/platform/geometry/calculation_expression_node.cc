@@ -52,7 +52,8 @@ CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
   if (keyword != Keyword::kSize && keyword != Keyword::kAny) {
     if (keyword == Keyword::kAuto) {
       has_auto_ = true;
-    } else if (keyword == Keyword::kWebkitFillAvailable) {
+    } else if (keyword == Keyword::kWebkitFillAvailable ||
+               keyword == Keyword::kStretch) {
       has_stretch_ = true;
     } else {
       has_content_or_intrinsic_ = true;
@@ -101,6 +102,7 @@ float CalculationExpressionSizingKeywordNode::Evaluate(
               ? Length::Type::kAuto
               : Length::Type::kFitContent;
       break;
+    case Keyword::kStretch:
     case Keyword::kWebkitFillAvailable:
       intrinsic_type =
           input.calc_size_keyword_behavior == CalcSizeKeywordBehavior::kAsAuto

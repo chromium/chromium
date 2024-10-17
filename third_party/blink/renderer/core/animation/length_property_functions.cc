@@ -73,6 +73,7 @@ bool LengthPropertyFunctions::CanAnimateKeyword(const CSSProperty& property,
           case CSSValueID::kMinContent:
           case CSSValueID::kMaxContent:
           case CSSValueID::kFitContent:
+          case CSSValueID::kStretch:
             return true;
           case CSSValueID::kWebkitMinContent:
           case CSSValueID::kWebkitMaxContent:
