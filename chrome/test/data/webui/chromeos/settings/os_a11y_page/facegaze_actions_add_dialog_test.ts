@@ -233,6 +233,10 @@ suite('<facegaze-actions-add-dialog>', () => {
     return getButton('#faceGazeCustomKeyboardNextButton');
   }
 
+  function getCustomKeyboardChangeButton(): CrButtonElement {
+    return getButton('#faceGazeCustomKeyboardChangeButton');
+  }
+
   function getCustomKeyboardPreviousButton(): CrButtonElement {
     const previousButton = getButton('#faceGazeCustomKeyboardPreviousButton');
     assertFalse(previousButton.disabled);
@@ -376,6 +380,50 @@ suite('<facegaze-actions-add-dialog>', () => {
         // Assert that the key combo has been reset.
         const keyboardNextButton = getCustomKeyboardNextButton();
         assertTrue(keyboardNextButton.disabled);
+      });
+
+
+  test(
+      'custom keyboard page change button resets key combination', async () => {
+        await initPage();
+        assertActionsListNoSelection();
+        setActionsListSelectionToCustomKeyCombo();
+
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+
+        actionNextButton.click();
+        flush();
+
+        assertShortcutInput();
+
+        const keyEvent = {
+          vkey: VKey.kKeyC,
+          domCode: 0,
+          domKey: 0,
+          modifiers: Modifier.CONTROL,
+          keyDisplay: 'c',
+        };
+
+        shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+        shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
+        await flushTasks();
+
+        let keyboardChangeButton = getCustomKeyboardChangeButton();
+        assertFalse(keyboardChangeButton.disabled);
+        keyboardChangeButton.click();
+        flush();
+
+        keyboardChangeButton = getCustomKeyboardChangeButton();
+        assertTrue(keyboardChangeButton.disabled);
+        const keyboardNextButton = getCustomKeyboardNextButton();
+        assertTrue(keyboardNextButton.disabled);
+
+        shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+        shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
+        await flushTasks();
+        keyboardChangeButton = getCustomKeyboardChangeButton();
+        assertFalse(keyboardChangeButton.disabled);
       });
 
   test(

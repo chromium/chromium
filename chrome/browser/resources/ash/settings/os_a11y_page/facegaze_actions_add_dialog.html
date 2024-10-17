@@ -98,6 +98,11 @@
     margin: 20px;
   }
 
+  #changeButtonContainer {
+    display: flex;
+    justify-content: center;
+  }
+
   #sliderContainer {
     margin-top: 20px;
     display: flex;
@@ -198,6 +203,15 @@
               aria-label="[[shortcutInputLabel_]]"
               ignore-blur>
           </shortcut-input>
+        </div>
+        <div id="changeButtonContainer">
+          <cr-button id="faceGazeCustomKeyboardChangeButton"
+              class="button"
+              aria-label="[[keyComboChangeButtonLabel_]]"
+              disabled="[[disableCustomKeyboardNextButton_]]"
+              on-click="onChangeButtonClick_">
+            $i18n{faceGazeActionsDialogKeyCombinationChangeButtonLabel}
+          </cr-button>
         </div>
       </div>
     </div>

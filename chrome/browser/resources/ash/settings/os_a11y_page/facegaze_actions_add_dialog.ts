@@ -20,6 +20,7 @@ import type {CrSliderElement} from '//resources/ash/common/cr_elements/cr_slider
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrScrollableMixin} from 'chrome://resources/ash/common/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -183,6 +184,11 @@ export class FaceGazeAddActionDialogElement extends
         computed: 'getShortcutInputLabel_(keyCombination_)',
       },
 
+      keyComboChangeButtonLabel_: {
+        type: String,
+        computed: 'getKeyComboChangeButtonLabel_(keyCombination_)',
+      },
+
       localizedSelectGestureTitle_: {
         type: String,
         computed: 'getLocalizedSelectGestureTitle_(selectedAction_)',
@@ -290,6 +296,12 @@ export class FaceGazeAddActionDialogElement extends
 
   private onShortcutInputEvent_(e: ShortcutInputCompleteEvent): void {
     this.keyCombination_ = this.formatKeyCombination_(e.detail.keyEvent);
+    if (this.keyCombination_) {
+      this.shortcutInput!.stopObserving();
+      const changeButton = this.shadowRoot!.querySelector<CrButtonElement>(
+          '#faceGazeCustomKeyboardChangeButton');
+      changeButton!.focus();
+    }
   }
 
   private formatKeyCombination_(keyEvent: KeyEvent): KeyCombination|null {
@@ -320,8 +332,6 @@ export class FaceGazeAddActionDialogElement extends
             newKeyCombination.modifiers!.shift = true;
             break;
           case 'meta':
-            // TODO(b:366052411): Investigate support for meta keys other than
-            // search.
             newKeyCombination.modifiers!.search = true;
             break;
         }
@@ -329,6 +339,14 @@ export class FaceGazeAddActionDialogElement extends
     }
 
     return newKeyCombination;
+  }
+
+  private getKeyComboChangeButtonLabel_(): string {
+    return this.keyCombination_ ?
+        this.i18n(
+            'faceGazeActionsDialogKeyCombinationChangeButtonDescription',
+            FaceGazeUtils.getKeyComboDisplayText(this.keyCombination_)) :
+        this.i18n('faceGazeActionsDialogKeyCombinationChangeButtonLabel');
   }
 
   private getShortcutInputLabel_(): string {
@@ -582,6 +600,21 @@ export class FaceGazeAddActionDialogElement extends
     this.shortcutInput =
         this.shadowRoot!.querySelector<ShortcutInputElement>('#shortcutInput');
     if (this.shortcutInput) {
+      this.shortcutInput.reset();
+      this.shortcutInput.startObserving();
+    }
+  }
+
+  private onChangeButtonClick_(): void {
+    if (this.currentPage_ !== AddDialogPage.CUSTOM_KEYBOARD) {
+      return;
+    }
+
+    this.keyCombination_ = null;
+    this.shortcutInput =
+        this.shadowRoot!.querySelector<ShortcutInputElement>('#shortcutInput');
+    if (this.shortcutInput) {
+      this.shortcutInput.reset();
       this.shortcutInput.startObserving();
     }
   }

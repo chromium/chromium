@@ -1352,6 +1352,12 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_KEY_COMBINATION_TITLE" desc="Title for dialog page to create a custom key combination in the action settings.">
     Create key combination
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_KEY_COMBINATION_CHANGE_BUTTON_LABEL" desc="Label for button to change a custom key combination in the action settings.">
+    Change
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_KEY_COMBINATION_CHANGE_BUTTON_DESCRIPTION" desc="Spoken feedback when focus is on button to change a custom key combination in the action settings." is_accessibility_with_no_ui="true">
+    Change key combination <ph name="KEY_COMBINATION">$1<ex>ctrl + c</ex></ph>
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_SELECT_GESTURE_TITLE" desc="Title for dialog page to select a gesture for a given action in the action settings.">
     Select a gesture for <ph name="SELECTED_ACTION">$1<ex>Click a mouse button</ex></ph>
   </message>
