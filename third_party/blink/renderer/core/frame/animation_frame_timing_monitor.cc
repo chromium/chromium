@@ -618,12 +618,12 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
 
 void AnimationFrameTimingMonitor::Will(
     const probe::EvaluateScriptBlock& probe_data) {
-  if (!PushScriptEntryPoint(probe_data.script_state)) {
+  if (!PushScriptEntryPoint(&probe_data.script_state)) {
     return;
   }
   KURL url(probe_data.source_url);
   if (url.IsEmpty() || url.IsNull()) {
-    url = ToExecutionContext(probe_data.script_state)->Url();
+    url = ToExecutionContext(&probe_data.script_state)->Url();
   }
 
   pending_script_info_ = PendingScriptInfo{
@@ -703,26 +703,26 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
 
 void AnimationFrameTimingMonitor::Will(
     const probe::InvokeCallback& probe_data) {
-  if (!PushScriptEntryPoint(probe_data.script_state)) {
+  if (!PushScriptEntryPoint(&probe_data.script_state)) {
     return;
   }
 
-  ScriptState::Scope scope(probe_data.script_state);
+  ScriptState::Scope scope(&probe_data.script_state);
   pending_script_info_ = PendingScriptInfo{
       .invoker_type = ScriptTimingInfo::InvokerType::kUserCallback,
       .start_time = probe_data.CaptureStartTime(),
       .execution_start_time = probe_data.CaptureStartTime(),
       .property_like_name = probe_data.name,
       .source_location = CaptureScriptSourceLocation(
-          probe_data.script_state->GetIsolate(),
+          probe_data.script_state.GetIsolate(),
           probe_data.callback ? probe_data.callback->CallbackObject()
                               : probe_data.function)};
 }
 
 void AnimationFrameTimingMonitor::Will(
     const probe::InvokeEventHandler& probe_data) {
-  ScriptState::Scope scope(probe_data.script_state);
-  if (!PushScriptEntryPoint(probe_data.script_state)) {
+  ScriptState::Scope scope(&probe_data.script_state);
+  if (!PushScriptEntryPoint(&probe_data.script_state)) {
     return;
   }
 
@@ -732,7 +732,7 @@ void AnimationFrameTimingMonitor::Will(
       .start_time = probe_data.CaptureStartTime(),
       .execution_start_time = probe_data.CaptureStartTime(),
       .source_location = CaptureScriptSourceLocation(
-          probe_data.script_state->GetIsolate(),
+          probe_data.script_state.GetIsolate(),
           probe_data.listener->GetListenerObject(*target))};
 }
 
@@ -744,7 +744,7 @@ void AnimationFrameTimingMonitor::Did(
   did_see_ui_events_ = true;
 
   ScriptTimingInfo* info =
-      PopScriptEntryPoint(probe_data.script_state, &probe_data);
+      PopScriptEntryPoint(&probe_data.script_state, &probe_data);
   if (!info) {
     return;
   }

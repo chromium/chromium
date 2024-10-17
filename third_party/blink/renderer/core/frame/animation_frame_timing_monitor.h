@@ -76,7 +76,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
                          const String& script_url);
   void Will(const probe::EvaluateScriptBlock&);
   void Did(const probe::EvaluateScriptBlock& probe_data) {
-    PopScriptEntryPoint(probe_data.script_state, &probe_data);
+    PopScriptEntryPoint(&probe_data.script_state, &probe_data);
   }
   void Will(const probe::ExecuteScript&);
   void Did(const probe::ExecuteScript& probe_data) {
@@ -91,7 +91,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Did(const probe::UpdateLayout&);
   void Will(const probe::InvokeCallback&);
   void Did(const probe::InvokeCallback& probe_data) {
-    PopScriptEntryPoint(probe_data.script_state, &probe_data);
+    PopScriptEntryPoint(&probe_data.script_state, &probe_data);
   }
   void Will(const probe::InvokeEventHandler&);
   void Did(const probe::InvokeEventHandler&);

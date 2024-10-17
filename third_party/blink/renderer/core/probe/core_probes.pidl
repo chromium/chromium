@@ -170,15 +170,15 @@ interface CoreProbes {
   UpdateLayout(Document* document);
 
   /* This is called only for script generated from script blocks (script element, setTimeout with code */
-  EvaluateScriptBlock(ScriptState* script_state, const KURL& source_url, bool is_module, bool sanitize);
+  EvaluateScriptBlock(ScriptState& script_state, const KURL& source_url, bool is_module, bool sanitize);
 
   /* This is called once the script is ready to execute */
   ExecuteScript([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, const String& script_url, int script_id);
 
   CallFunction([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, v8::Local<v8::Function> function, int depth = 0);
   UserCallback([Keep] ExecutionContext* context, const char* name, AtomicString atomic_name, bool recurring, EventTarget* event_target = nullptr, Event* event = nullptr, EventListener* listener = nullptr);
-  InvokeCallback(ScriptState* script_state, const char* name, CallbackFunctionBase* callback, v8::MaybeLocal<v8::Value> function = v8::MaybeLocal<v8::Value>());
-  InvokeEventHandler(ScriptState* script_state, Event* event = nullptr, JSBasedEventListener* listener = nullptr);
+  InvokeCallback(ScriptState& script_state, const char* name, CallbackFunctionBase* callback, v8::MaybeLocal<v8::Value> function = v8::MaybeLocal<v8::Value>());
+  InvokeEventHandler(ScriptState& script_state, Event* event = nullptr, JSBasedEventListener* listener = nullptr);
   V8Compile([Keep] ExecutionContext* context, const String& file_name, int line, int column);
   ParseHTML(Document* document, HTMLDocumentParser* parser);
   void ForcePseudoState([Keep] Element* element, CSSSelector::PseudoType pseudo_state, bool* result);

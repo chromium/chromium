@@ -546,8 +546,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     ClassicScript* classic_script,
     ExecuteScriptPolicy policy,
     RethrowErrorsOption rethrow_errors) {
-  if (!script_state)
-    return ScriptEvaluationResult::FromClassicNotRun();
+  CHECK(script_state);
 
   // |script_state->GetContext()| must be initialized here already, typically
   // due to a WindowProxy() call inside ToScriptState*() that is used to get the

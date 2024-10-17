@@ -115,12 +115,13 @@ ScriptEvaluationResult ModuleScript::RunScriptOnScriptStateAndReturnValue(
     ScriptState* script_state,
     ExecuteScriptPolicy execute_script_policy,
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
-  probe::EvaluateScriptBlock probe_scope(script_state, BaseUrl(),
+  DCHECK_EQ(script_state, SettingsObject()->GetScriptState());
+  DCHECK(script_state);
+  probe::EvaluateScriptBlock probe_scope(*script_state, BaseUrl(),
                                          /*module=*/true, /*sanitize=*/false);
 
   DCHECK_EQ(execute_script_policy,
             ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
-  DCHECK_EQ(script_state, SettingsObject()->GetScriptState());
   return V8ScriptRunner::EvaluateModule(this, std::move(rethrow_errors));
 }
 
