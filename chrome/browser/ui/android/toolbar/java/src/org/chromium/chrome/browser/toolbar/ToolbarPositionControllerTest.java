@@ -45,6 +45,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
+import java.util.Observer;
+
 /** Unit tests for {@link ToolbarPositionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -350,6 +352,26 @@ public class ToolbarPositionControllerTest {
         assertControlsAtTop();
         assertEquals(toolbarLayer.getLayerVisibility(), LayerVisibility.HIDDEN);
         verify(mControlContainerView).setTranslationY(0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testGetToolbarPositionResId() {
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true)
+                .commit();
+        assertEquals(
+                R.string.address_bar_settings_top,
+                ToolbarPositionController.getToolbarPositionResId());
+
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
+                .commit();
+        assertEquals(
+                R.string.address_bar_settings_bottom,
+                ToolbarPositionController.getToolbarPositionResId());
     }
 
     private void assertControlsAtBottom() {

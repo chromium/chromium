@@ -367,6 +367,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateSearchEnginePreference();
         updateAutofillPreferences();
         updatePlusAddressesPreference();
+        updateAddressBarPreference();
 
         boolean isTabGroupSyncAutoOpenConfigurable =
                 TabGroupSyncFeatures.isTabGroupSyncEnabled(getProfile())
@@ -378,12 +379,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
             addPreferenceIfAbsent(PREF_TABS);
         } else {
             removePreferenceIfPresent(PREF_TABS);
-        }
-
-        if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(getContext(), false)) {
-            addPreferenceIfAbsent(PREF_ADDRESS_BAR);
-        } else {
-            removePreferenceIfPresent(PREF_ADDRESS_BAR);
         }
 
         Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
@@ -594,6 +589,15 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     });
         } else {
             removePreferenceIfPresent(PREF_PLUS_ADDRESSES);
+        }
+    }
+
+    private void updateAddressBarPreference() {
+        if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(getContext(), false)) {
+            Preference addressBarPreference = addPreferenceIfAbsent(PREF_ADDRESS_BAR);
+            addressBarPreference.setSummary(ToolbarPositionController.getToolbarPositionResId());
+        } else {
+            removePreferenceIfPresent(PREF_ADDRESS_BAR);
         }
     }
 

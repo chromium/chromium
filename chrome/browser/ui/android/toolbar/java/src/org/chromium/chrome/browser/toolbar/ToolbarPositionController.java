@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Class responsible for managing the position (top, bottom) of the browsing mode toolbar. */
@@ -122,6 +123,23 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 // foldables). To make the feature testable on these "devices", skip the foldable
                 // check for debug builds.
                 && (!BuildInfo.getInstance().isFoldable || BuildInfo.isDebugApp());
+    }
+
+    /**
+     * Returns the resource ID of a string representing the toolbar's position..
+     *
+     * <p>This method returns the resource ID for a string that indicates the toolbar's position
+     * within the UI. The string value corresponding to the returned resource ID will typically be
+     * "Top" or "Bottom", representing the toolbar's placement.
+     *
+     * @return The resource ID of the string indicating the toolbar's position.
+     */
+    public static int getToolbarPositionResId() {
+        boolean isOnTop =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+
+        return isOnTop ? R.string.address_bar_settings_top : R.string.address_bar_settings_bottom;
     }
 
     @Override
