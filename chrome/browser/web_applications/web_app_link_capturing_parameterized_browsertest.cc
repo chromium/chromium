@@ -532,14 +532,6 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
     "TargetBlank",
     "CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_MiddleClick_WithOpener_"
     "TargetBlank",
-    "kNavigateNew_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_"
-    "WithoutOpener_TargetBlank",
-    "kNavigateNew_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaButton_LeftClick_"
-    "WithoutOpener_TargetBlank",
-    "kNavigateNew_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_"
-    "WithoutOpener_TargetBlank",
-    "kNavigateNew_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaButton_LeftClick_"
-    "WithoutOpener_TargetBlank"
 #elif BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
 #elif BUILDFLAG(IS_CHROMEOS)
@@ -806,6 +798,9 @@ class WebAppLinkCapturingParameterizedBrowserTest
   base::Value::Dict CaptureCurrentState() {
     base::Value::List browsers;
     for (Browser* b : *BrowserList::GetInstance()) {
+      if (b->is_delete_scheduled()) {
+        continue;
+      }
       base::Value::Dict json_browser = BrowserToJson(*b);
       browsers.Append(std::move(json_browser));
     }
