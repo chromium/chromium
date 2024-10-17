@@ -1816,26 +1816,6 @@
     "expires": "Jul 1, 2025"
   },
   {
-    "prefix": "force-in-order-script",
-    "owners": ["sisidovski@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["wpt_internal/in-order-script-scheduling/force-in-order"],
-    "args": [
-      "--enable-features=ForceInOrderScript"
-    ],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "selective-in-order-script",
-    "owners": ["sisidovski@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["wpt_internal/in-order-script-scheduling/selective-in-order"],
-    "args": [
-      "--enable-features=SelectiveInOrderScript,SelectiveInOrderScriptTarget:allow_list/http%3A%2F%2Fbad3p.test%7Csync-script-1.js"
-    ],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "threaded-preload-scanner",
     "owners": ["cduvall@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
