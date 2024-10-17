@@ -134,7 +134,6 @@ class ASH_EXPORT LockContentsView
   void SetHasKioskApp(bool has_kiosk_apps);
 
   // views::View:
-  void Layout(PassKey) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnFocus() override;
@@ -231,6 +230,8 @@ class ASH_EXPORT LockContentsView
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
  private:
+  class LockContentsViewLayout;
+
   using DisplayLayoutAction = base::RepeatingCallback<void(bool landscape)>;
 
   // Focus the next/previous widget.
@@ -261,29 +262,11 @@ class ASH_EXPORT LockContentsView
       views::BoxLayout* main_layout,
       std::unique_ptr<LoginBigUserView> primary_big_view);
 
-  // Lay out the entire view. This is called when the view is attached to a
-  // widget and when the screen is rotated.
-  void DoLayout();
-
-  // Lay out the top header. This is called when the children of the top header
-  // change contents or visibility.
-  void LayoutTopHeader();
-
-  // Lay out the bottom status indicator. This is called when system information
-  // is shown if ADB is enabled and at the initialization of lock screen if the
-  // device is enrolled.
-  void LayoutBottomStatusIndicator();
-
-  // Lay out the user adding screen indicator. This is called when a secondary
-  // user is being added.
-  void LayoutUserAddingScreenIndicator();
-
-  // Lay out the expanded public session view.
-  void LayoutPublicSessionView();
-
   // Adds |layout_action| to |layout_actions_| and immediately executes it with
   // the current rotation.
   void AddDisplayLayoutAction(const DisplayLayoutAction& layout_action);
+
+  void RunDisplayLayoutActions();
 
   // Change the active |auth_user_|. If |is_primary| is true, the active auth
   // switches to |opt_secondary_big_view_|. If |is_primary| is false, the active
@@ -418,6 +401,8 @@ class ASH_EXPORT LockContentsView
   // Checks whether `pin_available_at` is past and pin needs to be enabled
   // again.
   void CheckIfPinEnabled(const AccountId& account_id);
+
+  void ForceSyncLayoutOfAllViews();
 
   const LockScreen::ScreenType screen_type_;
 

@@ -75,6 +75,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -378,7 +379,7 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_0,
         display::Display::RotationSource::ACTIVE);
-    widget->LayoutRootViewIfNecessary();
+    views::test::RunScheduledLayout(widget.get());
     int distance_0deg = calculate_distance();
     EXPECT_NE(distance_0deg, 0);
 
@@ -386,7 +387,7 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_90,
         display::Display::RotationSource::ACTIVE);
-    widget->LayoutRootViewIfNecessary();
+    views::test::RunScheduledLayout(widget.get());
     int distance_90deg = calculate_distance();
     EXPECT_LT(distance_90deg, distance_0deg);
 
@@ -394,7 +395,7 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_0,
         display::Display::RotationSource::ACTIVE);
-    widget->LayoutRootViewIfNecessary();
+    views::test::RunScheduledLayout(widget.get());
     int distance_0deg_2 = calculate_distance();
     EXPECT_EQ(distance_0deg_2, distance_0deg);
     EXPECT_NE(distance_0deg_2, distance_90deg);
@@ -714,6 +715,7 @@ TEST_F(LockContentsViewUnitTest, NoteActionButtonBounds) {
   // When the note action becomes available, the note action button should be
   // shown.
   DataDispatcher()->SetLockScreenNoteState(mojom::TrayActionState::kAvailable);
+  views::test::RunScheduledLayout(widget.get());
   EXPECT_TRUE(test_api.note_action()->GetVisible());
 
   // Verify the bounds of the note action button are as expected.
@@ -790,6 +792,7 @@ TEST_F(LockContentsViewUnitTest, SystemInfoViewBounds) {
   // the right to fill the empty space.
   DataDispatcher()->SetLockScreenNoteState(
       mojom::TrayActionState::kNotAvailable);
+  views::test::RunScheduledLayout(widget.get());
   EXPECT_FALSE(test_api.note_action()->GetVisible());
   EXPECT_LT(widget_bounds.right() -
                 test_api.system_info()->GetBoundsInScreen().right(),
@@ -822,6 +825,7 @@ TEST_F(LockContentsViewUnitTest, AltVTogglesHiddenSystemInfo) {
 
   // Alt-V shows hidden system info.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
+  views::test::RunScheduledLayout(widget.get());
   EXPECT_TRUE(test_api.system_info()->GetVisible());
   // System info is not empty, ie, it is actually being displayed.
   EXPECT_FALSE(test_api.system_info()->bounds().IsEmpty());
