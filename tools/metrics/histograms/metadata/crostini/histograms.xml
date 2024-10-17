@@ -166,28 +166,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Disk.StatefulReadsDaily" units="KiB"
-    expires_after="2024-11-17">
+    expires_after="2025-10-17">
   <owner>drmasquatch@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>Crostini stateful KiB read per day. Reported daily.</summary>
 </histogram>
 
 <histogram name="Crostini.Disk.StatefulWritesDaily" units="KiB"
-    expires_after="2024-11-17">
+    expires_after="2025-10-17">
   <owner>drmasquatch@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>Crostini stateful KiB written per day. Reported daily.</summary>
 </histogram>
 
 <histogram name="Crostini.Disk.SwapReadsDaily" units="KiB"
-    expires_after="2024-11-17">
+    expires_after="2025-10-17">
   <owner>drmasquatch@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>Crostini swap file KiB read per day. Reported daily.</summary>
 </histogram>
 
 <histogram name="Crostini.Disk.SwapWritesDaily" units="KiB"
-    expires_after="2024-11-17">
+    expires_after="2025-10-17">
   <owner>drmasquatch@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>Crostini swap file KiB written per day. Reported daily.</summary>
