@@ -1098,6 +1098,8 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.ESCAPE_LT_GT_IN_ATTRIBUTES,
                 "When enabled, less-than and greater-than characters in attributes are escaped."),
         Flag.baseFeature("CacheStylusSettings", "Cache stylus related settings."),
+        Flag.baseFeature(
+                "AsyncFastCheckout", "When enabled, run FastCheckoutTabHelper asynchronously."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
