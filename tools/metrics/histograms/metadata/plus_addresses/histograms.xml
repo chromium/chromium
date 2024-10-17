@@ -44,6 +44,20 @@ chromium-metrics-reviews@google.com.
   <variant name="Reserve" summary="Reserve a Plus Address"/>
 </variants>
 
+<histogram name="PlusAddresses.AccountSettings.Launch.Success"
+    enum="BooleanSuccess" expires_after="2025-03-23">
+  <owner>tchudakov@google.com</owner>
+  <owner>jkeitel@chromium.org</owner>
+  <summary>
+    Records whether Account Settings activity could be started successfully.
+    This is recorded when the user taps on the &quot;Manage plus addresses&quot;
+    action in the keyboard accessory address or password manual filling sheet,
+    or when the user opens the plus addresses settings from the Chrome settings.
+    If opening the Account Settings activity fails, the plus addresses
+    management page is opened in a CCT.
+  </summary>
+</histogram>
+
 <histogram name="PlusAddresses.AffiliationRequest.ResponseTime" units="ms"
     expires_after="2025-03-23">
   <owner>jkeitel@google.com</owner>

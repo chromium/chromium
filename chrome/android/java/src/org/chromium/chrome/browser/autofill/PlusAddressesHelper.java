@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.plus_addresses.PlusAddressesMetricsRecorder;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -67,9 +68,11 @@ public class PlusAddressesHelper {
 
         try {
             activity.startActivityForResult(createAccountSettingsIntent(accountInfo.getEmail()), 0);
+            PlusAddressesMetricsRecorder.recordAccountSettingsLaunched(/* success= */ true);
         } catch (ActivityNotFoundException e) {
             // Default to opening the management page in the Chrome custom tab.
             openManagePlusAddressesInCct(activity);
+            PlusAddressesMetricsRecorder.recordAccountSettingsLaunched(/* success= */ false);
         }
     }
 

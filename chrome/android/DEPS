@@ -51,6 +51,7 @@ include_rules = [
   "+components/metrics",
   "+components/page_info/android/java",
   "+components/permissions/android/nfc",
+  "+components/plus_addresses/android/java",
   "+components/policy",
   "+components/prefs/android",
   "+components/privacy_sandbox/android",

@@ -28,10 +28,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.plus_addresses.PlusAddressesMetricsRecorder;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.TestActivity;
@@ -68,16 +70,31 @@ public class PlusAddressesHelperTest {
     @Test
     @DisableFeatures(ChromeFeatureList.PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE)
     public void testOpensCctWithFeatureDisabled_NoIdentityManager() {
+        // The metric is not logged if the GMS Core Account Settings feature is not enabled.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                PlusAddressesMetricsRecorder
+                                        .UMA_PLUS_ADDRESSES_OPEN_ACCOUNT_SETTINGS)
+                        .build();
         PlusAddressesHelper.openManagePlusAddresses(mActivity, mProfile);
 
         var shadowActivity = Shadows.shadowOf(mActivity);
         Intent cctIntent = shadowActivity.getNextStartedActivity();
         assertNull(cctIntent);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE)
     public void testOpensCctWithFeatureDisabled() {
+        // The metric is not logged if the GMS Core Account Settings feature is not enabled.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                PlusAddressesMetricsRecorder
+                                        .UMA_PLUS_ADDRESSES_OPEN_ACCOUNT_SETTINGS)
+                        .build();
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
 
         PlusAddressesHelper.openManagePlusAddresses(mActivity, mProfile);
@@ -86,19 +103,35 @@ public class PlusAddressesHelperTest {
         Intent cctIntent = shadowActivity.getNextStartedActivity();
         assertNotNull(cctIntent);
         assertEquals(cctIntent.getDataString(), PLUS_ADDRESS_MANAGEMENT_URL);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testOpensGmsCore_NoIdentityManager() {
+        // The metric is not logged if the IdentityManager is not available.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                PlusAddressesMetricsRecorder
+                                        .UMA_PLUS_ADDRESSES_OPEN_ACCOUNT_SETTINGS)
+                        .build();
         PlusAddressesHelper.openManagePlusAddresses(mActivity, mProfile);
 
         var shadowActivity = Shadows.shadowOf(mActivity);
         Intent gmsCoreIntent = shadowActivity.getNextStartedActivity();
         assertNull(gmsCoreIntent);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testOpensGmsCore_UserNotSignedIn() {
+        // The metric is not logged if the user is not signed in.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                PlusAddressesMetricsRecorder
+                                        .UMA_PLUS_ADDRESSES_OPEN_ACCOUNT_SETTINGS)
+                        .build();
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
 
         PlusAddressesHelper.openManagePlusAddresses(mActivity, mProfile);
@@ -106,10 +139,18 @@ public class PlusAddressesHelperTest {
         var shadowActivity = Shadows.shadowOf(mActivity);
         Intent gmsCoreIntent = shadowActivity.getNextStartedActivity();
         assertNull(gmsCoreIntent);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testOpensGmsCore() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                PlusAddressesMetricsRecorder
+                                        .UMA_PLUS_ADDRESSES_OPEN_ACCOUNT_SETTINGS,
+                                true)
+                        .build();
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         CoreAccountInfo accountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", "testGaiaId");
@@ -120,5 +161,6 @@ public class PlusAddressesHelperTest {
         var shadowActivity = Shadows.shadowOf(mActivity);
         Intent gmsCoreIntent = shadowActivity.getNextStartedActivity();
         assertNotNull(gmsCoreIntent);
+        histogramWatcher.assertExpected();
     }
 }
