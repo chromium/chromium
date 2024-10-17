@@ -85,29 +85,28 @@ class PaintAggregator {
   //
   //  - The paint bounds union is computed on the fly so we don't have to keep
   //    a rectangle up to date as we do different operations.
-  class InternalPaintUpdate {
-   public:
+  struct InternalPaintUpdate {
     InternalPaintUpdate();
     ~InternalPaintUpdate();
-
-    // Computes the rect damaged by scrolling within `scroll_rect` by
-    // `scroll_delta`. This rect must be repainted. It is not included in
-    // paint_rects.
-    gfx::Rect GetScrollDamage() const;
 
     gfx::Vector2d scroll_delta;
     gfx::Rect scroll_rect;
 
     // Does not include the scroll damage rect unless
-    // synthesized_scroll_damage_rect_ is set.
+    // `synthesized_scroll_damage_rect` is set.
     std::vector<gfx::Rect> paint_rects;
 
     // Rectangles that are finished painting.
     std::vector<PaintReadyRect> ready_rects;
 
-    // Whether we have added the scroll damage rect to paint_rects yet or not.
-    bool synthesized_scroll_damage_rect_;
+    // Whether the scroll damage rect has been added to `paint_rects` yet.
+    bool synthesized_scroll_damage_rect = false;
   };
+
+  // Computes the rect damaged by scrolling within `update_.scroll_rect` by
+  // `update_.scroll_delta`. This rect must be repainted. It is not included in
+  // `update_.paint_rects`.
+  gfx::Rect GetScrollDamage() const;
 
   gfx::Rect ScrollPaintRect(const gfx::Rect& paint_rect,
                             const gfx::Vector2d& amount) const;
