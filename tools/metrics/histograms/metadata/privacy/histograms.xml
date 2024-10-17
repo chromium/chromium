@@ -1739,6 +1739,7 @@ reviewer.
     <variant name="IsFledgeBuyAllowed" summary="IsFledgeBuyAllowed"/>
     <variant name="IsFledgeJoinAllowed" summary="IsFledgeJoinAllowed"/>
     <variant name="IsFledgeLeaveAllowed" summary="IsFledgeLeaveAllowed"/>
+    <variant name="IsFledgeReadAllowed" summary="IsFledgeReadAllowed"/>
     <variant name="IsFledgeSellAllowed" summary="IsFledgeSellAllowed"/>
     <variant name="IsFledgeUpdateAllowed" summary="IsFledgeUpdateAllowed"/>
     <variant name="IsLocalUnpartitionedDataAccessAllowed"

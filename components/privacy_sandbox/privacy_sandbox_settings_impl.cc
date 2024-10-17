@@ -73,6 +73,8 @@ constexpr char kIsFledgeSellAllowedHistogram[] =
     "PrivacySandbox.IsFledgeSellAllowed";
 constexpr char kIsFledgeBuyAllowedHistogram[] =
     "PrivacySandbox.IsFledgeBuyAllowed";
+constexpr char kIsFledgeReadAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeReadAllowed";
 constexpr char kIsPrivacySandboxReportingDestinationAttestedHistogram[] =
     "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested";
 constexpr char kIsSharedStorageAllowedHistogram[] =
@@ -157,6 +159,9 @@ void PrivacySandboxSettingsImpl::JoinFledgeHistogram(
       break;
     case content::InterestGroupApiOperation::kBuy:
       JoinHistogram(kIsFledgeBuyAllowedHistogram, status);
+      break;
+    case content::InterestGroupApiOperation::kRead:
+      JoinHistogram(kIsFledgeReadAllowedHistogram, status);
       break;
   }
 }

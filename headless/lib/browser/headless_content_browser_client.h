@@ -77,7 +77,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 
   // Returns whether |api_origin| on |top_frame_origin| can perform
   // |operation| within the interest group API.
-  bool IsInterestGroupAPIAllowed(content::RenderFrameHost* render_frame_host,
+  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
+                                 content::RenderFrameHost* render_frame_host,
                                  content::InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
                                  const url::Origin& api_origin) override;

@@ -82,6 +82,7 @@ class AllowAllContentBrowserClient
 
   // ContentBrowserClient overrides:
   bool IsInterestGroupAPIAllowed(
+      content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
       ContentBrowserClient::InterestGroupApiOperation operation,
       const url::Origin& top_frame_origin,

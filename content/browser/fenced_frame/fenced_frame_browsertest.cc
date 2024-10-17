@@ -2407,6 +2407,7 @@ class FledgeFencedFrameOriginContentBrowserClient
   // This is needed so that the interest group related APIs can run without
   // failing with the result AuctionResult::kSellerRejected.
   bool IsInterestGroupAPIAllowed(
+      content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
       ContentBrowserClient::InterestGroupApiOperation operation,
       const url::Origin& top_frame_origin,

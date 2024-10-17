@@ -328,6 +328,7 @@ bool HeadlessContentBrowserClient::
 }
 
 bool HeadlessContentBrowserClient::IsInterestGroupAPIAllowed(
+    content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host,
     content::InterestGroupApiOperation operation,
     const url::Origin& top_frame_origin,

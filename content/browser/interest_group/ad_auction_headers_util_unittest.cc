@@ -48,7 +48,8 @@ std::string Base64UrlDecode(std::string_view input) {
 
 class InterceptingContentBrowserClient : public ContentBrowserClient {
  public:
-  bool IsInterestGroupAPIAllowed(RenderFrameHost* render_frame_host,
+  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
+                                 RenderFrameHost* render_frame_host,
                                  InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
                                  const url::Origin& api_origin) override {

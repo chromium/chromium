@@ -1137,6 +1137,18 @@ void SharedStorageWorkletHost::GetInterestGroups(
     return;
   }
 
+  RenderFrameHost* rfh =
+      document_service_ ? &document_service_->render_frame_host() : nullptr;
+
+  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+          browser_context_, rfh, InterestGroupApiOperation::kRead,
+          main_frame_origin_, shared_storage_origin_)) {
+    std::move(callback).Run(
+        blink::mojom::GetInterestGroupsResult::NewErrorMessage(
+            "interestGroups() is not allowed."));
+    return;
+  }
+
   interest_group_manager->GetInterestGroupsForOwner(
       /*devtools_auction_id=*/{},
       /*owner=*/shared_storage_origin_,

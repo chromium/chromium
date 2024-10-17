@@ -954,9 +954,15 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   using InterestGroupApiOperation = content::InterestGroupApiOperation;
 
-  // Returns whether |api_origin| on |top_frame_origin| can perform
-  // |operation| within the interest group API.
+  // Returns whether `api_origin` on `top_frame_origin` can perform `operation`
+  // within the interest group API.
+  //
+  // If `render_frame_host` is null (e.g., due to the initiator frame being
+  // destroyed for a keep-alive worklet), certain operations like console error
+  // will be skipped. However, the core permission check will still be
+  // performed.
   virtual bool IsInterestGroupAPIAllowed(
+      content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
       InterestGroupApiOperation operation,
       const url::Origin& top_frame_origin,

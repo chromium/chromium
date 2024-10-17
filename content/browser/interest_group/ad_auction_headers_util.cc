@@ -70,7 +70,7 @@ bool IsAdAuctionHeadersEligibleInternal(Page& page,
   }
 
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host,
+          render_frame_host->GetBrowserContext(), render_frame_host,
           ContentBrowserClient::InterestGroupApiOperation::kSell,
           top_frame_origin, request_origin)) {
     base::UmaHistogramEnumeration(

@@ -873,8 +873,8 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
         interest_group_api_operation,
     const url::Origin& origin) const {
   return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-      &render_frame_host(), interest_group_api_operation, main_frame_origin_,
-      origin);
+      render_frame_host().GetBrowserContext(), &render_frame_host(),
+      interest_group_api_operation, main_frame_origin_, origin);
 }
 
 void AdAuctionServiceImpl::OnAuctionComplete(
