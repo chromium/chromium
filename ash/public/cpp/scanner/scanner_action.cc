@@ -9,14 +9,6 @@
 
 namespace ash {
 
-NewContactAction::NewContactAction(std::string given_name)
-    : given_name(std::move(given_name)) {}
-
-NewContactAction::NewContactAction(const NewContactAction&) = default;
-NewContactAction& NewContactAction::operator=(const NewContactAction&) =
-    default;
-NewContactAction::~NewContactAction() = default;
-
 NewGoogleDocAction::NewGoogleDocAction(std::string title,
                                        std::string html_contents)
     : title(std::move(title)), html_contents(std::move(html_contents)) {}

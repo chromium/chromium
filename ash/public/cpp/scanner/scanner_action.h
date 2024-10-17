@@ -16,19 +16,6 @@
 
 namespace ash {
 
-// Opens the browser to the Google Contacts contact creation page, with some
-// fields pre-set.
-struct ASH_PUBLIC_EXPORT NewContactAction {
-  std::string given_name;
-
-  explicit NewContactAction(std::string given_name);
-
-  NewContactAction(const NewContactAction&);
-  NewContactAction& operator=(const NewContactAction&);
-
-  ~NewContactAction();
-};
-
 // Creates a new Google Doc with the given title and contents, then opens the
 // browser to that new Google Doc.
 struct ASH_PUBLIC_EXPORT NewGoogleDocAction {
@@ -90,7 +77,7 @@ struct ASH_PUBLIC_EXPORT CopyToClipboardAction {
 // Holds a particular action the user can complete in a ScannerSession,
 // equivalently a single command that can be applied to the system.
 using ScannerAction = std::variant<manta::proto::NewEventAction,
-                                   NewContactAction,
+                                   manta::proto::NewContactAction,
                                    NewGoogleDocAction,
                                    NewGoogleSheetAction,
                                    CopyToClipboardAction>;

@@ -150,9 +150,9 @@ TEST(ScannerActionToCommandTest, NewEventWithMultipleFields) {
                    "&location=Wonderland")))));
 }
 
-TEST(ScannerActionToCommandTest, NewContactWithNoFields) {
+TEST(ScannerActionToCommandTest, NewContact) {
   ScannerCommand command =
-      ScannerActionToCommand(NewContactAction(/*given_name=*/""));
+      ScannerActionToCommand(manta::proto::NewContactAction());
 
   EXPECT_THAT(
       command,
@@ -163,7 +163,9 @@ TEST(ScannerActionToCommandTest, NewContactWithNoFields) {
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithGivenName) {
-  ScannerCommand command = ScannerActionToCommand(NewContactAction("Léa"));
+  manta::proto::NewContactAction action;
+  action.set_given_name("Léa");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
       command,

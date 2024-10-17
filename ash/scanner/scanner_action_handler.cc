@@ -83,12 +83,13 @@ GURL GetCalendarEventUrl(const manta::proto::NewEventAction& event) {
   return GetCalendarEventTemplateUrl().ReplaceComponents(replacements);
 }
 
-GURL GetContactUrl(const NewContactAction& contact) {
+GURL GetContactUrl(const manta::proto::NewContactAction& contact) {
   std::string query = GetGoogleContactsNewUrl().query();
   CHECK(query.empty());
-  if (!contact.given_name.empty()) {
+  if (!contact.given_name().empty()) {
     query += "given_name=";
-    query += base::EscapeQueryParamValue(contact.given_name, /*use_plus=*/true);
+    query +=
+        base::EscapeQueryParamValue(contact.given_name(), /*use_plus=*/true);
   }
 
   GURL::Replacements replacements;
@@ -247,7 +248,7 @@ ScannerCommand ScannerActionToCommand(ScannerAction action) {
           [&](manta::proto::NewEventAction& action) -> ScannerCommand {
             return OpenUrlCommand(GetCalendarEventUrl(action));
           },
-          [&](NewContactAction& action) -> ScannerCommand {
+          [&](manta::proto::NewContactAction& action) -> ScannerCommand {
             return OpenUrlCommand(GetContactUrl(action));
           },
           [&](NewGoogleDocAction& action) -> ScannerCommand {
