@@ -428,7 +428,6 @@ bool IDBRequest::CanStillSendResult() const {
 }
 
 void IDBRequest::HandleResponse(std::unique_ptr<IDBKey> key) {
-  transit_blob_handles_.clear();
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
       this, std::move(key),
       WTF::BindOnce(&IDBTransaction::OnResultReady,
@@ -436,7 +435,6 @@ void IDBRequest::HandleResponse(std::unique_ptr<IDBKey> key) {
 }
 
 void IDBRequest::HandleResponse(int64_t value) {
-  DCHECK(transit_blob_handles_.empty());
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
       this, value,
       WTF::BindOnce(&IDBTransaction::OnResultReady,
@@ -444,14 +442,12 @@ void IDBRequest::HandleResponse(int64_t value) {
 }
 
 void IDBRequest::HandleResponse() {
-  transit_blob_handles_.clear();
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
       this, WTF::BindOnce(&IDBTransaction::OnResultReady,
                           WrapPersistent(transaction_.Get()))));
 }
 
 void IDBRequest::HandleResponse(std::unique_ptr<IDBValue> value) {
-  DCHECK(transit_blob_handles_.empty());
   value->SetIsolate(GetIsolate());
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
       this, std::move(value),
@@ -463,8 +459,6 @@ void IDBRequest::HandleResponseAdvanceCursor(
     std::unique_ptr<IDBKey> key,
     std::unique_ptr<IDBKey> primary_key,
     std::unique_ptr<IDBValue> optional_value) {
-  DCHECK(transit_blob_handles_.empty());
-
   std::unique_ptr<IDBValue> value =
       optional_value
           ? std::move(optional_value)
@@ -490,7 +484,6 @@ void IDBRequest::OnGetAll(
         receiver) {
   probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
                               "success");
-  DCHECK(transit_blob_handles_.empty());
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
       this, key_only, std::move(receiver),
       WTF::BindOnce(&IDBTransaction::OnResultReady,
@@ -648,7 +641,6 @@ void IDBRequest::HandleError(mojom::blink::IDBErrorPtr error) {
       static_cast<DOMExceptionCode>(code),
       error ? error->error_message : "Invalid response");
 
-  transit_blob_handles_.clear();
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
       this, exception,
       WTF::BindOnce(&IDBTransaction::OnResultReady,
@@ -730,7 +722,6 @@ void IDBRequest::SendResult(IDBAny* result) {
   }
 
   DCHECK(!pending_cursor_);
-  DCHECK(transit_blob_handles_.empty());
   SetResult(result);
   DispatchEvent(*Event::Create(event_type_names::kSuccess));
 }

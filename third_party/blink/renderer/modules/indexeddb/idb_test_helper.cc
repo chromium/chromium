@@ -45,8 +45,6 @@ std::unique_ptr<IDBValue> CreateIDBValueForTesting(v8::Isolate* isolate,
       create_wrapped_value ? 0 : 1024 * element_count);
   wrapper.DoneCloning();
 
-  Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
-      wrapper.TakeBlobDataHandles();
   Vector<WebBlobInfo> blob_infos = wrapper.TakeBlobInfo();
 
   auto idb_value = std::make_unique<IDBValue>(wrapper.TakeWireBytes(),

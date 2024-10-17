@@ -50,7 +50,6 @@ class SerializedScriptValue;
 //     wrapper.Clone(...);  // Structured clone used to extract keys.
 //     wrapper.DoneCloning();
 //     wrapper.TakeWireBytes();
-//     wrapper.TakeBlobDataHandles();
 //     wrapper.TakeBlobInfo();
 //
 // V8 values are first serialized via SerializedScriptValue (SSV), which is
@@ -122,20 +121,6 @@ class MODULES_EXPORT IDBValueWrapper {
   // WrapIfBiggerThan().
   Vector<char> TakeWireBytes();
 
-  // Obtains the BlobDataHandles from the serialized value's Blob array.
-  //
-  // This method must be called at most once, and must be called after
-  // DoneCloning().
-  Vector<scoped_refptr<BlobDataHandle>> TakeBlobDataHandles() {
-#if DCHECK_IS_ON()
-    DCHECK(done_cloning_) << __func__ << " called before DoneCloning()";
-    DCHECK(owns_blob_handles_) << __func__ << " called twice";
-    owns_blob_handles_ = false;
-#endif  // DCHECK_IS_ON()
-
-    return std::move(blob_handles_);
-  }
-
   // Obtains WebBlobInfos for the serialized value's Blob array.
   //
   // This method must be called at most once, and must be called after
@@ -192,7 +177,6 @@ class MODULES_EXPORT IDBValueWrapper {
 
   // V8 value serialization state.
   scoped_refptr<SerializedScriptValue> serialized_value_;
-  Vector<scoped_refptr<BlobDataHandle>> blob_handles_;
   Vector<WebBlobInfo> blob_info_;
 
   // Buffer for wire data that is not stored in SerializedScriptValue.
@@ -212,7 +196,6 @@ class MODULES_EXPORT IDBValueWrapper {
   // Accounting for lifecycle stages.
   bool had_exception_ = false;
   bool done_cloning_ = false;
-  bool owns_blob_handles_ = true;
   bool owns_blob_info_ = true;
   bool owns_wire_bytes_ = true;
   bool owns_file_system_handles_ = true;

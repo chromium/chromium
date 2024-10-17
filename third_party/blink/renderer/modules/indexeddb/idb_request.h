@@ -323,21 +323,6 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
 
   IDBCursor* GetResultCursor() const;
 
-  // Used to hang onto Blobs until the browser process handles the request.
-  //
-  // Blobs are ref-counted on the browser side, and BlobDataHandles manage
-  // references from renderers. When a BlobDataHandle gets destroyed, the
-  // browser-side Blob gets derefenced, which might cause it to be destroyed as
-  // well.
-  //
-  // After script uses a Blob in a put() request, the Blink-side Blob object
-  // (which hangs onto the BlobDataHandle) may get garbage-collected. IDBRequest
-  // needs to hang onto the BlobDataHandle as well, to avoid having the
-  // browser-side Blob get destroyed before the IndexedDB request is processed.
-  inline Vector<scoped_refptr<BlobDataHandle>>& transit_blob_handles() {
-    return transit_blob_handles_;
-  }
-
 #if DCHECK_IS_ON()
   inline bool TransactionHasQueuedResults() const {
     return transaction_ && transaction_->HasQueuedResults();
@@ -425,8 +410,6 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   std::unique_ptr<IDBKey> cursor_key_;
   std::unique_ptr<IDBKey> cursor_primary_key_;
   std::unique_ptr<IDBValue> cursor_value_;
-
-  Vector<scoped_refptr<BlobDataHandle>> transit_blob_handles_;
 
   bool did_fire_upgrade_needed_event_ = false;
   bool prevent_propagation_ = false;

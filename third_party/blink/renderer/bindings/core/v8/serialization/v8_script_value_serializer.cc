@@ -407,8 +407,6 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
                                              ExceptionState& exception_state) {
   ScriptWrappable::TypeDispatcher dispatcher(wrappable);
   if (auto* blob = dispatcher.ToMostDerived<Blob>()) {
-    serialized_script_value_->BlobDataHandles().Set(blob->Uuid(),
-                                                    blob->GetBlobDataHandle());
     if (blob_info_array_) {
       size_t index = blob_info_array_->size();
       DCHECK_LE(index, std::numeric_limits<uint32_t>::max());
@@ -417,6 +415,8 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
       WriteAndRequireInterfaceTag(kBlobIndexTag);
       WriteUint32(static_cast<uint32_t>(index));
     } else {
+      serialized_script_value_->BlobDataHandles().Set(
+          blob->Uuid(), blob->GetBlobDataHandle());
       WriteAndRequireInterfaceTag(kBlobTag);
       WriteUTF8String(blob->Uuid());
       WriteUTF8String(blob->type());
@@ -852,8 +852,6 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
 
 bool V8ScriptValueSerializer::WriteFile(File* file,
                                         ExceptionState& exception_state) {
-  serialized_script_value_->BlobDataHandles().Set(file->Uuid(),
-                                                  file->GetBlobDataHandle());
   if (blob_info_array_) {
     size_t index = blob_info_array_->size();
     DCHECK_LE(index, std::numeric_limits<uint32_t>::max());
@@ -862,6 +860,8 @@ bool V8ScriptValueSerializer::WriteFile(File* file,
         file->LastModifiedTimeForSerialization(), file->size());
     WriteUint32(static_cast<uint32_t>(index));
   } else {
+    serialized_script_value_->BlobDataHandles().Set(file->Uuid(),
+                                                    file->GetBlobDataHandle());
     WriteUTF8String(file->HasBackingFile() ? file->GetPath() : g_empty_string);
     WriteUTF8String(file->name());
     WriteUTF8String(file->webkitRelativePath());

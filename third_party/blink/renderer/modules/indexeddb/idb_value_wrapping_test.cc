@@ -461,8 +461,6 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
                           non_throwable_exception_state);
   wrapper.set_wrapping_threshold_for_test(0);
   wrapper.DoneCloning();
-  Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
-      wrapper.TakeBlobDataHandles();
   Vector<WebBlobInfo> blob_infos = wrapper.TakeBlobInfo();
   Vector<char> wrapped_marker_buffer = wrapper.TakeWireBytes();
   IDBKeyPath key_path(String("primaryKey"));
@@ -542,8 +540,6 @@ TEST(IDBValueUnwrapperTest, Compression) {
     wrapper.set_wrapping_threshold_for_test(test_case.wrapping_threshold);
     wrapper.set_compression_threshold_for_test(test_case.compression_threshold);
     wrapper.DoneCloning();
-    Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
-        wrapper.TakeBlobDataHandles();
     Vector<WebBlobInfo> blob_infos = wrapper.TakeBlobInfo();
     Vector<char> buffer = wrapper.TakeWireBytes();
 
@@ -592,8 +588,6 @@ TEST(IDBValueUnwrapperTest, Decompression) {
                             non_throwable_exception_state);
     wrapper.set_compression_threshold_for_test(100);
     wrapper.DoneCloning();
-    Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
-        wrapper.TakeBlobDataHandles();
     blob_infos = wrapper.TakeBlobInfo();
     buffer = wrapper.TakeWireBytes();
   }
