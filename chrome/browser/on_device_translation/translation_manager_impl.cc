@@ -104,8 +104,7 @@ bool TranslationManagerImpl::PassAcceptLanguagesCheck(
     const std::string& accept_languages_str,
     const std::string& source_lang,
     const std::string& target_lang) {
-  if (!base::FeatureList::IsEnabled(
-          on_device_translation::kTranslationAPIAcceptLanguagesCheck)) {
+  if (!on_device_translation::kTranslationAPIAcceptLanguagesCheck.Get()) {
     return true;
   }
   // When the TranslationAPIAcceptLanguagesCheck feature is enabled, the

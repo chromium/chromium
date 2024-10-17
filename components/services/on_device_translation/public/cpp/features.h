@@ -11,16 +11,14 @@
 
 namespace on_device_translation {
 
-// When this feature is enabled, the Translation API will fail if neither the
-// source nor destination language is in the AcceptLanguages. This is introduced
-// to mitigate privacy concerns.
-BASE_DECLARE_FEATURE(kTranslationAPIAcceptLanguagesCheck);
+// When this feature param is enabled, the Translation API will fail if neither
+// the source nor destination language is in the AcceptLanguages. This is
+// introduced to mitigate privacy concerns.
+extern const base::FeatureParam<bool> kTranslationAPIAcceptLanguagesCheck;
 
 // This feature limits the number of language components downloaded by
-// createTranslator() to `kTranslationAPILimitLanguagePackCountMax`.
-BASE_DECLARE_FEATURE(kTranslationAPILimitLanguagePackCount);
-extern const base::FeatureParam<size_t>
-    kTranslationAPILimitLanguagePackCountMax;
+// createTranslator() to 3.
+extern const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount;
 
 const char kTranslateKitBinaryPath[] = "translate-kit-binary-path";
 

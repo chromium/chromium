@@ -4122,6 +4122,16 @@ const FeatureEntry::FeatureVariation
          std::size(kSecurePaymentConfirmationNetworkAndIssuerIcons_Rows),
          nullptr}};
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const FeatureEntry::FeatureParam kTranslationAPI_SkipLanguagePackLimit[] = {
+    {"TranslationAPIAcceptLanguagesCheck", "false"},
+    {"TranslationAPILimitLanguagePackCount", "false"}};
+
+const FeatureEntry::FeatureVariation kTranslationAPIVariations[] = {
+    {"without language pack limit", kTranslationAPI_SkipLanguagePackLimit,
+     std::size(kTranslationAPI_SkipLanguagePackLimit), nullptr}};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kClayBlockingWithFakeBackend[] = {
     {"use_fake_backend", "true"}};
@@ -11887,7 +11897,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"translation-api", flag_descriptions::kTranslationAPIName,
      flag_descriptions::kTranslationAPIDescription, kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(blink::features::kEnableTranslationAPI)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kEnableTranslationAPI,
+                                    kTranslationAPIVariations,
+                                    "EnableTranslationAPI")},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
     {"password-form-grouped-affiliations",
