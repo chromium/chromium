@@ -17,7 +17,6 @@ import org.chromium.components.browser_ui.widget.TouchEventProvider;
  * the back button toolbar disappearing on fullscreen, appearing on swipe.
  */
 public class AutomotiveBackButtonToolbarCoordinator {
-    private final View mBackButtonToolbarForAutomotive;
     private final FullscreenManager mFullscreenManager;
 
     private TouchEventProvider mTouchEventProvider;
@@ -53,7 +52,6 @@ public class AutomotiveBackButtonToolbarCoordinator {
             View backButtonToolbarForAutomotive,
             FullscreenManager fullscreenManager,
             TouchEventProvider touchEventProvider) {
-        mBackButtonToolbarForAutomotive = backButtonToolbarForAutomotive;
         mFullscreenManager = fullscreenManager;
         mTouchEventProvider = touchEventProvider;
         mEdgeSwipeGestureDetector = new EdgeSwipeGestureDetector(context, this::handleSwipe);

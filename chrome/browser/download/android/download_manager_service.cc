@@ -465,15 +465,9 @@ void DownloadManagerService::OnDownloadRemoved(
   if (java_ref_.is_null() || item->IsTransient())
     return;
 
-  const Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item));
-
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_DownloadManagerService_onDownloadItemRemoved(
-      env, java_ref_, item->GetGuid(),
-      profile->IsOffTheRecord()
-          ? profile->GetOTRProfileID().ConvertToJavaOTRProfileID(env)
-          : nullptr);
+  Java_DownloadManagerService_onDownloadItemRemoved(env, java_ref_,
+                                                    item->GetGuid());
 }
 
 void DownloadManagerService::ResumeDownloadInternal(

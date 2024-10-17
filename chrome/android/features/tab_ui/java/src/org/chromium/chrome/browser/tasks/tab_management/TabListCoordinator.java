@@ -394,7 +394,7 @@ public class TabListCoordinator
                             parentView, mModel, this::runOnItemAnimatorFinished);
         }
 
-        configureRecyclerViewTouchHelpers(mTabActionState);
+        configureRecyclerViewTouchHelpers();
     }
 
     /** Returns the {@link TabListMode} of the coordinator. */
@@ -417,7 +417,7 @@ public class TabListCoordinator
     public void setTabActionState(@TabActionState int tabActionState) {
         assert mMediator != null;
         mTabActionState = tabActionState;
-        configureRecyclerViewTouchHelpers(mTabActionState);
+        configureRecyclerViewTouchHelpers();
         mMediator.setTabActionState(tabActionState);
     }
 
@@ -516,7 +516,7 @@ public class TabListCoordinator
         }
     }
 
-    private void configureRecyclerViewTouchHelpers(@TabActionState int tabActionState) {
+    private void configureRecyclerViewTouchHelpers() {
         boolean modeAllowsDragAndDrop = mMode == TabListMode.GRID || mMode == TabListMode.LIST;
         boolean actionStateAllowsDragAndDrop = mTabActionState != TabActionState.SELECTABLE;
         if (mAllowDragAndDrop && modeAllowsDragAndDrop && actionStateAllowsDragAndDrop) {

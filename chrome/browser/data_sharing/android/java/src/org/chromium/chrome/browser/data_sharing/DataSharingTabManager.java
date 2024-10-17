@@ -440,8 +440,7 @@ public class DataSharingTabManager {
      * @param collaborationId The collaboration ID to show the UI for.
      */
     public void showManageSharing(Activity activity, String collaborationId) {
-        BottomSheetContent bottomSheetContent =
-                showBottomSheet(activity, /* onClosedCallback= */ null);
+        showBottomSheet(activity, /* onClosedCallback= */ null);
 
         // Callback Manage screen API for here.
     }

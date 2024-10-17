@@ -17,6 +17,7 @@ import org.chromium.components.browser_ui.widget.TouchEventObserver;
  * This observer to listen to motion events, and determine whenever a valid swipe occurs (i.e. from
  * the correct edge and the correct length). Triggers a callback whenever valid swipe occurs.
  */
+@SuppressWarnings("UnusedVariable") // Remove once implementation is complete.
 public class EdgeSwipeGestureDetector implements TouchEventObserver {
     private AutomotiveBackButtonToolbarCoordinator.OnSwipeCallback mOnSwipeCallback;
     private GestureDetector mDetector;

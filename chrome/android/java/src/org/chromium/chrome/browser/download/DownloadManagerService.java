@@ -271,10 +271,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     // Deprecated after new download backend.
     public void onDownloadCancelled(final DownloadInfo downloadInfo) {
-        DownloadInfo newInfo =
-                DownloadInfo.Builder.fromDownloadInfo(downloadInfo)
-                        .setState(DownloadState.CANCELLED)
-                        .build();
         updateDownloadProgress(new DownloadItem(false, downloadInfo), DownloadStatus.CANCELLED);
     }
 
@@ -1369,8 +1365,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     // Deprecated after new download backend.
     @CalledByNative
-    private void onDownloadItemRemoved(
-            @JniType("std::string") String guid, OtrProfileId otrProfileId) {
+    private void onDownloadItemRemoved(@JniType("std::string") String guid) {
         for (DownloadObserver adapter : mDownloadObservers) {
             adapter.onDownloadItemRemoved(guid);
         }

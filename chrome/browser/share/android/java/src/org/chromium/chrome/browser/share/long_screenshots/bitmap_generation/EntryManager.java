@@ -21,11 +21,10 @@ import java.util.List;
 
 /**
  * Entry manager responsible for managing all the of the {@LongScreenshotEntry}. This should be used
- * to generate and retrieve the needed bitmaps. Currently we generate the screenshot in one pass;
- * to obtain it call {@link generateFullpageEntry}.
+ * to generate and retrieve the needed bitmaps. Currently we generate the screenshot in one pass; to
+ * obtain it call {@link generateFullpageEntry}.
  */
 public class EntryManager {
-    private static final int KB_IN_BYTES = 1024;
     // List of all entries in correspondence of the webpage.
     private List<LongScreenshotsEntry> mEntries;
     // List of entries that are queued to generate the bitmap. Entries should only be queued

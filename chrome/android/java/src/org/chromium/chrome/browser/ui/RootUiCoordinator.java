@@ -269,7 +269,6 @@ public class RootUiCoordinator
 
     @Nullable private final Callback<Boolean> mOnOmniboxFocusChangedListener;
     protected ToolbarManager mToolbarManager;
-    protected Supplier<Boolean> mCanAnimateBrowserControls;
     private ModalDialogManagerObserver mModalDialogManagerObserver;
 
     private BottomSheetManager mBottomSheetManager;
@@ -1612,7 +1611,6 @@ public class RootUiCoordinator
                             mFindToolbarManager,
                             mProfileSupplier,
                             mBookmarkModelSupplier,
-                            mCanAnimateBrowserControls,
                             mLayoutStateProviderOneShotSupplier,
                             mAppMenuSupplier,
                             canShowMenuUpdateBadge(),

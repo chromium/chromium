@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashControl
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashDelegate;
 import org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
 import javax.inject.Inject;
@@ -73,7 +72,6 @@ public class TwaSplashController implements SplashDelegate {
     public TwaSplashController(
             SplashController splashController,
             Activity activity,
-            ActivityWindowAndroid activityWindowAndroid,
             SplashImageHolder splashImageCache,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mSplashController = splashController;

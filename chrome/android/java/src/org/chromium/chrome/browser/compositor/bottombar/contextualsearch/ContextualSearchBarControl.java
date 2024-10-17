@@ -54,9 +54,6 @@ public class ContextualSearchBarControl {
      */
     private final ContextualSearchCardIconControl mCardIconControl;
 
-    /** The width of our icon, including padding, in pixels. */
-    private final float mPaddedIconWidthPx;
-
     /** The {@link ContextualSearchImageControl} for the panel. */
     private ContextualSearchImageControl mImageControl;
 
@@ -159,10 +156,6 @@ public class ContextualSearchBarControl {
                         .getDimension(R.dimen.contextual_search_text_layer_min_height);
         mTermCaptionSpacing =
                 context.getResources().getDimension(R.dimen.contextual_search_term_caption_spacing);
-
-        // Icon attributes.
-        mPaddedIconWidthPx =
-                context.getResources().getDimension(R.dimen.contextual_search_padded_button_width);
     }
 
     /**

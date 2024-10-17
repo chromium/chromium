@@ -103,7 +103,6 @@ public class TabUma extends EmptyTabObserver implements UserData {
         if (mLastTabState == newState) {
             return;
         }
-        long now = System.currentTimeMillis();
         mLastTabState = newState;
     }
 

@@ -24,11 +24,6 @@ public class HostBrowserLauncher {
     public static final String ACTION_START_WEBAPK =
             "com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP";
 
-    // Must stay in sync with {@link
-    // org.chromium.chrome.browser.ShortcutHelper#REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB}.
-    private static final String REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB =
-            "REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB";
-
     /**
      * Launches host browser in WebAPK mode if the browser is WebAPK-compatible. Otherwise, launches
      * the host browser in tabbed mode.

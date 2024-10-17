@@ -35,16 +35,14 @@ public class WebApkActivityCoordinator implements DestroyObserver {
     @Inject
     public WebApkActivityCoordinator(
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
-            WebappDisclosureController disclosureController,
-            DisclosureInfobar disclosureInfobar,
-            WebApkActivityLifecycleUmaTracker webApkActivityLifecycleUmaTracker,
+            WebappDisclosureController unused_disclosureController,
+            DisclosureInfobar unused_disclosureInfobar,
+            WebApkActivityLifecycleUmaTracker unused_webApkActivityLifecycleUmaTracker,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intendDataProvider,
             Lazy<WebApkUpdateManager> webApkUpdateManager,
             InstalledWebappRegistrar installedWebappRegistrar) {
-        // We don't need to do anything with |disclosureController|, |disclosureInfobar| and
-        // |webApkActivityLifecycleUmaTracker|. We just need to resolve
-        // them so that they start working.
+        // The unused_ params are present just to initialize them.
 
         mIntentDataProvider = intendDataProvider;
         mWebApkUpdateManager = webApkUpdateManager;

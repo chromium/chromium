@@ -297,9 +297,9 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
      * Handles clicks on the Privacy Policy link. If a ThinWebView is available, loads and displays
      * the privacy policy within it, replacing the consent view.
      *
-     * @param view The View that was clicked (typically the TextView containing the link).
+     * @param unused_view The View that was clicked (typically the TextView containing the link).
      */
-    private void onPrivacyPolicyClicked(View view) {
+    private void onPrivacyPolicyClicked(View unused_view) {
         RecordUserAction.record("Settings.PrivacySandbox.Consent.PrivacyPolicyLinkClicked");
         mPrivacyPolicyClickedTimestamp = System.currentTimeMillis();
         mPrivacyPolicyContent.removeAllViews();

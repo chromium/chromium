@@ -25,7 +25,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 class ContextMenuHeaderCoordinator {
     private PropertyModel mModel;
-    private ContextMenuHeaderMediator mMediator;
 
     ContextMenuHeaderCoordinator(
             Activity activity,
@@ -37,8 +36,7 @@ class ContextMenuHeaderCoordinator {
                         activity,
                         ContextMenuUtils.getTitle(params),
                         getUrl(activity, params, profile));
-        mMediator =
-                new ContextMenuHeaderMediator(activity, mModel, params, profile, nativeDelegate);
+        new ContextMenuHeaderMediator(activity, mModel, params, profile, nativeDelegate);
     }
 
     @VisibleForTesting

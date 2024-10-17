@@ -34,8 +34,8 @@ public class PriceMessageCardViewModel {
             PriceDropNotificationManager notificationManager) {
         boolean isIconVisible = data.getType() != PriceMessageType.PRICE_WELCOME;
         String titleText = getTitle(context, data.getType());
-        String descriptionText = getDescription(context, data.getType(), notificationManager);
-        String actionText = getActionText(context, data.getType(), notificationManager);
+        String descriptionText = getDescription(context, data.getType());
+        String actionText = getActionText(context, data.getType());
         String dismissButtonContextDescription =
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
@@ -68,7 +68,7 @@ public class PriceMessageCardViewModel {
                 .with(
                         MessageCardViewProperties.ICON_PROVIDER,
                         (callback) -> {
-                            callback.onResult(getIconDrawable(context, data.getType()));
+                            callback.onResult(getIconDrawable());
                         })
                 .with(CARD_TYPE, MESSAGE)
                 .with(CARD_ALPHA, 1f)
@@ -82,27 +82,21 @@ public class PriceMessageCardViewModel {
         return null;
     }
 
-    private static String getDescription(
-            Context context,
-            @PriceMessageType int type,
-            PriceDropNotificationManager notificationManager) {
+    private static String getDescription(Context context, @PriceMessageType int type) {
         if (type == PriceMessageType.PRICE_WELCOME) {
             return context.getString(R.string.price_drop_spotted_content);
         }
         return null;
     }
 
-    private static String getActionText(
-            Context context,
-            @PriceMessageType int type,
-            PriceDropNotificationManager notificationManager) {
+    private static String getActionText(Context context, @PriceMessageType int type) {
         if (type == PriceMessageType.PRICE_WELCOME) {
             return context.getString(R.string.price_drop_spotted_show_me);
         }
         return null;
     }
 
-    private static Drawable getIconDrawable(Context context, @PriceMessageType int type) {
+    private static Drawable getIconDrawable() {
         return null;
     }
 }

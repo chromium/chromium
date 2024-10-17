@@ -24,7 +24,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class PriceMessageService extends MessageService {
     private static final String WELCOME_MESSAGE_METRICS_IDENTIFIER = "PriceWelcomeMessageCard";
-    private static final String ALERTS_MESSAGE_METRICS_IDENTIFIER = "PriceAlertsMessageCard";
 
     // PRICE_WELCOME and PRICE_ALERTS are added to {@link TabListModel} at a different time and the
     // insertion positions are different as well. Right now PRICE_WELCOME is added via {@link
@@ -149,7 +148,6 @@ public class PriceMessageService extends MessageService {
     private final Supplier<PriceWelcomeMessageProvider> mPriceWelcomeMessageProviderSupplier;
     private final Supplier<PriceWelcomeMessageReviewActionProvider>
             mPriceWelcomeMessageReviewActionProviderSupplier;
-    private final PriceDropNotificationManager mNotificationManager;
 
     private PriceTabData mPriceTabData;
 
@@ -165,7 +163,6 @@ public class PriceMessageService extends MessageService {
         mPriceWelcomeMessageProviderSupplier = priceWelcomeMessageProviderSupplier;
         mPriceWelcomeMessageReviewActionProviderSupplier =
                 priceWelcomeMessageReviewActionProviderSupplier;
-        mNotificationManager = notificationManager;
     }
 
     /**

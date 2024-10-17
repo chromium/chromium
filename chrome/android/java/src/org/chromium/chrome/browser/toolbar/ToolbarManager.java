@@ -301,8 +301,6 @@ public class ToolbarManager
 
     private int mCurrentOrientation;
 
-    private final Supplier<Boolean> mCanAnimateNativeBrowserControls;
-
     private final ScrimCoordinator mScrimCoordinator;
 
     private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
@@ -330,7 +328,6 @@ public class ToolbarManager
     private boolean mBackGestureInProgress;
     private boolean mStartNavDuringOngoingGesture;
     private WindowAndroid.ProgressBarConfig.Provider mProgressBarConfigProvider;
-    private ToolbarPositionController mToolbarPositionController;
     // Supplier of the offset, relative to the bottom of the viewport, of the bottom-anchored
     // toolbar. This value is only meaningful when the current ControlsPosition is BOTTOM.
     private final ObservableSupplierImpl<Integer> mBottomToolbarControlsOffsetSupplier =
@@ -571,7 +568,6 @@ public class ToolbarManager
             FindToolbarManager findToolbarManager,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
-            @Nullable Supplier<Boolean> canAnimateNativeBrowserControls,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             boolean canShowUpdateBadge,
@@ -612,7 +608,6 @@ public class ToolbarManager
                         activity.getSupportActionBar(),
                         controlContainer,
                         activity.findViewById(R.id.action_bar_black_background));
-        mCanAnimateNativeBrowserControls = canAnimateNativeBrowserControls;
         mScrimCoordinator = scrimCoordinator;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
@@ -672,7 +667,7 @@ public class ToolbarManager
                             return;
                         }
                         mCurrentOrientation = newOrientation;
-                        onOrientationChange(newOrientation);
+                        onOrientationChange();
                     }
 
                     @Override
@@ -1335,15 +1330,14 @@ public class ToolbarManager
         }
 
         mIsNtpShowingSupplier.set(getNewTabPageForCurrentTab() != null);
-        mToolbarPositionController =
-                new ToolbarPositionController(
-                        mBrowserControlsSizer,
-                        ContextUtils.getAppSharedPreferences(),
-                        mIsNtpShowingSupplier,
-                        mOmniboxFocusStateSupplier,
-                        mControlContainer,
-                        mBottomControlsStacker,
-                        mBottomToolbarControlsOffsetSupplier);
+        new ToolbarPositionController(
+                mBrowserControlsSizer,
+                ContextUtils.getAppSharedPreferences(),
+                mIsNtpShowingSupplier,
+                mOmniboxFocusStateSupplier,
+                mControlContainer,
+                mBottomControlsStacker,
+                mBottomToolbarControlsOffsetSupplier);
     }
 
     // TODO(b/315204103): add tests
@@ -1979,7 +1973,7 @@ public class ToolbarManager
     }
 
     /** Called when the orientation of the activity has changed. */
-    private void onOrientationChange(int newOrientation) {
+    private void onOrientationChange() {
         if (mActionModeController != null) mActionModeController.showControlsOnOrientationChange();
     }
 

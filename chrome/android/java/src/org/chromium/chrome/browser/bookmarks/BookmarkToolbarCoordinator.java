@@ -23,7 +23,6 @@ import java.util.function.BooleanSupplier;
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
 public class BookmarkToolbarCoordinator {
     private final BookmarkToolbar mToolbar;
-    private final BookmarkToolbarMediator mMediator;
     private final PropertyModel mModel;
 
     BookmarkToolbarCoordinator(
@@ -59,21 +58,19 @@ public class BookmarkToolbarCoordinator {
         mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING);
         mModel.set(BookmarkToolbarProperties.IS_DIALOG_UI, isDialogUi);
         mModel.set(BookmarkToolbarProperties.DRAG_ENABLED, false);
-        mMediator =
-                new BookmarkToolbarMediator(
-                        context,
-                        mModel,
-                        dragReorderableRecyclerViewAdapter,
-                        bookmarkDelegateSupplier,
-                        selectionDelegate,
-                        bookmarkModel,
-                        bookmarkOpener,
-                        bookmarkUiPrefs,
-                        new BookmarkAddNewFolderCoordinator(
-                                context, modalDialogManager, bookmarkModel),
-                        endSearchRunnable,
-                        bookmarkMoveSnackbarManager,
-                        incognitoEnabledSupplier);
+        new BookmarkToolbarMediator(
+                context,
+                mModel,
+                dragReorderableRecyclerViewAdapter,
+                bookmarkDelegateSupplier,
+                selectionDelegate,
+                bookmarkModel,
+                bookmarkOpener,
+                bookmarkUiPrefs,
+                new BookmarkAddNewFolderCoordinator(context, modalDialogManager, bookmarkModel),
+                endSearchRunnable,
+                bookmarkMoveSnackbarManager,
+                incognitoEnabledSupplier);
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }

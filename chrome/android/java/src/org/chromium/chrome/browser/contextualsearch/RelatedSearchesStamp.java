@@ -30,9 +30,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 class RelatedSearchesStamp {
     // Related Searches "stamp" building and accessing details.
     static final String STAMP_PARAMETER = "ctxsl_rs";
-    private static final String RELATED_SEARCHES_STAMP_VERSION = "1";
-    private static final String RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE = "R";
-    private static final String RELATED_SEARCHES_NO_EXPERIMENT = "n";
     private static final String RELATED_SEARCHES_LANGUAGE_RESTRICTION = "l";
     private static final String RELATED_SEARCHES_USER_INTERACTION = "U";
     private static final String RELATED_SEARCHES_SELECTED_POSITION = "p";

@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -304,7 +303,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final boolean mShouldEnableEmbeddedMediaExperience;
     private final BrowserControlsVisibilityDelegate mBrowserStateVisibilityDelegate;
     private final ExternalAuthUtils mExternalAuthUtils;
-    private final MultiWindowUtils mMultiWindowUtils;
     private final Verifier mVerifier;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -338,7 +336,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @param visibilityDelegate The delegate that handles browser control visibility associated
      *     with browser actions (as opposed to tab state).
      * @param authUtils To determine whether apps are Google signed.
-     * @param multiWindowUtils To use to determine which ChromeTabbedActivity to open new tabs in.
      * @param verifier Decides how to handle navigation to a new URL.
      * @param chromeActivityNativeDelegate Delegate for native initialziation.
      * @param browserControlsStateProvider Provides state of the browser controls.
@@ -364,7 +361,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             boolean shouldEnableEmbeddedMediaExperience,
             BrowserControlsVisibilityDelegate visibilityDelegate,
             ExternalAuthUtils authUtils,
-            MultiWindowUtils multiWindowUtils,
             Verifier verifier,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -389,7 +385,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mShouldEnableEmbeddedMediaExperience = shouldEnableEmbeddedMediaExperience;
         mBrowserStateVisibilityDelegate = visibilityDelegate;
         mExternalAuthUtils = authUtils;
-        mMultiWindowUtils = multiWindowUtils;
         mVerifier = verifier;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -413,7 +408,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabBrowserControlsVisibilityDelegate visibilityDelegate,
             ExternalAuthUtils authUtils,
-            MultiWindowUtils multiWindowUtils,
             Verifier verifier,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -438,7 +432,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 intentDataProvider.shouldEnableEmbeddedMediaExperience(),
                 visibilityDelegate,
                 authUtils,
-                multiWindowUtils,
                 verifier,
                 chromeActivityNativeDelegate,
                 browserControlsStateProvider,
@@ -469,7 +462,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 null,
                 DisplayMode.BROWSER,
                 false,
-                null,
                 null,
                 null,
                 null,

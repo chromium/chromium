@@ -48,13 +48,11 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
     private View mCommerceBottomSheetContentContainer;
     private ModelList mModelList;
 
-    private final Context mContext;
     private CallbackController mCallbackController;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     public CommerceBottomSheetContentCoordinator(
             Context context, @NonNull BottomSheetController bottomSheetController) {
-        mContext = context;
         mModelList = new ModelList();
         ModelListAdapter adapter = new ModelListAdapter(mModelList);
         adapter.registerType(

@@ -35,7 +35,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private static final String TOPICS_TOGGLE_PREFERENCE = "topics_toggle";
     private static final String TOPICS_EXPLANATION_PREFERENCE = "topics_explanation";
-    private static final String TOPICS_HEADING_PREFERENCE = "topics_heading";
+    // private static final String TOPICS_HEADING_PREFERENCE = "topics_heading";
     private static final String CURRENT_TOPICS_PREFERENCE = "current_topics";
     private static final String EMPTY_TOPICS_PREFERENCE = "topics_empty";
     private static final String DISABLED_TOPICS_PREFERENCE = "topics_disabled";
@@ -100,7 +100,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                 new ClickableSpan() {
                                     @Override
                                     public void onClick(View view) {
-                                        onManagingAdPrivacyClicked(view);
+                                        onManagingAdPrivacyClicked();
                                     }
                                 })));
         mTopicsPageFooterPreference.setSummary(
@@ -112,7 +112,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                 new ClickableSpan() {
                                     @Override
                                     public void onClick(View view) {
-                                        onFledgeSettingsLinkClicked(view);
+                                        onFledgeSettingsLinkClicked();
                                     }
                                 }),
                         new SpanApplier.SpanInfo(
@@ -121,7 +121,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                 new ClickableSpan() {
                                     @Override
                                     public void onClick(View view) {
-                                        onCookieSettingsLink(view);
+                                        onCookieSettingsLink();
                                     }
                                 }),
                         new SpanApplier.SpanInfo(
@@ -130,7 +130,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                 new ClickableSpan() {
                                     @Override
                                     public void onClick(View view) {
-                                        onManagingAdPrivacyClicked(view);
+                                        onManagingAdPrivacyClicked();
                                     }
                                 })));
     }
@@ -140,15 +140,15 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         return mPageTitle;
     }
 
-    private void onManagingAdPrivacyClicked(View view) {
+    private void onManagingAdPrivacyClicked() {
         openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 
-    private void onFledgeSettingsLinkClicked(View view) {
+    private void onFledgeSettingsLinkClicked() {
         startSettings(FledgeFragment.class);
     }
 
-    private void onCookieSettingsLink(View view) {
+    private void onCookieSettingsLink() {
         launchCookieSettings();
     }
 

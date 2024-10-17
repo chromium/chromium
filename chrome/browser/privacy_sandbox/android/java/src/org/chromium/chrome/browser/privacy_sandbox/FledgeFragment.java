@@ -39,7 +39,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     @VisibleForTesting static final int MAX_DISPLAYED_SITES = 15;
 
     private static final String FLEDGE_TOGGLE_PREFERENCE = "fledge_toggle";
-    private static final String FLEDGE_DESCRIPTION_PREFERENCE = "fledge_description";
+    // private static final String FLEDGE_DESCRIPTION_PREFERENCE = "fledge_description";
     private static final String HEADING_PREFERENCE = "fledge_heading";
     private static final String CURRENT_SITES_PREFERENCE = "current_fledge_sites";
     private static final String EMPTY_FLEDGE_PREFERENCE = "fledge_empty";
@@ -102,7 +102,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                                 new ClickableSpan() {
                                     @Override
                                     public void onClick(View view) {
-                                        onLearnMoreClicked(view);
+                                        onLearnMoreClicked();
                                     }
                                 })));
         mFooterPreference.setSummary(
@@ -114,7 +114,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                                 new ClickableSpan() {
                                     @Override
                                     public void onClick(View view) {
-                                        onFledgeSettingsLinkClicked(view);
+                                        onFledgeSettingsLinkClicked();
                                     }
                                 }),
                         new SpanApplier.SpanInfo(
@@ -123,7 +123,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                                 new ClickableSpan() {
                                     @Override
                                     public void onClick(View view) {
-                                        onCookieSettingsLink(view);
+                                        onCookieSettingsLink();
                                     }
                                 }),
                         new SpanApplier.SpanInfo(
@@ -132,7 +132,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                                 new ClickableSpan() {
                                     @Override
                                     public void onClick(View view) {
-                                        onManagingAdPrivacyClicked(view);
+                                        onManagingAdPrivacyClicked();
                                     }
                                 })));
     }
@@ -142,20 +142,20 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
         return mPageTitle;
     }
 
-    private void onLearnMoreClicked(View view) {
+    private void onLearnMoreClicked() {
         RecordUserAction.record("Settings.PrivacySandbox.Fledge.LearnMoreClicked");
         startSettings(FledgeLearnMoreFragment.class);
     }
 
-    private void onManagingAdPrivacyClicked(View view) {
+    private void onManagingAdPrivacyClicked() {
         openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 
-    private void onFledgeSettingsLinkClicked(View view) {
+    private void onFledgeSettingsLinkClicked() {
         startSettings(TopicsFragment.class);
     }
 
-    private void onCookieSettingsLink(View view) {
+    private void onCookieSettingsLink() {
         launchCookieSettings();
     }
 

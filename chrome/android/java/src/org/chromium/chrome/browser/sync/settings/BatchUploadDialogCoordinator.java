@@ -92,7 +92,7 @@ final class BatchUploadDialogCoordinator {
                         .with(ModalDialogProperties.CUSTOM_VIEW, view)
                         .with(
                                 ModalDialogProperties.CONTROLLER,
-                                createController(context, localDataDescriptionsMap, listener))
+                                createController(localDataDescriptionsMap, listener))
                         .build();
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
 
@@ -205,9 +205,7 @@ final class BatchUploadDialogCoordinator {
     }
 
     private Controller createController(
-            Context context,
-            HashMap<Integer, LocalDataDescription> localDataDescriptionsMap,
-            Listener listener) {
+            HashMap<Integer, LocalDataDescription> localDataDescriptionsMap, Listener listener) {
         return new Controller() {
             @Override
             public void onClick(PropertyModel model, int buttonType) {

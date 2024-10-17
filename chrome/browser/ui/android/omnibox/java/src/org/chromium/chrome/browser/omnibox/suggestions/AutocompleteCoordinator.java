@@ -145,7 +145,7 @@ public class AutocompleteCoordinator
                 this::dropdownOverscrolledToTop);
 
         ViewProvider<SuggestionListViewHolder> viewProvider =
-                createViewProvider(context, forcePhoneStyleOmnibox);
+                createViewProvider(forcePhoneStyleOmnibox);
         viewProvider.whenLoaded(
                 (holder) -> {
                     mDropdown = holder.dropdown;
@@ -196,7 +196,7 @@ public class AutocompleteCoordinator
     }
 
     private ViewProvider<SuggestionListViewHolder> createViewProvider(
-            Context context, boolean forcePhoneStyleOmnibox) {
+            boolean forcePhoneStyleOmnibox) {
         return new ViewProvider<SuggestionListViewHolder>() {
             private AsyncViewProvider<ViewGroup> mAsyncProvider;
             private List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();

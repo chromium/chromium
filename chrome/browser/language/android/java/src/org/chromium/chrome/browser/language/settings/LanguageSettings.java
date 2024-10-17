@@ -70,9 +70,9 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
 
         // Create the correct version of language settings.
         if (shouldShowDetailedPreferences()) {
-            createDetailedPreferences(savedInstanceState);
+            createDetailedPreferences();
         } else {
-            createBasicPreferences(rootKey);
+            createBasicPreferences();
         }
 
         LanguagesManager.recordImpression(LanguagesManager.LanguageSettingsPageType.PAGE_MAIN);
@@ -96,7 +96,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     }
 
     /** Create the old language and translate settings page. Delete once no longer used. */
-    private void createBasicPreferences(String rootKey) {
+    private void createBasicPreferences() {
         SettingsUtils.addPreferencesFromResource(this, R.xml.languages_preferences);
 
         ContentLanguagesPreference mLanguageListPref =
@@ -137,7 +137,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
      * Create the new language and translate settings page. With options to change the app language,
      * translate target language, and detailed translate preferences.
      */
-    private void createDetailedPreferences(Bundle savedInstanceState) {
+    private void createDetailedPreferences() {
         // Log currently installed language splits.
         String installedLanguages =
                 TextUtils.join(",", LanguageSplitInstaller.getInstance().getInstalledLanguages());

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,7 +65,6 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
             return;
         }
 
-        Resources res = getResources();
         mBookmarkImageFetcher =
                 new BookmarkImageFetcher(
                         profile,

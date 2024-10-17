@@ -8,7 +8,6 @@ import android.content.ComponentName;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
@@ -34,8 +33,7 @@ public class LocationPermissionUpdater {
     @Inject
     public LocationPermissionUpdater(
             InstalledWebappPermissionManager permissionManager,
-            TrustedWebActivityClient trustedWebActivityClient,
-            TrustedWebActivityUmaRecorder umaRecorder) {
+            TrustedWebActivityClient trustedWebActivityClient) {
         mPermissionManager = permissionManager;
         mTrustedWebActivityClient = trustedWebActivityClient;
     }

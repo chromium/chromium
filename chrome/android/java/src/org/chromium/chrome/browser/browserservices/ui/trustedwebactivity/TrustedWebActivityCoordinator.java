@@ -35,16 +35,16 @@ public class TrustedWebActivityCoordinator {
     @Inject
     public TrustedWebActivityCoordinator(
             SharedActivityCoordinator sharedActivityCoordinator,
-            TrustedWebActivityDisclosureController disclosureController,
-            DisclosureUiPicker disclosureUiPicker,
-            TrustedWebActivityOpenTimeRecorder openTimeRecorder,
+            TrustedWebActivityDisclosureController unused_disclosureController,
+            DisclosureUiPicker unused_disclosureUiPicker,
+            TrustedWebActivityOpenTimeRecorder unused_openTimeRecorder,
             CurrentPageVerifier currentPageVerifier,
             Lazy<TwaSplashController> splashController,
             BrowserServicesIntentDataProvider intentDataProvider,
             TrustedWebActivityUmaRecorder umaRecorder,
             InstalledWebappRegistrar installedWebappRegistrar,
             ClientPackageNameProvider clientPackageNameProvider) {
-        // We don't need to do anything with most of the classes above, we just need to resolve them
+        // We don't need to do anything with the unused_ classes above, we just need to resolve them
         // so they start working.
         mSharedActivityCoordinator = sharedActivityCoordinator;
         mCurrentPageVerifier = currentPageVerifier;

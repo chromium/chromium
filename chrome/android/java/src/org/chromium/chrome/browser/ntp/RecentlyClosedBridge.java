@@ -72,7 +72,6 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @CalledByNative
     private void restoreTabGroup(
             TabModel tabModel,
-            @JniType("std::string") String savedTabGroupId,
             @JniType("std::u16string") String title,
             int color,
             @JniType("std::vector") int[] tabIds) {

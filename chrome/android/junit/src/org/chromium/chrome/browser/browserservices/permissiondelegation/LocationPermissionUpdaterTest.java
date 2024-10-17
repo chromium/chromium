@@ -33,7 +33,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
@@ -53,7 +52,6 @@ public class LocationPermissionUpdaterTest {
 
     @Mock public InstalledWebappPermissionManager mPermissionManager;
     @Mock public TrustedWebActivityClient mTrustedWebActivityClient;
-    @Mock public TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Mock private InstalledWebappBridge.Natives mNativeMock;
 
@@ -71,8 +69,7 @@ public class LocationPermissionUpdaterTest {
         PackageManager pm = RuntimeEnvironment.application.getPackageManager();
         mShadowPackageManager = shadowOf(pm);
         mLocationPermissionUpdater =
-                new LocationPermissionUpdater(
-                        mPermissionManager, mTrustedWebActivityClient, mUmaRecorder);
+                new LocationPermissionUpdater(mPermissionManager, mTrustedWebActivityClient);
 
         doAnswer(
                         invocation -> {

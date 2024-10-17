@@ -591,7 +591,7 @@ public class StackScroller {
 
         void fling(int start, int velocity, int min, int max, int over, long time) {
             if (mSnapDistance != 0) {
-                doSnapScroll(start, velocity, min, max, time);
+                doSnapScroll(start, velocity, time);
                 return;
             }
 
@@ -634,7 +634,7 @@ public class StackScroller {
             }
         }
 
-        private void doSnapScroll(int start, int velocity, int min, int max, long time) {
+        private void doSnapScroll(int start, int velocity, long time) {
             boolean sameDirection = (Math.signum(velocity) == Math.signum(mCurrVelocity));
 
             int numTabsToScroll = computeSnapScrollDistance(velocity);

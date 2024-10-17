@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -92,7 +91,6 @@ public class BookmarkSaveFlowCoordinator {
                         (ImprovedBookmarkSaveFlowView) mBookmarkSaveFlowView,
                         ImprovedBookmarkSaveFlowViewBinder::bind);
 
-        Resources res = mContext.getResources();
         BookmarkImageFetcher bookmarkImageFetcher =
                 new BookmarkImageFetcher(
                         profile,

@@ -198,7 +198,7 @@ public class MostVisitedSitesMetadataUtils {
             if (url.isEmpty()) throw new IOException("GURL deserialization failed.");
 
             // Read the allowlistIconPath, which is always an empty string.
-            String allowlistIconPath = stream.readUTF();
+            stream.readUTF();
             int titleSource = stream.readInt();
             int source = stream.readInt();
             int sectionType = stream.readInt();

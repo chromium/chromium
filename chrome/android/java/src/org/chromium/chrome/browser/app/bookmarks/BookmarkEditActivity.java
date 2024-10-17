@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -140,7 +139,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
 
-        Resources res = getResources();
         mFolderSelectRowCoordinator =
                 new ImprovedBookmarkRowCoordinator(
                         this,

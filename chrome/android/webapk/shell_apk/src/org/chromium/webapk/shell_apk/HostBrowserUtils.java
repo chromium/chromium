@@ -18,8 +18,6 @@ import java.util.Set;
 
 /** Contains methods for getting information about host browser. */
 public class HostBrowserUtils {
-    private static final String VERSION_NAME_DEVELOPER_BUILD = "Developer Build";
-
     public static String ARC_INTENT_HELPER_BROWSER = "org.chromium.arc.intent_helper";
 
     public static String ARC_WEBAPK_BROWSER = "org.chromium.arc.webapk";

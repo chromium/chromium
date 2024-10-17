@@ -206,6 +206,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
     private final @NonNull DataSharingTabManager mDataSharingTabManager;
+    private final Supplier<Boolean> mCanAnimateBrowserControls;
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
 
     // Activity tab observer that updates the current tab used by various UI components.
