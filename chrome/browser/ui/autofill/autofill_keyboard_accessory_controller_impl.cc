@@ -41,6 +41,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -553,8 +554,7 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
   const std::u16string& value = suggestions_[index].main_text.value;
   const SuggestionType type = suggestions_[index].type;
-  const Suggestion::Guid& guid =
-      suggestions_[index].GetPayload<Suggestion::Guid>();
+  const Suggestion::Payload& payload = suggestions_[index].payload;
 
   if (type == SuggestionType::kAutocompleteEntry) {
     if (title) {
@@ -574,37 +574,46 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());
 
-  if (const CreditCard* credit_card =
-          pdm->payments_data_manager().GetCreditCardByGUID(guid.value())) {
-    if (!CreditCard::IsLocalCard(credit_card)) {
-      return false;
+  if (absl::holds_alternative<Suggestion::Guid>(payload)) {
+    if (const CreditCard* credit_card =
+            pdm->payments_data_manager().GetCreditCardByGUID(
+                absl::get<Suggestion::Guid>(payload).value())) {
+      if (!CreditCard::IsLocalCard(credit_card)) {
+        return false;
+      }
+      if (title) {
+        title->assign(credit_card->CardNameAndLastFourDigits());
+      }
+      if (body) {
+        body->assign(l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
+      }
+      return true;
     }
-    if (title) {
-      title->assign(credit_card->CardNameAndLastFourDigits());
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
-    }
-    return true;
+    return false;
   }
 
-  if (const AutofillProfile* profile =
-          pdm->address_data_manager().GetProfileByGUID(guid.value())) {
-    if (title) {
-      std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
-      if (!street_address.empty()) {
-        title->swap(street_address);
-      } else {
-        title->assign(value);
+  if (absl::holds_alternative<Suggestion::AutofillProfilePayload>(payload)) {
+    if (const AutofillProfile* profile =
+            pdm->address_data_manager().GetProfileByGUID(
+                absl::get<Suggestion::AutofillProfilePayload>(payload)
+                    .guid.value())) {
+      if (title) {
+        std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
+        if (!street_address.empty()) {
+          title->swap(street_address);
+        } else {
+          title->assign(value);
+        }
       }
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-    }
+      if (body) {
+        body->assign(l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
+      }
 
-    return true;
+      return true;
+    }
+    return false;
   }
 
   return false;  // The ID was valid. The entry may have been deleted in a race.

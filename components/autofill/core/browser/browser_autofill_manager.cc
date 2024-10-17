@@ -142,6 +142,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect.h"
@@ -2274,11 +2275,15 @@ void BrowserAutofillManager::OnHidePopupImpl() {
 }
 
 bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
-    const Suggestion::Guid& guid) {
+    const Suggestion::Payload& payload) {
+  const std::string guid =
+      absl::holds_alternative<Suggestion::AutofillProfilePayload>(payload)
+          ? absl::get<Suggestion::AutofillProfilePayload>(payload).guid.value()
+          : absl::get<Suggestion::Guid>(payload).value();
   PersonalDataManager* pdm = client().GetPersonalDataManager();
 
   if (const CreditCard* credit_card =
-          pdm->payments_data_manager().GetCreditCardByGUID(guid.value())) {
+          pdm->payments_data_manager().GetCreditCardByGUID(guid)) {
     // Server cards cannot be deleted from within Chrome.
     bool allowed_to_delete = CreditCard::IsLocalCard(credit_card);
     if (allowed_to_delete) {
@@ -2288,7 +2293,7 @@ bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
   }
 
   if (const AutofillProfile* profile =
-          pdm->address_data_manager().GetProfileByGUID(guid.value())) {
+          pdm->address_data_manager().GetProfileByGUID(guid)) {
     pdm->RemoveByGUID(profile->guid());
     return true;
   }

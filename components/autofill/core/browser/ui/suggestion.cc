@@ -85,6 +85,30 @@ Suggestion::PredictionImprovementsPayload::operator=(
 Suggestion::PredictionImprovementsPayload::~PredictionImprovementsPayload() =
     default;
 
+Suggestion::AutofillProfilePayload::AutofillProfilePayload() = default;
+Suggestion::AutofillProfilePayload::AutofillProfilePayload(Guid guid)
+    : AutofillProfilePayload(std::move(guid), u"") {}
+Suggestion::AutofillProfilePayload::AutofillProfilePayload(
+    Guid guid,
+    std::u16string email_override)
+    : guid(std::move(guid)), email_override(std::move(email_override)) {}
+
+Suggestion::AutofillProfilePayload::AutofillProfilePayload(
+    const AutofillProfilePayload&) = default;
+
+Suggestion::AutofillProfilePayload::AutofillProfilePayload(
+    AutofillProfilePayload&&) = default;
+
+Suggestion::AutofillProfilePayload&
+Suggestion::AutofillProfilePayload::operator=(const AutofillProfilePayload&) =
+    default;
+
+Suggestion::AutofillProfilePayload&
+Suggestion::AutofillProfilePayload::operator=(AutofillProfilePayload&&) =
+    default;
+
+Suggestion::AutofillProfilePayload::~AutofillProfilePayload() = default;
+
 Suggestion::PaymentsPayload::PaymentsPayload() = default;
 
 Suggestion::PaymentsPayload::PaymentsPayload(

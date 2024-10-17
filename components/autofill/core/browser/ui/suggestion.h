@@ -122,12 +122,34 @@ struct Suggestion {
     bool should_display_terms_available = false;
   };
 
-  using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using Guid = base::StrongAlias<class GuidTag, std::string>;
+
+  struct AutofillProfilePayload final {
+    AutofillProfilePayload();
+    explicit AutofillProfilePayload(Guid guid);
+    AutofillProfilePayload(Guid guid, std::u16string email_override);
+    AutofillProfilePayload(const AutofillProfilePayload&);
+    AutofillProfilePayload(AutofillProfilePayload&&);
+    AutofillProfilePayload& operator=(const AutofillProfilePayload&);
+    AutofillProfilePayload& operator=(AutofillProfilePayload&&);
+    ~AutofillProfilePayload();
+
+    friend bool operator==(const AutofillProfilePayload&,
+                           const AutofillProfilePayload&) = default;
+
+    // Address profile identifier.
+    Guid guid;
+    // If non-empty, the email override is applied on the AutofillProfile
+    // identified by `guid` every time it's loaded.
+    std::u16string email_override;
+  };
+
+  using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
   using Payload = absl::variant<Guid,
                                 InstrumentId,
+                                AutofillProfilePayload,
                                 GURL,
                                 ValueToFill,
                                 PasswordSuggestionDetails,
@@ -320,8 +342,10 @@ struct Suggestion {
         // use this.
         return absl::holds_alternative<Guid>(payload) ||
                absl::holds_alternative<PaymentsPayload>(payload);
+      case SuggestionType::kDevtoolsTestAddressEntry:
       default:
-        return absl::holds_alternative<Guid>(payload);
+        return absl::holds_alternative<Guid>(payload) ||
+               absl::holds_alternative<AutofillProfilePayload>(payload);
     }
   }
 #endif

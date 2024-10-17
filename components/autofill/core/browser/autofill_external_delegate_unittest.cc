@@ -121,11 +121,19 @@ constexpr auto kDefaultTriggerSource =
 // `Suggestion::field_by_field_filling_type_used` to `fbf_type_used`.
 Suggestion CreateFieldByFieldFillingSuggestion(const std::string& guid,
                                                FieldType fbf_type_used) {
-  Suggestion suggestion = test::CreateAutofillSuggestion(
+  auto GetPayload = [](SuggestionType type,
+                       const std::string& guid) -> Suggestion::Payload {
+    if (type == SuggestionType::kCreditCardFieldByFieldFilling) {
+      return Suggestion::Guid(guid);
+    }
+    return Suggestion::AutofillProfilePayload(Suggestion::Guid(guid));
+  };
+  SuggestionType suggestion_type =
       GroupTypeOfFieldType(fbf_type_used) == FieldTypeGroup::kCreditCard
           ? SuggestionType::kCreditCardFieldByFieldFilling
-          : SuggestionType::kAddressFieldByFieldFilling,
-      u"field by field", Suggestion::Guid(guid));
+          : SuggestionType::kAddressFieldByFieldFilling;
+  Suggestion suggestion = test::CreateAutofillSuggestion(
+      suggestion_type, u"field by field", GetPayload(suggestion_type, guid));
   suggestion.field_by_field_filling_type_used = std::optional(fbf_type_used);
   return suggestion;
 }
@@ -939,7 +947,8 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   pdm().address_data_manager().AddProfile(profile);
   std::vector<Suggestion> autofill_item = {
       Suggestion(SuggestionType::kAddressEntry)};
-  autofill_item[0].payload = Suggestion::Guid(profile.guid());
+  autofill_item[0].payload =
+      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()));
   OnSuggestionsReturned(queried_field().global_id(), autofill_item);
 
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
@@ -1288,9 +1297,9 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
                              HasQueriedFormId(), HasQueriedFieldId(), _, _));
   const AutofillProfile profile = test::GetFullProfile();
   pdm().address_data_manager().AddProfile(profile);
-  external_delegate().DidSelectSuggestion(
-      test::CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"baz foo",
-                                     Suggestion::Guid(profile.guid())));
+  external_delegate().DidSelectSuggestion(test::CreateAutofillSuggestion(
+      SuggestionType::kAddressEntry, u"baz foo",
+      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()))));
 
   // Ensure selecting an autocomplete entry will cause any previews to
   // get cleared.
@@ -1516,8 +1525,10 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
   const Suggestion suggestion =
       params.type == SuggestionType::kAddressFieldByFieldFilling
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
-          : test::CreateAutofillSuggestion(params.type, u"baz foo",
-                                           Suggestion::Guid(profile.guid()));
+          : test::CreateAutofillSuggestion(
+                params.type, u"baz foo",
+                Suggestion::AutofillProfilePayload(
+                    Suggestion::Guid(profile.guid())));
   auto expected_source =
 #if BUILDFLAG(IS_ANDROID)
       AutofillTriggerSource::kKeyboardAccessory;
@@ -1566,9 +1577,9 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
   const AutofillProfile profile = test::GetFullProfile();
   pdm().address_data_manager().AddProfile(profile);
   external_delegate().DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(SuggestionType::kAddressEntry,
-                                     u"John Legend",
-                                     Suggestion::Guid(profile.guid())),
+      test::CreateAutofillSuggestion(
+          SuggestionType::kAddressEntry, u"John Legend",
+          Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()))),
       SuggestionPosition{.row = 2});
 }
 
@@ -1595,7 +1606,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestAddressSuggestion_FillAndPreview) {
   client().set_test_addresses({profile});
   const Suggestion suggestion = test::CreateAutofillSuggestion(
       SuggestionType::kDevtoolsTestAddressEntry, u"John Legend",
-      Suggestion::Guid(profile.guid()));
+      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())));
   base::HistogramTester histogram_tester;
 
   // Test preview.
@@ -1628,9 +1639,9 @@ TEST_F(AutofillExternalDelegateUnitTest,
   base::HistogramTester histogram_tester;
 
   external_delegate().DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(SuggestionType::kAddressEntry,
-                                     u"John Legend",
-                                     Suggestion::Guid(profile.guid())),
+      test::CreateAutofillSuggestion(
+          SuggestionType::kAddressEntry, u"John Legend",
+          Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()))),
       AutofillSuggestionDelegate::SuggestionMetadata{
           .row = suggestion_accepted_row});
 
@@ -1645,7 +1656,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   pdm().address_data_manager().AddProfile(profile);
   const Suggestion suggestion = test::CreateAutofillSuggestion(
       SuggestionType::kFillEverythingFromAddressProfile, u"John Legend",
-      Suggestion::Guid(profile.guid()));
+      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())));
 
   // Test preview.
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
@@ -1672,7 +1683,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
   pdm().address_data_manager().AddProfile(profile);
   Suggestion suggestion = test::CreateAutofillSuggestion(
       SuggestionType::kAddressEntry, /*main_text_value=*/u"",
-      Suggestion::Guid(profile.guid()));
+      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())));
 
   IssueOnQuery(AutofillSuggestionTriggerSource::kFormControlElementClicked);
   auto expected_source =
@@ -3234,7 +3245,8 @@ INSTANTIATE_TEST_SUITE_P(AutofillExternalDelegateUnitTest,
 TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
   const AutofillProfile profile = test::GetFullProfile();
   const Suggestion& suggestion = test::CreateAutofillSuggestion(
-      GetParam(), u"autofill suggestion", Suggestion::Guid(profile.guid()));
+      GetParam(), u"autofill suggestion",
+      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())));
   pdm().address_data_manager().AddProfile(profile);
 
   if (suggestion.type == SuggestionType::kAutocompleteEntry) {

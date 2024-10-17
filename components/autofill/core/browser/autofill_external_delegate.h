@@ -233,7 +233,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // would be selected and if `is_preview` is false then the user has selected
   // this data.
   void FillAutofillFormData(SuggestionType type,
-                            Suggestion::Guid guid,
+                            const Suggestion::Payload& payload,
                             std::optional<SuggestionMetadata> metadata,
                             bool is_preview,
                             const AutofillTriggerDetails& trigger_details);

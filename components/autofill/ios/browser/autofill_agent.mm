@@ -366,10 +366,16 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       autofill_suggestion.type = suggestion.type;
       autofill_suggestion.field_by_field_filling_type_used =
           suggestion.fieldByFieldFillingTypeUsed;
-      // TODO(crbug.com/324557053): Update payload.
+
       const std::string& guid =
-          absl::get<autofill::Suggestion::Guid>(suggestion.backendIdentifier)
-              .value();
+          absl::holds_alternative<autofill::Suggestion::AutofillProfilePayload>(
+              suggestion.backendIdentifier)
+              ? absl::get<autofill::Suggestion::AutofillProfilePayload>(
+                    suggestion.backendIdentifier)
+                    .guid.value()
+              : absl::get<autofill::Suggestion::Guid>(
+                    suggestion.backendIdentifier)
+                    .value();
       if (guid.empty()) {
         autofill_suggestion.payload = autofill::Suggestion::Payload();
       } else {
@@ -655,8 +661,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       }
     }
 
-    if (!value)
+    if (!value) {
       continue;
+    }
 
     NSString* acceptanceA11yAnnouncement =
         popup_suggestion.acceptance_a11y_announcement.has_value()
@@ -737,8 +744,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   DCHECK_EQ(_webState, webState);
-  if (![self isAutofillEnabled])
+  if (![self isAutofillEnabled]) {
     return;
+  }
 
   [self processPage:webState];
 }
@@ -792,8 +800,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     didRegisterFormActivity:(const autofill::FormActivityParams&)params
                     inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
-  if (![self isAutofillEnabled])
+  if (![self isAutofillEnabled]) {
     return;
+  }
 
   if (!frame) {
     return;
@@ -808,8 +817,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   }
 
   // Return early if |params| is not complete.
-  if (params.input_missing)
+  if (params.input_missing) {
     return;
+  }
 
   // If the event is a form_changed, then the event concerns the whole page and
   // not a particular form. The whole document's forms need to be extracted to
@@ -890,8 +900,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   // Processing the page can be needed here if Autofill is enabled in settings
   // when the page is already loaded.
-  if ([self isAutofillEnabled])
+  if ([self isAutofillEnabled]) {
     [self processPage:_webState];
+  }
 }
 
 #pragma mark - Private methods

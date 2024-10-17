@@ -1003,47 +1003,61 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(NAME_FIRST, app_locale()), NAME_FIRST,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(NAME_MIDDLE, app_locale()), NAME_MIDDLE,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(NAME_LAST, app_locale()), NAME_LAST,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(COMPANY_NAME, app_locale()), COMPANY_NAME,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_LINE1, app_locale()),
-              ADDRESS_HOME_LINE1, Suggestion::Guid(profile().guid())),
+              ADDRESS_HOME_LINE1,
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_LINE2, app_locale()),
-              ADDRESS_HOME_LINE2, Suggestion::Guid(profile().guid())),
+              ADDRESS_HOME_LINE2,
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_CITY, app_locale()),
-              ADDRESS_HOME_CITY, Suggestion::Guid(profile().guid())),
+              ADDRESS_HOME_CITY,
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_ZIP, app_locale()),
-              ADDRESS_HOME_ZIP, Suggestion::Guid(profile().guid())),
+              ADDRESS_HOME_ZIP,
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsSuggestion(SuggestionType::kSeparator),
           // Triggering field is not a phone number, international phone number
           // should be shown to the user.
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               GetFormattedInternationalNumber(), PHONE_HOME_WHOLE_NUMBER,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(EMAIL_ADDRESS, app_locale()), EMAIL_ADDRESS,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(SuggestionType::kEditAddressProfile),
           EqualsSuggestion(SuggestionType::kDeleteAddressProfile)));
@@ -1202,13 +1216,17 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
-              ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile().guid()),
+              ADDRESS_HOME_HOUSE_NUMBER,
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid())),
               {{Suggestion::Text(l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}}),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
-              ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile().guid()),
+              ADDRESS_HOME_STREET_NAME,
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid())),
               {{Suggestion::Text(l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT))}})));
 }
@@ -1227,7 +1245,9 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
               EqualsFieldByFieldFillingSuggestion(
                   SuggestionType::kAddressFieldByFieldFilling,
                   profile().GetInfo(NAME_FIRST, app_locale()), NAME_FIRST,
-                  Suggestion::Guid(profile().guid()), {}));
+                  Suggestion::AutofillProfilePayload(
+                      Suggestion::Guid(profile().guid())),
+                  {}));
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
@@ -1495,20 +1515,23 @@ TEST_F(
   ASSERT_EQ(1u, suggestions.size());
   ASSERT_LE(3u, suggestions[0].children.size());
   // The address line 1 (sixth child) should have the street name as child.
-  EXPECT_THAT(suggestions[0].children[1].children,
-              ElementsAre(EqualsFieldByFieldFillingSuggestion(
-                  SuggestionType::kAddressFieldByFieldFilling,
-                  profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
-                  ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile.guid()),
-                  {{Suggestion::Text(l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT))}})));
+  EXPECT_THAT(
+      suggestions[0].children[1].children,
+      ElementsAre(EqualsFieldByFieldFillingSuggestion(
+          SuggestionType::kAddressFieldByFieldFilling,
+          profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
+          ADDRESS_HOME_STREET_NAME,
+          Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())),
+          {{Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT))}})));
   // The address line 2 (seventh child) should have the house number as child.
   EXPECT_THAT(
       suggestions[0].children[2].children,
       ElementsAre(EqualsFieldByFieldFillingSuggestion(
           SuggestionType::kAddressFieldByFieldFilling,
           profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
-          ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile.guid()),
+          ADDRESS_HOME_HOUSE_NUMBER,
+          Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())),
           {{Suggestion::Text(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}})));
 }
@@ -1717,47 +1740,61 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(NAME_FIRST, app_locale()), NAME_FIRST,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(NAME_MIDDLE, app_locale()), NAME_MIDDLE,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(NAME_LAST, app_locale()), NAME_LAST,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(COMPANY_NAME, app_locale()), COMPANY_NAME,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_LINE1, app_locale()),
-              ADDRESS_HOME_LINE1, Suggestion::Guid(profile().guid())),
+              ADDRESS_HOME_LINE1,
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_LINE2, app_locale()),
-              ADDRESS_HOME_LINE2, Suggestion::Guid(profile().guid())),
+              ADDRESS_HOME_LINE2,
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_CITY, app_locale()),
-              ADDRESS_HOME_CITY, Suggestion::Guid(profile().guid())),
+              ADDRESS_HOME_CITY,
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_ZIP, app_locale()),
-              ADDRESS_HOME_ZIP, Suggestion::Guid(profile().guid())),
+              ADDRESS_HOME_ZIP,
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsSuggestion(SuggestionType::kSeparator),
           // Triggering field is not a phone number, international phone number
           // should be shown to the user.
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               GetFormattedInternationalNumber(), PHONE_HOME_WHOLE_NUMBER,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsFieldByFieldFillingSuggestion(
               SuggestionType::kAddressFieldByFieldFilling,
               profile().GetInfo(EMAIL_ADDRESS, app_locale()), EMAIL_ADDRESS,
-              Suggestion::Guid(profile().guid())),
+              Suggestion::AutofillProfilePayload(
+                  Suggestion::Guid(profile().guid()))),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(SuggestionType::kEditAddressProfile),
           EqualsSuggestion(SuggestionType::kDeleteAddressProfile)));
@@ -1900,7 +1937,8 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[0].children[1].type, SuggestionType::kSeparator);
   const Suggestion& test_address_child = suggestions[0].children.back();
   EXPECT_EQ(test_address_child.main_text.value, u"United States");
-  EXPECT_EQ(test_address_child.GetPayload<Suggestion::Guid>().value(),
+  EXPECT_EQ(test_address_child.GetPayload<Suggestion::AutofillProfilePayload>()
+                .guid.value(),
             profile.guid());
   EXPECT_EQ(test_address_child.type, SuggestionType::kDevtoolsTestAddressEntry);
 }
