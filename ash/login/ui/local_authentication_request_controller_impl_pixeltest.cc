@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/ui/local_authentication_request_controller_impl.h"
-
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/login/ui/local_authentication_request_controller_impl.h"
 #include "ash/login/ui/local_authentication_request_view.h"
 #include "ash/login/ui/local_authentication_request_widget.h"
 #include "ash/login/ui/login_button.h"
@@ -20,6 +20,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
@@ -55,7 +56,10 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
       const LocalAuthenticationRequestControllerImplPixelTest&) = delete;
 
  protected:
-  LocalAuthenticationRequestControllerImplPixelTest() = default;
+  LocalAuthenticationRequestControllerImplPixelTest() {
+    scoped_features_.InitAndDisableFeature(
+        features::kLocalAuthenticationWithPin);
+  }
   ~LocalAuthenticationRequestControllerImplPixelTest() override = default;
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -187,6 +191,8 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     base::RunLoop().RunUntilIdle();
   }
+
+  base::test::ScopedFeatureList scoped_features_;
 
   // Number of times the view was dismissed with close button.
   int close_action_ = 0;
