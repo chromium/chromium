@@ -56,6 +56,10 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
       'unreclaimableSlabMemoryKib': data.memory.unreclaimableSlabMemoryKib,
     });
   }
+
+  updateExpanded(isExpanded: boolean) {
+    this.$.infoCard.updateExpanded(isExpanded);
+  }
 }
 
 declare global {

@@ -47,6 +47,10 @@ export class HealthdInternalsThermalCardElement extends PolymerElement {
         1, filterThermalsBySource(data.thermals, 'SysFs'));
     this.$.infoCard.updateDisplayedInfo(2, data.cpu.temperatureChannels);
   }
+
+  updateExpanded(isExpanded: boolean) {
+    this.$.infoCard.updateExpanded(isExpanded);
+  }
 }
 
 declare global {

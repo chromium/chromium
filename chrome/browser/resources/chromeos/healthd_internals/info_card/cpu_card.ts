@@ -64,6 +64,10 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
       });
     }
   }
+
+  updateExpanded(isExpanded: boolean) {
+    this.$.infoCard.updateExpanded(isExpanded);
+  }
 }
 
 declare global {

@@ -35,6 +35,10 @@ export class HealthdInternalsFanCardElement extends PolymerElement {
   updateTelemetryData(data: HealthdApiTelemetryResult) {
     this.$.infoCard.updateDisplayedInfo(0, data.fans);
   }
+
+  updateExpanded(isExpanded: boolean) {
+    this.$.infoCard.updateExpanded(isExpanded);
+  }
 }
 
 declare global {

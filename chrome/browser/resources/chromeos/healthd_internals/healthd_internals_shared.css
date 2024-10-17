@@ -10,11 +10,18 @@
  * #include=cr-shared-style cr-nav-menu-item-style
  * #css_wrapper_metadata_end */
 
-h1 {
+h1, h2 {
   color: var(--cr-primary-text-color);
-  font-size: 170%;
   font-weight: 500;
   padding-inline-start: 24px;
+}
+
+h1 {
+  font-size: 22px;
+}
+
+h2 {
+  font-size: 18px;
 }
 
 .full-page {

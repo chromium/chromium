@@ -63,6 +63,14 @@ export class HealthdInternalsInfoCardElement extends PolymerElement {
         this.encodeJsonString(data));
   }
 
+  // Update the `isExpanded` state for all rows.
+  updateExpanded(isExpanded: boolean) {
+    for (let i = 0; i < this.displayedInfoList.length; ++i) {
+      // Update the property by the `set` function to trigger a change.
+      this.set(`displayedInfoList.${i}.isExpanded`, isExpanded);
+    }
+  }
+
   private encodeJsonString(data: any) {
     return JSON.stringify(data, null, 2);
   }

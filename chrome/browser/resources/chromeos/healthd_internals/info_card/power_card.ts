@@ -35,6 +35,10 @@ export class HealthdInternalsPowerCardElement extends PolymerElement {
   updateTelemetryData(data: HealthdApiTelemetryResult) {
     this.$.infoCard.updateDisplayedInfo(0, data.battery);
   }
+
+  updateExpanded(isExpanded: boolean) {
+    this.$.infoCard.updateExpanded(isExpanded);
+  }
 }
 
 declare global {
