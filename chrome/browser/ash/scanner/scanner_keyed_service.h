@@ -11,7 +11,6 @@
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/ash/scanner/scanner_action_provider.h"
 #include "chrome/browser/ash/scanner/scanner_system_state_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -57,7 +56,6 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
   void Shutdown() override;
 
  private:
-  ScannerActionProvider action_provider_;
   ScannerSystemStateProvider system_state_provider_;
 
   std::unique_ptr<drive::DriveAPIService> drive_service_;

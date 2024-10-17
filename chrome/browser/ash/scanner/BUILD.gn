@@ -10,8 +10,6 @@ static_library("scanner") {
   sources = [
     "chrome_scanner_delegate.cc",
     "chrome_scanner_delegate.h",
-    "scanner_action_provider.cc",
-    "scanner_action_provider.h",
     "scanner_keyed_service.cc",
     "scanner_keyed_service.h",
     "scanner_keyed_service_factory.cc",

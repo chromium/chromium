@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "base/check_deref.h"
@@ -14,10 +15,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/drive/service/drive_api_service.h"
 #include "components/drive/service/drive_service_interface.h"
+#include "components/manta/proto/scanner.pb.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -89,7 +92,11 @@ ash::ScannerSystemState ScannerKeyedService::GetSystemState() const {
 void ScannerKeyedService::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     base::OnceCallback<void(ash::ScannerActionsResponse)> callback) {
-  action_provider_.FetchActionsForImage(jpeg_bytes, std::move(callback));
+  // TODO(b/363100868): Fetch available actions from service
+  manta::proto::NewEventAction action;
+  action.set_title("Event title");
+  std::move(callback).Run(
+      base::ok(std::vector<ash::ScannerAction>{std::move(action)}));
 }
 
 drive::DriveServiceInterface* ScannerKeyedService::GetDriveService() {
