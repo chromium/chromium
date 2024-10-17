@@ -42574,6 +42574,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Tabs.TabArchived">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a tab is archived. This happens when a tab's last used time
+    exceeds the limit for archived tabs.
+  </description>
+</action>
+
 <action name="TabsSearch.SuggestedActions.OpenTabs">
   <owner>michaeldo@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>

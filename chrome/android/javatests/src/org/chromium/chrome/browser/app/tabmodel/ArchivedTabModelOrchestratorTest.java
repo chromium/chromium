@@ -45,7 +45,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -201,9 +200,9 @@ public class ArchivedTabModelOrchestratorTest {
                 () ->
                         mOrchestrator
                                 .getTabArchiver()
-                                .unarchiveAndRestoreTabs(
+                                .unarchiveAndRestoreTab(
                                         mRegularTabCreator,
-                                        Arrays.asList(mArchivedTabModel.getTabAt(0)),
+                                        mArchivedTabModel.getTabAt(0),
                                         /* updateTimestamp= */ true));
 
         // Now the timestamp has been updated, no tabs should get archived.

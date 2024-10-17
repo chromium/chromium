@@ -354,7 +354,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     /** Begins the process of decluttering tabs if it hasn't been started already. */
     public void maybeBeginDeclutter() {
-        ThreadUtils.assertOnUiThread();
         if (mDeclutterInitializationCalled) return;
         mDeclutterInitializationCalled = true;
         waitUntilSelectorInitializedAndPostTask(this::maybeBeginDeclutterImpl);
@@ -391,7 +390,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      * called from.
      */
     public void maybeRescueArchivedTabs() {
-        ThreadUtils.assertOnUiThread();
         if (mRescueTabsCalled) return;
         mRescueTabsCalled = true;
         waitUntilSelectorInitializedAndPostTask(this::maybeRescueArchivedTabsImpl);

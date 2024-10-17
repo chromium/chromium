@@ -70,7 +70,6 @@ import org.chromium.ui.util.TokenHolder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarManageable {
@@ -184,10 +183,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     Tab tab = mArchivedTabModel.getTabById(tabId);
                     mArchivedTabModelOrchestrator
                             .getTabArchiver()
-                            .unarchiveAndRestoreTabs(
-                                    mRegularTabCreator,
-                                    Arrays.asList(tab),
-                                    /* updateTimestamp= */ true);
+                            .unarchiveAndRestoreTab(
+                                    mRegularTabCreator, tab, /* updateTimestamp= */ true);
 
                     hide(
                             ANIM_DURATION_MS,
@@ -616,9 +613,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     private void restoreArchivedTabs(List<Tab> tabs) {
-        mArchivedTabModelOrchestrator
-                .getTabArchiver()
-                .unarchiveAndRestoreTabs(mRegularTabCreator, tabs, /* updateTimestamp= */ true);
+        for (Tab tab : tabs) {
+            mArchivedTabModelOrchestrator
+                    .getTabArchiver()
+                    .unarchiveAndRestoreTab(mRegularTabCreator, tab, /* updateTimestamp= */ true);
+        }
     }
 
     private void onIphReviewClicked() {

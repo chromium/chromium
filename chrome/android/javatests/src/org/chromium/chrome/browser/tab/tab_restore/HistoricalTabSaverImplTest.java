@@ -458,7 +458,7 @@ public class HistoricalTabSaverImplTest {
                 () -> {
                     archivedTabModelOrchestrator
                             .getTabArchiver()
-                            .archiveAndRemoveTabs(mTabModel, Arrays.asList(mTabModel.getTabAt(0)));
+                            .archiveAndRemoveTab(mTabModel, mTabModel.getTabAt(0));
                 });
         List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
         assertEntriesAre(empty);
@@ -467,9 +467,9 @@ public class HistoricalTabSaverImplTest {
                 () -> {
                     archivedTabModelOrchestrator
                             .getTabArchiver()
-                            .unarchiveAndRestoreTabs(
+                            .unarchiveAndRestoreTab(
                                     mActivity.getTabCreator(/* incognito= */ false),
-                                    Arrays.asList(archivedTabModelSupplier.get().getTabAt(0)),
+                                    archivedTabModelSupplier.get().getTabAt(0),
                                     /* updateTimestamp= */ false);
                 });
         assertEntriesAre(empty);

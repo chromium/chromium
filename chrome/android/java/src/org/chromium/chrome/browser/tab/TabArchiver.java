@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 
 import java.util.ArrayList;
@@ -155,11 +156,11 @@ public class TabArchiver implements TabWindowManager.Observer {
      */
     public void rescueArchivedTabs(TabCreator regularTabCreator) {
         ThreadUtils.assertOnUiThread();
-        unarchiveAndRestoreTabs(
-                regularTabCreator,
-                TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel),
-                /* updateTimestamp= */ false);
-        RecordUserAction.record("Tabs.ArchivedTabRescued");
+        while (mArchivedTabModel.getCount() > 0) {
+            Tab tab = mArchivedTabModel.getTabAt(0);
+            unarchiveAndRestoreTab(regularTabCreator, tab, /* updateTimestamp= */ false);
+            RecordUserAction.record("Tabs.ArchivedTabRescued");
+        }
     }
 
     /**
@@ -167,28 +168,21 @@ public class TabArchiver implements TabWindowManager.Observer {
      * regular TabModel. Must be called on the UI thread.
      *
      * @param tabModel The {@link TabModel} the tab currently belongs to.
-     * @param tabs The list {@link Tab}s to unarchive.
+     * @param tab The {@link Tab} to unarchive.
+     * @return The archived {@link Tab}.
      */
-    public void archiveAndRemoveTabs(TabModel tabModel, List<Tab> tabs) {
+    public Tab archiveAndRemoveTab(TabModel tabModel, Tab tab) {
         ThreadUtils.assertOnUiThread();
+        int tabAgeDays = timestampMillisToDays(tab.getTimestampMillis());
+        TabState tabState = prepareTabState(tab);
+        Tab newTab = mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+        tabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
 
-        List<Tab> archivedTabs = new ArrayList<>();
-        // Add tabs to the archived tab model first to prevent tab loss if the operation is aborted.
-        for (Tab tab : tabs) {
-            TabState tabState = prepareTabState(tab);
-            Tab archivedTab =
-                    mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
-            archivedTabs.add(archivedTab);
-        }
+        initializePersistedTabData(newTab);
 
-        int tabCount = tabs.size();
-        // Once the archived tabs are added, do a bulk closure from the regular tab model.
-        tabModel.closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
-        RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.TabCount", tabCount);
-
-        for (Tab archivedTab : archivedTabs) {
-            initializePersistedTabData(archivedTab);
-        }
+        RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.AfterNDays", tabAgeDays);
+        RecordUserAction.record("Tabs.TabArchived");
+        return newTab;
     }
 
     void initializePersistedTabData(Tab archivedTab) {
@@ -210,25 +204,21 @@ public class TabArchiver implements TabWindowManager.Observer {
      * archived/regular TabModels. Must be called on the UI thread.
      *
      * @param tabCreator The {@link TabCreator} to use when recreating the tabs.
-     * @param tabs The {@link Tab}s to unarchive.
+     * @param tab The {@link Tab} to unarchive.
      * @param updateTimestamp Whether the Tab's timestamp should be updated.
      */
-    public void unarchiveAndRestoreTabs(
-            TabCreator tabCreator, List<Tab> tabs, boolean updateTimestamp) {
+    public void unarchiveAndRestoreTab(TabCreator tabCreator, Tab tab, boolean updateTimestamp) {
         ThreadUtils.assertOnUiThread();
-        for (Tab tab : tabs) {
-            // Update the timestamp so that the tab isn't immediately re-archived on the next pass.
-            if (updateTimestamp) {
-                tab.setTimestampMillis(System.currentTimeMillis());
-            }
-
-            TabState tabState = prepareTabState(tab);
-            tabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+        // Update the timestamp so that the tab isn't immediately re-archived on the next pass.
+        if (updateTimestamp) {
+            tab.setTimestampMillis(System.currentTimeMillis());
         }
 
-        int tabCount = tabs.size();
-        mArchivedTabModel.closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
-        RecordHistogram.recordCount1000Histogram("Tabs.ArchivedTabRestored.TabCount", tabCount);
+        TabState tabState = prepareTabState(tab);
+        mArchivedTabModel.removeTab(tab);
+        mAsyncTabParamsManager.add(tab.getId(), new TabReparentingParams(tab, null));
+        tabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+        RecordUserAction.record("Tabs.ArchivedTabRestored");
     }
 
     // TabWindowManager.Observer implementation.
@@ -248,11 +238,10 @@ public class TabArchiver implements TabWindowManager.Observer {
         ThreadUtils.postOnUiThread(
                 mCallbackController.makeCancelable(
                         () -> {
+                            int numExistingRegularTabsFound = 0;
                             TabModel model = selector.getModel(/* isIncognito= */ false);
                             int activeTabId = TabModelUtils.getCurrentTabId(model);
-                            List<Tab> tabsToClose = new ArrayList<>();
-                            List<Tab> tabsToArchive = new ArrayList<>();
-                            for (int i = 0; i < model.getCount(); i++) {
+                            for (int i = 0; i < model.getCount(); ) {
                                 Tab tab = model.getTabAt(i);
                                 // If there's an existing archived tab for the tab id, then we've
                                 // run into a case where the tab metadata file wasn't updated after
@@ -260,25 +249,22 @@ public class TabArchiver implements TabWindowManager.Observer {
                                 // model since the tab was already archived.
                                 Tab archivedTab = mArchivedTabModel.getTabById(tab.getId());
                                 if (archivedTab != null) {
-                                    tabsToClose.add(tab);
+                                    numExistingRegularTabsFound++;
+                                    model.closeTabs(
+                                            TabClosureParams.closeTab(tab)
+                                                    .allowUndo(false)
+                                                    .build());
                                 } else if (activeTabId != tab.getId()
                                         && isTabEligibleForArchive(tab)) {
-                                    tabsToArchive.add(tab);
+                                    archiveAndRemoveTab(model, tab);
+                                } else {
+                                    i++;
                                 }
-                            }
-                            if (tabsToClose.size() > 0) {
-                                model.closeTabs(
-                                        TabClosureParams.closeTabs(tabsToClose)
-                                                .allowUndo(false)
-                                                .build());
-                            }
-                            if (tabsToArchive.size() > 0) {
-                                archiveAndRemoveTabs(model, tabsToArchive);
                             }
                             mSelectorsQueuedForDeclutter--;
                             RecordHistogram.recordCount1000Histogram(
                                     "Tabs.TabArchived.FoundDuplicateInRegularModel",
-                                    tabsToClose.size());
+                                    numExistingRegularTabsFound);
 
                             if (mSelectorsQueuedForDeclutter == 0) {
                                 for (Observer obs : mObservers) {
