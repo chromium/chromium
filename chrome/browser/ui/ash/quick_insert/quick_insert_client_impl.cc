@@ -386,7 +386,8 @@ PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
 
 PickerClientImpl::ShowLobsterCallback
 PickerClientImpl::GetShowLobsterCallback() {
-  if (!ash::features::IsLobsterEnabled()) {
+  if (!ash::features::IsLobsterEnabled() ||
+      !ash::LobsterController::IsEnabled()) {
     return {};
   }
   LobsterService* lobster_service =
