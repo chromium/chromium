@@ -5421,11 +5421,6 @@ const char kSmartCardWebApiDescription[] =
     "Enable access to the Smart Card API. See "
     "https://github.com/WICG/web-smart-card#readme for more information.";
 
-const char kTabOrganizationName[] = "Tab Organization";
-const char kTabOrganizationDescription[] =
-    "Enables the Auto Tab Groups feature, which can be found within the Tab "
-    "Search bubble.";
-
 const char kTabOrganizationSettingsVisibilityName[] =
     "Tab Organization Settings Visibility";
 const char kTabOrganizationSettingsVisibilityDescription[] =

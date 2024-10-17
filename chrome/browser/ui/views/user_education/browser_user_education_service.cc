@@ -1579,12 +1579,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Shown in app and web context menus.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kTabOrganization,
-      user_education::Metadata(
-          126, "emshack@chromium.org",
-          "Shown in app menu when TabOrganizationAppMenuItem is enabled.")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
       autofill::features::kAutofillForUnclassifiedFieldsAvailable,
       user_education::Metadata(
           125, "vidhanj@google.com",

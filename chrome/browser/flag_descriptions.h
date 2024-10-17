@@ -3125,9 +3125,6 @@ extern const char kSCTAuditingDescription[];
 extern const char kSmartCardWebApiName[];
 extern const char kSmartCardWebApiDescription[];
 
-extern const char kTabOrganizationName[];
-extern const char kTabOrganizationDescription[];
-
 extern const char kTabOrganizationSettingsVisibilityName[];
 extern const char kTabOrganizationSettingsVisibilityDescription[];
 

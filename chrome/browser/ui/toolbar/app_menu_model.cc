@@ -870,16 +870,12 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // - Developer tools.
 // - Option to enable profiling.
 void ToolsMenuModel::Build(Browser* browser) {
-  if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
-      TabOrganizationUtils::GetInstance()->IsEnabled(browser->profile())) {
+  if (TabOrganizationUtils::GetInstance()->IsEnabled(browser->profile())) {
     auto* const tab_organization_service =
         TabOrganizationServiceFactory::GetForProfile(browser->profile());
     if (tab_organization_service) {
       AddItemWithStringIdAndVectorIcon(
           this, IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU, kAutoTabGroupsIcon);
-      SetIsNewFeatureAt(
-          GetIndexOfCommandId(IDC_ORGANIZE_TABS).value(),
-          browser->window()->MaybeShowNewBadgeFor(features::kTabOrganization));
     }
   }
 

@@ -271,14 +271,6 @@ const char kTabHoverCardImagesCrossfadePreviewAtParameterName[] =
 const char kTabHoverCardAdditionalMaxWidthDelay[] =
     "additional_max_width_delay";
 
-BASE_FEATURE(kTabOrganization,
-             "TabOrganization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsTabOrganization() {
-  return base::FeatureList::IsEnabled(features::kTabOrganization);
-}
-
 BASE_FEATURE(kTabstripDeclutter,
              "TabstripDeclutter",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -301,10 +293,6 @@ BASE_FEATURE(kMultiTabOrganization,
              "MultiTabOrganization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabOrganizationAppMenuItem,
-             "TabOrganizationAppMenuItem",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabReorganization,
              "TabReorganization",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -320,21 +308,6 @@ BASE_FEATURE(kTabOrganizationModelStrategy,
 BASE_FEATURE(kTabOrganizationEnableNudgeForEnterprise,
              "TabOrganizationEnableNudgeForEnterprise",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod{
-    &kTabOrganization, "trigger_period", base::Hours(6)};
-
-const base::FeatureParam<double> kTabOrganizationTriggerBackoffBase{
-    &kTabOrganization, "backoff_base", 2.0};
-
-const base::FeatureParam<double> kTabOrganizationTriggerThreshold{
-    &kTabOrganization, "trigger_threshold", 7.0};
-
-const base::FeatureParam<double> kTabOrganizationTriggerSensitivityThreshold{
-    &kTabOrganization, "trigger_sensitivity_threshold", 0.5};
-
-const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode{
-    &kTabOrganization, "trigger_demo_mode", false};
 
 // Controls feature parameters for Tab Search's `Recently Closed` entries.
 BASE_FEATURE(kTabSearchRecentlyClosed,

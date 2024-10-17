@@ -18,13 +18,23 @@
 
 namespace {
 
+// The target (and minimum) interval between proactive nudge triggers. Measured
+// against a clock that only runs while Chrome is in the foreground.
+constexpr base::TimeDelta kTabOrganizationTriggerPeriod = base::Hours(6);
+
+// The base to use for the trigger logic's exponential backoff.
+constexpr double kTabOrganizationTriggerBackoffBase = 2.0;
+
+// The minimum score threshold for proactive nudge triggering to occur.
+constexpr double kTabOrganizationTriggerThreshold = 7.0;
+
+// The maximum sensitivity score for a tab to contribute to trigger scoring.
+constexpr double kTabOrganizationTriggerSensitivityThreshold = 0.5;
+
 // Just counts the number of tabs in the browser.
 float ScoringFunction(float sensitivity_threshold, TabStripModel* const model) {
-  // Feature may be disabled in tests, in which case GetForProfile will CHECK.
   const TabOrganizationService* const service =
-      base::FeatureList::IsEnabled(features::kTabOrganization)
-          ? TabOrganizationServiceFactory::GetForProfile(model->profile())
-          : nullptr;
+      TabOrganizationServiceFactory::GetForProfile(model->profile());
 
   int num_eligible_tabs = 0;
   for (int i = 0; i < model->count(); i++) {
@@ -70,20 +80,16 @@ TriggerScoringFunction GetTriggerScoringFunction() {
 }
 
 float GetTriggerScoreThreshold() {
-  return features::kTabOrganizationTriggerThreshold.Get();
+  return kTabOrganizationTriggerThreshold;
 }
 
 float GetSensitivityThreshold() {
-  return features::kTabOrganizationTriggerSensitivityThreshold.Get();
+  return kTabOrganizationTriggerSensitivityThreshold;
 }
 
 std::unique_ptr<TriggerPolicy> GetTriggerPolicy(
     BackoffLevelProvider* backoff_level_provider,
     Profile* profile) {
-  if (features::KTabOrganizationTriggerDemoMode.Get()) {
-    return std::make_unique<DemoTriggerPolicy>();
-  }
-
   auto* management_service =
       policy::ManagementServiceFactory::GetForProfile(profile);
   if (!base::FeatureList::IsEnabled(
@@ -95,8 +101,7 @@ std::unique_ptr<TriggerPolicy> GetTriggerPolicy(
 
   return std::make_unique<TargetFrequencyTriggerPolicy>(
       std::make_unique<UsageTickClock>(base::DefaultTickClock::GetInstance()),
-      features::kTabOrganizationTriggerPeriod.Get(),
-      features::kTabOrganizationTriggerBackoffBase.Get(),
+      kTabOrganizationTriggerPeriod, kTabOrganizationTriggerBackoffBase,
       std::move(backoff_level_provider));
 }
 

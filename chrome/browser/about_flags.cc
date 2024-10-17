@@ -11462,10 +11462,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-    {"tab-organization", flag_descriptions::kTabOrganizationName,
-     flag_descriptions::kTabOrganizationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabOrganization)},
-
     {"tab-organization-settings-visibility",
      flag_descriptions::kTabOrganizationSettingsVisibilityName,
      flag_descriptions::kTabOrganizationSettingsVisibilityDescription,

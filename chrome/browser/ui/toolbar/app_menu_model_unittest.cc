@@ -143,8 +143,7 @@ class ExtensionsMenuModelTest : public AppMenuModelTest {
 class TestAppMenuModelCR2023 : public AppMenuModelTest {
  public:
   TestAppMenuModelCR2023() {
-    feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kTabstripDeclutter}, {});
+    feature_list_.InitWithFeatures({features::kTabstripDeclutter}, {});
   }
 
   TestAppMenuModelCR2023(const TestAppMenuModelCR2023&) = delete;

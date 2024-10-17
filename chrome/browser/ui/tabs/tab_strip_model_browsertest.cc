@@ -8,7 +8,6 @@
 #include "base/json/json_reader.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -166,10 +165,6 @@ IN_PROC_BROWSER_TEST_F(
 class TabStripModelBrowserTest : public InProcessBrowserTest,
                                  public TabStripModelObserver {
  public:
-  TabStripModelBrowserTest() {
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
-  }
-
   void TearDownOnMainThread() override { observer_.Reset(); }
 
   MOCK_METHOD(void,
@@ -181,7 +176,6 @@ class TabStripModelBrowserTest : public InProcessBrowserTest,
               (const tab_groups::TabGroupId& group_id),
               (override));
 
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedObservation<TabStripModel, TabStripModelBrowserTest> observer_{
       this};
 };
