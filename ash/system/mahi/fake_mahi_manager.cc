@@ -50,6 +50,10 @@ constexpr char16_t kDefaultSummaryText[] =
     u"fake summary text\nfake summary text\nfake summary text\nfake summary "
     u"text\nfake summary text";
 
+constexpr char16_t kDefaultElucidationText[] =
+    u"fake elucidation text\nfake elucidation text\nfake elucidation text"
+    u"\nfake elucidation text";
+
 constexpr char kMahiSettingsUrl[] =
     "chrome://os-settings/systemPreferences?settingId=612";
 
@@ -97,6 +101,18 @@ void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {
                 mahi_constants::kFakeMahiManagerLoadSummaryDelaySeconds));
 }
 
+void FakeMahiManager::GetElucidation(MahiElucidationCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     elucidation_text_.value_or(kDefaultElucidationText),
+                     chromeos::MahiResponseStatus::kSuccess),
+      g_use_zero_duration
+          ? base::TimeDelta()
+          : base::Seconds(
+                mahi_constants::kFakeMahiManagerLoadElucidationDelaySeconds));
+}
+
 void FakeMahiManager::GetOutlines(MahiOutlinesCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -125,6 +141,9 @@ void FakeMahiManager::AnswerQuestion(const std::u16string& question,
 void FakeMahiManager::OnContextMenuClicked(
     crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) {
   switch (context_menu_request->action_type) {
+    // TODO(b:372741602): deal with kElucidation properly
+    case MahiContextMenuActionType::kElucidation:
+      return;
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.

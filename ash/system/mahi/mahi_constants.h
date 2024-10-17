@@ -106,6 +106,7 @@ inline constexpr SkScalar kCutoutConcaveRadius = 12.f;
 inline constexpr int kFakeMahiManagerGetContentDelaySeconds = 2;
 inline constexpr int kFakeMahiManagerLoadAnswerDelaySeconds = 3;
 inline constexpr int kFakeMahiManagerLoadSummaryDelaySeconds = 4;
+inline constexpr int kFakeMahiManagerLoadElucidationDelaySeconds = 4;
 inline constexpr int kFakeMahiManagerLoadOutlinesDelaySeconds = 6;
 
 // Nudge constants

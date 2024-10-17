@@ -135,6 +135,8 @@ void SparkyManagerImpl::GetSummary(MahiSummaryCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void SparkyManagerImpl::GetElucidation(MahiElucidationCallback callback) {}
+
 void SparkyManagerImpl::GetOutlines(MahiOutlinesCallback callback) {
   std::vector<chromeos::MahiOutline> outlines;
   std::move(callback).Run(outlines, MahiResponseStatus::kUnknownError);
@@ -186,6 +188,9 @@ void SparkyManagerImpl::SetCurrentFocusedPageInfo(
 void SparkyManagerImpl::OnContextMenuClicked(
     crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) {
   switch (context_menu_request->action_type) {
+    // TODO(b:372741602): deal with kElucidation properly
+    case MahiContextMenuActionType::kElucidation:
+      return;
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.

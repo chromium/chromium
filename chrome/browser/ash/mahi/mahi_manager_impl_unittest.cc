@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
@@ -46,6 +47,7 @@ using ::testing::IsNull;
 
 constexpr char kFakeSummary[] = "Fake summary";
 constexpr char kFakeContent[] = "Test page content";
+constexpr char kFakeElucidation[] = "Fake elucidation";
 
 class FakeMahiProvider : public manta::MahiProvider {
  public:
@@ -65,15 +67,31 @@ class FakeMahiProvider : public manta::MahiProvider {
                             {manta::MantaStatusCode::kOk, "Status string ok"});
   }
 
+  void Elucidate(const std::string& input,
+                 const std::string& context,
+                 const std::string& title,
+                 const std::optional<std::string>& url,
+                 manta::MantaGenericCallback callback) override {
+    latest_elucidation_input_ = input;
+    std::move(callback).Run(
+        base::Value::Dict().Set("outputData", kFakeElucidation),
+        {manta::MantaStatusCode::kOk, "Status string ok"});
+  }
+
   // Counts the number of call to `Summarize()`
   int NumberOfSumarizeCall() { return num_summarize_call_; }
 
   const std::string& latest_title() const { return latest_title_; }
   const std::optional<std::string>& latest_url() const { return latest_url_; }
 
+  const std::string& latest_elucidation_input() const {
+    return latest_elucidation_input_;
+  }
+
  private:
   int num_summarize_call_ = 0;
   std::string latest_title_;
+  std::string latest_elucidation_input_;
   std::optional<std::string> latest_url_;
 };
 
@@ -464,6 +482,26 @@ TEST_F(MahiManagerImplTest, ShowEducationalNudge) {
   // Notifying that a refresh is not available should have no effect.
   NotifyRefreshAvailability(/*available=*/false);
   EXPECT_TRUE(IsMahiNudgeShown());
+}
+
+// Tests that `GetElucidation` can send request to and get response from mahi
+// provider.
+TEST_F(MahiManagerImplTest, GetElucidation) {
+  // `GetElucidation` requires non empty selected text from mahi web contents
+  // manager.
+  const std::u16string selected_text = u"test selected text";
+  chromeos::MahiWebContentsManager::Get()->SetSelectedText(selected_text);
+
+  base::test::TestFuture<std::u16string, chromeos::MahiResponseStatus>
+      test_future;
+  mahi_manager_impl_->GetElucidation(test_future.GetCallback());
+
+  // Checks mahi provider receives the request.
+  EXPECT_EQ(GetMahiProvider()->latest_elucidation_input(),
+            base::UTF16ToUTF8(selected_text));
+  // Checks the elucidation result.
+  EXPECT_EQ(test_future.Get<std::u16string>(),
+            base::UTF8ToUTF16(std::string(kFakeElucidation)));
 }
 
 }  // namespace ash

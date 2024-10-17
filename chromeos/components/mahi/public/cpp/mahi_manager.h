@@ -82,6 +82,12 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
       base::OnceCallback<void(std::u16string, MahiResponseStatus)>;
   virtual void GetSummary(MahiSummaryCallback callback) = 0;
 
+  // Returns the elucidated / simplified text of the current selected text on
+  // the corresponding surface.
+  using MahiElucidationCallback =
+      base::OnceCallback<void(std::u16string, MahiResponseStatus)>;
+  virtual void GetElucidation(MahiElucidationCallback callback) = 0;
+
   // Returns the outlines of the current active content on the corresponding
   // surface.
   using MahiOutlinesCallback =

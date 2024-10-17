@@ -299,6 +299,9 @@ void MahiWebContentsManagerImpl::OnContextMenuClicked(
   if (button_type == chromeos::mahi::ButtonType::kQA) {
     context_menu_request->question = question;
   }
+  if (button_type == chromeos::mahi::ButtonType::kElucidation) {
+    CHECK(!selected_text_.empty());
+  }
 
   // Forwards the UI request to `MahiManager`.
   chromeos::MahiManager::Get()->OnContextMenuClicked(

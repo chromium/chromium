@@ -34,6 +34,7 @@ class MockMahiManager : public chromeos::MahiManager {
               (override));
   MOCK_METHOD(void, GetContent, (MahiContentCallback), (override));
   MOCK_METHOD(void, GetSummary, (MahiSummaryCallback), (override));
+  MOCK_METHOD(void, GetElucidation, (MahiElucidationCallback), (override));
   MOCK_METHOD(void, GoToOutlineContent, (int), (override));
   MOCK_METHOD(void,
               OnContextMenuClicked,

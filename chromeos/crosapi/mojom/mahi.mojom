@@ -44,6 +44,7 @@ enum MahiContextMenuActionType {
   kOutline,
   kSettings,
   kQA,
+  kElucidation,
 };
 
 // The struct of the mahi context menu request from the browser.
