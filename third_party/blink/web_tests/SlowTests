@@ -1485,3 +1485,4 @@ crbug.com/374035637 [ Mac14 Debug ] fast/css-grid-layout/grid-auto-repeat-huge-g
 crbug.com/374035637 [ Mac14 Debug ] fast/css-grid-layout/grid-auto-repeat-huge-grid-016.html [ Slow ]
 crbug.com/374035637 [ Mac14 Debug ] fast/css-grid-layout/grid-auto-repeat-huge-grid-018.html [ Slow ]
 crbug.com/374035637 [ Mac14 Debug ] fast/css-grid-layout/grid-auto-repeat-huge-grid-019.html [ Slow ]
+crbug.com/374045525 [ Mac14 Debug ] webaudio/AudioParam/audioparam-rate-change-357391257.html [ Slow ]
