@@ -25,6 +25,10 @@ This is a testharness.js-based test.
   assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.048248291015625 should be close enough to expected 0.04828956723213196 by the acceptable 18 ULP distance, but they have 11080 ULP distance expected true got false
 [FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=iohw
   assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.048248291015625 should be close enough to expected 0.04828956723213196 by the acceptable 18 ULP distance, but they have 11080 ULP distance expected true got false
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi
+  assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.0482831671833992 should be close enough to expected 0.04828956723213196 by the acceptable 18 ULP distance, but they have 1718 ULP distance expected true got false
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi
+  assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.0482831671833992 should be close enough to expected 0.04828956723213196 by the acceptable 18 ULP distance, but they have 1718 ULP distance expected true got false
 [FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=iohw
   assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.048248291015625 should be close enough to expected 0.04828956723213196 by the acceptable 18 ULP distance, but they have 11080 ULP distance expected true got false
 [FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi

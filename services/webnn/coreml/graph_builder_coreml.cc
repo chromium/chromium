@@ -546,13 +546,6 @@ void SetInputsWithValues(
     SetInputWithValue(inputs, param.first, std::move(param.second));
   }
 }
-void SetInputWithName(
-    google::protobuf::Map<std::string,
-                          CoreML::Specification::MILSpec::Argument>& inputs,
-    std::string_view key,
-    std::string_view name) {
-  inputs[key].add_arguments()->set_name(std::string(name));
-}
 
 // CoreML requires names to match regular expression [A-Za-z\_][A-Za-z0-9\_@]*
 // Note prefixes "input_", "output_" are added to names, so here only removing
@@ -575,6 +568,71 @@ CoreML::Specification::MILSpec::Value CreateFloatValue(
              : CreateScalarImmediateValue(
                    static_cast<Float16>(fp16_ieee_from_fp32_value(value)));
 }
+
+class WeightsFileHandle {
+ public:
+  static std::optional<WeightsFileHandle> CreateWeightsHandle(
+      const base::FilePath& weights_file_path,
+      uint32_t num_of_weights) {
+    base::File weights_file = base::File(
+        weights_file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    if (!weights_file.IsValid()) {
+      LOG(ERROR) << "[WebNN] Unable to open " << weights_file_path << ": "
+                 << base::File::ErrorToString(weights_file.error_details());
+      return std::nullopt;
+    }
+
+    WeightHeader header{num_of_weights};
+    if (!weights_file.WriteAtCurrentPosAndCheck(
+            base::byte_span_from_ref(header))) {
+      return std::nullopt;
+    }
+    uint64_t current_offset = sizeof(header);
+    return WeightsFileHandle(std::move(weights_file), current_offset);
+  }
+
+  WeightsFileHandle(base::File weights_file, uint64_t current_offest)
+      : weights_file_(std::move(weights_file)),
+        current_offset_(current_offest) {}
+  WeightsFileHandle(const WeightsFileHandle&) = delete;
+  WeightsFileHandle(WeightsFileHandle&&) = default;
+  ~WeightsFileHandle() = default;
+
+  base::expected<uint64_t, mojom::ErrorPtr> Write(
+      base::span<const uint8_t> bytes,
+      OperandDataType data_type) {
+    std::optional<BlobDataType> weight_type =
+        OperandTypeToDataTypeInWeightFile(data_type);
+    if (!weight_type.has_value()) {
+      return NewNotSupportedError("Unsupported constant type.");
+    }
+
+    WeightMetadata metadata(weight_type.value(), bytes.size(),
+                            current_offset_ + sizeof(metadata));
+
+    if (!weights_file_.WriteAtCurrentPosAndCheck(
+            base::byte_span_from_ref(metadata))) {
+      return NewUnknownError(kWriteWeightsErrorMessage);
+    }
+
+    if (!weights_file_.WriteAtCurrentPosAndCheck(bytes)) {
+      return NewUnknownError(kWriteWeightsErrorMessage);
+    }
+    uint64_t weight_offset = current_offset_;
+
+    current_offset_ += sizeof(metadata);
+    current_offset_ += bytes.size();
+    current_offset_ = base::bits::AlignUp(current_offset_, kWeightAlignment);
+    if (!weights_file_.Seek(base::File::Whence::FROM_BEGIN, current_offset_)) {
+      return NewUnknownError(kWriteWeightsErrorMessage);
+    }
+    return weight_offset;
+  }
+
+ private:
+  base::File weights_file_;
+  uint64_t current_offset_ = 0;
+};
 
 }  // namespace
 
@@ -645,7 +703,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
       {/*input=*/kFloatsAndInt32,
-       /*constant=*/kFloatsAndInt32,
+       /*constant=*/kFloat16To32Int8To32AndUint8,
        /*arg_min_max_input=*/kFloatsAndInt32,
        /*arg_min_max_output=*/
        kArgMinMaxOutputSupportedDataTypes,
@@ -1095,25 +1153,15 @@ GraphBuilderCoreml::FinishAndTakeResult() {
 
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteWeightsToFile(
     CoreML::Specification::MILSpec::Block& block) {
-  base::FilePath weights_file_path = ml_package_dir()
-                                         .Append(kMlPackageDataDir)
-                                         .Append(kMlPackageWeightsDir)
-                                         .Append(kMlPackageWeightsFileName);
-  base::File weights_file(weights_file_path,
-                          base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  if (!weights_file.IsValid()) {
-    LOG(ERROR) << "[WebNN] Unable to open " << weights_file_path << ": "
-               << base::File::ErrorToString(weights_file.error_details());
+  auto weights_handle = WeightsFileHandle::CreateWeightsHandle(
+      ml_package_dir()
+          .Append(kMlPackageDataDir)
+          .Append(kMlPackageWeightsDir)
+          .Append(kMlPackageWeightsFileName),
+      base::checked_cast<uint32_t>(constant_operands_->size()));
+  if (!weights_handle) {
     return NewUnknownError(kWriteWeightsErrorMessage);
   }
-
-  uint64_t current_offset = 0;
-  WeightHeader header{static_cast<uint32_t>(constant_operands_->size())};
-  if (!weights_file.WriteAtCurrentPosAndCheck(
-          base::byte_span_from_ref(header))) {
-    return NewUnknownError(kWriteWeightsErrorMessage);
-  }
-  current_offset += sizeof(header);
 
   for (auto& [id, constant_operand] : *constant_operands_) {
     // int32 is only supported as immediate value.
@@ -1129,26 +1177,10 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteWeightsToFile(
       return NewNotSupportedError("Unsupported constant type.");
     }
 
-    WeightMetadata metadata(weight_type.value(),
-                            constant_operand->ByteSpan().size(),
-                            current_offset + sizeof(metadata));
-
-    if (!weights_file.WriteAtCurrentPosAndCheck(
-            base::byte_span_from_ref(metadata))) {
-      return NewUnknownError(kWriteWeightsErrorMessage);
-    }
-
-    if (!weights_file.WriteAtCurrentPosAndCheck(constant_operand->ByteSpan())) {
-      return NewUnknownError(kWriteWeightsErrorMessage);
-    }
-
-    AddConstantFileValue(id, current_offset, block);
-    current_offset += sizeof(metadata);
-    current_offset += constant_operand->ByteSpan().size();
-    current_offset = base::bits::AlignUp(current_offset, kWeightAlignment);
-    if (!weights_file.Seek(base::File::Whence::FROM_BEGIN, current_offset)) {
-      return NewUnknownError(kWriteWeightsErrorMessage);
-    }
+    ASSIGN_OR_RETURN(
+        constant_offsets_[id],
+        weights_handle->Write(constant_operand->ByteSpan(),
+                              constant_operand->descriptor().data_type()));
   }
   return base::ok();
 }
@@ -1181,10 +1213,11 @@ void GraphBuilderCoreml::AddPlaceholderInput(
   // The model compute only succeeds when the placeholder is used in one op.
   CoreML::Specification::MILSpec::Operation* placeholder_op =
       block.add_operations();
-  SetInputWithName(*placeholder_op->mutable_inputs(), kOpParamX,
-                   kPlaceholderInputName);
-  SetInputWithName(*placeholder_op->mutable_inputs(), kOpParamY,
-                   kPlaceholderInputName);
+  (*placeholder_op->mutable_inputs())[kOpParamX].add_arguments()->set_name(
+      std::string(kPlaceholderInputName));
+  (*placeholder_op->mutable_inputs())[kOpParamY].add_arguments()->set_name(
+      std::string(kPlaceholderInputName));
+
   placeholder_op->set_type(kOpAddTypeName);
   CoreML::Specification::MILSpec::NamedValueType& outputs =
       *placeholder_op->add_outputs();
@@ -1263,8 +1296,7 @@ GraphBuilderCoreml::CreateUnaryOperation(
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(std::string(op_name));
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id);
 
   PopulateNamedValueType(output_operand_id, *op->add_outputs());
   return op;
@@ -1288,13 +1320,10 @@ void GraphBuilderCoreml::AddUnaryOperation(
     uint64_t input_operand_id,
     uint64_t output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
-  const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
-
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(std::string(op_name));
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id);
 
   PopulateNamedValueType(output_operand_id, *op->add_outputs());
 }
@@ -1322,20 +1351,21 @@ void GraphBuilderCoreml::AddUnaryOperation(
 
 void GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
     std::string_view op_name,
-    std::string_view input_name,
-    CoreML::Specification::MILSpec::DataType input_mil_data_type,
+    uint64_t input_operand_id,
     uint64_t output_operand_id,
     float epsilon,
     CoreML::Specification::MILSpec::Block& block) {
-  CHECK(kFloatDataTypes.contains(input_mil_data_type));
+  const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
+  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(std::string(op_name));
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX, input_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id);
 
-  SetInputWithValue(*op->mutable_inputs(), kOpParamEpsilon,
-                    CreateFloatValue(input_mil_data_type, epsilon));
+  SetInputWithValue(
+      *op->mutable_inputs(), kOpParamEpsilon,
+      CreateFloatValue(input_operand_info.mil_data_type, epsilon));
 
   PopulateNamedValueType(output_operand_id, *op->add_outputs());
 }
@@ -1346,11 +1376,9 @@ void GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
     const T& operation,
     float epsilon,
     CoreML::Specification::MILSpec::Block& block) {
-  const OperandInfo& input_operand_info =
-      GetOperandInfo(operation.input_operand_id);
-  AddUnaryFloatsOperationWithEpsilon(
-      op_name, input_operand_info.coreml_name, input_operand_info.mil_data_type,
-      operation.output_operand_id, epsilon, block);
+  AddUnaryFloatsOperationWithEpsilon(op_name, operation.input_operand_id,
+                                     operation.output_operand_id, epsilon,
+                                     block);
 }
 
 base::expected<void, mojom::ErrorPtr>
@@ -1386,8 +1414,7 @@ GraphBuilderCoreml::AddOperationForArgMinMax(
       op->set_type(kOpArgmaxTypeName);
       break;
   }
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   GetOperandInfo(input_operand_id).coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id);
 
   SetInputsWithValues(
       *op->mutable_inputs(),
@@ -1446,24 +1473,24 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpBatchNormalizationTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   static constexpr char kParamMean[] = "mean";
   static constexpr char kParamVariance[] = "variance";
 
   // TODO(crbug.com/338529226): These params must all be constant tensors.
-  SetInputWithName(*op->mutable_inputs(), kParamMean,
-                   GetOperandInfo(operation.mean_operand_id).coreml_name);
-  SetInputWithName(*op->mutable_inputs(), kParamVariance,
-                   GetOperandInfo(operation.variance_operand_id).coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kParamMean,
+                      operation.mean_operand_id);
+  SetInputFromOperand(*op->mutable_inputs(), kParamVariance,
+                      operation.variance_operand_id);
   if (operation.scale_operand_id.has_value()) {
-    SetInputWithName(*op->mutable_inputs(), kOpParamGamma,
-                     GetOperandInfo(*operation.scale_operand_id).coreml_name);
+    SetInputFromOperand(*op->mutable_inputs(), kOpParamGamma,
+                        *operation.scale_operand_id);
   }
   if (operation.bias_operand_id.has_value()) {
-    SetInputWithName(*op->mutable_inputs(), kOpParamBeta,
-                     GetOperandInfo(*operation.bias_operand_id).coreml_name);
+    SetInputFromOperand(*op->mutable_inputs(), kOpParamBeta,
+                        *operation.bias_operand_id);
   }
 
   SetInputWithValue(
@@ -1500,8 +1527,7 @@ void GraphBuilderCoreml::AddOperationForCast(
         MILDataTypeToOperandType(output_data_type)));
   }
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id);
   op->set_type(kOpCastTypeName);
   SetInputWithValue(
       *op->mutable_inputs(), kOpParamDataTypeName,
@@ -1520,8 +1546,8 @@ void GraphBuilderCoreml::AddOperationForClamp(
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpClipTypeName);
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   SetInputsWithValues(
       *op->mutable_inputs(),
@@ -1552,8 +1578,7 @@ void GraphBuilderCoreml::AddOperationForConcat(
   op->set_type(kOpConcatTypeName);
 
   for (uint64_t input_operand_id : operation.input_operand_ids) {
-    SetInputWithName(*op->mutable_inputs(), kParamValues,
-                     GetOperandInfo(input_operand_id).coreml_name);
+    SetInputFromOperand(*op->mutable_inputs(), kParamValues, input_operand_id);
   }
   SetInputsWithValues(
       *op->mutable_inputs(),
@@ -1592,9 +1617,10 @@ void GraphBuilderCoreml::AddOperationForConv2d(
       break;
   }
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX, input_operand.coreml_name);
-  SetInputWithName(*op->mutable_inputs(), kParamWeight,
-                   GetOperandInfo(operation.filter_operand_id).coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
+  SetInputFromOperand(*op->mutable_inputs(), kParamWeight,
+                      operation.filter_operand_id);
 
   std::array<int32_t, 2> strides = {
       base::checked_cast<int32_t>(operation.strides->height),
@@ -1618,9 +1644,8 @@ void GraphBuilderCoreml::AddOperationForConv2d(
                           base::checked_cast<int32_t>(operation.groups))}});
   if (operation.bias_operand_id) {
     // TODO(crbug.com/338529226): This param must be a constant tensor.
-    SetInputWithName(
-        *op->mutable_inputs(), kParamBias,
-        GetOperandInfo(operation.bias_operand_id.value()).coreml_name);
+    SetInputFromOperand(*op->mutable_inputs(), kParamBias,
+                        operation.bias_operand_id.value());
   }
 
   if (operation.kind == mojom::Conv2d::Kind::kTransposed) {
@@ -1648,8 +1673,8 @@ void GraphBuilderCoreml::AddOperationForCumulativeSum(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpCumulativeSumTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   static constexpr char kParamExclusive[] = "exclusive";
   static constexpr char kParamReverse[] = "reverse";
@@ -1759,8 +1784,7 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
     }
   }
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   lhs_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX, lhs_operand_id);
 
   std::visit(
       base::Overloaded{[&](uint64_t rhs_operand_id) {
@@ -1768,8 +1792,8 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
                              GetOperandInfo(rhs_operand_id);
                          CHECK_EQ(lhs_operand_info.mil_data_type,
                                   rhs_operand_info.mil_data_type);
-                         SetInputWithName(*op->mutable_inputs(), kOpParamY,
-                                          rhs_operand_info.coreml_name);
+                         SetInputFromOperand(*op->mutable_inputs(), kOpParamY,
+                                             rhs_operand_id);
                        },
                        [&](CoreML::Specification::MILSpec::Value rhs_value) {
                          SetInputWithValue(*op->mutable_inputs(), kOpParamY,
@@ -1804,8 +1828,6 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       input_operand_info.mil_data_type;
   const OperandDataType input_operand_data_type =
       MILDataTypeToOperandType(input_data_type);
-
-  std::string_view input_name = GetOperandInfo(input_operand_id).coreml_name;
 
   switch (kind) {
     case mojom::ElementWiseUnary::Kind::kAbs: {
@@ -1894,8 +1916,8 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       // reciprocal(4) returning  0.24999 rather than 0.25.
       // In order to return expected results similar to other platforms,
       // set epsilon to 0.
-      AddUnaryFloatsOperationWithEpsilon(kOpReciprocalTypeName, input_name,
-                                         input_data_type, output_operand_id,
+      AddUnaryFloatsOperationWithEpsilon(kOpReciprocalTypeName,
+                                         input_operand_id, output_operand_id,
                                          /*epsilon=*/0, block);
       return base::ok();
     }
@@ -1907,8 +1929,8 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       // in different result compared to other platforms.
       // In order to return expected results compatible with other
       // platforms, set epsilon to 0.
-      AddUnaryFloatsOperationWithEpsilon(kOpLogTypeName, input_name,
-                                         input_data_type, output_operand_id,
+      AddUnaryFloatsOperationWithEpsilon(kOpLogTypeName, input_operand_id,
+                                         output_operand_id,
                                          /*epsilon=*/0, block);
       return base::ok();
     }
@@ -2048,11 +2070,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGather(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpGatherTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
-  SetInputWithName(*op->mutable_inputs(), kParamIndices,
-                   indices_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kParamIndices,
+                      operation.indices_operand_id);
 
   SetInputsWithValues(
       *op->mutable_inputs(),
@@ -2074,8 +2096,8 @@ void GraphBuilderCoreml::AddOperationForGelu(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpGeluTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   constexpr char kParamModeExact[] = "EXACT";
 
@@ -2170,8 +2192,7 @@ void GraphBuilderCoreml::AddOperationForHardSigmoid(
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpHardSigmoidTypeName);
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id);
 
   SetInputsWithValues(
       *op->mutable_inputs(),
@@ -2239,17 +2260,17 @@ GraphBuilderCoreml::AddOperationForInstanceNormalization(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpInstanceNormalizationTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   // TODO(crbug.com/338529226): These params must all be constant tensors.
   if (operation.scale_operand_id.has_value()) {
-    SetInputWithName(*op->mutable_inputs(), kOpParamGamma,
-                     GetOperandInfo(*operation.scale_operand_id).coreml_name);
+    SetInputFromOperand(*op->mutable_inputs(), kOpParamGamma,
+                        *operation.scale_operand_id);
   }
   if (operation.bias_operand_id.has_value()) {
-    SetInputWithName(*op->mutable_inputs(), kOpParamBeta,
-                     GetOperandInfo(*operation.bias_operand_id).coreml_name);
+    SetInputFromOperand(*op->mutable_inputs(), kOpParamBeta,
+                        *operation.bias_operand_id);
   }
 
   SetInputWithValue(
@@ -2277,8 +2298,8 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpLayerNormalizationTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
   base::FixedArray<int32_t> axes(operation.axes.size());
   base::ranges::transform(operation.axes, axes.begin(), [](uint32_t val) {
     return base::checked_cast<int32_t>(val);
@@ -2286,14 +2307,12 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
 
   // TODO: crbug.com/338529226: These params must all be constant tensors.
   if (operation.scale_operand_id.has_value()) {
-    SetInputWithName(
-        *op->mutable_inputs(), kOpParamGamma,
-        GetOperandInfo(operation.scale_operand_id.value()).coreml_name);
+    SetInputFromOperand(*op->mutable_inputs(), kOpParamGamma,
+                        operation.scale_operand_id.value());
   }
   if (operation.bias_operand_id.has_value()) {
-    SetInputWithName(
-        *op->mutable_inputs(), kOpParamBeta,
-        GetOperandInfo(operation.bias_operand_id.value()).coreml_name);
+    SetInputFromOperand(*op->mutable_inputs(), kOpParamBeta,
+                        operation.bias_operand_id.value());
   }
 
   SetInputsWithValues(
@@ -2372,11 +2391,9 @@ void GraphBuilderCoreml::AddOperationForMatmul(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpMatmulTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_x_operand_id);
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamY,
-                   GetOperandInfo(input_y_operand_id).coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamY, input_y_operand_id);
 
   static constexpr char kParamTransposeX[] = "transpose_x";
   static constexpr char kParamTransposeY[] = "transpose_y";
@@ -2408,8 +2425,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpPadTypeName);
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   base::FixedArray<int32_t> paddings(operation.beginning_padding.size() +
                                      operation.ending_padding.size());
@@ -2525,8 +2542,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
       break;
   }
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   const std::array<const int32_t, kSpatialDimensions> kernel_sizes = {
       base::checked_cast<int32_t>(operation.window_dimensions->height),
@@ -2595,8 +2612,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
   }
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
   const OperandDataType input_data_type =
@@ -2693,8 +2710,8 @@ void GraphBuilderCoreml::AddOperationForResample2d(
       break;
   }
 
-  SetInputWithName(*op.mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op.mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   // Use explicit scales if given, otherwise, compute scales from output
   // dimensions / input dimensions.
@@ -2743,8 +2760,7 @@ GraphBuilderCoreml::AddOperationForReshape(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpReshapeTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id);
 
   static constexpr char kParamShape[] = "shape";
   base::FixedArray<int32_t> shape(output_operand_info.dimensions.size());
@@ -2777,8 +2793,8 @@ void GraphBuilderCoreml::AddOperationForSlice(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpSliceTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   static constexpr char kParamBegin[] = "begin";
   static constexpr char kParamSize[] = "size";
@@ -2812,8 +2828,8 @@ void GraphBuilderCoreml::AddOperationForSoftmax(
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpSoftmaxTypeName);
 
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   SetInputWithValue(
       *op->mutable_inputs(), kOpParamAxis,
@@ -2835,8 +2851,8 @@ void GraphBuilderCoreml::AddOperationForSplit(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpSplitTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   base::FixedArray<int32_t> split_sizes(operation.output_operand_ids.size());
   for (size_t i = 0; i < operation.output_operand_ids.size(); ++i) {
@@ -2864,8 +2880,8 @@ void GraphBuilderCoreml::AddOperationForTile(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpTileTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   // CoreML expects repetitions to be vector of int32_t.
   base::FixedArray<int32_t> repetitions(operation.repetitions.size());
@@ -2889,8 +2905,8 @@ void GraphBuilderCoreml::AddOperationForTranspose(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpTransposeTypeName);
-  SetInputWithName(*op->mutable_inputs(), kOpParamX,
-                   input_operand_info.coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
 
   // CoreML expects permutation to be vector of int32_t.
   static constexpr char kParamPerm[] = "perm";
@@ -2935,12 +2951,12 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForWhere(
   constexpr char kParamA[] = "a";
   constexpr char kParamB[] = "b";
   constexpr char kParamCond[] = "cond";
-  SetInputWithName(*op->mutable_inputs(), kParamA,
-                   true_operand_info.coreml_name);
-  SetInputWithName(*op->mutable_inputs(), kParamB,
-                   false_operand_info.coreml_name);
-  SetInputWithName(*op->mutable_inputs(), kParamCond,
-                   GetOperandInfo(bool_condition_operand_id).coreml_name);
+  SetInputFromOperand(*op->mutable_inputs(), kParamA,
+                      operation.true_value_operand_id);
+  SetInputFromOperand(*op->mutable_inputs(), kParamB,
+                      operation.false_value_operand_id);
+  SetInputFromOperand(*op->mutable_inputs(), kParamCond,
+                      bool_condition_operand_id);
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
@@ -3003,18 +3019,9 @@ void GraphBuilderCoreml::AddConstantImmediateValue(
   }
 }
 
-void GraphBuilderCoreml::AddConstantFileValue(
-    uint64_t constant_id,
-    uint64_t offset,
-    CoreML::Specification::MILSpec::Block& block) {
-  auto* op = block.add_operations();
-  PopulateConstantOpFromOperand(constant_id, *op);
-  // Blob path is defined in generic Operation.attributes.
-  // This follows the actual data structure in
-  // https://github.com/apple/coremltools/blob/bba83f43859e087d50c7d764cb132e7d4b427611/coremltools/converters/mil/backend/mil/load.py#L60.
-  auto& attributes = *op->mutable_attributes();
-  attributes["name"] =
-      CreateStringImmediateValue(GetOperandInfo(constant_id).coreml_name);
+CoreML::Specification::MILSpec::Value
+GraphBuilderCoreml::CreateConstantFileValue(uint64_t constant_id,
+                                            uint64_t offset) {
   CoreML::Specification::MILSpec::Value blob_value{};
   const OperandInfo& operand_info = GetOperandInfo(constant_id);
   PopulateValueTypeFromOperandInfo(operand_info, *blob_value.mutable_type());
@@ -3022,7 +3029,7 @@ void GraphBuilderCoreml::AddConstantFileValue(
       blob_value.mutable_blobfilevalue();
   blob->set_filename(kWeightsRelativeFilePath);
   blob->set_offset(offset);
-  attributes["val"] = std::move(blob_value);
+  return blob_value;
 }
 
 const mojom::Operand& GraphBuilderCoreml::GetOperand(
@@ -3240,6 +3247,29 @@ std::string GraphBuilderCoreml::GetCoreMLNameFromOperand(uint64_t operand_id) {
             kStringSeparator);
       }
   }
+}
+
+void GraphBuilderCoreml::SetInputFromOperand(
+    google::protobuf::Map<std::string,
+                          CoreML::Specification::MILSpec::Argument>& inputs,
+    std::string_view key,
+    uint64_t operand_id) {
+  auto operand = graph_info_->id_to_operand_map.find(operand_id);
+  auto offset = constant_offsets_.find(operand_id);
+
+  // Internal operands, non-constant operands, or constant operands added by
+  // `AddConstantImmediateValue` already have an entity in the model so they can
+  // be referenced by name.
+  if (operand == graph_info_->id_to_operand_map.end() ||
+      operand->second->kind != mojom::Operand::Kind::kConstant ||
+      offset == constant_offsets_.end()) {
+    inputs[key].add_arguments()->set_name(
+        std::string(GetOperandInfo(operand_id).coreml_name));
+    return;
+  }
+
+  SetInputWithValue(inputs, key,
+                    CreateConstantFileValue(operand_id, offset->second));
 }
 
 GraphBuilderCoreml::OperandInfo::OperandInfo(
