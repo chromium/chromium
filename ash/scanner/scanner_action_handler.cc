@@ -64,6 +64,19 @@ GURL GetCalendarEventUrl(const manta::proto::NewEventAction& event) {
     query += "&text=";
     query += base::EscapeQueryParamValue(event.title(), /*use_plus=*/true);
   }
+  if (!event.description().empty()) {
+    query += "&details=";
+    query +=
+        base::EscapeQueryParamValue(event.description(), /*use_plus=*/true);
+  }
+  if (!event.dates().empty()) {
+    query += "&dates=";
+    query += base::EscapeQueryParamValue(event.dates(), /*use_plus=*/true);
+  }
+  if (!event.location().empty()) {
+    query += "&location=";
+    query += base::EscapeQueryParamValue(event.location(), /*use_plus=*/true);
+  }
 
   GURL::Replacements replacements;
   replacements.SetQueryStr(query);

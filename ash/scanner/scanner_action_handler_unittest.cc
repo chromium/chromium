@@ -86,6 +86,70 @@ TEST(ScannerActionToCommandTest, NewEventWithTitle) {
                    "action=TEMPLATE&text=Test+title%3F")))));
 }
 
+TEST(ScannerActionToCommandTest, NewEventWithDescription) {
+  manta::proto::NewEventAction action;
+  action.set_description("Test desc?");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
+          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
+          Property("query_piece", &GURL::query_piece,
+                   "action=TEMPLATE&details=Test+desc%3F")))));
+}
+
+TEST(ScannerActionToCommandTest, NewEventWithDates) {
+  manta::proto::NewEventAction action;
+  action.set_dates("20241014T160000/20241014T161500");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
+          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
+          Property(
+              "query_piece", &GURL::query_piece,
+              "action=TEMPLATE&dates=20241014T160000%2F20241014T161500")))));
+}
+
+TEST(ScannerActionToCommandTest, NewEventWithLocation) {
+  manta::proto::NewEventAction action;
+  action.set_location("401 - Unauthorized");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
+          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
+          Property("query_piece", &GURL::query_piece,
+                   "action=TEMPLATE&location=401+-+Unauthorized")))));
+}
+
+TEST(ScannerActionToCommandTest, NewEventWithMultipleFields) {
+  manta::proto::NewEventAction action;
+  action.set_title("🌏");
+  action.set_description("formerly \"Geo Sync\"");
+  action.set_dates("20241014T160000/20241014T161500");
+  action.set_location("Wonderland");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
+          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
+          Property("query_piece", &GURL::query_piece,
+                   "action=TEMPLATE"
+                   "&text=%F0%9F%8C%8F"
+                   "&details=formerly+%22Geo+Sync%22"
+                   "&dates=20241014T160000%2F20241014T161500"
+                   "&location=Wonderland")))));
+}
+
 TEST(ScannerActionToCommandTest, NewContactWithNoFields) {
   ScannerCommand command =
       ScannerActionToCommand(NewContactAction(/*given_name=*/""));
