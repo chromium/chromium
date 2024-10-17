@@ -30,11 +30,6 @@ constexpr char kCampbellHashKey[] =
     "\x78\xb6\xa7\x59\x06\x11\xc7\xea\x09\x7e\x92\xe3\xe9\xff\xa6\x01\x4c"
     "\x03\x18\x32";
 
-// The hash value for the secret key of the conch feature.
-constexpr char kConchHashKey[] =
-    "\x55\x40\xce\x6c\x95\x34\xae\x33\x4c\x82\x20\xa3\x86\xdb\xbc\xc5\x4d\x49"
-    "\x38\xf0";
-
 // The hash value for the secret key of the modifier split feature.
 constexpr char kModifierSplitHashKey[] =
     "\xFC\xEF\x09\x7D\x01\x39\x86\x6A\x57\x08\x7C\x22\x5F\x1C\xEF\x8A\x3B\x7E"
@@ -345,11 +340,6 @@ const char kChildWallpaperLarge[] = "child-wallpaper-large";
 // Default small wallpaper to use for kids accounts (as path to trusted,
 // non-user-writable JPEG file).
 const char kChildWallpaperSmall[] = "child-wallpaper-small";
-
-// Switch used to pass in a secret key for Conch. Unless the correct secret key
-// is provided, Conch feature will remain disabled, regardless of the state of
-// the associated feature flag.
-const char kConchKey[] = "conch-key";
 
 // Forces CrOS region value.
 const char kCrosRegion[] = "cros-region";
@@ -1436,22 +1426,6 @@ bool IsCampbellSecretKeyMatched() {
   if (!key_matched) {
     LOG(ERROR)
         << "Provided campbel secrey key does not match the expected one.";
-  }
-
-  return key_matched;
-}
-
-bool IsConchSecretKeyMatched() {
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --conch-key="INSERT KEY HERE" --enable-features=Conch
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(kConchKey));
-
-  bool key_matched = (provided_key_hash == kConchHashKey);
-  if (!key_matched) {
-    LOG(ERROR)
-        << "Provided conch secret key does not match with the expected one.";
   }
 
   return key_matched;

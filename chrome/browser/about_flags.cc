@@ -11239,10 +11239,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kConchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kConch)},
 
-    {"conch-key", flag_descriptions::kConchFeatureKeyName,
-     flag_descriptions::kConchFeatureKeyDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kConchKey, "")},
-
     {"conch-system-audio-from-mic",
      flag_descriptions::kConchSystemAudioFromMicName,
      flag_descriptions::kConchSystemAudioFromMicDescription, kOsCrOS,

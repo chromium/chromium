@@ -1619,11 +1619,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "conch-key",
-    "owners": ["pihsun@chromium.org"],
-    "expiry_milestone": 132
-  },
-  {
     "name": "conch-system-audio-from-mic",
     "owners": ["hsuanling@google.com"],
     "expiry_milestone": 140
