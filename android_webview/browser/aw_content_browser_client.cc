@@ -932,6 +932,15 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                 static_cast<AwBrowserContext*>(
                     web_contents->GetBrowserContext()));
 
+  // Pass WebContentsKey to look up AwContentsIoThreadClient in
+  // WebContentsToIoThreadClientMap later. Currently this is used only when a
+  // page is being prerendered.
+  // TODO(crbug.com/373474043): Use this even for non-prerendered pages.
+  std::optional<WebContentsKey> web_contents_key;
+  if (web_contents && web_contents->IsPrerenderedFrame(frame_tree_node_id)) {
+    web_contents_key = GetWebContentsKey(*web_contents);
+  }
+
   // We don't need to care for |security_options| as the factories constructed
   // below are used only for navigation.
   // We also don't care about retrieving cookies in this case because these will
@@ -942,8 +951,8 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     // Manages its own lifetime.
     new android_webview::AwProxyingURLLoaderFactory(
         std::nullopt /* cookie_manager */, nullptr /* cookie_access_policy */,
-        isolation_info, frame_tree_node_id, std::move(receiver),
-        mojo::NullRemote(), true /* intercept_only */,
+        isolation_info, web_contents_key, frame_tree_node_id,
+        std::move(receiver), mojo::NullRemote(), true /* intercept_only */,
         std::nullopt /* security_options */,
         nullptr /* xrw_allowlist_matcher */, std::move(browser_context_handle),
         std::nullopt /* navigation_id */);
@@ -952,6 +961,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
         FROM_HERE,
         base::BindOnce(
             [](mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+               std::optional<WebContentsKey> web_contents_key,
                content::FrameTreeNodeId frame_tree_node_id,
                scoped_refptr<AwBrowserContextIoThreadHandle>
                    browser_context_handle,
@@ -960,14 +970,14 @@ bool AwContentBrowserClient::HandleExternalProtocol(
               new android_webview::AwProxyingURLLoaderFactory(
                   std::nullopt /* cookie_manager */,
                   nullptr /* cookie_access_policy */, isolation_info,
-                  frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
-                  true /* intercept_only */,
+                  web_contents_key, frame_tree_node_id, std::move(receiver),
+                  mojo::NullRemote(), true /* intercept_only */,
                   std::nullopt /* security_options */,
                   nullptr /* xrw_allowlist_matcher */,
                   std::move(browser_context_handle),
                   std::nullopt /* navigation_id */);
             },
-            std::move(receiver), frame_tree_node_id,
+            std::move(receiver), web_contents_key, frame_tree_node_id,
             std::move(browser_context_handle), isolation_info));
   }
   return false;
@@ -1133,17 +1143,27 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
           preferences.allow_universal_access_from_file_urls;
     }
 
+    // Pass WebContentsKey to look up AwContentsIoThreadClient in
+    // WebContentsToIoThreadClientMap later. Currently this is used only when a
+    // page is being prerendered.
+    // TODO(crbug.com/373474043): Use this even for non-prerendered pages.
+    std::optional<WebContentsKey> web_contents_key;
+    if (web_contents->IsPrerenderedFrame(frame->GetFrameTreeNodeId())) {
+      web_contents_key = GetWebContentsKey(*web_contents);
+    }
+
     auto xrw_allowlist_matcher =
         AwSettings::FromWebContents(web_contents)->xrw_allowlist_matcher();
 
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &AwProxyingURLLoaderFactory::CreateProxy, std::move(cookie_manager),
-            cookie_access_policy, isolation_info, frame->GetFrameTreeNodeId(),
-            std::move(proxied_receiver), std::move(target_factory_remote),
-            security_options, std::move(xrw_allowlist_matcher),
-            std::move(browser_context_handle), navigation_id));
+        base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
+                       std::move(cookie_manager), cookie_access_policy,
+                       isolation_info, web_contents_key,
+                       frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
+                       std::move(target_factory_remote), security_options,
+                       std::move(xrw_allowlist_matcher),
+                       std::move(browser_context_handle), navigation_id));
   } else {
     // A service worker and worker subresources set nullptr to |frame|, and
     // work without seeing the AllowUniversalAccessFromFileURLs setting. So,
@@ -1152,7 +1172,8 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
         FROM_HERE,
         base::BindOnce(
             &AwProxyingURLLoaderFactory::CreateProxy, std::move(cookie_manager),
-            cookie_access_policy, isolation_info, content::FrameTreeNodeId(),
+            cookie_access_policy, isolation_info,
+            /*web_contents_key=*/std::nullopt, content::FrameTreeNodeId(),
             std::move(proxied_receiver), std::move(target_factory_remote),
             std::nullopt /* security_options */,
             aw_browser_context->service_worker_xrw_allowlist_matcher(),

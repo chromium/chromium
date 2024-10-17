@@ -76,6 +76,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           cookie_manager,
       AwCookieAccessPolicy* cookie_access_policy,
       std::optional<const net::IsolationInfo> isolation_info,
+      std::optional<WebContentsKey> key,
       content::FrameTreeNodeId frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -107,6 +108,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
       AwCookieAccessPolicy* cookie_access_policy,
       std::optional<const net::IsolationInfo> isolation_info,
+      std::optional<WebContentsKey> web_contents_key,
       content::FrameTreeNodeId frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -152,6 +154,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   raw_ptr<AwCookieAccessPolicy> cookie_access_policy_;
   std::optional<const net::IsolationInfo> isolation_info_;
+  const std::optional<WebContentsKey> web_contents_key_;
   const content::FrameTreeNodeId frame_tree_node_id_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;

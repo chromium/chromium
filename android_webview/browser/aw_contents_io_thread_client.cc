@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/base_tracing.h"
@@ -265,6 +266,43 @@ void RfhToIoThreadClientMap::RenderFrameHostChanged(RenderFrameHost* old_rfh,
   frame_tree_node_to_weak_global_ref_.erase(pre_swap_ftn_id);
 }
 
+// WebContentsToIoThreadClientMap ---------------------------------------------
+
+class WebContentsToIoThreadClientMap {
+ public:
+  static WebContentsToIoThreadClientMap* GetInstance() {
+    static base::NoDestructor<WebContentsToIoThreadClientMap> instance;
+    return instance.get();
+  }
+
+  void Set(WebContentsKey key, const JavaObjectWeakGlobalRef& client) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    base::AutoLock lock(map_lock_);
+    web_contents_to_weak_global_ref_[key] = client;
+  }
+
+  std::optional<JavaObjectWeakGlobalRef> Get(WebContentsKey key) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    base::AutoLock lock(map_lock_);
+    auto iterator = web_contents_to_weak_global_ref_.find(key);
+    if (iterator == web_contents_to_weak_global_ref_.end()) {
+      return std::nullopt;
+    } else {
+      return iterator->second;
+    }
+  }
+
+  void Erase(WebContentsKey key) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    base::AutoLock lock(map_lock_);
+    web_contents_to_weak_global_ref_.erase(key);
+  }
+
+ private:
+  base::Lock map_lock_;
+  map<WebContentsKey, JavaObjectWeakGlobalRef> web_contents_to_weak_global_ref_;
+};
+
 // ClientMapEntryUpdater ------------------------------------------------------
 
 class ClientMapEntryUpdater : public content::WebContentsObserver {
@@ -293,6 +331,9 @@ ClientMapEntryUpdater::ClientMapEntryUpdater(
 
   if (web_contents->GetPrimaryMainFrame())
     RenderFrameCreated(web_contents->GetPrimaryMainFrame());
+
+  WebContentsToIoThreadClientMap::GetInstance()->Set(
+      GetWebContentsKey(*web_contents), jdelegate_);
 }
 
 void ClientMapEntryUpdater::RenderFrameCreated(RenderFrameHost* rfh) {
@@ -310,10 +351,16 @@ void ClientMapEntryUpdater::RenderFrameHostChanged(RenderFrameHost* old_rfh,
 }
 
 void ClientMapEntryUpdater::WebContentsDestroyed() {
+  WebContentsToIoThreadClientMap::GetInstance()->Erase(
+      GetWebContentsKey(*web_contents()));
   delete this;
 }
 
 }  // namespace
+
+WebContentsKey GetWebContentsKey(content::WebContents& web_contents) {
+  return safe_browsing::GetWebContentsKey(&web_contents);
+}
 
 // AwContentsIoThreadClient -----------------------------------------------
 
@@ -345,6 +392,13 @@ std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
     content::FrameTreeNodeId frame_tree_node_id) {
   return WrapOptionalWeakRef(
       RfhToIoThreadClientMap::GetInstance()->Get(frame_tree_node_id));
+}
+
+// static
+std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromKey(
+    WebContentsKey key) {
+  return WrapOptionalWeakRef(
+      WebContentsToIoThreadClientMap::GetInstance()->Get(key));
 }
 
 // static
