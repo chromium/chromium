@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 #include <ostream>
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -45,19 +45,11 @@ std::ostream& operator<<(std::ostream& stream,
   return stream << value.ToString().Utf8();
 }
 
-template <unsigned fractional_bits, typename Storage>
-WTF::TextStream& operator<<(WTF::TextStream& ts,
-                            const FixedPoint<fractional_bits, Storage>& unit) {
-  return ts << WTF::TextStream::FormatNumberRespectingIntegers(unit.ToDouble());
-}
-
 // Explicit instantiations.
-#define INSTANTIATE(fractional_bits, Storage)                      \
-  template class FixedPoint<fractional_bits, Storage>;             \
-  template std::ostream& operator<<(                               \
-      std::ostream&, const FixedPoint<fractional_bits, Storage>&); \
-  template WTF::TextStream& operator<<(                            \
-      WTF::TextStream&, const FixedPoint<fractional_bits, Storage>&)
+#define INSTANTIATE(fractional_bits, Storage)          \
+  template class FixedPoint<fractional_bits, Storage>; \
+  template std::ostream& operator<<(                   \
+      std::ostream&, const FixedPoint<fractional_bits, Storage>&)
 
 INSTANTIATE(6, int32_t);
 INSTANTIATE(16, int32_t);

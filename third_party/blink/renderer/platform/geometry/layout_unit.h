@@ -840,10 +840,6 @@ template <unsigned fractional_bits, typename RawValue>
 PLATFORM_EXPORT std::ostream& operator<<(
     std::ostream&,
     const FixedPoint<fractional_bits, RawValue>&);
-template <unsigned fractional_bits, typename RawValue>
-PLATFORM_EXPORT WTF::TextStream& operator<<(
-    WTF::TextStream&,
-    const FixedPoint<fractional_bits, RawValue>&);
 
 }  // namespace blink
 

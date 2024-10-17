@@ -65,6 +65,14 @@
 
 namespace blink {
 
+namespace {
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutUnit& unit) {
+  return ts << WTF::TextStream::FormatNumberRespectingIntegers(unit.ToDouble());
+}
+
+}  // namespace
+
 static void WriteLayers(WTF::TextStream&,
                         PaintLayer*,
                         int indent = 0,
