@@ -3778,8 +3778,9 @@
       // selection.isCollapsed should return false if anchor and focus nodes
       // are different, including in shadow tree.
       // https://crbug.com/40400558
+      // This feature was shipped in M131, so this flag can be removed in M133.
       name: "SelectionIsCollapsedShadowDOMSupport",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Maintain author-defined ::selection highlight colors, even if they
