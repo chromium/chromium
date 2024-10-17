@@ -198,6 +198,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "tab_usb_connected.icon",
     "tablet.icon",
     "task_manager.icon",
+    "text_analysis.icon",
     "toolbar_chrome_refresh.icon",
     "trailing_scroll.icon",
     "translate.icon",
