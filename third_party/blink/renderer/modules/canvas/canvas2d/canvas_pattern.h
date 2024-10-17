@@ -29,6 +29,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
@@ -44,7 +45,7 @@ class ExceptionState;
 class ExecutionContext;
 class Image;
 
-class CanvasPattern final : public ScriptWrappable {
+class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
