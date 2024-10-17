@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/install_limiter.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_util.h"
@@ -11,17 +12,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/extensions/install_limiter_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
-
-namespace {
-
-int64_t GetFileSize(const base::FilePath& file) {
-  // Get file size. In case of error, sets 0 as file size to let the installer
-  // run and fail.
-  int64_t size;
-  return base::GetFileSize(file, &size) ? size : 0;
-}
-
-}  // namespace
 
 namespace extensions {
 
@@ -75,8 +65,7 @@ void InstallLimiter::Add(const scoped_refptr<CrxInstaller>& installer,
   num_installs_waiting_for_file_size_++;
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&GetFileSize, file_info.path),
+      FROM_HERE, {base::MayBlock()}, base::GetFileSizeCallback(file_info.path),
       base::BindOnce(&InstallLimiter::AddWithSize,
                      weak_ptr_factory_.GetWeakPtr(), installer, file_info));
 }
@@ -94,12 +83,12 @@ void InstallLimiter::OnAllExternalProvidersReady() {
 
 void InstallLimiter::AddWithSize(const scoped_refptr<CrxInstaller>& installer,
                                  const CRXFileInfo& file_info,
-                                 int64_t size) {
+                                 std::optional<int64_t> size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   num_installs_waiting_for_file_size_--;
 
-  if (!ShouldDeferInstall(size, installer->expected_id()) ||
+  if (!ShouldDeferInstall(size.value_or(0), installer->expected_id()) ||
       AllInstallsQueuedWithFileSize()) {
     RunInstall(installer, file_info);
 
