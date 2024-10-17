@@ -2515,21 +2515,6 @@ static_library("browser") {
     sources += [ "net/net_error_diagnostics_dialog_stub.cc" ]
   }
 
-  if (is_posix) {
-    sources += [
-      "download/trusted_sources_manager_posix.cc",
-      "performance_monitor/metric_evaluator_helper_posix.cc",
-      "performance_monitor/metric_evaluator_helper_posix.h",
-    ]
-  }
-
-  if (!is_chromeos_ash) {
-    sources += [
-      "signin/wait_for_network_callback_helper_chrome.cc",
-      "signin/wait_for_network_callback_helper_chrome.h",
-    ]
-  }
-
   if (is_android) {
     sources += [
       "accessibility/accessibility_prefs/android/accessibility_prefs_controller.cc",
@@ -2991,47 +2976,6 @@ static_library("browser") {
       "history_clusters/history_clusters_tab_helper_android.cc",
       "icon_loader_android.cc",
       "incognito/android/incognito_utils_android.cc",
-      "page_image_service/android/image_service_bridge.cc",
-      "page_image_service/android/image_service_bridge.h",
-      "signin/android/signin_bridge.cc",
-      "signin/android/signin_bridge.h",
-      "signin/android/signin_manager_android.cc",
-      "signin/android/signin_manager_android.h",
-      "signin/android/signin_metrics_utils.cc",
-      "signin/android/unified_consent_service_bridge.cc",
-      "signin/android/web_signin_bridge.cc",
-      "signin/android/web_signin_bridge.h",
-      "supervised_user/android/supervised_user_service_platform_delegate.cc",
-      "supervised_user/android/supervised_user_service_platform_delegate.h",
-      "supervised_user/android/website_parent_approval.cc",
-      "supervised_user/android/website_parent_approval.h",
-      "supervised_user/child_accounts/child_account_service_android.cc",
-      "supervised_user/child_accounts/child_account_service_android.h",
-      "tab_group_sync/android/tab_group_sync_service_factory_android.cc",
-      "tab_group_sync/android/tab_group_sync_utils_android.cc",
-      "tab_group_sync/messaging/android/messaging_backend_service_factory_android.cc",
-      "visited_url_ranking/android_tab_model_url_visit_data_fetcher.cc",
-      "visited_url_ranking/android_tab_model_url_visit_data_fetcher.h",
-      "webapps/installable/installed_webapp_bridge.cc",
-      "webapps/installable/installed_webapp_bridge.h",
-      "webapps/installable/installed_webapp_geolocation_bridge.cc",
-      "webapps/installable/installed_webapp_geolocation_bridge.h",
-      "webapps/installable/installed_webapp_geolocation_context.cc",
-      "webapps/installable/installed_webapp_geolocation_context.h",
-      "webapps/installable/installed_webapp_provider.cc",
-      "webapps/installable/installed_webapp_provider.h",
-
-      # TODO(b/40071344): Fold into "keyboard_accessory/android".
-      "keyboard_accessory/android/address_accessory_controller_impl.cc",
-      "keyboard_accessory/android/address_accessory_controller_impl.h",
-      "keyboard_accessory/android/affiliated_plus_profiles_cache.cc",
-      "keyboard_accessory/android/affiliated_plus_profiles_cache.h",
-      "keyboard_accessory/android/manual_filling_controller_impl.cc",
-      "keyboard_accessory/android/manual_filling_controller_impl.h",
-      "keyboard_accessory/android/password_accessory_controller_impl.cc",
-      "keyboard_accessory/android/password_accessory_controller_impl.h",
-      "keyboard_accessory/android/payment_method_accessory_controller_impl.cc",
-      "keyboard_accessory/android/payment_method_accessory_controller_impl.h",
       "language/android/language_bridge.cc",
       "language/android/language_bridge.h",
       "lens/android/lens_policy_utils.cc",
@@ -3078,6 +3022,8 @@ static_library("browser") {
       "optimization_guide/android/optimization_guide_bridge.h",
       "optimization_guide/android/optimization_guide_tab_url_provider_android.cc",
       "optimization_guide/android/optimization_guide_tab_url_provider_android.h",
+      "page_image_service/android/image_service_bridge.cc",
+      "page_image_service/android/image_service_bridge.h",
       "page_info/about_this_site_controller_android.cc",
       "page_load_metrics/observers/android_page_load_metrics_observer.cc",
       "page_load_metrics/observers/android_page_load_metrics_observer.h",
@@ -3185,6 +3131,14 @@ static_library("browser") {
       "sharing/sms/sms_fetch_request_handler.cc",
       "sharing/sms/sms_fetch_request_handler.h",
       "shell_integration_android.cc",
+      "signin/android/signin_bridge.cc",
+      "signin/android/signin_bridge.h",
+      "signin/android/signin_manager_android.cc",
+      "signin/android/signin_manager_android.h",
+      "signin/android/signin_metrics_utils.cc",
+      "signin/android/unified_consent_service_bridge.cc",
+      "signin/android/web_signin_bridge.cc",
+      "signin/android/web_signin_bridge.h",
       "signin/identity_services_provider_android.cc",
       "signin/signin_manager_android_factory.cc",
       "signin/signin_manager_android_factory.h",
@@ -3196,15 +3150,66 @@ static_library("browser") {
       "ssl/known_interception_disclosure_infobar.h",
       "supervised_user/android/favicon_fetcher.cc",
       "supervised_user/android/favicon_fetcher.h",
+      "supervised_user/android/supervised_user_service_platform_delegate.cc",
+      "supervised_user/android/supervised_user_service_platform_delegate.h",
       "supervised_user/android/supervised_user_web_content_handler_impl.cc",
       "supervised_user/android/supervised_user_web_content_handler_impl.h",
+      "supervised_user/android/website_parent_approval.cc",
+      "supervised_user/android/website_parent_approval.h",
+      "supervised_user/child_accounts/child_account_service_android.cc",
+      "supervised_user/child_accounts/child_account_service_android.h",
       "tab/web_contents_state.cc",
       "tab/web_contents_state.h",
+      "tab_group_sync/android/tab_group_sync_service_factory_android.cc",
+      "tab_group_sync/android/tab_group_sync_utils_android.cc",
+      "tab_group_sync/messaging/android/messaging_backend_service_factory_android.cc",
       "tab_resumption/visited_url_ranking_backend.cc",
       "tab_resumption/visited_url_ranking_backend.h",
+      "translate/android/translate_bridge.cc",
+      "translate/android/translate_bridge.h",
       "trusted_vault/trusted_vault_client_android.cc",
       "trusted_vault/trusted_vault_client_android.h",
-
+      "usb/android/usb_bridge.cc",
+      "usb/android/web_usb_chooser_android.cc",
+      "usb/android/web_usb_chooser_android.h",
+      "visited_url_ranking/android_tab_model_url_visit_data_fetcher.cc",
+      "visited_url_ranking/android_tab_model_url_visit_data_fetcher.h",
+      "wallet/android/boarding_pass_bridge.cc",
+      "wallet/android/boarding_pass_detector.cc",
+      "wallet/android/boarding_pass_detector.h",
+      "webapps/installable/installed_webapp_bridge.cc",
+      "webapps/installable/installed_webapp_bridge.h",
+      "webapps/installable/installed_webapp_geolocation_bridge.cc",
+      "webapps/installable/installed_webapp_geolocation_bridge.h",
+      "webapps/installable/installed_webapp_geolocation_context.cc",
+      "webapps/installable/installed_webapp_geolocation_context.h",
+      "webapps/installable/installed_webapp_provider.cc",
+      "webapps/installable/installed_webapp_provider.h",
+      "webapps/web_app_offline_android.cc",
+      "webapps/webapps_client_android.cc",
+      "webapps/webapps_client_android.h",
+      "webauthn/android/cable_module_android.cc",
+      "webauthn/android/cable_registration_state.cc",
+      "webauthn/android/cable_registration_state.h",
+      "webauthn/android/chrome_webauthn_client_android.cc",
+      "webauthn/android/chrome_webauthn_client_android.h",
+      "webauthn/android/webauthn_request_delegate_android.cc",
+      "webauthn/android/webauthn_request_delegate_android.h",
+    ]
+    sources += [
+      # TODO(crbug.com/40071344): Fold into "keyboard_accessory/android".
+      "keyboard_accessory/android/address_accessory_controller_impl.cc",
+      "keyboard_accessory/android/address_accessory_controller_impl.h",
+      "keyboard_accessory/android/affiliated_plus_profiles_cache.cc",
+      "keyboard_accessory/android/affiliated_plus_profiles_cache.h",
+      "keyboard_accessory/android/manual_filling_controller_impl.cc",
+      "keyboard_accessory/android/manual_filling_controller_impl.h",
+      "keyboard_accessory/android/password_accessory_controller_impl.cc",
+      "keyboard_accessory/android/password_accessory_controller_impl.h",
+      "keyboard_accessory/android/payment_method_accessory_controller_impl.cc",
+      "keyboard_accessory/android/payment_method_accessory_controller_impl.h",
+    ]
+    sources += [
       # TODO(crbug.com/40261269): Move to its own target in touch_to_fill/.
       "touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.cc",
       "touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h",
@@ -3218,25 +3223,8 @@ static_library("browser") {
       "touch_to_fill/password_manager/touch_to_fill_controller_delegate.h",
       "touch_to_fill/password_manager/touch_to_fill_controller_webauthn_delegate.cc",
       "touch_to_fill/password_manager/touch_to_fill_controller_webauthn_delegate.h",
-      "translate/android/translate_bridge.cc",
-      "translate/android/translate_bridge.h",
-      "usb/android/usb_bridge.cc",
-      "usb/android/web_usb_chooser_android.cc",
-      "usb/android/web_usb_chooser_android.h",
-      "wallet/android/boarding_pass_bridge.cc",
-      "wallet/android/boarding_pass_detector.cc",
-      "wallet/android/boarding_pass_detector.h",
-      "webapps/web_app_offline_android.cc",
-      "webapps/webapps_client_android.cc",
-      "webapps/webapps_client_android.h",
-      "webauthn/android/cable_module_android.cc",
-      "webauthn/android/cable_registration_state.cc",
-      "webauthn/android/cable_registration_state.h",
-      "webauthn/android/chrome_webauthn_client_android.cc",
-      "webauthn/android/chrome_webauthn_client_android.h",
-      "webauthn/android/webauthn_request_delegate_android.cc",
-      "webauthn/android/webauthn_request_delegate_android.h",
     ]
+
     deps += [
       ":delta_file_proto",
       ":fast_checkout_funnels_proto",
@@ -5801,6 +5789,8 @@ static_library("browser") {
       "profiles/gaia_info_update_service_factory.h",
       "signin/chrome_signin_and_sync_status_metrics_provider.cc",
       "signin/chrome_signin_and_sync_status_metrics_provider.h",
+      "signin/wait_for_network_callback_helper_chrome.cc",
+      "signin/wait_for_network_callback_helper_chrome.h",
     ]
   }
 
@@ -7056,6 +7046,9 @@ static_library("browser") {
 
   if (is_posix) {
     sources += [
+      "download/trusted_sources_manager_posix.cc",
+      "performance_monitor/metric_evaluator_helper_posix.cc",
+      "performance_monitor/metric_evaluator_helper_posix.h",
       "shutdown_signal_handlers_posix.cc",
       "shutdown_signal_handlers_posix.h",
     ]
