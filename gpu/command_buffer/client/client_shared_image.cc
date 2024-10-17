@@ -440,9 +440,13 @@ void ClientSharedImage::HelperGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,
     base::OnceCallback<void(bool)> callback) {
-  // Will be implemented in follow up CLs once IPC changes to perform this
-  // operation are done.
-  NOTIMPLEMENTED();
+  auto sii = GetSharedImageInterface();
+  if (!sii) {
+    DLOG(WARNING) << "No SharedImageInterface.";
+    return;
+  }
+  sii->CopyNativeGmbToSharedMemoryAsync(
+      std::move(buffer_handle), std::move(memory_region), std::move(callback));
 }
 
 bool ClientSharedImage::HelperGpuMemoryBufferManager::IsConnected() {
