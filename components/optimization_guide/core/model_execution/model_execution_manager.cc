@@ -351,8 +351,8 @@ void ModelExecutionManager::OnModelExecuteResponse(
   // Create corresponding log entry for `log_ai_data_request` to pass it with
   // the callback.
   std::unique_ptr<ModelQualityLogEntry> log_entry =
-      std::make_unique<ModelQualityLogEntry>(std::move(log_ai_data_request),
-                                             model_quality_uploader_service_);
+      std::make_unique<ModelQualityLogEntry>(model_quality_uploader_service_);
+  log_entry->log_ai_data_request()->MergeFrom(*log_ai_data_request);
 
   if (!execute_response.has_value()) {
     scoped_logger.set_message("Error: No Response");

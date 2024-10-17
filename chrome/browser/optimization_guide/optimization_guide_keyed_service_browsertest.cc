@@ -362,14 +362,11 @@ class OptimizationGuideKeyedServiceBrowserTest
   }
 
   std::unique_ptr<ModelQualityLogEntry> GetModelQualityLogEntryForCompose() {
-    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
-        new proto::LogAiDataRequest());
-    proto::ComposeLoggingData compose_logging_data;
-    *(log_ai_data_request->mutable_compose()) = compose_logging_data;
-
-    return std::make_unique<ModelQualityLogEntry>(
-        std::move(log_ai_data_request),
+    auto log_entry = std::make_unique<ModelQualityLogEntry>(
         service()->GetModelQualityLogsUploaderService()->GetWeakPtr());
+    *log_entry->log_ai_data_request()->mutable_compose() =
+        proto::ComposeLoggingData();
+    return log_entry;
   }
 
   GURL url_with_hints() { return url_with_hints_; }

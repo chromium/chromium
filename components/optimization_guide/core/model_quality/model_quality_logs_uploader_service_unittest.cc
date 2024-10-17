@@ -124,11 +124,8 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
   std::unique_ptr<ModelQualityLogEntry> GetModelQualityLogEntryAndSetFeedback(
       UserVisibleFeatureKey feature,
       proto::UserFeedback feedback) {
-    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
-        new proto::LogAiDataRequest());
     std::unique_ptr<ModelQualityLogEntry> log_entry =
         std::make_unique<ModelQualityLogEntry>(
-            std::move(log_ai_data_request),
             model_quality_logs_uploader_service_->GetWeakPtr());
     switch (feature) {
       case UserVisibleFeatureKey::kCompose:
@@ -361,19 +358,15 @@ TEST_F(ModelQualityLogsUploaderServiceTest,
        TabOrganizationUserFeedbackNullCheck) {
   // Set TabOrganization ModelQualityLogEntry without any quality data tab
   // organization.
-  std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request_1(
-      new proto::LogAiDataRequest());
-
   proto::TabOrganizationLoggingData tab_organization_logging_data;
 
   proto::TabOrganizationRequest tab_request;
 
   *(tab_organization_logging_data.mutable_request()) = tab_request;
-  *(log_ai_data_request_1->mutable_tab_organization()) =
-      tab_organization_logging_data;
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
-      std::make_unique<ModelQualityLogEntry>(std::move(log_ai_data_request_1),
-                                             nullptr);
+      std::make_unique<ModelQualityLogEntry>(nullptr);
+  *(log_entry_1->log_ai_data_request()->mutable_tab_organization()) =
+      tab_organization_logging_data;
 
   // Upload logs without quality data set this should mark user_feedback as
   // unspecified.

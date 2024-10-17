@@ -2592,12 +2592,11 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
 
   // Invoke T&S callback.
   proto::Any ts_any;
-  auto remote_log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
-  remote_log_ai_data_request->mutable_model_execution_info()->set_execution_id(
-      "serverexecid");
   auto remote_log_entry = std::make_unique<ModelQualityLogEntry>(
-      std::move(remote_log_ai_data_request),
       /*model_quality_uploader_service=*/nullptr);
+  remote_log_entry->log_ai_data_request()
+      ->mutable_model_execution_info()
+      ->set_execution_id("serverexecid");
   std::move(last_remote_ts_callback_)
       .Run(base::ok(ts_any), std::move(remote_log_entry));
 
@@ -2672,11 +2671,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   // Invoke T&S callback.
   auto remote_log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
-  remote_log_ai_data_request->mutable_model_execution_info()->set_execution_id(
-      "serverexecid");
   auto remote_log_entry = std::make_unique<ModelQualityLogEntry>(
-      std::move(remote_log_ai_data_request),
       /*model_quality_uploader_service=*/nullptr);
+  remote_log_entry->log_ai_data_request()
+      ->mutable_model_execution_info()
+      ->set_execution_id("serverexecid");
   std::move(last_remote_ts_callback_)
       .Run(base::unexpected(
                OptimizationGuideModelExecutionError::FromModelExecutionError(

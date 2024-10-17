@@ -286,7 +286,6 @@ PrepareQualityLogEntry(optimization_guide::ModelQualityLogsUploaderService*
   }
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
       std::make_unique<optimization_guide::ModelQualityLogEntry>(
-          std::make_unique<optimization_guide::proto::LogAiDataRequest>(),
           model_quality_logs_uploader_service->GetWeakPtr());
   optimization_guide::proto::LogAiDataRequest* request =
       log_entry->log_ai_data_request();

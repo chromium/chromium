@@ -133,7 +133,6 @@ class UserAnnotationsServiceTest : public testing::Test,
 
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> CreateLogEntry() {
     return std::make_unique<optimization_guide::ModelQualityLogEntry>(
-        std::make_unique<optimization_guide::proto::LogAiDataRequest>(),
         logs_service_->GetWeakPtr());
   }
 

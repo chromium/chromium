@@ -210,7 +210,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                                          ComposeResponse(true, "Cucumbers"))),
                                      /*provided_by_on_device=*/false,
                                      std::make_unique<ModelQualityLogEntry>(
-                                         std::make_unique<LogAiDataRequest>(),
                                          logs_uploader().GetWeakPtr()))));
             })));
 
@@ -1481,7 +1480,6 @@ TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {
                                     ModelExecutionError::kGenericFailure)),
                     false,
                     std::make_unique<ModelQualityLogEntry>(
-                        std::make_unique<LogAiDataRequest>(),
                         logs_uploader().GetWeakPtr())));
           })));
 
@@ -1553,7 +1551,6 @@ TEST_F(ChromeComposeClientTest, TestComposeSetTriggeredFromModifierOnError) {
                                     ModelExecutionError::kGenericFailure)),
                     false,
                     std::make_unique<ModelQualityLogEntry>(
-                        std::make_unique<LogAiDataRequest>(),
                         logs_uploader().GetWeakPtr())));
           })));
   page_handler()->Rewrite(compose::mojom::StyleModifier::kRetry);
@@ -3769,7 +3766,6 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
                                     ModelExecutionError::kGenericFailure)),
                     /*provided_by_on_device=*/false,
                     std::make_unique<ModelQualityLogEntry>(
-                        std::make_unique<LogAiDataRequest>(),
                         logs_uploader().GetWeakPtr())));
           })));
 
@@ -4462,7 +4458,6 @@ TEST_F(ChromeComposeClientTest, TestOfflineError) {
                                         ModelExecutionError::kGenericFailure)),
                     /*provided_by_on_device=*/false,
                     std::make_unique<ModelQualityLogEntry>(
-                        std::make_unique<LogAiDataRequest>(),
                         logs_uploader().GetWeakPtr())));
           })));
 

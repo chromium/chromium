@@ -11,9 +11,8 @@
 namespace optimization_guide {
 
 ModelQualityLogEntry::ModelQualityLogEntry(
-    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     base::WeakPtr<ModelQualityLogsUploaderService> uploader)
-    : log_ai_data_request_(std::move(log_ai_data_request)),
+    : log_ai_data_request_(std::make_unique<proto::LogAiDataRequest>()),
       uploader_(uploader) {}
 
 ModelQualityLogEntry::~ModelQualityLogEntry() {

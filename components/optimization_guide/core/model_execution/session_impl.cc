@@ -649,7 +649,8 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
     std::unique_ptr<ModelQualityLogEntry> log_entry = nullptr;
     if (og_error.ShouldLogModelQuality()) {
       log_entry = std::make_unique<ModelQualityLogEntry>(
-          std::move(log_ai_data_request), model_quality_uploader_service_);
+          model_quality_uploader_service_);
+      log_entry->log_ai_data_request()->MergeFrom(*log_ai_data_request);
       log_entry->set_model_execution_id(GenerateExecutionId());
     }
     callback.Run(OptimizationGuideModelStreamingExecutionResult(
@@ -762,9 +763,10 @@ void SessionImpl::SendSuccessCompletionCallback(
                          success_response_metadata);
     on_device_state_->MutableLoggedResponse()->set_status(
         proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
-    log_entry = std::make_unique<ModelQualityLogEntry>(
-        std::move(on_device_state_->log_ai_data_request),
-        model_quality_uploader_service_);
+    log_entry =
+        std::make_unique<ModelQualityLogEntry>(model_quality_uploader_service_);
+    log_entry->log_ai_data_request()->MergeFrom(
+        *on_device_state_->log_ai_data_request);
     log_entry->set_model_execution_id(GenerateExecutionId());
     on_device_state_->log_ai_data_request.reset();
   }

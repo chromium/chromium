@@ -228,8 +228,6 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
                           ComposeResponse(true, "Cucumbers"), true, false,
                           std::make_unique<
                               optimization_guide::ModelQualityLogEntry>(
-                              std::make_unique<optimization_guide::proto::
-                                                   LogAiDataRequest>(),
                               nullptr))));
             })));
   }

@@ -260,8 +260,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
   }
 
   std::unique_ptr<ModelQualityLogEntry> ModelQuality() {
-    return std::make_unique<ModelQualityLogEntry>(
-        std::make_unique<LogAiDataRequest>(), logs_uploader_.GetWeakPtr());
+    return std::make_unique<ModelQualityLogEntry>(logs_uploader_.GetWeakPtr());
   }
 
   const std::vector<std::unique_ptr<LogAiDataRequest>>& uploaded_logs() {
