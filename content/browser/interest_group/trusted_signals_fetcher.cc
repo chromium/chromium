@@ -97,26 +97,40 @@ constexpr size_t kCborStringLengthSize = 4;   // bytes
 constexpr size_t kOhttpHeaderSize = 55;       // bytes
 
 // Creates a single entry for the "arguments" array of a partition, with a
-// single tag and a variable number of string data values, from a set of
-// strings.
-cbor::Value MakeArgument(std::string_view tag,
-                         const std::set<std::string>& data) {
+// single tag and an array of values.
+cbor::Value MakeArgument(std::string_view tag, cbor::Value::ArrayValue data) {
   cbor::Value::MapValue argument;
 
   cbor::Value::ArrayValue tags;
   tags.emplace_back(cbor::Value(tag));
   argument.try_emplace(cbor::Value("tags"), cbor::Value(std::move(tags)));
-
-  cbor::Value::ArrayValue cbor_data;
-  for (const auto& element : data) {
-    cbor_data.emplace_back(cbor::Value(element));
-  }
-  argument.try_emplace(cbor::Value("data"), cbor::Value(std::move(cbor_data)));
+  argument.try_emplace(cbor::Value("data"), std::move(data));
 
   return cbor::Value(std::move(argument));
 }
 
-cbor::Value::MapValue BuildMapForBiddingPartition(
+// Creates a single entry for the "arguments" array of a partition, with a
+// single tag and an array that contains the single passed-in `data` value.
+cbor::Value MakeArgument(std::string_view tag, cbor::Value data) {
+  cbor::Value::ArrayValue cbor_array;
+  cbor_array.emplace_back(std::move(data));
+  return MakeArgument(tag, std::move(cbor_array));
+}
+
+// Creates a single entry for the "arguments" array of a partition, with a
+// single tag and a variable number of string data values, from a set of
+// strings.
+cbor::Value MakeArgument(std::string_view tag,
+                         const std::set<std::string>& data) {
+  cbor::Value::ArrayValue cbor_data;
+  for (const auto& element : data) {
+    cbor_data.emplace_back(cbor::Value(element));
+  }
+  return MakeArgument(tag, std::move(cbor_data));
+}
+
+// BiddingPartition overload of BuildMapForPartition().
+cbor::Value::MapValue BuildMapForPartition(
     int compression_group_id,
     const TrustedSignalsFetcher::BiddingPartition& bidding_partition) {
   cbor::Value::MapValue partition_cbor_map;
@@ -154,6 +168,52 @@ cbor::Value::MapValue BuildMapForBiddingPartition(
   return partition_cbor_map;
 }
 
+// ScoringPartition overload of BuildMapForPartition().
+cbor::Value::MapValue BuildMapForPartition(
+    int compression_group_id,
+    const TrustedSignalsFetcher::ScoringPartition& scoring_partition) {
+  cbor::Value::MapValue partition_cbor_map;
+
+  partition_cbor_map.try_emplace(cbor::Value("compressionGroupId"),
+                                 cbor::Value(compression_group_id));
+  partition_cbor_map.try_emplace(cbor::Value("id"),
+                                 cbor::Value(scoring_partition.partition_id));
+
+  if (!scoring_partition.additional_params->empty()) {
+    cbor::Value::MapValue metadata;
+    for (const auto param : *scoring_partition.additional_params) {
+      // TODO(crbug.com/333445540): Consider switching to taking
+      // `additional_params` as a cbor::Value, for greater flexibility.
+      //
+      // Alternatively, could split this up into the data used to construct it.
+      CHECK(param.second.is_string());
+      metadata.try_emplace(cbor::Value(param.first),
+                           cbor::Value(param.second.GetString()));
+    }
+    partition_cbor_map.try_emplace(cbor::Value("metadata"),
+                                   cbor::Value(std::move(metadata)));
+  }
+
+  cbor::Value::ArrayValue arguments;
+  arguments.emplace_back(MakeArgument(
+      "renderUrls", cbor::Value(scoring_partition.render_url->spec())));
+
+  if (!scoring_partition.component_render_urls->empty()) {
+    cbor::Value::ArrayValue component_urls;
+    for (const GURL& component_render_urls :
+         *scoring_partition.component_render_urls) {
+      component_urls.emplace_back(cbor::Value(component_render_urls.spec()));
+    }
+    arguments.emplace_back(
+        MakeArgument("adComponentRenderUrls", std::move(component_urls)));
+  }
+
+  partition_cbor_map.try_emplace(cbor::Value("arguments"),
+                                 cbor::Value(std::move(arguments)));
+
+  return partition_cbor_map;
+}
+
 std::string CreateRequestBodyFromCbor(cbor::Value cbor_value) {
   std::optional<std::vector<uint8_t>> maybe_cbor_bytes =
       cbor::Writer::Write(cbor_value);
@@ -185,10 +245,13 @@ std::string CreateRequestBodyFromCbor(cbor::Value cbor_value) {
   return request_body;
 }
 
-std::string BuildBiddingSignalsRequestBody(
+// Builds the request body for bidding and scoring requests. The outer body is
+// the same, only the data in the partitions is different, so a template works
+// well for this. PartitionType is either BiddingPartition or ScoringPartition.
+template <typename PartitionType>
+std::string BuildSignalsRequestBody(
     std::string_view hostname,
-    const std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>&
-        compression_groups) {
+    const std::map<int, std::vector<PartitionType>>& compression_groups) {
   cbor::Value::MapValue request_map_value;
   cbor::Value::ArrayValue accept_compression(kAcceptCompression.begin(),
                                              kAcceptCompression.end());
@@ -203,9 +266,9 @@ std::string BuildBiddingSignalsRequestBody(
   cbor::Value::ArrayValue partition_array;
   for (const auto& group_pair : compression_groups) {
     int compression_group_id = group_pair.first;
-    for (const auto& bidding_partition : group_pair.second) {
+    for (const auto& partition : group_pair.second) {
       cbor::Value::MapValue partition_cbor_map =
-          BuildMapForBiddingPartition(compression_group_id, bidding_partition);
+          BuildMapForPartition(compression_group_id, partition);
       partition_array.emplace_back(partition_cbor_map);
     }
   }
@@ -280,7 +343,7 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
     Callback callback) {
   EncryptRequestBodyAndStart(
       url_loader_factory, trusted_bidding_signals_url, bidding_and_auction_key,
-      BuildBiddingSignalsRequestBody(hostname, compression_groups),
+      BuildSignalsRequestBody(hostname, compression_groups),
       std::move(callback));
 }
 
@@ -291,7 +354,10 @@ void TrustedSignalsFetcher::FetchScoringSignals(
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<ScoringPartition>>& compression_groups,
     Callback callback) {
-  NOTIMPLEMENTED();
+  EncryptRequestBodyAndStart(
+      url_loader_factory, trusted_scoring_signals_url, bidding_and_auction_key,
+      BuildSignalsRequestBody(hostname, compression_groups),
+      std::move(callback));
 }
 
 void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
