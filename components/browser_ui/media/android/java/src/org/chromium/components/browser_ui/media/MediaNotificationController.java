@@ -13,7 +13,6 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -56,13 +55,7 @@ public class MediaNotificationController {
     // The maximum number of actions in BigView media notification.
     private static final int BIG_VIEW_ACTIONS_COUNT = 5;
 
-    // Pending intent for `ACTION_SWIPE`. This intent is scheduled to be created when the UI thread
-    // message queue is idle, the first time it is needed, with the goal of reducing input handling
-    // delay.
-    @VisibleForTesting public PendingIntentProvider mPendingIntentActionSwipe;
-
-    // Used to help initialize `mPendingIntentActionSwipe`.
-    @VisibleForTesting public PendingIntentInitializer mPendingIntentInitializer;
+    private final PendingIntentProvider mPendingIntentActionSwipe;
 
     public static final String ACTION_PLAY = "org.chromium.components.browser_ui.media.ACTION_PLAY";
     public static final String ACTION_PAUSE =
@@ -124,28 +117,27 @@ public class MediaNotificationController {
             mHandler = new Handler();
         }
 
-        // When |mThrottleTask| is non-null, it will always be queued in mHandler. When
-        // |mThrottleTask| is non-null, all notification updates will be throttled and their info
-        // will be stored as mLastPendingInfo. When |mThrottleTask| fires, it will call {@link
-        // showNotification()} with the latest queued notification info.
-        @VisibleForTesting public Runnable mThrottleTask;
+        // When |mTask| is non-null, it will always be queued in mHandler. When |mTask| is non-null,
+        // all notification updates will be throttled and their info will be stored as
+        // mLastPendingInfo. When |mTask| fires, it will call {@link showNotification()} with
+        // the latest queued notification info.
+        @VisibleForTesting public Runnable mTask;
 
         // The last pending info. If non-null, it will be the latest notification info.
         // Otherwise, the latest notification info will be |mController.mMediaNotificationInfo|.
-        //
-        // If `mLastPendingInfo` or `mPendingIntentActionSwipe` are null, no notification will be
-        // shown. When `mThrottleTask` fires and `mLastPendingInfo` is null, the throttled state
-        // will end.
         @VisibleForTesting public MediaNotificationInfo mLastPendingInfo;
 
         /**
-         * Queue `mediaNotificationInfo` for update.
+         * Queue |mediaNotificationInfo| for update. In unthrottled state (i.e. |mTask| != null),
+         * the notification will be updated immediately and enter the throttled state. In
+         * unthrottled state, the method will only update the pending notification info, which will
+         * be used for updating the notification when |mTask| is fired.
          *
          * @param mediaNotificationInfo The notification info to be queued.
          */
         public void queueNotification(MediaNotificationInfo mediaNotificationInfo) {
             assert mediaNotificationInfo != null;
-            mController.schedulePendingIntentConstructionIfNeeded();
+
             MediaNotificationInfo latestMediaNotificationInfo =
                     mLastPendingInfo != null
                             ? mLastPendingInfo
@@ -156,164 +148,43 @@ public class MediaNotificationController {
                 return;
             }
 
-            showNotificationImmediately(mediaNotificationInfo);
-        }
-
-        /**
-         * Clears the pending notification and `PendingIntentInitializer` task, and enter
-         * unthrottled state.
-         */
-        public void clearPendingNotifications() {
-            mHandler.removeCallbacks(mThrottleTask);
-            mLastPendingInfo = null;
-            mThrottleTask = null;
-
-            if (mController.mPendingIntentInitializer != null) {
-                mController.mPendingIntentInitializer.clearDelayedTask();
+            if (mTask == null) {
+                showNotificationImmediately(mediaNotificationInfo);
+            } else {
+                mLastPendingInfo = mediaNotificationInfo;
             }
         }
 
-        /**
-         * Shows notification immediately if no notification has been updated in the last
-         * THROTTLE_MILLIS, and queue a task for blocking further updates.
-         *
-         * <p>In unthrottled state (i.e. `mThrottleTask` == null), the notification will be updated
-         * immediately and enter the throttled state. In throttled state, the method will only
-         * update the pending notification info, which will be used for updating the notification
-         * when `mThrottleTask` is fired.
-         */
+        /** Clears the pending notification and enter unthrottled state. */
+        public void clearPendingNotifications() {
+            mHandler.removeCallbacks(mTask);
+            mLastPendingInfo = null;
+            mTask = null;
+        }
+
         @VisibleForTesting
         public void showNotificationImmediately(MediaNotificationInfo mediaNotificationInfo) {
-            // Keep `mLastPendingInfo` up to date with the latest notification info.
-            mLastPendingInfo = mediaNotificationInfo;
-
-            // Return if we are in a throttled state.
-            if (mThrottleTask != null) {
-                return;
-            }
-
-            // Show the notification and clear `mLastPendingInfo` to prevent the next scheduled task
-            // from showing a notification, if no new notifications are received.
-            if (mController.mPendingIntentActionSwipe != null) {
-                mController.showNotification(mediaNotificationInfo);
-                mLastPendingInfo = null;
-            }
-
-            // Create a task to show a notification for the latest `mLastPendingInfo` that is queued
-            // while the task is waiting to run. The task will fire after `THROTTLE_MILLIS` has
-            // elapsed.
-            //
-            // `mThrottleTask` takes care of clearing itself and `mLastPendingInfo` controls when to
-            // exit the throttled state.
-            mThrottleTask =
+            // If no notification hasn't been updated in the last THROTTLE_MILLIS, update
+            // immediately and queue a task for blocking further updates.
+            mController.showNotification(mediaNotificationInfo);
+            mTask =
                     new Runnable() {
                         @Override
                         public void run() {
-                            mThrottleTask = null;
                             if (mLastPendingInfo != null) {
+                                // If any notification info is pended during the throttling time
+                                // window, update the notification.
                                 showNotificationImmediately(mLastPendingInfo);
+                                mLastPendingInfo = null;
+                            } else {
+                                // Otherwise, clear the task so further update is unthrottled.
+                                mTask = null;
                             }
                         }
                     };
-
-            // Enter throttled state.
-            if (!mHandler.postDelayed(mThrottleTask, THROTTLE_MILLIS)) {
+            if (!mHandler.postDelayed(mTask, THROTTLE_MILLIS)) {
                 Log.w(TAG, "Failed to post the throttler task.");
-                mThrottleTask = null;
-            }
-        }
-    }
-
-    /**
-     * Helper class to initialize the `mPendingIntentActionSwipe` pending intent when the UI thread
-     * message queue is idle.
-     *
-     * <p>This class will add an `IdleHandler` to the UI thread message queue and schedule a delayed
-     * task. If the UI thread is not idle before `MAX_INIT_WAIT_TIME_MILLIS`, then
-     * `mPendingIntentActionSwipe` will be initialized by the delayed task.
-     *
-     * <p>If the idle task runs before `MAX_INIT_WAIT_TIME_MILLIS`, it will cancel the delayed task.
-     */
-    public static class PendingIntentInitializer {
-        @VisibleForTesting public static final int MAX_INIT_WAIT_TIME_MILLIS = 2000;
-
-        @VisibleForTesting public MediaNotificationController mController;
-
-        private final Handler mHandler;
-
-        // Task to perform initialization if the pending intent has not been initialized after
-        // `MAX_INIT_WAIT_TIME_MILLIS`.
-        @VisibleForTesting public Runnable mSwipeInitTask;
-
-        // Indicates whether the tasks to initialize the pending intent have been scheduled or not.
-        private boolean mTasksScheduled;
-
-        @VisibleForTesting
-        public PendingIntentInitializer(@NonNull MediaNotificationController controller) {
-            mController = controller;
-            mHandler = new Handler();
-        }
-
-        /** Schedules the `mPendingIntentActionSwipe` construction if needed. */
-        @VisibleForTesting
-        public void schedulePendingIntentConstructionIfNeeded() {
-            if (mController.mPendingIntentActionSwipe != null || mTasksScheduled) {
-                return;
-            }
-
-            postDelayedTask();
-            scheduleIdleTask();
-
-            mTasksScheduled = true;
-        }
-
-        @VisibleForTesting
-        public void createPendingIntentActionSwipeIfNeeded() {
-            if (mController.mPendingIntentActionSwipe != null) {
-                return;
-            }
-
-            clearDelayedTask();
-            mController.mPendingIntentActionSwipe = mController.createPendingIntent(ACTION_SWIPE);
-            mController.mPendingIntentInitializer = null;
-        }
-
-        /**
-         * Schedules a delayed task to initialize `mPendingIntentActionSwipe`, if the pending intent
-         * has not been initialized after `MAX_INIT_WAIT_TIME_MILLIS`.
-         */
-        @VisibleForTesting
-        public void postDelayedTask() {
-            mSwipeInitTask =
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            createPendingIntentActionSwipeIfNeeded();
-                        }
-                    };
-            mHandler.postDelayed(mSwipeInitTask, MAX_INIT_WAIT_TIME_MILLIS);
-        }
-
-        /**
-         * Adds a new `IdleHandler` to initialize `mPendingIntentActionSwipe` whenever the UI thread
-         * message queue is idle.
-         */
-        @VisibleForTesting
-        public void scheduleIdleTask() {
-            Looper.myQueue()
-                    .addIdleHandler(
-                            () -> {
-                                createPendingIntentActionSwipeIfNeeded();
-                                return false;
-                            });
-        }
-
-        /** Clears the `mIdleSwipeInitTask` delayed task */
-        @VisibleForTesting
-        public void clearDelayedTask() {
-            if (mSwipeInitTask != null) {
-                mHandler.removeCallbacks(mSwipeInitTask);
-                mSwipeInitTask = null;
+                mTask = null;
             }
         }
     }
@@ -389,8 +260,7 @@ public class MediaNotificationController {
         return true;
     }
 
-    @VisibleForTesting
-    public PendingIntentProvider createPendingIntent(String action) {
+    private PendingIntentProvider createPendingIntent(String action) {
         Intent intent = mDelegate.createServiceIntent().setAction(action);
         return PendingIntentProvider.getService(
                 getContext(),
@@ -502,11 +372,9 @@ public class MediaNotificationController {
                         ACTION_SEEK_BACKWARD,
                         MEDIA_ACTION_SEEK_BACKWARD));
 
-        mThrottler = new Throttler(this);
+        mPendingIntentActionSwipe = createPendingIntent(ACTION_SWIPE);
 
-        // Create `mPendingIntentInitializer`, which will be used to help initialize
-        // `mPendingIntentActionSwipe`.
-        mPendingIntentInitializer = new PendingIntentInitializer(this);
+        mThrottler = new Throttler(this);
     }
 
     /**
@@ -682,15 +550,6 @@ public class MediaNotificationController {
             return;
         }
         clearNotification();
-    }
-
-    /** Schedules the `mPendingIntentActionSwipe` construction if needed. */
-    @VisibleForTesting
-    public void schedulePendingIntentConstructionIfNeeded() {
-        if (mPendingIntentInitializer == null) {
-            return;
-        }
-        mPendingIntentInitializer.schedulePendingIntentConstructionIfNeeded();
     }
 
     @VisibleForTesting
