@@ -20,8 +20,13 @@ class PrefService;
 @optional
 // Called when the authentication requirement in a given scene might have
 // changed.
+// TODO(crbug.com/374073829): Remove after launching Soft Lock.
 - (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
     didUpdateAuthenticationRequirement:(BOOL)isRequired;
+
+// Called when the incognito lock state in a given scene might have changed.
+- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
+    didUpdateIncognitoLockState:(IncognitoLockState)incogitoLockState;
 
 @end
 

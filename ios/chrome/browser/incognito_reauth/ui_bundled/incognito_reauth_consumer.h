@@ -11,7 +11,15 @@
 
 // Notify consumer that the displayed items require authentication before they
 // can be accessed. Used for biometric incognito tab authentication.
+// TODO(crbug.com/374073829): Remove after launching Soft Lock.
 - (void)setItemsRequireAuthentication:(BOOL)requireAuthentication;
+
+// Notify consumer that the displayed items require authentication before they
+// can be accessed. Also push to the consumer the text and accessibility label
+// of the primary button on the lock screen.
+- (void)setItemsRequireAuthentication:(BOOL)requireAuthentication
+                withPrimaryButtonText:(NSString*)text
+                   accessibilityLabel:(NSString*)accessibilityLabel;
 
 @end
 

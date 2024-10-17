@@ -2410,6 +2410,20 @@ enum HeaderBehaviour {
   }
 }
 
+- (void)setItemsRequireAuthentication:(BOOL)require
+                withPrimaryButtonText:(NSString*)text
+                   accessibilityLabel:(NSString*)accessibilityLabel {
+  [self setItemsRequireAuthentication:require];
+  if (require) {
+    // TODO(crbug.com/370804664): Change the primary button text and
+    // accessibility label.
+  } else {
+    // No primary button text or accessibility label should be set when
+    // authentication is not required.
+    CHECK(!text);
+    CHECK(!accessibilityLabel);
+  }
+}
 #pragma mark - UIGestureRecognizerDelegate
 
 // Always return yes, as this tap should work with various recognizers,

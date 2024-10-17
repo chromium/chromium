@@ -2297,6 +2297,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INCOGNITO_REAUTH_CLOSE_INCOGNITO_TABS" desc="Button to close all Incognito tabs on a screen that blocks Incognito tabs until unlocked. [iOS only]">
         Close Incognito tabs
       </message>
+      <message name="IDS_IOS_INCOGNITO_REAUTH_CONTINUE_IN_INCOGNITO" desc="Button that unlocks Incognito content, behind the blurred lock screen, with a tap. [iOS only]">
+        Continue in Incognito
+      </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_GO_TO_NORMAL_TABS" desc="Button to go to non-Incognito tabs on a screen that blocks Incognito tabs until biometric authetication. [iOS only]">
         See other tabs
       </message>

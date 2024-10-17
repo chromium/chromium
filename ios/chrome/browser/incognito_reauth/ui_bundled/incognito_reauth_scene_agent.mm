@@ -228,8 +228,13 @@
 
 - (void)notifyObservers {
   DCHECK([self areLockFeaturesEnabled]);
-  [self.observers reauthAgent:self
-      didUpdateAuthenticationRequirement:self.isAuthenticationRequired];
+  if (IsIOSSoftLockEnabled()) {
+    [self.observers reauthAgent:self
+        didUpdateIncognitoLockState:self.incognitoLockState];
+  } else {
+    [self.observers reauthAgent:self
+        didUpdateAuthenticationRequirement:self.isAuthenticationRequired];
+  }
 }
 
 #pragma mark - SceneStateObserver

@@ -84,14 +84,19 @@ source_set("incognito_reauth_scene_agent") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "incognito_reauth_scene_agent_unittest.mm" ]
+  sources = [
+    "incognito_reauth_mediator_unittest.mm",
+    "incognito_reauth_scene_agent_unittest.mm",
+  ]
   deps = [
     ":features",
     ":incognito_reauth_scene_agent",
     ":incognito_reauth_util",
+    ":ui",
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_view/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:scene_activation_level",
     "//ios/chrome/browser/shared/coordinator/scene/test",
