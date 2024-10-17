@@ -34,7 +34,23 @@ enum class SupportedLanguage {
   kVi = 16,
   kZh = 17,
   kZhHant = 18,
-  kMaxValue = kZhHant,
+  kBg = 19,
+  kCs = 20,
+  kDa = 21,
+  kEl = 22,
+  kFi = 23,
+  kHr = 24,
+  kHu = 25,
+  kId = 26,
+  kIw = 27,
+  kLt = 28,
+  kNo = 29,
+  kRo = 30,
+  kSk = 31,
+  kSl = 32,
+  kSv = 33,
+  kUk = 34,
+  kMaxValue = kUk,
 };
 
 // Converts a SupportedLanguage to a language code.
@@ -68,7 +84,23 @@ enum class LanguagePackKey {
   kEn_Vi = 15,
   kEn_Zh = 16,
   kEn_ZhHant = 17,
-  kMaxValue = kEn_ZhHant,
+  kBg_En = 18,
+  kCs_En = 19,
+  kDa_En = 20,
+  kEl_En = 21,
+  kEn_Fi = 22,
+  kEn_Hr = 23,
+  kEn_Hu = 24,
+  kEn_Id = 25,
+  kEn_Iw = 26,
+  kEn_Lt = 27,
+  kEn_No = 28,
+  kEn_Ro = 29,
+  kEn_Sk = 30,
+  kEn_Sl = 31,
+  kEn_Sv = 32,
+  kEn_Uk = 33,
+  kMaxValue = kEn_Uk,
 };
 
 // The config for a language pack component.
@@ -257,6 +289,150 @@ const LanguagePackComponentConfig kTranslateKitEnZhHantConfig = {
                        0xc3, 0x18, 0x64, 0x25, 0x95, 0x20, 0xdd, 0x4a,
                        0xcb, 0x70, 0x7e, 0x63, 0xcf, 0xaa, 0x5f, 0x3b}};
 
+// The config for the TranslateKit bg-en language pack.
+const LanguagePackComponentConfig kTranslateKitBgEnConfig = {
+    .language1 = SupportedLanguage::kBg,
+    .language2 = SupportedLanguage::kEn,
+    .public_key_sha = {0x6c, 0xdf, 0x57, 0x5f, 0x99, 0x8e, 0x24, 0xb1,
+                       0x99, 0x9f, 0xc8, 0x99, 0xe5, 0xd0, 0xd9, 0xec,
+                       0xba, 0xc2, 0x52, 0x9e, 0x33, 0x02, 0xd0, 0x3a,
+                       0x69, 0xea, 0x47, 0xd1, 0xf5, 0xc7, 0xc3, 0xe5}};
+
+// The config for the TranslateKit cs-en language pack.
+const LanguagePackComponentConfig kTranslateKitCsEnConfig = {
+    .language1 = SupportedLanguage::kCs,
+    .language2 = SupportedLanguage::kEn,
+    .public_key_sha = {0xb1, 0xc4, 0xea, 0x3f, 0xb5, 0xcf, 0xba, 0x79,
+                       0x30, 0xed, 0xac, 0x26, 0x86, 0xb4, 0xe4, 0xba,
+                       0x7a, 0xe6, 0x49, 0x10, 0xa4, 0xf3, 0x5c, 0x03,
+                       0x6e, 0x83, 0x9a, 0xfd, 0xea, 0xbb, 0x82, 0x65}};
+
+// The config for the TranslateKit da-en language pack.
+const LanguagePackComponentConfig kTranslateKitDaEnConfig = {
+    .language1 = SupportedLanguage::kDa,
+    .language2 = SupportedLanguage::kEn,
+    .public_key_sha = {0x03, 0xed, 0xf8, 0x44, 0x84, 0xaa, 0x9e, 0x13,
+                       0xd2, 0x2f, 0xe6, 0xfb, 0x6d, 0x22, 0x0b, 0xa0,
+                       0x9b, 0x6a, 0x3e, 0x8f, 0x2e, 0x89, 0x88, 0x07,
+                       0xcd, 0x7d, 0x6b, 0x7d, 0x38, 0x89, 0xe7, 0x7d}};
+
+// The config for the TranslateKit el-en language pack.
+const LanguagePackComponentConfig kTranslateKitElEnConfig = {
+    .language1 = SupportedLanguage::kEl,
+    .language2 = SupportedLanguage::kEn,
+    .public_key_sha = {0x29, 0xa0, 0x99, 0xad, 0x64, 0x3f, 0x23, 0x88,
+                       0x90, 0x0c, 0xa9, 0x7b, 0x6c, 0x32, 0x6a, 0x75,
+                       0x46, 0x03, 0x1a, 0xd5, 0xb7, 0xeb, 0x89, 0x99,
+                       0x28, 0xf6, 0x46, 0x39, 0x5f, 0x88, 0x61, 0xed}};
+
+// The config for the TranslateKit en-fi language pack.
+const LanguagePackComponentConfig kTranslateKitEnFiConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kFi,
+    .public_key_sha = {0x92, 0xb7, 0xbb, 0xb7, 0xc7, 0xad, 0x82, 0x5b,
+                       0x94, 0xfd, 0xba, 0x43, 0x51, 0x59, 0x01, 0xcf,
+                       0xff, 0x81, 0x92, 0xc8, 0x4a, 0xfe, 0x17, 0x04,
+                       0x48, 0x35, 0xc7, 0x93, 0x77, 0x0a, 0x81, 0x85}};
+
+// The config for the TranslateKit en-hr language pack.
+const LanguagePackComponentConfig kTranslateKitEnHrConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kHr,
+    .public_key_sha = {0x6a, 0x1a, 0x78, 0x89, 0x45, 0x2b, 0x32, 0xf1,
+                       0xe6, 0x23, 0x26, 0x9e, 0x84, 0x70, 0x53, 0x53,
+                       0xc0, 0x51, 0xa2, 0xa9, 0xb2, 0x4f, 0xe5, 0x47,
+                       0x3c, 0x55, 0x03, 0xed, 0x63, 0x21, 0x17, 0xdb}};
+
+// The config for the TranslateKit en-hu language pack.
+const LanguagePackComponentConfig kTranslateKitEnHuConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kHu,
+    .public_key_sha = {0xf4, 0xee, 0xf9, 0x6f, 0x3c, 0x96, 0x24, 0xc3,
+                       0x6e, 0xbf, 0x68, 0xdc, 0x6f, 0xf1, 0x0d, 0x58,
+                       0x1a, 0xf4, 0x78, 0xd4, 0x0e, 0x9e, 0x55, 0x35,
+                       0x75, 0x7d, 0xb4, 0x55, 0x9e, 0x3e, 0xc9, 0x24}};
+
+// The config for the TranslateKit en-id language pack.
+const LanguagePackComponentConfig kTranslateKitEnIdConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kId,
+    .public_key_sha = {0xa1, 0x07, 0xf5, 0x27, 0xbd, 0x5a, 0x87, 0x1f,
+                       0xd3, 0x4e, 0x44, 0x35, 0x97, 0x41, 0xc6, 0x58,
+                       0xd7, 0x29, 0x25, 0x33, 0x52, 0x25, 0x72, 0x3a,
+                       0x47, 0x85, 0x8c, 0x1d, 0x88, 0x40, 0x1d, 0x1d}};
+
+// The config for the TranslateKit en-iw language pack.
+const LanguagePackComponentConfig kTranslateKitEnIwConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kIw,
+    .public_key_sha = {0x31, 0x28, 0xaf, 0x49, 0xe0, 0x6e, 0x38, 0xc8,
+                       0x21, 0xf7, 0x06, 0xd9, 0xad, 0x51, 0x21, 0x03,
+                       0x8c, 0xbd, 0x0c, 0x8f, 0x7d, 0x51, 0xb5, 0x3b,
+                       0x40, 0x33, 0x8e, 0x09, 0x5d, 0x78, 0x6f, 0x3c}};
+
+// The config for the TranslateKit en-lt language pack.
+const LanguagePackComponentConfig kTranslateKitEnLtConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kLt,
+    .public_key_sha = {0xe3, 0x60, 0xdd, 0x89, 0xe4, 0x3e, 0x7a, 0x2a,
+                       0x63, 0xc6, 0xdc, 0x79, 0x4d, 0x67, 0x76, 0x7f,
+                       0x98, 0xbc, 0xdd, 0x6c, 0xf4, 0x30, 0x33, 0x8e,
+                       0xef, 0x82, 0x05, 0x97, 0x12, 0xcc, 0xa5, 0xfa}};
+
+// The config for the TranslateKit en-no language pack.
+const LanguagePackComponentConfig kTranslateKitEnNoConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kNo,
+    .public_key_sha = {0xc7, 0xce, 0xeb, 0x48, 0x16, 0x9e, 0x4e, 0x88,
+                       0xf9, 0xfe, 0x15, 0x1f, 0x67, 0x92, 0x1d, 0x72,
+                       0x34, 0x9c, 0x02, 0xfa, 0xfd, 0x24, 0x6c, 0x6f,
+                       0xa6, 0x99, 0x90, 0xf1, 0xfa, 0x5a, 0x99, 0xa0}};
+
+// The config for the TranslateKit en-ro language pack.
+const LanguagePackComponentConfig kTranslateKitEnRoConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kRo,
+    .public_key_sha = {0x0a, 0x2f, 0xeb, 0x3c, 0xac, 0xf3, 0x64, 0xbf,
+                       0x50, 0x2f, 0x9c, 0xff, 0xc7, 0x17, 0x81, 0x0c,
+                       0xf8, 0x47, 0xf5, 0x7a, 0xa5, 0x2b, 0xb2, 0x7a,
+                       0x47, 0x24, 0x37, 0x15, 0xcc, 0x7f, 0x03, 0xa7}};
+
+// The config for the TranslateKit en-sk language pack.
+const LanguagePackComponentConfig kTranslateKitEnSkConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kSk,
+    .public_key_sha = {0xf4, 0xe9, 0x21, 0x11, 0x45, 0xae, 0x0a, 0x0c,
+                       0xf6, 0x1f, 0x7c, 0x6a, 0x72, 0xe9, 0x7b, 0x6f,
+                       0xf5, 0x9a, 0x87, 0xda, 0x85, 0x0f, 0xea, 0x46,
+                       0x25, 0xa5, 0x65, 0xfa, 0xdf, 0xd6, 0xf5, 0x9d}};
+
+// The config for the TranslateKit en-sl language pack.
+const LanguagePackComponentConfig kTranslateKitEnSlConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kSl,
+    .public_key_sha = {0xe1, 0x5f, 0xa1, 0xfb, 0x33, 0xbb, 0x42, 0xe5,
+                       0x02, 0x81, 0x68, 0x0c, 0xf0, 0xc7, 0xcd, 0xef,
+                       0xfa, 0x09, 0x1f, 0xd9, 0x61, 0xf3, 0x4f, 0x55,
+                       0x50, 0x6a, 0x71, 0x6b, 0xe0, 0xbe, 0x65, 0xed}};
+
+// The config for the TranslateKit en-sv language pack.
+const LanguagePackComponentConfig kTranslateKitEnSvConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kSv,
+    .public_key_sha = {0xf7, 0xff, 0xca, 0x43, 0xfb, 0x2e, 0xcd, 0x44,
+                       0xdf, 0xb7, 0xc2, 0xa6, 0x8a, 0x66, 0x68, 0x3e,
+                       0xb1, 0x3b, 0x10, 0xd2, 0x7a, 0xc4, 0xc7, 0xf9,
+                       0xdd, 0xc4, 0x87, 0xed, 0xf9, 0x22, 0x0a, 0x6b}};
+
+// The config for the TranslateKit en-uk language pack.
+const LanguagePackComponentConfig kTranslateKitEnUkConfig = {
+    .language1 = SupportedLanguage::kEn,
+    .language2 = SupportedLanguage::kUk,
+    .public_key_sha = {0xe0, 0x84, 0x14, 0x12, 0x2b, 0xce, 0xb0, 0xbc,
+                       0x6a, 0x3c, 0xc2, 0x07, 0x60, 0x82, 0x63, 0x14,
+                       0xa3, 0x39, 0x69, 0x87, 0x82, 0x86, 0x10, 0xd3,
+                       0x55, 0x54, 0x50, 0x94, 0x01, 0xec, 0xc5, 0xe3}};
+
 // The config for each language pack.
 constexpr auto kLanguagePackComponentConfigMap =
     base::MakeFixedFlatMap<LanguagePackKey, const LanguagePackComponentConfig*>(
@@ -277,7 +453,23 @@ constexpr auto kLanguagePackComponentConfigMap =
          {LanguagePackKey::kEn_Tr, &kTranslateKitEnTrConfig},
          {LanguagePackKey::kEn_Vi, &kTranslateKitEnViConfig},
          {LanguagePackKey::kEn_Zh, &kTranslateKitEnZhConfig},
-         {LanguagePackKey::kEn_ZhHant, &kTranslateKitEnZhHantConfig}});
+         {LanguagePackKey::kEn_ZhHant, &kTranslateKitEnZhHantConfig},
+         {LanguagePackKey::kBg_En, &kTranslateKitBgEnConfig},
+         {LanguagePackKey::kCs_En, &kTranslateKitCsEnConfig},
+         {LanguagePackKey::kDa_En, &kTranslateKitDaEnConfig},
+         {LanguagePackKey::kEl_En, &kTranslateKitElEnConfig},
+         {LanguagePackKey::kEn_Fi, &kTranslateKitEnFiConfig},
+         {LanguagePackKey::kEn_Hr, &kTranslateKitEnHrConfig},
+         {LanguagePackKey::kEn_Hu, &kTranslateKitEnHuConfig},
+         {LanguagePackKey::kEn_Id, &kTranslateKitEnIdConfig},
+         {LanguagePackKey::kEn_Iw, &kTranslateKitEnIwConfig},
+         {LanguagePackKey::kEn_Lt, &kTranslateKitEnLtConfig},
+         {LanguagePackKey::kEn_No, &kTranslateKitEnNoConfig},
+         {LanguagePackKey::kEn_Ro, &kTranslateKitEnRoConfig},
+         {LanguagePackKey::kEn_Sk, &kTranslateKitEnSkConfig},
+         {LanguagePackKey::kEn_Sl, &kTranslateKitEnSlConfig},
+         {LanguagePackKey::kEn_Sv, &kTranslateKitEnSvConfig},
+         {LanguagePackKey::kEn_Uk, &kTranslateKitEnUkConfig}});
 static_assert(std::size(kLanguagePackComponentConfigMap) ==
                   static_cast<unsigned>(LanguagePackKey::kMaxValue) + 1,
               "All language packs must be in kLanguagePackComponentConfigMap.");
