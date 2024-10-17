@@ -440,7 +440,7 @@ int GetWallpaperSearchButtonAnimationShownThreshold() {
 int GetWallpaperSearchButtonHideCondition() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kNtpWallpaperSearchButtonHideCondition,
-      kNtpWallpaperSearchButtonHideConditionParam, 0);
+      kNtpWallpaperSearchButtonHideConditionParam, 2);
 }
 
 std::string GetMobilePromoTargetURL() {
