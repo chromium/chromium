@@ -7,6 +7,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/fingerprinting_protection/fingerprinting_protection_filter_browser_test_harness.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
@@ -129,6 +130,13 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     FingerprintingProtectionFilterEnabledInIncognitoBrowserTest,
     SubframeDocumentLoadFiltering) {
+  // Close normal browser and switch the test's browser instance to an incognito
+  // instance.
+  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(browser(), incognito);
+
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   base::HistogramTester histogram_tester;
@@ -318,20 +326,9 @@ class FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/40236757): Flaky on Mac.
-#define MAYBE_PerformanceMeasurementsHistogramsAreRecorded \
-  DISABLED_PerformanceMeasurementsHistogramsAreRecorded
-#else
-#define MAYBE_PerformanceMeasurementsHistogramsAreRecorded \
-  PerformanceMeasurementsHistogramsAreRecorded
-#endif
-
-// TODO(https://crbug.com/371981583): Add browser test(s) for Incognito mode
-// equivalent.
 IN_PROC_BROWSER_TEST_F(
     FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabled,
-    MAYBE_PerformanceMeasurementsHistogramsAreRecorded) {
+    PerformanceMeasurementsHistogramsAreRecorded) {
   base::HistogramTester histogram_tester;
 
   GURL url(GetTestUrl(kTestFrameSetPath));
@@ -340,6 +337,74 @@ IN_PROC_BROWSER_TEST_F(
   // loading included_script.js.
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Now navigate the first subframe to an allowed URL and ensure that the load
+  // successfully commits and the frame gets restored (no longer collapsed).
+  GURL allowed_subdocument_url(
+      GetTestUrl("subresource_filter/frame_with_allowed_script.html"));
+  NavigateFrame(kSubframeNames[0], allowed_subdocument_url);
+
+  const std::vector<bool> kExpectFirstAndSecondSubframe{true, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectFirstAndSecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectFirstAndSecondSubframe);
+
+  histogram_tester.ExpectBucketCount(
+      ActivationDecisionHistogramName,
+      subresource_filter::ActivationDecision::ACTIVATED, 1);
+  histogram_tester.ExpectBucketCount(
+      ActivationLevelHistogramName,
+      subresource_filter::mojom::ActivationLevel::kEnabled, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsMatchedRulesForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
+  histogram_tester.ExpectTotalCount(kEvaluationTotalWallDurationForPage, 1);
+  histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDurationForPage, 1);
+}
+
+class
+    FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabledInIncognito
+    : public FingerprintingProtectionFilterEnabledInIncognitoBrowserTest {
+ public:
+  FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabledInIncognito() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kEnableFingerprintingProtectionFilterInIncognito,
+          {{"performance_measurement_rate", "1.0"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabledInIncognito,
+    PerformanceMeasurementsHistogramsAreRecorded) {
+  // Close normal browser and switch the test's browser instance to an incognito
+  // instance.
+  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(browser(), incognito);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url(GetTestUrl(kTestFrameSetPath));
+
+  // Disallow loading child frame documents that in turn would end up
+  // loading included_script.js.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   const std::vector<const char*> kSubframeNames{"one", "two", "three"};
