@@ -761,9 +761,9 @@ void AttributionManagerImpl::HandleTrigger(
 }
 
 void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
-                                          bool is_debug_cookie_set) {
+                                          bool cookie_based_debug_allowed) {
   std::optional<uint64_t> cleared_debug_key;
-  if (!is_debug_cookie_set) {
+  if (!cookie_based_debug_allowed) {
     cleared_debug_key =
         std::exchange(trigger.registration().debug_key, std::nullopt);
   }
@@ -773,7 +773,7 @@ void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
       .WithArgs(std::move(trigger))
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,
                            weak_factory_.GetWeakPtr(), cleared_debug_key,
-                           is_debug_cookie_set));
+                           cookie_based_debug_allowed));
 }
 
 void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTriggerRFH event) {
@@ -877,11 +877,11 @@ void AttributionManagerImpl::ProcessEvent(SourceOrTriggerRFH event) {
                         StoreSourceResult::ProhibitedByBrowserPolicy()));
                 break;
               case BrowserPolicy::kAllowedWithDebug:
-                source.set_debug_cookie_set(/*value=*/true);
+                source.set_cookie_based_debug_allowed(/*value=*/true);
                 StoreSource(std::move(source));
                 break;
               case BrowserPolicy::kAllowedWithoutDebug:
-                source.set_debug_cookie_set(/*value=*/false);
+                source.set_cookie_based_debug_allowed(/*value=*/false);
                 StoreSource(std::move(source));
                 break;
             }
@@ -891,7 +891,7 @@ void AttributionManagerImpl::ProcessEvent(SourceOrTriggerRFH event) {
               case BrowserPolicy::kProhibited:
                 OnReportStored(
                     /*cleared_debug_key=*/std::nullopt,
-                    /*is_debug_cookie_set=*/false,
+                    /*cookie_based_debug_allowed=*/false,
                     CreateReportResult(
                         /*trigger_time=*/base::Time::Now(), std::move(trigger),
                         /*event_level_result=*/
@@ -902,10 +902,12 @@ void AttributionManagerImpl::ProcessEvent(SourceOrTriggerRFH event) {
                         /*min_null_aggregatable_report_time=*/std::nullopt));
                 break;
               case BrowserPolicy::kAllowedWithDebug:
-                StoreTrigger(std::move(trigger), /*is_debug_cookie_set=*/true);
+                StoreTrigger(std::move(trigger),
+                             /*cookie_based_debug_allowed=*/true);
                 break;
               case BrowserPolicy::kAllowedWithoutDebug:
-                StoreTrigger(std::move(trigger), /*is_debug_cookie_set=*/false);
+                StoreTrigger(std::move(trigger),
+                             /*cookie_based_debug_allowed=*/false);
                 break;
             }
           },
@@ -915,7 +917,7 @@ void AttributionManagerImpl::ProcessEvent(SourceOrTriggerRFH event) {
 
 void AttributionManagerImpl::StoreSource(StorableSource source) {
   std::optional<uint64_t> cleared_debug_key;
-  if (!source.common_info().debug_cookie_set()) {
+  if (!source.common_info().cookie_based_debug_allowed()) {
     cleared_debug_key =
         std::exchange(source.registration().debug_key, std::nullopt);
   }
@@ -928,7 +930,7 @@ void AttributionManagerImpl::StoreSource(StorableSource source) {
 
 void AttributionManagerImpl::OnReportStored(
     std::optional<uint64_t> cleared_debug_key,
-    bool is_debug_cookie_set,
+    bool cookie_based_debug_allowed,
     CreateReportResult result) {
   CHECK(IsReady());
 
@@ -976,7 +978,7 @@ void AttributionManagerImpl::OnReportStored(
     observer.OnTriggerHandled(cleared_debug_key, result);
   }
 
-  MaybeSendVerboseDebugReport(is_debug_cookie_set, result);
+  MaybeSendVerboseDebugReport(cookie_based_debug_allowed, result);
 
   MaybeSendAggregatableDebugReport(result);
 }
@@ -1576,7 +1578,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
 }
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
-    bool is_debug_cookie_set,
+    bool cookie_based_debug_allowed,
     const CreateReportResult& result) {
   const auto is_operation_allowed = [&]() {
     return IsOperationAllowed(
@@ -1590,7 +1592,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
 
   if (std::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(is_operation_allowed,
-                                         is_debug_cookie_set, result)) {
+                                         cookie_based_debug_allowed, result)) {
     report_sender_->SendReport(
         *std::move(debug_report),
         base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,

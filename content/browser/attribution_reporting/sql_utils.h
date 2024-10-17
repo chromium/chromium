@@ -65,7 +65,7 @@ std::string SerializeReadOnlySourceData(
     const attribution_reporting::TriggerSpecs&,
     double randomized_response_rate,
     attribution_reporting::mojom::TriggerDataMatching,
-    bool debug_cookie_set,
+    bool cookie_based_debug_allowed,
     absl::uint128 aggregatable_debug_key_piece);
 
 CONTENT_EXPORT std::optional<proto::AttributionReadOnlySourceData>

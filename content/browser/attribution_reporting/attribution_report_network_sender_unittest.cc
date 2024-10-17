@@ -849,7 +849,7 @@ TEST_F(AttributionReportNetworkSenderTest,
       StoreSourceResult(
           SourceBuilder()
               .SetDebugReporting(true)
-              .SetDebugCookieSet(true)
+              .SetCookieBasedDebugAllowed(true)
               .Build(),
           /*is_noised=*/false, /*source_time=*/base::Time::Now(),
           /*destination_limit=*/std::nullopt,
@@ -884,7 +884,7 @@ TEST_F(AttributionReportNetworkSenderTest,
       StoreSourceResult(
           SourceBuilder()
               .SetDebugReporting(true)
-              .SetDebugCookieSet(true)
+              .SetCookieBasedDebugAllowed(true)
               .Build(),
           /*is_noised=*/false, /*source_time=*/base::Time::Now(),
           /*destination_limit=*/std::nullopt,

@@ -2975,13 +2975,13 @@ TEST_F(AttributionResolverTest, GetAttributionDataKeysSet) {
 
 TEST_F(AttributionResolverTest, SourceDebugKey_RoundTrips) {
   storage()->StoreSource(
-      SourceBuilder().SetDebugKey(33).SetDebugCookieSet(true).Build());
+      SourceBuilder().SetDebugKey(33).SetCookieBasedDebugAllowed(true).Build());
   EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceDebugKeyIs(33)));
 }
 
 TEST_F(AttributionResolverTest, TriggerDebugKey_RoundTrips) {
   storage()->StoreSource(
-      SourceBuilder().SetDebugKey(22).SetDebugCookieSet(true).Build());
+      SourceBuilder().SetDebugKey(22).SetCookieBasedDebugAllowed(true).Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetDebugKey(33).Build()));
@@ -3026,7 +3026,7 @@ TEST_F(AttributionResolverTest, MaxReportingOriginsPerSource) {
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
           .SetDebugKey(1)
-          .SetDebugCookieSet(true)
+          .SetCookieBasedDebugAllowed(true)
           .Build());
   ASSERT_EQ(result.status(), StorableSource::Result::kSuccess);
 
@@ -3034,7 +3034,7 @@ TEST_F(AttributionResolverTest, MaxReportingOriginsPerSource) {
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
           .SetDebugKey(2)
-          .SetDebugCookieSet(true)
+          .SetCookieBasedDebugAllowed(true)
           .Build());
   ASSERT_EQ(result.status(), StorableSource::Result::kSuccess);
 
@@ -3044,7 +3044,7 @@ TEST_F(AttributionResolverTest, MaxReportingOriginsPerSource) {
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r3.test"))
           .SetDebugKey(3)
-          .SetDebugCookieSet(true)
+          .SetCookieBasedDebugAllowed(true)
           .Build());
   delegate()->set_randomized_response(std::nullopt);
   ASSERT_EQ(result.status(),
@@ -5349,7 +5349,7 @@ TEST_F(AttributionResolverTest, DebugKey) {
     storage()->StoreSource(TestAggregatableSourceProvider()
                                .GetBuilder()
                                .SetDebugKey(test_case.source_debug_key)
-                               .SetDebugCookieSet(true)
+                               .SetCookieBasedDebugAllowed(true)
                                .Build());
     storage()->MaybeCreateAndStoreReport(
         DefaultAggregatableTriggerBuilder()

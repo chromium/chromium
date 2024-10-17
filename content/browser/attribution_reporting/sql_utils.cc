@@ -183,7 +183,7 @@ std::string SerializeReadOnlySourceData(
     const attribution_reporting::TriggerSpecs& trigger_specs,
     double randomized_response_rate,
     TriggerDataMatching trigger_data_matching,
-    bool debug_cookie_set,
+    bool cookie_based_debug_allowed,
     absl::uint128 aggregatable_debug_key_piece) {
   DCHECK_GE(randomized_response_rate, 0);
   DCHECK_LE(randomized_response_rate, 1);
@@ -225,7 +225,7 @@ std::string SerializeReadOnlySourceData(
       break;
   }
 
-  msg.set_debug_cookie_set(debug_cookie_set);
+  msg.set_cookie_based_debug_allowed(cookie_based_debug_allowed);
 
   proto::AttributionAggregationKey* key_msg =
       msg.mutable_aggregatable_debug_key_piece();

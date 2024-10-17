@@ -41,7 +41,7 @@ class CONTENT_EXPORT AttributionDebugReport {
 
   static std::optional<AttributionDebugReport> Create(
       base::FunctionRef<bool()> is_operation_allowed,
-      bool is_debug_cookie_set,
+      bool cookie_based_debug_allowed,
       const CreateReportResult& result);
 
   static std::optional<AttributionDebugReport> Create(

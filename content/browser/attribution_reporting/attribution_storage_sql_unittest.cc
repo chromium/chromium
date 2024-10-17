@@ -2546,48 +2546,49 @@ TEST_F(AttributionStorageSqlTest, SourceRemainingAggregatableBudget) {
   }
 }
 
-TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
+TEST_F(AttributionStorageSqlTest,
+       SourceDebugKeyAndCookieBasedDebugAllowedCombination) {
   const struct {
     const char* desc;
-    std::optional<bool> debug_cookie_set;
+    std::optional<bool> cookie_based_debug_allowed;
     std::optional<uint64_t> debug_key;
-    std::optional<bool> expected_debug_cookie_set;
+    std::optional<bool> expected_cookie_based_debug_allowed;
   } kTestCases[] = {
       {
-          .desc = "debug cookie missing, debug key set",
-          .debug_cookie_set = std::nullopt,
+          .desc = "debug allowed missing, debug key set",
+          .cookie_based_debug_allowed = std::nullopt,
           .debug_key = 123,
-          .expected_debug_cookie_set = true,
+          .expected_cookie_based_debug_allowed = true,
       },
       {
-          .desc = "debug cookie missing, debug key not set",
-          .debug_cookie_set = std::nullopt,
+          .desc = "debug allowed missing, debug key not set",
+          .cookie_based_debug_allowed = std::nullopt,
           .debug_key = std::nullopt,
-          .expected_debug_cookie_set = false,
+          .expected_cookie_based_debug_allowed = false,
       },
       {
-          .desc = "debug cookie not set, debug key set",
-          .debug_cookie_set = false,
+          .desc = "debug not allowed, debug key set",
+          .cookie_based_debug_allowed = false,
           .debug_key = 123,
-          .expected_debug_cookie_set = std::nullopt,
+          .expected_cookie_based_debug_allowed = std::nullopt,
       },
       {
-          .desc = "debug cookie not set, debug key not set",
-          .debug_cookie_set = false,
+          .desc = "debug not allowed, debug key not set",
+          .cookie_based_debug_allowed = false,
           .debug_key = std::nullopt,
-          .expected_debug_cookie_set = false,
+          .expected_cookie_based_debug_allowed = false,
       },
       {
-          .desc = "debug cookie set, debug key set",
-          .debug_cookie_set = true,
+          .desc = "debug allowed, debug key set",
+          .cookie_based_debug_allowed = true,
           .debug_key = 123,
-          .expected_debug_cookie_set = true,
+          .expected_cookie_based_debug_allowed = true,
       },
       {
-          .desc = "debug cookie set, debug key not set",
-          .debug_cookie_set = true,
+          .desc = "debug allowed, debug key not set",
+          .cookie_based_debug_allowed = true,
           .debug_key = std::nullopt,
-          .expected_debug_cookie_set = true,
+          .expected_cookie_based_debug_allowed = true,
       },
   };
 
@@ -2601,7 +2602,7 @@ TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
 
     storage()->StoreSource(SourceBuilder()
                                .SetDebugKey(test_case.debug_key)
-                               .SetDebugCookieSet(true)
+                               .SetCookieBasedDebugAllowed(true)
                                .Build());
     ASSERT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
@@ -2618,11 +2619,11 @@ TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
               DeserializeReadOnlySourceDataAsProto(read_statement, 0);
       ASSERT_TRUE(read_only_source_data_msg);
 
-      if (test_case.debug_cookie_set.has_value()) {
-        read_only_source_data_msg->set_debug_cookie_set(
-            *test_case.debug_cookie_set);
+      if (test_case.cookie_based_debug_allowed.has_value()) {
+        read_only_source_data_msg->set_cookie_based_debug_allowed(
+            *test_case.cookie_based_debug_allowed);
       } else {
-        read_only_source_data_msg->clear_debug_cookie_set();
+        read_only_source_data_msg->clear_cookie_based_debug_allowed();
       }
 
       sql::Statement update_statement(raw_db.GetUniqueStatement(kUpdateSql));
@@ -2633,9 +2634,10 @@ TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
 
     OpenDatabase();
     auto sources = storage()->GetActiveSources();
-    if (test_case.expected_debug_cookie_set.has_value()) {
-      ASSERT_THAT(sources, ElementsAre(SourceDebugCookieSetIs(
-                               *test_case.expected_debug_cookie_set)));
+    if (test_case.expected_cookie_based_debug_allowed.has_value()) {
+      ASSERT_THAT(sources,
+                  ElementsAre(SourceCookieBasedDebugAllowedIs(
+                      *test_case.expected_cookie_based_debug_allowed)));
     } else {
       ASSERT_THAT(sources, IsEmpty());
     }

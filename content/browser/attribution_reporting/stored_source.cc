@@ -43,7 +43,7 @@ bool AreFieldsValid(int remaining_aggregatable_attribution_budget,
                     base::Time expiry_time,
                     base::Time aggregatable_report_window_time,
                     std::optional<uint64_t> debug_key,
-                    bool debug_cookie_set) {
+                    bool cookie_based_debug_allowed) {
   static_assert(attribution_reporting::kMaxAggregatableValue <=
                 std::numeric_limits<int>::max() / 2);
 
@@ -58,7 +58,7 @@ bool AreFieldsValid(int remaining_aggregatable_attribution_budget,
          IsExpiryOrReportWindowTimeValid(expiry_time, source_time) &&
          IsExpiryOrReportWindowTimeValid(aggregatable_report_window_time,
                                          source_time) &&
-         (!debug_key.has_value() || debug_cookie_set);
+         (!debug_key.has_value() || cookie_based_debug_allowed);
 }
 
 }  // namespace
@@ -91,7 +91,7 @@ std::optional<StoredSource> StoredSource::Create(
                       remaining_aggregatable_debug_budget,
                       randomized_response_rate, source_time, expiry_time,
                       aggregatable_report_window_time, debug_key,
-                      common_info.debug_cookie_set())) {
+                      common_info.cookie_based_debug_allowed())) {
     return std::nullopt;
   }
 
@@ -155,7 +155,7 @@ StoredSource::StoredSource(
                         remaining_aggregatable_debug_budget_,
                         randomized_response_rate_, source_time_, expiry_time_,
                         aggregatable_report_window_time_, debug_key_,
-                        common_info_.debug_cookie_set()));
+                        common_info_.cookie_based_debug_allowed()));
 }
 
 StoredSource::~StoredSource() = default;

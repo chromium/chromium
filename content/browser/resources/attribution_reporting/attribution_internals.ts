@@ -203,7 +203,7 @@ interface Source {
   aggregatableDedupKeys: bigint[];
   triggerDataMatching: string;
   eventLevelEpsilon: number;
-  debugCookieSet: boolean;
+  cookieBasedDebugAllowed: boolean;
   remainingAggregatableDebugBudget: number;
   aggregatableDebugKeyPiece: string;
   attributionScopesData: string;
@@ -234,7 +234,7 @@ function newSource(mojo: WebUISource): Source {
     triggerDataMatching: triggerDataMatchingText[mojo.triggerDataMatching],
     eventLevelEpsilon: mojo.eventLevelEpsilon,
     status: attributabilityText[mojo.attributability],
-    debugCookieSet: mojo.debugCookieSet,
+    cookieBasedDebugAllowed: mojo.cookieBasedDebugAllowed,
     remainingAggregatableDebugBudget: mojo.remainingAggregatableDebugBudget,
     aggregatableDebugKeyPiece: mojo.aggregatableDebugKeyPiece,
     attributionScopesData: mojo.attributionScopesDataJson,
@@ -264,7 +264,9 @@ function initSourceTable(panel: HTMLElement):
       [
         valueColumn('Priority', 'priority', asNumber),
         valueColumn('Filter Data', 'filterData', asCode),
-        valueColumn('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
+        valueColumn(
+            'Cookie-Based Debug Allowed', 'cookieBasedDebugAllowed',
+            asStringOrBool),
         valueColumn('Attribution Scopes Data', 'attributionScopesData', asCode),
         'Event-Level Fields',
         valueColumn(

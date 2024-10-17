@@ -208,7 +208,7 @@ TEST(AttributionReportTest, ReportBody_DebugKeys) {
                       SourceBuilder(base::Time::UnixEpoch())
                           .SetSourceEventId(100)
                           .SetDebugKey(test_case.source_debug_key)
-                          .SetDebugCookieSet(true)
+                          .SetCookieBasedDebugAllowed(true)
                           .SetRandomizedResponseRate(0.2)
                           .BuildStored())
             .SetTriggerData(5)

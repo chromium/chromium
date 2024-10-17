@@ -368,7 +368,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const StoreSourceResult& result) {
   const StorableSource& source = result.source();
   if (!source.registration().debug_reporting ||
-      !source.common_info().debug_cookie_set() ||
+      !source.common_info().cookie_based_debug_allowed() ||
       source.is_within_fenced_frame() || !is_operation_allowed()) {
     return std::nullopt;
   }
@@ -406,15 +406,16 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 // static
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     base::FunctionRef<bool()> is_operation_allowed,
-    bool is_debug_cookie_set,
+    bool cookie_based_debug_allowed,
     const CreateReportResult& result) {
   if (!result.trigger().registration().debug_reporting ||
-      !is_debug_cookie_set || result.trigger().is_within_fenced_frame() ||
-      !is_operation_allowed()) {
+      !cookie_based_debug_allowed ||
+      result.trigger().is_within_fenced_frame() || !is_operation_allowed()) {
     return std::nullopt;
   }
 
-  if (result.source() && !result.source()->common_info().debug_cookie_set()) {
+  if (result.source() &&
+      !result.source()->common_info().cookie_based_debug_allowed()) {
     return std::nullopt;
   }
 

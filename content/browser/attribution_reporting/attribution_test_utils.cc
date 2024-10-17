@@ -236,8 +236,9 @@ SourceBuilder& SourceBuilder::SetTriggerDataMatching(
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetDebugCookieSet(bool debug_cookie_set) {
-  debug_cookie_set_ = debug_cookie_set;
+SourceBuilder& SourceBuilder::SetCookieBasedDebugAllowed(
+    bool cookie_based_debug_allowed) {
+  cookie_based_debug_allowed_ = cookie_based_debug_allowed;
   return *this;
 }
 
@@ -263,7 +264,7 @@ SourceBuilder& SourceBuilder::SetAttributionScopesData(
 StorableSource SourceBuilder::Build() const {
   StorableSource source(reporting_origin_, registration_, source_origin_,
                         source_type_, is_within_fenced_frame_);
-  source.set_debug_cookie_set(debug_cookie_set_);
+  source.set_cookie_based_debug_allowed(cookie_based_debug_allowed_);
   return source;
 }
 
@@ -271,7 +272,7 @@ StoredSource SourceBuilder::BuildStored() const {
   base::Time expiry_time = source_time_ + registration_.expiry;
   StoredSource source = *StoredSource::Create(
       CommonSourceInfo(source_origin_, reporting_origin_, source_type_,
-                       debug_cookie_set_),
+                       cookie_based_debug_allowed_),
       registration_.source_event_id, registration_.destination_set,
       source_time_, expiry_time, registration_.trigger_specs,
       source_time_ + registration_.aggregatable_report_window,
@@ -685,7 +686,8 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
   return out << "{source_origin=" << source.source_origin()
              << "reporting_origin=" << source.reporting_origin()
              << ",source_type=" << source.source_type()
-             << ",debug_cookie_set=" << source.debug_cookie_set() << "}";
+             << ",cookie_based_debug_allowed="
+             << source.cookie_based_debug_allowed() << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,

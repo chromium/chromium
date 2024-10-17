@@ -373,7 +373,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483200000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
@@ -403,7 +403,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483300000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
@@ -439,7 +439,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483400000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
@@ -538,7 +538,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483200000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
@@ -570,7 +570,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483300000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
@@ -608,7 +608,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483400000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(

@@ -425,11 +425,12 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       trigger_data_matching = TriggerDataMatching::kModulus;
       break;
   }
-  // If "debug_cookie_set" field was not set in earlier versions, set the
-  // value to whether the debug key was set for the source.
-  bool debug_cookie_set = read_only_source_data_msg->has_debug_cookie_set()
-                              ? read_only_source_data_msg->debug_cookie_set()
-                              : debug_key.has_value();
+  // If "cookie_based_debug_allowed" field was not set in earlier versions, set
+  // the value to whether the debug key was set for the source.
+  bool cookie_based_debug_allowed =
+      read_only_source_data_msg->has_cookie_based_debug_allowed()
+          ? read_only_source_data_msg->cookie_based_debug_allowed()
+          : debug_key.has_value();
 
   absl::uint128 aggregatable_debug_key_piece = absl::MakeUint128(
       read_only_source_data_msg->aggregatable_debug_key_piece().high_bits(),
@@ -449,7 +450,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
 
   std::optional<StoredSource> stored_source = StoredSource::Create(
       CommonSourceInfo(*std::move(source_origin), *std::move(reporting_origin),
-                       *source_type, debug_cookie_set),
+                       *source_type, cookie_based_debug_allowed),
       source_event_id, *std::move(destination_set), source_time, expiry_time,
       *std::move(trigger_specs), aggregatable_report_window_time, priority,
       *std::move(filter_data), debug_key, *std::move(aggregation_keys),
@@ -693,10 +694,11 @@ std::optional<StoredSource> AttributionStorageSql::InsertSource(
   statement.BindBlob(15, SerializeAggregationKeys(reg.aggregation_keys));
   statement.BindBlob(16, SerializeFilterData(reg.filter_data));
   statement.BindBlob(
-      17, SerializeReadOnlySourceData(
-              reg.trigger_specs, randomized_response_rate,
-              reg.trigger_data_matching, common_info.debug_cookie_set(),
-              reg.aggregatable_debug_reporting_config.config().key_piece));
+      17,
+      SerializeReadOnlySourceData(
+          reg.trigger_specs, randomized_response_rate,
+          reg.trigger_data_matching, common_info.cookie_based_debug_allowed(),
+          reg.aggregatable_debug_reporting_config.config().key_piece));
   statement.BindInt(18, remaining_aggregatable_debug_budget);
 
   if (reg.attribution_scopes_data.has_value()) {

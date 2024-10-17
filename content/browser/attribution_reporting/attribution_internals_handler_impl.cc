@@ -98,7 +98,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
           }),
       source.remaining_aggregatable_attribution_budget(),
       source.aggregatable_dedup_keys(), source.trigger_data_matching(),
-      source.event_level_epsilon(), source.common_info().debug_cookie_set(),
+      source.event_level_epsilon(),
+      source.common_info().cookie_based_debug_allowed(),
       source.remaining_aggregatable_debug_budget(),
       attribution_reporting::HexEncodeAggregationKey(
           source.aggregatable_debug_key_piece()),

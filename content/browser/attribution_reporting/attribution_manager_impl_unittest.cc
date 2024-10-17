@@ -2234,7 +2234,7 @@ const struct {
   std::optional<uint64_t> expected_debug_key;
   std::optional<uint64_t> expected_cleared_key;
   bool cookie_access_allowed;
-  bool expected_debug_cookie_set;
+  bool expected_cookie_based_debug_allowed;
   bool can_bypass = false;
 } kDebugKeyTestCases[] = {
     {
@@ -2326,9 +2326,9 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
 
     EXPECT_THAT(
         StoredSources(),
-        ElementsAre(AllOf(
-            SourceDebugKeyIs(test_case.expected_debug_key),
-            SourceDebugCookieSetIs(test_case.expected_debug_cookie_set))));
+        ElementsAre(AllOf(SourceDebugKeyIs(test_case.expected_debug_key),
+                          SourceCookieBasedDebugAllowedIs(
+                              test_case.expected_cookie_based_debug_allowed))));
 
     attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
                                     /*filter=*/base::NullCallback(),
@@ -2489,10 +2489,11 @@ TEST_F(AttributionManagerImplTest,
       &observer);
   observation.Observe(attribution_manager_.get());
 
-  EXPECT_CALL(observer,
-              OnSourceHandled(SourceBuilder().SetDebugCookieSet(true).Build(),
-                              base::Time::Now(), testing::Eq(std::nullopt),
-                              StorableSource::Result::kSuccess));
+  EXPECT_CALL(
+      observer,
+      OnSourceHandled(SourceBuilder().SetCookieBasedDebugAllowed(true).Build(),
+                      base::Time::Now(), testing::Eq(std::nullopt),
+                      StorableSource::Result::kSuccess));
 
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(1));

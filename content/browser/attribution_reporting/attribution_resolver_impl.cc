@@ -187,7 +187,7 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!source.registration().debug_key.has_value() ||
-        source.common_info().debug_cookie_set());
+        source.common_info().cookie_based_debug_allowed());
 
   bool is_noised = false;
   std::optional<int> destination_limit;

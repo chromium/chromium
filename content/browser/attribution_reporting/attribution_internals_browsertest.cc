@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetSourceEventId(std::numeric_limits<uint64_t>::max())
               .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
               .SetDebugKey(19)
-              .SetDebugCookieSet(true)
+              .SetCookieBasedDebugAllowed(true)
               .SetDestinationSites({
                   net::SchemefulSite::Deserialize("https://a.test"),
                   net::SchemefulSite::Deserialize("https://b.test"),
@@ -1399,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest, DebugReports) {
       /*is_operation_allowed=*/[]() { return true; },
       StoreSourceResult(SourceBuilder()
                             .SetDebugReporting(true)
-                            .SetDebugCookieSet(true)
+                            .SetCookieBasedDebugAllowed(true)
                             .Build(),
                         /*is_noised=*/false, /*source_time=*/base::Time::Now(),
                         /*destination_limit=*/std::nullopt,

@@ -123,7 +123,7 @@ class SourceBuilder {
   SourceBuilder& SetTriggerDataMatching(
       attribution_reporting::mojom::TriggerDataMatching);
 
-  SourceBuilder& SetDebugCookieSet(bool debug_cookie_set);
+  SourceBuilder& SetCookieBasedDebugAllowed(bool cookie_based_debug_allowed);
 
   SourceBuilder& SetAggregatableDebugReportingConfig(
       attribution_reporting::SourceAggregatableDebugReportingConfig);
@@ -156,7 +156,7 @@ class SourceBuilder {
   double randomized_response_rate_ = 0;
   std::vector<uint64_t> aggregatable_dedup_keys_;
   bool is_within_fenced_frame_ = false;
-  bool debug_cookie_set_ = false;
+  bool cookie_based_debug_allowed_ = false;
   int remaining_aggregatable_debug_budget_ = 0;
 };
 
@@ -436,9 +436,9 @@ MATCHER_P(SourceDebugKeyIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.debug_key(), result_listener);
 }
 
-MATCHER_P(SourceDebugCookieSetIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().debug_cookie_set(),
-                            result_listener);
+MATCHER_P(SourceCookieBasedDebugAllowedIs, matcher, "") {
+  return ExplainMatchResult(
+      matcher, arg.common_info().cookie_based_debug_allowed(), result_listener);
 }
 
 MATCHER_P(SourceFilterDataIs, matcher, "") {
