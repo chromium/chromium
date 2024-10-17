@@ -6,9 +6,16 @@ import {assert} from '//resources/js/assert.js';
 
 import type {HealthdApiCpuExecutionTimeUserHz, HealthdApiCpuResult} from './externs.js';
 
+// The CPU usage info since last snapshot.
 export interface CpuUsage {
-  // The usage in percentage. Return null if the usage cannot be calculated.
-  usagePercentage: number|null;
+  // The usage in percentage.
+  usagePercentage: number;
+  // The amount of time the CPU is running in user space.
+  userTime: number;
+  // The amount of time the CPU is running in kernel space.
+  systemTime: number;
+  // The amount of time the CPU is not used.
+  idleTime: number;
 }
 
 /**
@@ -22,12 +29,13 @@ export class CpuUsageHelper {
   /**
    * Calculate the CPU usage from execution time.
    *
-   * @returns - CPU usage for each logical CPU. The index for the first
-   *            dimension is physical CPU ID and the index for the second
-   *            dimension is logical CPU ID. Return null if the last execution
-   *            time is not found.
+   * @returns - CPU usage for each logical CPU, or null when the value can not
+   *            be determined. The index for the first dimension is physical CPU
+   *            ID and the index for the second dimension is logical CPU ID.
+   *
+   *            Return null if the last execution time is not found.
    */
-  getCpuUsage(cpu: HealthdApiCpuResult): CpuUsage[][]|null {
+  getCpuUsage(cpu: HealthdApiCpuResult): (CpuUsage|null)[][]|null {
     if (this.lastExecutionTime.length === 0) {
       for (const [physicalCpuId, physicalCpu] of cpu.physicalCpus.entries()) {
         this.lastExecutionTime[physicalCpuId] = [];
@@ -38,7 +46,7 @@ export class CpuUsageHelper {
       return null;
     }
 
-    const output: CpuUsage[][] = [];
+    const output: (CpuUsage|null)[][] = [];
     for (const [physicalCpuId, physicalCpu] of cpu.physicalCpus.entries()) {
       output[physicalCpuId] = [];
       for (const [logicalCpuId, logicalCpu] of physicalCpu.logicalCpus
@@ -59,23 +67,25 @@ export class CpuUsageHelper {
   private getLogicalCpuUsage(
       currentExecTime: HealthdApiCpuExecutionTimeUserHz,
       lastExecTime: HealthdApiCpuExecutionTimeUserHz,
-      ): CpuUsage {
+      ): CpuUsage|null {
     const user: number|null = this.getCpuTimeDiff(
         parseInt(currentExecTime.user), parseInt(lastExecTime.user));
     const system: number|null = this.getCpuTimeDiff(
         parseInt(currentExecTime.system), parseInt(lastExecTime.system));
     const idle: number|null = this.getCpuTimeDiff(
         parseInt(currentExecTime.idle), parseInt(lastExecTime.idle));
-    let usage: number|null = null;
-    if (user !== null && system !== null && idle !== null) {
-      const total: number = user + system + idle;
-      if (total !== 0) {
-        usage = (user + system) / total * 100;
-      }
+    if (user === null || system === null || idle === null) {
+      return null;
     }
-
+    const total: number = user + system + idle;
+    if (total === 0) {
+      return null
+    }
     return {
-      usagePercentage: usage,
+      usagePercentage: (user + system) / total * 100,
+      userTime: user,
+      systemTime: system,
+      idleTime: idle,
     };
   }
 

@@ -36,11 +36,11 @@ export class HealthdInternalsInfoCardElement extends PolymerElement {
   private displayedInfoList: DisplayedCardInfo[] = [];
 
   // Append a new row in the displayed card.
-  appendCardRow(header: string) {
+  appendCardRow(header: string, isExpanded: boolean = false) {
     this.displayedInfoList.push({
       infoHeader: header,
       detailedInfo: '',
-      isExpanded: false,
+      isExpanded: isExpanded,
     });
   }
 

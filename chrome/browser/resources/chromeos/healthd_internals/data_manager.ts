@@ -137,10 +137,10 @@ export class DataManager {
     this.updateMemoryData(data.memory, timestamp);
     this.updateThermalData(data.thermals, timestamp);
 
-    const cpuUsage: CpuUsage[][]|null =
-        this.cpuUsageHelper.getCpuUsage(data.cpu);
+    const cpuUsage = this.cpuUsageHelper.getCpuUsage(data.cpu);
     if (cpuUsage !== null) {
       this.updateCpuUsageData(cpuUsage, timestamp);
+      this.telemetryPage.updateCpuUsageData(cpuUsage);
     }
 
     this.removeOutdatedData(timestamp);
@@ -204,7 +204,7 @@ export class DataManager {
   }
 
   private updateCpuUsageData(
-      physcialCpuUsage: CpuUsage[][], timestamp: number) {
+      physcialCpuUsage: (CpuUsage|null)[][], timestamp: number) {
     if (this.cpuUsageDataSeries.length === 0) {
       this.initCpuUsageDataSeries(physcialCpuUsage);
     }
@@ -225,7 +225,7 @@ export class DataManager {
     let count: number = 1;
     for (const logicalCpuUsage of physcialCpuUsage) {
       for (const cpuUsage of logicalCpuUsage) {
-        if (cpuUsage.usagePercentage !== null) {
+        if (cpuUsage !== null) {
           this.cpuUsageDataSeries[count].addDataPoint(
               cpuUsage.usagePercentage, timestamp);
           sumCpuUsage += cpuUsage.usagePercentage;
@@ -295,7 +295,7 @@ export class DataManager {
     this.chartPages.cpuFrequency.addDataSeries(this.cpuFrequencyDataSeries);
   }
 
-  private initCpuUsageDataSeries(physcialCpuUsage: CpuUsage[][]) {
+  private initCpuUsageDataSeries(physcialCpuUsage: (CpuUsage|null)[][]) {
     this.cpuUsageDataSeries.push(
         new DataSeries('Overall', getLineChartColor(0)));
     let count: number = 1;
