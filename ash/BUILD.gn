@@ -4046,6 +4046,7 @@ test("ash_unittests") {
     "scalable_iph/wallpaper_ash_notification_view_unittest.cc",
     "scanner/scanner_action_handler_unittest.cc",
     "scanner/scanner_controller_unittest.cc",
+    "scanner/scanner_session_unittest.cc",
     "scanner/scanner_text_unittest.cc",
     "screen_util_unittest.cc",
     "sensor_info/sensor_provider_unittest.cc",
