@@ -148,13 +148,13 @@ bool SlowWebPreferenceCache::Update() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  // On Android, Touch event feature detection is enabled by default,
+  // On Android and iOS, Touch event feature detection is enabled by default,
   // Otherwise default is disabled.
   std::string touch_enabled_default_switch =
       switches::kTouchEventFeatureDetectionDisabled;
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   touch_enabled_default_switch = switches::kTouchEventFeatureDetectionEnabled;
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const std::string touch_enabled_switch =
       command_line.HasSwitch(switches::kTouchEventFeatureDetection)
           ? command_line.GetSwitchValueASCII(
