@@ -17,6 +17,9 @@ import org.mockito.ArgumentCaptor;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.List;
 
@@ -76,6 +79,28 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         Assert.assertEquals(InstantNotificationLevel.SYSTEM, message.level);
         Assert.assertEquals(InstantNotificationType.CONFLICT_TAB_REMOVED, message.type);
         Assert.assertEquals(UserAction.TAB_REMOVED, message.action);
+
+        // MessageAttribution.
+        MessageAttribution attribution = message.attribution;
+        Assert.assertEquals("my group", attribution.collaborationId);
+        Assert.assertEquals("affected", attribution.affectedUser.gaiaId);
+        Assert.assertEquals("triggering", attribution.triggeringUser.gaiaId);
+
+        // TabGroupMessageMetadata.
+        TabGroupMessageMetadata tgmm = attribution.tabGroupMetadata;
+        Assert.assertEquals(
+                new LocalTabGroupId(new Token(2748937106984275893L, 588177993057108452L)),
+                tgmm.localTabGroupId);
+        Assert.assertEquals("a1b2c3d4-e5f6-7890-1234-567890abcdef", tgmm.syncTabGroupId);
+        Assert.assertEquals("last known group title", tgmm.lastKnownTitle);
+        Assert.assertEquals(TabGroupColorId.ORANGE, tgmm.lastKnownColor.get().intValue());
+
+        // TabMessageMetadata.
+        TabMessageMetadata tmm = attribution.tabMetadata;
+        Assert.assertEquals(499897179L, tmm.localTabId);
+        Assert.assertEquals("fedcba09-8765-4321-0987-6f5e4d3c2b1a", tmm.syncTabId);
+        Assert.assertEquals("https://example.com/", tmm.lastKnownUrl);
+        Assert.assertEquals("last known tab title", tmm.lastKnownTitle);
     }
 
     @CalledByNative

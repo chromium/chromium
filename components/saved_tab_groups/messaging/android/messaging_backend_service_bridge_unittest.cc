@@ -11,10 +11,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "base/types/strong_alias.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/messaging/activity_log.h"
 #include "components/saved_tab_groups/messaging/android/messaging_backend_service_bridge.h"
 #include "components/saved_tab_groups/messaging/message.h"
 #include "components/saved_tab_groups/messaging/messaging_backend_service.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -160,16 +163,50 @@ TEST_F(MessagingBackendServiceBridgeTest, TestPersistentMessageObservation) {
       base::android::AttachCurrentThread(), j_companion(), 1);
 }
 
+InstantMessage CreateInstantMessage() {
+  InstantMessage message;
+  message.level = InstantNotificationLevel::SYSTEM;
+  message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
+  message.action = UserAction::TAB_REMOVED;
+
+  // Attribution.
+  message.attribution.collaboration_id = data_sharing::GroupId("my group");
+  // GroupMember has its own conversion utils, so only check a single field.
+  message.attribution.affected_user = data_sharing::GroupMember();
+  message.attribution.affected_user->gaia_id = "affected";
+  message.attribution.triggering_user = data_sharing::GroupMember();
+  message.attribution.triggering_user->gaia_id = "triggering";
+
+  // TabGroupMessageMetadata.
+  message.attribution.tab_group_metadata = TabGroupMessageMetadata();
+  message.attribution.tab_group_metadata->local_tab_group_id =
+      LocalTabGroupID(base::Token(2748937106984275893, 588177993057108452));
+  message.attribution.tab_group_metadata->sync_tab_group_id =
+      base::Uuid::ParseLowercase("a1b2c3d4-e5f6-7890-1234-567890abcdef");
+  message.attribution.tab_group_metadata->last_known_title =
+      "last known group title";
+  message.attribution.tab_group_metadata->last_known_color =
+      tab_groups::TabGroupColorId::kOrange;
+
+  // TabMessageMetadata.
+  message.attribution.tab_metadata = TabMessageMetadata();
+  message.attribution.tab_metadata->local_tab_id =
+      std::make_optional(499897179);
+  message.attribution.tab_metadata->sync_tab_id =
+      base::Uuid::ParseLowercase("fedcba09-8765-4321-0987-6f5e4d3c2b1a");
+  message.attribution.tab_metadata->last_known_url = "https://example.com/";
+  message.attribution.tab_metadata->last_known_title = "last known tab title";
+
+  return message;
+}
+
 TEST_F(MessagingBackendServiceBridgeTest, TestDisplayingInstantMessageSuccess) {
   // Set up the delegate for instant messages in Java.
   Java_MessagingBackendServiceBridgeUnitTestCompanion_setInstantMessageDelegate(
       base::android::AttachCurrentThread(), j_companion());
 
   // Create and display an instant message.
-  InstantMessage message;
-  message.level = InstantNotificationLevel::SYSTEM;
-  message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
-  message.action = UserAction::TAB_REMOVED;
+  InstantMessage message = CreateInstantMessage();
   DisplayInstantaneousMessage(message, /*success=*/true);
 
   // Ensure that the message was received on the Java side with correct data.
@@ -188,10 +225,7 @@ TEST_F(MessagingBackendServiceBridgeTest, TestDisplayingInstantMessageFailure) {
       base::android::AttachCurrentThread(), j_companion());
 
   // Create and display an instant message.
-  InstantMessage message;
-  message.level = InstantNotificationLevel::SYSTEM;
-  message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
-  message.action = UserAction::TAB_REMOVED;
+  InstantMessage message = CreateInstantMessage();
   DisplayInstantaneousMessage(message, /*success=*/false);
 
   // Ensure that the message was received on the Java side with correct data.

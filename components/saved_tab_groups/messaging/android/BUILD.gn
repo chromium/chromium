@@ -88,7 +88,9 @@ android_library("native_java_unittests_java") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
+    "//components/data_sharing/public:public_java",
     "//components/saved_tab_groups/messaging/android:java",
+    "//components/saved_tab_groups/public:java",
     "//components/tab_groups:tab_groups_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

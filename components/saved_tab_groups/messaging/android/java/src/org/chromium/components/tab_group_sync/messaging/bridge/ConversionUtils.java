@@ -56,9 +56,9 @@ class ConversionUtils {
             attribution.tabGroupMetadata.syncTabGroupId = syncTabGroupId;
             attribution.tabGroupMetadata.lastKnownTitle = lastKnownTabGroupTitle;
             if (lastKnownTabGroupColor == -1) {
-                attribution.tabGroupMetadata.lastKnownColor = Optional.of(lastKnownTabGroupColor);
-            } else {
                 attribution.tabGroupMetadata.lastKnownColor = Optional.empty();
+            } else {
+                attribution.tabGroupMetadata.lastKnownColor = Optional.of(lastKnownTabGroupColor);
             }
         }
         if (localTabId != -1
