@@ -155,6 +155,8 @@ HoverHighlightView* NetworkDetailedNetworkViewImpl::AddConfigureNetworkEntry(
   HoverHighlightView* entry = GetNetworkList(type)->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
   entry->SetID(GetViewIDForConfigureNetworkEntry(type));
+  entry->SetProperty(views::kElementIdentifierKey,
+                     kNetworkDetailedViewConfigureNetworkButtonElementId);
 
   auto tooltip_text = GetTooltipForConfigureNetworkEntry(type);
   if (tooltip_text.has_value()) {

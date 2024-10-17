@@ -92,6 +92,11 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kLoginUserViewElementId);
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kNetworkAddEsimElementId);
 
+// Uniquely identifies the configure network button element.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kNetworkDetailedViewConfigureNetworkButtonElementId);
+
 // Uniquely identifies the Mobile data toggle element.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
@@ -202,6 +207,11 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kSettingsAppElementId);
 
 // Uniquely identifies the `ShelfView`.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kShelfViewElementId);
+
+// Uniquely identifies the progress bar shown for the `TrayDetailedView`.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kTrayDetailedViewProgressBarElementId);
 
 // Uniquely identifies the `UnifiedSystemTray`.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
