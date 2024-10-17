@@ -24,8 +24,6 @@ import java.util.Optional;
 /** A central hub for accessing shopping and product information. */
 @JNINamespace("commerce")
 public class ShoppingService {
-    private static Boolean sShoppingListEligibleForTestsing;
-
     /** A data container for product info provided by the shopping service. */
     public static final class ProductInfo {
         public final String title;

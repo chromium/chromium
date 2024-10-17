@@ -34,6 +34,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.blink_public.input.SelectionGranularity;
+import org.chromium.build.annotations.DoNotInline;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.content.browser.AppWebMessagePort;
 import org.chromium.content.browser.GestureListenerManagerImpl;
@@ -170,7 +171,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
     // The media session for this WebContents. It is constructed by the native MediaSession and has
     // the same life time as native MediaSession.
-    private MediaSessionImpl mMediaSession;
+    @DoNotInline private MediaSessionImpl mMediaSession;
 
     class SmartClipCallback {
         public SmartClipCallback(final Handler smartClipHandler) {

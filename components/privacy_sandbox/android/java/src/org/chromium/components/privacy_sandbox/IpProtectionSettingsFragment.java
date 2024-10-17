@@ -91,12 +91,12 @@ public class IpProtectionSettingsFragment extends PreferenceFragmentCompat
                                 new ClickableSpan() {
                                     @Override
                                     public void onClick(View view) {
-                                        onLearnMoreClicked(view);
+                                        onLearnMoreClicked();
                                     }
                                 })));
     }
 
-    private void onLearnMoreClicked(View view) {
+    private void onLearnMoreClicked() {
         openUrlInCct(LEARN_MORE_URL);
     }
 

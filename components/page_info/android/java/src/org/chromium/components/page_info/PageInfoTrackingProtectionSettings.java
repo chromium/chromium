@@ -31,7 +31,7 @@ import org.chromium.ui.text.SpanApplier;
 public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String TP_SWITCH_PREFERENCE = "tp_switch";
-    private static final String TP_STATUS_PREFERENCE = "tp_status";
+    // private static final String TP_STATUS_PREFERENCE = "tp_status";
     private static final String STORAGE_IN_USE_PREFERENCE = "storage_in_use";
     private static final String RWS_IN_USE_PREFERENCE = "rws_in_use";
     private static final String TPC_TITLE = "tpc_title";

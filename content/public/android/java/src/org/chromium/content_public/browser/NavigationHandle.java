@@ -122,7 +122,7 @@ public class NavigationHandle {
 
     @CalledByNative
     private void initialize(
-            long nativeNavigationHandleProxy,
+            long unused_nativeNavigationHandleProxy,
             @NonNull GURL url,
             @NonNull GURL referrerUrl,
             @NonNull GURL baseUrlForDataUrl,

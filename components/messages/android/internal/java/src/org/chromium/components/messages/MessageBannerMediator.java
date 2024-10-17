@@ -264,7 +264,6 @@ class MessageBannerMediator implements SwipeHandler {
         // Flinging toward the idle position from outside the hiding threshold should animate the
         // message to the idle position. Otherwise, the message will be dismissed with animation.
         final boolean isVertical = isVertical(mSwipeDirection);
-        final float velocity = isVertical ? velocityY : velocityX;
         float translateTo;
         if (isVertical) {
             final float translationY = mModel.get(TRANSLATION_Y);

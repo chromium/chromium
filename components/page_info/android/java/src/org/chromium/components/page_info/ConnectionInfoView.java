@@ -91,12 +91,12 @@ public class ConnectionInfoView implements OnClickListener {
     }
 
     /**
-     * Adds certificate section, which contains an icon, a headline, a description and a label for
-     * certificate info link.
+     * Adds certificate section, which contains an icon, a description and a label for certificate
+     * info link.
      */
     @CalledByNative
     private void addCertificateSection(
-            int iconId, String headline, String description, String label, int iconColorId) {
+            int iconId, String description, String label, int iconColorId) {
         View section = addSection(iconId, description, iconColorId);
         assert mCertificateLayout == null;
         mCertificateLayout = (ViewGroup) section.findViewById(R.id.connection_info_text_layout);
@@ -106,12 +106,11 @@ public class ConnectionInfoView implements OnClickListener {
     }
 
     /**
-     * Adds Description section, which contains an icon, a headline, and a description. Most likely
-     * headline for description is empty
+     * Adds Description section, which contains an icon, and a description. Most likely headline for
+     * description is empty
      */
     @CalledByNative
-    private void addDescriptionSection(
-            int iconId, String headline, String description, int iconColorId) {
+    private void addDescriptionSection(int iconId, String description, int iconColorId) {
         View section = addSection(iconId, description, iconColorId);
         assert mDescriptionLayout == null;
         mDescriptionLayout = section.findViewById(R.id.connection_info_text_layout);

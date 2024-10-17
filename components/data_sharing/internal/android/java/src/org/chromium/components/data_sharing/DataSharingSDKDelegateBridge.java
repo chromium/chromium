@@ -34,11 +34,11 @@ public class DataSharingSDKDelegateBridge {
 
     @CalledByNative
     private static DataSharingSDKDelegateBridge create(
-            long nativePtr, DataSharingSDKDelegate delegate) {
-        return new DataSharingSDKDelegateBridge(nativePtr, delegate);
+            long unused_nativePtr, DataSharingSDKDelegate delegate) {
+        return new DataSharingSDKDelegateBridge(delegate);
     }
 
-    private DataSharingSDKDelegateBridge(long nativePtr, DataSharingSDKDelegate delegate) {
+    private DataSharingSDKDelegateBridge(DataSharingSDKDelegate delegate) {
         mSDKDelegateImpl = delegate;
     }
 

@@ -57,7 +57,7 @@ public class ArCoreInstallUtils {
         public void onActivityResumed(Activity activity) {
             if (mWeakActivity.get() != activity || mInstallInstance == null) return;
 
-            mInstallInstance.onArCoreRequestInstallReturned(activity);
+            mInstallInstance.onArCoreRequestInstallReturned();
         }
 
         // Unfortunately, ActivityLifecycleCallbacks force us to implement all of the methods, but
@@ -199,7 +199,7 @@ public class ArCoreInstallUtils {
         }
     }
 
-    private void onArCoreRequestInstallReturned(Activity activity) {
+    private void onArCoreRequestInstallReturned() {
         assert sInstallRequest != null;
         maybeNotifyNativeOnRequestInstallSupportedArCoreResult(
                 getArCoreInstallStatus() == ArCoreAvailability.SUPPORTED_INSTALLED);

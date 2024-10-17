@@ -164,7 +164,6 @@ public class JsonSanitizer {
 
             if (Character.isHighSurrogate(c)) {
                 // A high surrogate has to be followed by a low surrogate.
-                char high = c;
                 if (++i >= length) return false;
 
                 char low = string.charAt(i);

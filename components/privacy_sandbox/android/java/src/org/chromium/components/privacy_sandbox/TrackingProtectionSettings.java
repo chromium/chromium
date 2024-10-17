@@ -120,7 +120,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                                 new ClickableSpan() {
                                     @Override
                                     public void onClick(View view) {
-                                        onLearnMoreClicked(view);
+                                        onLearnMoreClicked();
                                     }
                                 })));
 
@@ -167,7 +167,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                                     new ClickableSpan() {
                                         @Override
                                         public void onClick(View view) {
-                                            onLearnMoreClicked(view);
+                                            onLearnMoreClicked();
                                         }
                                     })));
         }
@@ -196,7 +196,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                                     new ClickableSpan() {
                                         @Override
                                         public void onClick(View view) {
-                                            onLearnMoreClicked(view);
+                                            onLearnMoreClicked();
                                         }
                                     })));
         }
@@ -402,7 +402,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
         allowedGroup.setExpanded(mAllowListExpanded);
     }
 
-    private void onLearnMoreClicked(View view) {
+    private void onLearnMoreClicked() {
         openUrlInCct(LEARN_MORE_URL);
     }
 
