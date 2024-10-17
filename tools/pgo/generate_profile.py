@@ -257,7 +257,7 @@ def run_profdata_show(file_name, topn=1000):
     cmd = [_PROFDATA, 'show', '-topn', str(topn), file_name]
     _LOGGER.debug(f"Running command: {' '.join(cmd)}")
     proc = subprocess.run(cmd, check=True, capture_output=True, text=True)
-    _LOGGER.info(proc.stdout)
+    _LOGGER.debug(proc.stdout)
     return proc.stdout
 
 
