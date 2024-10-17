@@ -23,7 +23,7 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/credential_provider_extension/account_verification_provider.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
-#import "ios/chrome/credential_provider_extension/passkey_keychain_util.h"
+#import "ios/chrome/credential_provider_extension/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
@@ -73,6 +73,10 @@ UIColor* BackgroundColor() {
 // the next time this view appears.
 @property(nonatomic, strong)
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
+
+// Bridge to the PasskeyKeychainProvider that manages passkey vault keys.
+@property(nonatomic, strong)
+    PasskeyKeychainProviderBridge* passkeyKeychainProviderBridge;
 
 @end
 
@@ -279,6 +283,14 @@ UIColor* BackgroundColor() {
     _accountVerificator = [[AccountVerificationProvider alloc] init];
   }
   return _accountVerificator;
+}
+
+- (PasskeyKeychainProviderBridge*)passkeyKeychainProviderBridge {
+  if (!_passkeyKeychainProviderBridge) {
+    _passkeyKeychainProviderBridge =
+        [[PasskeyKeychainProviderBridge alloc] init];
+  }
+  return _passkeyKeychainProviderBridge;
 }
 
 #pragma mark - Private
@@ -564,12 +576,14 @@ UIColor* BackgroundColor() {
     // If we failed to perform the passkey assertion on the first attempt, try
     // to mark the security domain secret vault keys as stale and retry.
     __weak __typeof(self) weakSelf = self;
-    MarkKeysAsStale(credential.gaia, ^() {
-      [weakSelf userSelectedPasskey:credential
-                     clientDataHash:clientDataHash
-                 allowedCredentials:allowedCredentials
-                         allowRetry:NO];
-    });
+    [self.passkeyKeychainProviderBridge
+        markKeysAsStaleForGaia:credential.gaia
+                    completion:^() {
+                      [weakSelf userSelectedPasskey:credential
+                                     clientDataHash:clientDataHash
+                                 allowedCredentials:allowedCredentials
+                                         allowRetry:NO];
+                    }];
   }
 }
 
@@ -595,8 +609,12 @@ UIColor* BackgroundColor() {
                                               ReauthenticatePurpose)purpose
                               completion:(FetchKeyCompletionBlock)completion {
   // TODO(crbug.com/355047459): Add navigation controller.
-  FetchSecurityDomainSecret(gaia, /*navigation_controller =*/nil, purpose,
-                            [self metricsAreEnabled], completion);
+  [self.passkeyKeychainProviderBridge
+      fetchSecurityDomainSecretForGaia:gaia
+                  navigationController:nil
+                               purpose:purpose
+                         enableLogging:[self metricsAreEnabled]
+                            completion:completion];
 }
 
 - (BOOL)metricsAreEnabled {
