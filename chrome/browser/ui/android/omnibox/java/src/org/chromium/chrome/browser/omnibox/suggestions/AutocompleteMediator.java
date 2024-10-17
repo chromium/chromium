@@ -362,10 +362,14 @@ class AutocompleteMediator
 
     private void maybeCacheResult(@NonNull AutocompleteResult result) {
         if (mIsInZeroPrefixContext
+                && mIsActive
                 && !result.isFromCachedResult()
                 && mDataProvider.getPageClassification(false)
                         == PageClassification.ANDROID_SEARCH_WIDGET_VALUE) {
-            CachedZeroSuggestionsManager.saveToCache(result);
+            assert result.getSuggestionsList().size() != 0 : "Attempting to cache empty result.";
+            if (result.getSuggestionsList().size() != 0) {
+                CachedZeroSuggestionsManager.saveToCache(result);
+            }
         }
     }
 
@@ -1392,7 +1396,9 @@ class AutocompleteMediator
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         // TODO(crbug.com/329702834): Ensuring showing Suggestions when activity resumes.
         if (!isTopResumedActivity) {
-            clearSuggestions();
+            // Careful: only clear suggestions after Omnibox session state changes to inactive.
+            // This has an immediate impact on suggestions caching mechanism: if suggestions get
+            // cleared before session state becomes inactive, we will cache empty result.
             mDelegate.clearOmniboxFocus();
         }
     }

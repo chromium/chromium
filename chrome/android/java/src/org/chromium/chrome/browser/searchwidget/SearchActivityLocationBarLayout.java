@@ -54,6 +54,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
                 urlCoordinator,
                 statusCoordinator,
                 locationBarDataProvider);
+
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
         findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
@@ -72,6 +73,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         // Expand status view's left and right space, and expand the vertical padding of the
         // location bar to match the expanded interface on the regular omnibox.
         setUrlFocusChangePercent(1f, 1f, /* isUrlFocusChangeInProgress= */ false);
+        requestOmniboxFocus();
     }
 
     @Override
@@ -149,7 +151,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         } else if (searchType == SearchType.LENS) {
             runGoogleLens();
         }
-        requestOmniboxFocus();
         mInteractionFromWidget = false;
     }
 
@@ -179,21 +180,12 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         }
     }
 
-    /** Focus the Omnibox and present the cached suggestions. */
     void requestOmniboxFocus() {
-        mUrlBar.post(
-                () -> {
-                    if (mUrlCoordinator == null || mAutocompleteCoordinator == null) {
-                        return;
-                    }
-
-                    mUrlBar.requestFocus();
-                    mUrlCoordinator.setKeyboardVisibility(true, false);
-                });
+        mUrlBar.requestFocus();
     }
 
     void clearOmniboxFocus() {
-        mUrlBar.post(() -> mUrlBar.clearFocus());
+        mUrlBar.clearFocus();
     }
 
     @Override
