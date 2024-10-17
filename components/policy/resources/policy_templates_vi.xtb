@@ -9529,9 +9529,9 @@ Nếu bạn Bật chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ đề 
 
 Nếu bạn Tắt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ không đề xuất thoả thuận về khoá hậu lượng tử trong kết nối TLS. Khi đó, lưu lượng truy cập của người dùng sẽ không được bảo vệ khỏi máy tính lượng tử.
 
-Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ tuân theo quy trình phát hành mặc định để đề xuất thoả thuận khoá hậu lượng tử.
+Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ tuân theo quy trình phát hành mặc định để đề xuất thoả thuận về khoá hậu lượng tử.
 
-Việc đề xuất thoả thuận khoá hậu lượng tử có khả năng tương thích ngược. Các máy chủ TLS hiện có và phần mềm trung gian kết nối mạng dự kiến sẽ bỏ qua lựa chọn mới và tiếp tục chọn các lựa chọn trước đó.
+Việc đề xuất thoả thuận về khoá hậu lượng tử có khả năng tương thích ngược. Các máy chủ TLS hiện có và phần mềm trung gian kết nối mạng dự kiến sẽ bỏ qua lựa chọn mới và tiếp tục chọn các lựa chọn trước đó.
 
 Tuy nhiên, các thiết bị không triển khai TLS đúng cách có thể gặp sự cố khi được đề xuất lựa chọn mới. Ví dụ: Các thiết bị có thể ngắt kết nối trong quá trình phản hồi các lựa chọn không xác định hoặc các tin nhắn phóng to hơn. Những thiết bị này chưa sẵn sàng cho hậu lượng tử và sẽ can thiệp vào quá trình chuyển đổi hậu lượng tử của doanh nghiệp. Nếu gặp sự cố, quản trị viên nên liên hệ với nhà cung cấp để khắc phục.
 
