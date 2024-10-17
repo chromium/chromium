@@ -2529,11 +2529,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-app-service-in-kiosk",
-    "owners": ["yixie@chromium.org", "chromeos-kiosk-eng@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-aria-element-reflection",
     "owners": [ "aleventhal@chromium.org", "//third_party/blink/renderer/modules/accessibility/OWNERS" ],
     "expiry_milestone": 105
