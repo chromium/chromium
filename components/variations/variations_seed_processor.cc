@@ -67,8 +67,9 @@ void RegisterExperimentParams(const Study& study,
     params[internal::kGoogleGroupFeatureParamName] =
         SerializeGoogleGroupsFilter(study.filter());
   }
-  if (!params.empty())
+  if (!params.empty()) {
     base::AssociateFieldTrialParams(study.name(), experiment.name(), params);
+  }
 }
 
 // Returns the IDCollectionKey with which |experiment| should be associated.
@@ -121,8 +122,9 @@ void RegisterVariationIds(const Study::Experiment& experiment,
   }
 
   std::optional<IDCollectionKey> key = GetKeyForWebExperiment(experiment);
-  if (!key.has_value())
+  if (!key.has_value()) {
     return;
+  }
 
   CHECK(VariationsSeedProcessor::HasGoogleWebExperimentId(experiment));
   // An experiment cannot have both |google_web_experiment_id| and
@@ -174,8 +176,9 @@ void AssociateDefaultFeatures(const Study& study,
   // Note: We only compute feature associations for ACTIVATE_ON_QUERY studies,
   // since these associations are only used to determine that the trial has
   // been queried when the feature is queried.
-  if (study.activation_type() != Study_ActivationType_ACTIVATE_ON_QUERY)
+  if (study.activation_type() != Study_ActivationType_ACTIVATE_ON_QUERY) {
     return;
+  }
 
   std::set<std::string> features_to_associate;
   for (const auto& experiment : study.experiment()) {
@@ -368,8 +371,9 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
       // different group (e.g. via --force-fieldtrials). Break out of the loop,
       // but don't return, so that variation ids and params for the selected
       // group will still be picked up.
-      if (!trial)
+      if (!trial) {
         break;
+      }
 
       if (experiment.feature_association().has_forcing_feature_on()) {
         feature_list->AssociateReportingFieldTrial(
@@ -416,8 +420,9 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
       continue;
     }
 
-    if (experiment.name() != study.default_experiment_name())
+    if (experiment.name() != study.default_experiment_name()) {
       trial->AppendGroup(experiment.name(), experiment.probability_weight());
+    }
 
     RegisterVariationIds(experiment, study.name(),
                          /*is_trial_overridden=*/existing_trial &&
@@ -454,8 +459,9 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
 
     // Don't try to apply overrides if none of the experiments in this study had
     // any.
-    if (!has_overrides)
+    if (!has_overrides) {
       return;
+    }
 
     // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
     int experiment_index = processed_study.GetExperimentIndexByName(group_name);
