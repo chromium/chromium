@@ -530,9 +530,7 @@ bool SetUpFullAccelerationAndCcLayer(HTMLCanvasElement& canvas_element) {
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
       RasterModeHint::kPreferGPU, &canvas_element,
       CompositingMode::kSupportsDirectCompositing);
-  canvas_element.SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&canvas_element), size);
+  canvas_element.SetResourceProviderForTesting(std::move(provider), size);
 
   // Put the host in GPU compositing mode.
   canvas_element.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
@@ -619,9 +617,7 @@ TEST_P(CanvasRenderingContext2DTest,
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
       RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kDoesNotSupportDirectCompositing);
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+  CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
   EXPECT_TRUE(CanvasElement().IsResourceValid());
   CanvasElement().SetIsDisplayed(true);
@@ -647,9 +643,7 @@ TEST_P(CanvasRenderingContext2DTest,
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
       RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+  CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
   EXPECT_TRUE(CanvasElement().IsResourceValid());
   CanvasElement().SetIsDisplayed(true);
@@ -673,9 +667,7 @@ TEST_P(CanvasRenderingContext2DTest, HidingCanvasTurnsOffRateLimiting) {
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
       RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+  CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
   EXPECT_TRUE(CanvasElement().IsResourceValid());
   CanvasElement().SetIsDisplayed(true);
@@ -701,9 +693,7 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
       RasterModeHint::kPreferCPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+  CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   ASSERT_TRUE(CanvasElement().IsResourceValid());
 
@@ -1324,9 +1314,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_FullCoverage) {
   EXPECT_CALL(*provider, RasterRecord).Times(0);
   EXPECT_CALL(*provider, WritePixels).Times(1);
 
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+  CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
   NonThrowableExceptionState exception_state;
   Context2D()->fillRect(3, 3, 1, 1);
@@ -1360,9 +1348,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_PartialCoverage) {
       .Times(1);
   EXPECT_CALL(*provider, WritePixels).Times(1);
 
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+  CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
   // `putImageData` forces a flush, which clears the recording.
   NonThrowableExceptionState exception_state;
@@ -1434,11 +1420,9 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
           SkImageInfo::MakeN32Premul(size.width(), size.height()),
           RasterModeHint::kPreferGPU, &CanvasElement(),
           CompositingMode::kSupportsDirectCompositing);
-  auto bridge = std::make_unique<Canvas2DLayerBridge>(&CanvasElement());
-  Canvas2DLayerBridge* bridge_ptr = bridge.get();
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      std::move(fake_resource_provider), std::move(bridge), size);
+      std::move(fake_resource_provider), size);
 
   // 800 = 10 * 10 * 4 * 2 where 10*10 is canvas size, 4 is num of bytes per
   // pixel per buffer, and 2 is an estimate of num of gpu buffers required
@@ -1457,7 +1441,6 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   CanvasContextCreationAttributesCore attributes;
   anotherCanvas->GetCanvasRenderingContext("2d", attributes);
   gfx::Size size2(10, 5);
-  auto bridge2 = std::make_unique<Canvas2DLayerBridge>(&CanvasElement());
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider2 =
       std::make_unique<FakeCanvasResourceProvider>(
           SkImageInfo::MakeN32Premul(size2.width(), size2.height()),
@@ -1465,11 +1448,10 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
           CompositingMode::kSupportsDirectCompositing);
   anotherCanvas->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   anotherCanvas->SetResourceProviderForTesting(
-      std::move(fake_resource_provider2), std::move(bridge2), size2);
+      std::move(fake_resource_provider2), size2);
 
   // Tear down the first image buffer that resides in current canvas element
   CanvasElement().SetSize(gfx::Size(20, 20));
-  Mock::VerifyAndClearExpectations(bridge_ptr);
 
   // Tear down the second image buffer
   anotherCanvas->SetSize(gfx::Size(20, 20));
@@ -1508,8 +1490,7 @@ TEST_P(CanvasRenderingContext2DTest,
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
 
   EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge());
   EXPECT_FALSE(CanvasElement().ResourceProvider());
@@ -1840,8 +1821,7 @@ TEST_P(CanvasRenderingContext2DTest,
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
 
   DrawSomething();
   NonThrowableExceptionState exception_state;
@@ -1858,8 +1838,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
   const size_t initial_op_count = Context2D()->Recorder()->TotalOpCount();
 
@@ -1879,8 +1858,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
 
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
 
@@ -1914,8 +1892,7 @@ TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
 
   constexpr unsigned int kImageSize = 10;
   constexpr unsigned int kBytesPerImage = 400;
@@ -1939,8 +1916,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
 
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
   size_t expected_op_count = Context2D()->Recorder()->TotalOpCount();
@@ -1966,8 +1942,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
   NonThrowableExceptionState exception_state;
   Context2D()->beginLayer(ToScriptStateForMainWorld(GetDocument().GetFrame()),
                           BeginLayerOptions::Create(), exception_state);
@@ -2186,8 +2161,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
 
   DrawSomething();
   NonThrowableExceptionState exception_state;
@@ -2206,8 +2180,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   gfx::Size size(300, 300);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   // Take a snapshot to trigger lazy resource provider creation
@@ -2912,9 +2885,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
       .Times(1)
       .WillOnce(SaveArg<0>(&hibernation_raster));
 
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+  CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
   ThreadScheduler::Current()->PostIdleTask(
       FROM_HERE, WTF::BindOnce(
@@ -2980,8 +2951,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   gfx::Size size(300, 300);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   EXPECT_TRUE(CanvasElement().GetLayoutBoxModelObject());
@@ -3102,8 +3072,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr,
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+      /*provider=*/nullptr, size);
   CanvasRenderingContext2D* context = Context2D();
 
   // 800 = 10 * 10 * 4 * 2 where 10*10 is canvas size, 4 is num of bytes per
@@ -3141,9 +3110,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_CALL(*cpu_provider, WritePixels).Times(1);
 
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(gpu_provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+  CanvasElement().SetResourceProviderForTesting(std::move(gpu_provider), size);
 
   NonThrowableExceptionState exception_state;
   Context2D()->fillRect(10, 10, 20, 20);

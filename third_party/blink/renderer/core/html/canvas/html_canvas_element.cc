@@ -1493,13 +1493,12 @@ Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
 
 void HTMLCanvasElement::SetResourceProviderForTesting(
     std::unique_ptr<CanvasResourceProvider> provider,
-    std::unique_ptr<Canvas2DLayerBridge> bridge,
     const gfx::Size& size) {
   DiscardResourceProvider();
   SetIntegralAttribute(html_names::kWidthAttr, size.width());
   SetIntegralAttribute(html_names::kHeightAttr, size.height());
   CanvasResourceHost::SetSize(size);
-  SetCanvas2DLayerBridgeInternal(std::move(bridge));
+  SetCanvas2DLayerBridgeInternal(nullptr);
   ReplaceResourceProvider(std::move(provider));
 }
 

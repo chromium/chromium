@@ -247,7 +247,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void SetResourceProviderForTesting(
       std::unique_ptr<CanvasResourceProvider> provider,
-      std::unique_ptr<Canvas2DLayerBridge> bridge,
       const gfx::Size& size);
 
   static void RegisterRenderingContextFactory(

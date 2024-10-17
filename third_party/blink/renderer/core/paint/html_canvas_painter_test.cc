@@ -81,10 +81,8 @@ TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
   CanvasRenderingContext* context =
       element->GetCanvasRenderingContext("2d", attributes);
   gfx::Size size(300, 200);
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      std::make_unique<Canvas2DLayerBridge>(element);
   element->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  element->SetResourceProviderForTesting(nullptr, std::move(bridge), size);
+  element->SetResourceProviderForTesting(nullptr, size);
   ASSERT_EQ(context, element->RenderingContext());
 
   // Force the page to paint.
