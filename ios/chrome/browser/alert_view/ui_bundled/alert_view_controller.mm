@@ -226,16 +226,16 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 
 #pragma mark - Public
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    self.textFieldStackHolder.layer.borderColor =
-        [UIColor colorNamed:kSeparatorColor].CGColor;
+  if (@available(iOS 17, *)) {
+    return;
   }
+
+  [self updateBorderColorOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)loadView {
   [super loadView];
@@ -403,6 +403,20 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
          selector:@selector(handleKeyboardWillHide:)
              name:UIKeyboardWillHideNotification
            object:nil];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
+      UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
+      UITraitUserInterfaceLevel.self
+    ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateBorderColorOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
 #pragma mark - Getters
@@ -661,6 +675,18 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 // Enables `button`.
 - (void)enableActionButton:(UIButton*)actionButton {
   actionButton.enabled = YES;
+}
+
+// Updates the `textFieldStackHolder`'s border color when the view controller's
+// UITraits are modified.
+- (void)updateBorderColorOnTraitChange:
+    (UITraitCollection*)previousTraitCollection {
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    self.textFieldStackHolder.layer.borderColor =
+        [UIColor colorNamed:kSeparatorColor].CGColor;
+  }
 }
 
 @end
