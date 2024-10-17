@@ -12229,6 +12229,9 @@
                         "PageContentAnnotations",
                         "SegmentationPlatformURLVisitResumptionRanker",
                         "TabResumption2"
+                    ],
+                    "disable_features": [
+                        "VisitedURLRankingHistoryVisibilityScoreFilter"
                     ]
                 }
             ]
