@@ -19,7 +19,7 @@ from test_helpers import execute_command, goto_url
 
 
 @pytest.mark.asyncio
-async def test_print(websocket, context_id, html):
+async def test_print_top_level_context(websocket, context_id, html):
     await goto_url(websocket, context_id, html())
 
     print_result = await execute_command(
@@ -47,3 +47,19 @@ async def test_print(websocket, context_id, html):
             'message': 'net::ERR_ABORTED'
         }
         pytest.xfail("PDF viewer not available in headless.")
+
+
+@pytest.mark.asyncio
+async def test_print_iframe(websocket, iframe_id, html):
+    with pytest.raises(
+            Exception,
+            match=str({
+                'error': 'unsupported operation',
+                'message': 'Printing of non-top level contexts is not supported'
+            })):
+        await execute_command(websocket, {
+            "method": "browsingContext.print",
+            "params": {
+                "context": iframe_id,
+            }
+        })

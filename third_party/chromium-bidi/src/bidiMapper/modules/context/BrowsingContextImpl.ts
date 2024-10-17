@@ -1109,6 +1109,12 @@ export class BrowsingContextImpl {
   async print(
     params: BrowsingContext.PrintParameters,
   ): Promise<BrowsingContext.PrintResult> {
+    if (!this.isTopLevelContext()) {
+      throw new UnsupportedOperationException(
+        'Printing of non-top level contexts is not supported',
+      );
+    }
+
     const cdpParams: Protocol.Page.PrintToPDFRequest = {};
 
     if (params.background !== undefined) {
