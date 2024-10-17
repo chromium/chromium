@@ -86,11 +86,11 @@ MATCHER_P(ImageColorIs, expected_color, "") {
 }
 
 // Fill the given data buffer with valid png data.
-std::vector<unsigned char> FillBitmapWithEdgeSize(int size, SkColor color) {
+std::vector<uint8_t> FillBitmapWithEdgeSize(int size, SkColor color) {
   SkBitmap bitmap = gfx::test::CreateBitmap(size, color);
-  std::vector<unsigned char> output;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
-  return output;
+  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                           /*discard_transparency=*/false)
+      .value();
 }
 
 std::vector<FaviconRawBitmapResult> CreateRawBitmapResult(

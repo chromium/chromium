@@ -18,11 +18,10 @@ bool ReencodeFavicon(const unsigned char* src_data,
                      std::vector<unsigned char>* png_data) {
   // Decode the favicon using WebKit's image decoder.
   SkBitmap decoded = content::DecodeImage(
-      src_data,
-      gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize),
-      src_len);
-  if (decoded.empty())
+      src_data, gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize), src_len);
+  if (decoded.empty()) {
     return false;  // Unable to decode.
+  }
 
   if (decoded.width() != gfx::kFaviconSize ||
       decoded.height() != gfx::kFaviconSize) {
@@ -35,7 +34,10 @@ bool ReencodeFavicon(const unsigned char* src_data,
   }
 
   // Encode our bitmap as a PNG.
-  gfx::PNGCodec::EncodeBGRASkBitmap(decoded, false, png_data);
+  std::optional<std::vector<uint8_t>> data = gfx::PNGCodec::EncodeBGRASkBitmap(
+      decoded, /*discard_transparency=*/false);
+  // TODO: Return failure if encoding doesn't work?
+  *png_data = data.value_or(std::vector<uint8_t>());
   return true;
 }
 

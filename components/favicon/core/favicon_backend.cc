@@ -568,14 +568,16 @@ bool FaviconBackend::SetFaviconBitmaps(favicon_base::FaviconID icon_id,
   using PNGEncodedBitmap =
       std::pair<scoped_refptr<base::RefCountedBytes>, gfx::Size>;
   std::vector<PNGEncodedBitmap> to_add;
-  for (size_t i = 0; i < bitmaps.size(); ++i) {
-    scoped_refptr<base::RefCountedBytes> bitmap_data(new base::RefCountedBytes);
-    if (!gfx::PNGCodec::EncodeBGRASkBitmap(bitmaps[i], false,
-                                           &bitmap_data->as_vector())) {
+  for (const auto& bitmap : bitmaps) {
+    std::optional<std::vector<uint8_t>> encoded =
+        gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false);
+    if (!encoded) {
       continue;
     }
-    to_add.push_back(std::make_pair(
-        bitmap_data, gfx::Size(bitmaps[i].width(), bitmaps[i].height())));
+    auto bitmap_data =
+        base::MakeRefCounted<base::RefCountedBytes>(std::move(encoded.value()));
+    to_add.emplace_back(bitmap_data,
+                        gfx::Size(bitmap.width(), bitmap.height()));
   }
 
   bool favicon_bitmaps_changed = false;
