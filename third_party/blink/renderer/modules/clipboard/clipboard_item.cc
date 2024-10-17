@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -16,14 +17,70 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
+class UnionToBlobResolverFunction final : public ScriptFunction::Callable {
+ public:
+  enum class ResolveType { kFulfill, kReject };
+
+  static void Create(ScriptState* script_state,
+                     ScriptPromise<V8UnionBlobOrString> promise,
+                     ScriptPromiseResolver<Blob>* resolver,
+                     const String& mime_type) {
+    promise.Then(
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<UnionToBlobResolverFunction>(
+                              resolver, mime_type, ResolveType::kFulfill)),
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<UnionToBlobResolverFunction>(
+                              resolver, mime_type, ResolveType::kReject)));
+  }
+
+  UnionToBlobResolverFunction(ScriptPromiseResolver<Blob>* resolver,
+                              const String& mime_type,
+                              ResolveType resolve_type)
+      : resolver_(resolver),
+        mime_type_(mime_type),
+        resolve_type_(resolve_type) {}
+
+  void Trace(Visitor* visitor) const final {
+    ScriptFunction::Callable::Trace(visitor);
+    visitor->Trace(resolver_);
+  }
+
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+    if (resolve_type_ == ResolveType::kReject) {
+      resolver_->Reject(value);
+    } else {
+      auto* union_value =
+          NativeValueTraits<blink::V8UnionBlobOrString>::NativeValue(
+              script_state->GetIsolate(), value.V8Value(),
+              PassThroughException(script_state->GetIsolate()));
+      if (union_value->IsBlob()) {
+        resolver_->Resolve(union_value->GetAsBlob());
+      } else if (union_value->IsString()) {
+        // ClipboardItem::getType() returns a Blob, so we need to convert the
+        // string to a Blob here.
+        Blob* blob =
+            Blob::Create(union_value->GetAsString().Span8(), mime_type_);
+        resolver_->Resolve(blob);
+      }
+    }
+    return ScriptValue();
+  }
+
+ private:
+  Member<ScriptPromiseResolver<Blob>> resolver_;
+  String mime_type_;
+  ResolveType resolve_type_;
+};
 
 // static
 ClipboardItem* ClipboardItem::Create(
-    const HeapVector<std::pair<String, ScriptPromise<Blob>>>& representations,
+    const HeapVector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>>&
+        representations,
     ExceptionState& exception_state) {
   // Check that incoming dictionary isn't empty. If it is, it's possible that
   // Javascript bindings implicitly converted an Object (like a
-  // ScriptPromise<Blob>) into {}, an empty dictionary.
+  // ScriptPromise<V8UnionBlobOrString>) into {}, an empty dictionary.
   if (!representations.size()) {
     exception_state.ThrowTypeError("Empty dictionary argument");
     return nullptr;
@@ -32,7 +89,8 @@ ClipboardItem* ClipboardItem::Create(
 }
 
 ClipboardItem::ClipboardItem(
-    const HeapVector<std::pair<String, ScriptPromise<Blob>>>& representations) {
+    const HeapVector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>>&
+        representations) {
   for (const auto& representation : representations) {
     String web_custom_format =
         Clipboard::ParseWebCustomFormat(representation.first);
@@ -41,9 +99,8 @@ ClipboardItem::ClipboardItem(
       // any read/write support for that type.
       // TODO(caseq,japhet): we can't pass typed promises from bindings yet, but
       // when we can, the type cast below should go away.
-      representations_.emplace_back(
-          representation.first,
-          static_cast<const ScriptPromise<Blob>&>(representation.second));
+      representations_.emplace_back(representation.first,
+                                    representation.second);
     } else {
       // Types with "web " prefix are special, so we do some level of MIME type
       // parsing here to get a valid web custom format type.
@@ -57,9 +114,8 @@ ClipboardItem::ClipboardItem(
       String web_custom_format_string =
           String::Format("%s%s", ui::kWebClipboardFormatPrefix,
                          web_custom_format.Utf8().c_str());
-      representations_.emplace_back(
-          web_custom_format_string,
-          static_cast<const ScriptPromise<Blob>&>(representation.second));
+      representations_.emplace_back(web_custom_format_string,
+                                    representation.second);
       custom_format_types_.push_back(web_custom_format_string);
     }
   }
@@ -74,13 +130,29 @@ Vector<String> ClipboardItem::types() const {
   return types;
 }
 
+ScriptPromise<Blob> ConvertUnionToBlob(
+    ScriptState* script_state,
+    ScriptPromise<V8UnionBlobOrString> union_promise,
+    const String& mime_type,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Blob>>(
+      script_state, exception_state.GetContext());
+
+  UnionToBlobResolverFunction::Create(script_state, union_promise, resolver,
+                                      mime_type);
+
+  return resolver->Promise();
+}
+
 ScriptPromise<Blob> ClipboardItem::getType(
     ScriptState* script_state,
     const String& type,
     ExceptionState& exception_state) const {
   for (const auto& item : representations_) {
-    if (type == item.first)
-      return item.second;
+    if (type == item.first) {
+      return ConvertUnionToBlob(script_state, item.second, type,
+                                exception_state);
+    }
   }
 
   exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,

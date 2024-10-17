@@ -42,7 +42,7 @@ namespace blink {
 
 namespace {  // anonymous namespace for ClipboardWriter's derived classes.
 
-// Writes a Blob with image/png content to the System Clipboard.
+// Writes image/png content to the System Clipboard.
 class ClipboardImageWriter final : public ClipboardWriter {
  public:
   ClipboardImageWriter(SystemClipboard* system_clipboard,
@@ -104,7 +104,7 @@ class ClipboardImageWriter final : public ClipboardWriter {
   }
 };
 
-// Writes a Blob with text/plain content to the System Clipboard.
+// Writes text/plain content to the System Clipboard.
 class ClipboardTextWriter final : public ClipboardWriter {
  public:
   ClipboardTextWriter(SystemClipboard* system_clipboard,
@@ -151,7 +151,7 @@ class ClipboardTextWriter final : public ClipboardWriter {
   }
 };
 
-// Writes a blob with text/html content to the System Clipboard.
+// Writes text/html content to the System Clipboard.
 class ClipboardHtmlWriter final : public ClipboardWriter {
  public:
   ClipboardHtmlWriter(SystemClipboard* system_clipboard,
@@ -187,7 +187,7 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
   }
 };
 
-// Writes a blob with image/svg+xml content to the System Clipboard.
+// Write image/svg+xml content to the System Clipboard.
 class ClipboardSvgWriter final : public ClipboardWriter {
  public:
   ClipboardSvgWriter(SystemClipboard* system_clipboard,
@@ -220,7 +220,7 @@ class ClipboardSvgWriter final : public ClipboardWriter {
   }
 };
 
-// Writes a Blob with arbitrary, unsanitized content to the System Clipboard.
+// Writes arbitrary, unsanitized content to the System Clipboard.
 class ClipboardCustomFormatWriter final : public ClipboardWriter {
  public:
   ClipboardCustomFormatWriter(SystemClipboard* system_clipboard,
@@ -309,12 +309,21 @@ ClipboardWriter::ClipboardWriter(SystemClipboard* system_clipboard,
 
 ClipboardWriter::~ClipboardWriter() = default;
 
-void ClipboardWriter::WriteToSystem(Blob* blob) {
+void ClipboardWriter::WriteToSystem(V8UnionBlobOrString* clipboard_item_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!file_reader_);
-  file_reader_ = MakeGarbageCollected<FileReaderLoader>(
-      this, std::move(file_reading_task_runner_));
-  file_reader_->Start(blob->GetBlobDataHandle());
+  if (clipboard_item_data->IsBlob()) {
+    DCHECK(!file_reader_);
+    file_reader_ = MakeGarbageCollected<FileReaderLoader>(
+        this, std::move(file_reading_task_runner_));
+    file_reader_->Start(clipboard_item_data->GetAsBlob()->GetBlobDataHandle());
+  } else if (clipboard_item_data->IsString()) {
+    DCHECK(RuntimeEnabledFeatures::ClipboardItemWithDOMStringSupportEnabled());
+    StartWrite(
+        DOMArrayBuffer::Create(clipboard_item_data->GetAsString().Span8()),
+        clipboard_task_runner_);
+  } else {
+    NOTREACHED();
+  }
 }
 
 // FileReaderClient implementation.

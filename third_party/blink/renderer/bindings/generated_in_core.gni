@@ -1792,6 +1792,8 @@ generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_audiotrack_texttrack_videotrack.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_autokeyword_double.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_autokeyword_double.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_blob_string.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_blob_string.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_boolean_bytestringbytestringrecord.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_boolean_bytestringbytestringrecord.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_boolean_eventlisteneroptions.cc",

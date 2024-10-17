@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_blob_string.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -103,15 +104,18 @@ class MODULES_EXPORT ClipboardPromise final
   void Trace(Visitor* visitor) const override;
 
  private:
-  class BlobPromiseResolverFunction;
+  class ClipboardItemDataPromiseResolverFunction;
 
-  void HandlePromiseBlobsWrite(HeapVector<Member<Blob>>* blob_list);
-  void WriteBlobs(HeapVector<Member<Blob>>* blob_list);
+  void HandlePromiseWrite(
+      HeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list);
+  void WriteClipboardItemData(
+      HeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list);
 
-  // Rejects the promise for blobs that have invalid MIME types or got rejected.
-  // `exception_text` The JS exception text populated after the promises for
-  // blobs were either fulfilled with invalid blob types or rejected.
-  void RejectBlobPromise(const String& exception_text);
+  // Rejects the promise for clipboard items that have invalid MIME types or
+  // got rejected. `exception_text` The JS exception text populated after the
+  // promises for clipboard items were either fulfilled with invalid clipboard
+  // item types or rejected.
+  void RejectClipboardItemPromise(const String& exception_text);
   void WriteNextRepresentation();
 
   // Checks Read/Write permission (interacting with `PermissionService`).
@@ -167,10 +171,11 @@ class MODULES_EXPORT ClipboardPromise final
   // Plain text data to be written to the clipboard.
   String plain_text_;
   // The list of formats read from the clipboard.
-  HeapVector<std::pair<String, Member<Blob>>> clipboard_item_data_;
+  HeapVector<std::pair<String, Member<V8UnionBlobOrString>>>
+      clipboard_item_data_;
   // The list of formats with their corresponding promises to the Blob data to
   // be written to the clipboard.
-  HeapVector<std::pair<String, ScriptPromise<Blob>>>
+  HeapVector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>>
       clipboard_item_data_with_promises_;
   wtf_size_t clipboard_representation_index_ = 0;
   // List of custom format with "web " prefix.

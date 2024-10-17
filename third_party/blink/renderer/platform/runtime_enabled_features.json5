@@ -749,6 +749,10 @@
       status: "experimental",
     },
     {
+      name: "ClipboardItemWithDOMStringSupport",
+      status: "test",
+    },
+    {
       name: "ClipPathRejectEmptyPaths",
       status: "stable",
     },
