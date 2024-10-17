@@ -50,13 +50,20 @@ using ::testing::SizeIs;
 auto IsCreateInlineSuggestion(
     std::optional<std::u16string> suggested_plus_address) {
   const bool is_loading = !suggested_plus_address.has_value();
+  const std::optional<std::u16string> voice_over =
+      suggested_plus_address
+          ? l10n_util::GetStringFUTF16(
+                IDS_PLUS_ADDRESS_CREATE_INLINE_SUGGESTION_A11Y_VOICE_OVER,
+                *suggested_plus_address)
+          : std::optional<std::u16string>();
   Suggestion::PlusAddressPayload payload(std::move(suggested_plus_address));
   payload.offer_refresh = !is_loading;
   return AllOf(
       EqualsSuggestion(SuggestionType::kCreateNewPlusAddressInline),
       Property(&Suggestion::GetPayload<Suggestion::PlusAddressPayload>,
                std::move(payload)),
-      Field(&Suggestion::is_loading, Suggestion::IsLoading(is_loading)));
+      Field(&Suggestion::is_loading, Suggestion::IsLoading(is_loading)),
+      Field(&Suggestion::voice_over, voice_over));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

@@ -342,6 +342,9 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
     suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
     suggestion.feature_for_iph =
         &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
+    suggestion.voice_over = l10n_util::GetStringFUTF16(
+        IDS_PLUS_ADDRESS_CREATE_INLINE_SUGGESTION_A11Y_VOICE_OVER,
+        base::UTF8ToUTF16(*profile->plus_address));
   } else {
     suggestion.payload = Suggestion::PlusAddressPayload();
     SetLoadingStateForSuggestion(/*is_loading=*/true, suggestion);

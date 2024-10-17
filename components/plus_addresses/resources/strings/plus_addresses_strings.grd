@@ -541,6 +541,9 @@ if we want to translate this file.
       <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT_WITH_FORWARDING_INFO" desc="The secondary text in the Autofill suggestion for creating a new plus address." translateable="false">
         Lorem Ipsum <ph name="GAIA_EMAIL"><ex>foo@gmail.com</ex>$1</ph>
       </message>
+      <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_SUGGESTION_A11Y_VOICE_OVER" desc="The voice over text read out for an inline suggestion for creating a plus address." translateable="false">
+        Use a plus address (<ph name="EMAIL">$1<ex>example@foo.com</ex></ph>)
+      </message>
       <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME" desc="The accessible name on the button that allows refreshing plus addresses inside an Autofill popup suggestion." translateable="false">
         Refresh plus address
       </message>
