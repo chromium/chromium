@@ -706,6 +706,19 @@ GetFieldTypeGroupsFromFormStructure(const FormStructure* form_structure) {
                         : base::flat_map<FieldGlobalId, FieldTypeGroup>();
 }
 
+// Returns if the email address was modified on any of the suggested addresses
+// using a plus profile.
+bool WasEmailOverrideAppliedOnSuggestions(
+    const std::vector<Suggestion>& address_suggestions) {
+  return base::ranges::any_of(
+      address_suggestions, [](const Suggestion& suggestion) {
+        const Suggestion::AutofillProfilePayload* profile_payload =
+            absl::get_if<Suggestion::AutofillProfilePayload>(
+                &suggestion.payload);
+        return profile_payload && !profile_payload->email_override.empty();
+      });
+}
+
 }  // namespace
 
 BrowserAutofillManager::MetricsState::MetricsState(
@@ -1628,13 +1641,14 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   }
   // Only offer plus address suggestions together with address suggestions if
   // these exist. Otherwise, plus address suggestions will be generated and
-  // shown alongside single field form fill suggestions.
-  // TODO(crbug.com/324557053): Do not generate plus address suggestions if the
-  // plus address email override was applied on at least one address suggestion.
+  // shown alongside single field form fill suggestions. Plus address
+  // suggestions are not shown if the plus address email override was applied on
+  // at least one address suggestion.
   const bool should_offer_plus_addresses_with_profiles =
       context.field_is_relevant_for_plus_addresses && autofill_field &&
       autofill_field->Type().group() == FieldTypeGroup::kEmail &&
-      !suggestions.empty();
+      !suggestions.empty() &&
+      !WasEmailOverrideAppliedOnSuggestions(suggestions);
   // Try to show plus address suggestions. If the user specifically requested
   // plus addresses, disregard any other requirements (like having profile
   // suggestions) and show only plus address suggestions. Otherwise plus address

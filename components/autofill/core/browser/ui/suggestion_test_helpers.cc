@@ -23,6 +23,11 @@ Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
 }
 
 Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
+                                     const Suggestion::Payload& payload) {
+  return AllOf(EqualsSuggestion(id), Field(&Suggestion::payload, payload));
+}
+
+Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
                                      const std::u16string& main_text,
                                      Suggestion::Icon icon) {
   return AllOf(EqualsSuggestion(id, main_text), Field(&Suggestion::icon, icon));

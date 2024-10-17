@@ -106,6 +106,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/translate/core/common/language_detection_details.h"
@@ -8094,6 +8095,8 @@ class BrowserAutofillManagerPlusAddressTest
         .WillByDefault(Return(Suggestion(SuggestionType::kManagePlusAddress)));
     ON_CALL(*plus_address_delegate, IsPlusAddressFillingEnabled)
         .WillByDefault(Return(true));
+    ON_CALL(*plus_address_delegate, IsPlusAddressFullFormFillingEnabled)
+        .WillByDefault(Return(true));
     autofill_client_.set_plus_address_delegate(
         std::move(plus_address_delegate));
   }
@@ -8471,6 +8474,69 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_EQ(form.fields().size(), form_seen_by_autocomplete.fields().size());
   EXPECT_FALSE(form_seen_by_autocomplete.fields()[0].should_autocomplete());
   EXPECT_TRUE(form_seen_by_autocomplete.fields()[1].should_autocomplete());
+}
+
+// Test that plus address inputs are forced to !should_autocomplete
+// for `SingleFieldFormFillRouter::OnWillSubmitForm()`.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       TestPlusAddressEmailOverridesAppliedOnAddresses) {
+  using enum AutofillPlusAddressDelegate::SuggestionContext;
+  using enum PasswordFormClassification::Type;
+
+  const std::string gaia_email = "foo@mail.com";
+  autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+      gaia_email, signin::ConsentLevel::kSignin);
+
+  personal_data().test_address_data_manager().ClearProfiles();
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile1.set_guid(MakeGuid(1));
+  profile1.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
+  personal_data().test_address_data_manager().AddProfile(profile1);
+
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile2.set_guid(MakeGuid(2));
+  profile2.SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16(gaia_email));
+  personal_data().test_address_data_manager().AddProfile(profile2);
+
+  // Plus address suggestions request.
+  const std::vector<std::string> plus_addresses = {"plus+remote@plus.plus"};
+  EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
+      .WillOnce(RunOnceCallback<1>(plus_addresses));
+  // No plus address suggestions are built as the plus address replaced the
+  // address profile email.
+  EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses(
+                                           plus_addresses, _, _, _, _, _, _, _))
+      .Times(0);
+  // No single field form fill suggestions requests.
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
+
+  // Set up our form data. Notably, the first field is an email address.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+
+  FormsSeen({form});
+
+  // Check that the plus address suggestion are embedded in the address
+  // suggestions and not offered separately.
+  GetAutofillSuggestions(form, form.fields()[0]);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntry,
+                                   Suggestion::AutofillProfilePayload(
+                                       Suggestion::Guid(profile1.guid()))),
+                  // The second address suggestion with a plus address email.
+                  EqualsSuggestion(SuggestionType::kAddressEntry,
+                                   Suggestion::AutofillProfilePayload(
+                                       Suggestion::Guid(profile2.guid()),
+                                       u"plus+remote@plus.plus")),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
 }
 
 }  // namespace autofill
