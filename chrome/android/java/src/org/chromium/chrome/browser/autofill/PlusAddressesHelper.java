@@ -41,42 +41,45 @@ public class PlusAddressesHelper {
         openManagePlusAddresses(activity, profile);
     }
 
-    // TODO: crbug.com/367381724 - Figure out how to test the intent creation.
     public static void openManagePlusAddresses(Activity activity, Profile profile) {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE)) {
-            @Nullable
-            IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(profile);
-            if (identityManager == null) {
-                return;
-            }
-
-            @Nullable
-            CoreAccountInfo accountInfo =
-                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-            if (accountInfo == null) {
-                return;
-            }
-
-            Intent intent =
-                    new Intent("com.google.android.gms.accountsettings.action.VIEW_SETTINGS")
-                            .setPackage("com.google.android.gms")
-                            .putExtra("extra.screenId", PLUS_ADDRESS_EMAIL_SCREEN)
-                            .putExtra("extra.accountName", accountInfo.getEmail())
-                            .putExtra("extra.utmSource", "chrome")
-                            .putExtra("extra.campaign", "chrome");
-
-            try {
-                activity.startActivityForResult(intent, 0);
-            } catch (ActivityNotFoundException e) {
-                // Default to opening the management page in the Chrome custom tab.
-                openManagePlusAddressesInCct(activity);
-            }
+        @Nullable
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (identityManager == null) {
+            // There's no identity manager in the incognito mode. Make sure management UI is not
+            // opened in the incognito mode.
             return;
         }
 
-        openManagePlusAddressesInCct(activity);
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE)) {
+            openManagePlusAddressesInCct(activity);
+            return;
+        }
+
+        @Nullable
+        CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        if (accountInfo == null) {
+            // Signed out users should not be able to open the plus address management UI. Early
+            // return if account information is not available for whatever reason.
+            return;
+        }
+
+        try {
+            activity.startActivityForResult(createAccountSettingsIntent(accountInfo.getEmail()), 0);
+        } catch (ActivityNotFoundException e) {
+            // Default to opening the management page in the Chrome custom tab.
+            openManagePlusAddressesInCct(activity);
+        }
+    }
+
+    private static Intent createAccountSettingsIntent(String primaryEmail) {
+        return new Intent("com.google.android.gms.accountsettings.action.VIEW_SETTINGS")
+                .setPackage("com.google.android.gms")
+                .putExtra("extra.screenId", PLUS_ADDRESS_EMAIL_SCREEN)
+                .putExtra("extra.accountName", primaryEmail)
+                .putExtra("extra.utmSource", "chrome")
+                .putExtra("extra.campaign", "chrome");
     }
 
     private static void openManagePlusAddressesInCct(Context context) {
