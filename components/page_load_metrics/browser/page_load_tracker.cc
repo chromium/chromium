@@ -200,6 +200,9 @@ void DispatchObserverTimingCallbacks(PageLoadMetricsObserverInterface* observer,
   if (new_timing.connect_start && !last_timing.connect_start) {
     observer->OnConnectStart(new_timing);
   }
+  if (new_timing.connect_end && !last_timing.connect_end) {
+    observer->OnConnectEnd(new_timing);
+  }
 }
 
 internal::PageLoadTrackerPageType CalculatePageType(

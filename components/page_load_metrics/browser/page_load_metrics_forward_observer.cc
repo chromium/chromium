@@ -237,6 +237,8 @@ void PageLoadMetricsForwardObserver::OnParseStop(
 
 void PageLoadMetricsForwardObserver::OnConnectStart(
     const mojom::PageLoadTiming& timing) {}
+void PageLoadMetricsForwardObserver::OnConnectEnd(
+    const mojom::PageLoadTiming& timing) {}
 void PageLoadMetricsForwardObserver::OnDomainLookupStart(
     const mojom::PageLoadTiming& timing) {}
 void PageLoadMetricsForwardObserver::OnDomainLookupEnd(
