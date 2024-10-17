@@ -142,7 +142,7 @@ public class UrlBarCoordinator
         return mMediator.setUrlBarData(data, scrollType, state);
     }
 
-    /** Returns the UrlBarData representing the current contents of the UrsssdddsssslBar. */
+    /** Returns the UrlBarData representing the current contents of the UrlBar. */
     public @NonNull UrlBarData getUrlBarData() {
         return mMediator.getUrlBarData();
     }
