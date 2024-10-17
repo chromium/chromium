@@ -566,12 +566,12 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                                         inputStream == null
                                                 ? null
                                                 : InputStreamChannel.wrap(inputStream);
-                                mCallbackAsync.onResponseStarted(mUrlResponseInfo);
+                                mCallbackAsync.onResponseStarted();
                             } else {
                                 mResponseChannel =
                                         InputStreamChannel.wrap(
                                                 mCurrentUrlConnection.getInputStream());
-                                mCallbackAsync.onResponseStarted(mUrlResponseInfo);
+                                mCallbackAsync.onResponseStarted();
                             }
                         }));
     }
@@ -895,7 +895,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     });
         }
 
-        void onResponseStarted(UrlResponseInfo info) {
+        void onResponseStarted() {
             execute(
                     () -> {
                         if (mState.compareAndSet(

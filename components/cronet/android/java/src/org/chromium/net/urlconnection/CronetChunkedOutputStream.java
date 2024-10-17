@@ -19,7 +19,6 @@ import java.util.Objects;
  * be called from the thread on which the {@link #mConnection} is created.
  */
 final class CronetChunkedOutputStream extends CronetOutputStream {
-    private final CronetHttpURLConnection mConnection;
     private final MessageLoop mMessageLoop;
     private final ByteBuffer mBuffer;
     private final UploadDataProvider mUploadDataProvider = new UploadDataProviderImpl();
@@ -40,7 +39,6 @@ final class CronetChunkedOutputStream extends CronetOutputStream {
             throw new IllegalArgumentException("chunkLength should be greater than 0");
         }
         mBuffer = ByteBuffer.allocate(chunkLength);
-        mConnection = connection;
         mMessageLoop = messageLoop;
     }
 

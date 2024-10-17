@@ -284,12 +284,12 @@ public class FakeUrlResponse {
             String bodyString = new String(mResponseBody, "UTF-8");
             outputString.append("(UTF-8): " + bodyString);
         } catch (UnsupportedEncodingException e) {
-            outputString.append("(hexadecimal): " + getHexStringFromBytes(mResponseBody));
+            outputString.append("(hexadecimal): " + getHexStringFromBytes());
         }
         return outputString.toString();
     }
 
-    private String getHexStringFromBytes(byte[] bytes) {
+    private String getHexStringFromBytes() {
         StringBuilder bytesToHexStringBuilder = new StringBuilder();
         for (byte b : mResponseBody) {
             bytesToHexStringBuilder.append(String.format("%02x", b));

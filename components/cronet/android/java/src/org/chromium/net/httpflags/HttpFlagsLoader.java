@@ -75,7 +75,7 @@ public final class HttpFlagsLoader {
                     "Found application exporting HTTP flags: %s",
                     providerApplicationInfo.packageName);
 
-            File flagsFile = getFlagsFileFromProvider(context, providerApplicationInfo);
+            File flagsFile = getFlagsFileFromProvider(providerApplicationInfo);
             Log.d(TAG, "HTTP flags file path: %s", flagsFile.getAbsolutePath());
 
             Flags flags = loadFlagsFile(flagsFile);
@@ -111,8 +111,7 @@ public final class HttpFlagsLoader {
         return resolveInfo.serviceInfo.applicationInfo;
     }
 
-    private static File getFlagsFileFromProvider(
-            Context context, ApplicationInfo providerApplicationInfo) {
+    private static File getFlagsFileFromProvider(ApplicationInfo providerApplicationInfo) {
         return new File(
                 new File(
                         new File(

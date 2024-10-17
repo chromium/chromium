@@ -17,8 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import org.chromium.base.Log;
 import org.chromium.net.CronetEngine;
@@ -41,7 +39,6 @@ public class MainFragment extends Fragment {
     private Button mStartButton;
     private Button mResetEngineButton;
     private Button mClearTextButton;
-    private SampleActivityViewModel mActivityViewModel;
 
     private CronetEngine getCronetEngine() {
         return ((CronetSampleApplication) requireActivity().getApplication()).getCronetEngine();
@@ -70,9 +67,6 @@ public class MainFragment extends Fragment {
 
         mResetEngineButton.setOnClickListener(v -> resetEngine());
         mClearTextButton.setOnClickListener(v -> mResultText.setText(""));
-        mActivityViewModel =
-                new ViewModelProvider((FragmentActivity) requireActivity())
-                        .get(SampleActivityViewModel.class);
     }
 
     @Nullable

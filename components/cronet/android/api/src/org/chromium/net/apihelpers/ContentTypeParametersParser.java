@@ -29,7 +29,6 @@ final class ContentTypeParametersParser {
 
     @Nullable
     Map.Entry<String, String> getNextParameter() throws ContentTypeParametersParserException {
-        int startPos = mCurrentPosition;
         optionallySkipWhitespace();
         String parameterName = getNextToken();
         if (currentChar() != '=') {
