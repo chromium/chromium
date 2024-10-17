@@ -1,6 +1,6 @@
 {
-  "version": "47.2",
-  "log_list_timestamp": "2024-10-02T12:56:45Z",
+  "version": "48.3",
+  "log_list_timestamp": "2024-10-17T12:58:37Z",
   "operators": [
     {
       "name": "Google",
@@ -586,8 +586,8 @@
           "url": "https://mammoth2026h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-30T04:00:00Z"
+            "usable": {
+              "timestamp": "2024-10-14T17:00:00Z"
             }
           },
           "temporal_interval": {
@@ -602,8 +602,8 @@
           "url": "https://mammoth2026h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-30T04:00:00Z"
+            "usable": {
+              "timestamp": "2024-10-14T17:00:00Z"
             }
           },
           "temporal_interval": {
@@ -618,8 +618,8 @@
           "url": "https://sabre2026h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-30T04:00:00Z"
+            "usable": {
+              "timestamp": "2024-10-14T17:00:00Z"
             }
           },
           "temporal_interval": {
@@ -634,8 +634,8 @@
           "url": "https://sabre2026h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-30T04:00:00Z"
+            "usable": {
+              "timestamp": "2024-10-14T17:00:00Z"
             }
           },
           "temporal_interval": {
