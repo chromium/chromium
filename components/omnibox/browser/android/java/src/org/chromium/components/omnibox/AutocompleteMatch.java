@@ -499,6 +499,85 @@ public class AutocompleteMatch {
         AutocompleteMatchJni.get().updateWithClipboardContent(mNativeMatch, callback);
     }
 
+    /** Serialize suggestion to a protocol buffer message. */
+    public @Nullable AutocompleteProto.AutocompleteMatchProto serialize() {
+        var builder = AutocompleteProto.AutocompleteMatchProto.newBuilder();
+        builder.setType(mType)
+                .setDisplayText(mDisplayText)
+                .setDescription(mDescription)
+                .setFillIntoEdit(mFillIntoEdit)
+                .setUrl(mUrl.getSpec())
+                .setImageUrl(mImageUrl.getSpec())
+                .setTransition(mTransition)
+                .setGroupId(mGroupId)
+                .setAllowedToBeDefaultMatch(mAllowedToBeDefaultMatch)
+                .setInlineAutocompletion(mInlineAutocompletion)
+                .setAdditionalText(mAdditionalText);
+        for (int subtype : mSubtypes) {
+            builder.addSubtype(subtype);
+        }
+        for (var displayTextClassification : mDisplayTextClassifications) {
+            builder.addDisplayTextClassification(
+                    AutocompleteProto.MatchClassificationProto.newBuilder()
+                            .setOffset(displayTextClassification.offset)
+                            .setStyle(displayTextClassification.style));
+        }
+        for (var descriptionClassification : mDescriptionClassifications) {
+            builder.addDescriptionClassification(
+                    AutocompleteProto.MatchClassificationProto.newBuilder()
+                            .setOffset(descriptionClassification.offset)
+                            .setStyle(descriptionClassification.style));
+        }
+        return builder.build();
+    }
+
+    /** Deserialize suggestion from a protocol buffer message. */
+    public static AutocompleteMatch deserialize(AutocompleteProto.AutocompleteMatchProto input) {
+        List<MatchClassification> displayTextClassifications = new ArrayList<>();
+        List<MatchClassification> descriptionClassifications = new ArrayList<>();
+
+        for (var displayTextClassification : input.getDisplayTextClassificationList()) {
+            displayTextClassifications.add(
+                    new MatchClassification(
+                            displayTextClassification.getOffset(),
+                            displayTextClassification.getStyle()));
+        }
+
+        for (var descriptionClassification : input.getDescriptionClassificationList()) {
+            descriptionClassifications.add(
+                    new MatchClassification(
+                            descriptionClassification.getOffset(),
+                            descriptionClassification.getStyle()));
+        }
+
+        return new AutocompleteMatch(
+                input.getType(),
+                new ArraySet(input.getSubtypeList()),
+                input.getIsSearchType(),
+                input.getTransition(),
+                input.getDisplayText(),
+                displayTextClassifications,
+                input.getDescription(),
+                descriptionClassifications,
+                /* answer= */ null,
+                /* serializedAnswerTemplate= */ null,
+                /* answerType= */ 0,
+                input.getFillIntoEdit(),
+                new GURL(input.getUrl()),
+                new GURL(input.getImageUrl()),
+                /* imageDominantColor= */ null,
+                /* isDeletable= */ false,
+                /* postContentType= */ null,
+                /* postData= */ null,
+                input.getGroupId(),
+                /* clipboardImageData= */ null,
+                /* hasTabMatch= */ false,
+                /* actions= */ null,
+                input.getAllowedToBeDefaultMatch(),
+                input.getInlineAutocompletion(),
+                input.getAdditionalText());
+    }
+
     @Override
     @SuppressWarnings("LiteProtoToString")
     public String toString() {

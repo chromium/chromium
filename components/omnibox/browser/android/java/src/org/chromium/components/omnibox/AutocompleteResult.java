@@ -173,7 +173,7 @@ public class AutocompleteResult {
         // May happen with either test data, or AutocompleteResult built from the ZeroSuggestCache.
         // This is a valid case, despite not meeting coherency criteria. Do not record.
         if (mNativeAutocompleteResult == 0) return false;
-        long nativeMatches[] = new long[mSuggestions.size()];
+        long[] nativeMatches = new long[mSuggestions.size()];
         for (int index = 0; index < mSuggestions.size(); index++) {
             nativeMatches[index] = mSuggestions.get(index).getNativeObjectRef();
         }
@@ -213,6 +213,26 @@ public class AutocompleteResult {
         }
 
         return null;
+    }
+
+    /** Serialize AutocompleteResult to a protocol buffer message. */
+    public @Nullable AutocompleteProto.AutocompleteResultProto serialize() {
+        var builder = AutocompleteProto.AutocompleteResultProto.newBuilder();
+        builder.setGroups(mGroupsInfo);
+        for (var match : mSuggestions) {
+            builder.addMatch(match.serialize());
+        }
+        return builder.build();
+    }
+
+    /** Deserialize AutocompleteResult from a protocol buffer message. */
+    public static AutocompleteResult deserialize(AutocompleteProto.AutocompleteResultProto input) {
+        List<AutocompleteMatch> matches = new ArrayList<>(input.getMatchList().size());
+        for (var match : input.getMatchList()) {
+            matches.add(AutocompleteMatch.deserialize(match));
+        }
+
+        return AutocompleteResult.fromCache(matches, input.getGroups());
     }
 
     @NativeMethods

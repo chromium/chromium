@@ -519,6 +519,12 @@ static_library("location_bar") {
 }
 
 if (is_android) {
+  proto_java_library("autocomplete_proto_java") {
+    sources = [ "android/autocomplete.proto" ]
+    proto_path = "../../../"
+    deps = [ "//third_party/omnibox_proto:omnibox_proto_java" ]
+  }
+
   android_resources("java_resources") {
     sources = [
       "android/java/res/drawable-hdpi/omnibox_https_valid.png",
@@ -590,6 +596,7 @@ if (is_android) {
 
     resources_package = "org.chromium.components.omnibox"
     deps = [
+      ":autocomplete_proto_java",
       ":java_resources",
       "//base:base_java",
       "//build/android:build_java",
