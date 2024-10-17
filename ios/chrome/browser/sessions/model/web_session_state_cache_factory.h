@@ -17,9 +17,6 @@
 // ProfileIOS.
 class WebSessionStateCacheFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static WebSessionStateCache* GetForBrowserState(ProfileIOS* profile);
-
   static WebSessionStateCache* GetForProfile(ProfileIOS* profile);
   static WebSessionStateCacheFactory* GetInstance();
 

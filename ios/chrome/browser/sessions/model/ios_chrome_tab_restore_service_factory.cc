@@ -29,12 +29,6 @@ std::unique_ptr<KeyedService> BuildTabRestoreService(
 }  // namespace
 
 // static
-sessions::TabRestoreService*
-IOSChromeTabRestoreServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 sessions::TabRestoreService* IOSChromeTabRestoreServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<sessions::TabRestoreService*>(

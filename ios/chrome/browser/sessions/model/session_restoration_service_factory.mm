@@ -231,12 +231,6 @@ void OnSessionMigrationDone(base::WeakPtr<ProfileIOS> weak_profile,
 }  // namespace
 
 // static
-SessionRestorationService* SessionRestorationServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SessionRestorationService* SessionRestorationServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<SessionRestorationService*>(

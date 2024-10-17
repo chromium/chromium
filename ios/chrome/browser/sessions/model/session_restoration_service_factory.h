@@ -25,9 +25,6 @@ class SessionRestorationServiceFactory final
     kOptimized,
   };
 
-  // TODO(crbug.com/358301380): remove this method.
-  static SessionRestorationService* GetForBrowserState(ProfileIOS* profile);
-
   static SessionRestorationService* GetForProfile(ProfileIOS* profile);
   static SessionRestorationServiceFactory* GetInstance();
 

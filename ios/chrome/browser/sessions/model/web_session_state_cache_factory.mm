@@ -73,12 +73,6 @@ std::unique_ptr<KeyedService> BuildWebSessionStateCacheWrapper(
 }  // namespace
 
 // static
-WebSessionStateCache* WebSessionStateCacheFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 WebSessionStateCache* WebSessionStateCacheFactory::GetForProfile(
     ProfileIOS* profile) {
   WebSessionStateCacheWrapper* wrapper =

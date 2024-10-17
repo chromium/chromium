@@ -109,7 +109,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       ios::HistoryServiceFactory::GetForProfile(
           chrome_state, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<commerce::WebExtractorImpl>(),
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(chrome_state));
+      IOSChromeTabRestoreServiceFactory::GetForProfile(chrome_state));
 }
 
 bool ShoppingServiceFactory::ServiceIsNULLWhileTesting() const {
