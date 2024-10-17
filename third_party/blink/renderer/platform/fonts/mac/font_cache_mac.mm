@@ -153,6 +153,7 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
   // the "Apple Symbols" monochromatic emoji font with "Apple Color Emoji"
   // cascade list since it has better glyph coverage.
   if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
+      substitute_font_name &&
       CFStringCompare(substitute_font_name.get(), CFSTR("Apple Color Emoji"),
                       kCFCompareCaseInsensitive) == kCFCompareEqualTo &&
       Character::IsEmoji(character)) {
