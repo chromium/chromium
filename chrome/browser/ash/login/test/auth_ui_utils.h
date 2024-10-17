@@ -118,6 +118,7 @@ class LocalAuthenticationDialogActor {
   bool IsVisible();
   void CancelDialog();
   void SubmitPassword(const std::string& password);
+  void SubmitPin(const std::string& pin);
   void WaitUntilDismissed();
 };
 

@@ -349,6 +349,11 @@ void LocalAuthenticationDialogActor::SubmitPassword(
   LoginScreenTestApi::SubmitPasswordLocalAuthenticationDialog(password);
 }
 
+void LocalAuthenticationDialogActor::SubmitPin(const std::string& pin) {
+  EXPECT_TRUE(IsVisible());
+  LoginScreenTestApi::SubmitPinLocalAuthenticationDialog(pin);
+}
+
 void LocalAuthenticationDialogActor::WaitUntilDismissed() {
   LocalAuthenticationDialogDismissWaiter()->Wait();
 }

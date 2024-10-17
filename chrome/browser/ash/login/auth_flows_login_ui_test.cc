@@ -7,8 +7,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/shell.h"
 #include "base/auto_reset.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -46,9 +49,22 @@ class AuthFlowsLoginTestBase : public LoginManagerTest {
             UserAuthConfig::Create(
                 {AshAuthFactor::kLocalPassword, AshAuthFactor::kRecovery})
                 .RequireReauth(require_reauth)},
+        with_local_pw_pin_{
+            LoginManagerMixin::CreateConsumerAccountId(5),
+            UserAuthConfig::Create(
+                {AshAuthFactor::kLocalPassword, AshAuthFactor::kCryptohomePin})
+                .RequireReauth(require_reauth)},
+        with_local_pw_pin_recovery_{
+            LoginManagerMixin::CreateConsumerAccountId(6),
+            UserAuthConfig::Create({AshAuthFactor::kLocalPassword,
+                                    AshAuthFactor::kCryptohomePin,
+                                    AshAuthFactor::kRecovery})
+                .RequireReauth(require_reauth)},
+
         login_mixin_{&mixin_host_,
                      {with_gaia_pw_, with_gaia_pw_recovery_, with_local_pw_,
-                      with_local_pw_recovery_},
+                      with_local_pw_recovery_, with_local_pw_pin_,
+                      with_local_pw_pin_recovery_},
                      &fake_gaia_,
                      &cryptohome_}
 
@@ -73,6 +89,8 @@ class AuthFlowsLoginTestBase : public LoginManagerTest {
   const LoginManagerMixin::TestUserInfo with_gaia_pw_recovery_;
   const LoginManagerMixin::TestUserInfo with_local_pw_;
   const LoginManagerMixin::TestUserInfo with_local_pw_recovery_;
+  const LoginManagerMixin::TestUserInfo with_local_pw_pin_;
+  const LoginManagerMixin::TestUserInfo with_local_pw_pin_recovery_;
 
   CryptohomeMixin cryptohome_{&mixin_host_};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
@@ -102,6 +120,19 @@ class AuthFlowsLoginReauthTest : public AuthFlowsLoginTestBase {
     gaia->TypePassword(password);
     gaia->ContinueLogin();
   }
+};
+
+// ----------------------------------------------------------
+
+class AuthFlowsLoginReauthWithPinTest : public AuthFlowsLoginReauthTest {
+ public:
+  AuthFlowsLoginReauthWithPinTest() : AuthFlowsLoginReauthTest() {
+    scoped_features_.InitAndEnableFeature(
+        features::kLocalAuthenticationWithPin);
+  }
+  ~AuthFlowsLoginReauthWithPinTest() override = default;
+
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 // ----------------------------------------------------------
@@ -278,6 +309,61 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginAddExistingUserTest,
   pw_updated->ConfirmPasswordUpdate();
 
   login_mixin_.WaitForActiveSession();
+}
+
+// ----------------------------------------------------------
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthWithPinTest,
+                       GaiaPasswordChangedWithRecoveryPin) {
+  const auto& user = with_local_pw_pin_recovery_;
+
+  test::OnLoginScreen()->SelectUserPod(user.account_id);
+  auto gaia = test::AwaitGaiaSigninUI();
+
+  gaia->ReauthConfirmEmail(user.account_id);
+  gaia->TypePassword(test::kNewPassword);
+  gaia->ContinueLogin();
+
+  auto local_authentication =
+      test::OnLoginScreen()->WaitForLocalAuthenticationDialog();
+
+  local_authentication->SubmitPin(test::kAuthPin);
+  login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthWithPinTest, PinCorrectPassword) {
+  const auto& user = with_local_pw_pin_;
+
+  test::OnLoginScreen()->SelectUserPod(user.account_id);
+  auto gaia = test::AwaitGaiaSigninUI();
+
+  gaia->ReauthConfirmEmail(user.account_id);
+  gaia->TypePassword(test::kNewPassword);
+  gaia->ContinueLogin();
+
+  auto local_authentication =
+      test::OnLoginScreen()->WaitForLocalAuthenticationDialog();
+
+  local_authentication->SubmitPin(test::kAuthPin);
+  login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthWithPinTest,
+                       CancelLocalAuthenticationDialog) {
+  const auto& user = with_local_pw_pin_;
+
+  TriggerUserOnlineAuth(user, test::kGaiaPassword);
+
+  auto local_authentication =
+      test::OnLoginScreen()->WaitForLocalAuthenticationDialog();
+
+  local_authentication->CancelDialog();
+
+  local_authentication->WaitUntilDismissed();
+
+  // After dismissing the local authentication dialog,
+  // the flow should return to and display the login screen.
+  test::OnLoginScreen()->SelectUserPod(user.account_id);
 }
 
 // ----------------------------------------------------------
