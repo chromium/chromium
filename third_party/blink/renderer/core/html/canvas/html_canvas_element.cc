@@ -1423,39 +1423,33 @@ bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
       .ShouldDisableAcceleration();
 }
 
-void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
-    std::unique_ptr<Canvas2DLayerBridge> external_canvas2d_bridge) {
+void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal() {
   DCHECK(IsRenderingContext2D() && !canvas2d_bridge_);
   did_fail_to_create_resource_provider_ = true;
 
   if (!IsValidImageSize(Size()))
     return;
 
-  if (external_canvas2d_bridge) {
-    canvas2d_bridge_ = std::move(external_canvas2d_bridge);
-  } else {
-    // If the canvas meets the criteria to use accelerated-GPU rendering, and
-    // the user signals that the canvas will not be read frequently through
-    // getImageData, which is a slow operation with GPU, the canvas will try to
-    // use accelerated-GPU rendering.
-    // If any of the two conditions fails, or if the creation of accelerated
-    // resource provider fails, the canvas will fallback to CPU rendering.
-    UMA_HISTOGRAM_BOOLEAN(
-        "Blink.Canvas.2DLayerBridge.WillReadFrequently",
-        context_ &&
-            context_->CreationAttributes().will_read_frequently ==
-                CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
+  // If the canvas meets the criteria to use accelerated-GPU rendering, and
+  // the user signals that the canvas will not be read frequently through
+  // getImageData, which is a slow operation with GPU, the canvas will try to
+  // use accelerated-GPU rendering.
+  // If any of the two conditions fails, or if the creation of accelerated
+  // resource provider fails, the canvas will fallback to CPU rendering.
+  UMA_HISTOGRAM_BOOLEAN(
+      "Blink.Canvas.2DLayerBridge.WillReadFrequently",
+      context_ &&
+          context_->CreationAttributes().will_read_frequently ==
+              CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
 
-    bool will_read_frequently =
-        context_->CreationAttributes().will_read_frequently ==
-        CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
-    RasterModeHint hint =
-        ShouldAccelerate() && context_ && !will_read_frequently
-            ? RasterModeHint::kPreferGPU
-            : RasterModeHint::kPreferCPU;
-    SetPreferred2DRasterMode(hint);
-    canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
-  }
+  bool will_read_frequently =
+      context_->CreationAttributes().will_read_frequently ==
+      CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
+  RasterModeHint hint = ShouldAccelerate() && context_ && !will_read_frequently
+                            ? RasterModeHint::kPreferGPU
+                            : RasterModeHint::kPreferCPU;
+  SetPreferred2DRasterMode(hint);
+  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
 
   did_fail_to_create_resource_provider_ = false;
   UpdateMemoryUsage();
@@ -1484,7 +1478,7 @@ void HTMLCanvasElement::Trace(Visitor* visitor) const {
 Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
   DCHECK(IsRenderingContext2D());
   if (!canvas2d_bridge_ && !did_fail_to_create_resource_provider_) {
-    SetCanvas2DLayerBridgeInternal(nullptr);
+    SetCanvas2DLayerBridgeInternal();
     if (did_fail_to_create_resource_provider_ && !Size().IsEmpty() && context_)
       context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
   }
@@ -1498,7 +1492,7 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
   SetIntegralAttribute(html_names::kWidthAttr, size.width());
   SetIntegralAttribute(html_names::kHeightAttr, size.height());
   CanvasResourceHost::SetSize(size);
-  SetCanvas2DLayerBridgeInternal(nullptr);
+  SetCanvas2DLayerBridgeInternal();
   ReplaceResourceProvider(std::move(provider));
 }
 

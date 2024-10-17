@@ -356,7 +356,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void Reset();
 
-  void SetCanvas2DLayerBridgeInternal(std::unique_ptr<Canvas2DLayerBridge>);
+  void SetCanvas2DLayerBridgeInternal();
 
   void SetSurfaceSize(gfx::Size);
 
