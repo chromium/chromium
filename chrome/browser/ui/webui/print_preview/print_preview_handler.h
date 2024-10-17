@@ -332,11 +332,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
       extension_printer_handler_adapter_;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Version number of the LocalPrinter mojo service.
-  int local_printer_version_ = 0;
-#endif
-
   base::WeakPtrFactory<PrintPreviewHandler> weak_factory_{this};
 };
 

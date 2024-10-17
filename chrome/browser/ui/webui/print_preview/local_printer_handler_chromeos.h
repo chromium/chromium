@@ -116,9 +116,6 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
 
   const raw_ptr<content::WebContents> preview_web_contents_;
   raw_ptr<crosapi::mojom::LocalPrinter> local_printer_ = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int local_printer_version_ = 0;
-#endif
   base::WeakPtrFactory<LocalPrinterHandlerChromeos> weak_ptr_factory_{this};
 };
 
