@@ -225,11 +225,13 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="DigitalIdentityRequestStatus">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kErrorOther"/>
-  <int value="2" label="kErrorNoCredential"/>
-  <int value="3" label="kErrorUserDeclined"/>
-  <int value="4" label="kErrorAborted"/>
+  <int value="0" label="Success"/>
+  <int value="1" label="Other error"/>
+  <int value="2" label="No Credential"/>
+  <int value="3" label="User Declined"/>
+  <int value="4" label="Request Aborted"/>
+  <int value="5" label="No provider in API call"/>
+  <int value="6" label="No transient user activation"/>
 </enum>
 
 <enum name="FedCmAccountChooserResult">
