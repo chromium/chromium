@@ -250,9 +250,6 @@ extern const char
 extern const char
     EnableSupervisedUserSkipParentApprovalToInstallExtensionsDescription[];
 
-extern const char kEnableSupervisedUserProfileSignInIphName[];
-extern const char kEnableSupervisedUserProfileSignInIphDescription[];
-
 extern const char kUpdatedSupervisedUserExtensionApprovalStringsName[];
 extern const char kUpdatedSupervisedUserExtensionApprovalStringsDescription[];
 

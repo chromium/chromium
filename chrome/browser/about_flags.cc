@@ -8220,12 +8220,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          supervised_user::kUpdatedSupervisedUserExtensionApprovalStrings)},
 
-    {"enable-supervised-user-new-profile-sign-in-iph",
-     flag_descriptions::kEnableSupervisedUserProfileSignInIphName,
-     flag_descriptions::kEnableSupervisedUserProfileSignInIphDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         feature_engagement::kIPHSupervisedUserProfileSigninFeature)},
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -11555,7 +11549,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSupervisedProfileSignInIphName,
      flag_descriptions::kSupervisedProfileSignInIphDescription,
      kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(supervised_user::kSupervisedUserProfileSigninIPH)},
+     FEATURE_VALUE_TYPE(
+         feature_engagement::kIPHSupervisedUserProfileSigninFeature)},
 
     {"supervised-profile-kite-badging",
      flag_descriptions::kSupervisedProfileShowKiteBadgeName,

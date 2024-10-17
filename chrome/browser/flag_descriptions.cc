@@ -382,12 +382,6 @@ const char
         "also "
         "be enabled on Windows/Linux/Mac.";
 
-const char kEnableSupervisedUserProfileSignInIphName[] =
-    "Enable IPH for supervised user sign-in into a new profile.";
-const char kEnableSupervisedUserProfileSignInIphDescription[] =
-    "Enables the IPH for shown to supervised user upon sign-in into a newly "
-    "created profile.";
-
 const char kUpdatedSupervisedUserExtensionApprovalStringsName[] =
     "Display informative strings in the extension parent approval dialog.";
 const char kUpdatedSupervisedUserExtensionApprovalStringsDescription[] =
