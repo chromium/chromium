@@ -100,10 +100,6 @@ public class AllPlusAddressesBottomSheetRenderTest {
     public void testShowBottomSheet() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    AllPlusAddressesBottomSheetUIInfo uiInfo =
-                            new AllPlusAddressesBottomSheetUIInfo();
-                    uiInfo.setPlusProfiles(List.of(PROFILE_1, PROFILE_2, PROFILE_3, PROFILE_4));
-
                     ChromeTabbedActivity activity = mActivityTestRule.getActivity();
                     AllPlusAddressesBottomSheetCoordinator coordinator =
                             new AllPlusAddressesBottomSheetCoordinator(
@@ -113,7 +109,8 @@ public class AllPlusAddressesBottomSheetRenderTest {
                                     mDelegate,
                                     FaviconHelper.create(activity, mProfile));
 
-                    coordinator.showPlusProfiles(uiInfo);
+                    coordinator.showPlusProfiles(
+                            List.of(PROFILE_1, PROFILE_2, PROFILE_3, PROFILE_4));
                 });
         BottomSheetTestSupport.waitForOpen(
                 mActivityTestRule

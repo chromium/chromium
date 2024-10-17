@@ -31,14 +31,14 @@ class AllPlusAddressesBottomSheetMediator {
         mModel = model;
     }
 
-    void showPlusProfiles(AllPlusAddressesBottomSheetUIInfo uiInfo) {
-        mProfiles = uiInfo.getPlusProfiles();
+    void showPlusProfiles(List<PlusProfile> profiles) {
+        mProfiles = profiles;
 
         mModel.set(ON_QUERY_TEXT_CHANGE, this::onQueryTextChanged);
         mModel.set(ON_DISMISSED, this::onDismissed);
 
         mModel.get(PLUS_PROFILES).clear();
-        for (PlusProfile profile : uiInfo.getPlusProfiles()) {
+        for (PlusProfile profile : profiles) {
             final PropertyModel model =
                     PlusProfileProperties.createPlusProfileModel(
                             profile, this::onPlusAddressSelected);

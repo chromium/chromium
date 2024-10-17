@@ -47,10 +47,7 @@ public class AllPlusAddressesBottomSheetMediatorTest {
     @Test
     @SmallTest
     public void testShowAndHideBottomSheet() {
-        AllPlusAddressesBottomSheetUIInfo info = new AllPlusAddressesBottomSheetUIInfo();
-        info.setPlusProfiles(List.of(PROFILE_1));
-
-        mMediator.showPlusProfiles(info);
+        mMediator.showPlusProfiles(List.of(PROFILE_1));
 
         assertEquals(mModel.get(PLUS_PROFILES).size(), 1);
         assertEquals(mModel.get(PLUS_PROFILES).get(0).model.get(PLUS_PROFILE), PROFILE_1);

@@ -15,7 +15,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetMediator.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetProperties.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetUIInfo.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContent.java",
@@ -76,7 +75,6 @@ android_resources("java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetUIInfo.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationErrorStateInfo.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationNormalStateInfo.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",

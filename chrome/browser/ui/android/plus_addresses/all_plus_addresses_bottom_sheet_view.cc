@@ -19,7 +19,6 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/AllPlusAddressesBottomSheetBridge_jni.h"
-#include "chrome/browser/ui/android/plus_addresses/jni_headers/AllPlusAddressesBottomSheetUIInfo_jni.h"
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusProfile_jni.h"
 
 namespace plus_addresses {
@@ -53,13 +52,8 @@ void AllPlusAddressesBottomSheetView::Show(
         profile.facet.canonical_spec()));
   }
 
-  base::android::ScopedJavaLocalRef<jobject> ui_info =
-      Java_AllPlusAddressesBottomSheetUIInfo_Constructor(env);
-  Java_AllPlusAddressesBottomSheetUIInfo_setPlusProfiles(env, ui_info,
-                                                         java_profiles);
-
   Java_AllPlusAddressesBottomSheetBridge_showPlusAddresses(env, java_object,
-                                                           ui_info);
+                                                           java_profiles);
 }
 
 void AllPlusAddressesBottomSheetView::OnPlusAddressSelected(

@@ -19,6 +19,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.List;
+
 @JNINamespace("plus_addresses")
 public class AllPlusAddressesBottomSheetBridge
         implements AllPlusAddressesBottomSheetCoordinator.Delegate {
@@ -65,8 +67,8 @@ public class AllPlusAddressesBottomSheetBridge
     }
 
     @CalledByNative
-    private void showPlusAddresses(AllPlusAddressesBottomSheetUIInfo uiInfo) {
-        mAllPlusAddressesBottomSheetCoordinator.showPlusProfiles(uiInfo);
+    private void showPlusAddresses(@JniType("std::vector") List<PlusProfile> profiles) {
+        mAllPlusAddressesBottomSheetCoordinator.showPlusProfiles(profiles);
     }
 
     @Override
