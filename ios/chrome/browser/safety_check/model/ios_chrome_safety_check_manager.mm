@@ -77,7 +77,7 @@ IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
   // refactored to use `IOSChromeSafetyCheckManager`. For now
   // `GetLastSafetyCheckRunTimeAcrossAllEntrypoints()` returns the last run
   // time, across both entry points.
-  if (IsSafetyCheckNotificationsEnabled()) {
+  if (IsSafetyCheckAutorunByManagerEnabled()) {
     if (CanAutomaticallyRunSafetyCheck(
             GetLatestSafetyCheckRunTimeAcrossAllEntrypoints(
                 local_pref_service))) {

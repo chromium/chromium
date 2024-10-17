@@ -47,6 +47,10 @@ BASE_FEATURE(kSafetyCheckMagicStack,
              "SafetyCheckMagicStack",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafetyCheckAutorunByManagerKillswitch,
+             "SafetyCheckAutorunByManagerKillswitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch,
              "SafetyCheckModuleHiddenIfNoIssuesKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -341,6 +345,10 @@ BASE_FEATURE(kOnlyAccessClipboardAsync,
 BASE_FEATURE(kThemeColorInTopToolbar,
              "ThemeColorInTopToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSafetyCheckAutorunByManagerEnabled() {
+  return base::FeatureList::IsEnabled(kSafetyCheckAutorunByManagerKillswitch);
+}
 
 bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);

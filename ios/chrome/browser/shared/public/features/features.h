@@ -35,6 +35,12 @@ BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgradeShortManualFillMenu);
 // features in tests works.
 BASE_DECLARE_FEATURE(kTestFeature);
 
+// Killswitch to control how Safety Checks are automatically triggered.
+// If enabled, the Safety Check Manager can independently initiate Safety
+// Checks. If disabled, automatic Safety Check runs must be triggered through
+// the Safety Check module in the Magic Stack.
+BASE_DECLARE_FEATURE(kSafetyCheckAutorunByManagerKillswitch);
+
 // Feature to add the Safety Check module to the Magic Stack.
 BASE_DECLARE_FEATURE(kSafetyCheckMagicStack);
 
@@ -381,6 +387,9 @@ BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 
 // Feature flag to try using the page theme color in the top toolbar
 BASE_DECLARE_FEATURE(kThemeColorInTopToolbar);
+
+// Whether the Safety Check Manager can automatically trigger Safety Checks.
+bool IsSafetyCheckAutorunByManagerEnabled();
 
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
