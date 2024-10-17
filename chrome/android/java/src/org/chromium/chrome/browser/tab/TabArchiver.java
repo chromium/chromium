@@ -170,18 +170,25 @@ public class TabArchiver implements TabWindowManager.Observer {
         Tab newTab = mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
         tabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
 
+        initializePersistedTabData(newTab);
+
+        RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.AfterNDays", tabAgeDays);
+        RecordUserAction.record("Tabs.TabArchived");
+        return newTab;
+    }
+
+    void initializePersistedTabData(Tab archivedTab) {
         ArchivePersistedTabData.from(
-                newTab,
+                archivedTab,
                 (archivePersistedTabData) -> {
+                    if (archivePersistedTabData == null) {
+                        return;
+                    }
                     // Persisted tab data requires a true supplier before saving to disk.
                     archivePersistedTabData.registerIsTabSaveEnabledSupplier(
                             new ObservableSupplierImpl<>(true));
                     archivePersistedTabData.setArchivedTimeMs(mClock.currentTimeMillis());
                 });
-
-        RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.AfterNDays", tabAgeDays);
-        RecordUserAction.record("Tabs.TabArchived");
-        return newTab;
     }
 
     /**

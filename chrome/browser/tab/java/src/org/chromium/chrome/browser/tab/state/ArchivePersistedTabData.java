@@ -32,7 +32,7 @@ public class ArchivePersistedTabData extends PersistedTabData {
      *
      * @param tab The {@link Tab} to get/create the tab data for.
      * @param callback The {@link Callback} to be invoked when the {@link ArchivePersistedTabData}
-     *     is ready.
+     *     is ready. The returned value can be null.
      */
     public static void from(Tab tab, Callback<ArchivePersistedTabData> callback) {
         PersistedTabData.from(tab, () -> new ArchivePersistedTabData(tab), USER_DATA_KEY, callback);
