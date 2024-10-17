@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_EXTERNAL_INSTALL_OPTIONS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_EXTERNAL_INSTALL_OPTIONS_H_
 
+#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "url/gurl.h"
@@ -38,12 +39,16 @@ class IsolatedWebAppExternalInstallOptions final {
     return web_bundle_id_;
   }
   const UpdateChannel& update_channel() const { return update_channel_; }
+  const std::optional<base::Version>& pinned_version() const {
+    return pinned_version_;
+  }
 
  private:
   IsolatedWebAppExternalInstallOptions(
       GURL update_manifest_url,
       web_package::SignedWebBundleId web_bundle_id,
-      UpdateChannel update_channel);
+      UpdateChannel update_channel,
+      std::optional<base::Version> pinned_version = std::nullopt);
 
   // Update manifest contains the info about available versions of the IWA and
   // the URLs of the corresponding Web Bundle files.
@@ -53,6 +58,12 @@ class IsolatedWebAppExternalInstallOptions final {
   // Update Channel ID to specify the desired release channel. If not specified
   // in policy, it is set to "default".
   UpdateChannel update_channel_;
+  // The desired version of the IWA to pin it to.
+  // If specified, the system will attempt to update the app to this version
+  // and then disable all further app updates. If the chosen pinned version is
+  // not available in the IWA's update manifest, the app will be pinned to its
+  // currently installed version.
+  std::optional<base::Version> pinned_version_;
 };
 
 }  // namespace web_app

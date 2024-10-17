@@ -4,11 +4,13 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -18,10 +20,12 @@ namespace web_app {
 IsolatedWebAppExternalInstallOptions::IsolatedWebAppExternalInstallOptions(
     GURL update_manifest_url,
     web_package::SignedWebBundleId web_bundle_id,
-    UpdateChannel update_channel)
+    UpdateChannel update_channel,
+    std::optional<base::Version> pinned_version)
     : update_manifest_url_(std::move(update_manifest_url)),
       web_bundle_id_(std::move(web_bundle_id)),
-      update_channel_(update_channel) {
+      update_channel_(update_channel),
+      pinned_version_(std::move(pinned_version)) {
   DCHECK(update_manifest_url_.is_valid());
 }
 
@@ -75,13 +79,25 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
         "bundle cannot be installed");
   }
 
+  std::optional<base::Version> maybe_pinned_version;
+
+  if (const auto* pinned_version_raw =
+          entry_dict.FindString(kPolicyPinnedVersionKey)) {
+    base::Version pinned_version = base::Version(*pinned_version_raw);
+    if (!pinned_version.IsValid()) {
+      return base::unexpected("Pinned version has invalid format");
+    }
+    maybe_pinned_version = std::move(pinned_version);
+  }
+
   const std::string* const update_channel_raw =
       entry_dict.FindString(kPolicyUpdateChannelKey);
 
   if (!update_channel_raw) {
     return IsolatedWebAppExternalInstallOptions(
         std::move(update_manifest_url), std::move(web_bundle_id),
-        UpdateChannel::default_channel());
+        std::move(UpdateChannel::default_channel()),
+        std::move(maybe_pinned_version));
   }
 
   auto update_channel = UpdateChannel::Create(*update_channel_raw);
@@ -89,9 +105,9 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
   if (update_channel.has_value()) {
     return IsolatedWebAppExternalInstallOptions(
         std::move(update_manifest_url), std::move(web_bundle_id),
-        std::move(update_channel.value()));
+        std::move(update_channel.value()), std::move(maybe_pinned_version));
   }
 
-  return base::unexpected("Failed to create UpdateChannel");
+  return base::unexpected("Failed to create UpdateChannel from policy value");
 }
 }  // namespace web_app

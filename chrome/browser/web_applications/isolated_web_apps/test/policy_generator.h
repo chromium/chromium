@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_POLICY_GENERATOR_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_POLICY_GENERATOR_H_
 
+#include <optional>
+
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -21,25 +23,31 @@ class PolicyGenerator {
   void AddForceInstalledIwa(
       web_package::SignedWebBundleId id,
       GURL update_manifest_url,
-      std::optional<UpdateChannel> update_channel = std::nullopt);
+      std::optional<UpdateChannel> update_channel = std::nullopt,
+      std::optional<base::Version> pinned_version = std::nullopt);
 
   base::Value Generate();
 
   static base::Value CreatePolicyEntry(
       std::string web_bundle_id,
       std::string update_manifest_url,
-      std::optional<std::string> update_channel = std::nullopt);
+      std::optional<std::string> update_channel = std::nullopt,
+      std::optional<std::string> pinned_version = std::nullopt);
 
  private:
   struct IwaForceInstalledPolicy {
-    IwaForceInstalledPolicy(web_package::SignedWebBundleId id,
-                            GURL update_manifest_url,
-                            UpdateChannel update_channel);
+    IwaForceInstalledPolicy(
+        web_package::SignedWebBundleId id,
+        GURL update_manifest_url,
+        UpdateChannel update_channel,
+        std::optional<base::Version> pinned_version = std::nullopt);
     IwaForceInstalledPolicy(const IwaForceInstalledPolicy& other);
     ~IwaForceInstalledPolicy();
+
     web_package::SignedWebBundleId id_;
     GURL update_manifest_url_;
-    UpdateChannel update_channel;
+    UpdateChannel update_channel_;
+    std::optional<base::Version> pinned_version_;
   };
 
   std::vector<IwaForceInstalledPolicy> app_policies_;
