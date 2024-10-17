@@ -21,9 +21,6 @@ class ChromeAccountManagerServiceFactory
   ChromeAccountManagerServiceFactory& operator=(
       const BrowserStateKeyedServiceFactory&) = delete;
 
-  // TODO(crbug.com/358301380): remove this method.
-  static ChromeAccountManagerService* GetForBrowserState(ProfileIOS* profile);
-
   static ChromeAccountManagerService* GetForProfile(ProfileIOS* profile);
   static ChromeAccountManagerServiceFactory* GetInstance();
 

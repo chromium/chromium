@@ -15,12 +15,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
 // static
-ChromeAccountManagerService*
-ChromeAccountManagerServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 ChromeAccountManagerService* ChromeAccountManagerServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<ChromeAccountManagerService*>(

@@ -120,7 +120,7 @@
   // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these are
   // loaded in iSL.
   RunSystemCapabilitiesPrefetch(
-      ChromeAccountManagerServiceFactory::GetForBrowserState(profile)
+      ChromeAccountManagerServiceFactory::GetForProfile(profile)
           ->GetAllIdentities());
 
   FirstRunScreenProvider* provider =
