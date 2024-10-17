@@ -247,7 +247,7 @@ class EGLImageBackingFactoryThreadSafeTest
     wgpu::FutureWaitInfo wait_info{
         buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
                         wgpu::CallbackMode::WaitAnyOnly,
-                        [&](wgpu::MapAsyncStatus status, const char*) {
+                        [&](wgpu::MapAsyncStatus status, wgpu::StringView) {
                           ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
                         })};
     wgpu::WaitStatus status =

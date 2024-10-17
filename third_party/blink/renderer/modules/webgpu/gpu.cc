@@ -188,7 +188,7 @@ void GPU::OnRequestAdapterCallback(
     ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver,
     wgpu::RequestAdapterStatus status,
     wgpu::Adapter adapter,
-    const char* error_message) {
+    wgpu::StringView error_message) {
   GPUAdapter* gpu_adapter = nullptr;
   switch (status) {
     case wgpu::RequestAdapterStatus::Success:
@@ -204,7 +204,7 @@ void GPU::OnRequestAdapterCallback(
     case wgpu::RequestAdapterStatus::InstanceDropped:
       break;
   }
-  if (error_message) {
+  if (error_message.length != 0) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,

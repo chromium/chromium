@@ -22,12 +22,15 @@ namespace {
 
 class MockBufferMapCallback {
  public:
-  MOCK_METHOD(void, Call, (wgpu::MapAsyncStatus status, const char* message));
+  MOCK_METHOD(void,
+              Call,
+              (wgpu::MapAsyncStatus status, wgpu::StringView message));
 };
 std::unique_ptr<testing::StrictMock<MockBufferMapCallback>>
     mock_buffer_map_callback;
 
-void ToMockBufferMapCallback(wgpu::MapAsyncStatus status, const char* message) {
+void ToMockBufferMapCallback(wgpu::MapAsyncStatus status,
+                             wgpu::StringView message) {
   mock_buffer_map_callback->Call(status, message);
 }
 

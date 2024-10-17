@@ -370,24 +370,26 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
 void GPUBuffer::OnMapAsyncCallback(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     wgpu::MapAsyncStatus status,
-    const char* message) {
+    wgpu::StringView message) {
   switch (status) {
     case wgpu::MapAsyncStatus::Success:
       resolver->Resolve();
       break;
     case wgpu::MapAsyncStatus::InstanceDropped:
-      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, message);
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                       String::FromUTF8(message));
       break;
     case wgpu::MapAsyncStatus::Error:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       message);
+                                       String::FromUTF8(message));
       break;
     case wgpu::MapAsyncStatus::Aborted:
-      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, message);
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                       String::FromUTF8(message));
       break;
     case wgpu::MapAsyncStatus::Unknown:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       message);
+                                       String::FromUTF8(message));
       break;
   }
 }

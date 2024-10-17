@@ -266,7 +266,7 @@ bool DawnFallbackImageRepresentation::UploadToBacking() {
     wgpu::FutureWaitInfo wait_info = {staging_buffer_entry.buffer.MapAsync(
         wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
         wgpu::CallbackMode::WaitAnyOnly,
-        [](wgpu::MapAsyncStatus status, const char*, bool* success) {
+        [](wgpu::MapAsyncStatus status, wgpu::StringView, bool* success) {
           *success = status == wgpu::MapAsyncStatus::Success;
         },
         &success)};

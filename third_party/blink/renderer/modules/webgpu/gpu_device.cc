@@ -216,10 +216,12 @@ void GPUDevice::InjectError(wgpu::ErrorType type, const char* message) {
   GetHandle().InjectError(type, message);
 }
 
+void GPUDevice::AddConsoleWarning(wgpu::StringView message) {
+  AddConsoleWarning(StringFromASCIIAndUTF8(message));
+}
 void GPUDevice::AddConsoleWarning(const char* message) {
   AddConsoleWarning(StringFromASCIIAndUTF8(message));
 }
-
 void GPUDevice::AddConsoleWarning(const String& message) {
   ExecutionContext* execution_context = GetExecutionContext();
   if (execution_context && allowed_console_warnings_remaining_ > 0) {
@@ -338,7 +340,7 @@ bool GPUDevice::ValidateBlendFactor(V8GPUBlendFactor blend_factor,
 
 void GPUDevice::OnUncapturedError(const wgpu::Device& device,
                                   wgpu::ErrorType errorType,
-                                  const char* message) {
+                                  wgpu::StringView message) {
   // Suppress errors once the device is lost.
   if (lost_property_->GetState() == LostProperty::kResolved) {
     return;
@@ -346,7 +348,7 @@ void GPUDevice::OnUncapturedError(const wgpu::Device& device,
 
   DCHECK_NE(errorType, wgpu::ErrorType::NoError);
   DCHECK_NE(errorType, wgpu::ErrorType::DeviceLost);
-  LOG(ERROR) << "GPUDevice: " << message;
+  LOG(ERROR) << "GPUDevice: " << std::string_view(message);
 
   GPUUncapturedErrorEventInit* init = GPUUncapturedErrorEventInit::Create();
   if (errorType == wgpu::ErrorType::Validation) {
@@ -370,14 +372,9 @@ void GPUDevice::OnUncapturedError(const wgpu::Device& device,
   }
 }
 
-#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
 void GPUDevice::OnLogging(WGPULoggingType cLoggingType,
                           WGPUStringView message) {
   std::string_view messageView = {message.data, message.length};
-#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
-void GPUDevice::OnLogging(WGPULoggingType cLoggingType, const char* message) {
-  std::string_view messageView = message;
-#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
   wgpu::LoggingType loggingType = static_cast<wgpu::LoggingType>(cLoggingType);
   // Callback function for WebGPU logging return command
   mojom::blink::ConsoleMessageLevel level;
@@ -414,7 +411,7 @@ void GPUDevice::OnLogging(WGPULoggingType cLoggingType, const char* message) {
 
 void GPUDevice::OnDeviceLostError(const wgpu::Device& device,
                                   wgpu::DeviceLostReason reason,
-                                  const char* message) {
+                                  wgpu::StringView message) {
   // Early-out if the context is being destroyed (see WrapCallbackInScriptScope)
   if (!GetExecutionContext()) {
     return;
@@ -436,7 +433,7 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     ScriptPromiseResolver<GPURenderPipeline>* resolver,
     wgpu::CreatePipelineAsyncStatus status,
     wgpu::RenderPipeline render_pipeline,
-    const char* message) {
+    wgpu::StringView message) {
   ScriptState* script_state = resolver->GetScriptState();
   switch (status) {
     case wgpu::CreatePipelineAsyncStatus::Success: {
@@ -471,7 +468,7 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
     ScriptPromiseResolver<GPUComputePipeline>* resolver,
     wgpu::CreatePipelineAsyncStatus status,
     wgpu::ComputePipeline compute_pipeline,
-    const char* message) {
+    wgpu::StringView message) {
   ScriptState* script_state = resolver->GetScriptState();
   switch (status) {
     case wgpu::CreatePipelineAsyncStatus::Success: {
@@ -711,7 +708,7 @@ void GPUDevice::OnPopErrorScopeCallback(
     ScriptPromiseResolver<IDLNullable<GPUError>>* resolver,
     wgpu::PopErrorScopeStatus status,
     wgpu::ErrorType type,
-    const char* message) {
+    wgpu::StringView message) {
   switch (status) {
     case wgpu::PopErrorScopeStatus::InstanceDropped:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
@@ -809,13 +806,14 @@ void GPUDevice::UntrackTextureWithMailbox(GPUTexture* texture) {
   textures_with_mailbox_.erase(texture);
 }
 
-WGPURepeatingCallback<void(const wgpu::Device&, wgpu::ErrorType, const char*)>*
+WGPURepeatingCallback<
+    void(const wgpu::Device&, wgpu::ErrorType, wgpu::StringView)>*
 GPUDevice::error_callback() {
   return error_callback_.get();
 }
 
 WGPURepeatingCallback<
-    void(const wgpu::Device&, wgpu::DeviceLostReason, const char*)>*
+    void(const wgpu::Device&, wgpu::DeviceLostReason, wgpu::StringView)>*
 GPUDevice::lost_callback() {
   return lost_callback_.get();
 }

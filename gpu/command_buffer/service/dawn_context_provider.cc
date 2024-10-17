@@ -38,6 +38,7 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/gpu_util.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp_print.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnUtils.h"
@@ -390,17 +391,9 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   // Provided to wgpu::Device as logging callback.
   static void LogInfo(WGPULoggingType type,
-#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
                       WGPUStringView message,
-#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
-                      const char* message,
-#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
                       void*) {
-#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
     std::string_view view = {message.data, message.length};
-#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
-    std::string_view view = message;
-#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
     switch (static_cast<wgpu::LoggingType>(type)) {
       case wgpu::LoggingType::Warning:
         LOG(WARNING) << view;
@@ -417,7 +410,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   ~DawnSharedContext() override;
 
-  void OnError(wgpu::ErrorType error_type, const char* message);
+  void OnError(wgpu::ErrorType error_type, wgpu::StringView message);
 
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -565,7 +558,7 @@ bool DawnSharedContext::Initialize(
 
   wgpu::DeviceDescriptor descriptor;
   descriptor.SetUncapturedErrorCallback(
-      [](const wgpu::Device&, wgpu::ErrorType type, const char* message,
+      [](const wgpu::Device&, wgpu::ErrorType type, wgpu::StringView message,
          DawnSharedContext* state) {
         if (type != wgpu::ErrorType::NoError) {
           state->OnError(type, message);
@@ -575,7 +568,7 @@ bool DawnSharedContext::Initialize(
   descriptor.SetDeviceLostCallback(
       wgpu::CallbackMode::AllowSpontaneous,
       [](const wgpu::Device&, wgpu::DeviceLostReason reason,
-         const char* message, DawnSharedContext* state) {
+         wgpu::StringView message, DawnSharedContext* state) {
         if (reason != wgpu::DeviceLostReason::Destroyed) {
           state->OnError(wgpu::ErrorType::DeviceLost, message);
         }
@@ -673,7 +666,7 @@ std::optional<error::ContextLostReason> DawnSharedContext::GetResetStatus()
 }
 
 void DawnSharedContext::OnError(wgpu::ErrorType error_type,
-                                const char* message) {
+                                wgpu::StringView message) {
   LOG(ERROR) << message;
   SetDawnErrorCrashKey(message);
 

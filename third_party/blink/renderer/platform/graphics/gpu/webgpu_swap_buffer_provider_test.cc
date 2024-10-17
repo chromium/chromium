@@ -232,15 +232,17 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
     instance_.RequestAdapter(
         &options, wgpu::CallbackMode::AllowSpontaneous,
         [&](wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
-            const char*) { adapter_ = std::move(adapter); });
+            wgpu::StringView) { adapter_ = std::move(adapter); });
     ASSERT_TRUE(c2s_serializer_.Flush());
     ASSERT_TRUE(s2c_serializer_.Flush());
     ASSERT_NE(adapter_, nullptr);
 
     wgpu::DeviceDescriptor deviceDesc = {};
-    adapter_.RequestDevice(&deviceDesc, wgpu::CallbackMode::AllowSpontaneous,
-                           [&](wgpu::RequestDeviceStatus, wgpu::Device device,
-                               const char*) { device_ = std::move(device); });
+    adapter_.RequestDevice(
+        &deviceDesc, wgpu::CallbackMode::AllowSpontaneous,
+        [&](wgpu::RequestDeviceStatus, wgpu::Device device, wgpu::StringView) {
+          device_ = std::move(device);
+        });
     ASSERT_TRUE(c2s_serializer_.Flush());
     ASSERT_TRUE(s2c_serializer_.Flush());
     ASSERT_NE(device_, nullptr);

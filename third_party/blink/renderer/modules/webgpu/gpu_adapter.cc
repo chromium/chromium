@@ -257,7 +257,7 @@ void GPUAdapter::OnRequestDeviceCallback(
     ScriptPromiseResolver<GPUDevice>* resolver,
     wgpu::RequestDeviceStatus status,
     wgpu::Device dawn_device,
-    const char* error_message) {
+    wgpu::StringView error_message) {
   switch (status) {
     case wgpu::RequestDeviceStatus::Success: {
       DCHECK(dawn_device);

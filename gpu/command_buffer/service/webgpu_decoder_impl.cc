@@ -9,12 +9,6 @@
 
 #include "gpu/command_buffer/service/webgpu_decoder_impl.h"
 
-#include <dawn/native/DawnNative.h>
-#include <dawn/native/OpenGLBackend.h>
-#include <dawn/platform/DawnPlatform.h>
-#include <dawn/webgpu_cpp.h>
-#include <dawn/wire/WireServer.h>
-
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -62,6 +56,12 @@
 #include "gpu/config/webgpu_blocklist.h"
 #include "gpu/webgpu/callback.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"
+#include "third_party/dawn/include/dawn/native/OpenGLBackend.h"
+#include "third_party/dawn/include/dawn/platform/DawnPlatform.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp_print.h"
+#include "third_party/dawn/include/dawn/wire/WireServer.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
@@ -128,9 +128,6 @@ void ChainStruct(T1& head, T2* struct_to_chain) {
   head.nextInChain = struct_to_chain;
 }
 
-#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
-// A few helpers to make WGPUStringViews since the C version of the structure
-// doesn't have helpers that do implicit conversion from other types of strings.
 template <size_t N>
 WGPUStringView MakeStringView(const char (&s)[N]) {
   return {s, N};
@@ -141,11 +138,6 @@ WGPUStringView MakeStringView(const char* s) {
 WGPUStringView MakeStringView() {
   return {nullptr, 0};
 }
-#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
-const char* MakeStringView(const char* s = nullptr) {
-  return s;
-}
-#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
 
 class WebGPUDecoderImpl final : public WebGPUDecoder {
  public:
@@ -844,7 +836,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       wgpu::FutureWaitInfo waitInfo{buffer.MapAsync(
           wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
           wgpu::CallbackMode::WaitAnyOnly,
-          [&](wgpu::MapAsyncStatus status, const char* message) {
+          [&](wgpu::MapAsyncStatus status, wgpu::StringView message) {
             success = status == wgpu::MapAsyncStatus::Success;
             if (!success) {
               DLOG(ERROR) << message;
@@ -1527,15 +1519,15 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
   auto f = adapter_obj.RequestDevice(
       &desc, wgpu::CallbackMode::AllowSpontaneous,
       [&](wgpu::RequestDeviceStatus status, wgpu::Device device,
-          const char* message) {
+          wgpu::StringView message) {
         called = true;
         // Copy the device to save in known_device_metadata_.
         wgpu::Device device_copy = device;
         // Forward to the original callback.
-        callback_info.callback(static_cast<WGPURequestDeviceStatus>(status),
-                               device.MoveToCHandle(), MakeStringView(message),
-                               callback_info.userdata1,
-                               callback_info.userdata2);
+        callback_info.callback(
+            static_cast<WGPURequestDeviceStatus>(status),
+            device.MoveToCHandle(), {message.data, message.length},
+            callback_info.userdata1, callback_info.userdata2);
         if (device_copy) {
           // Intercept the response so we can add a device ref to the list of
           // known devices on.

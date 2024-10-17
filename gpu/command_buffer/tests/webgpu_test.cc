@@ -143,19 +143,19 @@ void WebGPUTest::Initialize(const Options& options) {
   ra_options.compatibilityMode = options.compatibility_mode;
 
   bool done = false;
-  instance_.RequestAdapter(&ra_options, wgpu::CallbackMode::AllowSpontaneous,
-                           [&](wgpu::RequestAdapterStatus status,
-                               wgpu::Adapter adapter, const char* message) {
-                             if (!options.force_fallback_adapter) {
-                               // If we don't force a particular adapter, we
-                               // should always find one.
-                               EXPECT_EQ(status,
-                                         wgpu::RequestAdapterStatus::Success);
-                               EXPECT_NE(adapter, nullptr);
-                             }
-                             this->adapter_ = std::move(adapter);
-                             done = true;
-                           });
+  instance_.RequestAdapter(
+      &ra_options, wgpu::CallbackMode::AllowSpontaneous,
+      [&](wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
+          wgpu::StringView message) {
+        if (!options.force_fallback_adapter) {
+          // If we don't force a particular adapter, we
+          // should always find one.
+          EXPECT_EQ(status, wgpu::RequestAdapterStatus::Success);
+          EXPECT_NE(adapter, nullptr);
+        }
+        this->adapter_ = std::move(adapter);
+        done = true;
+      });
   webgpu()->FlushCommands();
   while (!done) {
     RunPendingTasks();
@@ -235,7 +235,7 @@ wgpu::Device WebGPUTest::GetNewDevice() {
   device_desc.SetDeviceLostCallback(
       wgpu::CallbackMode::AllowSpontaneous,
       [](const wgpu::Device&, wgpu::DeviceLostReason reason,
-         const char* message) {
+         wgpu::StringView message) {
         if (reason == wgpu::DeviceLostReason::Destroyed) {
           return;
         }
@@ -244,7 +244,7 @@ wgpu::Device WebGPUTest::GetNewDevice() {
       });
   device_desc.SetUncapturedErrorCallback([](const wgpu::Device& device,
                                             wgpu::ErrorType type,
-                                            const char* message) {
+                                            wgpu::StringView message) {
     auto it = s_expected_errors.find(std::make_pair(device.Get(), type));
     if (it != s_expected_errors.end() && !it->second) {
       it->second = true;
@@ -256,10 +256,10 @@ wgpu::Device WebGPUTest::GetNewDevice() {
   adapter_.RequestDevice(
       &device_desc, wgpu::CallbackMode::AllowSpontaneous,
       [&](wgpu::RequestDeviceStatus status, wgpu::Device created_device,
-          const char* message) {
+          wgpu::StringView message) {
         // Fail the test with error message if returned status is not success
         if (status != wgpu::RequestDeviceStatus::Success) {
-          if (message) {
+          if (message.length != 0) {
             GTEST_FAIL() << "RequestDevice returns unexpected message: "
                          << message;
           } else {
@@ -326,12 +326,13 @@ TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
 
   bool called = false;
   wgpu::RequestAdapterOptions ra_options = {};
-  instance_.RequestAdapter(&ra_options, wgpu::CallbackMode::AllowSpontaneous,
-                           [&](wgpu::RequestAdapterStatus status,
-                               wgpu::Adapter adapter, const char* message) {
-                             EXPECT_EQ(adapter, nullptr);
-                             called = true;
-                           });
+  instance_.RequestAdapter(
+      &ra_options, wgpu::CallbackMode::AllowSpontaneous,
+      [&](wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
+          wgpu::StringView message) {
+        EXPECT_EQ(adapter, nullptr);
+        called = true;
+      });
   webgpu()->FlushCommands();
   RunPendingTasks();
   EXPECT_TRUE(called);
@@ -349,7 +350,7 @@ TEST_F(WebGPUTest, RequestDeviceAfterContextLost) {
   wgpu::DeviceDescriptor device_desc = {};
   adapter_.RequestDevice(&device_desc, wgpu::CallbackMode::AllowSpontaneous,
                          [&](wgpu::RequestDeviceStatus status,
-                             wgpu::Device device, const char* message) {
+                             wgpu::Device device, wgpu::StringView message) {
                            EXPECT_EQ(device, nullptr);
                            called = true;
                          });
@@ -373,12 +374,13 @@ TEST_F(WebGPUTest, RequestDeviceWithUnsupportedFeature) {
   device_desc.requiredFeatureCount = 1;
   device_desc.requiredFeatures = &invalid_feature;
 
-  adapter_.RequestDevice(&device_desc, wgpu::CallbackMode::AllowSpontaneous,
-                         [&](wgpu::RequestDeviceStatus status,
-                             wgpu::Device created_device, const char* message) {
-                           device = std::move(created_device);
-                           done = true;
-                         });
+  adapter_.RequestDevice(
+      &device_desc, wgpu::CallbackMode::AllowSpontaneous,
+      [&](wgpu::RequestDeviceStatus status, wgpu::Device created_device,
+          wgpu::StringView message) {
+        device = std::move(created_device);
+        done = true;
+      });
   webgpu()->FlushCommands();
 
   while (!done) {
@@ -412,7 +414,7 @@ TEST_F(WebGPUTest, SPIRVIsDisallowed) {
   bool got_error = false;
   device.PopErrorScope(wgpu::CallbackMode::AllowSpontaneous,
                        [&](wgpu::PopErrorScopeStatus status,
-                           wgpu::ErrorType type, const char* message) {
+                           wgpu::ErrorType type, wgpu::StringView message) {
                          // We match on this string to make sure the shader
                          // module creation fails because SPIR-V is disallowed
                          // and not because codeSize=0.
