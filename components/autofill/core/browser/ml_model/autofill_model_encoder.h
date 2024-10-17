@@ -25,19 +25,8 @@ class FormStructure;
 // standardizing and tokenizing it. Tokenization maps raw strings to tokens,
 // and tokens to IDs based on the given dictionary. Empty Strings map to
 // value 0 and unknown words map to value 1.
-// TODO(crbug.com/40276177) The AutofillFieldClassificationFeature attributes
-// split_on_camel_case, lowercase, replace_chars_with_whitespace, remove_chars
-// are not supported yet.
 class AutofillModelEncoder {
  public:
-  // Special characters to remove from the field label input.
-  static constexpr char16_t kSpecialChars[] =
-      uR"(!"#$%&()\*+,-./:;<=>?@[\]^_`{|}~'×—•∗…–“▼)";
-
-  // Whitespace and separator characters.
-  static constexpr char16_t kWhitespaceChars[] =
-      u" \xa0\u200b\u3164\u2062\u2063";
-
   using TokenId = base::StrongAlias<class TokenIdTag, uint32_t>;
 
   // An encoded representation of the form's labels.
@@ -89,9 +78,17 @@ class AutofillModelEncoder {
   // the final input.
   std::vector<TokenId> EncodeField(const AutofillField& field) const;
 
+  // Standardizes a string according to encoding_parameters_:
+  //   - Optionally split on CamelCase.
+  //   - Optionally map to lowercase.
+  //   - Replace specified characters with whitespace.
+  //   - Remove specified characters.
+  std::u16string StandardizeString(std::u16string_view input) const;
+
   // Tokenizes the specific `input` to a vector of size
-  // `max_tokens_per_feature`. The tokens are generated after standardizing
-  // `input`. Excess tokens are deleted or extra tokens (representing empty
+  // `max_tokens_per_feature`. The token IDs are looked up in token_to_id_
+  // after standardizing and splitting on whitespace.
+  // Excess tokens are deleted or extra tokens (representing empty
   // strings) are appended to generate a vector of the desired size.
   std::vector<TokenId> EncodeAttribute(std::u16string_view input) const;
 

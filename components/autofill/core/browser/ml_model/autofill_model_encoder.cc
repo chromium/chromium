@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
 
@@ -110,13 +112,40 @@ std::vector<AutofillModelEncoder::TokenId> AutofillModelEncoder::EncodeField(
   return output;
 }
 
+std::u16string AutofillModelEncoder::StandardizeString(
+    std::u16string_view input) const {
+  std::u16string standardized_input(input);
+  if (encoding_parameters_.split_on_camel_case()) {
+    std::string utf8_input = base::UTF16ToUTF8(standardized_input);
+    re2::RE2::GlobalReplace(&utf8_input, re2::RE2("([a-z])([A-Z])"), "\\1 \\2");
+    re2::RE2::GlobalReplace(&utf8_input, re2::RE2("([A-Z])([A-Z][a-z])"),
+                            "\\1 \\2");
+    standardized_input = base::UTF8ToUTF16(utf8_input);
+  }
+
+  if (encoding_parameters_.lowercase()) {
+    standardized_input = base::ToLowerASCII(standardized_input);
+  }
+
+  base::ReplaceChars(
+      standardized_input,
+      base::UTF8ToUTF16(encoding_parameters_.replace_chars_with_whitespace()),
+      u" ", &standardized_input);
+
+  base::RemoveChars(standardized_input,
+                    base::UTF8ToUTF16(encoding_parameters_.remove_chars()),
+                    &standardized_input);
+  return standardized_input;
+}
+
 std::vector<AutofillModelEncoder::TokenId>
 AutofillModelEncoder::EncodeAttribute(std::u16string_view input) const {
-  std::u16string standardized_input = base::ToLowerASCII(input);
-  base::RemoveChars(standardized_input, kSpecialChars, &standardized_input);
+  std::u16string standardized_input = StandardizeString(input);
+
   std::vector<std::u16string> split_string =
-      base::SplitString(standardized_input, kWhitespaceChars,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      base::SplitString(standardized_input, u" ", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+
   // Padding the output to be of size `max_tokens_per_feature`.
   split_string.resize(encoding_parameters_.max_tokens_per_feature(), u"");
 

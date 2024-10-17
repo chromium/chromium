@@ -25,6 +25,5 @@ encoding_parameters {
   features: FEATURE_PLACEHOLDER
   features: FEATURE_AUTOCOMPLETE
   lowercase: true
-  replace_chars_with_whitespace: ".,()[]/"
-  remove_chars: "+*!@"
+  replace_chars_with_whitespace: "#$%&()\\*+,-./:;<=>?@[]^_`{|}~'×—•∗…–“▼)\u200b\u3164\u2062\u2063"
 }

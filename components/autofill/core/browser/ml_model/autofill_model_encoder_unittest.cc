@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
 
+#include <string>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -22,6 +24,7 @@ namespace autofill {
 
 using TokenId = AutofillModelEncoder::TokenId;
 using testing::ElementsAre;
+using testing::TestWithParam;
 
 namespace {
 // Representation of an empty string.
@@ -162,6 +165,67 @@ TEST_F(AutofillModelEncoderTest, FormEncodedCorrectly) {
                       kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
                       // FEATURE_AUTOCOMPLETE
                       kUnknown, kNumber, kUnknown, kUnknown, kUnknown)));
+}
+
+struct StandardizeStringTestCase {
+  bool split_on_camel_case = false;
+  bool lowercase = false;
+  std::string replace_chars_with_whitespace = "";
+  std::string remove_chars = "";
+  std::u16string input;
+  std::u16string expected;
+};
+
+using StandardizeStringTest = TestWithParam<StandardizeStringTestCase>;
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillModelEncoderTest,
+    StandardizeStringTest,
+    testing::ValuesIn<StandardizeStringTestCase>(
+        {{
+             .input = u"Hello World",
+             .expected = u"Hello World",
+         },
+         {
+             .split_on_camel_case = true,
+             .input = u"HelloWorld thisIsACamelCaseTest ABCHello",
+             .expected = u"Hello World this Is A Camel Case Test ABC Hello",
+         },
+         {
+            // Test that casting to UTF8 does not break Japanese characters.
+            // This happens in the CamelCase splitting implementation.
+            .split_on_camel_case = true,
+            .input = u"やまもと HelloWorld",
+            .expected = u"やまもと Hello World",
+         },
+         {
+             .lowercase = true,
+             .input = u"AbCd123",
+             .expected = u"abcd123",
+         },
+         {
+             .replace_chars_with_whitespace = "_.-",
+             .input = u"Chars_are-replaced.by-.whitespace",
+             .expected = u"Chars are replaced by  whitespace",
+         },
+         {
+             .remove_chars = "@!",
+             .input = u"@Chars are! @removed!",
+             .expected = u"Chars are removed",
+         }}));
+
+TEST_P(StandardizeStringTest, ReturnsExpectedResult) {
+  const StandardizeStringTestCase& test_case = GetParam();
+  optimization_guide::proto::AutofillFieldClassificationEncodingParameters
+      encoding_parameters;
+  encoding_parameters.set_split_on_camel_case(test_case.split_on_camel_case);
+  encoding_parameters.set_lowercase(test_case.lowercase);
+  encoding_parameters.set_replace_chars_with_whitespace(
+      test_case.replace_chars_with_whitespace);
+  encoding_parameters.set_remove_chars(test_case.remove_chars);
+  AutofillModelEncoder encoder({}, encoding_parameters);
+
+  EXPECT_EQ(encoder.StandardizeString(test_case.input), test_case.expected);
 }
 
 }  // namespace autofill
