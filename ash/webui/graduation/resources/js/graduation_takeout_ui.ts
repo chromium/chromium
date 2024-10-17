@@ -18,6 +18,12 @@ import {ScreenSwitchEvents} from './graduation_app.js';
 import {getTemplate} from './graduation_takeout_ui.html.js';
 import {getGraduationUiHandler} from './graduation_ui_handler.js';
 
+declare global {
+  interface HTMLElementEventMap {
+    'newwindow': chrome.webviewTag.NewWindowEvent;
+  }
+}
+
 /**
  * The base URL of the banner shown in Takeout indicating that the user has
  * completed the final step of the flow.
@@ -74,6 +80,12 @@ export class GraduationTakeoutUi extends PolymerElement {
         composed: true,
       }));
     });
+
+    this.webview.addEventListener(
+        'newwindow', (e: chrome.webviewTag.NewWindowEvent) => {
+          // Allow the webview to open links in a new tab.
+          window.open(e.targetUrl);
+        });
 
     /**
      * The done button is made visible when the image shown at the end of the
