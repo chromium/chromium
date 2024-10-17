@@ -38,6 +38,21 @@
 
 namespace blink {
 
+namespace {
+
+bool IsContextFormatSupported(V8GPUTextureFormat::Enum format) {
+  switch (format) {
+    case V8GPUTextureFormat::Enum::kBgra8Unorm:
+    case V8GPUTextureFormat::Enum::kRgba8Unorm:
+    case V8GPUTextureFormat::Enum::kRgba16Float:
+      return true;
+    default:
+      return false;
+  }
+}
+
+}  // namespace
+
 GPUCanvasContext::Factory::~Factory() = default;
 
 CanvasRenderingContext* GPUCanvasContext::Factory::Create(
@@ -368,6 +383,13 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     }
   }
 
+  if (!IsContextFormatSupported(descriptor->format().AsEnum())) {
+    exception_state.ThrowTypeError(
+        String::Format("Unsupported canvas context format '%s'.",
+                       V8GPUTextureFormat(descriptor->format()).AsCStr()));
+    return;
+  }
+
   // As soon as the validation for extensions for usage and formats passes, the
   // canvas is "configured" and calls to getNextTexture() will return GPUTexture
   // objects (valid or invalid) and not throw.
@@ -406,33 +428,18 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   device_->GetHandle().ValidateTextureDescriptor(&texture_descriptor_);
 
   copy_to_swap_texture_required_ = false;
-  switch (texture_descriptor_.format) {
-    case wgpu::TextureFormat::BGRA8Unorm:
 #if BUILDFLAG(IS_ANDROID)
-      // BGRA8Unorm is not natively supported by Android's compositor.
-      copy_to_swap_texture_required_ = true;
-#endif
-      break;
-
-    case wgpu::TextureFormat::RGBA8Unorm:
-#if BUILDFLAG(IS_MAC)
-      // RGBA8Unorm is not natively supported by MacOS's compositor.
-      copy_to_swap_texture_required_ = true;
-#endif
-      break;
-
-    case wgpu::TextureFormat::RGBA16Float:
-      break;
-
-    default:
-      device_->InjectError(
-          wgpu::ErrorType::Validation,
-          ((String)("Unsupported canvas context format \"" +
-                    FromDawnEnum(texture_descriptor_.format).AsString() + "\""))
-              .Utf8()
-              .c_str());
-      return;
+  if (texture_descriptor_.format == wgpu::TextureFormat::BGRA8Unorm) {
+    // BGRA8Unorm is not natively supported by Android's compositor.
+    copy_to_swap_texture_required_ = true;
   }
+#endif
+#if BUILDFLAG(IS_MAC)
+  if (texture_descriptor_.format == wgpu::TextureFormat::RGBA8Unorm) {
+    // RGBA8Unorm is not natively supported by MacOS's compositor.
+    copy_to_swap_texture_required_ = true;
+  }
+#endif
 
   // If the context is configured with STORAGE_BINDING texture usage and
   // "bgra8unorm" is the preferred format but the adapter doesn't support the
