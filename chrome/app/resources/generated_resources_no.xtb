@@ -207,7 +207,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1142713751288681188">Papirtype</translation>
 <translation id="1143142264369994168">Sertifikat-signatar</translation>
 <translation id="1145593918056169051">Skriveren har stoppet</translation>
-<translation id="114721135501989771">Få Googles smarte funksjoner i Chrome</translation>
+<translation id="114721135501989771">Få Googles smartfunksjoner i Chrome</translation>
 <translation id="1147322039136785890">Nå kan du gi enheten til <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">For å be om tilgang, kontakt administratoren for denne enheten.</translation>
 <translation id="1148624853678088576">Du er klar.</translation>
@@ -2819,7 +2819,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2975761176769946178">En nettadresse kreves</translation>
 <translation id="2976547701881428815">Verktøy og handlinger</translation>
 <translation id="2976557544729462544">For at enkelte enheter skal fungere ordentlig eller med full ytelse, må du slå av datatilgangsbeskyttelse.</translation>
-<translation id="2976639738101799892">Få Google Søk og smarte funksjoner fra Google hver gang du surfer på nettet</translation>
+<translation id="2976639738101799892">Få Google Søk og smartfunksjoner fra Google hver gang du surfer på nettet</translation>
 <translation id="2977480621796371840">Fjern fra gruppen</translation>
 <translation id="2979493931538961252">Når Chromebooken er uten nett og wifi-soner er tilgjengelige</translation>
 <translation id="2979639724566107830">Åpne i nytt vindu</translation>
@@ -8540,7 +8540,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7194873994243265344">Organisasjonen din har blokkert denne filen fordi den er kryptert. Be eieren om å dekryptere den.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 nedlasting pågår}other{# nedlastinger pågår}}</translation>
 <translation id="7196272782924897510">Vil du bruke en passnøkkel fra en annen enhet?</translation>
-<translation id="7197190419934240522">Få Google Søk og smarte funksjoner fra Google hver gang du surfer på nettet</translation>
+<translation id="7197190419934240522">Få Google Søk og smartfunksjoner fra Google hver gang du surfer på nettet</translation>
 <translation id="719791532916917144">Hurtigtast</translation>
 <translation id="7198503619164954386">Du må bruke en bedriftsregistrert enhet</translation>
 <translation id="7199158086730159431">Få hjelp</translation>
