@@ -139,7 +139,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 new ResourceButtonData(
                         R.string.accessibility_tab_switcher_incognito_stack,
                         R.string.accessibility_tab_switcher_incognito_stack,
-                        R.drawable.incognito_small);
+                        R.drawable.ic_incognito);
 
         ResourceButtonData newTabButtonData =
                 new ResourceButtonData(

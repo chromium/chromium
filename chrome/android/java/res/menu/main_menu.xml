@@ -45,7 +45,7 @@ found in the LICENSE file.
             android:icon="@drawable/ic_add_box_rounded_corner" />
         <item android:id="@+id/new_incognito_tab_menu_id"
             android:title="@string/menu_new_incognito_tab"
-            android:icon="@drawable/incognito_simple" />
+            android:icon="@drawable/ic_incognito" />
         <item android:id="@+id/new_window_menu_id"
             android:title="@string/menu_new_window"
             android:icon="@drawable/ic_new_window" />
