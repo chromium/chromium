@@ -290,7 +290,7 @@ constexpr base::FeatureParam<bool>
         "send-lens-visual-interaction-data-for-lens-suggest", false};
 
 constexpr base::FeatureParam<size_t> kLensOverlayFileUploadLimitBytes{
-    &kLensOverlayContextualSearchbox, "file-upload-limit-bytes", 2000000};
+    &kLensOverlayContextualSearchbox, "file-upload-limit-bytes", 200000000};
 
 const base::FeatureParam<base::TimeDelta> kLensOverlaySurveyResultsTime{
     &kLensOverlaySurvey, "results-time", base::Seconds(1)};
