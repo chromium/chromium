@@ -39,11 +39,22 @@ bool IsNegative(int32_t num) {
 
 PaintAggregator::PaintUpdate::PaintUpdate() = default;
 
-PaintAggregator::PaintUpdate::PaintUpdate(const PaintUpdate& that) = default;
+PaintAggregator::PaintUpdate::PaintUpdate(
+    PaintAggregator::PaintUpdate&&) noexcept = default;
+
+PaintAggregator::PaintUpdate& PaintAggregator::PaintUpdate::operator=(
+    PaintAggregator::PaintUpdate&&) noexcept = default;
 
 PaintAggregator::PaintUpdate::~PaintUpdate() = default;
 
 PaintAggregator::InternalPaintUpdate::InternalPaintUpdate() = default;
+
+PaintAggregator::InternalPaintUpdate::InternalPaintUpdate(
+    PaintAggregator::InternalPaintUpdate&&) noexcept = default;
+
+PaintAggregator::InternalPaintUpdate&
+PaintAggregator::InternalPaintUpdate::operator=(
+    PaintAggregator::InternalPaintUpdate&&) noexcept = default;
 
 PaintAggregator::InternalPaintUpdate::~InternalPaintUpdate() = default;
 
@@ -84,6 +95,8 @@ gfx::Rect PaintAggregator::GetScrollDamage() const {
 }
 
 PaintAggregator::PaintAggregator() = default;
+
+PaintAggregator::~PaintAggregator() = default;
 
 bool PaintAggregator::HasPendingUpdate() const {
   return !update_.scroll_rect.IsEmpty() || !update_.paint_rects.empty();

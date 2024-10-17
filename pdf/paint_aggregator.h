@@ -24,7 +24,10 @@ class PaintAggregator {
  public:
   struct PaintUpdate {
     PaintUpdate();
-    PaintUpdate(const PaintUpdate& that);
+    PaintUpdate(PaintUpdate&&) noexcept;
+    PaintUpdate& operator=(PaintUpdate&&) noexcept;
+    PaintUpdate(const PaintUpdate&) = delete;
+    PaintUpdate& operator=(const PaintUpdate&) = delete;
     ~PaintUpdate();
 
     // True if there is a scroll applied. This indicates that the scroll delta
@@ -52,6 +55,9 @@ class PaintAggregator {
   };
 
   PaintAggregator();
+  PaintAggregator(const PaintAggregator&) = delete;
+  PaintAggregator& operator=(const PaintAggregator&) = delete;
+  ~PaintAggregator();
 
   // There is a PendingUpdate if InvalidateRect or ScrollRect were called and
   // ClearPendingUpdate was not called.
@@ -87,6 +93,10 @@ class PaintAggregator {
   //    a rectangle up to date as we do different operations.
   struct InternalPaintUpdate {
     InternalPaintUpdate();
+    InternalPaintUpdate(InternalPaintUpdate&&) noexcept;
+    InternalPaintUpdate& operator=(InternalPaintUpdate&&) noexcept;
+    InternalPaintUpdate(const InternalPaintUpdate&) = delete;
+    InternalPaintUpdate& operator=(const InternalPaintUpdate&) = delete;
     ~InternalPaintUpdate();
 
     gfx::Vector2d scroll_delta;
