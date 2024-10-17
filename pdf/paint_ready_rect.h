@@ -17,10 +17,8 @@ namespace chrome_pdf {
 // ready.
 class PaintReadyRect {
  public:
-  PaintReadyRect(const gfx::Rect& rect,
-                 sk_sp<SkImage> image,
-                 bool flush_now = false);
-
+  PaintReadyRect(const gfx::Rect& rect, sk_sp<SkImage> image);
+  PaintReadyRect(const gfx::Rect& rect, sk_sp<SkImage> image, bool flush_now);
   PaintReadyRect(const PaintReadyRect& other);
   PaintReadyRect& operator=(const PaintReadyRect& other);
   ~PaintReadyRect();
