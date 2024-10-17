@@ -90,7 +90,6 @@
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/identity_internals_ui.h"
-#include "chrome/browser/ui/webui/inspect_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
@@ -305,11 +304,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return nullptr;
     return &NewWebUI<DevToolsUI>;
   }
-  // chrome://inspect isn't supported on Android nor iOS. Page debugging is
-  // handled by a remote devtools on the host machine, and other elements, i.e.
-  // extensions aren't supported.
-  if (url.host_piece() == chrome::kChromeUIInspectHost)
-    return &NewWebUI<InspectUI>;
   if (url.host_piece() == chrome::kChromeUISyncConfirmationHost &&
       !profile->IsOffTheRecord()) {
     return &NewWebUI<SyncConfirmationUI>;
