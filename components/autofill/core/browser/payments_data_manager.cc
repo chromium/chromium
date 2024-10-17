@@ -395,6 +395,7 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
         ReceiveLoadedDbValues(h, result.get(),
                               &pending_payment_instruments_query_,
                               &payment_instruments);
+        ewallet_accounts_.clear();
         for (sync_pb::PaymentInstrument& payment_instrument :
              payment_instruments) {
           CacheIfEwalletPaymentInstrument(payment_instrument);

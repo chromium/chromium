@@ -2270,6 +2270,41 @@ TEST_F(PaymentsDataManagerTest, EwalletAccountsIconsFetched_DatabaseUpdated) {
   payments_data_manager().Refresh();
   WaitForOnPaymentsDataChanged();
 }
+
+TEST_F(
+    PaymentsDataManagerTest,
+    GetEwalletAccounts_PaymentsDataManagerRefreshedTwice_NoDuplicatedEwalletAccounts) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234L);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(2345L);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {payment_instrument_1, payment_instrument_2}));
+
+  // Since the PaymentsDataManager was initialized before adding the eWallet
+  // payment instruments to the WebDatabase, we expect GetEwalletAccounts to
+  // return an empty list.
+  base::span<const Ewallet> ewallet_accounts =
+      payments_data_manager().GetEwalletAccounts();
+  EXPECT_EQ(0u, ewallet_accounts.size());
+
+  // We need to call `Refresh()` to ensure that the eWallet payment instruments
+  // are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  ewallet_accounts = payments_data_manager().GetEwalletAccounts();
+  EXPECT_EQ(2u, ewallet_accounts.size());
+
+  // Invoke `Refresh()` again.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  ewallet_accounts = payments_data_manager().GetEwalletAccounts();
+  EXPECT_EQ(2u, ewallet_accounts.size());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PaymentsDataManagerTest,
