@@ -91,6 +91,7 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback) override;
+  bool IsConnected() override;
 #endif
   SwapChainSharedImages CreateSwapChain(viz::SharedImageFormat format,
                                         const gfx::Size& size,

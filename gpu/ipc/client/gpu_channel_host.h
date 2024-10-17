@@ -156,6 +156,7 @@ class GPU_EXPORT GpuChannelHost
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback);
+  bool IsConnected();
 #endif
 
   // Crashes the GPU process. This functionality is added here because

@@ -143,6 +143,10 @@ void GpuChannelHost::CopyNativeGmbToSharedMemoryAsync(
   GetGpuChannel().CopyNativeGmbToSharedMemoryAsync(
       std::move(buffer_handle), std::move(memory_region), std::move(callback));
 }
+
+bool GpuChannelHost::IsConnected() {
+  return static_cast<bool>(gpu_channel_);
+}
 #endif
 
 void GpuChannelHost::EnsureFlush(uint32_t deferred_message_id) {

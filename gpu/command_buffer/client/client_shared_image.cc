@@ -450,10 +450,12 @@ void ClientSharedImage::HelperGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
 }
 
 bool ClientSharedImage::HelperGpuMemoryBufferManager::IsConnected() {
-  // Will be implemented in follow up CLs once IPC changes to perform this
-  // operations are done.
-  NOTIMPLEMENTED();
-  return true;
+  auto sii = GetSharedImageInterface();
+  if (!sii) {
+    DLOG(WARNING) << "No SharedImageInterface.";
+    return false;
+  }
+  return sii->IsConnected();
 }
 
 // Access the SharedImageInterface via the SharedImageInterfaceHolder.

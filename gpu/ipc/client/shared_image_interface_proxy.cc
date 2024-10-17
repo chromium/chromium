@@ -295,6 +295,10 @@ void SharedImageInterfaceProxy::CopyNativeGmbToSharedMemoryAsync(
   host_->CopyNativeGmbToSharedMemoryAsync(
       std::move(buffer_handle), std::move(memory_region), std::move(callback));
 }
+
+bool SharedImageInterfaceProxy::IsConnected() {
+  return host_->IsConnected();
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 void SharedImageInterfaceProxy::UpdateSharedImage(const SyncToken& sync_token,

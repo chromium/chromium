@@ -111,6 +111,10 @@ void SharedImageInterface::CopyNativeGmbToSharedMemoryAsync(
   NOTREACHED();
 }
 
+bool SharedImageInterface::IsConnected() {
+  NOTREACHED();
+}
+
 void SharedImageInterface::Release() const {
   bool should_destroy = false;
 

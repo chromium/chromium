@@ -291,6 +291,10 @@ void ClientSharedImageInterface::CopyNativeGmbToSharedMemoryAsync(
   proxy_->CopyNativeGmbToSharedMemoryAsync(
       std::move(buffer_handle), std::move(memory_region), std::move(callback));
 }
+
+bool ClientSharedImageInterface::IsConnected() {
+  return proxy_->IsConnected();
+}
 #endif
 
 ClientSharedImageInterface::SwapChainSharedImages

@@ -89,6 +89,7 @@ class SharedImageInterfaceProxy {
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback);
+  bool IsConnected();
 #endif  // BUILDFLAG(IS_WIN)
 
   void UpdateSharedImage(const SyncToken& sync_token, const Mailbox& mailbox);

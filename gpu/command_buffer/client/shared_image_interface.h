@@ -243,6 +243,11 @@ class GPU_EXPORT SharedImageInterface
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback);
 
+  // Checks if the GpuChannel is connected to this interface. This is
+  // used on windows to find if SII is still connected to the GPU service so
+  // that GpuMemoryBufferManager can use it.
+  virtual bool IsConnected();
+
   // Destroys the shared image, unregistering its mailbox, after |sync_token|
   // has been released. After this call, the mailbox can't be used to reference
   // the image any more, however if the image was imported into other APIs,
