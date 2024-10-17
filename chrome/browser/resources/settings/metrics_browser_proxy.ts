@@ -348,12 +348,37 @@ export enum CardBenefitsUserAction {
   CARD_BENEFITS_TERMS_LINK_CLICKED = 'CardBenefits_TermsLinkClicked',
 }
 
+/**
+ * Contains all recorded interactions across AI settings page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SettingsAiPageInteractions enum in
+ * histograms/metadata/settings/enums.xml
+ */
+// LINT.IfChange(AiPageInteractions)
+export enum AiPageInteractions {
+  HISTORY_SEARCH_CLICK = 0,
+  COMPARE_CLICK = 1,
+  COMPOSE_CLICK = 2,
+  TAB_ORGANIZATION_CLICK = 3,
+  WALLPAPER_SEARCH_CLICK = 4,
+  MAX_VALUE = 5,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageInteractions)
+
 export interface MetricsBrowserProxy {
   /**
    * Helper function that calls recordAction with one action from
    * tools/metrics/actions/actions.xml.
    */
   recordAction(action: string): void;
+
+  /**
+   * Helper function that calls recordBooleanHistogram with the histogramName.
+   */
+  recordBooleanHistogram(histogramName: string, visible: boolean): void;
 
   /**
    * Helper function that calls recordHistogram for the
@@ -544,11 +569,24 @@ export interface MetricsBrowserProxy {
    */
   recordFeatureNotificationsChange(enabled: boolean): void;
   // </if>
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.AiPage.Interactions histogram
+   */
+  recordAiPageInteractions(interaction: AiPageInteractions): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordAction(action: string) {
     chrome.send('metricsHandler:recordAction', [action]);
+  }
+
+  recordBooleanHistogram(histogramName: string, visible: boolean): void {
+    chrome.send('metricsHandler:recordBooleanHistogram', [
+      histogramName,
+      visible,
+    ]);
   }
 
   recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {
@@ -782,6 +820,14 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
         'Windows.FeatureNotificationsSettingChange', enabled);
   }
   // </if>
+
+  recordAiPageInteractions(interaction: AiPageInteractions): void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.AiPage.Interactions',
+      interaction,
+      AiPageInteractions.MAX_VALUE,
+    ]);
+  }
 
   static getInstance(): MetricsBrowserProxy {
     return instance || (instance = new MetricsBrowserProxyImpl());

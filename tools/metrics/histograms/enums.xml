@@ -34131,6 +34131,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-210069062" label="/content"/>
   <int value="-191557146" label="/content/bluetoothDevices"/>
   <int value="-189314307" label="/crostini/exportImport"/>
+  <int value="-174226049" label="/ai/compareProducts"/>
   <int value="-152132510" label="/captions"/>
   <int value="-146134264" label="/content/protectedContent"/>
   <int value="-141168426" label="/passkeys"/>
@@ -34143,6 +34144,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4710857" label="/content/hidDevices"/>
   <int value="8030578" label="/crostini/sharedUsbDevices"/>
   <int value="8530592" label="/syncSetup/advanced"/>
+  <int value="14407759" label="/ai/helpMeWrite"/>
   <int value="16287984" label="/languages/details"/>
   <int value="22120718" label="/adPrivacy"/>
   <int value="53341592" label="/privacySandbox"/>
@@ -34171,6 +34173,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="851467961" label="/content/siteData"/>
   <int value="856943564" label="/content/siteDetails"/>
   <int value="868952532" label="/pointer-overlay"/>
+  <int value="871362590" label="/ai/historySearch"/>
   <int value="872535792" label="/parentalControls"/>
   <int value="900733129" label="/content/microphone"/>
   <int value="912274271" label="/siteData"/>

@@ -267,6 +267,18 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Restore the last session and open URLs"/>
 </enum>
 
+<!-- LINT.IfChange(SettingsAiPageInteractions) -->
+
+<enum name="SettingsAiPageInteractions">
+  <int value="0" label="History Search row click"/>
+  <int value="1" label="Compare row click"/>
+  <int value="2" label="Compose row click"/>
+  <int value="3" label="Tab organization row click"/>
+  <int value="4" label="Themes row click"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageInteractions) -->
+
 <enum name="SettingsClearBrowsingDataTimePeriod">
   <int value="0" label="Last hour"/>
   <int value="1" label="Last day"/>
