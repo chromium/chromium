@@ -85,8 +85,8 @@ SharedQuadState* CreateSharedQuadState(AggregatedRenderPass* render_pass,
   const gfx::Rect visible_layer_rect = rect;
   SharedQuadState* shared_state = render_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), layer_rect, visible_layer_rect,
-                       gfx::MaskFilterInfo(), /*clip_rect=*/std::nullopt,
-                       /*are_contents_opaque=*/false, /*opacity=*/1.0f,
+                       gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
+                       /*contents_opaque=*/false, /*opacity_f=*/1.0f,
                        SkBlendMode::kSrcOver,
                        /*sorting_context=*/0,
                        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -377,12 +377,13 @@ class ReadbackPixelTest : public VizPixelTest {
 
     scale_by_half_ = scale_by_half;
 
-    ASSERT_TRUE(cc::ReadPNGFile(
-        GetTestFilePath(FILE_PATH_LITERAL("16_color_rects.png")),
-        &source_bitmap_));
+    source_bitmap_ = cc::ReadPNGFile(
+        GetTestFilePath(FILE_PATH_LITERAL("16_color_rects.png")));
+    ASSERT_FALSE(source_bitmap_.isNull());
     source_bitmap_.setImmutable();
 
-    ASSERT_TRUE(cc::ReadPNGFile(GetExpectedPath(), &expected_bitmap_));
+    expected_bitmap_ = cc::ReadPNGFile(GetExpectedPath());
+    ASSERT_FALSE(expected_bitmap_.isNull());
     expected_bitmap_.setImmutable();
 
     source_size_ = gfx::Size(source_bitmap_.width(), source_bitmap_.height());

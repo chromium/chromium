@@ -563,7 +563,8 @@ class VideoCaptureOverlayRenderTest
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             "video-overlay-capture-test-update-golden-files")) {
       LOG(INFO) << "Rewriting golden file: " << golden_file_path.AsUTF8Unsafe();
-      cc::WritePNGFile(canonical_bitmap, golden_file_path, false);
+      CHECK(cc::WritePNGFile(canonical_bitmap, golden_file_path,
+                             /*discard_transparency=*/false));
     }
 
     // FuzzyPixelComparator configuration: Allow 100% of pixels to mismatch, but
@@ -582,8 +583,8 @@ class VideoCaptureOverlayRenderTest
     // expected versus actual PNG data URLs. So, only do the VLOG(1)'s when
     // MatchesPNGFile() returned true.
     if (matches_golden_file && VLOG_IS_ON(1)) {
-      SkBitmap expected;
-      if (cc::ReadPNGFile(golden_file_path, &expected)) {
+      SkBitmap expected = cc::ReadPNGFile(golden_file_path);
+      if (!expected.isNull()) {
         VLOG(1) << "Expected bitmap: " << cc::GetPNGDataUrl(expected);
       }
       VLOG(1) << "Actual bitmap: " << cc::GetPNGDataUrl(canonical_bitmap);

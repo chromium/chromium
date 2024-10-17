@@ -181,7 +181,8 @@ TEST_F(AppIconFactoryTest, LoadFromFileSuccess) {
   gfx::ImageSkia image =
       gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(20, 20), 0.0f));
   const SkBitmap* bitmap = image.bitmap();
-  cc::WritePNGFile(*bitmap, GetPath(), /*discard_transparency=*/false);
+  ASSERT_TRUE(
+      cc::WritePNGFile(*bitmap, GetPath(), /*discard_transparency=*/false));
 
   auto fallback_response = std::make_unique<apps::IconValue>();
   auto result = std::make_unique<apps::IconValue>();
