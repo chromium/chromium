@@ -1267,8 +1267,8 @@ TEST_F(PdfViewWebPluginTest, OnPaintWithMultiplePaintRects) {
   EXPECT_FALSE(ready[2].flush_now());
 
   // All the requested paints should share the same `SkImage`.
-  EXPECT_NE(&ready[0].image(), &ready[1].image());
-  EXPECT_EQ(&ready[1].image(), &ready[2].image());
+  EXPECT_NE(ready[0].image(), ready[1].image());
+  EXPECT_EQ(ready[1].image(), ready[2].image());
 }
 
 TEST_F(PdfViewWebPluginTest, UpdateLayerTransformWithIdentity) {

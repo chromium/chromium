@@ -285,7 +285,7 @@ void PaintManager::DoPaint() {
   for (const auto& ready_rect : ready_now) {
     SkRect skia_rect = gfx::RectToSkRect(ready_rect.rect());
     surface_->getCanvas()->drawImageRect(
-        &ready_rect.image(), skia_rect, skia_rect, SkSamplingOptions(), nullptr,
+        ready_rect.image(), skia_rect, skia_rect, SkSamplingOptions(), nullptr,
         SkCanvas::kStrict_SrcRectConstraint);
   }
 
