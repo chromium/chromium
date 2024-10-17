@@ -711,6 +711,20 @@ class WebAppLinkCapturingParameterizedBrowserTest
       ASSERT_EQ(OpenerMode::kNoOpener, GetOpenerMode());
       ASSERT_EQ(NavigationTarget::kBlank, GetNavigationTarget());
     }
+
+    // For right clicks, redirect URL should not be kServerSideViaX because
+    // redirection does not happen via X (uninstalled app).
+    if (ClickMethod() == test::ClickMethod::kRightClickLaunchApp) {
+      ASSERT_NE(RedirectType::kServerSideViaX, GetRedirectType());
+      // This is for right click use cases in redirection. Note that this
+      // does not apply if there is no redirection happening.
+      if (GetRedirectType() != RedirectType::kNone) {
+        ASSERT_NE(Destination::kScopeA2X, GetDestination());
+        ASSERT_EQ(OpenerMode::kNoOpener, GetOpenerMode());
+        ASSERT_EQ(NavigationElement::kElementLink, GetNavigationElement());
+        ASSERT_EQ(NavigationTarget::kBlank, GetNavigationTarget());
+      }
+    }
   }
 
   // Trigger a right click on an HTML element, wait for the context menu to
@@ -1592,6 +1606,25 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(NavigationElement::kElementLink,
                         NavigationElement::kElementButton),
         testing::Values(test::ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// Use-case where redirection happens via an 'Open link in <App>' selection
+// from the context menu, triggered via a right click.
+INSTANTIATE_TEST_SUITE_P(
+    Redirection_RightClickUseCases,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2B),
+        testing::Values(RedirectType::kServerSideViaA,
+                        RedirectType::kServerSideViaB),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kRightClickLaunchApp),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
