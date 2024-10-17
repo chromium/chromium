@@ -67,6 +67,8 @@ dependencies {
     compile 'androidx.concurrent:concurrent-futures:{{androidx_dependency_version}}'
     compile 'androidx.coordinatorlayout:coordinatorlayout:{{androidx_dependency_version}}'
     compile 'androidx.core:core:{{androidx_dependency_version}}'
+    compile 'androidx.credentials:credentials:{{androidx_dependency_version}}'
+    compile 'androidx.credentials:credentials-play-services-auth:{{androidx_dependency_version}}'
     compile 'androidx.core:core-animation:{{androidx_dependency_version}}'
     compile 'androidx.customview:customview:{{androidx_dependency_version}}'
     compile 'androidx.datastore:datastore-android:{{androidx_dependency_version}}'
