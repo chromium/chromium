@@ -61,6 +61,7 @@ source_set("bottom_sheet_ui") {
     "password_suggestion_bottom_sheet_consumer.h",
     "password_suggestion_bottom_sheet_delegate.h",
     "password_suggestion_bottom_sheet_handler.h",
+    "password_suggestion_bottom_sheet_presenter.h",
     "password_suggestion_bottom_sheet_view_controller.h",
     "password_suggestion_bottom_sheet_view_controller.mm",
   ]

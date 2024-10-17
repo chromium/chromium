@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -222,6 +223,8 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
 
     consumer_ =
         OCMProtocolMock(@protocol(PasswordSuggestionBottomSheetConsumer));
+    presenter_ = OCMStrictProtocolMock(
+        @protocol(PasswordSuggestionBottomSheetPresenter));
 
     params_.form_name = "form";
     params_.field_identifier = "field_id";
@@ -263,7 +266,8 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
           profilePasswordStore:store_
           accountPasswordStore:nullptr
         sharedURLLoaderFactory:nullptr
-             engagementTracker:nil];
+             engagementTracker:nil
+                     presenter:nil];
   }
 
   // Creates the bottom sheet mediator with custom suggestions `providers`.
@@ -293,22 +297,13 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
   autofill::FormActivityParams params_;
   PasswordSuggestionBottomSheetMediator* mediator_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  id presenter_;
 };
 
 // Tests PasswordSuggestionBottomSheetMediator can be initialized.
 TEST_F(PasswordSuggestionBottomSheetMediatorTest, Init) {
   CreateMediator();
   EXPECT_TRUE(mediator_);
-}
-
-// Tests consumer when no suggestion is available.
-TEST_F(PasswordSuggestionBottomSheetMediatorTest, NoSuggestion) {
-  CreateMediator();
-  ASSERT_TRUE(mediator_);
-
-  OCMExpect([consumer_ dismiss]);
-  [mediator_ setConsumer:consumer_];
-  EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 // Tests consumer when suggestions are available.
@@ -351,19 +346,19 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, IncrementDismissCount) {
 
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 0);
-  [mediator_ dismiss];
+  [mediator_ onDismissWithoutAnyPasswordAction];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 1);
-  [mediator_ dismiss];
+  [mediator_ onDismissWithoutAnyPasswordAction];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 2);
-  [mediator_ dismiss];
+  [mediator_ onDismissWithoutAnyPasswordAction];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 3);
 
   // Expect failure after 3 times.
 #if defined(GTEST_HAS_DEATH_TEST)
-  EXPECT_DEATH([mediator_ dismiss],
+  EXPECT_DEATH([mediator_ onDismissWithoutAnyPasswordAction],
                "Failed when dismiss count is incremented higher than the "
                "expected value.");
 #endif  // defined(GTEST_HAS_DEATH_TEST)
@@ -433,7 +428,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
   ASSERT_TRUE(mediator_);
   [mediator_ setConsumer:consumer_];
 
-  OCMExpect([consumer_ dismiss]);
+  OCMExpect([presenter_ endPresentation]);
   web_state_list_.reset();
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

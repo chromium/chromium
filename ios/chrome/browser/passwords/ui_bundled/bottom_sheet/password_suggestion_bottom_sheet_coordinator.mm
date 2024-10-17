@@ -101,7 +101,8 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
           accountPasswordStore:accountPasswordStore
         sharedURLLoaderFactory:profile->GetSharedURLLoaderFactory()
              engagementTracker:feature_engagement::TrackerFactory::
-                                   GetForProfile(self.browser->GetProfile())];
+                                   GetForProfile(self.browser->GetProfile())
+                     presenter:self];
     self.viewController.delegate = self.mediator;
     self.mediator.consumer = self.viewController;
   }
@@ -111,11 +112,13 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  // If the bottom sheet has no suggestion to show, do not show the bottom
-  // sheet. Instead, re-focus the field which triggered the bottom sheet and
-  // disable it.
+  // If the bottom sheet has no suggestion to show, stop the presentation right
+  // away.
   if (![self.mediator hasSuggestions]) {
-    [self.mediator dismiss];
+    // Cleanup the coordinator if it couldn't be started.
+    [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
+    // Do not add any logic past this point in this specific context since the
+    // the coordinator was torn down at this point hence now unusable.
     return;
   }
 
@@ -150,12 +153,12 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 }
 
 - (void)stop {
-  [super stop];
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator = nil;
   _viewController.delegate = nil;
   _viewController = nil;
+  [super stop];
 }
 
 #pragma mark - PasswordSuggestionBottomSheetHandler
@@ -165,7 +168,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   [self.mediator logExitReason:kShowPasswordManager];
 
   __weak __typeof(self) weakSelf = self;
-  [self.baseViewController.presentedViewController
+  [self.viewController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:^{
                            [weakSelf displaySavedPasswordList];
@@ -182,7 +185,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
       [self.mediator getCredentialForFormSuggestion:formSuggestion];
 
   __weak __typeof(self) weakSelf = self;
-  [self.baseViewController.presentedViewController
+  [self.viewController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:^{
                            // TODO(crbug.com/40896839): Add metric for when the
@@ -205,7 +208,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   ProceduralBlock completion = ^{
     [weakSelf.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
   };
-  [self.viewController
+  [self.viewController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:^{
                            [weakSelf.mediator didSelectSuggestion:formSuggestion
@@ -226,7 +229,9 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 - (void)secondaryButtonTapped {
   // "Use Keyboard" button, which dismisses the bottom sheet.
-  [self.viewController dismissViewControllerAnimated:YES completion:NULL];
+  [self.viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
 }
 
 - (void)viewDidDisappear {
@@ -234,6 +239,8 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     return;
   }
 
+  // Terminate dismissal if the entrypoint that dismissed the bottom sheet
+  // wasn't handled yet (e.g. when swipped away).
   if (base::FeatureList::IsEnabled(
           password_manager::features::kIOSPasswordBottomSheetV2)) {
     // Explicitly refocus the field if the sheet is dismissed without using any
@@ -244,12 +251,28 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   }
 
   [self.mediator logExitReason:kDismissal];
-  [self.mediator dismiss];
+  [self.mediator onDismissWithoutAnyPasswordAction];
 
   // Disconnect as a last step of cleaning up the presentation. This should
   // always be kept as the last step.
   [self.mediator disconnect];
-  [_browserCoordinatorCommandsHandler dismissPasswordSuggestions];
+  [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
+}
+
+#pragma mark - PasswordSuggestionBottomSheetPresenter
+
+- (void)endPresentation {
+  if (_dismissing) {
+    // The bottom sheet was already dismissed by another entrypoint, so no need
+    // to do it twice.
+    return;
+  }
+
+  // Dismiss the bottom sheet, then the presentation will be fully torn down
+  // upon calling -viewDidDisappear.
+  [self.viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
 }
 
 #pragma mark - Private

@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -50,8 +51,8 @@
 
 namespace {
 
-const char kImageFetcherUmaClient[] = "PasswordBottomSheet";
-const CGFloat kProfileImageSize = 80.0;
+constexpr char kImageFetcherUmaClient[] = "PasswordBottomSheet";
+constexpr CGFloat kProfileImageSize = 80.0;
 
 using PasswordSuggestionBottomSheetExitReason::kBadProvider;
 using ReauthenticationEvent::kAttempt;
@@ -240,6 +241,9 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
 // Default globe favicon when no favicon is available.
 @property(nonatomic, readonly) FaviconAttributes* defaultGlobeIconAttributes;
 
+// Presenter that controls the presentation of the bottom sheet.
+@property(nonatomic, weak) id<PasswordSuggestionBottomSheetPresenter> presenter;
+
 @end
 
 @implementation PasswordSuggestionBottomSheetMediator {
@@ -319,7 +323,9 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
               accountPasswordStore
     sharedURLLoaderFactory:
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
-         engagementTracker:(feature_engagement::Tracker*)engagementTracker {
+         engagementTracker:(feature_engagement::Tracker*)engagementTracker
+                 presenter:
+                     (id<PasswordSuggestionBottomSheetPresenter>)presenter {
   if ((self = [super init])) {
     _faviconLoader = faviconLoader;
     _prefService = prefService;
@@ -345,6 +351,7 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
         _webStateListObserver.get());
     _webStateListObservation->Observe(_webStateList);
 
+    _presenter = presenter;
     _params = params;
 
     if (activeWebState) {
@@ -473,10 +480,8 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
     // should be at least one suggestion at this point because the consumer is
     // set when there is at least one suggestion.
     [consumer setPrimaryActionString:l10n_util::GetNSString(
-                                        PrimaryActionStringIdFromSuggestion(
-                                            self.suggestions.firstObject))];
-  } else {
-    [consumer dismiss];
+                                         PrimaryActionStringIdFromSuggestion(
+                                             self.suggestions.firstObject))];
   }
 }
 
@@ -515,7 +520,7 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
   }
 }
 
-- (void)dismiss {
+- (void)onDismissWithoutAnyPasswordAction {
   [self incrementDismissCount];
   [self markSharedPasswordNotificationsDisplayed];
 }
@@ -598,7 +603,9 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
 #pragma mark - Private
 
 - (void)onWebStateChange {
-  [self.consumer dismiss];
+  // As there is no more context for showing the bottom sheet, end the
+  // presentation.
+  [self.presenter endPresentation];
 }
 
 // Perform suggestion selection

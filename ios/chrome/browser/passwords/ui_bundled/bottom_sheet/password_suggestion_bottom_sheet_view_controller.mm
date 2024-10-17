@@ -163,10 +163,6 @@ CGFloat const kSpacingAfterTitle = 4;
   self.image = avatarImage;
 }
 
-- (void)dismiss {
-  [self dismissViewControllerAnimated:NO completion:NULL];
-}
-
 #pragma mark - UITableViewDelegate
 
 // Long press open context menu.
