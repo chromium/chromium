@@ -220,12 +220,6 @@ bool BinaryFCMService::Connected() {
   if (!gcm_driver_)
     return false;
 
-  // It's possible for the service to not be started yet if this is the first
-  // FCM feature of the profile, so in that case assume it will be available
-  // soon.
-  if (!gcm_driver_->IsStarted())
-    return true;
-
   return gcm_driver_->IsConnected();
 }
 
