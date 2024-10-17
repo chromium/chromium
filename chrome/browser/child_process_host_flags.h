@@ -8,11 +8,9 @@
 #include "build/build_config.h"
 #include "content/public/browser/child_process_host.h"
 
-namespace chrome {
-
 // Flags for Chrome specific child processes to resolve the appropriate process
 // via ChromeContentBrowserClient::GetChildProcessSuffix().
-enum ChildProcessHostFlags {
+enum class ChildProcessHostFlags {
 #if BUILDFLAG(IS_MAC)
   // Starts a child process with the macOS alert style to show notifications as
   // alerts instead of banners which are shown by the main app.
@@ -20,7 +18,5 @@ enum ChildProcessHostFlags {
       content::ChildProcessHost::CHILD_EMBEDDER_FIRST + 1,
 #endif  // BUILDFLAG(IS_MAC)
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_CHILD_PROCESS_HOST_FLAGS_H_

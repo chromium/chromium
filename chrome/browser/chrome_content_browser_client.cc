@@ -8485,7 +8485,8 @@ bool ChromeContentBrowserClient::
 
 #if BUILDFLAG(IS_MAC)
 std::string ChromeContentBrowserClient::GetChildProcessSuffix(int child_flags) {
-  if (child_flags == chrome::kChildProcessHelperAlerts) {
+  if (child_flags ==
+      base::to_underlying(ChildProcessHostFlags::kChildProcessHelperAlerts)) {
     return chrome::kMacHelperSuffixAlerts;
   }
   NOTREACHED_IN_MIGRATION() << "Unsupported child process flags!";

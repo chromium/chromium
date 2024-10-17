@@ -29,7 +29,8 @@ LaunchOutOfProcessProvider() {
       content::ServiceProcessHost::Options()
           .WithDisplayName("Notification Service")
           .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
-          .WithChildFlags(chrome::kChildProcessHelperAlerts)
+          .WithChildFlags(base::to_underlying(
+              ChildProcessHostFlags::kChildProcessHelperAlerts))
           .Pass());
 }
 
