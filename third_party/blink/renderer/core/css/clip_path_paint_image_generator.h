@@ -7,10 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
-
-namespace gfx {
-class RectF;
-}
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -29,13 +26,12 @@ class CORE_EXPORT ClipPathPaintImageGenerator
       ClipPathPaintImageGenerator*(LocalFrame&);
   static void Init(ClipPathPaintImageGeneratorCreateFunction* create_function);
 
+  static gfx::RectF GetAnimationBoundingRect();
+
   virtual scoped_refptr<Image> Paint(float zoom,
                                      const gfx::RectF& reference_box,
                                      const gfx::SizeF& clip_area_size,
                                      const Node&) = 0;
-  virtual gfx::RectF ClipAreaRect(const Node& node,
-                                  const gfx::RectF& reference_box,
-                                  float zoom) const = 0;
 };
 
 }  // namespace blink

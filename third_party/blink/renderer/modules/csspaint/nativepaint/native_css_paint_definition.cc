@@ -67,22 +67,7 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
 
   // TODO(crbug.com/1429770): Implement positive delay fix for bgcolor.
   if (effect->SpecifiedTiming().start_delay.AsTimeValue().InSecondsF() > 0.f) {
-    if (property.PropertyID() == CSSPropertyID::kClipPath) {
-      // TODO(crbug.com/365481208): When clip-path: none, the clip path paint
-      // worklet won't be painted. This results in a composited animation with
-      // no associated paint worklet. This prevents that from happening by
-      // forcing these animations to be downgraded to main thread, however this
-      // solution is far from ideal, and introduces complexity into an already
-      // complex state machine. This should be removed once a better solution
-      // is found to clip-path: none during delays.
-      if (!element->GetLayoutObject()->StyleRef().HasClipPath()) {
-        // Set the animation to kNotComposited so that when the animation begins
-        // the paint worklet is not painted.
-        element->GetElementAnimations()->SetCompositedClipPathStatus(
-            ElementAnimations::CompositedPaintStatus::kNotComposited);
-        return nullptr;
-      }
-    } else {
+    if (property.PropertyID() != CSSPropertyID::kClipPath) {
       return nullptr;
     }
   }

@@ -1422,8 +1422,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
 static bool NeedsClipPathClipOrMask(const LayoutObject& object) {
   // We only apply clip-path if the LayoutObject has a layer or is an SVG
   // child. See NeedsEffect() for additional information on the former.
-  return !object.IsText() && object.StyleRef().HasClipPath() &&
-         (object.HasLayer() || object.IsSVGChild());
+  return !object.IsText() &&
+         (ClipPathClipper::HasCompositeClipPathAnimation(object) ||
+          (object.StyleRef().HasClipPath() &&
+           (object.HasLayer() || object.IsSVGChild())));
 }
 
 static bool NeedsEffectForViewTransition(const LayoutObject& object) {
@@ -2140,10 +2142,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   if (NeedsPaintPropertyUpdate()) {
     DCHECK(!clip_path_bounding_box_.has_value());
     if (NeedsClipPathClipOrMask(object_)) {
-      // Recalc the composited clip path paint status, which depends on whether
-      // we are in a block fragmentation
-      ClipPathClipper::ResolveClipPathStatus(
-          object_, context_.current.is_in_block_fragmentation);
       clip_path_bounding_box_ =
           ClipPathClipper::LocalClipPathBoundingBox(object_);
       if (clip_path_bounding_box_) {
@@ -3568,6 +3566,16 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
       context_.old_scroll_offset = old_scroll_translation->Get2dTranslation();
     }
   }
+
+  // Resolve the current composited clip path animation status. This is needed
+  // to determine whether we need to initialize paint properties for this
+  // object.
+  const bool is_in_fragment_container =
+      pre_paint_info_ &&
+      pre_paint_info_->fragmentainer_is_oof_containing_block &&
+      IsA<LayoutBox>(object_) &&
+      (To<LayoutBox>(object_).PhysicalFragmentCount() > 1);
+  ClipPathClipper::ResolveClipPathStatus(object_, is_in_fragment_container);
 
   UpdatePaintingLayer();
   UpdateFragmentData();
