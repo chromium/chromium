@@ -370,15 +370,7 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
       break;
   }
 
-  if (state_ == State::kAnimationFinished) {
-    // - Navigation committed (old page was unloaded).
-    // - Navigation cancelled or never started.
-    CHECK_EQ(deferred_dialog_token_,
-             ui::ModalDialogManagerBridge::kInvalidDialogToken);
-  } else {
-    // Transition was aborted.
-    ResumeDialogs();
-  }
+  ResumeDialogs();
 
   ResetTransformForLayer(animation_manager_->web_contents_view_android()
                              ->parent_for_web_page_widgets());
