@@ -1,4 +1,5 @@
 caption: Re-enable deprecated/removed Mutation Events
+deprecated: true
 default: false
 desc: |-
   This policy provides a temporary opt-back-in to a deprecated and removed set of platform events called Mutation Events.
