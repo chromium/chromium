@@ -62,23 +62,21 @@ scoped_refptr<PasswordFormMetricsRecorder> CreatePasswordFormMetricsRecorder(
       is_main_frame_secure, kTestSourceId, pref_service);
 }
 
-// TODO(crbug.com/40528506) Replace this with generalized infrastructure.
-// Verifies that the metric |metric_name| was recorded with value |value| in the
-// single entry of |test_ukm_recorder_| exactly |expected_count| times.
-void ExpectUkmValueCount(ukm::TestUkmRecorder* test_ukm_recorder,
-                         const char* metric_name,
-                         int64_t value,
-                         int64_t expected_count) {
+// Checks if the metric `metric_name` was recorded in the single entry of
+// `test_ukm_recorder_`.
+void ExpectUkmEntryRecorded(ukm::TestUkmRecorder* test_ukm_recorder,
+                            const char* metric_name,
+                            std::optional<int64_t> expected_recording) {
   auto entries = test_ukm_recorder->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
+
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     EXPECT_EQ(kTestSourceId, entry->source_id);
-    if (expected_count) {
-      test_ukm_recorder->ExpectEntryMetric(entry, metric_name, value);
+    if (expected_recording.has_value()) {
+      test_ukm_recorder->ExpectEntryMetric(entry, metric_name,
+                                           expected_recording.value());
     } else {
-      const int64_t* count =
-          test_ukm_recorder->GetEntryMetric(entry, metric_name);
-      EXPECT_TRUE(count == nullptr || *count != expected_count);
+      EXPECT_FALSE(test_ukm_recorder->EntryHasMetric(entry, metric_name));
     }
   }
 }
@@ -152,55 +150,36 @@ TEST_F(PasswordFormMetricsRecorderTest, Generation) {
       }
     }
 
-    ExpectUkmValueCount(
-        &test_ukm_recorder, UkmEntry::kSubmission_ObservedName,
+    bool form_was_submitted =
         test.submission !=
-                PasswordFormMetricsRecorder::SubmitResult::kNotSubmitted
-            ? 1
-            : 0,
-        1);
+        PasswordFormMetricsRecorder::SubmitResult::kNotSubmitted;
+    ExpectUkmEntryRecorded(&test_ukm_recorder,
+                           UkmEntry::kSubmission_ObservedName,
+                           std::make_optional<int64_t>(form_was_submitted));
 
-    int expected_login_failed =
+    EXPECT_EQ(
         test.submission == PasswordFormMetricsRecorder::SubmitResult::kFailed
             ? 1
-            : 0;
-    EXPECT_EQ(expected_login_failed,
-              user_action_tester.GetActionCount("PasswordManager_LoginFailed"));
-    ExpectUkmValueCount(&test_ukm_recorder,
-                        UkmEntry::kSubmission_SubmissionResultName,
-                        static_cast<int64_t>(
-                            PasswordFormMetricsRecorder::SubmitResult::kFailed),
-                        expected_login_failed);
-
-    int expected_login_failed_after_generation =
-        test.has_generated_password && expected_login_failed ? 1 : 0;
-    ExpectUkmValueCount(
-        &test_ukm_recorder,
-        UkmEntry::kSubmission_SubmissionResult_GeneratedPasswordName,
-        static_cast<int64_t>(
-            PasswordFormMetricsRecorder::SubmitResult::kFailed),
-        expected_login_failed_after_generation);
-
-    int expected_login_passed =
+            : 0,
+        user_action_tester.GetActionCount("PasswordManager_LoginFailed"));
+    EXPECT_EQ(
         test.submission == PasswordFormMetricsRecorder::SubmitResult::kPassed
             ? 1
-            : 0;
-    EXPECT_EQ(expected_login_passed,
-              user_action_tester.GetActionCount("PasswordManager_LoginPassed"));
-    ExpectUkmValueCount(&test_ukm_recorder,
-                        UkmEntry::kSubmission_SubmissionResultName,
-                        static_cast<int64_t>(
-                            PasswordFormMetricsRecorder::SubmitResult::kPassed),
-                        expected_login_passed);
+            : 0,
+        user_action_tester.GetActionCount("PasswordManager_LoginPassed"));
 
-    int expected_login_passed_after_generation =
-        test.has_generated_password && expected_login_passed ? 1 : 0;
-    ExpectUkmValueCount(
+    ExpectUkmEntryRecorded(
+        &test_ukm_recorder, UkmEntry::kSubmission_SubmissionResultName,
+        form_was_submitted
+            ? std::make_optional<int64_t>(static_cast<int64_t>(test.submission))
+            : std::nullopt);
+
+    ExpectUkmEntryRecorded(
         &test_ukm_recorder,
         UkmEntry::kSubmission_SubmissionResult_GeneratedPasswordName,
-        static_cast<int64_t>(
-            PasswordFormMetricsRecorder::SubmitResult::kPassed),
-        expected_login_passed_after_generation);
+        form_was_submitted && test.has_generated_password
+            ? std::make_optional<int64_t>(static_cast<int64_t>(test.submission))
+            : std::nullopt);
 
     if (test.has_generated_password) {
       switch (test.submission) {
@@ -281,9 +260,9 @@ TEST_F(PasswordFormMetricsRecorderTest, SubmittedFormType) {
     if (test.should_record_metrics) {
       histogram_tester.ExpectUniqueSample("PasswordManager.SubmittedFormType2",
                                           test.form_type.value(), 1);
-      ExpectUkmValueCount(&test_ukm_recorder,
-                          UkmEntry::kSubmission_SubmittedFormType2Name,
-                          static_cast<int64_t>(test.form_type.value()), 1);
+      ExpectUkmEntryRecorded(&test_ukm_recorder,
+                             UkmEntry::kSubmission_SubmittedFormType2Name,
+                             static_cast<int64_t>(test.form_type.value()));
     } else {
       histogram_tester.ExpectTotalCount("PasswordManager.SubmittedFormType2",
                                         0);
@@ -1188,10 +1167,9 @@ TEST_F(PasswordFormMetricsRecorderTest,
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
-  ExpectUkmValueCount(&test_ukm_recorder,
-                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
-                      static_cast<int64_t>(expected_assistance),
-                      /*expected_count=*/1);
+  ExpectUkmEntryRecorded(&test_ukm_recorder,
+                         UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                         static_cast<int64_t>(expected_assistance));
 }
 
 // Tests the calculation of the filling assistance metric for a single username
@@ -1225,10 +1203,9 @@ TEST_F(PasswordFormMetricsRecorderTest,
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
-  ExpectUkmValueCount(&test_ukm_recorder,
-                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
-                      static_cast<int64_t>(expected_assistance),
-                      /*expected_count=*/1);
+  ExpectUkmEntryRecorded(&test_ukm_recorder,
+                         UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                         static_cast<int64_t>(expected_assistance));
 }
 
 // Tests the calculation of the filling assistance metric for a single username
@@ -1262,10 +1239,9 @@ TEST_F(PasswordFormMetricsRecorderTest,
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
-  ExpectUkmValueCount(&test_ukm_recorder,
-                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
-                      static_cast<int64_t>(expected_assistance),
-                      /*expected_count=*/1);
+  ExpectUkmEntryRecorded(&test_ukm_recorder,
+                         UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                         static_cast<int64_t>(expected_assistance));
 }
 
 // Tests the calculation of the filling assistance metric for a single username
@@ -1297,10 +1273,9 @@ TEST_F(PasswordFormMetricsRecorderTest,
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
-  ExpectUkmValueCount(&test_ukm_recorder,
-                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
-                      static_cast<int64_t>(expected_assistance),
-                      /*expected_count=*/1);
+  ExpectUkmEntryRecorded(&test_ukm_recorder,
+                         UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                         static_cast<int64_t>(expected_assistance));
 }
 
 // Tests the calculation of the filling assistance metric for a single username
@@ -1335,10 +1310,9 @@ TEST_F(PasswordFormMetricsRecorderTest,
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
-  ExpectUkmValueCount(&test_ukm_recorder,
-                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
-                      static_cast<int64_t>(expected_assistance),
-                      /*expected_count=*/1);
+  ExpectUkmEntryRecorded(&test_ukm_recorder,
+                         UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                         static_cast<int64_t>(expected_assistance));
 }
 
 // Tests the calculation of the filling assistance metric for a single username
@@ -1371,10 +1345,9 @@ TEST_F(
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
-  ExpectUkmValueCount(&test_ukm_recorder,
-                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
-                      static_cast<int64_t>(expected_assistance),
-                      /*expected_count=*/1);
+  ExpectUkmEntryRecorded(&test_ukm_recorder,
+                         UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                         static_cast<int64_t>(expected_assistance));
 }
 
 // Tests the calculation of the filling assistance metric for a single username
@@ -1404,10 +1377,9 @@ TEST_F(PasswordFormMetricsRecorderTest,
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
-  ExpectUkmValueCount(&test_ukm_recorder,
-                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
-                      static_cast<int64_t>(expected_assistance),
-                      /*expected_count=*/1);
+  ExpectUkmEntryRecorded(&test_ukm_recorder,
+                         UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                         static_cast<int64_t>(expected_assistance));
 }
 
 // Tests the calculation of the filling assistance metric for a single username
@@ -1436,10 +1408,9 @@ TEST_F(PasswordFormMetricsRecorderTest,
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
-  ExpectUkmValueCount(&test_ukm_recorder,
-                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
-                      static_cast<int64_t>(expected_assistance),
-                      /*expected_count=*/1);
+  ExpectUkmEntryRecorded(&test_ukm_recorder,
+                         UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                         static_cast<int64_t>(expected_assistance));
 }
 
 // Tests the calculation of the filling assistance metric for a single username
@@ -1473,10 +1444,9 @@ TEST_F(PasswordFormMetricsRecorderTest,
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
-  ExpectUkmValueCount(&test_ukm_recorder,
-                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
-                      static_cast<int64_t>(expected_assistance),
-                      /*expected_count=*/1);
+  ExpectUkmEntryRecorded(&test_ukm_recorder,
+                         UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                         static_cast<int64_t>(expected_assistance));
 }
 
 TEST_F(PasswordFormMetricsRecorderTest,
@@ -1510,10 +1480,9 @@ TEST_F(PasswordFormMetricsRecorderTest,
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
-  ExpectUkmValueCount(&test_ukm_recorder,
-                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
-                      static_cast<int64_t>(expected_assistance),
-                      /*expected_count=*/1);
+  ExpectUkmEntryRecorded(&test_ukm_recorder,
+                         UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                         static_cast<int64_t>(expected_assistance));
 }
 
 // Tests that if filling assistance is recorded for both a password form and
