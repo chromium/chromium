@@ -91,7 +91,7 @@
 #include "extensions/browser/extensions_browser_client.h"     // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
@@ -103,7 +103,7 @@
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -112,7 +112,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "components/saved_tab_groups/public/features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -128,26 +127,6 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
-
-bool ShouldSyncBrowserTypes() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::browser_util::IsAshBrowserSyncEnabled();
-#else
-  return true;
-#endif
-}
-
-syncer::DataTypeSet GetDisabledCommonDataTypes() {
-  if (!ShouldSyncBrowserTypes()) {
-    // If browser-sync is disabled (on ChromeOS Ash), most "common" data types
-    // are disabled. These types will be synced in Lacros instead.
-    return base::Difference(syncer::UserTypes(),
-                            {syncer::DEVICE_INFO, syncer::USER_CONSENTS});
-  }
-
-  // Common case: No disabled types.
-  return {};
-}
 
 // Returns TabGroupSyncService or null if the feature is disabled.
 // Tab group sync is enabled via separate feature flags on different platforms.
@@ -256,9 +235,7 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
 #if BUILDFLAG(IS_ANDROID)
       nullptr
 #else   // BUILDFLAG(IS_ANDROID)
-      ShouldSyncBrowserTypes()
-          ? TemplateURLServiceFactory::GetForProfile(profile)
-          : nullptr
+      TemplateURLServiceFactory::GetForProfile(profile)
 #endif  // BUILDFLAG(IS_ANDROID)
   );
   builder.SetSendTabToSelfSyncService(
@@ -266,9 +243,7 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
   builder.SetSessionSyncService(
       SessionSyncServiceFactory::GetForProfile(profile));
   builder.SetSharingMessageBridge(
-      ShouldSyncBrowserTypes()
-          ? SharingMessageBridgeFactory::GetForBrowserContext(profile)
-          : nullptr);
+      SharingMessageBridgeFactory::GetForBrowserContext(profile));
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   builder.SetSupervisedUserSettingsService(
       SupervisedUserSettingsServiceFactory::GetForKey(
@@ -277,7 +252,7 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
   builder.SetUserEventService(
       browser_sync::UserEventServiceFactory::GetForProfile(profile));
 
-  return builder.Build(GetDisabledCommonDataTypes(), sync_service,
+  return builder.Build(/*disabled_types=*/{}, sync_service,
                        chrome::GetChannel());
 }
 
@@ -315,7 +290,7 @@ syncer::DataTypeController::TypeVector CreateChromeControllers(
           : nullptr);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const bool arc_enabled =
       arc::IsArcAllowedForProfile(profile) && !arc::IsArcAppSyncFlowDisabled();
 
@@ -342,7 +317,7 @@ syncer::DataTypeController::TypeVector CreateChromeControllers(
           ? WifiConfigurationSyncServiceFactory::GetForProfile(profile,
                                                                /*create=*/true)
           : nullptr);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return builder.Build(sync_service);
 }
@@ -378,11 +353,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
   bool local_sync_backend_enabled = false;
   // Only check the local sync backend pref on the supported platforms of
   // Windows, Mac and Linux.
-  // TODO(crbug.com/40118868): Reassess whether the following block needs to be
-  // included in lacros-chrome once build flag switch of lacros-chrome is
-  // complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   syncer::SyncPrefs prefs(profile->GetPrefs());
   local_sync_backend_enabled = prefs.IsLocalSyncEnabled();
   base::UmaHistogramBoolean("Sync.Local.Enabled2", local_sync_backend_enabled);
@@ -399,8 +370,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
       return nullptr;
     }
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS))
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   if (!local_sync_backend_enabled) {
     // Always create the GCMProfileService instance such that we can listen to
@@ -549,7 +519,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(extensions::StorageFrontend::GetFactoryInstance());
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DependsOn(app_list::AppListSyncableServiceFactory::GetInstance());
   DependsOn(
       ash::printing::oauth2::AuthorizationZonesManagerFactory::GetInstance());
@@ -559,7 +529,7 @@ SyncServiceFactory::SyncServiceFactory()
   }
   DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
   DependsOn(WifiConfigurationSyncServiceFactory::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 SyncServiceFactory::~SyncServiceFactory() = default;
