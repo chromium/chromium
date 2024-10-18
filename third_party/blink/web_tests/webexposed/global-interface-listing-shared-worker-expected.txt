@@ -32,6 +32,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter defaultTopK
 [Worker]     getter maxTopK
 [Worker]     method constructor
+[Worker]     method languageAvailable
 [Worker] interface AIAssistantFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method capabilities
@@ -79,8 +80,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter available
 [Worker]     method constructor
+[Worker]     method languageAvailable
 [Worker]     method supportsFormat
-[Worker]     method supportsInputLanguage
 [Worker]     method supportsLength
 [Worker]     method supportsType
 [Worker] interface AISummarizerFactory

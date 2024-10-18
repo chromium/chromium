@@ -15,7 +15,7 @@ interface AISummarizerCapabilities {
   AICapabilityAvailability supportsFormat(AISummarizerFormat format);
   AICapabilityAvailability supportsLength(AISummarizerLength length);
 
-  AICapabilityAvailability supportsInputLanguage(DOMString languageTag);
+  AICapabilityAvailability languageAvailable(DOMString languageTag);
 };
 
 enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };

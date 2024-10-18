@@ -35,8 +35,7 @@ class AISummarizerCapabilities final : public ScriptWrappable {
   V8AICapabilityAvailability supportsLength(V8AISummarizerLength length) {
     return capability_availability_;
   }
-  V8AICapabilityAvailability supportsInputLanguage(
-      const WTF::String& language_tag);
+  V8AICapabilityAvailability languageAvailable(const WTF::String& language_tag);
 
  private:
   V8AICapabilityAvailability capability_availability_;

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ai/ai_summarizer_capabilities.h"
 
+#include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
+
 namespace blink {
 
 AISummarizerCapabilities::AISummarizerCapabilities(
@@ -14,10 +16,9 @@ void AISummarizerCapabilities::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-V8AICapabilityAvailability AISummarizerCapabilities::supportsInputLanguage(
+V8AICapabilityAvailability AISummarizerCapabilities::languageAvailable(
     const WTF::String& language_tag) {
-  constexpr char kLanguageTagEn[] = "en";
-  if (language_tag == kLanguageTagEn) {
+  if (language_tag == kAILanguageTagEn) {
     return V8AICapabilityAvailability(
         V8AICapabilityAvailability::Enum::kReadily);
   }

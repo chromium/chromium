@@ -8,8 +8,8 @@ promise_test(async () => {
   assert_true(capabilities.supportsType("tl;dr") == "readily");
   assert_true(capabilities.supportsFormat("plain-text") == "readily");
   assert_true(capabilities.supportsLength("long") == "readily");
-  assert_true(capabilities.supportsInputLanguage("en") == "readily");
-  assert_true(capabilities.supportsInputLanguage("es") == "no");
+  assert_true(capabilities.languageAvailable("en") == "readily");
+  assert_true(capabilities.languageAvailable("es") == "no");
 });
 
 promise_test(async () => {

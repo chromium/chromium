@@ -27,6 +27,7 @@ class AIAssistantCapabilities final : public ScriptWrappable {
   V8AICapabilityAvailability available() const {
     return capability_availability_;
   }
+  V8AICapabilityAvailability languageAvailable(WTF::String languageTag) const;
   std::optional<uint64_t> defaultTopK() const { return default_top_k_; }
   std::optional<uint64_t> maxTopK() const { return max_top_k_; }
   std::optional<float> defaultTemperature() const {

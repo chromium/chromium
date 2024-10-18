@@ -31,6 +31,7 @@ interface AIAssistantCapabilities
     getter defaultTopK
     getter maxTopK
     method constructor
+    method languageAvailable
 interface AIAssistantFactory
     attribute @@toStringTag
     method capabilities
@@ -78,8 +79,8 @@ interface AISummarizerCapabilities
     attribute @@toStringTag
     getter available
     method constructor
+    method languageAvailable
     method supportsFormat
-    method supportsInputLanguage
     method supportsLength
     method supportsType
 interface AISummarizerFactory

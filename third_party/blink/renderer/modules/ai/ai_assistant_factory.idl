@@ -14,6 +14,8 @@ enum AIAssistantPromptRole { "user", "assistant" };
 interface AIAssistantCapabilities {
   [Measure]
   readonly attribute AICapabilityAvailability available;
+  [Measure]
+  AICapabilityAvailability languageAvailable(DOMString languageTag);
 
   // Always null if available === "no"
   [Measure]
