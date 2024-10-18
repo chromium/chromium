@@ -105,29 +105,6 @@ void LogPriceDropMetrics(web::WebState* web_state) {
           .c_str()));
 }
 
-// Returns the Browser with `identifier` in its WebStateList. Returns `nullptr`
-// if not found.
-Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
-                                         web::WebStateID identifier,
-                                         bool is_otr_tab) {
-  const BrowserList::BrowserType browser_types =
-      is_otr_tab ? BrowserList::BrowserType::kIncognito
-                 : BrowserList::BrowserType::kRegularAndInactive;
-  std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
-  for (Browser* browser : browsers) {
-    WebStateList* web_state_list = browser->GetWebStateList();
-    int index = GetWebStateIndex(web_state_list,
-                                 WebStateSearchCriteria{
-                                     .identifier = identifier,
-                                     .pinned_state = PinnedState::kNonPinned,
-                                 });
-    if (index != WebStateList::kInvalidIndex) {
-      return browser;
-    }
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 @interface BaseGridMediator () <CRWWebStateObserver,
@@ -874,8 +851,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     // from the inactive browser - check inactive browser and other windows
     // before giving up.
     BrowserList* browserList = BrowserListFactory::GetForProfile(self.profile);
-    Browser* browser = GetBrowserForNonPinnedTabWithId(
-        browserList, itemID, self.profile->IsOffTheRecord());
+    Browser* browser = GetBrowserForTabWithCriteria(
+        browserList, searchCriteria, self.profile->IsOffTheRecord());
 
     if (!browser) {
       return;
@@ -1030,10 +1007,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 - (void)closeItemWithID:(web::WebStateID)itemID {
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
-  int index = GetWebStateIndex(self.webStateList,
-                               WebStateSearchCriteria{
-                                   .identifier = itemID,
-                               });
+  const WebStateSearchCriteria& searchCriteria = WebStateSearchCriteria{
+      .identifier = itemID,
+  };
+  int index = GetWebStateIndex(self.webStateList, searchCriteria);
   if (index != WebStateList::kInvalidIndex) {
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
     return;
@@ -1055,8 +1032,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       base::UserMetricsAction("MobileTabGridSearchCloseTabFromAnotherWindow"));
 
   BrowserList* browserList = BrowserListFactory::GetForProfile(self.profile);
-  Browser* browser = GetBrowserForNonPinnedTabWithId(
-      browserList, itemID, self.profile->IsOffTheRecord());
+  Browser* browser = GetBrowserForTabWithCriteria(
+      browserList, searchCriteria, self.profile->IsOffTheRecord());
 
   // If this tab is still associated with another browser, remove it from the
   // associated web state list.
@@ -1065,7 +1042,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     index = GetWebStateIndex(itemWebStateList,
                              WebStateSearchCriteria{
                                  .identifier = itemID,
-                                 .pinned_state = PinnedState::kNonPinned,
+                                 .pinned_state = PinnedState::kAny,
                              });
     itemWebStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
   }

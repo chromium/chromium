@@ -99,8 +99,9 @@
         // search can display all tabs from the same profile at the same time.
         // The selected tab is currently in a different web state list (inactive
         // tab, or tab from another window).
-        Browser* selectedTabBrowser = GetBrowserForTabWithId(
-            browserList, identifier, profile->IsOffTheRecord());
+        Browser* selectedTabBrowser = GetBrowserForTabWithCriteria(
+            browserList, WebStateSearchCriteria{.identifier = identifier},
+            profile->IsOffTheRecord());
         CHECK(browser);
         currentWebStateList = selectedTabBrowser->GetWebStateList();
         index =

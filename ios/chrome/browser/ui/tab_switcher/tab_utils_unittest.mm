@@ -61,8 +61,10 @@ TEST_F(TabSwitcherUtilsTest, GetTheCorrectBrowser) {
     BOOL incognito = profile->IsOffTheRecord();
     web::WebState* inserted_web_state = AddTabToBrowser(browser);
     ASSERT_EQ(browser,
-              GetBrowserForTabWithId(browser_list_.get(),
-                                     inserted_web_state->GetUniqueIdentifier(),
-                                     /*is_otr_tab*/ incognito));
+              GetBrowserForTabWithCriteria(
+                  browser_list_.get(),
+                  WebStateSearchCriteria{
+                      .identifier = inserted_web_state->GetUniqueIdentifier()},
+                  /*is_otr_tab*/ incognito));
   }
 }

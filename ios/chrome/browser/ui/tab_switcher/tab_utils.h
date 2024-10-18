@@ -17,10 +17,6 @@ class BrowserList;
 @class TabSwitcherItem;
 class WebStateList;
 
-namespace web {
-class WebStateID;
-}
-
 // Returns the TabItem object representing the tab with the given `criteria`.
 // Returns `nil` if the tab is not found.
 TabItem* GetTabItem(WebStateList* web_state_list,
@@ -33,10 +29,10 @@ bool HasDuplicateGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items);
 // Returns whether `items` has items with the same identifier.
 bool HasDuplicateIdentifiers(NSArray<TabSwitcherItem*>* items);
 
-// Returns the Browser with `identifier` in its WebStateList. Returns `nullptr`
-// if not found.
-Browser* GetBrowserForTabWithId(BrowserList* browser_list,
-                                web::WebStateID identifier,
-                                bool is_otr_tab);
+// Returns the Browser with a tab matching `criteria` in its WebStateList.
+// Returns `nullptr` if not found.
+Browser* GetBrowserForTabWithCriteria(BrowserList* browser_list,
+                                      WebStateSearchCriteria criteria,
+                                      bool is_otr_tab);
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_UTILS_H_

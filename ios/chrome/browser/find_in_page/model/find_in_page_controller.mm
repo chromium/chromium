@@ -152,8 +152,10 @@ NSString* gSearchTerm;
     BOOL incognito = profile->IsOffTheRecord();
     BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
 
-    Browser* browser = GetBrowserForTabWithId(
-        browserList, _webState->GetUniqueIdentifier(), incognito);
+    Browser* browser = GetBrowserForTabWithCriteria(
+        browserList,
+        WebStateSearchCriteria{.identifier = _webState->GetUniqueIdentifier()},
+        incognito);
     FullscreenController* fullscreenController =
         FullscreenController::FromBrowser(browser);
     fullscreenController->ExitFullscreen();
