@@ -2099,7 +2099,7 @@
             ]
         }
     ],
-    "AutofillI18nAddressModelITPL": [
+    "AutofillI18nAddressModelAndRegexesGEITPL": [
         {
             "platforms": [
                 "android",
@@ -2115,6 +2115,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AutofillGreekRegexes",
                         "AutofillUseITAddressModel",
                         "AutofillUsePLAddressModel"
                     ]
