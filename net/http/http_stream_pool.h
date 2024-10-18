@@ -204,6 +204,14 @@ class NET_EXPORT_PRIVATE HttpStreamPool
                   bool enable_ip_based_pooling,
                   bool enable_alternative_services);
 
+  // Returns the first quic::ParsedQuicVersion that has been advertised in
+  // `alternative_service_info` and is supported, following the order of
+  // `alternative_service_info.advertised_versions()`. Returns
+  // quic::ParsedQuicVersion::Unsupported() when the alternative service is
+  // not QUIC or no mutually supported version is found.
+  quic::ParsedQuicVersion SelectQuicVersion(
+      const AlternativeServiceInfo& alternative_service_info);
+
   // Returns true when there is an existing QUIC session for `stream_key` and
   // `quic_session_key`.
   bool CanUseExistingQuicSession(const HttpStreamKey& stream_key,

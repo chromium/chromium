@@ -91,13 +91,15 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     alternative_job_result_ = OK;
   }
 
+  quic::ParsedQuicVersion quic_version =
+      pool_->SelectQuicVersion(switching_info.alternative_service_info);
   origin_job_ = pool_->GetOrCreateGroup(stream_key)
                     .CreateJob(this, NextProto::kProtoUnknown,
                                switching_info.is_http1_allowed,
                                switching_info.proxy_info);
   origin_job_->Start(priority, allowed_bad_certs, respect_limits,
                      enable_ip_based_pooling, enable_alternative_services,
-                     switching_info.quic_version, net_log);
+                     quic_version, net_log);
 
   return request;
 }

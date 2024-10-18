@@ -39,6 +39,7 @@
 #include "net/socket/ssl_client_socket.h"
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_session.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -303,9 +304,10 @@ int HttpStreamPool::Preconnect(HttpStreamPoolSwitchingInfo switching_info,
     }
   }
 
+  quic::ParsedQuicVersion quic_version =
+      SelectQuicVersion(switching_info.alternative_service_info);
   return GetOrCreateGroup(stream_key)
-      .Preconnect(num_streams, switching_info.quic_version,
-                  std::move(callback));
+      .Preconnect(num_streams, quic_version, std::move(callback));
 }
 
 void HttpStreamPool::IncrementTotalIdleStreamCount() {
@@ -447,6 +449,15 @@ bool HttpStreamPool::CanUseQuic(const HttpStreamKey& stream_key,
   return enable_ip_based_pooling && enable_alternative_services &&
          GURL::SchemeIsCryptographic(stream_key.destination().scheme()) &&
          !RequiresHTTP11(stream_key) && !IsQuicBroken(stream_key);
+}
+
+quic::ParsedQuicVersion HttpStreamPool::SelectQuicVersion(
+    const AlternativeServiceInfo& alternative_service_info) {
+  if (alternative_service_info.protocol() != NextProto::kProtoQUIC) {
+    return quic::ParsedQuicVersion::Unsupported();
+  }
+  return http_network_session()->context().quic_context->SelectQuicVersion(
+      alternative_service_info.advertised_versions());
 }
 
 bool HttpStreamPool::CanUseExistingQuicSession(

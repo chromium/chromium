@@ -120,6 +120,8 @@ class StreamKeyBuilder {
     return *this;
   }
 
+  const url::SchemeHostPort& destination() const { return destination_; }
+
   StreamKeyBuilder& set_destination(std::string_view destination) {
     set_destination(url::SchemeHostPort(GURL(destination)));
     return *this;
@@ -165,7 +167,11 @@ class Preconnector {
   }
 
   Preconnector& set_quic_version(quic::ParsedQuicVersion quic_version) {
-    quic_version_ = quic_version;
+    AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                           key_builder_.destination().host(),
+                                           key_builder_.destination().port());
+    alternative_service_info_.set_alternative_service(alternative_service);
+    alternative_service_info_.set_advertised_versions({quic_version});
     return *this;
   }
 
@@ -174,8 +180,8 @@ class Preconnector {
   int Preconnect(HttpStreamPool& pool) {
     int rv = pool.Preconnect(
         HttpStreamPoolSwitchingInfo(GetStreamKey(), alternative_service_info_,
-                                    quic_version_, is_http1_allowed_,
-                                    load_flags_, proxy_info_),
+                                    is_http1_allowed_, load_flags_,
+                                    proxy_info_),
         num_streams_,
         base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
     if (rv != ERR_IO_PENDING) {
@@ -210,8 +216,6 @@ class Preconnector {
   size_t num_streams_ = 1;
 
   AlternativeServiceInfo alternative_service_info_;
-  quic::ParsedQuicVersion quic_version_ =
-      quic::ParsedQuicVersion::Unsupported();
   bool is_http1_allowed_ = true;
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
   int load_flags_ = 0;
@@ -288,7 +292,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   }
 
   StreamRequester& set_quic_version(quic::ParsedQuicVersion quic_version) {
-    quic_version_ = quic_version;
+    AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                           key_builder_.destination().host(),
+                                           key_builder_.destination().port());
+    alternative_service_info_.set_alternative_service(alternative_service);
+    alternative_service_info_.set_advertised_versions({quic_version});
     return *this;
   }
 
@@ -299,8 +307,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     request_ = pool.RequestStream(
         this,
         HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
-                                    quic_version_, is_http1_allowed_,
-                                    load_flags_, proxy_info_),
+                                    is_http1_allowed_, load_flags_,
+                                    proxy_info_),
         priority_, allowed_bad_certs_, enable_ip_based_pooling_,
         enable_alternative_services_, NetLogWithSource());
     return request_.get();
@@ -417,8 +425,6 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   int load_flags_ = 0;
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
   AlternativeServiceInfo alternative_service_info_;
-  quic::ParsedQuicVersion quic_version_ =
-      quic::ParsedQuicVersion::Unsupported();
 
   std::unique_ptr<HttpStreamRequest> request_;
 

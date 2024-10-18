@@ -850,17 +850,17 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
   alternative_service_info_ = GetAlternativeServiceInfoFor(
       http_request_info_url_, request_info_, delegate_, stream_type_);
 
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3) &&
+      proxy_info_.is_direct() && !is_websocket_) {
+    SwitchToHttpStreamPool();
+    return OK;
+  }
+
   quic::ParsedQuicVersion quic_version = quic::ParsedQuicVersion::Unsupported();
   if (alternative_service_info_.protocol() == kProtoQUIC) {
     quic_version =
         SelectQuicVersion(alternative_service_info_.advertised_versions());
     DCHECK_NE(quic_version, quic::ParsedQuicVersion::Unsupported());
-  }
-
-  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3) &&
-      proxy_info_.is_direct() && !is_websocket_) {
-    SwitchToHttpStreamPool(quic_version);
-    return OK;
   }
 
   // Getting ALPN for H3 from DNS has a lot of preconditions. Among them:
@@ -1488,8 +1488,7 @@ bool HttpStreamFactory::JobController::IsQuicAllowedForHost(
   return base::Contains(host_allowlist, lowered_host);
 }
 
-void HttpStreamFactory::JobController::SwitchToHttpStreamPool(
-    quic::ParsedQuicVersion quic_version) {
+void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
   CHECK(request_info_.socket_tag == SocketTag());
   CHECK_EQ(stream_type_, HttpStreamRequest::HTTP_STREAM);
 
@@ -1505,7 +1504,6 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool(
   if (is_preconnect_) {
     int rv = session_->http_stream_pool()->Preconnect(
         HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
-                                    quic_version,
                                     request_info_.is_http1_allowed,
                                     request_info_.load_flags, proxy_info_),
         num_streams_,
@@ -1523,7 +1521,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool(
       FROM_HERE,
       base::BindOnce(&JobController::CallOnSwitchesToHttpStreamPool,
                      ptr_factory_.GetWeakPtr(), std::move(stream_key),
-                     alternative_service_info_, quic_version));
+                     alternative_service_info_));
 }
 
 void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
@@ -1534,15 +1532,14 @@ void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
 
 void HttpStreamFactory::JobController::CallOnSwitchesToHttpStreamPool(
     HttpStreamKey stream_key,
-    AlternativeServiceInfo alternative_service_info,
-    quic::ParsedQuicVersion quic_version) {
+    AlternativeServiceInfo alternative_service_info) {
   CHECK(request_);
   CHECK(delegate_);
 
   // `request_` and `delegate_` will be reset later.
 
   delegate_->OnSwitchesToHttpStreamPool(HttpStreamPoolSwitchingInfo(
-      std::move(stream_key), std::move(alternative_service_info), quic_version,
+      std::move(stream_key), std::move(alternative_service_info),
       request_info_.is_http1_allowed, request_info_.load_flags, proxy_info_));
 }
 
