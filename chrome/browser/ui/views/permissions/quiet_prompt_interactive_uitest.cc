@@ -232,11 +232,11 @@ IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
       PressButton(PermissionChipView::kElementIdForTesting),
       WaitForShow(ContentSettingBubbleContents::kMainElementId),
       CheckQuietPromptMessage(
-          IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION),
+          IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
       ScreenshotSurface(ContentSettingBubbleContents::kMainElementId,
-                        "QuietPromptPopupBubble", "5875965"));
+                        "QuietPromptPopupBubble", "5934206"));
 }
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
@@ -328,11 +328,11 @@ IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
       PressButton(PermissionChipView::kElementIdForTesting),
       WaitForShow(ContentSettingBubbleContents::kMainElementId),
       CheckQuietPromptMessage(
-          IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION),
+          IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
       ScreenshotSurface(ContentSettingBubbleContents::kMainElementId,
-                        "QuietPromptPopupBubble", "5875965"));
+                        "QuietPromptPopupBubble", "5934206"));
 }
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
