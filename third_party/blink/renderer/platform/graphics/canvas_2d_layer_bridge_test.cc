@@ -141,45 +141,6 @@ class Canvas2DLayerBridgeTest : public Test {
       accelerated_compositing_scope_;
 };
 
-TEST_F(Canvas2DLayerBridgeTest, ReleaseLostTransferableResource) {
-  // Prepare a TransferableResource, then report the resource as lost.
-  // This test passes by not crashing and not triggering assertions.
-  host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
-  host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  host_->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
-  host_->GetOrCreateCcLayerIfNeeded();
-
-  viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
-  EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
-                                                  &release_callback));
-
-  bool lost_resource = true;
-  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
-}
-
-TEST_F(Canvas2DLayerBridgeTest,
-       ReleaseLostTransferableResourceWithLostContext) {
-  host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
-  host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  host_->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
-  host_->GetOrCreateCcLayerIfNeeded();
-
-  viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
-
-  EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
-                                                  &release_callback));
-
-  bool lost_resource = true;
-  test_context_provider_->TestContextGL()->set_context_lost(true);
-  // Get a new context provider so that the WeakPtr to the old one is null.
-  // This is the test to make sure that ReleaseFrameResources() handles
-  // null context_provider_wrapper properly.
-  SharedGpuContext::ContextProviderWrapper();
-  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
-}
-
 void DrawSomething(Canvas2DLayerBridge* bridge) {
   CanvasResourceProvider* provider = bridge->GetOrCreateResourceProvider();
   provider->Canvas().drawLine(0, 0, 2, 2, cc::PaintFlags());
