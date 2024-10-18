@@ -266,6 +266,8 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
     return;
   }
 
+  // Log is consumed by E2E tests. Please CC potassium-engprod@google.com if you
+  // have to change this log.
   VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size()
           << " tokens for proxy " << int(proxy_layer_);
   try_get_auth_tokens_after_ = base::Time();

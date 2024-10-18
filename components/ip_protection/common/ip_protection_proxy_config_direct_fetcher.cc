@@ -190,7 +190,9 @@ IpProtectionProxyConfigDirectFetcher::GetProxyListFromProxyConfigResponse(
     }
   }
 
-  VLOG(2) << "IPATP::GetProxyConfig got proxy list of length "
+  // Log is consumed by E2E tests. Please CC potassium-engprod@google.com if you
+  // have to change this log.
+  VLOG(2) << "IPATP::GetProxyList got proxy list of length "
           << proxy_list.size();
 
   return proxy_list;

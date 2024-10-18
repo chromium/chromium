@@ -116,6 +116,8 @@ void MaskedDomainListComponentInstallerPolicy::ComponentReady(
     return;
   }
 
+  // Log is consumed by E2E tests. Please CC potassium-engprod@google.com if you
+  // have to change this log.
   VLOG(1) << "Masked Domain List Component ready, version "
           << version.GetString() << " in " << install_dir.value();
 
