@@ -1348,13 +1348,7 @@ TEST_F(MLGraphTest, CreateWebNNTensorTest) {
   tensor_tester.WaitUntilSettled();
   EXPECT_TRUE(tensor_tester.IsFulfilled());
 
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
   MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
-
   ASSERT_THAT(ml_tensor, testing::NotNull());
   EXPECT_EQ(ml_tensor->dataType(), desc->dataType());
   EXPECT_EQ(ml_tensor->shape(), desc->shape());
@@ -1387,13 +1381,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   tensor_tester.WaitUntilSettled();
   EXPECT_TRUE(tensor_tester.IsFulfilled());
 
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
   MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
-
   ASSERT_THAT(ml_tensor, testing::NotNull());
 
   const std::array<const uint8_t, kTensorSize> input_data = {0xAA, 0xAA, 0xAA,
@@ -1480,13 +1468,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
   tensor_tester.WaitUntilSettled();
   EXPECT_TRUE(tensor_tester.IsFulfilled());
 
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
   MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
-
   ASSERT_THAT(ml_tensor, testing::NotNull());
 
   ml_tensor->destroy();
@@ -1523,14 +1505,8 @@ TEST_F(MLGraphTest, ReadWebNNTensorThenDestroyTest) {
   create_tensor_tester.WaitUntilSettled();
   EXPECT_TRUE(create_tensor_tester.IsFulfilled());
 
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
   MLTensor* ml_tensor =
       V8ToObject<MLTensor>(&scope, create_tensor_tester.Value());
-
   ASSERT_THAT(ml_tensor, testing::NotNull());
 
   ml_tensor->destroy();
@@ -1569,15 +1545,8 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
       BuildGraph(scope, builder, {{"output", output_operand}});
   ASSERT_THAT(graph, testing::NotNull());
 
-  // Check if MLTensor is supported.
   MLTensor* input_tensor =
       CreateMLTensorForOperand(scope, ml_context, lhs_operand);
-
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
   ASSERT_THAT(input_tensor, testing::NotNull());
 
   MLNamedTensors inputs(
