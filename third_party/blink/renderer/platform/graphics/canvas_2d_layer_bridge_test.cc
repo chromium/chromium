@@ -141,59 +141,40 @@ class Canvas2DLayerBridgeTest : public Test {
       accelerated_compositing_scope_;
 };
 
-TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
-  // Prepare a mailbox, then report the resource as lost.
+TEST_F(Canvas2DLayerBridgeTest, ReleaseLostTransferableResource) {
+  // Prepare a TransferableResource, then report the resource as lost.
   // This test passes by not crashing and not triggering assertions.
-  {
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-    viz::TransferableResource resource;
-    viz::ReleaseCallback release_callback;
-    EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
-                                                    &release_callback));
+  host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
+  host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  host_->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  host_->GetOrCreateCcLayerIfNeeded();
 
-    bool lost_resource = true;
-    std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
-  }
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+  EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
+                                                  &release_callback));
 
-  // Retry with mailbox released while bridge destruction is in progress.
-  {
-    viz::TransferableResource resource;
-    viz::ReleaseCallback release_callback;
-
-    {
-      std::unique_ptr<Canvas2DLayerBridge> bridge = MakeBridge(
-          gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-      Host()->PrepareTransferableResource(nullptr, &resource,
-                                          &release_callback);
-      // |bridge| goes out of scope and would normally be destroyed, but
-      // object is kept alive by self references.
-    }
-
-    // This should cause the bridge to be destroyed.
-    bool lost_resource = true;
-    // Before fixing crbug.com/411864, the following line would cause a memory
-    // use after free that sometimes caused a crash in normal builds and
-    // crashed consistently with ASAN.
-    std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
-  }
+  bool lost_resource = true;
+  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
 }
 
-TEST_F(Canvas2DLayerBridgeTest, ReleaseCallbackWithNullContextProviderWrapper) {
+TEST_F(Canvas2DLayerBridgeTest,
+       ReleaseLostTransferableResourceWithLostContext) {
+  host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
+  host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  host_->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  host_->GetOrCreateCcLayerIfNeeded();
+
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
 
-  {
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-    EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
-                                                    &release_callback));
-  }
+  EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
+                                                  &release_callback));
 
   bool lost_resource = true;
   test_context_provider_->TestContextGL()->set_context_lost(true);
   // Get a new context provider so that the WeakPtr to the old one is null.
-  // This is the test to make sure that ReleaseMailboxImageResource() handles
+  // This is the test to make sure that ReleaseFrameResources() handles
   // null context_provider_wrapper properly.
   SharedGpuContext::ContextProviderWrapper();
   std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
