@@ -392,7 +392,8 @@ void DoParseAfterNonSpecialScheme(const CHAR* spec,
   // are many subtle differences. So we have a different function for parsing
   // non-special URLs.
 
-  int num_slashes = CountConsecutiveSlashes(spec, after_scheme, spec_len);
+  int num_slashes = CountConsecutiveSlashesButNotCountBackslashes(
+      spec, after_scheme, spec_len);
 
   if (num_slashes >= 2) {
     // Found "//<some data>", looks like an authority section.
