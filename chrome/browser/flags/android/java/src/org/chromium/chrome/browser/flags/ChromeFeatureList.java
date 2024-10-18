@@ -514,6 +514,7 @@ public abstract class ChromeFeatureList {
             "TabWindowManagerIndexReassignmentActivityNotInAppTasks";
     public static final String TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH =
             "TabWindowManagerReportIndicesMismatch";
+    public static final String TASK_MANAGER_CLANK = "TaskManagerClank";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TINKER_TANK_BOTTOM_SHEET = "TinkerTankBottomSheet";

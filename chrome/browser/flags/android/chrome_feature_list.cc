@@ -18,6 +18,7 @@
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome_feature_list.h"
@@ -144,6 +145,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kSafetyHubFollowup,
     &features::kSafetyHubMagicStack,
     &features::kSafetyHubWeakAndReusedPasswords,
+    &features::kTaskManagerClank,
     &features::kQuietNotificationPrompts,
     &features::kWebNfc,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
