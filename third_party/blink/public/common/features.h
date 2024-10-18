@@ -1002,8 +1002,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // If enabled, LCPP learns with additional first-level-path key to origin.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPMultipleKey);
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLCPPMultipleKeyMaxPathLength;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                               kLCPPMultipleKeyMaxPathLength);
 
 // The type of LCPP Multiple Key Database.
 enum class LcppMultipleKeyTypes {
@@ -1033,30 +1033,37 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPPrefetchSubresource);
 // If enabled, prewarm HTTP disk cache based on the previous navigation.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHttpDiskCachePrewarming);
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kHttpDiskCachePrewarmingMaxUrlLength;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kHttpDiskCachePrewarmingMaxUrlLength);
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kHttpDiskCachePrewarmingHistorySize;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kHttpDiskCachePrewarmingHistorySize);
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kHttpDiskCachePrewarmingReprewarmPeriod;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kHttpDiskCachePrewarmingReprewarmPeriod);
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kHttpDiskCachePrewarmingTriggerOnNavigation;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kHttpDiskCachePrewarmingTriggerOnNavigation);
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kHttpDiskCachePrewarmingTriggerOnPointerDownOrHover;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kHttpDiskCachePrewarmingTriggerOnPointerDownOrHover);
 
 // This feature needs to be used in combination with the
 // network::kSimpleURLLoaderUseReadAndDiscardBodyOption feature in order to
 // discard the response body efficiently inside the network service.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kHttpDiskCachePrewarmingUseReadAndDiscardBodyOption;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kHttpDiskCachePrewarmingUseReadAndDiscardBodyOption);
 
 // If true, avoid prewarming HttpDiskCache during the browser startup.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kHttpDiskCachePrewarmingSkipDuringBrowserStartup;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kHttpDiskCachePrewarmingSkipDuringBrowserStartup);
 
 // Kill-switch for new parsing behaviour of the X-Content-Type-Options header.
 // (Should be removed after the new behaviour has been launched.)
@@ -1077,8 +1084,8 @@ enum class LinkPreviewTriggerType {
   kLongPress,
 };
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<LinkPreviewTriggerType>
-    kLinkPreviewTriggerType;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(LinkPreviewTriggerType,
+                                               kLinkPreviewTriggerType);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLoadingTasksUnfreezable);
 
@@ -1097,8 +1104,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowLatencyWebGLImageChromium);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityAsyncScriptExecution);
 // The timeout value for kLowPriorityAsyncScriptExecution. Async scripts run on
 // lower priority queue until this timeout elapsed.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kTimeoutForLowPriorityAsyncScriptExecution;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kTimeoutForLowPriorityAsyncScriptExecution);
 // kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
 // than |low_pri_async_exec_feature_limit|. Zero value means no limit.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
@@ -1131,12 +1139,12 @@ enum class AsyncScriptPrioritisationType {
   kLow,
   kBestEffort,
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    AsyncScriptPrioritisationType>
-    kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    AsyncScriptExperimentalSchedulingTarget>
-    kLowPriorityAsyncScriptExecutionTargetParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    AsyncScriptPrioritisationType,
+    kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    AsyncScriptExperimentalSchedulingTarget,
+    kLowPriorityAsyncScriptExecutionTargetParam);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kLowPriorityAsyncScriptExecutionExcludeNonParserInsertedParam);
@@ -1161,6 +1169,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kLowPriorityScriptLoadingFeatureLimitParam);
+// Note: declared without BASE_DECLARE_FEATURE_PARAM because the production code
+// gets this value only once to construct static local instance.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kLowPriorityScriptLoadingDenyListParam;
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
@@ -1189,8 +1199,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMHTML_Improvements);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMixedContentAutoupgrade);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNavigationPredictor);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kPredictorTrafficClientEnabledPercent;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kPredictorTrafficClientEnabledPercent);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kNavigationPredictorNewViewportFeatures);
 
@@ -1232,8 +1243,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPlzDedicatedWorker);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDedicatedWorkerAblationStudyEnabled);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kDedicatedWorkerStartDelayInMs;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kDedicatedWorkerStartDelayInMs);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseAncestorRenderFrameForWorker);
 
@@ -1266,8 +1277,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreInitializePageAndFrameForSVGImage);
 
 // The max count of Pages and Frames that will be prepared.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxCountOfPreInitializePageAndFrameForSVGImage;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kMaxCountOfPreInitializePageAndFrameForSVGImage);
 
 // If enabled, inline scripts will be stream compiled using a background HTML
 // scanner.

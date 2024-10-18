@@ -320,9 +320,8 @@ void LCPCriticalPathPredictor::OnStartPreload(
   if (!url.ProtocolIsInHTTPFamily()) {
     return;
   }
-  static size_t max_url_length = base::checked_cast<size_t>(
-      features::kHttpDiskCachePrewarmingMaxUrlLength.Get());
-  if (url.GetString().length() > max_url_length) {
+  if (url.GetString().length() >
+      features::kHttpDiskCachePrewarmingMaxUrlLength.Get()) {
     return;
   }
   Document* document = frame_->GetDocument();

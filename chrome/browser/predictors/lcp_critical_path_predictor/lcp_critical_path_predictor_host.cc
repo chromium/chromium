@@ -154,9 +154,8 @@ void LCPCriticalPathPredictorHost::NotifyFetchedSubresource(
         "subresource load start must not be negative value.");
     return;
   }
-  static size_t max_url_length = base::checked_cast<size_t>(
-      blink::features::kHttpDiskCachePrewarmingMaxUrlLength.Get());
-  if (subresource_url.spec().length() > max_url_length) {
+  if (subresource_url.spec().length() >
+      blink::features::kHttpDiskCachePrewarmingMaxUrlLength.Get()) {
     // The size can be different between KURL and GURL, not reporting
     // bad message.
     return;

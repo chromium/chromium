@@ -590,9 +590,7 @@ bool IsValidLcpUrlsHistogram(
 }
 
 size_t GetLCPPMultipleKeyMaxPathLength() {
-  static const size_t max_length = base::checked_cast<size_t>(
-      blink::features::kLCPPMultipleKeyMaxPathLength.Get());
-  return max_length;
+  return blink::features::kLCPPMultipleKeyMaxPathLength.Get();
 }
 
 bool IsKeyLengthValidForMultipleKey(const std::string& host,

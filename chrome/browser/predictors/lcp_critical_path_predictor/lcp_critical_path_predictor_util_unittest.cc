@@ -1107,9 +1107,7 @@ TEST(LcppKeyTest, InvalidURLs) {
 }
 
 size_t GetLCPPMultipleKeyMaxPathLength() {
-  static const size_t max_length = base::checked_cast<size_t>(
-      blink::features::kLCPPMultipleKeyMaxPathLength.Get());
-  return max_length;
+  return blink::features::kLCPPMultipleKeyMaxPathLength.Get();
 }
 
 TEST(LcppMultipleKeyTest, GetFirstLevelPath) {
@@ -1776,8 +1774,7 @@ TEST_P(LcppMultipleKeyTest, LearnURL) {
   const std::string long_host =
       std::string(ResourcePrefetchPredictorTables::kMaxStringLength - 10, 'a') +
       ".test";
-  const size_t max_path_length = base::checked_cast<size_t>(
-      blink::features::kLCPPMultipleKeyMaxPathLength.Get());
+  const size_t max_path_length = GetLCPPMultipleKeyMaxPathLength();
   const std::string long_path = "/" + std::string(max_path_length - 1, 'b');
   const std::string too_long_path =
       "/" + std::string(max_path_length + 1, 'c') + "/bar";

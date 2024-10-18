@@ -1549,8 +1549,11 @@ BASE_FEATURE(kLCPPMultipleKey,
              "LCPPMultipleKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kLCPPMultipleKeyMaxPathLength{
-    &kLCPPMultipleKey, "lcpp_multiple_key_max_path_length", 15};
+BASE_FEATURE_PARAM(size_t,
+                   kLCPPMultipleKeyMaxPathLength,
+                   &kLCPPMultipleKey,
+                   "lcpp_multiple_key_max_path_length",
+                   15);
 
 const base::FeatureParam<LcppMultipleKeyTypes>::Option
     lcpp_multiple_key_types[] = {
@@ -1585,35 +1588,49 @@ BASE_FEATURE(kHttpDiskCachePrewarming,
              "HttpDiskCachePrewarming",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kHttpDiskCachePrewarmingMaxUrlLength{
-    &kHttpDiskCachePrewarming, "http_disk_cache_prewarming_max_url_length",
-    1024};
+BASE_FEATURE_PARAM(size_t,
+                   kHttpDiskCachePrewarmingMaxUrlLength,
+                   &kHttpDiskCachePrewarming,
+                   "http_disk_cache_prewarming_max_url_length",
+                   1024);
 
-const base::FeatureParam<int> kHttpDiskCachePrewarmingHistorySize{
-    &kHttpDiskCachePrewarming, "http_disk_cache_prewarming_history_size", 1024};
+BASE_FEATURE_PARAM(int,
+                   kHttpDiskCachePrewarmingHistorySize,
+                   &kHttpDiskCachePrewarming,
+                   "http_disk_cache_prewarming_history_size",
+                   1024);
 
-const base::FeatureParam<base::TimeDelta>
-    kHttpDiskCachePrewarmingReprewarmPeriod{
-        &kHttpDiskCachePrewarming,
-        "http_disk_cache_prewarming_reprewarm_period", base::Minutes(10)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kHttpDiskCachePrewarmingReprewarmPeriod,
+                   &kHttpDiskCachePrewarming,
+                   "http_disk_cache_prewarming_reprewarm_period",
+                   base::Minutes(10));
 
-const base::FeatureParam<bool> kHttpDiskCachePrewarmingTriggerOnNavigation{
+BASE_FEATURE_PARAM(bool,
+                   kHttpDiskCachePrewarmingTriggerOnNavigation,
+                   &kHttpDiskCachePrewarming,
+                   "http_disk_cache_prewarming_trigger_on_navigation",
+                   true);
+
+BASE_FEATURE_PARAM(
+    bool,
+    kHttpDiskCachePrewarmingTriggerOnPointerDownOrHover,
     &kHttpDiskCachePrewarming,
-    "http_disk_cache_prewarming_trigger_on_navigation", true};
+    "http_disk_cache_prewarming_trigger_on_pointer_down_or_hover",
+    true);
 
-const base::FeatureParam<bool>
-    kHttpDiskCachePrewarmingTriggerOnPointerDownOrHover{
-        &kHttpDiskCachePrewarming,
-        "http_disk_cache_prewarming_trigger_on_pointer_down_or_hover", true};
-
-const base::FeatureParam<bool>
-    kHttpDiskCachePrewarmingUseReadAndDiscardBodyOption{
-        &kHttpDiskCachePrewarming,
-        "http_disk_cache_prewarming_use_read_and_discard_body_option", false};
-
-const base::FeatureParam<bool> kHttpDiskCachePrewarmingSkipDuringBrowserStartup{
+BASE_FEATURE_PARAM(
+    bool,
+    kHttpDiskCachePrewarmingUseReadAndDiscardBodyOption,
     &kHttpDiskCachePrewarming,
-    "http_disk_cache_prewarming_skip_during_browser_startup", true};
+    "http_disk_cache_prewarming_use_read_and_discard_body_option",
+    false);
+
+BASE_FEATURE_PARAM(bool,
+                   kHttpDiskCachePrewarmingSkipDuringBrowserStartup,
+                   &kHttpDiskCachePrewarming,
+                   "http_disk_cache_prewarming_skip_during_browser_startup",
+                   true);
 
 BASE_FEATURE(kLegacyParsingOfXContentTypeOptions,
              "LegacyParsingOfXContentTypeOptions",
@@ -1636,9 +1653,12 @@ constexpr base::FeatureParam<LinkPreviewTriggerType>::Option
         {LinkPreviewTriggerType::kAltClick, "alt_click"},
         {LinkPreviewTriggerType::kAltHover, "alt_hover"},
         {LinkPreviewTriggerType::kLongPress, "long_press"}};
-const base::FeatureParam<LinkPreviewTriggerType> kLinkPreviewTriggerType{
-    &kLinkPreview, "trigger_type", LinkPreviewTriggerType::kAltHover,
-    &link_preview_trigger_type_options};
+BASE_FEATURE_ENUM_PARAM(LinkPreviewTriggerType,
+                        kLinkPreviewTriggerType,
+                        &kLinkPreview,
+                        "trigger_type",
+                        LinkPreviewTriggerType::kAltHover,
+                        &link_preview_trigger_type_options);
 
 // A feature to control whether the loading phase should be extended beyond
 // First Meaningful Paint by a configurable buffer.
@@ -1684,10 +1704,11 @@ BASE_FEATURE(kLowPriorityAsyncScriptExecution,
              "LowPriorityAsyncScriptExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<base::TimeDelta>
-    kTimeoutForLowPriorityAsyncScriptExecution{
-        &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_timeout",
-        base::Milliseconds(0)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTimeoutForLowPriorityAsyncScriptExecution,
+                   &kLowPriorityAsyncScriptExecution,
+                   "low_pri_async_exec_timeout",
+                   base::Milliseconds(0));
 
 // kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
 // than |low_pri_async_exec_feature_limit|. Zero value means no limit.
@@ -1734,19 +1755,20 @@ const base::FeatureParam<AsyncScriptPrioritisationType>::Option
         {AsyncScriptPrioritisationType::kLow, "low"},
         {AsyncScriptPrioritisationType::kBestEffort, "best_effort"},
 };
-const base::FeatureParam<AsyncScriptPrioritisationType>
-    kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam{
-        &kLowPriorityAsyncScriptExecution,
-        "low_pri_async_exec_lower_task_priority",
-        AsyncScriptPrioritisationType::kBestEffort,
-        &async_script_prioritisation_types};
+BASE_FEATURE_ENUM_PARAM(AsyncScriptPrioritisationType,
+                        kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam,
+                        &kLowPriorityAsyncScriptExecution,
+                        "low_pri_async_exec_lower_task_priority",
+                        AsyncScriptPrioritisationType::kBestEffort,
+                        &async_script_prioritisation_types);
 // kLowPriorityAsyncScriptExecution will change evaluation schedule for the
 // specified target.
-const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>
-    kLowPriorityAsyncScriptExecutionTargetParam{
-        &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_target",
-        AsyncScriptExperimentalSchedulingTarget::kBoth,
-        &async_script_experimental_scheduling_targets};
+BASE_FEATURE_ENUM_PARAM(AsyncScriptExperimentalSchedulingTarget,
+                        kLowPriorityAsyncScriptExecutionTargetParam,
+                        &kLowPriorityAsyncScriptExecution,
+                        "low_pri_async_exec_target",
+                        AsyncScriptExperimentalSchedulingTarget::kBoth,
+                        &async_script_experimental_scheduling_targets);
 // If true, kLowPriorityAsyncScriptExecution will not change the script
 // evaluation timing for the non parser inserted script.
 BASE_FEATURE_PARAM(
@@ -1851,14 +1873,16 @@ BASE_FEATURE(kMHTML_Improvements,
 BASE_FEATURE(kNavigationPredictor,
              "NavigationPredictor",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kPredictorTrafficClientEnabledPercent{
-    &kNavigationPredictor, "traffic_client_enabled_percent",
+BASE_FEATURE_PARAM(int,
+                   kPredictorTrafficClientEnabledPercent,
+                   &kNavigationPredictor,
+                   "traffic_client_enabled_percent",
 #if BUILDFLAG(IS_ANDROID)
-    100
+                   100
 #else
-    5
+                   5
 #endif
-};
+);
 
 // Used to control the collection of new viewport related anchor element
 // metrics. Metrics will not be recorded if either this or kNavigationPredictor
@@ -1942,8 +1966,11 @@ BASE_FEATURE(kDedicatedWorkerAblationStudyEnabled,
              "DedicatedWorkerAblationStudyEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kDedicatedWorkerStartDelayInMs = {
-    &kDedicatedWorkerAblationStudyEnabled, "DedicatedWorkerStartDelayInMs", 0};
+BASE_FEATURE_PARAM(int,
+                   kDedicatedWorkerStartDelayInMs,
+                   &kDedicatedWorkerAblationStudyEnabled,
+                   "DedicatedWorkerStartDelayInMs",
+                   0);
 
 BASE_FEATURE(kUseAncestorRenderFrameForWorker,
              "UseAncestorRenderFrameForWorker",
@@ -1953,9 +1980,11 @@ BASE_FEATURE(kPreInitializePageAndFrameForSVGImage,
              "PreInitializePageAndFrameForSVGImage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<int>
-    kMaxCountOfPreInitializePageAndFrameForSVGImage{
-        &kPreInitializePageAndFrameForSVGImage, "max_pre_initialize_count", 5};
+BASE_FEATURE_PARAM(int,
+                   kMaxCountOfPreInitializePageAndFrameForSVGImage,
+                   &kPreInitializePageAndFrameForSVGImage,
+                   "max_pre_initialize_count",
+                   5);
 
 BASE_FEATURE(kPrecompileInlineScripts,
              "PrecompileInlineScripts",

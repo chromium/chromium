@@ -97,7 +97,7 @@ void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   // Avoid making network service to be more busy during the browser startup.
-  static const bool skip_during_browser_startup =
+  const bool skip_during_browser_startup =
       blink::features::kHttpDiskCachePrewarmingSkipDuringBrowserStartup.Get();
   if (skip_during_browser_startup &&
       !AfterStartupTaskUtils::IsBrowserStartupComplete()) {
