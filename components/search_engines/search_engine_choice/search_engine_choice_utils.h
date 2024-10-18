@@ -98,7 +98,7 @@ enum class SearchEngineChoiceScreenConditions {
 
   kMaxValue = kUsingPersistedGuestSessionChoice,
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchEngineChoiceScreenConditions)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceScreenConditions)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -133,7 +133,7 @@ enum class SearchEngineChoiceScreenEvents {
   kProfileCreationMoreButtonClicked = 12,
   kMaxValue = kProfileCreationMoreButtonClicked,
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchEngineChoiceScreenEvents)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceScreenEvents)
 
 // The cause for wiping the search engine choice preferences. Only used for
 // metrics.

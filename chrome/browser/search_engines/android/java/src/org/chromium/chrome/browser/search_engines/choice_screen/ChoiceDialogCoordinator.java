@@ -247,7 +247,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         int SUPPRESSED_DARK_LAUNCH = 1;
         int SUPPRESSED_ESCAPE_HATCH = 2;
         int COUNT = 3;
-        // LINT.ThenChange(//tools/metrics/histograms/enums.xml:OsDefaultsChoiceDialogSuppressionStatus)
+        // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:OsDefaultsChoiceDialogSuppressionStatus)
     }
 
     @DialogSuppressionStatus

@@ -80,7 +80,7 @@ class ChoiceDialogMediator {
         int COUNT = 4;
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/enums.xml:OsDefaultsChoiceDialogStatus)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:OsDefaultsChoiceDialogStatus)
 
     /** See {@link #startObserving}. */
     interface Delegate {
