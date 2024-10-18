@@ -37,9 +37,6 @@ class ChromeExtensionTestNotificationObserver
   // Waits for the number of visible page actions to change to |count|.
   bool WaitForPageActionVisibilityChangeTo(int count);
 
-  // Waits for all extension views to load.
-  bool WaitForExtensionViewsToLoad();
-
   // Waits for extension to be idle.
   bool WaitForExtensionIdle(const ExtensionId& extension_id);
 

@@ -37,6 +37,9 @@ class ExtensionTestNotificationObserver {
 
   ~ExtensionTestNotificationObserver();
 
+  // Waits for all extension views to load.
+  bool WaitForExtensionViewsToLoad();
+
  protected:
   class NotificationSet : public extensions::ProcessManagerObserver {
    public:

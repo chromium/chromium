@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "extensions/test/extension_test_notification_observer.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <set>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -19,6 +20,18 @@
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
+namespace {
+
+bool HaveAllExtensionRenderFrameHostsFinishedLoading(ProcessManager* manager) {
+  for (content::RenderFrameHost* host : manager->GetAllFrames()) {
+    if (content::WebContents::FromRenderFrameHost(host)->IsLoading()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // NotificationSet::ForwardingWebContentsObserver
@@ -101,6 +114,20 @@ ExtensionTestNotificationObserver::ExtensionTestNotificationObserver(
 
 ExtensionTestNotificationObserver::~ExtensionTestNotificationObserver() =
     default;
+
+bool ExtensionTestNotificationObserver::WaitForExtensionViewsToLoad() {
+  // Some views might not be created yet. This call may become insufficient if
+  // e.g. implementation of ExtensionHostQueue changes.
+  base::RunLoop().RunUntilIdle();
+
+  ProcessManager* manager = ProcessManager::Get(context_);
+  NotificationSet notification_set(manager);
+  WaitForCondition(
+      base::BindRepeating(&HaveAllExtensionRenderFrameHostsFinishedLoading,
+                          manager),
+      &notification_set);
+  return true;
+}
 
 void ExtensionTestNotificationObserver::WaitForCondition(
     const ConditionCallback& condition,

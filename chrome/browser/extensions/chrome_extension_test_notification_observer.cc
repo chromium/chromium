@@ -30,14 +30,6 @@ bool HasPageActionVisibilityReachedTarget(
          target_visible_page_action_count;
 }
 
-bool HaveAllExtensionRenderFrameHostsFinishedLoading(ProcessManager* manager) {
-  for (content::RenderFrameHost* host : manager->GetAllFrames()) {
-    if (content::WebContents::FromRenderFrameHost(host)->IsLoading())
-      return false;
-  }
-  return true;
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,20 +67,6 @@ bool ChromeExtensionTestNotificationObserver::
   WaitForCondition(base::BindRepeating(&HasPageActionVisibilityReachedTarget,
                                        browser_, count),
                    nullptr);
-  return true;
-}
-
-bool ChromeExtensionTestNotificationObserver::WaitForExtensionViewsToLoad() {
-  // Some views might not be created yet. This call may become insufficient if
-  // e.g. implementation of ExtensionHostQueue changes.
-  base::RunLoop().RunUntilIdle();
-
-  ProcessManager* manager = ProcessManager::Get(GetBrowserContext());
-  NotificationSet notification_set(manager);
-  WaitForCondition(
-      base::BindRepeating(&HaveAllExtensionRenderFrameHostsFinishedLoading,
-                          manager),
-      &notification_set);
   return true;
 }
 
