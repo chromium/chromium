@@ -14,8 +14,8 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
@@ -45,12 +45,13 @@ std::optional<optimization_guide::proto::Any> CreateModelMetadata() {
 AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     optimization_guide::proto::OptimizationTarget optimization_target)
-    : optimization_guide::ModelHandler<AutofillModelEncoder::ModelOutput,
-                                       const AutofillModelEncoder::ModelInput&>(
+    : optimization_guide::ModelHandler<
+          FieldClassificationModelEncoder::ModelOutput,
+          const FieldClassificationModelEncoder::ModelInput&>(
           model_provider,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
-          std::make_unique<AutofillModelExecutor>(),
+          std::make_unique<FieldClassificationModelExecutor>(),
           /*model_inference_timeout=*/std::nullopt,
           optimization_target,
           CreateModelMetadata()),
@@ -72,14 +73,15 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
     std::move(callback).Run(std::move(form_structure));
     return;
   }
-  AutofillModelEncoder::ModelInput encoded_input =
+  FieldClassificationModelEncoder::ModelInput encoded_input =
       state_->encoder.EncodeForm(*form_structure);
   ExecuteModelWithInput(
       base::BindOnce(
           [](base::WeakPtr<AutofillMlPredictionModelHandler> self,
              std::unique_ptr<FormStructure> form_structure,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
-             const std::optional<AutofillModelEncoder::ModelOutput>& output) {
+             const std::optional<FieldClassificationModelEncoder::ModelOutput>&
+                 output) {
             if (self && output) {
               self->AssignMostLikelyTypes(*form_structure, *output);
             }
@@ -105,8 +107,9 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   CHECK_EQ(optimization_target, optimization_target_);
-  optimization_guide::ModelHandler<AutofillModelEncoder::ModelOutput,
-                                   const AutofillModelEncoder::ModelInput&>::
+  optimization_guide::ModelHandler<
+      FieldClassificationModelEncoder::ModelOutput,
+      const FieldClassificationModelEncoder::ModelInput&>::
       OnModelUpdated(optimization_target, model_info);
   if (!model_info.has_value()) {
     // The model was unloaded.
@@ -122,16 +125,16 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
     // the server-side and might change in the future, it might fail.
     return;
   }
-  state.encoder = AutofillModelEncoder(state.metadata.input_token(),
-                                       state.metadata.encoding_parameters());
+  state.encoder = FieldClassificationModelEncoder(
+      state.metadata.input_token(), state.metadata.encoding_parameters());
   state_.emplace(std::move(state));
 }
 
 void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(
     FormStructure& form,
-    const AutofillModelEncoder::ModelOutput& output) const {
+    const FieldClassificationModelEncoder::ModelOutput& output) const {
   // The ML model can process at most
-  // `AutofillModelEncoder::kModelMaxNumberOfFields`.
+  // `FieldClassificationModelEncoder::kModelMaxNumberOfFields`.
   size_t relevant_fields = std::min(form.field_count(), output.size());
   for (size_t i = 0; i < relevant_fields; i++) {
     form.field(i)->set_heuristic_type(HeuristicSource::kMachineLearning,

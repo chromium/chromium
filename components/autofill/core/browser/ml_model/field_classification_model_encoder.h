@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_ENCODER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_ENCODER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_FIELD_CLASSIFICATION_MODEL_ENCODER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_FIELD_CLASSIFICATION_MODEL_ENCODER_H_
 
 #include <stdint.h>
 
@@ -20,18 +20,18 @@ namespace autofill {
 class AutofillField;
 class FormStructure;
 
-// The Encoder performs vectorization for on-device Autofill field type
-// prediction ML model. It changes the string input for preprocessing by
-// standardizing and tokenizing it. Tokenization maps raw strings to tokens,
-// and tokens to IDs based on the given dictionary. Empty Strings map to
-// value 0 and unknown words map to value 1.
-class AutofillModelEncoder {
+// The Encoder performs vectorization for on-device field type prediction ML
+// model. It changes the string input for preprocessing by standardizing and
+// tokenizing it. Tokenization maps raw strings to tokens, and tokens to IDs
+// based on the given dictionary. Empty Strings map to value 0 and unknown words
+// map to value 1.
+class FieldClassificationModelEncoder {
  public:
   using TokenId = base::StrongAlias<class TokenIdTag, uint32_t>;
 
   // An encoded representation of the form's labels.
   // Each element of the vector corresponds to an encoded feature (e.g. HTML
-  // attribute or an extracted label). See `AutofillModelEncoder`.
+  // attribute or an extracted label). See `FieldClassificationModelEncoder`.
   // Dimensionality: (#fields, 1 + len(features) * max_tokens_per_feature)
   // where max_tokens_per_feature and features are attributes of
   // encoding_parameters_. The "1" originates from a prepended CLS token.
@@ -52,14 +52,14 @@ class AutofillModelEncoder {
   // `AutofillFieldClassificationModelMetadata`.
   using ModelOutput = std::vector<std::vector<float>>;
 
-  explicit AutofillModelEncoder(
+  explicit FieldClassificationModelEncoder(
       const google::protobuf::RepeatedPtrField<std::string>& tokens,
       optimization_guide::proto::AutofillFieldClassificationEncodingParameters
           encoding_parameters);
 
-  AutofillModelEncoder();
-  AutofillModelEncoder(const AutofillModelEncoder&);
-  ~AutofillModelEncoder();
+  FieldClassificationModelEncoder();
+  FieldClassificationModelEncoder(const FieldClassificationModelEncoder&);
+  ~FieldClassificationModelEncoder();
 
   TokenId TokenToId(std::u16string_view token) const;
 
@@ -69,13 +69,13 @@ class AutofillModelEncoder {
   TokenId cls_token() const { return TokenId(token_to_id_.size() + 1); }
 
   // Encodes the `form` into the `ModelInput` representation understood by the
-  // `AutofillModelExecutor`. This is done by encoding the attributes of the
-  // form's fields.
+  // `FieldClassificationModelExecutor`. This is done by encoding the attributes
+  // of the form's fields.
   ModelInput EncodeForm(const FormStructure& form) const;
 
-  // Constructs from `field` the input for Autofill ML model using field
-  // attributes. More specifically, handles the attributes encoding and prepares
-  // the final input.
+  // Constructs from `field` the input for Field Classification ML model using
+  // field attributes. More specifically, handles the attributes encoding and
+  // prepares the final input.
   std::vector<TokenId> EncodeField(const AutofillField& field) const;
 
   // Standardizes a string according to encoding_parameters_:
@@ -100,4 +100,4 @@ class AutofillModelEncoder {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_ENCODER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_FIELD_CLASSIFICATION_MODEL_ENCODER_H_

@@ -7,24 +7,24 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
 
 namespace autofill {
 
-AutofillModelExecutor::AutofillModelExecutor() = default;
-AutofillModelExecutor::~AutofillModelExecutor() = default;
+FieldClassificationModelExecutor::FieldClassificationModelExecutor() = default;
+FieldClassificationModelExecutor::~FieldClassificationModelExecutor() = default;
 
-bool AutofillModelExecutor::Preprocess(
+bool FieldClassificationModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
-    const AutofillModelEncoder::ModelInput& input) {
+    const FieldClassificationModelEncoder::ModelInput& input) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillModelPredictions));
 
   // `input_tensors[0]` has shape (batch_size, max_number_of_fields,
@@ -46,10 +46,11 @@ bool AutofillModelExecutor::Preprocess(
                                                   empty_field);
 
     for (size_t i = 0; i < fields_count; ++i) {
-      base::ranges::transform(input[i], encoded_input[i].begin(),
-                              [](AutofillModelEncoder::TokenId token_id) {
-                                return token_id.value();
-                              });
+      base::ranges::transform(
+          input[i], encoded_input[i].begin(),
+          [](FieldClassificationModelEncoder::TokenId token_id) {
+            return token_id.value();
+          });
     }
     // Populate tensors with the vectorized field labels.
     for (size_t i = 0; i < maximum_number_of_fields; ++i) {
@@ -73,8 +74,8 @@ bool AutofillModelExecutor::Preprocess(
   return true;
 }
 
-std::optional<AutofillModelEncoder::ModelOutput>
-AutofillModelExecutor::Postprocess(
+std::optional<FieldClassificationModelEncoder::ModelOutput>
+FieldClassificationModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   // `output_tensors` is a 3D vector of floats. The first dimension is used
   // for batching, which the ML model declares with size 1. The second and third
@@ -84,7 +85,8 @@ AutofillModelExecutor::Postprocess(
   CHECK_EQ(kTfLiteFloat32, output_tensors[0]->type);
   const size_t maximum_number_of_fields = output_tensors[0]->dims->data[1];
   const size_t num_outputs = output_tensors[0]->dims->data[2];
-  AutofillModelEncoder::ModelOutput model_predictions(maximum_number_of_fields);
+  FieldClassificationModelEncoder::ModelOutput model_predictions(
+      maximum_number_of_fields);
   for (size_t i = 0; i < maximum_number_of_fields; ++i) {
     model_predictions[i].resize(num_outputs);
     const float* data_bgn =

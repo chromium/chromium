@@ -699,10 +699,10 @@ static_library("browser") {
     sources += [
       "ml_model/autofill_ml_prediction_model_handler.cc",
       "ml_model/autofill_ml_prediction_model_handler.h",
-      "ml_model/autofill_model_encoder.cc",
-      "ml_model/autofill_model_encoder.h",
-      "ml_model/autofill_model_executor.cc",
-      "ml_model/autofill_model_executor.h",
+      "ml_model/field_classification_model_encoder.cc",
+      "ml_model/field_classification_model_encoder.h",
+      "ml_model/field_classification_model_executor.cc",
+      "ml_model/field_classification_model_executor.h",
     ]
   }
 
@@ -1366,8 +1366,8 @@ source_set("unit_tests") {
   if (build_with_tflite_lib) {
     sources += [
       "ml_model/autofill_ml_prediction_model_handler_unittest.cc",
-      "ml_model/autofill_model_encoder_unittest.cc",
-      "ml_model/autofill_model_executor_unittest.cc",
+      "ml_model/field_classification_model_encoder_unittest.cc",
+      "ml_model/field_classification_model_executor_unittest.cc",
     ]
   }
 

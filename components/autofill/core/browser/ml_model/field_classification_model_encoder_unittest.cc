@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 
 #include <string>
 
@@ -22,7 +22,7 @@
 
 namespace autofill {
 
-using TokenId = AutofillModelEncoder::TokenId;
+using TokenId = FieldClassificationModelEncoder::TokenId;
 using testing::ElementsAre;
 using testing::TestWithParam;
 
@@ -38,7 +38,7 @@ constexpr TokenId kNumber = TokenId(14);
 constexpr TokenId kCLS = TokenId(15);
 }  // namespace
 
-class AutofillModelEncoderTest : public testing::Test {
+class FieldClassificationModelEncoderTest : public testing::Test {
  public:
   void SetUp() override {
     encoder_ = EncoderFromFileContents(GetTestModelMetadataPath());
@@ -56,50 +56,50 @@ class AutofillModelEncoderTest : public testing::Test {
         .AppendASCII("autofill_model_metadata.binarypb");
   }
 
-  AutofillModelEncoder EncoderFromFileContents(
+  FieldClassificationModelEncoder EncoderFromFileContents(
       const base::FilePath& file_path) {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
     std::string proto_content;
     EXPECT_TRUE(base::ReadFileToString(file_path, &proto_content));
     EXPECT_TRUE(metadata.ParseFromString(proto_content));
-    return AutofillModelEncoder(metadata.input_token(),
-                                metadata.encoding_parameters());
+    return FieldClassificationModelEncoder(metadata.input_token(),
+                                           metadata.encoding_parameters());
   }
 
-  AutofillModelEncoder encoder_;
+  FieldClassificationModelEncoder encoder_;
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-TEST_F(AutofillModelEncoderTest, TokensMappedCorrectly) {
+TEST_F(FieldClassificationModelEncoderTest, TokensMappedCorrectly) {
   EXPECT_EQ(encoder_.TokenToId(u"number"), kNumber);
 }
 
 // Tests that words out of vocabulary return 1.
-TEST_F(AutofillModelEncoderTest, WordOutOfVocab) {
+TEST_F(FieldClassificationModelEncoderTest, WordOutOfVocab) {
   EXPECT_EQ(encoder_.TokenToId(u"OutOfVocab"), kUnknown);
 }
 
 // Tests that empty strings return 0 for padding.
-TEST_F(AutofillModelEncoderTest, EmptyToken) {
+TEST_F(FieldClassificationModelEncoderTest, EmptyToken) {
   EXPECT_EQ(encoder_.TokenToId(u""), kEmpty);
 }
 
-TEST_F(AutofillModelEncoderTest, InputEncodedCorrectly) {
+TEST_F(FieldClassificationModelEncoderTest, InputEncodedCorrectly) {
   EXPECT_THAT(encoder_.EncodeAttribute(u"Phone 'number"),
               ElementsAre(kUnknown, kNumber, kEmpty, kEmpty, kEmpty));
 }
 
 // If a field label has more than one consecutive whitespace, they
 // should all be removed without any empty strings.
-TEST_F(AutofillModelEncoderTest, InputHasMoreThanOneWhitespace) {
+TEST_F(FieldClassificationModelEncoderTest, InputHasMoreThanOneWhitespace) {
   EXPECT_EQ(encoder_.EncodeAttribute(u"Phone   &number  "),
             encoder_.EncodeAttribute(u"Phone number"));
 }
 
-TEST_F(AutofillModelEncoderTest, ReplaceSpecialWithWhitespace) {
+TEST_F(FieldClassificationModelEncoderTest, ReplaceSpecialWithWhitespace) {
   EXPECT_EQ(encoder_.EncodeAttribute(u"Phone \u3164 number \xa0"),
             encoder_.EncodeAttribute(u"Phone number"));
 }
@@ -108,13 +108,14 @@ TEST_F(AutofillModelEncoderTest, ReplaceSpecialWithWhitespace) {
 // `AutofillFieldClassificationEncodingParameters::max_tokens_per_feature`,
 // only the first `max_tokens_per_feature` many words should be used and the
 // rest are ignored.
-TEST_F(AutofillModelEncoderTest, InputHasMoreWordsThanOutputSequenceLength) {
+TEST_F(FieldClassificationModelEncoderTest,
+       InputHasMoreWordsThanOutputSequenceLength) {
   EXPECT_THAT(
       encoder_.EncodeAttribute(u"City Number Phone Address Card Last Zip "),
       ElementsAre(kUnknown, kNumber, kUnknown, kUnknown, kUnknown));
 }
 
-TEST_F(AutofillModelEncoderTest, InputConstructedCorrectly) {
+TEST_F(FieldClassificationModelEncoderTest, InputConstructedCorrectly) {
   AutofillField field;
   field.set_label(u"Phone 'number");
   field.set_placeholder(u"Phone 'number");
@@ -131,7 +132,7 @@ TEST_F(AutofillModelEncoderTest, InputConstructedCorrectly) {
                   kUnknown, kNumber, kEmpty, kEmpty, kEmpty));
 }
 
-TEST_F(AutofillModelEncoderTest, FormEncodedCorrectly) {
+TEST_F(FieldClassificationModelEncoderTest, FormEncodedCorrectly) {
   FormStructure form(test::GetFormData(
       {.fields = {
            {
@@ -179,7 +180,7 @@ struct StandardizeStringTestCase {
 using StandardizeStringTest = TestWithParam<StandardizeStringTestCase>;
 
 INSTANTIATE_TEST_SUITE_P(
-    AutofillModelEncoderTest,
+    FieldClassificationModelEncoderTest,
     StandardizeStringTest,
     testing::ValuesIn<StandardizeStringTestCase>(
         {{
@@ -192,11 +193,11 @@ INSTANTIATE_TEST_SUITE_P(
              .expected = u"Hello World this Is A Camel Case Test ABC Hello",
          },
          {
-            // Test that casting to UTF8 does not break Japanese characters.
-            // This happens in the CamelCase splitting implementation.
-            .split_on_camel_case = true,
-            .input = u"やまもと HelloWorld",
-            .expected = u"やまもと Hello World",
+             // Test that casting to UTF8 does not break Japanese characters.
+             // This happens in the CamelCase splitting implementation.
+             .split_on_camel_case = true,
+             .input = u"やまもと HelloWorld",
+             .expected = u"やまもと Hello World",
          },
          {
              .lowercase = true,
@@ -223,7 +224,7 @@ TEST_P(StandardizeStringTest, ReturnsExpectedResult) {
   encoding_parameters.set_replace_chars_with_whitespace(
       test_case.replace_chars_with_whitespace);
   encoding_parameters.set_remove_chars(test_case.remove_chars);
-  AutofillModelEncoder encoder({}, encoding_parameters);
+  FieldClassificationModelEncoder encoder({}, encoding_parameters);
 
   EXPECT_EQ(encoder.StandardizeString(test_case.input), test_case.expected);
 }

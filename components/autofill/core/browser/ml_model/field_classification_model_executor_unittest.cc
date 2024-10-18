@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 
 #include "base/base_paths.h"
 #include "base/path_service.h"
@@ -21,15 +21,15 @@ namespace autofill {
 
 namespace {
 
-using ModelExecutor =
-    optimization_guide::ModelExecutor<AutofillModelEncoder::ModelOutput,
-                                      const AutofillModelEncoder::ModelInput&>;
-using TokenId = AutofillModelEncoder::TokenId;
+using ModelExecutor = optimization_guide::ModelExecutor<
+    FieldClassificationModelEncoder::ModelOutput,
+    const FieldClassificationModelEncoder::ModelInput&>;
+using TokenId = FieldClassificationModelEncoder::TokenId;
 
-class AutofillModelExecutorTest : public testing::Test {
+class FieldClassificationModelExecutorTest : public testing::Test {
  public:
-  AutofillModelExecutorTest() = default;
-  ~AutofillModelExecutorTest() override = default;
+  FieldClassificationModelExecutorTest() = default;
+  ~FieldClassificationModelExecutorTest() override = default;
 
   void SetUp() override {
     base::FilePath source_root_dir;
@@ -42,7 +42,7 @@ class AutofillModelExecutorTest : public testing::Test {
                            .AppendASCII("autofill_model-fold-one.tflite");
     execution_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-    model_executor_ = std::make_unique<AutofillModelExecutor>();
+    model_executor_ = std::make_unique<FieldClassificationModelExecutor>();
     model_executor_->InitializeAndMoveToExecutionThread(
         /*model_inference_timeout=*/std::nullopt,
         optimization_guide::proto::
@@ -61,10 +61,10 @@ class AutofillModelExecutorTest : public testing::Test {
   scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
   base::test::ScopedFeatureList features_{features::kAutofillModelPredictions};
   base::FilePath model_file_path_;
-  std::unique_ptr<AutofillModelExecutor> model_executor_;
+  std::unique_ptr<FieldClassificationModelExecutor> model_executor_;
 };
 
-TEST_F(AutofillModelExecutorTest, ExecuteModel) {
+TEST_F(FieldClassificationModelExecutorTest, ExecuteModel) {
   // Update model file.
   execution_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ModelExecutor::UpdateModelFile,
@@ -74,7 +74,7 @@ TEST_F(AutofillModelExecutorTest, ExecuteModel) {
   // Execute model on a dummy "form" consisting of two fields. Since the
   // executor works in terms of tokenized fields, this is represented as a
   // two arrays of tokens. The TokenIds are completely arbitrary.
-  AutofillModelEncoder::ModelInput input = {
+  FieldClassificationModelEncoder::ModelInput input = {
       {
           TokenId(14),  // CLS
           TokenId(1), TokenId(2), TokenId(3), TokenId(4),
@@ -94,7 +94,7 @@ TEST_F(AutofillModelExecutorTest, ExecuteModel) {
           TokenId(6),  // Attrib. 3
       }};
   base::test::TestFuture<
-      const std::optional<AutofillModelEncoder::ModelOutput>&>
+      const std::optional<FieldClassificationModelEncoder::ModelOutput>&>
       predictions;
   execution_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ModelExecutor::SendForExecution,

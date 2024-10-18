@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -21,14 +21,14 @@
 
 namespace autofill {
 
-// Model Handler which asynchronously calls the `AutofillModelExecutor`.
-// It retrieves the model from the server, load it into memory, execute
-// it with FormStructure as input and associate the model FieldType
-// predictions with the FormStructure.
+// Model Handler which asynchronously calls the
+// `FieldClassificationModelExecutor`. It retrieves the model from the server,
+// load it into memory, execute it with FormStructure as input and associate the
+// model FieldType predictions with the FormStructure.
 class AutofillMlPredictionModelHandler
     : public optimization_guide::ModelHandler<
-          AutofillModelEncoder::ModelOutput,
-          const AutofillModelEncoder::ModelInput&>,
+          FieldClassificationModelEncoder::ModelOutput,
+          const FieldClassificationModelEncoder::ModelInput&>,
       public KeyedService {
  public:
   // The version of the input, based on which the relevant model
@@ -70,7 +70,7 @@ class AutofillMlPredictionModelHandler
   // asssigns it to the corresponding field of the `form`.
   void AssignMostLikelyTypes(
       FormStructure& form,
-      const AutofillModelEncoder::ModelOutput& output) const;
+      const FieldClassificationModelEncoder::ModelOutput& output) const;
 
   // Given the confidences returned by the ML model, returns the most likely
   // type. This is currently just the argmax of `model_output`, mapped to the
@@ -80,7 +80,7 @@ class AutofillMlPredictionModelHandler
   struct ModelState {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
-    AutofillModelEncoder encoder;
+    FieldClassificationModelEncoder encoder;
   };
   // Initialized once the model was loaded and successfully initialized using
   // the model's metadata.
