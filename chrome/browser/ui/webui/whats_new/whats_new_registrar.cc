@@ -7,6 +7,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/user_education/webui/whats_new_registry.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 namespace whats_new {
@@ -16,6 +17,7 @@ namespace features {
 BASE_FEATURE(kSafetyAwareness,
              "SafetyAwareness",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSpark, "Spark", base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
@@ -35,6 +37,10 @@ void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
   // 130
   registry->RegisterEdition(
       WhatsNewEdition(features::kSafetyAwareness, "mickeyburks@google.com"));
+
+  // 131
+  registry->RegisterEdition(
+      WhatsNewEdition(features::kSpark, "mickeyburks@google.com"));
 }
 
 std::unique_ptr<WhatsNewRegistry> CreateWhatsNewRegistry() {
