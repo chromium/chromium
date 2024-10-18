@@ -953,7 +953,7 @@ likely than an alternative.
 
 **Notes:**
 *** promo
-- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/bk9YC5qSDF8)
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/bk9YC5qSDF8)
 ***
 
 ### Range-for statements with initializer <sup>[allowed]</sup>
@@ -998,6 +998,29 @@ definitions of other inequalities. See also "Default comparisons".
 **Notes:**
 *** promo
 [Migration bug](https://crbug.com/1414530)
+***
+
+### using enum declarations <sup>[allowed]</sup>
+
+```c++
+enum class E { kA = 1 };
+void f() {
+  using enum E;
+  auto a = kA;
+}
+```
+
+**Description:** Introduces enumerator element names into the current scope.
+
+**Documentation:**
+[`using enum` declaration](https://en.cppreference.com/w/cpp/language/enum#using_enum_declaration)
+
+**Notes:**
+*** promo
+Usage is subject to the Google Style
+[guidelines on aliases](https://google.github.io/styleguide/cppguide.html#Aliases).
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/Y0lf-DSOR3A)
 ***
 
 ## C++20 Allowed Library Features {#library-allowlist-20}
