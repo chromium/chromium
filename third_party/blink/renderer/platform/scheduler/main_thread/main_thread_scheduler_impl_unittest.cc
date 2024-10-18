@@ -2731,11 +2731,46 @@ TEST_P(
 
 TEST_P(
     MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest,
-    InputTerminatesLoadRAILMode) {
+    TestLoadRAILModeWhileHidden) {
+  InSequence s;
   MockRAILModeObserver observer;
+  EXPECT_CALL(observer, OnRAILModeChanged(RAILMode::kAnimation));
+  EXPECT_CALL(observer, OnRAILModeChanged(RAILMode::kIdle));
   scheduler_->AddRAILModeObserver(&observer);
+  scheduler_->SetAllRenderWidgetsHidden(true);
+
+  ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
+      .WillByDefault(Return(true));
+  ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
+      .WillByDefault(Return(true));
+  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(true));
+
+  // Because the widget is hidden, the mode should still be kIdle while loading.
+  scheduler_->DidStartProvisionalLoad(true);
+  EXPECT_EQ(RAILMode::kIdle, GetRAILMode());
+  EXPECT_EQ(UseCase::kEarlyLoading, ForceUpdatePolicyAndGetCurrentUseCase());
+  ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
+      .WillByDefault(Return(false));
+  scheduler_->OnMainFramePaint();
+  EXPECT_EQ(UseCase::kLoading, ForceUpdatePolicyAndGetCurrentUseCase());
+  ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
+      .WillByDefault(Return(false));
+  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(false));
+  scheduler_->OnMainFramePaint();
+  EXPECT_EQ(UseCase::kNone, ForceUpdatePolicyAndGetCurrentUseCase());
+  EXPECT_EQ(RAILMode::kIdle, GetRAILMode());
+  scheduler_->RemoveRAILModeObserver(&observer);
+}
+
+TEST_P(
+    MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest,
+    InputTerminatesLoadRAILMode) {
+  InSequence s;
+  MockRAILModeObserver observer;
   EXPECT_CALL(observer, OnRAILModeChanged(RAILMode::kAnimation));
   EXPECT_CALL(observer, OnRAILModeChanged(RAILMode::kLoad));
+  EXPECT_CALL(observer, OnRAILModeChanged(RAILMode::kAnimation));
+  scheduler_->AddRAILModeObserver(&observer);
 
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
       .WillByDefault(Return(true));
