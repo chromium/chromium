@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -65,18 +64,16 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
       views::BoxLayout::Orientation::kVertical);
   feedback_outer_container->SetMainAxisAlignment(
       views::LayoutAlignment::kStart);
-  if (autofill_prediction_improvements::kShowDetailsText.Get()) {
-    feedback_outer_container->AddChildView(
-        views::Builder<views::Label>()
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS))
-            .SetTextStyle(views::style::STYLE_BODY_5)
-            .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-                kContentVerticalPadding, kContentHorizontalPadding)))
-            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-            .SetMultiLine(true)
-            .Build());
-  }
+  feedback_outer_container->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS))
+          .SetTextStyle(views::style::STYLE_BODY_5)
+          .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+              kContentVerticalPadding, kContentHorizontalPadding)))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
+          .Build());
 
   // The feedback section, containing general text about it. Later on, thumbs up
   // and down buttons are added.
