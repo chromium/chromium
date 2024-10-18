@@ -188,18 +188,6 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
     UpdateNeedsBeginFramesInternal(/*needs_begin_frames=*/true);
   }
 
-  TRACE_EVENT(
-      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::Flow::Global(frame.metadata.begin_frame_ack.trace_id),
-      [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_chrome_graphics_pipeline();
-        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                           StepName::STEP_SUBMIT_COMPOSITOR_FRAME);
-        local_surface_id_.WriteIntoTrace(
-            ctx.Wrap(data->set_local_surface_id()));
-        data->set_display_trace_id(frame.metadata.begin_frame_ack.trace_id);
-      });
   if (local_surface_id_ == last_submitted_local_surface_id_) {
     DCHECK_EQ(last_submitted_device_scale_factor_, frame.device_scale_factor());
     DCHECK_EQ(last_submitted_size_in_pixels_.height(),

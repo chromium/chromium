@@ -960,23 +960,37 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   bool draw_frame = false;
 
   DrawResult result;
-  if (host_impl_->CanDraw()) {
-    result = host_impl_->PrepareToDraw(&frame);
-    draw_frame = forced_draw || result == DrawResult::kSuccess;
-  } else {
-    result = DrawResult::kAbortedCantDraw;
-  }
+  {
+    TRACE_EVENT(
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+        perfetto::Flow::Global(host_impl_->CurrentBeginFrameArgs().trace_id),
+        [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_chrome_graphics_pipeline();
+          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                             StepName::STEP_GENERATE_COMPOSITOR_FRAME);
+          data->set_display_trace_id(
+              host_impl_->CurrentBeginFrameArgs().trace_id);
+        });
 
-  if (draw_frame) {
-    if (std::optional<SubmitInfo> submit_info =
-            host_impl_->DrawLayers(&frame)) {
-      DCHECK_NE(frame.frame_token, 0u);
-      // Drawing implies we submitted a frame to the LayerTreeFrameSink.
-      scheduler_->DidSubmitCompositorFrame(submit_info.value());
+    if (host_impl_->CanDraw()) {
+      result = host_impl_->PrepareToDraw(&frame);
+      draw_frame = forced_draw || result == DrawResult::kSuccess;
+    } else {
+      result = DrawResult::kAbortedCantDraw;
     }
-    result = DrawResult::kSuccess;
-  } else {
-    DCHECK_NE(DrawResult::kSuccess, result);
+
+    if (draw_frame) {
+      if (std::optional<SubmitInfo> submit_info =
+              host_impl_->DrawLayers(&frame)) {
+        DCHECK_NE(frame.frame_token, 0u);
+        // Drawing implies we submitted a frame to the LayerTreeFrameSink.
+        scheduler_->DidSubmitCompositorFrame(submit_info.value());
+      }
+      result = DrawResult::kSuccess;
+    } else {
+      DCHECK_NE(DrawResult::kSuccess, result);
+    }
   }
 
   host_impl_->DidDrawAllLayers(frame);

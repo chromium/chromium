@@ -1629,16 +1629,6 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
 
   TRACE_EVENT1("cc", "LayerTreeHostImpl::PrepareToDraw", "SourceFrameNumber",
                active_tree_->source_frame_number());
-  TRACE_EVENT(
-      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
-      [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_chrome_graphics_pipeline();
-        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                           StepName::STEP_GENERATE_RENDER_PASS);
-        data->set_display_trace_id(CurrentBeginFrameArgs().trace_id);
-      });
   if (input_delegate_)
     input_delegate_->WillDraw();
 
@@ -2741,9 +2731,25 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
                        compositor_frame.render_pass_list);
 
   base::TimeTicks submit_time = base::TimeTicks::Now();
-  layer_tree_frame_sink_->SubmitCompositorFrame(
-      std::move(compositor_frame),
-      /*hit_test_data_changed=*/false);
+  {
+    TRACE_EVENT(
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+        perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
+        [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_chrome_graphics_pipeline();
+          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                             StepName::STEP_SUBMIT_COMPOSITOR_FRAME);
+          data->set_display_trace_id(CurrentBeginFrameArgs().trace_id);
+          for (const ui::LatencyInfo& latency :
+               compositor_frame.metadata.latency_info) {
+            data->add_latency_ids(latency.trace_id());
+          }
+        });
+    layer_tree_frame_sink_->SubmitCompositorFrame(
+        std::move(compositor_frame),
+        /*hit_test_data_changed=*/false);
+  }
 
 #if DCHECK_IS_ON()
   if (!doing_sync_draw_) {
@@ -2817,17 +2823,6 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     FrameData* frame) {
-  TRACE_EVENT_BEGIN(
-      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
-      [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_chrome_graphics_pipeline();
-        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                           StepName::STEP_GENERATE_COMPOSITOR_FRAME);
-        data->set_display_trace_id(CurrentBeginFrameArgs().trace_id);
-      });
-
   rendering_stats_instrumentation_->IncrementFrameCount(1);
 
   if (!settings_.is_display_tree) {
@@ -3071,19 +3066,6 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         base::StringPrintf("Compositing.%s.CompositorFrame.Quads", client_name),
         total_quad_count);
   }
-
-  // TODO(b/368050735): future-proof this event against early returns.
-  TRACE_EVENT_END("viz,benchmark,graphics.pipeline",
-                  [&](perfetto::EventContext ctx) {
-                    auto* event =
-                        ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-                    auto* data = event->set_chrome_graphics_pipeline();
-
-                    for (const ui::LatencyInfo& latency :
-                         compositor_frame.metadata.latency_info) {
-                      data->add_latency_ids(latency.trace_id());
-                    }
-                  });
 
   return compositor_frame;
 }
