@@ -504,7 +504,9 @@ bool HTMLDialogElement::DispatchToggleEvents(bool opening) {
 }
 
 void HTMLDialogElement::DispatchPendingToggleEvent() {
-  CHECK(pending_toggle_event_);
+  if (!pending_toggle_event_) {
+    return;
+  }
   DispatchEvent(*pending_toggle_event_);
   pending_toggle_event_ = nullptr;
 }
