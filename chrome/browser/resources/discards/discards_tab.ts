@@ -198,6 +198,8 @@ class DiscardsTabElement extends DiscardsTabElementBase {
         return 'proactive';
       case LifecycleUnitDiscardReason.SUGGESTED:
         return 'suggested';
+      case LifecycleUnitDiscardReason.FROZEN_WITH_GROWING_MEMORY:
+        return 'frozen with growing memory';
     }
   }
 

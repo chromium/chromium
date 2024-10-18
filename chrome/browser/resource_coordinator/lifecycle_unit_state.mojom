@@ -67,4 +67,7 @@ enum LifecycleUnitDiscardReason {
   // manager has detected intensive resource usage and suggests discarding
   // certain tabs in an attempt to improve resource usage.
   SUGGESTED = 3,
+  // The discard is requested by FreezingPolicy for a frozen tab that grew its
+  // memory usage above a threshold.
+  FROZEN_WITH_GROWING_MEMORY = 4,
 };

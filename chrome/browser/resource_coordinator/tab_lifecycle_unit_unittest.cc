@@ -305,10 +305,12 @@ TEST_F(TabLifecycleUnitTest, UrgentDiscardProtections) {
   TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());
-  // Initial external discarding are fine, but urgent discarding is blocked
-  // because the tab is too recent.
+  // EXTERNAL or FROZEN_WITH_GROWING_MEMORY discarding is allowed, but URGENT
+  // discarding is blocked because the tab is too recent.
   ExpectCanDiscardTrue(&tab_lifecycle_unit,
                        LifecycleUnitDiscardReason::EXTERNAL);
+  ExpectCanDiscardTrue(&tab_lifecycle_unit,
+                       LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY);
   ExpectCanDiscardFalseTrivial(&tab_lifecycle_unit,
                                LifecycleUnitDiscardReason::URGENT);
 
@@ -326,9 +328,12 @@ TEST_F(TabLifecycleUnitTest, UrgentDiscardProtections) {
   // already been discarded at least once.
   test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
-  // External discarding should be fine, but not urgent.
+  // EXTERNAL or FROZEN_WITH_GROWING_MEMORY discarding is allowed, but URGENT
+  // discarding is blocked because the tab has been discarded previously.
   ExpectCanDiscardTrue(&tab_lifecycle_unit,
                        LifecycleUnitDiscardReason::EXTERNAL);
+  ExpectCanDiscardTrue(&tab_lifecycle_unit,
+                       LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY);
   ExpectCanDiscardFalseTrivial(&tab_lifecycle_unit,
                                LifecycleUnitDiscardReason::URGENT);
 
@@ -560,6 +565,10 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardPictureInPictureWindow) {
                                       pip_browser->tab_strip_model());
   EXPECT_FALSE(
       tab_lifecycle_unit.Discard(LifecycleUnitDiscardReason::EXTERNAL, 0));
+  EXPECT_FALSE(
+      tab_lifecycle_unit.Discard(LifecycleUnitDiscardReason::SUGGESTED, 0));
+  EXPECT_FALSE(tab_lifecycle_unit.Discard(
+      LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY, 0));
 
   // Tear down picture-in-picture browser.
   pip_browser->tab_strip_model()->DetachAndDeleteWebContentsAt(0);

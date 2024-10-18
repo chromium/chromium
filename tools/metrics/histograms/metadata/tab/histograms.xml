@@ -42,6 +42,8 @@ chromium-metrics-reviews@google.com.
 <variants name="TabDiscardReason">
   <variant name=".External"
       summary="from outside of TabManager (e.g. by an extension)"/>
+  <variant name=".FrozenWithGrowingMemory"
+      summary="due to growing memory usage while frozen"/>
   <variant name=".Proactive"
       summary="proactively by Performance Manager before the system is in a
                critical condition, such as when Memory Saver Mode discards

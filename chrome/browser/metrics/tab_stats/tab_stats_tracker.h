@@ -235,15 +235,17 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   static const char kWindowWidthHistogramName[];
 
   // The names of the histograms that record daily discard/reload counts caused
-  // by external/urgent/proactive/suggested events.
+  // for each discard reason.
   static const char kDailyDiscardsExternalHistogramName[];
   static const char kDailyDiscardsUrgentHistogramName[];
   static const char kDailyDiscardsProactiveHistogramName[];
   static const char kDailyDiscardsSuggestedHistogramName[];
+  static const char kDailyDiscardsFrozenWithGrowingMemoryHistogramName[];
   static const char kDailyReloadsExternalHistogramName[];
   static const char kDailyReloadsUrgentHistogramName[];
   static const char kDailyReloadsProactiveHistogramName[];
   static const char kDailyReloadsSuggestedHistogramName[];
+  static const char kDailyReloadsFrozenWithGrowingMemoryHistogramName[];
 
   // The names of the histograms that record duplicate tab data.
   static const char kTabDuplicateCountSingleWindowHistogramName[];

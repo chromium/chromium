@@ -338,14 +338,13 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
   bool is_proactive_or_suggested;
   switch (discard_reason) {
     case DiscardReason::EXTERNAL:
-      // Always allow discards from external sources like extensions.
+    case DiscardReason::FROZEN_WITH_GROWING_MEMORY:
+      // Always allow discards.
       return CanDiscardResult::kEligible;
     case DiscardReason::URGENT:
       is_proactive_or_suggested = false;
       break;
     case DiscardReason::PROACTIVE:
-      is_proactive_or_suggested = true;
-      break;
     case DiscardReason::SUGGESTED:
       is_proactive_or_suggested = true;
       break;

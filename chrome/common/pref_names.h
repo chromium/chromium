@@ -3788,12 +3788,16 @@ inline constexpr char kTabStatsDiscardsProactive[] =
     "tab_stats.discards_proactive";
 inline constexpr char kTabStatsDiscardsSuggested[] =
     "tab_stats.discards_suggested";
+inline constexpr char kTabStatsDiscardsFrozenWithGrowingMemory[] =
+    "tab_stats.discards_frozen";
 inline constexpr char kTabStatsReloadsExternal[] = "tab_stats.reloads_external";
 inline constexpr char kTabStatsReloadsUrgent[] = "tab_stats.reloads_urgent";
 inline constexpr char kTabStatsReloadsProactive[] =
     "tab_stats.reloads_proactive";
 inline constexpr char kTabStatsReloadsSuggested[] =
     "tab_stats.reloads_suggested";
+inline constexpr char kTabStatsReloadsFrozenWithGrowingMemory[] =
+    "tab_stats.reloads_frozen";
 
 // A list of origins (URLs) to treat as "secure origins" for debugging purposes.
 inline constexpr char kUnsafelyTreatInsecureOriginAsSecure[] =
