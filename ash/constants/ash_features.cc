@@ -1872,7 +1872,7 @@ BASE_FEATURE(kLocalImageSearchOnCore,
 // Enables local authentication controller with PIN support.
 BASE_FEATURE(kLocalAuthenticationWithPin,
              "LocalAuthenticationWithPin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables cross device supported reports within the feedback tool.
 // (This feature is only available for dogfooders)
