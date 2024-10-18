@@ -23,7 +23,7 @@
   #webview {
     border-radius: 20px;
     display: flex;
-    height: 75%;
+    height: 80%;
     margin: 0 40px;
     overflow: hidden;
   }
@@ -50,7 +50,7 @@
     align-items: center;
     display: flex;
     flex-direction: column;
-    height: 75%;
+    height: 80%;
     justify-content: center;
     width: 100%;
   }
@@ -58,7 +58,7 @@
   .done-button-container {
     align-content: center;
     float: inline-end;
-    height: 15%;
+    height: 10%;
     margin-inline-end: 40px;
   }
 
@@ -84,7 +84,7 @@
   </div>
   <div class="done-button-container">
     <cr-button id="doneButton" class="action-button" on-click="onDoneClicked_"
-        hidden$="[[!takeoutFlowCompleted]]">
+        hidden$="[[webviewLoading]]" disabled$="[[!takeoutFlowCompleted]]">
       $i18n{doneButtonLabel}
     </cr-button>
   </div>

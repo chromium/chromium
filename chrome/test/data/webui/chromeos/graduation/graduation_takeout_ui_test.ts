@@ -66,7 +66,8 @@ suite('GraduationTakeoutUiTest', function() {
     assertTrue(getSpinner().hidden);
     assertFalse(getWebview().hidden);
     assertFalse(getBackButton().hidden);
-    assertTrue(getDoneButton().hidden);
+    assertFalse(getDoneButton().hidden);
+    assertTrue(getDoneButton().disabled);
     assertEquals(
         'https://takeout.google.com/transfer?hl=en-US', getWebview().src);
   });
