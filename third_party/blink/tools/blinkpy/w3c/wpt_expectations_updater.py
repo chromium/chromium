@@ -140,8 +140,7 @@ class WPTExpectationsUpdater:
         # the `(with patch)` suffix) to be consistent.
         suites = set()
         for step in self.host.builders.step_names_for_builder(builder):
-            suite_match = re.match(
-                r'(?P<suite>[\w_-]*wpt_tests|headless_shell_wpt)', step)
+            suite_match = re.match(r'(?P<suite>[\w_-]*wpt_tests)', step)
             if suite_match:
                 suites.add(step)
         return suites
