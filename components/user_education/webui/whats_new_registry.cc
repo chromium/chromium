@@ -5,6 +5,7 @@
 #include "components/user_education/webui/whats_new_registry.h"
 
 #include "base/containers/contains.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/values.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
@@ -44,6 +45,15 @@ const char* WhatsNewModule::GetFeatureName() const {
   return feature_->name;
 }
 
+const std::string WhatsNewModule::GetCustomization() const {
+  if (!feature_) {
+    return "";
+  }
+  std::string customization = base::GetFieldTrialParamValueByFeature(
+      *feature_, whats_new::kCustomizationParam);
+  return customization;
+}
+
 WhatsNewEdition::WhatsNewEdition(const base::Feature& feature,
                                  std::string owner,
                                  std::vector<BrowserCommand> browser_commands)
@@ -57,6 +67,12 @@ bool WhatsNewEdition::IsFeatureEnabled() const {
 
 const char* WhatsNewEdition::GetFeatureName() const {
   return feature_->name;
+}
+
+const std::string WhatsNewEdition::GetCustomization() const {
+  std::string customization = base::GetFieldTrialParamValueByFeature(
+      *feature_, whats_new::kCustomizationParam);
+  return customization;
 }
 
 void WhatsNewRegistry::RegisterModule(WhatsNewModule module) {
@@ -163,6 +179,33 @@ const std::vector<std::string_view> WhatsNewRegistry::GetRolledFeatureNames()
   }
 
   return feature_names;
+}
+
+const std::vector<std::string> WhatsNewRegistry::GetCustomizations() const {
+  std::vector<std::string> customizations;
+  for (const WhatsNewModule& module : modules_) {
+    // Modules without a feature are default-enabled.
+    const bool module_is_default_enabled = !module.HasFeature();
+    // If the module is tied to a feature, ensure the feature is available.
+    const bool module_is_available =
+        module.HasActiveFeature() || module.HasRolledFeature();
+    if (module_is_default_enabled || module_is_available) {
+      std::string customization = module.GetCustomization();
+      if (!customization.empty()) {
+        customizations.emplace_back(customization);
+      }
+    }
+  }
+  for (const WhatsNewEdition& edition : editions_) {
+    // The only requirement for an edition to show is that it is enabled.
+    if (edition.IsFeatureEnabled()) {
+      const auto customization = edition.GetCustomization();
+      if (!customization.empty()) {
+        customizations.emplace_back(customization);
+      }
+    }
+  }
+  return customizations;
 }
 
 void WhatsNewRegistry::SetEditionUsed(std::string_view edition_name) {

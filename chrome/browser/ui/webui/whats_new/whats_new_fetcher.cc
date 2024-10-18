@@ -58,16 +58,23 @@ GURL GetV2ServerURLForRender(bool is_staging) {
   CHECK(registry);
 
   GURL url = GetV2ServerURL(is_staging);
-  auto active_features = registry->GetActiveFeatureNames();
-  if (active_features.size() > 0) {
+  const auto active_features = registry->GetActiveFeatureNames();
+  if (!active_features.empty()) {
     url = net::AppendQueryParameter(
         url, "enabled", base::JoinString(active_features, std::string(",")));
   }
 
-  auto rolled_features = registry->GetRolledFeatureNames();
-  if (rolled_features.size() > 0) {
+  const auto rolled_features = registry->GetRolledFeatureNames();
+  if (!rolled_features.empty()) {
     url = net::AppendQueryParameter(
         url, "rolled", base::JoinString(rolled_features, std::string(",")));
+  }
+
+  const auto customizations = registry->GetCustomizations();
+  if (!customizations.empty()) {
+    url = net::AppendQueryParameter(
+        url, "customization",
+        base::JoinString(customizations, std::string(",")));
   }
 
   return net::AppendQueryParameter(url, "internal", "true");
