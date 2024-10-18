@@ -780,3 +780,7 @@
 # TODO(crbug.com/373461927): This test has been failing since
 # https://crrev.com/c/5716290.
 -PrerenderBrowserTest.BackgroundedPage_ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
+
+# TODO(crbug.com/374127248): This test has been failing since
+# https://crrev.com/c/5645306.
+-DeferSpeculativeRFHCreationTest.NavigationFromCrashedFrameNotDeferred
