@@ -1855,7 +1855,7 @@
   {
     "name": "cros-privacy-hub-app-permissions-v2",
     "owners": [ "cros-privacy-features-dev@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "cros-shortstand",
