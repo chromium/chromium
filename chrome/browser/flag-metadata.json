@@ -6940,7 +6940,7 @@
   {
     "name": "pdf-portfolio",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "pdf-searchify",
