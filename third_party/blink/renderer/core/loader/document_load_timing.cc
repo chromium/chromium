@@ -307,4 +307,10 @@ void DocumentLoadTiming::SetCriticalCHRestart(
   NotifyDocumentTimingChanged();
 }
 
+void DocumentLoadTiming::SetRandomizedConfidence(
+    const std::optional<RandomizedConfidenceValue>& value) {
+  randomized_confidence_ = value;
+  NotifyDocumentTimingChanged();
+}
+
 }  // namespace blink

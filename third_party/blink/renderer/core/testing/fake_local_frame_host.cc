@@ -323,4 +323,6 @@ void FakeLocalFrameHost::RecordWindowProxyUsageMetrics(
     const blink::FrameToken& target_frame_token,
     blink::mojom::WindowProxyAccessType access_type) {}
 
+void FakeLocalFrameHost::NotifyDocumentInteractive() {}
+
 }  // namespace blink

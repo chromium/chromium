@@ -2553,6 +2553,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetResizable(bool resizable) override;
   void DraggableRegionsChanged(
       std::vector<blink::mojom::DraggableRegionPtr> regions) override;
+  void NotifyDocumentInteractive() override;
 
   void ReportNoBinderForInterface(const std::string& error);
 

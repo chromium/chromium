@@ -961,7 +961,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Handle to the local main frame host. Only valid when the MainFrame is
   // local. It is ok to use WTF::Unretained(this) for callbacks made on this
   // interface because the callbacks will be associated with the lifecycle
-  // of this AssociatedRemote and the lifetiime of the main LocalFrame.
+  // of this AssociatedRemote and the lifetime of the main LocalFrame.
   mojo::AssociatedRemote<mojom::blink::LocalMainFrameHost>
       local_main_frame_host_remote_;
 

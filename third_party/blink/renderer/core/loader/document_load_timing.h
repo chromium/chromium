@@ -29,6 +29,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "third_party/blink/public/mojom/confidence_level.mojom-blink.h"
 #include "third_party/blink/public/mojom/navigation/system_entropy.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -46,6 +47,9 @@ namespace blink {
 class DocumentLoader;
 class KURL;
 class LocalFrame;
+
+using RandomizedConfidenceValue =
+    std::pair<double, mojom::blink::ConfidenceLevel>;
 
 class CORE_EXPORT DocumentLoadTiming final {
   DISALLOW_NEW();
@@ -103,6 +107,9 @@ class CORE_EXPORT DocumentLoadTiming final {
     system_entropy_at_navigation_start_ = value;
   }
 
+  void SetRandomizedConfidence(
+      const std::optional<RandomizedConfidenceValue>& value);
+
   void SetCriticalCHRestart(base::TimeTicks critical_ch_restart);
 
   base::TimeTicks InputStart() const { return input_start_; }
@@ -154,6 +161,10 @@ class CORE_EXPORT DocumentLoadTiming final {
     return system_entropy_at_navigation_start_;
   }
 
+  std::optional<RandomizedConfidenceValue> RandomizedConfidence() const {
+    return randomized_confidence_;
+  }
+
  private:
   void MarkRedirectEnd();
   void NotifyDocumentTimingChanged();
@@ -194,6 +205,7 @@ class CORE_EXPORT DocumentLoadTiming final {
   bool can_request_from_previous_document_ = false;
   mojom::blink::SystemEntropy system_entropy_at_navigation_start_ =
       mojom::blink::SystemEntropy::kNormal;
+  std::optional<RandomizedConfidenceValue> randomized_confidence_;
 };
 
 }  // namespace blink

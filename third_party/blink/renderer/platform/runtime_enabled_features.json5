@@ -3211,6 +3211,10 @@
       status: "experimental",
     },
     {
+      name: "PerformanceNavigationTimingConfidence",
+      status: "experimental",
+    },
+    {
       name: "PeriodicBackgroundSync",
       public: true,
       status: "stable",

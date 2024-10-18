@@ -1514,6 +1514,7 @@ void Document::SetReadyState(DocumentReadyState ready_state) {
   if (ready_state == ready_state_)
     return;
 
+  auto* frame = GetFrame();
   switch (ready_state) {
     case kLoading:
       if (document_timing_.DomLoading().is_null()) {
@@ -1523,6 +1524,10 @@ void Document::SetReadyState(DocumentReadyState ready_state) {
     case kInteractive:
       if (document_timing_.DomInteractive().is_null())
         document_timing_.MarkDomInteractive();
+
+      if (frame && frame->IsMainFrame()) {
+        frame->GetLocalFrameHostRemote().NotifyDocumentInteractive();
+      }
       break;
     case kComplete:
       if (document_timing_.DomComplete().is_null())
@@ -1531,8 +1536,8 @@ void Document::SetReadyState(DocumentReadyState ready_state) {
   }
 
   ready_state_ = ready_state;
-  if (GetFrame() && GetFrame()->GetPage() &&
-      GetFrame()->GetPage()->GetPageScheduler()->IsInBackForwardCache()) {
+  if (frame && frame->GetPage() &&
+      frame->GetPage()->GetPageScheduler()->IsInBackForwardCache()) {
     // Enqueue the event when the page is in back/forward cache, so that it
     // would not cause JavaScript execution. The event will be dispatched upon
     // restore.

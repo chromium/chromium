@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/timing/not_restored_reasons.h"
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_timing_confidence.h"
 
 namespace blink {
 
@@ -53,6 +54,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
   V8NavigationTimingType type() const;
   uint16_t redirectCount() const;
   NotRestoredReasons* notRestoredReasons() const;
+  PerformanceTimingConfidence* confidence() const;
   V8NavigationEntropy systemEntropy() const;
   DOMHighResTimeStamp criticalCHRestart(ScriptState* script_state) const;
 

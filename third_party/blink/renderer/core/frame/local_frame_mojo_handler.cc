@@ -1333,6 +1333,12 @@ void LocalFrameMojoHandler::Discard() {
   frame_->Discard();
 }
 
+void LocalFrameMojoHandler::FinalizeNavigationConfidence(
+    double randomized_trigger_rate,
+    mojom::blink::ConfidenceLevel confidence) {
+  frame_->SetNavigationConfidence(randomized_trigger_rate, confidence);
+}
+
 void LocalFrameMojoHandler::SetV8CompileHints(
     base::ReadOnlySharedMemoryRegion data) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kConsumeCompileHints));

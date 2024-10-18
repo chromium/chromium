@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/core/timing/performance_navigation_timing.h"
 
+#include "third_party/blink/public/mojom/confidence_level.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_entropy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_performance_timing_confidence_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
@@ -46,6 +48,13 @@ V8NavigationEntropy::Enum GetSystemEntropy(DocumentLoader* loader) {
     }
   }
   NOTREACHED();
+}
+
+V8PerformanceTimingConfidenceValue::Enum GetNavigationConfidenceString(
+    mojom::blink::ConfidenceLevel confidence) {
+  return confidence == mojom::blink::ConfidenceLevel::kHigh
+             ? V8PerformanceTimingConfidenceValue::Enum::kHigh
+             : V8PerformanceTimingConfidenceValue::Enum::kLow;
 }
 
 }  // namespace
@@ -294,6 +303,24 @@ NotRestoredReasons* PerformanceNavigationTiming::notRestoredReasons() const {
   return BuildNotRestoredReasons(loader->GetFrame()->GetNotRestoredReasons());
 }
 
+PerformanceTimingConfidence* PerformanceNavigationTiming::confidence() const {
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing) {
+    return nullptr;
+  }
+
+  std::optional<RandomizedConfidenceValue> confidence =
+      timing->RandomizedConfidence();
+  if (!confidence) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<PerformanceTimingConfidence>(
+      confidence->first,
+      V8PerformanceTimingConfidenceValue(
+          GetNavigationConfidenceString(confidence->second)));
+}
+
 V8NavigationEntropy PerformanceNavigationTiming::systemEntropy() const {
   if (DomWindow()) {
     blink::UseCounter::Count(DomWindow()->document(),
@@ -401,6 +428,15 @@ void PerformanceNavigationTiming::BuildJSONValue(
     builder.AddString(
         "systemEntropy",
         V8NavigationEntropy(GetSystemEntropy(GetDocumentLoader())).AsString());
+  }
+
+  if (RuntimeEnabledFeatures::PerformanceNavigationTimingConfidenceEnabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
+    if (auto* confidence_value = confidence()) {
+      builder.Add("confidence", confidence_value);
+    } else {
+      builder.AddNull("confidence");
+    }
   }
 }
 
