@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CdmUtilityProcessType">
+  <variant name="CdmServiceBroker"/>
+  <variant name="MediaFoundationServiceBroker"/>
+  <variant name="Unknown"/>
+</variants>
+
 <histogram name="ChildProcess.Crashed.UtilityProcessExitCode"
     enum="WindowsExitCode" expires_after="never">
 <!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
@@ -603,6 +609,48 @@ chromium-metrics-reviews@google.com.
     The estimated amount of time between when a crash occurred and when the user
     relaunched the application. Logged on application launch if the last session
     terminated in an unclean state.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Media.Cdm.{CdmUtilityProcessType}.Crash.ExitCode"
+    enum="WindowsExitCode" expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when a crash occurs in a CDM utility process. On crash, the exit
+    code will indicate the exception code of the crash.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Media.Cdm.{CdmUtilityProcessType}.Launch"
+    enum="Boolean" expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when a CDM utility process either succeeded or failed to launch.
+  </summary>
+</histogram>
+
+<histogram
+    name="Stability.Media.Cdm.{CdmUtilityProcessType}.Launch.LaunchErrorCode"
+    enum="LaunchErrorCodes" expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    A platform-specific error code returned from the attempt to launch a CDM
+    utility process. Recorded when a CDM utility process fails to launch.
+  </summary>
+</histogram>
+
+<histogram
+    name="Stability.Media.Cdm.{CdmUtilityProcessType}.Launch.WinLastError"
+    enum="WinGetLastError" expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    An extended Windows error code returned from GetLastError when failing to
+    launch a CDM utility process. Recorded when a utility process fails to
+    launch on Windows.
   </summary>
 </histogram>
 
