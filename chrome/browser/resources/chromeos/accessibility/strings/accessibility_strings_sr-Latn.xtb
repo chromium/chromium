@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="100421257800558142">Pritisnite taster sa strelicom nadesno</translation>
 <translation id="100506692671054486">nema prethodne komande</translation>
 <translation id="1009046985747440431">Pritisnite strelicu nagore ili nadole da biste se kretali. Da biste aktivirali, pritisnite Enter</translation>
 <translation id="1011903154582639569">Nađite taster, pa podignite prst da biste uneli</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Dugme za uključivanje/isključivanje</translation>
 <translation id="1299774449519412690">Svetla nebeskoplava</translation>
 <translation id="1303806948938513162">Dodirnite sa 4 prsta da biste ušli u ChromeVox menije</translation>
+<translation id="1304162325618937178">Pritisnite taster za razmak</translation>
 <translation id="1313373992684326101">Pređite na prethodni odeljak. Primeri obuhvataju Statusnu traku i Pokretač.</translation>
 <translation id="1315077335264761176">Položaj dodira</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, poništen je izbor dugmeta za izbor stavke menija</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Boja pšenice</translation>
 <translation id="1618597272655350600">Objavljuje potpun opis aktuelnog položaja</translation>
 <translation id="1627222324347828322">Prljavobela</translation>
+<translation id="1632810692616643246">Uđi u režim skrolovanja ili izađi iz njega</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{znak „veće od“}one{# znak „veće od“}few{# znaka „veće od“}other{# znakova „veće od“}}</translation>
 <translation id="1653266918374749391">Prethodno zaglavlje 3. nivoa</translation>
 <translation id="1657616855184033958">Prikaži filtere strima događaja</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Nema prethodne kontrole</translation>
 <translation id="2045606329038304310">Kontrola polja obrazaca</translation>
 <translation id="2063539687800151747">Natpis</translation>
+<translation id="2067158561093481039">Upotrebite prilagođenu kombinaciju tastera</translation>
 <translation id="2086961585857038472">Sledeća reč</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">sr</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Boja tamnog drveta</translation>
 <translation id="2199994615414171367">Prethodni matematički izraz</translation>
 <translation id="2203046366315513658">Smanjuje vrednost</translation>
+<translation id="2206580811360135054">Prikažite ili sakrijte pregled prozora</translation>
 <translation id="2216790501338699346">Link URL-a: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Pomeri unazad za jedan znak</translation>
 <translation id="2220529011494928058">Prijavi problem</translation>
+<translation id="2239819015858077439">Pritisnite taster sa strelicom nadole</translation>
 <translation id="2243633977138166243">Pritisnite strelicu nalevo ili nadesno da biste se kretali; Enter da biste aktivirali</translation>
 <translation id="224426591676115802">Nijedan glas nije dostupan za jezik: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Zaustavlja se režim za učenje</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Braoncrvena</translation>
 <translation id="4432896207833262240">Označeni sadržaj</translation>
 <translation id="4437615272777527928">Unesite tekst da biste pretražili menije. Koristite tastere sa strelicama nagore i nadole za kretanje kroz rezultate. Koristite tastere sa strelicama ulevo i udesno da biste prilagodili kursor za tekst i prelazili iz jednog menija u drugi.</translation>
+<translation id="4441677939526091190">Pritisnite taster sa strelicom nagore</translation>
 <translation id="4453530046591759283">Da biste prelazili na druge delove ekrana, kao što su trake s alatkama ili sistemska paleta, pritisnite Control+F1. F1 je prvi taster desno od tastera Escape.</translation>
 <translation id="4457472090507035117">Izaberite aktuelni glas:</translation>
 <translation id="4476183483923481720">novi red</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Korišćenje funkcija pristupačnosti na Chromebook dodirnom ekranu</translation>
 <translation id="5655682562155942719">Komande za prelazak</translation>
 <translation id="56637627897541303">Oblast za tekst</translation>
+<translation id="5666746275818170484">Pritisnite taster sa strelicom nalevo</translation>
 <translation id="5669637233317991674">Pritisnite taster za pretragu + strelica nadesno ili taster za pretragu + strelica nalevo da biste se kretali kroz ovu lekciju</translation>
 <translation id="5677240841070992068">Aktuelna lokacija</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Iskačuće dugme</translation>
 <translation id="7167657087543110">odjek znakova</translation>
 <translation id="7173102181852295013">Indigoplava</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Prošireno</translation>
 <translation id="7209751026933045237">Nema sledećeg klizača</translation>
 <translation id="7218782500591078391">Zlatnožuta</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">Oblast</translation>
 <translation id="8382679411218029383">Automatsko dovršavanje umetnutog teksta i liste</translation>
 <translation id="8394908167088220973">Puštanje/pauziranje medija</translation>
+<translation id="8409502156784390079">Režim skrolovanja je aktivan</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
 <translation id="8428603554127842284"><ph name="DEPTH" />. nivo</translation>
 <translation id="8430049249787218991">traka menija</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">Zaboravi</translation>
 <translation id="8989104346085848538">Da biste zaustavili aktuelni ChromeVox govor, pritisnite taster Control.</translation>
 <translation id="9014206344398081366">Vodič za ChromeVox</translation>
+<translation id="9034592733577768445">Kontrola licem je pauzirana</translation>
 <translation id="9040132695316389094">Zaglavlje 1</translation>
 <translation id="9061884144798498064">Izaberite tabelu Brajeve azbuke sa 8 tačaka:</translation>
 <translation id="9063946545000394379">premesti na prethodni znak</translation>
