@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
@@ -29,6 +30,8 @@
 
 namespace autofill {
 namespace {
+
+using ::optimization_guide::AnyWrapProto;
 
 // The matcher expects two arguments of types std::unique_ptr<AutofillField>
 // and FieldType respectively.
@@ -99,7 +102,7 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
         optimization_guide::TestModelInfoBuilder()
             .SetModelFilePath(
                 test_data_dir_.AppendASCII("autofill_model-fold-one.tflite"))
-            .SetModelMetadata(WrapMetadata(model_metadata))
+            .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
     model_handler_->OnModelUpdated(
         optimization_guide::proto::
@@ -135,20 +138,6 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
                            base::SPLIT_WANT_ALL)) {
       metadata.add_input_token(token);
     }
-  }
-
-  // Packs the `metadata` into an `optimization_guide::proto::Any`.
-  optimization_guide::proto::Any WrapMetadata(
-      const optimization_guide::proto::AutofillFieldClassificationModelMetadata&
-          metadata) const {
-    std::string serialized_metadata;
-    metadata.SerializeToString(&serialized_metadata);
-    optimization_guide::proto::Any any;
-    any.set_value(serialized_metadata);
-    any.set_type_url(
-        "type.googleapis.com/"
-        "optimization_guide.proto.AutofillFieldClassificationModelMetadata");
-    return any;
   }
 
   base::test::ScopedFeatureList features_{features::kAutofillModelPredictions};
