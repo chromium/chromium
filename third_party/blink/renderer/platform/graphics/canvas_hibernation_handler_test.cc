@@ -120,12 +120,6 @@ std::map<std::string, uint64_t> GetEntries(
   return result;
 }
 
-void DrawSomething(Canvas2DLayerBridge* bridge) {
-  CanvasResourceProvider* provider = bridge->GetOrCreateResourceProvider();
-  provider->Canvas().drawLine(0, 0, 2, 2, cc::PaintFlags());
-  provider->FlushCanvas(FlushReason::kTesting);
-}
-
 void Draw(CanvasResourceHost& host) {
   CanvasResourceProvider* provider = host.GetOrCreateCanvasResourceProvider(
       host.GetRasterMode() == RasterMode::kGPU ? RasterModeHint::kPreferGPU
@@ -476,14 +470,15 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 200), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
+  auto handler = std::make_unique<CanvasHibernationHandler>();
+  FakeCanvasResourceHost host(gfx::Size(300, 200));
+  host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
-  auto& handler = bridge->GetHibernationHandler();
-  handler.SetTaskRunnersForTesting(task_runner, task_runner);
+  Draw(host);
 
-  SetPageVisible(Host(), &handler, platform, false);
+  handler->SetTaskRunnersForTesting(task_runner, task_runner);
+
+  SetPageVisible(&host, handler.get(), platform, false);
 
   base::trace_event::MemoryDumpArgs args = {
       base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
@@ -494,8 +489,8 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
     auto* dump = pmd.GetAllocatorDump("canvas/hibernated/canvas_0");
     ASSERT_TRUE(dump);
     auto entries = GetEntries(*dump);
-    EXPECT_EQ(entries["memory_size"], handler.memory_size());
-    EXPECT_EQ(entries["original_memory_size"], handler.original_memory_size());
+    EXPECT_EQ(entries["memory_size"], handler->memory_size());
+    EXPECT_EQ(entries["original_memory_size"], handler->original_memory_size());
     EXPECT_EQ(entries.at("is_encoded"), 0u);
     EXPECT_EQ(entries["height"], 200u);
     EXPECT_EQ(entries["width"], 300u);
@@ -504,7 +499,7 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
   // Wait for the canvas to be encoded.
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
   EXPECT_EQ(2u, TestSingleThreadTaskRunner::RunAll(task_runner->immediate()));
-  EXPECT_TRUE(handler.is_encoded());
+  EXPECT_TRUE(handler->is_encoded());
 
   {
     base::trace_event::ProcessMemoryDump pmd(args);
@@ -513,16 +508,16 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
     auto* dump = pmd.GetAllocatorDump("canvas/hibernated/canvas_0");
     ASSERT_TRUE(dump);
     auto entries = GetEntries(*dump);
-    EXPECT_EQ(entries["memory_size"], handler.memory_size());
-    EXPECT_EQ(entries["original_memory_size"], handler.original_memory_size());
+    EXPECT_EQ(entries["memory_size"], handler->memory_size());
+    EXPECT_EQ(entries["original_memory_size"], handler->original_memory_size());
     EXPECT_LT(entries["memory_size"], entries["original_memory_size"]);
     EXPECT_EQ(entries["is_encoded"], 1u);
   }
 
   // End hibernation to be able to verify that hibernation dumps will no longer
   // occur.
-  SetPageVisible(Host(), &handler, platform, true);
-  EXPECT_FALSE(handler.IsHibernating());
+  SetPageVisible(&host, handler.get(), platform, true);
+  EXPECT_FALSE(handler->IsHibernating());
 
   {
     base::trace_event::ProcessMemoryDump pmd(args);
@@ -532,7 +527,7 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
     EXPECT_FALSE(pmd.GetAllocatorDump("canvas/hibernated/canvas_0"));
   }
 
-  SetPageVisible(Host(), &handler, platform, false);
+  SetPageVisible(&host, handler.get(), platform, false);
   // Wait for the canvas to be encoded.
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
   EXPECT_EQ(2u, TestSingleThreadTaskRunner::RunAll(task_runner->immediate()));
@@ -546,8 +541,8 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
     EXPECT_TRUE(pmd.GetAllocatorDump("canvas/hibernated/canvas_0"));
   }
 
-  // Bridge gets destroyed, no more hibernated canvas.
-  bridge = nullptr;
+  // Handler gets destroyed, no more hibernated canvas.
+  handler = nullptr;
   {
     base::trace_event::ProcessMemoryDump pmd(args);
     EXPECT_TRUE(HibernatedCanvasMemoryDumpProvider::GetInstance().OnMemoryDump(
