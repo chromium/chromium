@@ -2521,7 +2521,11 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
     analyze = !DisplayLockUtilities::IsUnlockedQuickCheck(node);
 
   StyleEngine& style_engine = GetStyleEngine();
-  bool maybe_affected_by_layout = style_engine.StyleMaybeAffectedByLayout(node);
+  bool maybe_affected_by_layout = false;
+  if (const auto* element = DynamicTo<Element>(node)) {
+    maybe_affected_by_layout =
+        style_engine.StyleMaybeAffectedByLayout(*element);
+  }
   // Even if we don't need layout *now*, any dirty style may invalidate layout.
   bool maybe_needs_layout =
       (update != StyleAndLayoutTreeUpdate::kNone) || View()->NeedsLayout();

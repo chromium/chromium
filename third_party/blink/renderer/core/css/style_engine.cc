@@ -3075,13 +3075,13 @@ const MediaQueryEvaluator& StyleEngine::EnsureMediaQueryEvaluator() {
   return *media_query_evaluator_;
 }
 
-bool StyleEngine::StyleMaybeAffectedByLayout(const Node& node) {
+bool StyleEngine::StyleMaybeAffectedByLayout(const Element& element) {
   // Note that the StyleAffectedByLayout flag is set based on which
   // ComputedStyles we've resolved previously. Since style resolution may never
   // reach elements in display:none, we defensively treat any null-or-ensured
   // ComputedStyle as affected by layout.
   return StyleAffectedByLayout() ||
-         ComputedStyle::IsNullOrEnsured(node.GetComputedStyle());
+         ComputedStyle::IsNullOrEnsured(element.GetComputedStyle());
 }
 
 bool StyleEngine::UpdateRootFontRelativeUnits(
@@ -3132,7 +3132,7 @@ void StyleEngine::EnvironmentVariableChanged() {
 
 void StyleEngine::NodeWillBeRemoved(Node& node) {
   if (auto* element = DynamicTo<Element>(node)) {
-    if (const ComputedStyle* style = node.GetComputedStyle();
+    if (const ComputedStyle* style = element->GetComputedStyle();
         style && style->GetCounterDirectives()) {
       MarkCountersDirty();
     }
@@ -4036,8 +4036,10 @@ StyleEngine::AncestorAnalysis StyleEngine::AnalyzeInclusiveAncestor(
   if (IsRootOrSibling(style_invalidation_root_.GetRootNode(), node)) {
     return AncestorAnalysis::kStyleRoot;
   }
-  if (ComputedStyle::IsInterleavingRoot(node.GetComputedStyle())) {
-    return AncestorAnalysis::kInterleavingRoot;
+  if (auto* element = DynamicTo<Element>(node)) {
+    if (ComputedStyle::IsInterleavingRoot(element->GetComputedStyle())) {
+      return AncestorAnalysis::kInterleavingRoot;
+    }
   }
   return AncestorAnalysis::kNone;
 }
