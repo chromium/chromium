@@ -194,10 +194,13 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesMigrationFailures) {
   EXPECT_CALL(*coordinator_ptr, Run)
       .WillOnce([&run_future](CloudProvider cloud_provider,
                               std::vector<base::FilePath> file_paths,
-                              const std::string& destination_dir,
+                              const std::string& upload_root,
                               MigrationDoneCallback callback) {
         std::move(callback).Run(
-            {{base::FilePath("test.txt"), MigrationUploadError::kCopyFailed}});
+            {
+                {base::FilePath("test.txt"), MigrationUploadError::kCopyFailed},
+            },
+            base::FilePath());
         run_future.SetValue();
       });
 

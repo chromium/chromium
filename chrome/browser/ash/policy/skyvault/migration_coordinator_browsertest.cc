@@ -40,8 +40,7 @@ class MockOdfsUploader : public ash::cloud_upload::OdfsMigrationUploader {
 
   MOCK_METHOD(void,
               Run,
-              (base::OnceCallback<void(storage::FileSystemURL,
-                                       std::optional<MigrationUploadError>)>),
+              (ash::cloud_upload::OdfsMigrationUploader::UploadDoneCallback),
               (override));
 
   MOCK_METHOD(void, Cancel, (), (override));
@@ -54,12 +53,13 @@ class MockOdfsUploader : public ash::cloud_upload::OdfsMigrationUploader {
   MockOdfsUploader(Profile* profile,
                    int64_t id,
                    const storage::FileSystemURL& file_system_url,
-                   const base::FilePath& target_path,
+                   const base::FilePath& relative_source_path,
                    base::RepeatingClosure run_callback)
       : ash::cloud_upload::OdfsMigrationUploader(profile,
                                                  id,
                                                  file_system_url,
-                                                 target_path),
+                                                 relative_source_path,
+                                                 ""),
         run_callback_(std::move(run_callback)),
         file_system_url_(file_system_url) {
     ON_CALL(*this, Run).WillByDefault([this](UploadDoneCallback callback) {
@@ -71,7 +71,8 @@ class MockOdfsUploader : public ash::cloud_upload::OdfsMigrationUploader {
 
     ON_CALL(*this, Cancel).WillByDefault([this]() {
       std::move(done_callback_)
-          .Run(file_system_url_, MigrationUploadError::kCancelled);
+          .Run(file_system_url_, MigrationUploadError::kCancelled,
+               base::FilePath());
     });
   }
 
@@ -157,11 +158,19 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, SuccessfulUpload) {
   base::FilePath nested_file_path = CopyTestFile(nested_file, dir_path);
 
   MigrationCoordinator coordinator(profile());
-  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>> future;
+  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
+                         base::FilePath>
+      future;
   // Upload the files.
   coordinator.Run(CloudProvider::kOneDrive, {file_path, nested_file_path},
                   kDestinationDirName, future.GetCallback());
-  ASSERT_TRUE(future.Get().empty());
+  auto [errors, upload_root_path] = future.Get();
+  ASSERT_TRUE(errors.empty());
+  EXPECT_EQ(ash::cloud_upload::GetODFS(profile())
+                ->GetFileSystemInfo()
+                .mount_path()
+                .Append(kDestinationDirName),
+            upload_root_path);
 
   // Check that all files have been moved to OneDrive in the correct place.
   CheckPathExistsOnODFS(
@@ -189,11 +198,13 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest,
   base::FilePath file_path = CopyTestFile(file, my_files_dir());
 
   MigrationCoordinator coordinator(profile());
-  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>> future;
+  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
+                         base::FilePath>
+      future;
   // Upload the file.
   coordinator.Run(CloudProvider::kOneDrive, {file_path}, kDestinationDirName,
                   future.GetCallback());
-  auto errors = future.Get();
+  auto errors = future.Get<0>();
   ASSERT_TRUE(errors.size() == 1u);
   auto error = errors.find(file_path);
   ASSERT_NE(error, errors.end());
@@ -207,10 +218,15 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, EmptyUrls) {
   SetUpODFS();
 
   MigrationCoordinator coordinator(profile());
-  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>> future;
+  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
+                         base::FilePath>
+      future;
   coordinator.Run(CloudProvider::kOneDrive, {}, kDestinationDirName,
                   future.GetCallback());
-  ASSERT_TRUE(future.Get().empty());
+  auto [errors, upload_root_path] = future.Get();
+  ASSERT_TRUE(errors.empty());
+  // The path won't get populated if no upload is triggered.
+  EXPECT_EQ(base::FilePath(), upload_root_path);
 }
 
 IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, CancelUpload) {
@@ -357,11 +373,16 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, SuccessfulUpload) {
           base::test::RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
   MigrationCoordinator coordinator(profile());
-  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>> future;
+  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
+                         base::FilePath>
+      future;
   // Upload the files.
   coordinator.Run(CloudProvider::kGoogleDrive, {nested_file_path},
                   kDestinationDirName, future.GetCallback());
-  ASSERT_TRUE(future.Get().empty());
+
+  auto [errors, upload_root_path] = future.Get();
+  ASSERT_TRUE(errors.empty());
+  EXPECT_EQ(drive_root_dir().Append(kDestinationDirName), upload_root_path);
 
   // Check that all files have been moved to Google Drive in the correct place.
   {
@@ -391,15 +412,19 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, FailedUpload) {
           base::test::RunOnceCallback<1>(drive::FileError::FILE_ERROR_FAILED));
 
   MigrationCoordinator coordinator(profile());
-  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>> future;
+  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
+                         base::FilePath>
+      future;
   // Upload the files.
   coordinator.Run(CloudProvider::kGoogleDrive, {file_path}, kDestinationDirName,
                   future.GetCallback());
-  auto errors = future.Get();
-  ASSERT_TRUE(errors.size() == 1u);
+  auto [errors, upload_root_path] = future.Get();
+  ASSERT_EQ(1u, errors.size());
   auto error = errors.find(file_path);
-  ASSERT_NE(error, errors.end());
-  ASSERT_EQ(error->second, MigrationUploadError::kCopyFailed);
+  ASSERT_NE(errors.end(), error);
+  ASSERT_EQ(MigrationUploadError::kCopyFailed, error->second);
+  // The path should be populated by the time sync starts.
+  EXPECT_EQ(drive_root_dir().Append(kDestinationDirName), upload_root_path);
 
   // Check that the file hasn't been moved to Google Drive.
   {

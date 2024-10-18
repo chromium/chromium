@@ -36,12 +36,17 @@ class DriveSkyvaultUploader
       drivefs::DriveFsHost::Observer,
       drive::DriveIntegrationService::Observer {
  public:
+  // Called when the upload finishes. Parameters:
+  //   error: The upload error, if any.
+  //   upload_root_path: Path to the upload root, or empty on early failure.
   using UploadCallback =
-      base::OnceCallback<void(std::optional<MigrationUploadError> error)>;
+      base::OnceCallback<void(std::optional<MigrationUploadError>,
+                              base::FilePath)>;
 
   DriveSkyvaultUploader(Profile* profile,
                         const base::FilePath& file_path,
-                        const base::FilePath& target_path,
+                        const base::FilePath& relative_source_path,
+                        const std::string& upload_root,
                         UploadCallback callback);
   ~DriveSkyvaultUploader() override;
 
@@ -51,7 +56,6 @@ class DriveSkyvaultUploader
   // - Remove the source file in case of a move operation. Move mode of the
   //   `CopyOrMoveIOTask` is not used because the source file should only be
   //   deleted at the end of the sync operation.
-  // Initiated by the `Upload` static method.
   void Run();
 
   // Cancels the upload, if possible.
@@ -113,9 +117,17 @@ class DriveSkyvaultUploader
   const raw_ptr<drive::DriveIntegrationService> drive_integration_service_;
 
   // Upload details:
-  const storage::FileSystemURL source_url_;  // Source file URL
-  const base::FilePath target_path_;         // Target folder path on Drive
-  UploadCallback callback_;                  // Invoked on completion
+  // Source file URL
+  const storage::FileSystemURL source_url_;
+  // Part of the source path relative to MyFiles
+  const base::FilePath relative_source_path_;
+  // The name of the device-unique upload root folder on Drive
+  const std::string upload_root_;
+  // Absolute path to the device's upload root folder on Drive. This is
+  // populated when the upload is about to start.
+  base::FilePath upload_root_path_;
+  // Invoked on completion
+  UploadCallback callback_;
 
   // Tracks upload progress:
   std::optional<file_manager::io_task::IOTaskId> observed_copy_task_id_ =

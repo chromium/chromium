@@ -48,10 +48,12 @@ bool CreateDirectoryIfNeeded(const base::FilePath& dir_path) {
 }
 }  // namespace
 
-DriveSkyvaultUploader::DriveSkyvaultUploader(Profile* profile,
-                                             const base::FilePath& file_path,
-                                             const base::FilePath& target_path,
-                                             UploadCallback callback)
+DriveSkyvaultUploader::DriveSkyvaultUploader(
+    Profile* profile,
+    const base::FilePath& file_path,
+    const base::FilePath& relative_source_path,
+    const std::string& upload_root,
+    UploadCallback callback)
     : profile_(profile),
       file_system_context_(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
@@ -61,7 +63,8 @@ DriveSkyvaultUploader::DriveSkyvaultUploader(Profile* profile,
           blink::StorageKey(),
           storage::kFileSystemTypeLocal,
           file_path)),
-      target_path_(target_path),
+      relative_source_path_(relative_source_path),
+      upload_root_(upload_root),
       callback_(std::move(callback)) {}
 
 DriveSkyvaultUploader::~DriveSkyvaultUploader() = default;
@@ -122,10 +125,11 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
-  base::FilePath destination_folder_path =
-      drive_integration_service_->GetMountPointPath()
-          .AppendASCII("root")
-          .Append(target_path_);
+  upload_root_path_ = drive_integration_service_->GetMountPointPath()
+                          .AppendASCII("root")
+                          .AppendASCII(upload_root_);
+  auto destination_folder_path =
+      upload_root_path_.Append(relative_source_path_);
   // Copy will fail if the full path doesn't already exist in drive, so first
   // create the destination folder if needed.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -248,7 +252,7 @@ void DriveSkyvaultUploader::OnEndUpload() {
   SkyVaultDeleteErrorHistogram(UploadTrigger::kMigration,
                                CloudProvider::kGoogleDrive,
                                error_ == MigrationUploadError::kDeleteFailed);
-  std::move(callback_).Run(error_);
+  std::move(callback_).Run(error_, upload_root_path_);
 }
 
 void DriveSkyvaultUploader::OnIOTaskStatus(

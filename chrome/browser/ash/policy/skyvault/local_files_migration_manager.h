@@ -109,7 +109,8 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Handles the completion of the migration process (success or failure).
   // If the migration was successful, starts the cleanup process, and handles
   // the errors otherwise.
-  void OnMigrationDone(std::map<base::FilePath, MigrationUploadError> errors);
+  void OnMigrationDone(std::map<base::FilePath, MigrationUploadError> errors,
+                       base::FilePath upload_root_path);
 
   // Completes the migration process, taking into account any errors that
   // occurred during the migration.

@@ -64,17 +64,17 @@ class MockMigrationCoordinator : public MigrationCoordinator {
 
   // MigrationCoordinator overrides:
   bool IsRunning() const override { return is_running_; }
-  void OnMigrationDone(
-      MigrationDoneCallback callback,
-      std::map<base::FilePath, MigrationUploadError> errors) override;
+  void OnMigrationDone(MigrationDoneCallback callback,
+                       std::map<base::FilePath, MigrationUploadError> errors,
+                       base::FilePath upload_root_path) override;
 
   // By default waits some minutes and completes the upload successfully.
   MOCK_METHOD(void,
               Run,
-              (CloudProvider cloud_provider,
-               std::vector<base::FilePath> file_paths,
-               const std::string& destination_dir,
-               MigrationDoneCallback callback),
+              (CloudProvider,
+               std::vector<base::FilePath>,
+               const std::string&,
+               MigrationDoneCallback),
               (override));
   MOCK_METHOD(void, Cancel, (), (override));
 

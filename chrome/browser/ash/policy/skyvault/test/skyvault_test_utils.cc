@@ -23,7 +23,7 @@ MockMigrationCoordinator::MockMigrationCoordinator(Profile* profile)
   ON_CALL(*this, Run)
       .WillByDefault([this](CloudProvider cloud_provider,
                             std::vector<base::FilePath> file_paths,
-                            const std::string& destination_dir,
+                            const std::string& upload_root,
                             MigrationDoneCallback callback) {
         is_running_ = true;
         if (run_cb_) {
@@ -35,10 +35,11 @@ MockMigrationCoordinator::MockMigrationCoordinator(Profile* profile)
             ->GetCurrentDefault()
             ->PostDelayedTask(
                 FROM_HERE,
-                base::BindOnce(
-                    &MockMigrationCoordinator::OnMigrationDone,
-                    weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                    std::map<base::FilePath, MigrationUploadError>()),
+                base::BindOnce(&MockMigrationCoordinator::OnMigrationDone,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(callback),
+                               std::map<base::FilePath, MigrationUploadError>(),
+                               base::FilePath()),
                 base::Minutes(5));  // Delay 5 minutes
       });
 
@@ -49,9 +50,10 @@ MockMigrationCoordinator::~MockMigrationCoordinator() = default;
 
 void MockMigrationCoordinator::OnMigrationDone(
     MigrationDoneCallback callback,
-    std::map<base::FilePath, MigrationUploadError> errors) {
+    std::map<base::FilePath, MigrationUploadError> errors,
+    base::FilePath upload_root_path) {
   if (is_running_) {
-    std::move(callback).Run(std::move(errors));
+    std::move(callback).Run(std::move(errors), upload_root_path);
     is_running_ = false;
   }
 }

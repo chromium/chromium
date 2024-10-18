@@ -31,7 +31,8 @@ class OdfsSkyvaultUploader
  public:
   using UploadDoneCallback =
       base::OnceCallback<void(storage::FileSystemURL,
-                              std::optional<MigrationUploadError>)>;
+                              std::optional<MigrationUploadError>,
+                              base::FilePath upload_root_path)>;
 
   // Uploads the file at `path` to the OneDrive root directory.
   //
@@ -53,15 +54,10 @@ class OdfsSkyvaultUploader
       base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback,
       std::optional<const gfx::Image> thumbnail = std::nullopt);
 
-  // Uploads the file at `file_system_url` to OneDrive, placing it at the
-  // specified `target_path`.
+  // Uploads the file to OneDrive, placing it in the device-unique folder at the
+  // specified relative path.
   //
-  // Upon completion, invokes `upload_callback` with the following:
-  // * `MigrationUploadError error` - Indicates the type of error encountered
-  // during the upload, if any. See the `MigrationUploadError` enum for possible
-  // values.
-  // * `storage::FileSystemURL url` - The URL of the uploaded file on OneDrive.
-  // This will be empty if the upload failed.
+  // Invokes `upload_callback` upon completion.
   //
   // Optionally, periodically invokes the `progress_callback` during the upload
   // to provide progress updates in bytes transferred.
@@ -69,16 +65,17 @@ class OdfsSkyvaultUploader
   // Returns a weak pointer to the `OdfsSkyvaultUploader` object. This can be
   // used to cancel the upload before it completes.
   //
-  // Example: Uploading "example.txt" with a `target_path` of "Documents/Files"
-  // results in
-  // "<ODFS ROOT>/Documents/Files/example.txt" on OneDrive.
+  // Example: Uploading "example.txt" with a `relative_source_path` of
+  // "Documents/Files" and `upload_root` "ChromeOS Device 123" results in
+  // "<ODFS ROOT>/ChromeOS Device 123/Documents/Files/example.txt" on OneDrive.
   static base::WeakPtr<OdfsSkyvaultUploader> Upload(
       Profile* profile,
       const base::FilePath& path,
+      const base::FilePath& relative_source_path,
+      const std::string& upload_root,
       UploadTrigger trigger,
       base::RepeatingCallback<void(int64_t)> progress_callback,
-      UploadDoneCallback upload_callback,
-      const base::FilePath& target_path);
+      UploadDoneCallback upload_callback);
 
   OdfsSkyvaultUploader(const OdfsSkyvaultUploader&) = delete;
   OdfsSkyvaultUploader& operator=(const OdfsSkyvaultUploader&) = delete;
@@ -110,6 +107,10 @@ class OdfsSkyvaultUploader
   virtual void Run(UploadDoneCallback upload_callback);
 
   raw_ptr<Profile> profile_;
+
+  // Absolute path to the device's upload root folder on Drive. This is
+  // populated when the upload is about to start.
+  base::FilePath upload_root_path_;
 
  private:
   friend base::RefCounted<OdfsSkyvaultUploader>;
@@ -175,15 +176,16 @@ class OdfsMigrationUploader : public OdfsSkyvaultUploader {
  public:
   using FactoryCallback =
       base::RepeatingCallback<scoped_refptr<OdfsMigrationUploader>(
-          Profile* profile,
-          int64_t id,
-          const storage::FileSystemURL& file_system_url,
-          const base::FilePath& target_path)>;
+          Profile*,
+          int64_t,
+          const storage::FileSystemURL&,
+          const base::FilePath&)>;
   static scoped_refptr<OdfsMigrationUploader> Create(
       Profile* profile,
       int64_t id,
       const storage::FileSystemURL& file_system_url,
-      const base::FilePath& target_path);
+      const base::FilePath& relative_source_path,
+      const std::string& upload_root);
 
   // Sets a testing factory function, allowing the injection of mock
   // OdfsMigrationUploader objects into the migration upload process.
@@ -193,7 +195,8 @@ class OdfsMigrationUploader : public OdfsSkyvaultUploader {
   OdfsMigrationUploader(Profile* profile,
                         int64_t id,
                         const storage::FileSystemURL& file_system_url,
-                        const base::FilePath& target_path);
+                        const base::FilePath& relative_source_path,
+                        const std::string& upload_root);
   ~OdfsMigrationUploader() override;
 
  private:
@@ -203,8 +206,10 @@ class OdfsMigrationUploader : public OdfsSkyvaultUploader {
   void RequestSignIn(
       base::OnceCallback<void(base::File::Error)> on_sign_in_cb) override;
 
-  // Path in OneDrive to upload the file to.
-  base::FilePath target_path_;
+  // Part of the source path relative to MyFiles
+  const base::FilePath relative_source_path_;
+  // The name of the device-unique upload root folder on Drive
+  const std::string upload_root_;
 
   base::CallbackListSubscription subscription_;
 };

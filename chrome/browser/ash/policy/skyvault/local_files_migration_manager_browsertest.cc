@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                      const std::string& destination_dir,
                      MigrationDoneCallback callback) {
           // Finish without delay.
-          std::move(callback).Run(/*errors=*/{});
+          std::move(callback).Run(/*errors=*/{}, base::FilePath());
         });
   }
 

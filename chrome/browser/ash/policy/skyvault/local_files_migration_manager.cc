@@ -398,7 +398,8 @@ void LocalFilesMigrationManager::StartMigration(
 }
 
 void LocalFilesMigrationManager::OnMigrationDone(
-    std::map<base::FilePath, MigrationUploadError> errors) {
+    std::map<base::FilePath, MigrationUploadError> errors,
+    base::FilePath upload_root_path) {
   if (state_ != State::kInProgress) {
     LOG(ERROR) << "Wrong state in migration done";
     SkyVaultMigrationWrongStateHistogram(
@@ -408,8 +409,6 @@ void LocalFilesMigrationManager::OnMigrationDone(
 
   SkyVaultMigrationFailedHistogram(cloud_provider_, !errors.empty());
 
-  // TODO(b/354709404): Get destination folder path in drive.
-  const base::FilePath destination_path = base::FilePath();
   if (!errors.empty()) {
     SetState(State::kFailure);
     LOG(ERROR) << "Local files migration failed.";
@@ -421,7 +420,7 @@ void LocalFilesMigrationManager::OnMigrationDone(
     observer.OnMigrationSucceeded();
   }
   notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
-                                                            destination_path);
+                                                            upload_root_path);
   VLOG(1) << "Local files migration done";
 
   SetState(State::kCleanup);

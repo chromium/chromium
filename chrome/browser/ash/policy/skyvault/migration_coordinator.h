@@ -19,8 +19,12 @@
 namespace policy::local_user_files {
 
 // Callback used to signal that all uploads completed (successfully or not).
+// Parameters:
+//  errors: Map of source file paths to upload errors (empty if no errors).
+//  upload_root_path: Path to the upload root, or empty on early failure.
 using MigrationDoneCallback =
-    base::OnceCallback<void(std::map<base::FilePath, MigrationUploadError>)>;
+    base::OnceCallback<void(std::map<base::FilePath, MigrationUploadError>,
+                            base::FilePath)>;
 
 class MigrationCloudUploader;
 
@@ -36,13 +40,12 @@ class MigrationCoordinator {
   virtual ~MigrationCoordinator();
 
   // Starts the upload of files specified by `source_urls` to the
-  // `destination_dir` directory in the cloud storage location specified by
-  // `cloud_provider`. The `callback` will be invoked upon completion,
-  // indicating whether the migration was successful. Fails if a migration is
-  // already in progress.
+  // `upload_root` directory on `cloud_provider`. Invokes `callback` upon
+  // completion, passing any errors that occurred and the absolute path to the
+  // root upload directory. Fails if a migration is already in progress.
   virtual void Run(CloudProvider cloud_provider,
                    std::vector<base::FilePath> files,
-                   const std::string& destination_dir,
+                   const std::string& upload_root,
                    MigrationDoneCallback callback);
 
   // Cancels any ongoing file uploads.
@@ -55,14 +58,14 @@ class MigrationCoordinator {
   // Called after underlying upload operation completes.
   virtual void OnMigrationDone(
       MigrationDoneCallback callback,
-      std::map<base::FilePath, MigrationUploadError> errors);
+      std::map<base::FilePath, MigrationUploadError> errors,
+      base::FilePath upload_root_path);
 
   // Profile for which this instance was created.
   raw_ptr<Profile> profile_;
 
-  // The implementation of the upload process, specific to the chosen cloud
-  // storage destination. This is initialized dynamically based on the
-  // `destination` argument passed to the `Run` method.
+  // The implementation of the upload process, specific to the
+  // `cloud_provider` argument passed to the `Run` method.
   std::unique_ptr<MigrationCloudUploader> uploader_ = nullptr;
 
   base::WeakPtrFactory<MigrationCoordinator> weak_ptr_factory_{this};
@@ -75,7 +78,7 @@ class MigrationCloudUploader {
  public:
   MigrationCloudUploader(Profile* profile,
                          std::vector<base::FilePath> files,
-                         const std::string& destination_dir,
+                         const std::string& upload_root,
                          MigrationDoneCallback callback);
   MigrationCloudUploader(const MigrationCloudUploader&) = delete;
   MigrationCloudUploader& operator=(const MigrationCloudUploader&) = delete;
@@ -96,8 +99,11 @@ class MigrationCloudUploader {
   const raw_ptr<Profile> profile_;
   // The paths of the files or directories to be uploaded.
   const std::vector<base::FilePath> files_;
-  // The name of the destination directory.
-  const std::string destination_dir_;
+  // The name of the device-unique upload root folder on Drive
+  const std::string upload_root_;
+  // Absolute path to the device's upload root folder on Drive. This is
+  // populated after the first successful upload.
+  base::FilePath upload_root_path_;
   // Callback to run after all uploads finish.
   MigrationDoneCallback done_callback_;
   // Callback to run after all uploads are cancelled.
@@ -111,7 +117,7 @@ class OneDriveMigrationUploader : public MigrationCloudUploader {
  public:
   OneDriveMigrationUploader(Profile* profile,
                             std::vector<base::FilePath> files,
-                            const std::string& destination_dir,
+                            const std::string& upload_root,
                             MigrationDoneCallback callback);
   OneDriveMigrationUploader(const OneDriveMigrationUploader&) = delete;
   OneDriveMigrationUploader& operator=(const OneDriveMigrationUploader&) =
@@ -126,7 +132,8 @@ class OneDriveMigrationUploader : public MigrationCloudUploader {
   // Called when one upload operation completes.
   void OnUploadDone(const base::FilePath& file_path,
                     storage::FileSystemURL url,
-                    std::optional<MigrationUploadError> error);
+                    std::optional<MigrationUploadError> error,
+                    base::FilePath upload_root_path);
 
   // Maps source urls of files being uploaded to corresponding
   // OdfsSkyvaultUploader instances. Keeps a weak reference as lifetime of
@@ -141,13 +148,12 @@ class OneDriveMigrationUploader : public MigrationCloudUploader {
   base::WeakPtrFactory<OneDriveMigrationUploader> weak_ptr_factory_{this};
 };
 
-// TODO(b/349101997): Implementation.
 // Migration file uploader for uploads to Google Drive.
 class GoogleDriveMigrationUploader : public MigrationCloudUploader {
  public:
   GoogleDriveMigrationUploader(Profile* profile,
                                std::vector<base::FilePath> files,
-                               const std::string& destination_dir,
+                               const std::string& upload_root,
                                MigrationDoneCallback callback);
   GoogleDriveMigrationUploader(const GoogleDriveMigrationUploader&) = delete;
   GoogleDriveMigrationUploader& operator=(const GoogleDriveMigrationUploader&) =
@@ -160,7 +166,8 @@ class GoogleDriveMigrationUploader : public MigrationCloudUploader {
 
  private:
   void OnUploadDone(const base::FilePath& file_path,
-                    std::optional<MigrationUploadError> error);
+                    std::optional<MigrationUploadError> error,
+                    base::FilePath upload_root_path);
 
   // Maps source urls of files being uploaded to corresponding
   // DriveSkyvaultUploader instances.
