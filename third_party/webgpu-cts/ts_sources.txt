@@ -23,6 +23,7 @@ src/common/framework/data_cache.ts
 src/common/framework/metadata.ts
 src/common/framework/params_builder.ts
 src/common/framework/resources.ts
+src/common/util/collect_garbage.ts
 src/common/internal/websocket_logger.ts
 src/common/internal/test_group.ts
 src/common/framework/test_group.ts
@@ -57,7 +58,6 @@ src/common/tools/merge_listing_times.ts
 src/common/tools/run_wpt_ref_tests.ts
 src/common/tools/validate.ts
 src/common/tools/version.ts
-src/common/util/collect_garbage.ts
 src/common/util/preprocessor.ts
 src/common/util/wpt_reftest_wait.ts
 src/unittests/unit_test.ts
