@@ -85,8 +85,8 @@ class PLATFORM_EXPORT FEComponentTransfer final : public FilterEffect {
                       const ComponentTransferFunction& blue_func,
                       const ComponentTransferFunction& alpha_func);
 
-  WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
-                                          int indention) const override;
+  StringBuilder& ExternalRepresentation(StringBuilder&,
+                                        wtf_size_t indent) const override;
 
  private:
   sk_sp<PaintFilter> CreateImageFilter() override;

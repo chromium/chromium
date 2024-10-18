@@ -34,7 +34,7 @@
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -164,8 +164,8 @@ void FEComponentTransfer::GetValues(unsigned char r_values[256],
   }
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const ComponentTransferType& type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const ComponentTransferType& type) {
   switch (type) {
     case FECOMPONENTTRANSFER_TYPE_UNKNOWN:
       ts << "UNKNOWN";
@@ -189,8 +189,8 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const ComponentTransferFunction& function) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const ComponentTransferFunction& function) {
   ts << "type=\"" << function.type << "\" slope=\"" << function.slope
      << "\" intercept=\"" << function.intercept << "\" amplitude=\""
      << function.amplitude << "\" exponent=\"" << function.exponent
@@ -198,9 +198,9 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-WTF::TextStream& FEComponentTransfer::ExternalRepresentation(
-    WTF::TextStream& ts,
-    int indent) const {
+StringBuilder& FEComponentTransfer::ExternalRepresentation(
+    StringBuilder& ts,
+    wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feComponentTransfer";
   FilterEffect::ExternalRepresentation(ts);

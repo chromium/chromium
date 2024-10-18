@@ -27,7 +27,7 @@
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -54,8 +54,8 @@ sk_sp<PaintFilter> FEBlend::CreateImageFilter() {
                                          base::OptionalToPtr(crop_rect));
 }
 
-WTF::TextStream& FEBlend::ExternalRepresentation(WTF::TextStream& ts,
-                                                 int indent) const {
+StringBuilder& FEBlend::ExternalRepresentation(StringBuilder& ts,
+                                               wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feBlend";
   FilterEffect::ExternalRepresentation(ts);

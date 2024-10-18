@@ -87,8 +87,8 @@ class PLATFORM_EXPORT FilterEffect : public GarbageCollected<FilterEffect> {
     return kFilterEffectTypeUnknown;
   }
 
-  virtual WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
-                                                  int indention = 0) const;
+  virtual StringBuilder& ExternalRepresentation(StringBuilder&,
+                                                wtf_size_t indention = 0) const;
 
   gfx::RectF FilterPrimitiveSubregion() const {
     return filter_primitive_subregion_;

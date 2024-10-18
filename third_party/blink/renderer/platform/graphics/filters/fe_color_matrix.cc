@@ -32,7 +32,7 @@
 #include "cc/paint/color_filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -158,8 +158,8 @@ sk_sp<PaintFilter> FEColorMatrix::CreateImageFilter() {
                                             base::OptionalToPtr(crop_rect));
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const ColorMatrixType& type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const ColorMatrixType& type) {
   switch (type) {
     case FECOLORMATRIX_TYPE_UNKNOWN:
       ts << "UNKNOWN";
@@ -197,8 +197,8 @@ static bool ValuesIsValidForType(ColorMatrixType type,
   return false;
 }
 
-WTF::TextStream& FEColorMatrix::ExternalRepresentation(WTF::TextStream& ts,
-                                                       int indent) const {
+StringBuilder& FEColorMatrix::ExternalRepresentation(StringBuilder& ts,
+                                                     wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feColorMatrix";
   FilterEffect::ExternalRepresentation(ts);

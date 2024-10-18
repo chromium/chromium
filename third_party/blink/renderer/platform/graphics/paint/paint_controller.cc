@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_under_invalidation_checker.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 
 #if DCHECK_IS_ON()
@@ -461,7 +461,7 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
     auto index = FindItemFromIdIndexMap(id, new_display_item_id_index_map_,
                                         new_display_item_list);
     if (index != kNotFound) {
-      WTF::TextStream ts;
+      StringBuilder ts;
       const auto& chunks = new_paint_artifact_->GetPaintChunks();
       auto chunk =
           std::upper_bound(chunks.begin(), chunks.end(), index,
@@ -486,7 +486,7 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
          << " (index=" << index << " in chunk "
          << chunk->ToString(*new_paint_artifact_, /*concise=*/true).Utf8()
          << ")";
-      std::string message = ts.Release().Utf8();
+      std::string message = ts.ReleaseString().Utf8();
       LOG(ERROR) << message;
       std::string debug_data = DebugDataAsString().Utf8();
       LOG(ERROR) << debug_data;
@@ -560,12 +560,12 @@ void PaintController::CheckNewChunkId(const PaintChunk::Id& id) {
   }
   auto it = new_paint_chunk_id_index_map_.find(id.AsHashKey());
   if (it != new_paint_chunk_id_index_map_.end()) {
-    WTF::TextStream ts;
+    StringBuilder ts;
     ts << "New paint chunk id " << id.ToString(*new_paint_artifact_)
        << " is already used by a previous chuck "
        << new_paint_artifact_->GetPaintChunks()[it->value].ToString(
               *new_paint_artifact_);
-    std::string message = ts.Release().Utf8();
+    std::string message = ts.ReleaseString().Utf8();
     LOG(ERROR) << message;
     std::string debug_data = DebugDataAsString().Utf8();
     LOG(ERROR) << debug_data;

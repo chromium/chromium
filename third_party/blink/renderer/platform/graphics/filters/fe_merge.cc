@@ -26,7 +26,7 @@
 
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -45,8 +45,8 @@ sk_sp<PaintFilter> FEMerge::CreateImageFilter() {
                                       base::OptionalToPtr(crop_rect));
 }
 
-WTF::TextStream& FEMerge::ExternalRepresentation(WTF::TextStream& ts,
-                                                 int indent) const {
+StringBuilder& FEMerge::ExternalRepresentation(StringBuilder& ts,
+                                               wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feMerge";
   FilterEffect::ExternalRepresentation(ts);

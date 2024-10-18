@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace gfx {
 class Point;
@@ -80,16 +80,16 @@ ExternalRepresentation(Element*,
                        LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal);
 
 // Helper function shared with SVGLayoutTreeAsText (so they are not exported).
-void Write(WTF::TextStream&,
+void Write(StringBuilder&,
            const LayoutObject&,
-           int indent = 0,
+           wtf_size_t indent = 0,
            LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal);
 String QuoteAndEscapeNonPrintables(const String&);
-WTF::TextStream& operator<<(WTF::TextStream&, const Color&);
-WTF::TextStream& operator<<(WTF::TextStream& ts, const PhysicalRect& r);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Point&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::PointF&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::RectF&);
+StringBuilder& operator<<(StringBuilder&, const Color&);
+StringBuilder& operator<<(StringBuilder& ts, const PhysicalRect& r);
+StringBuilder& operator<<(StringBuilder&, const gfx::Point&);
+StringBuilder& operator<<(StringBuilder&, const gfx::PointF&);
+StringBuilder& operator<<(StringBuilder&, const gfx::RectF&);
 
 CORE_EXPORT String CounterValueForElement(Element*);
 

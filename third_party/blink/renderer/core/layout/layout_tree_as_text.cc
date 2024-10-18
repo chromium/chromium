@@ -84,19 +84,19 @@ String FormatNumberRespectingIntegers(double value) {
   return String::Number(static_cast<int>(round(value)));
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutUnit& unit) {
+StringBuilder& operator<<(StringBuilder& ts, const LayoutUnit& unit) {
   return ts << FormatNumberRespectingIntegers(unit.ToDouble());
 }
 
 }  // namespace
 
-static void WriteLayers(WTF::TextStream&,
+static void WriteLayers(StringBuilder&,
                         PaintLayer*,
-                        int indent = 0,
+                        wtf_size_t indent = 0,
                         LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal,
                         const PaintLayer* marked_layer = nullptr);
 
-static void PrintBorderStyle(WTF::TextStream& ts,
+static void PrintBorderStyle(StringBuilder& ts,
                              const EBorderStyle border_style) {
   ts << getValueName(PlatformEnumToCSSValueID(border_style)) << " ";
 }
@@ -139,11 +139,11 @@ String QuoteAndEscapeNonPrintables(const String& s) {
   return result.ToString();
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const Color& c) {
+StringBuilder& operator<<(StringBuilder& ts, const Color& c) {
   return ts << c.NameForLayoutTreeAsText();
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const PhysicalRect& r) {
+StringBuilder& operator<<(StringBuilder& ts, const PhysicalRect& r) {
   ts << "at (" << FormatNumberRespectingIntegers(r.X().ToFloat());
   ts << "," << FormatNumberRespectingIntegers(r.Y().ToFloat());
   ts << ") size " << FormatNumberRespectingIntegers(r.Width().ToFloat());
@@ -151,25 +151,25 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const PhysicalRect& r) {
   return ts;
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Point& p) {
+StringBuilder& operator<<(StringBuilder& ts, const gfx::Point& p) {
   return ts << "(" << p.x() << "," << p.y() << ")";
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::PointF& p) {
+StringBuilder& operator<<(StringBuilder& ts, const gfx::PointF& p) {
   ts << "(" << FormatNumberRespectingIntegers(p.x());
   ts << "," << FormatNumberRespectingIntegers(p.y());
   ts << ")";
   return ts;
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::RectF& r) {
+StringBuilder& operator<<(StringBuilder& ts, const gfx::RectF& r) {
   ts << "at " << r.origin();
   ts << " size " << FormatNumberRespectingIntegers(r.width());
   ts << "x" << FormatNumberRespectingIntegers(r.height());
   return ts;
 }
 
-void WriteLayoutObject(WTF::TextStream& ts,
+void WriteLayoutObject(StringBuilder& ts,
                        const LayoutObject& o,
                        LayoutAsTextBehavior behavior) {
   ts << o.DecoratedName();
@@ -276,7 +276,7 @@ void WriteLayoutObject(WTF::TextStream& ts,
   if (behavior & kLayoutAsTextShowIDAndClass) {
     if (auto* element = DynamicTo<Element>(o.GetNode())) {
       if (element->HasID())
-        ts << " id=\"" + element->GetIdAttribute() + "\"";
+        ts << " id=\"" << element->GetIdAttribute() << "\"";
 
       if (element->HasClass()) {
         ts << " class=\"";
@@ -324,7 +324,7 @@ void WriteLayoutObject(WTF::TextStream& ts,
     ts << " (display-locked)";
 }
 
-static void WriteTextFragment(WTF::TextStream& ts,
+static void WriteTextFragment(StringBuilder& ts,
                               PhysicalRect rect,
                               StringView text,
                               LayoutUnit inline_size) {
@@ -337,7 +337,7 @@ static void WriteTextFragment(WTF::TextStream& ts,
   ts << "\n";
 }
 
-static void WriteTextFragment(WTF::TextStream& ts, const InlineCursor& cursor) {
+static void WriteTextFragment(StringBuilder& ts, const InlineCursor& cursor) {
   DCHECK(cursor.CurrentItem());
   const FragmentItem& item = *cursor.CurrentItem();
   DCHECK(item.Type() == FragmentItem::kText ||
@@ -348,9 +348,9 @@ static void WriteTextFragment(WTF::TextStream& ts, const InlineCursor& cursor) {
                     item.Text(cursor.Items()), inline_size);
 }
 
-static void WritePaintProperties(WTF::TextStream& ts,
+static void WritePaintProperties(StringBuilder& ts,
                                  const LayoutObject& o,
-                                 int indent) {
+                                 wtf_size_t indent) {
   bool has_fragments = o.IsFragmented();
   if (has_fragments) {
     WriteIndent(ts, indent);
@@ -376,9 +376,9 @@ static void WritePaintProperties(WTF::TextStream& ts,
   }
 }
 
-void Write(WTF::TextStream& ts,
+void Write(StringBuilder& ts,
            const LayoutObject& o,
-           int indent,
+           wtf_size_t indent,
            LayoutAsTextBehavior behavior) {
   if (o.IsSVGShape()) {
     Write(ts, To<LayoutSVGShape>(o), indent);
@@ -459,11 +459,11 @@ enum LayerPaintPhase {
   kLayerPaintPhaseForeground = 1
 };
 
-static void Write(WTF::TextStream& ts,
+static void Write(StringBuilder& ts,
                   PaintLayer& layer,
                   const PhysicalOffset& layer_offset,
                   LayerPaintPhase paint_phase = kLayerPaintPhaseAll,
-                  int indent = 0,
+                  wtf_size_t indent = 0,
                   LayoutAsTextBehavior behavior = kLayoutAsTextBehaviorNormal,
                   const PaintLayer* marked_layer = nullptr) {
   gfx::Point adjusted_layer_offset = ToRoundedPoint(layer_offset);
@@ -541,9 +541,9 @@ static HeapVector<Member<PaintLayer>> ChildLayers(
   return vector;
 }
 
-void WriteLayers(WTF::TextStream& ts,
+void WriteLayers(StringBuilder& ts,
                  PaintLayer* layer,
-                 int indent,
+                 wtf_size_t indent,
                  LayoutAsTextBehavior behavior,
                  const PaintLayer* marked_layer) {
   const LayoutObject& layer_object = layer->GetLayoutObject();
@@ -644,7 +644,7 @@ static String NodePosition(Node* node) {
   return result.ToString();
 }
 
-static void WriteSelection(WTF::TextStream& ts, const LayoutObject* o) {
+static void WriteSelection(StringBuilder& ts, const LayoutObject* o) {
   Document* doc = DynamicTo<Document>(o->GetNode());
   if (!doc)
     return;
@@ -673,14 +673,14 @@ static void WriteSelection(WTF::TextStream& ts, const LayoutObject* o) {
 static String ExternalRepresentation(LayoutBox* layout_object,
                                      LayoutAsTextBehavior behavior,
                                      const PaintLayer* marked_layer = nullptr) {
-  WTF::TextStream ts;
+  StringBuilder ts;
   if (!layout_object->HasLayer())
-    return ts.Release();
+    return ts.ReleaseString();
 
   PaintLayer* layer = layout_object->Layer();
   WriteLayers(ts, layer, 0, behavior, marked_layer);
   WriteSelection(ts, layout_object);
-  return ts.Release();
+  return ts.ReleaseString();
 }
 
 String ExternalRepresentation(LocalFrame* frame,
@@ -730,7 +730,7 @@ String ExternalRepresentation(Element* element, LayoutAsTextBehavior behavior) {
   return ExternalRepresentation(To<LayoutBox>(layout_object), behavior);
 }
 
-static void WriteCounterValuesFromChildren(WTF::TextStream& stream,
+static void WriteCounterValuesFromChildren(StringBuilder& stream,
                                            LayoutObject* parent,
                                            bool& is_first_counter) {
   for (LayoutObject* child = parent->SlowFirstChild(); child;
@@ -746,7 +746,7 @@ static void WriteCounterValuesFromChildren(WTF::TextStream& stream,
 
 String CounterValueForElement(Element* element) {
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  WTF::TextStream stream;
+  StringBuilder stream;
   bool is_first_counter = true;
   // The counter LayoutObjects should be children of ::marker, ::before or
   // ::after pseudo-elements.
@@ -758,7 +758,7 @@ String CounterValueForElement(Element* element) {
     WriteCounterValuesFromChildren(stream, before, is_first_counter);
   if (LayoutObject* after = element->PseudoElementLayoutObject(kPseudoIdAfter))
     WriteCounterValuesFromChildren(stream, after, is_first_counter);
-  return stream.Release();
+  return stream.ReleaseString();
 }
 
 String MarkerTextForListItem(Element* element) {

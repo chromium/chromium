@@ -35,8 +35,8 @@ class PLATFORM_EXPORT FEBlend final : public FilterEffect {
   BlendMode GetBlendMode() const { return mode_; }
   bool SetBlendMode(BlendMode);
 
-  WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
-                                          int indention) const override;
+  StringBuilder& ExternalRepresentation(StringBuilder&,
+                                        wtf_size_t indent) const override;
 
  private:
   sk_sp<PaintFilter> CreateImageFilter() override;

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_effect.h"
 
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -36,8 +36,9 @@ sk_sp<PaintFilter> PaintFilterEffect::CreateImageFilter() {
   }
 }
 
-WTF::TextStream& PaintFilterEffect::ExternalRepresentation(WTF::TextStream& ts,
-                                                           int indent) const {
+StringBuilder& PaintFilterEffect::ExternalRepresentation(
+    StringBuilder& ts,
+    wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[PaintFilterEffect]\n";
   return ts;

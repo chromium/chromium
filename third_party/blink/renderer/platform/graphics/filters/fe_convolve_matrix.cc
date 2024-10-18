@@ -30,7 +30,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -149,8 +149,8 @@ sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
       std::move(input), base::OptionalToPtr(crop_rect));
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const FEConvolveMatrix::EdgeModeType& type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const FEConvolveMatrix::EdgeModeType& type) {
   switch (type) {
     case FEConvolveMatrix::EDGEMODE_UNKNOWN:
       ts << "UNKNOWN";
@@ -168,8 +168,9 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-WTF::TextStream& FEConvolveMatrix::ExternalRepresentation(WTF::TextStream& ts,
-                                                          int indent) const {
+StringBuilder& FEConvolveMatrix::ExternalRepresentation(
+    StringBuilder& ts,
+    wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feConvolveMatrix";
   FilterEffect::ExternalRepresentation(ts);

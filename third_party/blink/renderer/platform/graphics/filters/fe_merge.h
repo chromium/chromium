@@ -31,8 +31,8 @@ class PLATFORM_EXPORT FEMerge final : public FilterEffect {
  public:
   explicit FEMerge(Filter*);
 
-  WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
-                                          int indention) const override;
+  StringBuilder& ExternalRepresentation(StringBuilder&,
+                                        wtf_size_t indent) const override;
 
  private:
   sk_sp<PaintFilter> CreateImageFilter() override;

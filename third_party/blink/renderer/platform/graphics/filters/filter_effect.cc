@@ -30,6 +30,7 @@
 
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -114,8 +115,8 @@ Color FilterEffect::AdaptColorToOperatingInterpolationSpace(
       device_color, OperatingInterpolationSpace());
 }
 
-WTF::TextStream& FilterEffect::ExternalRepresentation(WTF::TextStream& ts,
-                                                      int) const {
+StringBuilder& FilterEffect::ExternalRepresentation(StringBuilder& ts,
+                                                    wtf_size_t) const {
   // FIXME: We should dump the subRegions of the filter primitives here later.
   // This isn't possible at the moment, because we need more detailed
   // information from the target object.
