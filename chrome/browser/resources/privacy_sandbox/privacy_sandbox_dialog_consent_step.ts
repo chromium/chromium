@@ -134,6 +134,9 @@ export class PrivacySandboxDialogConsentStepElement extends
     iframeContent!.classList.add('hidden');
     iframeContent!.classList.remove('visible');
     this.hideConsentNoticePage_ = false;
+
+    // Send focus back to privacy policy link for a11y screen reader.
+    this.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink')!.focus();
   }
 
   private onPrivacyPolicyLinkClicked_() {
@@ -155,6 +158,9 @@ export class PrivacySandboxDialogConsentStepElement extends
           this.privacyPolicyPageLoadEndTime_ -
           this.privacyPolicyPageClickStartTime_);
     }
+
+    // Send focus on the first element (back button) for a11y screen reader.
+    this.shadowRoot!.querySelector<HTMLElement>('#backButton')!.focus();
   }
 
   private getBackButtonBorderStyle_(): string {
