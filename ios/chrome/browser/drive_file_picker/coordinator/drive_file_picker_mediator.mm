@@ -1144,6 +1144,7 @@ NSString* kDriveIconRepositoryPrefix =
 
   return _collectionType != DriveFilePickerCollectionType::kRoot &&
          _collectionType != DriveFilePickerCollectionType::kRecent &&
+         _collectionType != DriveFilePickerCollectionType::kSharedWithMe &&
          _collectionType != DriveFilePickerCollectionType::kSharedDrives;
 }
 
