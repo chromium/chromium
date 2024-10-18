@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
 
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_audience.h"
 
@@ -23,19 +24,16 @@ using segmentation_platform::TipIdentifier;
 #pragma mark - MagicStackModule
 
 - (ContentSuggestionsModuleType)type {
-  // Display the Tips module (with a product image) if the product image URL is
-  // valid and reachable.
-  if (_identifier == TipIdentifier::kLensShop) {
-    NSError* err;
-    [self.productImageURL checkResourceIsReachableAndReturnError:&err];
+  CHECK(IsTipsMagicStackEnabled());
 
-    // Verify the product image URL is reachable.
-    if (!err) {
-      return ContentSuggestionsModuleType::kTipsWithProductImage;
-    }
+  if (_identifier != TipIdentifier::kLensShop ||
+      (TipsLensShopExperimentTypeEnabled() ==
+           TipsLensShopExperimentType::kWithProductImage &&
+       !_productImageData)) {
+    return ContentSuggestionsModuleType::kTips;
   }
 
-  return ContentSuggestionsModuleType::kTips;
+  return ContentSuggestionsModuleType::kTipsWithProductImage;
 }
 
 @end

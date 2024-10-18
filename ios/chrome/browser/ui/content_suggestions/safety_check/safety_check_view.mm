@@ -202,6 +202,7 @@ bool IsDefault(SafetyCheckState* state) {
                                    ? [self descriptionText:itemType]
                                    : [self compactDescriptionText:itemType])
                    layoutType:layoutType
+              backgroundImage:nil
                    symbolName:symbolName
            symbolColorPalette:symbolColorPalette
         symbolBackgroundColor:symbolBackgroundColor

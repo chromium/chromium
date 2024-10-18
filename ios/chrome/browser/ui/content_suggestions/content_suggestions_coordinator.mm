@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
+#import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -137,6 +138,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_prefs.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
@@ -406,7 +408,12 @@ using segmentation_platform::TipIdentifier;
       !tips_prefs::IsTipsInMagicStackDisabled(prefs)) {
     _tipsMediator = [[TipsMagicStackMediator alloc]
         initWithIdentifier:TipIdentifier::kUnknown
-        profilePrefService:prefs];
+        profilePrefService:prefs
+           shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                               profile)
+             bookmarkModel:ios::BookmarkModelFactory::GetForProfile(profile)
+              imageFetcher:std::make_unique<image_fetcher::ImageDataFetcher>(
+                               profile->GetSharedURLLoaderFactory())];
     _tipsMediator.presentationAudience = self;
     [moduleMediators addObject:_tipsMediator];
   }
@@ -587,12 +594,27 @@ using segmentation_platform::TipIdentifier;
   switch (tip) {
     case TipIdentifier::kUnknown:
       NOTREACHED();
-    case TipIdentifier::kLensSearch:
     case TipIdentifier::kLensShop:
+    case TipIdentifier::kLensSearch:
     case TipIdentifier::kLensTranslate: {
       LensEntrypoint entryPoint = tip == TipIdentifier::kLensTranslate
                                       ? LensEntrypoint::TranslateOnebox
                                       : LensEntrypoint::HomeScreenWidget;
+
+      if (tip == TipIdentifier::kLensShop &&
+          _tipsMediator.state.productImageData != nil) {
+        UIImage* productImage =
+            [UIImage imageWithData:_tipsMediator.state.productImageData];
+
+        SearchImageWithLensCommand* command =
+            [[SearchImageWithLensCommand alloc] initWithImage:productImage
+                                                   entryPoint:entryPoint];
+
+        [HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands)
+            searchImageWithLens:command];
+
+        break;
+      }
 
       OpenLensInputSelectionCommand* command =
           [[OpenLensInputSelectionCommand alloc]
@@ -603,8 +625,6 @@ using segmentation_platform::TipIdentifier;
 
       command.presentNTPLensIconBubbleOnDismiss = YES;
 
-      // TODO(crbug.com/372489225): Conditionally show Lens shop result page
-      // with product image.
       [HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands)
           openLensInputSelection:command];
 

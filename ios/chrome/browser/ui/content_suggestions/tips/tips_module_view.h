@@ -7,11 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_consumer.h"
+
 @protocol TipsModuleAudience;
 @class TipsModuleState;
 
 // A view displaying the Tips module in the Magic Stack.
-@interface TipsModuleView : UIView
+@interface TipsModuleView : UIView <TipsMagicStackConsumer>
 
 // Initializes the `TipsModuleView` with `state`.
 - (instancetype)initWithState:(TipsModuleState*)state;

@@ -392,7 +392,7 @@ TipsLensShopExperimentType TipsLensShopExperimentTypeEnabled() {
       segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard,
       kTipsLensShopExperimentType,
       /*default_value=*/
-      (int)TipsLensShopExperimentType::kWithoutProductImage));
+      (int)TipsLensShopExperimentType::kWithProductImage));
 }
 
 BASE_FEATURE(kIOSChooseFromDrive,
