@@ -228,6 +228,13 @@ BASE_FEATURE(kFledgeBidderWorkletThreadPool,
              "FledgeBidderWorkletThreadPool",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Makes FLEDGE worklets on Android not use the main thread for their mojo.
+BASE_FEATURE(kFledgeAndroidWorkletOffMainThread,
+             "FledgeAndroidWorkletOffMainThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // The scaling factor for calculating the number of bidder worklet threads based
 // on the number of Interest Groups.
 // Formula: #threads = 1 + scaling_factor * log10(#IGs)

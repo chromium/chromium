@@ -26380,6 +26380,54 @@ IN_PROC_BROWSER_TEST_F(
                   .has_value());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+class InterestGroupUseMainThreadInRendererTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupUseMainThreadInRendererTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kFledgeAndroidWorkletOffMainThread);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This just makes sure that turning off kFledgeAndroidWorkletOffMainThread
+// (which is on in field trial config) doesn't break things.
+IN_PROC_BROWSER_TEST_F(InterestGroupUseMainThreadInRendererTest,
+                       BasicOperation) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(embedded_https_test_server().GetURL(
+                        "a.test", "/interest_group/bidding_logic.js"))
+                    .SetAds(/*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}})
+                    .Build()));
+
+  const char kConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+  })";
+
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(kConfigTemplate, test_origin,
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/decision_logic.js")),
+      /*expected_url=*/ad_url);
+}
+#endif
+
 }  // namespace
 
 }  // namespace content

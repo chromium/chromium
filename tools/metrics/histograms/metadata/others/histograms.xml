@@ -742,6 +742,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.DownloadThreadDelay" units="ms"
+    expires_after="2025-03-02">
+  <owner>morlovich@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Records the delay between when a worklet-initiated download completed in the
+    network service, and when the processing of the response to it began in the
+    process running the worklet.
+
+    Reported after every successful download.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.FinalReporterState"
     enum="InterestGroupAuctionReporterState" expires_after="2025-03-02">
   <owner>mmenke@chromium.org</owner>

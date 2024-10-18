@@ -59,6 +59,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeBidderWorkletThreadPool);
 CONTENT_EXPORT extern const base::FeatureParam<double>
     kFledgeBidderWorkletThreadPoolSizeLogarithmicScalingFactor;
 #if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeAndroidWorkletOffMainThread);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFocusRenderWidgetHostViewAndroidOnActionDown);
 #endif
