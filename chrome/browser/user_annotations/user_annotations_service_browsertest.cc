@@ -201,8 +201,8 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest,
 }
 
 // TODO(crbug.com/367201367):  Re-enable once flakiness is resolved for Windows
-// ASAN.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+// ASAN. Also flaky on Mac.
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_MAC)
 #define MAYBE_FormSubmissionFlow DISABLED_FormSubmissionFlow
 #else
 #define MAYBE_FormSubmissionFlow FormSubmissionFlow
