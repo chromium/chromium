@@ -530,6 +530,7 @@ constexpr int kThumbnailResizeDimension = 64;
   } else {
     _metricsHelper.searchingState = DriveFilePickerSearchState::kSearchText;
   }
+  [_consumer setFilterMenuEnabled:[self filterMenuShouldBeEnabled]];
   [_consumer setSortingMenuEnabled:[self sortingMenuShouldBeEnabled]];
   // Fetching new items is delayed when `_searchText` is modified, to ensure
   // modifying it very frequently does not equally too frequent API calls. This
@@ -646,6 +647,7 @@ constexpr int kThumbnailResizeDimension = 64;
   // is cleared and the loading indicator is presented.
   [self clearItems];
   [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
+  [_consumer setFilterMenuEnabled:[self filterMenuShouldBeEnabled]];
   [_consumer setSortingMenuEnabled:[self sortingMenuShouldBeEnabled]];
   [self updateTitle];
   [self loadItemsAppending:NO delayed:NO animated:YES];
