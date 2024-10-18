@@ -543,8 +543,6 @@ AccountSelectionModalView::CreateSingleAccountChooser(
     std::unique_ptr<views::StyledLabel> disclosure_label =
         CreateDisclosureLabel(*account.identity_provider);
     disclosure_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
-    disclosure_label->SizeToFit(views::LayoutProvider::Get()->GetDistanceMetric(
-        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
     disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         /*top=*/kVerticalSpacing, /*left=*/0, /*bottom=*/0, /*right=*/0)));
     queued_announcement_ = disclosure_label->GetText();
