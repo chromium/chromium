@@ -3940,6 +3940,11 @@
       base_feature: "SkipPreloadScanning",
     },
     {
+      // Added in M131, should be safe to remove after M131 ships.
+      name: "SkipTemporaryDocumentFragment",
+      status: "stable",
+    },
+    {
       // Skips the browser touch event filter, ensuring that events that reach
       // the queue and would otherwise be filtered out will instead be passed
       // onto the renderer compositor process as long as the page hasn't timed

@@ -893,9 +893,11 @@ void Range::insertNode(Node* new_node, ExceptionState& exception_state) {
                                          : To<ContainerNode>(start_node);
 
   // 6. Ensure pre-insertion validity of node into parent before referenceNode.
-  if (!parent.EnsurePreInsertionValidity(*new_node, reference_node, nullptr,
-                                         exception_state))
+  if (!parent.EnsurePreInsertionValidity(new_node, /*new_children*/ nullptr,
+                                         reference_node, nullptr,
+                                         exception_state)) {
     return;
+  }
 
   EventQueueScope scope;
   // 7. If range's start node is a Text node, set referenceNode to the result of

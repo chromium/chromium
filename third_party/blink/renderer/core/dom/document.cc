@@ -4927,13 +4927,17 @@ bool Document::ChildTypeAllowed(NodeType type) const {
 //  -> doctype
 //     parent has a doctype child that is not child, or an element is preceding
 //     child.
-bool Document::CanAcceptChild(const Node& new_child,
+bool Document::CanAcceptChild(const Node* new_child,
+                              const VectorOf<Node>* new_children,
                               const Node* next,
                               const Node* old_child,
                               ExceptionState& exception_state) const {
   DCHECK(!(next && old_child));
-  if (old_child && old_child->getNodeType() == new_child.getNodeType())
+  CHECK_NE(!new_child, !new_children);
+  if (old_child && new_child &&
+      old_child->getNodeType() == new_child->getNodeType()) {
     return true;
+  }
 
   int num_doctypes = 0;
   int num_elements = 0;
@@ -4944,7 +4948,7 @@ bool Document::CanAcceptChild(const Node& new_child,
   // the child we're about to remove.
   bool saw_reference_node = false;
   for (Node& child : NodeTraversal::ChildrenOf(*this)) {
-    if (old_child && *old_child == child) {
+    if (old_child == &child) {
       saw_reference_node = true;
       continue;
     }
@@ -4965,39 +4969,8 @@ bool Document::CanAcceptChild(const Node& new_child,
     }
   }
 
-  // Then, see how many doctypes and elements might be added by the new child.
-  if (auto* new_child_fragment = DynamicTo<DocumentFragment>(new_child)) {
-    for (Node& child : NodeTraversal::ChildrenOf(*new_child_fragment)) {
-      switch (child.getNodeType()) {
-        case kAttributeNode:
-        case kCdataSectionNode:
-        case kDocumentFragmentNode:
-        case kDocumentNode:
-        case kTextNode:
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kHierarchyRequestError,
-              "Nodes of type '" + new_child.nodeName() +
-                  "' may not be inserted inside nodes of type '#document'.");
-          return false;
-        case kCommentNode:
-        case kProcessingInstructionNode:
-          break;
-        case kDocumentTypeNode:
-          num_doctypes++;
-          break;
-        case kElementNode:
-          num_elements++;
-          if (has_doctype_after_reference_node) {
-            exception_state.ThrowDOMException(
-                DOMExceptionCode::kHierarchyRequestError,
-                "Can't insert an element before a doctype.");
-            return false;
-          }
-          break;
-      }
-    }
-  } else {
-    switch (new_child.getNodeType()) {
+  auto process_child = [&](const Node& child) -> bool {
+    switch (child.getNodeType()) {
       case kAttributeNode:
       case kCdataSectionNode:
       case kDocumentFragmentNode:
@@ -5005,18 +4978,18 @@ bool Document::CanAcceptChild(const Node& new_child,
       case kTextNode:
         exception_state.ThrowDOMException(
             DOMExceptionCode::kHierarchyRequestError,
-            "Nodes of type '" + new_child.nodeName() +
+            "Nodes of type '" + child.nodeName() +
                 "' may not be inserted inside nodes of type '#document'.");
         return false;
       case kCommentNode:
       case kProcessingInstructionNode:
-        return true;
+        break;
       case kDocumentTypeNode:
         num_doctypes++;
         if (num_elements > 0 && !has_element_after_reference_node) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kHierarchyRequestError,
-              "Can't insert a doctype before the root element.");
+              "Can't insert a doctype after the root element.");
           return false;
         }
         break;
@@ -5029,6 +5002,27 @@ bool Document::CanAcceptChild(const Node& new_child,
           return false;
         }
         break;
+    }
+    return true;
+  };
+
+  // Then, see how many doctypes and elements might be added by the new child.
+  if (new_children) {
+    for (Node* child : *new_children) {
+      if (!process_child(*child)) {
+        return false;
+      }
+    }
+  } else if (auto* new_child_fragment =
+                 DynamicTo<DocumentFragment>(new_child)) {
+    for (Node& child : NodeTraversal::ChildrenOf(*new_child_fragment)) {
+      if (!process_child(child)) {
+        return false;
+      }
+    }
+  } else {
+    if (!process_child(*new_child)) {
+      return false;
     }
   }
 

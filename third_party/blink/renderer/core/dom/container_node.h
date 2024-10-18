@@ -131,15 +131,23 @@ class CORE_EXPORT ContainerNode : public Node {
                                       ExceptionState&);
   StaticElementList* QuerySelectorAll(const AtomicString& selectors);
 
+  void InsertBefore(const VectorOf<Node>& new_children,
+                    Node* ref_child,
+                    ExceptionState&);
   Node* InsertBefore(Node* new_child, Node* ref_child, ExceptionState&);
   Node* InsertBefore(Node* new_child, Node* ref_child);
+  void ReplaceChild(const VectorOf<Node>& new_children,
+                    Node* old_child,
+                    ExceptionState&);
   Node* ReplaceChild(Node* new_child, Node* old_child, ExceptionState&);
   Node* ReplaceChild(Node* new_child, Node* old_child);
   Node* RemoveChild(Node* child, ExceptionState&);
   Node* RemoveChild(Node* child);
+  void AppendChildren(const VectorOf<Node>& new_children, ExceptionState&);
   Node* AppendChild(Node* new_child, ExceptionState&);
   Node* AppendChild(Node* new_child);
-  bool EnsurePreInsertionValidity(const Node& new_child,
+  bool EnsurePreInsertionValidity(const Node* new_child,
+                                  const VectorOf<Node>* new_children,
                                   const Node* next,
                                   const Node* old_child,
                                   ExceptionState&) const;
@@ -465,6 +473,7 @@ class CORE_EXPORT ContainerNode : public Node {
     return EnsureCachedCollection<HTMLCollection>(kPopoverInvokers);
   }
 
+  void ReplaceChildren(Node* new_child, ExceptionState& exception_state);
   void ReplaceChildren(const VectorOf<Node>& nodes,
                        ExceptionState& exception_state);
 
@@ -575,7 +584,6 @@ class CORE_EXPORT ContainerNode : public Node {
   inline bool CheckParserAcceptChild(const Node& new_child) const;
   inline bool IsHostIncludingInclusiveAncestorOfThis(const Node&,
                                                      ExceptionState&) const;
-  inline bool IsChildTypeAllowed(const Node& child) const;
 
   void CheckSoftNavigationHeuristicsTracking(const Document& document,
                                              Node& inserted_node);

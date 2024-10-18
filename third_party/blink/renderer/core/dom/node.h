@@ -1004,19 +1004,23 @@ class CORE_EXPORT Node : public EventTarget {
   void SetHasDisplayLockContext() { SetFlag(kHasDisplayLockContext); }
   bool HasDisplayLockContext() const { return GetFlag(kHasDisplayLockContext); }
 
-  // Creates a DocumentFragment, appends all of |nodes| to it, and returns the
-  // DocumentFragment. Returns nullptr if an exception was thrown.
-  static Node* ConvertNodesIntoNode(const Node* parent,
-                                    const HeapVector<Member<Node>>& nodes,
-                                    Document& document,
-                                    ExceptionState& exception_state);
-
   // Creates a DocumentFragment, converts |node_unions| from bindings into
   // actual Nodes by converting strings and script into text nodes via
-  // NodeOrStringToNode, appends all resulting Nodes to the DocumentFragment,
-  // and returns it. Returns nullptr if exceptions are thrown.
+  // NodeOrStringToNode.  If there is more than one node, appends all
+  // resulting Nodes to the DocumentFragment, and returns it. Returns nullptr
+  // if exceptions are thrown.
   static Node* ConvertNodeUnionsIntoNode(
-      const Node* parent,
+      const ContainerNode* parent,
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
+      Document& document,
+      const char* property_name,
+      ExceptionState& exception_state);
+  // Converts |node_unions| from bindings into actual Nodes by converting
+  // strings and script into text nodes, and if more than one node resulted,
+  // removes them from their old parent (as though they had been inserted into
+  // a DocumentFragment).
+  static HeapVector<Member<Node>> ConvertNodeUnionsIntoNodes(
+      const ContainerNode* parent,
       const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
       Document& document,
       const char* property_name,

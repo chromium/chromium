@@ -896,14 +896,35 @@ static Node* NodeOrStringToNode(
   return Text::Create(document, string_value);
 }
 
-// static
+// Converts |node_unions| from bindings into actual Nodes by converting strings
+// and script into text nodes via NodeOrStringToNode.
 // Returns nullptr if an exception was thrown.
-Node* Node::ConvertNodesIntoNode(const Node* parent,
-                                 const VectorOf<Node>& nodes,
-                                 Document& document,
-                                 ExceptionState& exception_state) {
-  if (nodes.size() == 1) {
-    return nodes[0].Get();
+// static
+Node* Node::ConvertNodeUnionsIntoNode(
+    const ContainerNode* parent,
+    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
+    Document& document,
+    const char* property_name,
+    ExceptionState& exception_state) {
+  DCHECK(!RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled());
+
+  bool needs_check = IsA<HTMLScriptElement>(parent) &&
+                     document.GetExecutionContext() &&
+                     document.GetExecutionContext()->RequireTrustedTypes();
+  VectorOf<Node> nodes;
+  for (const auto& node_union : node_unions) {
+    Node* node = NodeOrStringToNode(node_union, document, needs_check,
+                                    property_name, exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+    if (node) {
+      nodes.push_back(node);
+    }
+  }
+
+  if (nodes.size() == 1u) {
+    return nodes[0];
   }
 
   Node* fragment = DocumentFragment::Create(document);
@@ -916,17 +937,18 @@ Node* Node::ConvertNodesIntoNode(const Node* parent,
   return fragment;
 }
 
-namespace {
-
 // Converts |node_unions| from bindings into actual Nodes by converting strings
 // and script into text nodes via NodeOrStringToNode.
 // Returns nullptr if an exception was thrown.
-VectorOf<Node> ConvertNodeUnionsIntoNodes(
-    const Node* parent,
+// static
+VectorOf<Node> Node::ConvertNodeUnionsIntoNodes(
+    const ContainerNode* parent,
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
     Document& document,
     const char* property_name,
     ExceptionState& exception_state) {
+  DCHECK(RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled());
+
   bool needs_check = IsA<HTMLScriptElement>(parent) &&
                      document.GetExecutionContext() &&
                      document.GetExecutionContext()->RequireTrustedTypes();
@@ -939,28 +961,52 @@ VectorOf<Node> ConvertNodeUnionsIntoNodes(
       return nodes;
     }
     if (node) {
-      nodes.push_back(node);
+      if (auto* fragment = DynamicTo<DocumentFragment>(node)) {
+        NodeVector fragment_nodes;
+        GetChildNodes(*fragment, fragment_nodes);
+        fragment->RemoveChildren();
+        nodes.AppendVector(fragment_nodes);
+      } else {
+        nodes.push_back(node);
+      }
     }
   }
-  return nodes;
-}
 
-}  // namespace
+  // When there's more than one node, we need to pretend that we're inserting
+  // the nodes into a document fragment (which we later insert into the
+  // intended parent, which transfers them from the document fragment), but we
+  // don't actually do that because of the costs of inserting and later
+  // removing (which require walking the entire tree).  Not actually inserting
+  // into a DocumentFragment is web observable in some edge cases, and
+  // https://github.com/whatwg/dom/issues/1313 proposes to specify this new
+  // (faster) behavior instead.
+  //
+  // TODO(https://github.com/whatwg/dom/issues/1313): We should consider not
+  // having different behavior depending on how many nodes are here, which
+  // makes it a strange API.
+  //
+  // The only pre-insertion check that could fail when inserting into a
+  // DocumentFragment is the ChildTypeAllowed check.  This will be checked
+  // again later when we insert the nodes into their intended parent.
+  // However, this does mean we differ from the spec in two ways:
+  // * we allow the use of DocumentType nodes (when their eventual parent is a
+  //   Document) in these methods where the spec would disallow them.
+  // * we perform some of the checks at different times, which means that when
+  //   an exception is thrown it could be a different exception from the one
+  //   the spec calls for, and we could leave the tree in a different state
+  //   than exactly following the spec would lead to.
 
-// static
-// Returns nullptr if an exception was thrown.
-Node* Node::ConvertNodeUnionsIntoNode(
-    const Node* parent,
-    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
-    Document& document,
-    const char* property_name,
-    ExceptionState& exception_state) {
-  VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
-      parent, node_unions, document, property_name, exception_state);
-  if (exception_state.HadException()) {
-    return nullptr;
+  if (nodes.size() > 1u) {
+    for (Node* node : nodes) {
+      node->remove(exception_state);
+      if (exception_state.HadException()) {
+        nodes.clear();
+        return nodes;
+      }
+    }
   }
-  return Node::ConvertNodesIntoNode(parent, nodes, document, exception_state);
+
+  return nodes;
 }
 
 void Node::prepend(
@@ -974,9 +1020,19 @@ void Node::prepend(
     return;
   }
 
-  if (Node* node = ConvertNodeUnionsIntoNode(this, nodes, GetDocument(),
-                                             "prepend", exception_state)) {
-    this_node->InsertBefore(node, this_node->firstChild(), exception_state);
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+        this_node, nodes, GetDocument(), "prepend", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    this_node->InsertBefore(node_vector, this_node->firstChild(),
+                            exception_state);
+  } else {
+    if (Node* node = ConvertNodeUnionsIntoNode(this_node, nodes, GetDocument(),
+                                               "prepend", exception_state)) {
+      this_node->InsertBefore(node, this_node->firstChild(), exception_state);
+    }
   }
 }
 
@@ -991,9 +1047,18 @@ void Node::append(
     return;
   }
 
-  if (Node* node = ConvertNodeUnionsIntoNode(this, nodes, GetDocument(),
-                                             "append", exception_state)) {
-    this_node->AppendChild(node, exception_state);
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+        this_node, nodes, GetDocument(), "append", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    this_node->AppendChildren(node_vector, exception_state);
+  } else {
+    if (Node* node = ConvertNodeUnionsIntoNode(this_node, nodes, GetDocument(),
+                                               "append", exception_state)) {
+      this_node->AppendChild(node, exception_state);
+    }
   }
 }
 
@@ -1004,13 +1069,26 @@ void Node::before(
   if (!parent)
     return;
   Node* viable_previous_sibling = FindViablePreviousSibling(*this, nodes);
-  if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                             "before", exception_state)) {
-    parent->InsertBefore(node,
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+        parent, nodes, GetDocument(), "before", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    parent->InsertBefore(node_vector,
                          viable_previous_sibling
                              ? viable_previous_sibling->nextSibling()
                              : parent->firstChild(),
                          exception_state);
+  } else {
+    if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
+                                               "before", exception_state)) {
+      parent->InsertBefore(node,
+                           viable_previous_sibling
+                               ? viable_previous_sibling->nextSibling()
+                               : parent->firstChild(),
+                           exception_state);
+    }
   }
 }
 
@@ -1021,9 +1099,18 @@ void Node::after(
   if (!parent)
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
-  if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                             "after", exception_state)) {
-    parent->InsertBefore(node, viable_next_sibling, exception_state);
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+        parent, nodes, GetDocument(), "after", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    parent->InsertBefore(node_vector, viable_next_sibling, exception_state);
+  } else {
+    if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
+                                               "after", exception_state)) {
+      parent->InsertBefore(node, viable_next_sibling, exception_state);
+    }
   }
 }
 
@@ -1034,14 +1121,29 @@ void Node::replaceWith(
   if (!parent)
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
-  Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                         "replaceWith", exception_state);
-  if (exception_state.HadException())
-    return;
-  if (parent == parentNode())
-    parent->ReplaceChild(node, this, exception_state);
-  else
-    parent->InsertBefore(node, viable_next_sibling, exception_state);
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+        parent, nodes, GetDocument(), "replaceWith", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    if (parent == parentNode()) {
+      parent->ReplaceChild(node_vector, this, exception_state);
+    } else {
+      parent->InsertBefore(node_vector, viable_next_sibling, exception_state);
+    }
+  } else {
+    Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
+                                           "replaceWith", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    if (parent == parentNode()) {
+      parent->ReplaceChild(node, this, exception_state);
+    } else {
+      parent->InsertBefore(node, viable_next_sibling, exception_state);
+    }
+  }
 }
 
 // https://dom.spec.whatwg.org/#dom-parentnode-replacechildren
@@ -1056,10 +1158,19 @@ void Node::replaceChildren(
     return;
   }
 
-  VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
-      this, node_unions, GetDocument(), "replace", exception_state);
-  if (!exception_state.HadException()) {
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
+        this_node, node_unions, GetDocument(), "replace", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
     this_node->ReplaceChildren(nodes, exception_state);
+  } else {
+    Node* node = ConvertNodeUnionsIntoNode(
+        this_node, node_unions, GetDocument(), "replace", exception_state);
+    if (!exception_state.HadException()) {
+      this_node->ReplaceChildren(node, exception_state);
+    }
   }
 }
 
