@@ -1,0 +1,24 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+assert(is_win || is_mac || is_linux)
+
+build_webui_tests("build") {
+  files = [
+    "on_device_translation_internals_test.ts",
+    "test_on_device_translation_internals_browser_proxy.ts",
+  ]
+
+  ts_path_mappings = [ "chrome://on-device-translation-internals/*|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/on_device_translation_internals/tsc/*",
+                           target_gen_dir) ]
+
+  ts_deps = [
+    "//chrome/browser/resources/on_device_translation_internals:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

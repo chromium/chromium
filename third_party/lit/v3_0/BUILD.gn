@@ -38,6 +38,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/media_router/cast_feedback:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
     "//chrome/browser/resources/on_device_internals:build_ts",
+    "//chrome/browser/resources/on_device_translation_internals:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/private_state_tokens:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/related_website_sets:build_ts",
