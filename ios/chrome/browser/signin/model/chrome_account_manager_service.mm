@@ -44,7 +44,7 @@ using IteratorResult = AccountProfileMapper::IteratorResult;
 // Filter class skipping restricted account.
 class SkipRestricted {
  public:
-  SkipRestricted(const PatternAccountRestriction& restriction)
+  explicit SkipRestricted(const PatternAccountRestriction& restriction)
       : restriction_(restriction) {}
 
   bool ShouldFilter(id<SystemIdentity> identity) const {
@@ -56,25 +56,12 @@ class SkipRestricted {
   const raw_ref<const PatternAccountRestriction> restriction_;
 };
 
-// Filter class skipping unrestricted account.
-class KeepRestricted {
- public:
-  KeepRestricted(const PatternAccountRestriction& restriction)
-      : restriction_(restriction) {}
-
-  bool ShouldFilter(id<SystemIdentity> identity) const {
-    return !restriction_->IsAccountRestricted(
-        base::SysNSStringToUTF8(identity.userEmail));
-  }
-
- private:
-  const raw_ref<const PatternAccountRestriction> restriction_;
-};
-
 // Filter class skipping identities that do not have the given Gaia ID.
 class KeepGaiaID {
  public:
-  KeepGaiaID(NSString* gaia_id) : gaia_id_(gaia_id) { DCHECK(gaia_id_.length); }
+  explicit KeepGaiaID(NSString* gaia_id) : gaia_id_(gaia_id) {
+    DCHECK(gaia_id_.length);
+  }
 
   bool ShouldFilter(id<SystemIdentity> identity) const {
     return ![gaia_id_ isEqualToString:identity.gaiaID];
@@ -161,9 +148,9 @@ class Iterator {
   Filter filter_;
 };
 
-// Helper function to iterator over ChromeIdentityService identities.
-// Return the collector’s result, after `collector` ’s `ForEach` received
-// identities that `filter` did not filtered out. It receives all identities
+// Helper function to iterator over identities.
+// Returns the collector’s result, after `collector` ’s `ForEach` received
+// identities that `filter` did not filter out. It receives all identities
 // until the first kInterruptIteration.
 template <typename Collector, typename Filter>
 typename Collector::ResultType IterateOverIdentities(
@@ -216,12 +203,6 @@ ChromeAccountManagerService::~ChromeAccountManagerService() {
 bool ChromeAccountManagerService::HasIdentities() const {
   return IterateOverIdentities(FindFirstIdentity{},
                                SkipRestricted{restriction_},
-                               profile_name_) != nil;
-}
-
-bool ChromeAccountManagerService::HasRestrictedIdentities() const {
-  return IterateOverIdentities(FindFirstIdentity{},
-                               KeepRestricted{restriction_},
                                profile_name_) != nil;
 }
 

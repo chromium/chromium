@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include <string_view>
+#import <string_view>
 
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
@@ -23,14 +23,17 @@ class PrefService;
 @protocol RefreshAccessTokenError;
 @class ResizedAvatarCache;
 
-// Service that provides Chrome identities.
+// Service that provides SystemIdentities for use within a Chrome profile. In
+// particular, it only passes on accounts that AccountProfileMapper has assigned
+// to this profile, and it additionally filters out identities according to the
+// RestrictAccountsToPatterns policy.
 class ChromeAccountManagerService : public KeyedService,
                                     public AccountProfileMapper::Observer {
  public:
   // Observer handling events related to the ChromeAccountManagerService.
   class Observer : public base::CheckedObserver {
    public:
-    Observer() {}
+    Observer() = default;
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
     ~Observer() override {}
@@ -68,14 +71,11 @@ class ChromeAccountManagerService : public KeyedService,
   // Returns true if there is at least one identity known by the service.
   bool HasIdentities() const;
 
-  // Returns true if there is at least one restricted identity known by the
-  // service.
-  bool HasRestrictedIdentities() const;
-
   // Returns whether `identity` is valid and known by the service.
   bool IsValidIdentity(id<SystemIdentity> identity) const;
 
-  // Returns whether `email` is restricted.
+  // Returns whether `email` is restricted according to the
+  // RestrictAccountsToPatterns policy.
   bool IsEmailRestricted(std::string_view email) const;
 
   // Returns the SystemIdentity with gaia ID equals to `gaia_id` or nil if
@@ -85,7 +85,7 @@ class ChromeAccountManagerService : public KeyedService,
   id<SystemIdentity> GetIdentityWithGaiaID(std::string_view gaia_id) const;
 
   // Returns all SystemIdentity objects, sorted by the ordering used in the
-  // account manager, which is typically based on the keychain ordering of
+  // SystemIdentityManager, which is typically based on the keychain ordering of
   // accounts.
   NSArray<id<SystemIdentity>>* GetAllIdentities() const;
 
@@ -98,7 +98,7 @@ class ChromeAccountManagerService : public KeyedService,
   UIImage* GetIdentityAvatarWithIdentity(id<SystemIdentity> identity,
                                          IdentityAvatarSize size);
 
-  // Returns true if the service can be used.
+  // Returns whether signin is supported.
   bool IsServiceSupported() const;
 
   // KeyedService implementation.
@@ -116,8 +116,8 @@ class ChromeAccountManagerService : public KeyedService,
       id<RefreshAccessTokenError> error) override;
 
  private:
-  // Updates PatternAccountRestriction with the current pref_service_. If
-  // pref_service_ is null, no identity will be filtered.
+  // Updates PatternAccountRestriction with the current `pref_service_`. If
+  // `pref_service_` is null, no identity will be filtered.
   void UpdateRestriction();
 
   // Returns a ResizedAvatarCache based on `avatar_size`.

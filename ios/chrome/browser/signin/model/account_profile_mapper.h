@@ -19,9 +19,6 @@ class ProfileManagerIOS;
 @protocol SystemIdentity;
 
 // Class to map the identities from SystemIdentityManager to profiles.
-// TODO(crbug.com/331783685): Hook up `AccountProfileMapper` between
-// `SystemIdentityManager` and `ChromeAccountManagerService` (i.e. revert parts
-// of crrev.com/c/5849614).
 class AccountProfileMapper {
  public:
   class Observer : public base::CheckedObserver {
