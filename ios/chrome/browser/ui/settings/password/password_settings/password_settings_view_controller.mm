@@ -607,14 +607,14 @@ bool SyncingWebauthnCredentialsEnabled() {
     return;
   }
 
-  [self.tableViewModel deleteAllItemsFromSectionWithIdentifier:
-                           SectionIdentifierSavePasswordsSwitch];
+  TableViewModel* tableViewModel = self.tableViewModel;
+  [tableViewModel deleteAllItemsFromSectionWithIdentifier:
+                      SectionIdentifierSavePasswordsSwitch];
   [self addSavePasswordsSwitchOrManagedInfo];
 
   NSIndexSet* indexSet = [[NSIndexSet alloc]
-      initWithIndex:[self.tableViewModel
-                        sectionForSectionIdentifier:
-                            SectionIdentifierSavePasswordsSwitch]];
+      initWithIndex:[tableViewModel sectionForSectionIdentifier:
+                                        SectionIdentifierSavePasswordsSwitch]];
 
   [self.tableView reloadSections:indexSet
                 withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -754,20 +754,22 @@ bool SyncingWebauthnCredentialsEnabled() {
 }
 
 - (void)updateBulkMovePasswordsToAccountSection {
+  UITableView* tableView = self.tableView;
+  TableViewModel* tableViewModel = self.tableViewModel;
   BOOL sectionExists =
-      [self.tableViewModel hasSectionForSectionIdentifier:
-                               SectionIdentifierBulkMovePasswordsToAccount];
+      [tableViewModel hasSectionForSectionIdentifier:
+                          SectionIdentifierBulkMovePasswordsToAccount];
 
   // Remove the section if it exists and we shouldn't show it.
   if (!_showBulkMovePasswordsToAccount && sectionExists) {
     NSInteger section =
-        [self.tableViewModel sectionForSectionIdentifier:
-                                 SectionIdentifierBulkMovePasswordsToAccount];
-    [self.tableViewModel removeSectionWithIdentifier:
-                             SectionIdentifierBulkMovePasswordsToAccount];
+        [tableViewModel sectionForSectionIdentifier:
+                            SectionIdentifierBulkMovePasswordsToAccount];
+    [tableViewModel removeSectionWithIdentifier:
+                        SectionIdentifierBulkMovePasswordsToAccount];
     if (self.modelLoadStatus == ModelLoadComplete) {
-      [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
-                    withRowAnimation:UITableViewRowAnimationAutomatic];
+      [tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
+               withRowAnimation:UITableViewRowAnimationAutomatic];
     }
     return;
   }
@@ -778,16 +780,16 @@ bool SyncingWebauthnCredentialsEnabled() {
 
   // Prepare the section in the model, either by clearing or adding it.
   if (sectionExists) {
-    [self.tableViewModel deleteAllItemsFromSectionWithIdentifier:
-                             SectionIdentifierBulkMovePasswordsToAccount];
+    [tableViewModel deleteAllItemsFromSectionWithIdentifier:
+                        SectionIdentifierBulkMovePasswordsToAccount];
   } else {
     // Find the section that's supposed to be before Bulk Move Passwords to
     // Account, and insert after that.
     NSInteger bulkMovePasswordsToAccountSectionIndex =
-        [self.tableViewModel
+        [tableViewModel
             sectionForSectionIdentifier:SectionIdentifierSavePasswordsSwitch] +
         1;
-    [self.tableViewModel
+    [tableViewModel
         insertSectionWithIdentifier:SectionIdentifierBulkMovePasswordsToAccount
                             atIndex:bulkMovePasswordsToAccountSectionIndex];
 
@@ -801,13 +803,13 @@ bool SyncingWebauthnCredentialsEnabled() {
 
   // Add the description and button items to the bulk move passwords to account
   // section.
-  [self.tableViewModel addItem:self.bulkMovePasswordsToAccountDescriptionItem
-       toSectionWithIdentifier:SectionIdentifierBulkMovePasswordsToAccount];
-  [self.tableViewModel addItem:self.bulkMovePasswordsToAccountButtonItem
-       toSectionWithIdentifier:SectionIdentifierBulkMovePasswordsToAccount];
+  [tableViewModel addItem:self.bulkMovePasswordsToAccountDescriptionItem
+      toSectionWithIdentifier:SectionIdentifierBulkMovePasswordsToAccount];
+  [tableViewModel addItem:self.bulkMovePasswordsToAccountButtonItem
+      toSectionWithIdentifier:SectionIdentifierBulkMovePasswordsToAccount];
 
   NSIndexSet* indexSet = [NSIndexSet
-      indexSetWithIndex:[self.tableViewModel
+      indexSetWithIndex:[tableViewModel
                             sectionForSectionIdentifier:
                                 SectionIdentifierBulkMovePasswordsToAccount]];
 
@@ -817,11 +819,11 @@ bool SyncingWebauthnCredentialsEnabled() {
 
   // Reload the section if it exists, otherwise insert it if it does not.
   if (sectionExists) {
-    [self.tableView reloadSections:indexSet
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+    [tableView reloadSections:indexSet
+             withRowAnimation:UITableViewRowAnimationAutomatic];
   } else {
-    [self.tableView insertSections:indexSet
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+    [tableView insertSections:indexSet
+             withRowAnimation:UITableViewRowAnimationAutomatic];
   }
 }
 
@@ -847,37 +849,40 @@ bool SyncingWebauthnCredentialsEnabled() {
 // section or clear (and possibly reload) an existing one.
 - (void)updateOnDeviceEncryptionSectionWithOldState:
     (PasswordSettingsOnDeviceEncryptionState)oldState {
+  UITableView* tableView = self.tableView;
+  TableViewModel* tableViewModel = self.tableViewModel;
+
   // Easy case: the section just needs to be removed.
   if (self.onDeviceEncryptionState ==
           PasswordSettingsOnDeviceEncryptionStateNotShown &&
-      [self.tableViewModel
+      [tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption]) {
-    NSInteger section = [self.tableViewModel
+    NSInteger section = [tableViewModel
         sectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption];
-    [self.tableViewModel
+    [tableViewModel
         removeSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
     if (self.modelLoadStatus == ModelLoadComplete) {
-      [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
-                    withRowAnimation:UITableViewRowAnimationAutomatic];
+      [tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
+               withRowAnimation:UITableViewRowAnimationAutomatic];
     }
     return;
   }
 
   // Prepare the section in the model, either by clearing or adding it.
-  if ([self.tableViewModel
+  if ([tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption]) {
-    [self.tableViewModel deleteAllItemsFromSectionWithIdentifier:
-                             SectionIdentifierOnDeviceEncryption];
+    [tableViewModel deleteAllItemsFromSectionWithIdentifier:
+                        SectionIdentifierOnDeviceEncryption];
   } else {
     // Find the section that's supposed to be before On-Device Encryption, and
     // insert after that.
     NSInteger priorSectionIndex =
-        [self.tableViewModel sectionForSectionIdentifier:
-                                 SyncingWebauthnCredentialsEnabled()
-                                     ? SectionIdentifierGooglePasswordManagerPin
-                                     : SectionIdentifierPasswordsInOtherApps];
+        [tableViewModel sectionForSectionIdentifier:
+                            SyncingWebauthnCredentialsEnabled()
+                                ? SectionIdentifierGooglePasswordManagerPin
+                                : SectionIdentifierPasswordsInOtherApps];
     NSInteger onDeviceEncryptionSectionIndex = priorSectionIndex + 1;
-    [self.tableViewModel
+    [tableViewModel
         insertSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
                             atIndex:onDeviceEncryptionSectionIndex];
   }
@@ -885,17 +890,17 @@ bool SyncingWebauthnCredentialsEnabled() {
   // Actually populate the section.
   switch (self.onDeviceEncryptionState) {
     case PasswordSettingsOnDeviceEncryptionStateOptedIn: {
-      [self.tableViewModel addItem:self.onDeviceEncryptionOptedInDescription
-           toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
-      [self.tableViewModel addItem:self.onDeviceEncryptionOptedInLearnMore
-           toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      [tableViewModel addItem:self.onDeviceEncryptionOptedInDescription
+          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      [tableViewModel addItem:self.onDeviceEncryptionOptedInLearnMore
+          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
       break;
     }
     case PasswordSettingsOnDeviceEncryptionStateOfferOptIn: {
-      [self.tableViewModel addItem:self.onDeviceEncryptionOptInDescriptionItem
-           toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
-      [self.tableViewModel addItem:self.setUpOnDeviceEncryptionItem
-           toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      [tableViewModel addItem:self.onDeviceEncryptionOptInDescriptionItem
+          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      [tableViewModel addItem:self.setUpOnDeviceEncryptionItem
+          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
       break;
     }
     default: {
@@ -915,15 +920,15 @@ bool SyncingWebauthnCredentialsEnabled() {
 
   NSIndexSet* indexSet = [NSIndexSet
       indexSetWithIndex:
-          [self.tableViewModel
+          [tableViewModel
               sectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption]];
 
   if (oldState == PasswordSettingsOnDeviceEncryptionStateNotShown) {
-    [self.tableView insertSections:indexSet
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+    [tableView insertSections:indexSet
+             withRowAnimation:UITableViewRowAnimationAutomatic];
   } else {
-    [self.tableView reloadSections:indexSet
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+    [tableView reloadSections:indexSet
+             withRowAnimation:UITableViewRowAnimationAutomatic];
   }
 }
 
