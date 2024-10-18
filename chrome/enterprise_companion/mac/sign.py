@@ -11,6 +11,7 @@ import logging
 import shutil
 import os
 import tempfile
+import stat
 
 
 def sign(path, identity):
@@ -30,16 +31,31 @@ def notarize(tool_path, file):
 
 
 def create_dmg(app_bundle_path, output_dir):
+
+    def write_install_script(tempdir):
+        install_file = os.path.join(tempdir, '.install')
+        with open(install_file, 'w') as f:
+            f.write('#!/bin/bash\n'
+                    r'"$1/ChromeEnterpriseCompanion.app/Contents/MacOS/'
+                    r'ChromeEnterpriseCompanion" ${SERVER_ARGS}')
+        st = os.stat(install_file)
+        os.chmod(install_file,
+                 st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        return install_file
+
     with tempfile.TemporaryDirectory() as tempdir:
+        install_script_path = write_install_script(tempdir)
         work_dir = tempfile.mkdtemp(dir=tempdir)
         empty_dir = tempfile.mkdtemp(dir=tempdir)
         return subprocess.run([
             os.path.join(os.path.dirname(sys.argv[0]),
                          'pkg-dmg'), '--verbosity', '0', '--tempdir', work_dir,
             '--source', empty_dir, '--target',
-            os.path.join(output_dir, 'ChromeEnterpriseCompanion.dmg'),
-            '--format', 'UDBZ', '--volname', 'ChromeEnterpriseCompanion',
-            '--copy', '{}:/'.format(app_bundle_path)
+            os.path.join(output_dir,
+                         'ChromeEnterpriseCompanion.dmg'), '--format', 'UDBZ',
+            '--volname', 'ChromeEnterpriseCompanion', '--copy',
+            '{}:/ChromeEnterpriseCompanion.app'.format(app_bundle_path),
+            '--copy', '{}:/.install'.format(install_script_path)
         ]).returncode
 
 
