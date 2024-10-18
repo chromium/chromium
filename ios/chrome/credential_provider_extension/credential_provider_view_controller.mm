@@ -287,8 +287,10 @@ UIColor* BackgroundColor() {
 
 - (PasskeyKeychainProviderBridge*)passkeyKeychainProviderBridge {
   if (!_passkeyKeychainProviderBridge) {
+    // TODO(crbug.com/355047459): Add navigation controller.
     _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
-        initWithEnableLogging:[self metricsAreEnabled]];
+        initWithEnableLogging:[self metricsAreEnabled]
+         navigationController:nil];
   }
   return _passkeyKeychainProviderBridge;
 }
@@ -602,16 +604,16 @@ UIColor* BackgroundColor() {
                                        : nil;
 }
 
-// Fetches the security domain secret and calls the completion block with the
-// security domain secret as input.
+// Triggers the process to fetch the security domain secret and calls the
+// completion block with the security domain secret as input.
 - (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
                                  purpose:(PasskeyKeychainProvider::
                                               ReauthenticatePurpose)purpose
-                              completion:(FetchKeyCompletionBlock)completion {
-  // TODO(crbug.com/355047459): Add navigation controller.
+                              completion:
+                                  (FetchSecurityDomainSecretCompletionBlock)
+                                      completion {
   [self.passkeyKeychainProviderBridge
       fetchSecurityDomainSecretForGaia:gaia
-                  navigationController:nil
                                purpose:purpose
                             completion:completion];
 }

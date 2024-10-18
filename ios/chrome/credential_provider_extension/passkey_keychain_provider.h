@@ -32,7 +32,9 @@ class PasskeyKeychainProvider {
   using SharedKeyList = std::vector<SharedKey>;
 
   // Types for the different callbacks.
-  using KeyFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
+  using CheckEnrolledCallback = base::OnceCallback<void(BOOL, NSError*)>;
+  using EnrollCallback = base::OnceCallback<void(NSError*)>;
+  using KeysFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
   using KeysMarkedAsAsStaleCallback = base::OnceCallback<void(void)>;
 
   PasskeyKeychainProvider();
@@ -42,21 +44,35 @@ class PasskeyKeychainProvider {
 
   ~PasskeyKeychainProvider();
 
+  // Checks if the identity identified by `gaia` is enrolled and invokes
+  // `callback` with the result.
+  // - "gaia" is used to identify the account.
+  // - "callback" is called once the enrollment status is known and receives
+  // the result and the potential error as input.
+  void CheckEnrolled(NSString* gaia, CheckEnrolledCallback callback);
+
+  // Asynchronously enrolls the identity identified by `gaia` and invokes
+  // `callback`.
+  // - "gaia" is used to identify the account.
+  // - "navigation_controller" is used to display UI for the user to enter
+  //   credentials.
+  // - "callback" is called once the enrollment process is finished and
+  // receives the potential error as input.
+  void Enroll(NSString* gaia,
+              UINavigationController* navigation_controller,
+              EnrollCallback callback);
+
   // Asynchronously fetches the shared keys for the identity identified by
   // `gaia` and invokes `callback` with the fetched keys.
   // - "gaia" is used to identify the account.
-  // - "navigation_controller" is used to display UI for the user to enter
-  //   credentials. Can be nil, in which case FetchKeys still attempts to fetch
-  //   keys, but fails immediately if any user interaction is required.
   // - "purpose" is used to specify if the keys will be used to encrypt or
   //   decrypt. This is mostly for logging purposes and has no effect on the
-  //   keys fetched.
+  //   fetched keys.
   // - "callback" is called once the keys are fetched and receives the fetched
   //   keys as input (the array will be empty on failure).
   void FetchKeys(NSString* gaia,
-                 UINavigationController* navigation_controller,
                  ReauthenticatePurpose purpose,
-                 KeyFetchedCallback callback);
+                 KeysFetchedCallback callback);
 
   // Asynchronously marks the keys as stale for the identity identified by
   // `gaia` and invokes `callback` after completion. This should be invoked
@@ -65,6 +81,21 @@ class PasskeyKeychainProvider {
   // - "gaia" is used to identify the account.
   // - "callback" is called once the keys are marked as stale.
   void MarkKeysAsStale(NSString* gaia, KeysMarkedAsAsStaleCallback callback);
+
+  // Asynchronously reauthenticates the identity identified by `gaia` after the
+  // keys were fetched and invokes `callback` with the fetched keys.
+  // - "gaia" is used to identify the account.
+  // - "navigation_controller" is used to display UI for the user to enter
+  //   credentials.
+  // - "purpose" is used to specify if the keys will be used to encrypt or
+  //   decrypt. This is mostly for logging purposes and has no effect on the
+  //   fetched keys.
+  // - "callback" is called once the keys are fetched and receives the fetched
+  //   keys as input (the array will be empty on failure).
+  void Reauthenticate(NSString* gaia,
+                      UINavigationController* navigation_controller,
+                      ReauthenticatePurpose purpose,
+                      KeysFetchedCallback callback);
 
  private:
   // Folsom service.

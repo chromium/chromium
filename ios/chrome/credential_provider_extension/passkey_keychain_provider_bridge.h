@@ -16,18 +16,20 @@
 // Default initializer. `enableLogging` indicates whether metrics logging should
 // be enabled in the Credential Provider Extension.
 - (instancetype)initWithEnableLogging:(BOOL)enableLogging
+                 navigationController:
+                     (UINavigationController*)navigationController
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Fetches the Security Domain Secret and calls the completion block
-// with the Security Domain Secret as the input argument.
+// Initiates the process to fetch the security domain secret and calls the
+// completion block with the security domain secret the input argument.
 - (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
-                    navigationController:
-                        (UINavigationController*)navigationController
                                  purpose:(PasskeyKeychainProvider::
                                               ReauthenticatePurpose)purpose
-                              completion:(FetchKeyCompletionBlock)completion;
+                              completion:
+                                  (FetchSecurityDomainSecretCompletionBlock)
+                                      fetchSecurityDomainSecretCompletion;
 
 // Marks the security domain secret vault keys as stale and calls the completion
 // block.

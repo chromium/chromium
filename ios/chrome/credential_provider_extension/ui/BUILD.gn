@@ -100,6 +100,8 @@ source_set("credential_list_ui_handler") {
 
 source_set("credential_response_handler") {
   sources = [ "credential_response_handler.h" ]
+  deps =
+      [ "//ios/chrome/credential_provider_extension:passkey_keychain_provider" ]
 }
 
 source_set("feature_flags") {

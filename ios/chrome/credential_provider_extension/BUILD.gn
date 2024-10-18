@@ -31,7 +31,7 @@ source_set("credential_provider") {
   deps = [
     ":account_verification_provider",
     ":metrics_util",
-    ":passkey_keychain_bridge",
+    ":passkey_keychain_provider_bridge",
     ":passkey_util",
     ":reauthentication_handler",
     ":system_strings",
@@ -120,7 +120,7 @@ source_set("passkey_util") {
   frameworks = [ "Foundation.framework" ]
 }
 
-source_set("passkey_keychain_bridge") {
+source_set("passkey_keychain_provider_bridge") {
   sources = [
     "passkey_keychain_provider_bridge.h",
     "passkey_keychain_provider_bridge.mm",
@@ -161,7 +161,10 @@ source_set("metrics_util") {
 
 source_set("passkey_keychain_provider") {
   public_deps = [ ":passkey_keychain_provider_header" ]
-  deps = [ ios_passkey_keychain_provider_target ]
+
+  # TODO(crbug.com/355042392): Set the dep back to
+  # `ios_passkey_keychain_provider_target` once the internal repo is updated.
+  deps = [ ":passkey_keychain_provider_implementation" ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]
 }
