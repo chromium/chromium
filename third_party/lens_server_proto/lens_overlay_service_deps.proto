@@ -77,7 +77,7 @@ message LensOverlayInteractionResponse {
   reserved 1, 2;
 }
 
-// Next ID: 5
+// Next ID: 6
 message Payload {
   // Currently unset, use image_data in ObjectsRequest.
   // TODO(b/359638436): Move ObjectsRequest clients onto Payload.ImageData.
@@ -90,6 +90,9 @@ message Payload {
   // The media type/MIME type of the data represented i content_data, e.g.
   // "application/pdf". If content_type is set, content_data should also be set.
   string content_type = 4;
+
+  // The page url this request was made on.
+  string page_url = 5;
 
   reserved 1;
 }
