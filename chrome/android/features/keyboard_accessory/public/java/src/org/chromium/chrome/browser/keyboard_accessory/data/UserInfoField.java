@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Callback;
 
+import java.util.Objects;
+
 /**
- * Represents an item (either selectable or not) presented on the UI, such as the username
- * or a credit card number.
+ * Represents an item (either selectable or not) presented on the UI, such as the username or a
+ * credit card number.
  */
 public final class UserInfoField {
     private final String mDisplayText;
@@ -19,7 +23,8 @@ public final class UserInfoField {
     private final String mId;
     private final int mIconId;
     private final boolean mIsObfuscated;
-    private final Callback<UserInfoField> mCallback;
+    // The callback is {@code null} if the field is not selectable.
+    @Nullable private final Callback<UserInfoField> mCallback;
 
     /**
      * @param displayText The text to display. Plain text if |isObfuscated| is false.
@@ -27,7 +32,8 @@ public final class UserInfoField {
      * @param a11yDescription The description used for accessibility.
      * @param id An ID representing this object for filling purposes. May be empty.
      * @param isObfuscated If true, the displayed caption is transformed into stars.
-     * @param callback Called when the user taps the suggestions.
+     * @param callback Called when the user taps the suggestions. Pass a {@code null} value for
+     *     non-selectable suggestions.
      */
     private UserInfoField(
             String displayText,
@@ -36,11 +42,11 @@ public final class UserInfoField {
             String id,
             int iconId,
             boolean isObfuscated,
-            Callback<UserInfoField> callback) {
-        mDisplayText = displayText;
-        mTextToFill = textToFill;
-        mA11yDescription = a11yDescription;
-        mId = id;
+            @Nullable Callback<UserInfoField> callback) {
+        mDisplayText = Objects.requireNonNull(displayText, "Display text can't be null");
+        mTextToFill = Objects.requireNonNull(textToFill, "Text to fill can't be null");
+        mA11yDescription = Objects.requireNonNull(a11yDescription, "A11 description can't be null");
+        mId = Objects.requireNonNull(id, "Id can't be null");
         mIconId = iconId;
         mIsObfuscated = isObfuscated;
         mCallback = callback;
@@ -100,13 +106,13 @@ public final class UserInfoField {
 
     /** Builder for the {@link UserInfoField}. */
     public static final class Builder {
-        private String mDisplayText;
-        private String mTextToFill;
-        private String mA11yDescription;
-        private String mId;
+        private String mDisplayText = "";
+        private String mTextToFill = "";
+        private String mA11yDescription = "";
+        private String mId = "";
         private int mIconId;
         private boolean mIsObfuscated;
-        private Callback<UserInfoField> mCallback;
+        @Nullable private Callback<UserInfoField> mCallback;
 
         public Builder setDisplayText(String displayText) {
             this.mDisplayText = displayText;
