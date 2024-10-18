@@ -23,6 +23,7 @@
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/cxx23_to_underlying.h"
 
@@ -275,7 +276,10 @@ std::unique_ptr<uint8_t[]> MachPortRendezvousServerBase::CreateReplyMessage(
     port_identifiers[i] = port_it->first;
   }
 
-  *iterator.MutableObject<uint64_t>() = additional_data.size();
+  // The current iterator location may not have appropriate alignment to
+  // directly store a uint64_t. Write the size as bytes instead.
+  iterator.MutableSpan<uint8_t, 8>()->copy_from(
+      base::U64ToNativeEndian(additional_data.size()));
   iterator.MutableSpan<uint8_t>(additional_data.size())
       .copy_from(additional_data);
 
