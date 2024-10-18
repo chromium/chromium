@@ -865,7 +865,11 @@ TEST_F(TabGroupSyncServiceTest, TabIDMappingIsCleardOnGroupClose) {
   EXPECT_FALSE(group->saved_tabs()[0].local_tab_id().has_value());
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
+TEST_F(TabGroupSyncServiceTest,
+       EmptyGroupsAreExcludedFromGetCallAndObserverMethods) {
+  auto all_groups = tab_group_sync_service_->GetAllGroups();
+  EXPECT_EQ(all_groups.size(), 3u);
+
   // Create a group with no tabs. Observers won't be notified.
   SavedTabGroup group_4 = test::CreateTestSavedTabGroupWithNoTabs();
   base::Uuid group_id = group_4.saved_guid();
@@ -874,6 +878,10 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
       .Times(0);
   model_->AddedFromSync(group_4);
   task_environment_.RunUntilIdle();
+
+  // Verify that GetAllGroups call will not return it.
+  all_groups = tab_group_sync_service_->GetAllGroups();
+  EXPECT_EQ(all_groups.size(), 3u);
 
   // Update visuals. Observers still won't be notified.
   EXPECT_CALL(*observer_,

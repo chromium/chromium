@@ -603,7 +603,18 @@ void TabGroupSyncServiceImpl::SavedTabGroupReorderedFromSync() {
 
 void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(
     const base::Uuid& guid) {
-  HandleTabGroupAdded(guid, TriggerSource::REMOTE);
+  const SavedTabGroup* saved_tab_group = model_->Get(guid);
+  CHECK(saved_tab_group);
+  if (saved_tab_group->saved_tabs().empty()) {
+    empty_groups_.emplace(guid);
+  }
+
+  // Post task is used here to avoid reentrancy. See crbug.com/373500807 for
+  // details.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&TabGroupSyncServiceImpl::HandleTabGroupAdded,
+                                weak_ptr_factory_.GetWeakPtr(), guid,
+                                TriggerSource::REMOTE));
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupAddedLocally(
@@ -614,7 +625,12 @@ void TabGroupSyncServiceImpl::SavedTabGroupAddedLocally(
 void TabGroupSyncServiceImpl::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
-  HandleTabGroupUpdated(group_guid, tab_guid, TriggerSource::REMOTE);
+  // Post task is used here to avoid reentrancy. See crbug.com/373500807 for
+  // details.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&TabGroupSyncServiceImpl::HandleTabGroupUpdated,
+                                weak_ptr_factory_.GetWeakPtr(), group_guid,
+                                tab_guid, TriggerSource::REMOTE));
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupUpdatedLocally(
@@ -654,7 +670,6 @@ void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
 
   if (saved_tab_group->saved_tabs().empty()) {
     // Wait for another sync update with tabs before notifying the UI.
-    empty_groups_.emplace(guid);
     return;
   }
 
@@ -662,6 +677,7 @@ void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
     return;
   }
 
+  empty_groups_.erase(guid);
   for (auto& observer : observers_) {
     observer.OnTabGroupAdded(*saved_tab_group, source);
   }
@@ -683,7 +699,6 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
   }
 
   if (base::Contains(empty_groups_, group_guid)) {
-    empty_groups_.erase(group_guid);
     HandleTabGroupAdded(group_guid, source);
     return;
   }
@@ -692,6 +707,7 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
     return;
   }
 
+  empty_groups_.erase(group_guid);
   for (auto& observer : observers_) {
     observer.OnTabGroupUpdated(*saved_tab_group, source);
   }
