@@ -68,7 +68,7 @@ public class PostPasswordMigrationSheetRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(1)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 

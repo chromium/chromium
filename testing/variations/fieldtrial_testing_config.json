@@ -13443,21 +13443,6 @@
             ]
         }
     ],
-    "LocalPasswordsAndroidAccessLossWarning": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning"
-                    ]
-                }
-            ]
-        }
-    ],
     "LocalStateEnterprisePasswordHashes": [
         {
             "platforms": [
