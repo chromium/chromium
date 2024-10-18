@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 ToastSpecification::Builder::Builder(const gfx::VectorIcon& icon,
                                      int body_string_id)

@@ -3,23 +3,23 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.h"
-#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/mac/mac_util.h"
 #import "base/mac/scoped_sending_event.h"
+#include "base/memory/raw_ptr.h"
 #import "base/message_loop/message_pump_apple.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #import "components/remote_cocoa/app_shim/menu_controller_cocoa_delegate_impl.h"
 #include "content/public/browser/web_contents.h"
-#import "ui/base/cocoa/menu_controller.h"
 #include "ui/base/cocoa/menu_utils.h"
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/color/color_provider.h"
+#import "ui/menus/cocoa/menu_controller.h"
 #include "ui/views/controls/menu/menu_controller_cocoa_delegate_params.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"

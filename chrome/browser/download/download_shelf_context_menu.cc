@@ -17,8 +17,8 @@
 #include "content/public/common/content_features.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/menus/simple_menu_model.h"
 
 using InsecureDownloadStatus = download::DownloadItem::InsecureDownloadStatus;
 

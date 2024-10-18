@@ -14,10 +14,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/menus/simple_menu_model.h"
 
 class PrefRegistrySimple;
 

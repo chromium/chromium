@@ -13,4 +13,5 @@ include_rules = [
   "+services/service_manager/public/cpp",
   "+ui/linux",
   "+ui/ozone/public",
+  "+ui/menus",
 ]

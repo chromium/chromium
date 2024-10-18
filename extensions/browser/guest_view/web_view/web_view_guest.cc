@@ -78,8 +78,8 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/url_constants.h"
 
 using base::UserMetricsAction;

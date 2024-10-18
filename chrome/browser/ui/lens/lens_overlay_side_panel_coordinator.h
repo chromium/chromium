@@ -12,7 +12,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class GURL;
 class LensOverlayController;

@@ -11,8 +11,8 @@
 #include "components/remote_cocoa/common/menu.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/base/cocoa/menu_controller.h"
 #include "ui/base/interaction/element_tracker_mac.h"
+#include "ui/menus/cocoa/menu_controller.h"
 
 @class NSWindow;
 @class NSView;

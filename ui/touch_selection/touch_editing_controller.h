@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_POINTER_TOUCH_EDITING_CONTROLLER_H_
-#define UI_BASE_POINTER_TOUCH_EDITING_CONTROLLER_H_
+#ifndef UI_TOUCH_SELECTION_TOUCH_EDITING_CONTROLLER_H_
+#define UI_TOUCH_SELECTION_TOUCH_EDITING_CONTROLLER_H_
 
 #include "base/component_export.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace gfx {
 class Point;
@@ -113,4 +113,4 @@ class COMPONENT_EXPORT(UI_BASE) TouchEditable
 
 }  // namespace ui
 
-#endif  // UI_BASE_POINTER_TOUCH_EDITING_CONTROLLER_H_
+#endif  // UI_TOUCH_SELECTION_TOUCH_EDITING_CONTROLLER_H_

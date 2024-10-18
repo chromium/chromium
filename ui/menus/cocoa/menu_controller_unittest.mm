@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ui/menus/cocoa/menu_controller.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "base/memory/raw_ptr.h"
@@ -12,16 +14,15 @@
 #include "base/test/task_environment.h"
 #import "testing/gtest_mac.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#import "ui/base/cocoa/menu_controller.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #import "ui/base/test/cocoa_helper.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 
 @interface WatchedLifetimeMenuController : MenuControllerCocoa
@@ -493,8 +494,9 @@ void Validate(MenuControllerCocoa* controller, NSMenu* menu) {
   for (int i = 0; i < [menu numberOfItems]; ++i) {
     NSMenuItem* item = [menu itemAtIndex:i];
     [controller validateUserInterfaceItem:item];
-    if ([item hasSubmenu])
+    if ([item hasSubmenu]) {
       Validate(controller, [item submenu]);
+    }
   }
 }
 
@@ -702,10 +704,9 @@ TEST_F(MenuControllerTest, InitBuildsMenu) {
   model.AddItem(2, u"two");
   model.AddItem(3, u"three");
 
-  MenuControllerCocoa* menu =
-      [[MenuControllerCocoa alloc] initWithModel:&model
-                                        delegate:nil
-                          useWithPopUpButtonCell:YES];
+  MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                                delegate:nil
+                                                  useWithPopUpButtonCell:YES];
   EXPECT_TRUE([menu isMenuBuiltForTesting]);
 }
 

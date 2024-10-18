@@ -59,10 +59,10 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "url/gurl.h"
 

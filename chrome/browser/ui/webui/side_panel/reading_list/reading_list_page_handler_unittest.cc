@@ -22,8 +22,8 @@
 #include "components/reading_list/core/reading_list_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
 namespace {

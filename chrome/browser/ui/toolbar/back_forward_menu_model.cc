@@ -39,7 +39,6 @@
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
@@ -47,6 +46,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/menus/simple_menu_model.h"
 
 using base::UserMetricsAction;
 using content::NavigationController;

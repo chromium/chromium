@@ -85,7 +85,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/cocoa/secure_password_input.h"
-#include "ui/base/cocoa/text_services_context_menu.h"
+#include "ui/menus/cocoa/text_services_context_menu.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)

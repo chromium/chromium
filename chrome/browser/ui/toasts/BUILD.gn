@@ -50,6 +50,7 @@ source_set("impl") {
     "//components/vector_icons:vector_icons",
     "//ui/base/metadata",
     "//ui/compositor",
+    "//ui/menus",
   ]
 }
 

@@ -12,8 +12,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/menus/simple_menu_model.h"
 
 // ToastSpecification details what the toast should contain when shown.
 class ToastSpecification {

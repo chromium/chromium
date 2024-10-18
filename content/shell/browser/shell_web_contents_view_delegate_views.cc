@@ -13,8 +13,8 @@
 #include "content/shell/common/shell_switches.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 

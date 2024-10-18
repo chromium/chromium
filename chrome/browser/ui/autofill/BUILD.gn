@@ -94,6 +94,7 @@ source_set("autofill") {
       "//components/user_education/common",
       "//third_party/abseil-cpp:absl",
       "//ui/base",
+      "//ui/menus",
       "//ui/views",
     ]
   }

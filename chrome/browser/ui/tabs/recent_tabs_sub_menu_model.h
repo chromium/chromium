@@ -23,7 +23,7 @@
 #include "components/sessions/core/tab_restore_types.h"
 #include "components/sync_sessions/synced_session.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class Browser;
 

@@ -56,10 +56,10 @@
 #include "ui/actions/actions.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/time_format.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "url/gurl.h"
 

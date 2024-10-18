@@ -11,6 +11,8 @@ test("ui_unittests") {
   deps = [
     "//base/test:test_support",
     "//testing/gtest",
+    "//ui/base",
+    "//ui/menus:unit_tests",
   ]
 
   if (!is_ios && !is_android && !is_castos) {
@@ -19,5 +21,9 @@ test("ui_unittests") {
 
   if (use_blink) {
     deps += [ "//ui/color:unit_tests" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//ui/base:ui_unittests_framework" ]
   }
 }

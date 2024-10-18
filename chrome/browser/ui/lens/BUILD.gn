@@ -147,6 +147,7 @@ source_set("lens") {
     "//ui/gfx:gfx",
     "//ui/gfx/codec:codec",
     "//ui/gfx/geometry:geometry",
+    "//ui/menus",
     "//ui/views",
     "//ui/webui",
     "//url",

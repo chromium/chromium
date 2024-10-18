@@ -6,8 +6,8 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/metrics/histogram_macros.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/view.h"
 
 namespace ash {

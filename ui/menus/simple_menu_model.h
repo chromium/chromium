@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_MODELS_SIMPLE_MENU_MODEL_H_
-#define UI_BASE_MODELS_SIMPLE_MENU_MODEL_H_
+#ifndef UI_MENUS_SIMPLE_MENU_MODEL_H_
+#define UI_MENUS_SIMPLE_MENU_MODEL_H_
 
 #include <optional>
 #include <string>
@@ -33,7 +33,7 @@ class ButtonMenuItemModel;
 // classes, forcing the use of those classes (or wrappers around those classes)
 // in order to display as new. This prevents creating menu items which are
 // marked as "new" for an extended/indefinite period of time.
-class COMPONENT_EXPORT(UI_BASE) IsNewFeatureAtValue {
+class COMPONENT_EXPORT(UI_MENUS) IsNewFeatureAtValue {
  public:
   IsNewFeatureAtValue() = default;
 
@@ -69,12 +69,12 @@ class COMPONENT_EXPORT(UI_BASE) IsNewFeatureAtValue {
 // items. This makes it easy to construct fixed menus. Menus populated by
 // dynamic data sources may be better off implementing MenuModel directly.
 // The breadth of MenuModel is not exposed through this API.
-class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
+class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
  public:
   // Default icon size to be used for context menus.
   static constexpr int kDefaultIconSize = 16;
 
-  class COMPONENT_EXPORT(UI_BASE) Delegate : public AcceleratorProvider {
+  class COMPONENT_EXPORT(UI_MENUS) Delegate : public AcceleratorProvider {
    public:
     ~Delegate() override = default;
 
@@ -338,4 +338,4 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
 
 }  // namespace ui
 
-#endif  // UI_BASE_MODELS_SIMPLE_MENU_MODEL_H_
+#endif  // UI_MENUS_SIMPLE_MENU_MODEL_H_

@@ -2496,6 +2496,7 @@ static_library("browser") {
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:buildflags",
+    "//ui/menus",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/resources",

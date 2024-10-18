@@ -6,7 +6,7 @@
 #define CHROME_TEST_BASE_MENU_MODEL_TEST_H_
 
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 // A mix-in class to be used in addition to something that derrives from
 // testing::Test to provide some extra functionality for testing menu models.

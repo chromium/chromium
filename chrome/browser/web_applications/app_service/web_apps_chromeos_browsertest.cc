@@ -42,11 +42,11 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/image/image.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

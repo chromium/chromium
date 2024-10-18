@@ -456,6 +456,7 @@ static_library("test_support") {
     "//components/web_package",
     "//components/webapps/browser:browser",
     "//components/webapps/common",
+    "//ui/menus",
     "//ui/webui",
   ]
 
@@ -6605,6 +6606,7 @@ test("unit_tests") {
     "//ui/events:test_support",
     "//ui/gfx:test_support",
     "//ui/gl",
+    "//ui/menus",
     "//ui/native_theme:test_support",
     "//ui/resources",
     "//ui/shell_dialogs:test_support",
@@ -10117,6 +10119,7 @@ if (!is_android) {
       "//ui/base:test_support",
       "//ui/events:test_support",
       "//ui/gfx:test_support",
+      "//ui/menus",
       "//ui/shell_dialogs",
       "//ui/views",
       "//ui/views:test_support",
@@ -10142,7 +10145,10 @@ if (!is_android) {
         "base/in_process_browser_test_mac.mm",
         "base/interactive_test_utils_mac.mm",
       ]
-      deps += [ "//chrome/browser/apps/app_shim:app_shim" ]
+      deps += [
+        "//chrome/browser/apps/app_shim:app_shim",
+        "//ui/base/interaction:test_support",
+      ]
     }
 
     if (is_win) {
@@ -10607,6 +10613,7 @@ if (!is_android && !is_chromeos_device) {
       "//ui/base:ozone_buildflags",
       "//ui/base:test_support",
       "//ui/base/clipboard:clipboard_test_support",
+      "//ui/base/interaction:test_support",
       "//ui/compositor:test_support",
       "//ui/display:test_support",
       "//ui/events:events_interactive_ui_tests",
@@ -10876,6 +10883,7 @@ if (!is_android && !is_chromeos_device) {
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
         "//ui/base/mojom:ui_base_types",
+        "//ui/menus",
         "//ui/views",
         "//ui/views:test_support",
         "//ui/views:views_interactive_ui_tests",

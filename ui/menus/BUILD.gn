@@ -1,0 +1,76 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+assert(is_win || is_mac || is_linux || is_chromeos || is_android ||
+       is_fuchsia || is_ios)
+
+component("menus") {
+  sources = [
+    "simple_menu_model.cc",
+    "simple_menu_model.h",
+  ]
+
+  if (is_mac) {
+    sources += [
+      "cocoa/menu_controller.h",
+      "cocoa/menu_controller.mm",
+      "cocoa/text_services_context_menu.h",
+      "cocoa/text_services_context_menu.mm",
+    ]
+  }
+
+  defines = [ "IS_UI_MENUS_IMPL" ]
+
+  public_deps = [
+    "//base",
+    "//ui/actions",
+    "//ui/base",
+  ]
+
+  if (is_mac) {
+    public_deps += [ "//ui/strings:ui_strings_grit" ]
+  }
+  if (is_mac) {
+    frameworks = [
+      "Accelerate.framework",
+      "AppKit.framework",
+      "AudioUnit.framework",
+      "AVFAudio.framework",
+      "Carbon.framework",
+      "CoreVideo.framework",
+      "Foundation.framework",
+      "QuartzCore.framework",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "simple_menu_model_unittest.cc" ]
+
+  if (is_mac) {
+    sources += [ "cocoa/menu_controller_unittest.mm" ]
+  }
+
+  deps = [
+    ":menus",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+  ]
+
+  if (is_mac) {
+    deps += [
+      "//base/test:test_support",
+      "//ui/base:test_support",
+      "//ui/events:test_support",
+    ]
+  }
+
+  if (use_blink) {
+    deps += [ "//ui/color" ]
+  }
+}

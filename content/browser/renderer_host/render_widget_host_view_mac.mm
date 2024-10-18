@@ -63,7 +63,6 @@
 #include "ui/base/cocoa/cursor_accessibility_scale_factor.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/secure_password_input.h"
-#include "ui/base/cocoa/text_services_context_menu.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
@@ -79,6 +78,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/menus/cocoa/text_services_context_menu.h"
 
 using blink::WebInputEvent;
 using blink::WebMouseEvent;

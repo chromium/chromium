@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_context_menu.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/widget/widget.h"
 
 StandaloneBrowserExtensionAppShelfItemController::

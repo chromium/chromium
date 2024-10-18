@@ -7,7 +7,7 @@
 #include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/user_education_features.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace user_education {
 

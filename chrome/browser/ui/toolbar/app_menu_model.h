@@ -18,7 +18,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/button_menu_item_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class AppMenuIconController;
 class BookmarkSubMenuModel;

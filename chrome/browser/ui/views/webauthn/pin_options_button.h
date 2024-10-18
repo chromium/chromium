@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PIN_OPTIONS_BUTTON_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/button/md_text_button_with_down_arrow.h"
 
 namespace views {

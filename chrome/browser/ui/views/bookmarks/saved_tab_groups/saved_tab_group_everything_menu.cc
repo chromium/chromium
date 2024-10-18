@@ -22,9 +22,9 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/base/models/dialog_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/widget/widget.h"
 

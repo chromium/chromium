@@ -15,7 +15,7 @@
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace commerce {
 

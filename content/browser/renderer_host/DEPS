@@ -54,6 +54,7 @@ specific_include_rules = {
   "render_widget_host_view_mac\.mm": [
     "+components/device_event_log/device_event_log.h",
     "+content/public/browser/web_contents.h",
+    "+ui/menus/cocoa/text_services_context_menu.h",
   ],
   "popup_menu_helper_mac.mm": [
     "+content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h",

@@ -26,8 +26,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 using extensions::APIPermission;

@@ -18,6 +18,7 @@ source_set("cast") {
     "//components/media_router/browser",
     "//components/prefs",
     "//ui/base",
+    "//ui/menus",
   ]
 }
 

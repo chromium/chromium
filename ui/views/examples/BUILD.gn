@@ -139,6 +139,7 @@ component("views_examples_lib") {
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/lottie",
+    "//ui/menus",
     "//ui/message_center",
     "//ui/native_theme",
     "//ui/resources",

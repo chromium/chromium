@@ -159,6 +159,7 @@ source_set("toolbar") {
     "//ui/events",
     "//ui/gfx:color_utils",
     "//ui/gfx/geometry:geometry_skia",
+    "//ui/menus",
     "//ui/native_theme",
   ]
   if (enable_webui_tab_strip) {

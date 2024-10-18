@@ -32,6 +32,7 @@ source_set("bookmarks") {
     "//ui/base/dragdrop/mojom",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/menus",
     "//url",
   ]
 

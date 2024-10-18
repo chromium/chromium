@@ -968,6 +968,7 @@ source_set("extensions") {
     "//ui/base/ime",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/menus",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/native_theme",

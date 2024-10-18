@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/tab_groups/tab_group_color.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/menus/simple_menu_model.h"
 
 class Browser;
 class BrowserNonClientFrameView;

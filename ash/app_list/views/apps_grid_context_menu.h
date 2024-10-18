@@ -9,8 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace views {

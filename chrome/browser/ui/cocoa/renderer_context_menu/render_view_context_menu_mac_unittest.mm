@@ -12,7 +12,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/cocoa/text_services_context_menu.h"
+#include "ui/menus/cocoa/text_services_context_menu.h"
 
 namespace {
 

@@ -14,9 +14,9 @@
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/vector_icons.h"
 

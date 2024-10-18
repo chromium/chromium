@@ -37,6 +37,7 @@ if (!is_android) {
     public_deps = [
       "//base",
       "//ui/base",
+      "//ui/menus",
     ]
   }
 
@@ -132,6 +133,7 @@ if (!is_android) {
       "//components/tab_groups",
       "//content/public/browser",
       "//ui/base",
+      "//ui/menus",
     ]
 
     if (is_chromeos) {

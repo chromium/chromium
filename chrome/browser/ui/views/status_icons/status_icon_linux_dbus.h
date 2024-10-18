@@ -18,8 +18,8 @@
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/linux/status_icon_linux.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace gfx {

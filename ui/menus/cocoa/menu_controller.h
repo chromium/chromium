@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_COCOA_MENU_CONTROLLER_H_
-#define UI_BASE_COCOA_MENU_CONTROLLER_H_
+#ifndef UI_MENUS_COCOA_MENU_CONTROLLER_H_
+#define UI_MENUS_COCOA_MENU_CONTROLLER_H_
 
 #import <Cocoa/Cocoa.h>
 
@@ -13,7 +13,7 @@ namespace ui {
 class MenuModel;
 }
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_MENUS)
 @protocol MenuControllerCocoaDelegate
 // Called as each item is created during menu or submenu creation.
 - (void)controllerWillAddItem:(NSMenuItem*)menuItem
@@ -29,9 +29,9 @@ COMPONENT_EXPORT(UI_BASE)
 // allow for hierarchical menus). The tag is the index into that model for
 // that particular item. It is important that the model outlives this object
 // as it only maintains weak references.
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_MENUS)
 @interface MenuControllerCocoa
-    : NSObject<NSMenuDelegate, NSUserInterfaceValidations>
+    : NSObject <NSMenuDelegate, NSUserInterfaceValidations>
 
 // Note that changing this will have no effect if you use
 // |-initWithModel:useWithPopUpButtonCell:| or after the first call to |-menu|.
@@ -70,4 +70,4 @@ COMPONENT_EXPORT(UI_BASE)
 - (BOOL)isMenuBuiltForTesting;
 @end
 
-#endif  // UI_BASE_COCOA_MENU_CONTROLLER_H_
+#endif  // UI_MENUS_COCOA_MENU_CONTROLLER_H_

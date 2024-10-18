@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class MediaGalleryContextMenu : public ui::SimpleMenuModel,
                                 public ui::SimpleMenuModel::Delegate {

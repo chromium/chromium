@@ -14,7 +14,7 @@
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/new_badge_policy.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace user_education {
 

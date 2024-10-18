@@ -17,12 +17,12 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_separator_types.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/test/keyboard_layout.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_platform.h"

@@ -105,11 +105,11 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/window.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/wm/core/window_util.h"
 
 // Browser Test for AppListClientImpl.

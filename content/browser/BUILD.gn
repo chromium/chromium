@@ -311,6 +311,7 @@ source_set("browser") {
     "//ui/gl",
     "//ui/gl:buildflags",
     "//ui/latency",
+    "//ui/menus",
     "//ui/native_theme",
     "//ui/native_theme:native_theme_browser",
     "//ui/resources",

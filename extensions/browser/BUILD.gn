@@ -568,6 +568,7 @@ source_set("browser_sources") {
     "//tools/json_schema_compiler:generated_api_util",
     "//ui/color",
     "//ui/display",
+    "//ui/menus",
     "//url",
   ]
 

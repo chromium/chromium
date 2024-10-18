@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -60,8 +61,7 @@ ImageModel SimpleMenuModel::Delegate::GetIconForCommandId(
 
 void SimpleMenuModel::Delegate::OnMenuWillShow(SimpleMenuModel* /*source*/) {}
 
-void SimpleMenuModel::Delegate::MenuClosed(SimpleMenuModel* /*source*/) {
-}
+void SimpleMenuModel::Delegate::MenuClosed(SimpleMenuModel* /*source*/) {}
 
 bool SimpleMenuModel::Delegate::GetAcceleratorForCommandId(
     int command_id,
@@ -125,7 +125,8 @@ void SimpleMenuModel::AddRadioItem(int command_id,
   AppendItem(std::move(item));
 }
 
-void SimpleMenuModel::AddRadioItemWithStringId(int command_id, int string_id,
+void SimpleMenuModel::AddRadioItemWithStringId(int command_id,
+                                               int string_id,
                                                int group_id) {
   AddRadioItem(command_id, l10n_util::GetStringUTF16(string_id), group_id);
 }
@@ -177,8 +178,9 @@ void SimpleMenuModel::AddSeparator(MenuSeparatorType separator_type) {
     }
   }
 #if !defined(USE_AURA)
-  if (separator_type == SPACING_SEPARATOR)
+  if (separator_type == SPACING_SEPARATOR) {
     NOTIMPLEMENTED();
+  }
 #endif
   Item item(kSeparatorId, TYPE_SEPARATOR, std::u16string());
   item.separator_type = separator_type;
@@ -201,7 +203,8 @@ void SimpleMenuModel::AddSubMenu(int command_id,
 }
 
 void SimpleMenuModel::AddSubMenuWithStringId(int command_id,
-                                             int string_id, MenuModel* model) {
+                                             int string_id,
+                                             MenuModel* model) {
   AddSubMenu(command_id, l10n_util::GetStringUTF16(string_id), model);
 }
 
@@ -282,8 +285,8 @@ void SimpleMenuModel::InsertRadioItemWithStringIdAt(size_t index,
                                                     int command_id,
                                                     int string_id,
                                                     int group_id) {
-  InsertRadioItemAt(
-      index, command_id, l10n_util::GetStringUTF16(string_id), group_id);
+  InsertRadioItemAt(index, command_id, l10n_util::GetStringUTF16(string_id),
+                    group_id);
 }
 
 void SimpleMenuModel::InsertTitleWithStringIdAt(size_t index, int string_id) {
@@ -349,16 +352,18 @@ void SimpleMenuModel::SetMinorIcon(size_t index,
 }
 
 void SimpleMenuModel::SetEnabledAt(size_t index, bool enabled) {
-  if (items_[ValidateItemIndex(index)].enabled == enabled)
+  if (items_[ValidateItemIndex(index)].enabled == enabled) {
     return;
+  }
 
   items_[index].enabled = enabled;
   MenuItemsChanged();
 }
 
 void SimpleMenuModel::SetVisibleAt(size_t index, bool visible) {
-  if (items_[ValidateItemIndex(index)].visible == visible)
+  if (items_[ValidateItemIndex(index)].visible == visible) {
     return;
+  }
 
   items_[index].visible = visible;
   MenuItemsChanged();
@@ -398,8 +403,9 @@ void SimpleMenuModel::Clear() {
 std::optional<size_t> SimpleMenuModel::GetIndexOfCommandId(
     int command_id) const {
   for (auto i = items_.begin(); i != items_.end(); ++i) {
-    if (i->command_id == command_id)
+    if (i->command_id == command_id) {
       return static_cast<size_t>(std::distance(items_.begin(), i));
+    }
   }
   return std::nullopt;
 }
@@ -428,8 +434,9 @@ int SimpleMenuModel::GetCommandIdAt(size_t index) const {
 }
 
 std::u16string SimpleMenuModel::GetLabelAt(size_t index) const {
-  if (IsItemDynamicAt(index))
+  if (IsItemDynamicAt(index)) {
     return delegate_->GetLabelForCommandId(GetCommandIdAt(index));
+  }
   return items_[ValidateItemIndex(index)].label;
 }
 
@@ -453,8 +460,9 @@ bool SimpleMenuModel::GetAcceleratorAt(size_t index,
 }
 
 bool SimpleMenuModel::IsItemCheckedAt(size_t index) const {
-  if (!delegate_)
+  if (!delegate_) {
     return false;
+  }
   MenuModel::ItemType item_type = GetTypeAt(index);
   return (item_type == TYPE_CHECK || item_type == TYPE_RADIO) &&
          delegate_->IsCommandIdChecked(GetCommandIdAt(index));
@@ -465,8 +473,9 @@ int SimpleMenuModel::GetGroupIdAt(size_t index) const {
 }
 
 ImageModel SimpleMenuModel::GetIconAt(size_t index) const {
-  if (IsItemDynamicAt(index))
+  if (IsItemDynamicAt(index)) {
     return delegate_->GetIconForCommandId(GetCommandIdAt(index));
+  }
   return items_[ValidateItemIndex(index)].icon;
 }
 
@@ -499,15 +508,17 @@ bool SimpleMenuModel::IsVisibleAt(size_t index) const {
 
 bool SimpleMenuModel::IsAlertedAt(size_t index) const {
   const int command_id = GetCommandIdAt(index);
-  if (!delegate_ || command_id == kSeparatorId || command_id == kTitleId)
+  if (!delegate_ || command_id == kSeparatorId || command_id == kTitleId) {
     return false;
+  }
 
   // This method needs to be recursive, because if the highlighted command is
   // in a submenu then the submenu item should also be highlighted.
   if (auto* const submenu = GetSubmenuModelAt(index)) {
     for (size_t i = 0; i < submenu->GetItemCount(); ++i) {
-      if (submenu->IsAlertedAt(i))
+      if (submenu->IsAlertedAt(i)) {
         return true;
+      }
     }
   }
 
@@ -562,8 +573,9 @@ MenuModel* SimpleMenuModel::GetSubmenuModelAt(size_t index) const {
 }
 
 void SimpleMenuModel::MenuWillShow() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnMenuWillShow(this);
+  }
 }
 
 void SimpleMenuModel::MenuWillClose() {
@@ -576,15 +588,15 @@ void SimpleMenuModel::MenuWillClose() {
 }
 
 void SimpleMenuModel::OnMenuClosed() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->MenuClosed(this);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // SimpleMenuModel, Protected:
 
-void SimpleMenuModel::MenuItemsChanged() {
-}
+void SimpleMenuModel::MenuItemsChanged() {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // SimpleMenuModel, Private:

@@ -8,8 +8,8 @@
 #include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/menu/menu_types.h"
 

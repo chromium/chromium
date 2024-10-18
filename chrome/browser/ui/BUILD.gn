@@ -663,6 +663,7 @@ static_library("ui") {
     "//ui/events:gesture_detection",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/menus",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/native_theme",

@@ -65,7 +65,6 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_provider_source.h"
@@ -74,6 +73,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_controller.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)

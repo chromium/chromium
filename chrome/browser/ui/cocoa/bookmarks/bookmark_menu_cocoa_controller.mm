@@ -22,8 +22,8 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
-#import "ui/base/cocoa/menu_controller.h"
 #include "ui/base/window_open_disposition.h"
+#import "ui/menus/cocoa/menu_controller.h"
 
 using base::UserMetricsAction;
 using bookmarks::BookmarkModel;

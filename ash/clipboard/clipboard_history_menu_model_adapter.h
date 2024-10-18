@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 
 namespace gfx {

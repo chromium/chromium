@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
 

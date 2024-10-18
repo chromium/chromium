@@ -18,9 +18,9 @@
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_features.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
-#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 
 namespace pdf {
 

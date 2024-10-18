@@ -11,7 +11,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
 namespace {

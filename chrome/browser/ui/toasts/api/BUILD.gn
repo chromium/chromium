@@ -16,6 +16,7 @@ source_set("toasts") {
   public_deps = [
     "//base",
     "//ui/base",
+    "//ui/menus",
   ]
   deps = [ "//components/vector_icons:vector_icons" ]
 }
@@ -33,5 +34,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//testing/gtest",
     "//ui/gfx",
+    "//ui/menus",
   ]
 }

@@ -12,8 +12,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/menus/simple_menu_model.h"
 
 class ToastRegistryTest : public testing::Test {};
 

@@ -6,7 +6,7 @@
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_IMAGE_VIEW_DELEGATE_H_
 
 #include "ash/ash_export.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/drag_controller.h"
 

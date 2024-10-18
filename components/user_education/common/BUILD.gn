@@ -74,6 +74,7 @@ source_set("common") {
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility",
     "//ui/base",
+    "//ui/menus",
   ]
 }
 

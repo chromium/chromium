@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace {
 

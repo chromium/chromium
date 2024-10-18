@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

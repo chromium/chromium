@@ -49,7 +49,6 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/list_selection_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
@@ -59,6 +58,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
 // This should be after all other #includes.

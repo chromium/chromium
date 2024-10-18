@@ -5,9 +5,9 @@
 #include "ui/base/interaction/interaction_test_util_mac.h"
 
 #include "base/apple/foundation_util.h"
-#include "ui/base/cocoa/menu_controller.h"
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/menus/cocoa/menu_controller.h"
 
 namespace ui::test {
 

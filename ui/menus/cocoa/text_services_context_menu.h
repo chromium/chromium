@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
-#define UI_BASE_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
+#ifndef UI_MENUS_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
+#define UI_MENUS_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
 
 #include <string>
 
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace ui {
 
 // This class is used to append and handle the Speech and BiDi submenu for the
 // context menu.
-class COMPONENT_EXPORT(UI_BASE) TextServicesContextMenu
+class COMPONENT_EXPORT(UI_MENUS) TextServicesContextMenu
     : public SimpleMenuModel::Delegate {
  public:
   enum MenuCommands {
@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(UI_BASE) TextServicesContextMenu
     kWritingDirectionRtl,
   };
 
-  class COMPONENT_EXPORT(UI_BASE) Delegate {
+  class COMPONENT_EXPORT(UI_MENUS) Delegate {
    public:
     // Returns the selected text.
     virtual std::u16string GetSelectedText() const = 0;
@@ -90,4 +90,4 @@ class COMPONENT_EXPORT(UI_BASE) TextServicesContextMenu
 
 }  // namespace ui
 
-#endif  // UI_BASE_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
+#endif  // UI_MENUS_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_

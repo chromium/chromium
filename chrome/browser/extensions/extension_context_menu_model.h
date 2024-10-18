@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/extension_id.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/origin.h"
 
 class Browser;

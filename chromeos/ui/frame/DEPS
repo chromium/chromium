@@ -13,6 +13,7 @@ include_rules = [
   "+ui/display",
   "+ui/events",
   "+ui/gfx",
+  "+ui/menus",
   "+ui/platform_window",
   "+ui/strings/grit/ui_strings.h",
   "+ui/views",

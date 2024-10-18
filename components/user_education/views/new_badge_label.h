@@ -10,7 +10,7 @@
 #include "components/user_education/common/new_badge_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/badge_painter.h"
 #include "ui/views/controls/label.h"

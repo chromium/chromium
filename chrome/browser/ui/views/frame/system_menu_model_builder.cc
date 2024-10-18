@@ -19,7 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profile.h"

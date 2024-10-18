@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ui/base/cocoa/menu_controller.h"
+#import "ui/menus/cocoa/menu_controller.h"
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -16,10 +16,10 @@
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #import "ui/events/event_utils.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
@@ -40,8 +40,9 @@ NSMenu* MakeEmptySubmenu() {
 bool MenuHasVisibleItems(const ui::MenuModel* model) {
   size_t count = model->GetItemCount();
   for (size_t index = 0; index < count; ++index) {
-    if (model->IsVisibleAt(index))
+    if (model->IsVisibleAt(index)) {
       return true;
+    }
   }
   return false;
 }
@@ -157,8 +158,9 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 - (void)cancel {
   if (_isMenuOpen) {
     [_menu cancelTracking];
-    if (_model)
+    if (_model) {
       _model->MenuWillClose();
+    }
     _isMenuOpen = NO;
   }
 }
@@ -196,8 +198,9 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
   // If the menu item has an icon, set it.
   ui::ImageModel icon = model->GetIconAt(index);
-  if (icon.IsImage())
+  if (icon.IsImage()) {
     item.image = icon.GetImage().ToNSImage();
+  }
 
   ui::MenuModel::ItemType type = model->GetTypeAt(index);
   const NSInteger modelIndex = base::checked_cast<NSInteger>(index);
@@ -253,13 +256,15 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   NSMenuItem* menuItem = base::apple::ObjCCastStrict<NSMenuItem>(item);
 
   SEL action = menuItem.action;
-  if (action != @selector(itemSelected:))
+  if (action != @selector(itemSelected:)) {
     return NO;
+  }
 
   ui::MenuModel* model =
       [WeakPtrToMenuModelAsNSObject getFrom:menuItem.representedObject];
-  if (!model)
+  if (!model) {
     return NO;
+  }
 
   const size_t modelIndex = base::checked_cast<size_t>(menuItem.tag);
   BOOL checked = model->IsItemCheckedAt(modelIndex);
@@ -307,8 +312,9 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 }
 
 - (void)maybeBuild {
-  if (_menu || !_model)
+  if (_menu || !_model) {
     return;
+  }
 
   _menu = [self menuFromModel:_model.get()];
   _menu.delegate = self;
@@ -317,8 +323,9 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   // However, the way we currently hook menu events only supports the root
   // menu. Therefore we call this method here and submenus are not supported
   // for auto-highlighting or ElementTracker events.
-  if (_delegate)
+  if (_delegate) {
     [_delegate controllerWillAddMenu:_menu fromModel:_model.get()];
+  }
 
   // If this is to be used with a NSPopUpButtonCell, add an item at the 0th
   // position that's empty. Doing it after the menu has been constructed won't
@@ -343,15 +350,17 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
 - (void)menuWillOpen:(NSMenu*)menu {
   _isMenuOpen = YES;
-  if (_model)
+  if (_model) {
     _model->MenuWillShow();  // Note: |model_| may trigger -[self dealloc].
+  }
 }
 
 - (void)menuDidClose:(NSMenu*)menu {
   if (_isMenuOpen) {
     _isMenuOpen = NO;
-    if (_model)
+    if (_model) {
       _model->MenuWillClose();  // Note: |model_| may trigger -[self dealloc].
+    }
   }
 }
 

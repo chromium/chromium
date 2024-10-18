@@ -8,7 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
-#include "ui/base/cocoa/text_services_context_menu.h"
+#include "ui/menus/cocoa/text_services_context_menu.h"
 
 // Mac implementation of the context menu display code. Uses a Cocoa NSMenu
 // to display the context menu. Internally uses an obj-c object as the

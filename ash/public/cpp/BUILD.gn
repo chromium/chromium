@@ -487,6 +487,7 @@ component("cpp") {
     "//ui/events/ozone/layout",
     "//ui/message_center/public/cpp",
     "//ui/strings:ui_strings_grit",
+    "//ui/touch_selection",
     "//ui/views",
     "//ui/wm",
     "//ui/wm/public",

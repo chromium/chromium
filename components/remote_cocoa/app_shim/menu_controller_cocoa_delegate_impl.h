@@ -8,8 +8,8 @@
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #include "components/remote_cocoa/common/menu.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
-#import "ui/base/cocoa/menu_controller.h"
 #include "ui/gfx/font.h"
+#import "ui/menus/cocoa/menu_controller.h"
 
 REMOTE_COCOA_APP_SHIM_EXPORT
 @interface MenuControllerCocoaDelegateImpl

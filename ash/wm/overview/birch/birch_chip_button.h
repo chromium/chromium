@@ -11,7 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace views {

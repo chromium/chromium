@@ -34,8 +34,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 

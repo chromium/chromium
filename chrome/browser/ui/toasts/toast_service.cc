@@ -26,7 +26,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 ToastService::ToastService(BrowserWindowInterface* browser_window_interface) {
   toast_registry_ = std::make_unique<ToastRegistry>();

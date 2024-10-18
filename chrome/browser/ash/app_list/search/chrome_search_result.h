@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/search/scoring.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
 namespace ui {
