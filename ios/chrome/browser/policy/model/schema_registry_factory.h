@@ -7,7 +7,7 @@
 
 #import <memory>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+class ProfileIOS;
 
 namespace policy {
 class CombinedSchemaRegistry;

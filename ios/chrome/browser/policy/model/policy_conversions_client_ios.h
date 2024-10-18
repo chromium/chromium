@@ -7,7 +7,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/policy/core/browser/policy_conversions_client.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace web {
 class BrowserState;

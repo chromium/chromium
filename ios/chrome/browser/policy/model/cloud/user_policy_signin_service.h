@@ -11,7 +11,8 @@
 #import "base/scoped_observation.h"
 #import "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace policy {
 
