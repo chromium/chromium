@@ -16,7 +16,7 @@ namespace base {
 namespace debug {
 
 // Describes a region of mapped memory and the path of the file mapped.
-struct MappedMemoryRegion {
+struct BASE_EXPORT MappedMemoryRegion {
   enum Permission {
     READ = 1 << 0,
     WRITE = 1 << 1,
