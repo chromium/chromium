@@ -438,15 +438,16 @@ TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
+  CanvasHibernationHandler handler;
+  FakeCanvasResourceHost host(gfx::Size(300, 200));
+  host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
-  auto& handler = bridge->GetHibernationHandler();
+  Draw(host);
+
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
   // Set the page to hidden to kick off hibernation.
-  SetPageVisible(Host(), &handler, platform, false);
+  SetPageVisible(&host, &handler, platform, false);
   EXPECT_TRUE(handler.IsHibernating());
   EXPECT_FALSE(handler.is_encoded());
 
