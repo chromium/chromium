@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
-import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
@@ -34,7 +33,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -81,9 +79,6 @@ import java.util.concurrent.TimeoutException;
 /** Tests tabbed mode app menu popup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableIf.Build(
-        sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-        message = "crbug.com/354278364")
 public class TabbedAppMenuTest {
     private static final int RENDER_TEST_REVISION = 2;
 
@@ -135,9 +130,6 @@ public class TabbedAppMenuTest {
 
         showAppMenuAndAssertMenuShown();
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> getListView().setSelection(0));
-        CriteriaHelper.pollInstrumentationThread(
-                () -> Criteria.checkThat(getCurrentFocusedRow(), Matchers.is(0)));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -561,6 +553,13 @@ public class TabbedAppMenuTest {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
                     Assert.assertTrue(mAppMenuHandler.isAppMenuShowing());
+                });
+
+        // Make sure the menu is ready to be selected.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    getListView().setSelection(0);
+                    Criteria.checkThat(getCurrentFocusedRow(), Matchers.is(0));
                 });
     }
 
