@@ -241,6 +241,12 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   _editButton.enabled = enabled;
 }
 
+#pragma mark Search Bar
+
+- (void)setSearchBarText:(NSString*)text {
+  _searchBar.text = text;
+}
+
 #pragma mark - UIView
 
 - (CGSize)intrinsicContentSize {

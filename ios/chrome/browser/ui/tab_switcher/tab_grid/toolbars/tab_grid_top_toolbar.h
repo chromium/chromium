@@ -83,7 +83,8 @@
 - (void)respondBeforeResponder:(UIResponder*)nextResponder;
 // Relinquishs the searchBar status as first responder.
 - (void)unfocusSearchBar;
-
+// Sets the text of the UISearchBar.
+- (void)setSearchBarText:(NSString*)text;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TOOLBARS_TAB_GRID_TOP_TOOLBAR_H_

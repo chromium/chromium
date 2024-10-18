@@ -1212,7 +1212,7 @@ TEST_P(BaseGridMediatorTest, DropCrossBrowserTabGroup) {
   ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOtherBrowser);
 }
 
-// Tests dropping an interal URL (e.g. drag from omnibox) in the grid.
+// Tests dropping an internal URL (e.g. drag from omnibox) in the grid.
 TEST_P(BaseGridMediatorTest, DropInternalURL) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);

@@ -1408,8 +1408,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     if (completion) {
       completion();
     }
+    // Save the string in the History search bar before switching back
+    // to TabGridMode::kSearch. See `-showHistoryForText:` for why presenting
+    // History switched from kSearch to kNormal.
+    NSString* previousString = self.historyCoordinator.searchTerms;
     [weakSelf.historyCoordinator stop];
     weakSelf.historyCoordinator = nil;
+    [self setActiveMode:TabGridMode::kSearch];
+    // When setting TabGridMode to kSearch, the string in the search bar
+    // is initialized to an empty string, so we override with the previous
+    // string
+    [self.baseViewController.topToolbar setSearchBarText:previousString];
   }];
 }
 
@@ -1647,6 +1656,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.historyCoordinator.presentationDelegate = self;
   self.historyCoordinator.delegate = self;
   [self.historyCoordinator start];
+  // See crbug.com/368260425.
+  // When presenting and dismissing History, the Tab Grid search bar becomes
+  // uneditable. As a workaround, switch TabGridMode from kSearch to kNormal.
+  // When dismissing History in `-closeHistoryWithCompletion:`, it will be
+  // switched back from kNormal to kSearch, and the Tab Grid search bar will be
+  // editable.
+  [self setActiveMode:TabGridMode::kNormal];
 }
 
 - (void)showWebSearchForText:(NSString*)text {
