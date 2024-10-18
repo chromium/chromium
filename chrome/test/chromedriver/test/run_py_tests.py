@@ -104,10 +104,6 @@ _OS_SPECIFIC_FILTER = {}
 _OS_SPECIFIC_FILTER['win'] = [
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=299
     'ChromeLogPathCapabilityTest.testChromeLogPath',
-    # https://bugs.chromium.org/p/chromium/issues/detail?id=1196363
-    'ChromeDownloadDirTest.testFileDownloadAfterTab',
-    'InvalidCertificateTest.testLoadsPage',
-    'InvalidCertificateTest.testNavigateNewWindow',
     # Flaky on Win7 bots: crbug.com/1132559
     'ChromeDriverTest.testTakeElementScreenshotInIframe',
     # TODO(https://crbug.com/360058651): Flaky on win11.
