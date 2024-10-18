@@ -473,7 +473,6 @@ bool JpegClient::GetSoftwareEncodeResult(int width,
   const uint8_t* yuv_src = static_cast<uint8_t*>(in_shm_->mapping.memory());
   const int kBytesPerPixel = 4;
   std::vector<uint8_t> rgba_buffer(width * height * kBytesPerPixel);
-  std::vector<uint8_t> encoded;
   libyuv::I420ToABGR(yuv_src, y_stride, yuv_src + y_stride * height, u_stride,
                      yuv_src + y_stride * height + u_stride * height / 2,
                      v_stride, rgba_buffer.data(), width * kBytesPerPixel,
@@ -482,12 +481,14 @@ bool JpegClient::GetSoftwareEncodeResult(int width,
   SkImageInfo info = SkImageInfo::Make(width, height, kRGBA_8888_SkColorType,
                                        kOpaque_SkAlphaType);
   SkPixmap src(info, &rgba_buffer[0], width * kBytesPerPixel);
-  if (!gfx::JPEGCodec::Encode(src, kJpegDefaultQuality, &encoded)) {
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::JPEGCodec::Encode(src, kJpegDefaultQuality);
+  if (!encoded) {
     return false;
   }
 
-  memcpy(sw_out_mapping_.memory(), encoded.data(), encoded.size());
-  *sw_encoded_size = encoded.size();
+  memcpy(sw_out_mapping_.memory(), encoded->data(), encoded->size());
+  *sw_encoded_size = encoded->size();
   *sw_encode_time = base::TimeTicks::Now() - sw_encode_start;
   return true;
 }

@@ -291,9 +291,12 @@ void SystemMediaControlsWin::SetThumbnail(const SkBitmap& bitmap) {
                                              &icon_data_writer_);
   DCHECK(SUCCEEDED(hr));
 
-  std::vector<unsigned char> icon_png;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &icon_png);
-  hr = icon_data_writer_->WriteBytes(icon_png.size(), (BYTE*)icon_png.data());
+  std::optional<std::vector<uint8_t>> icon_png =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  if (icon_png) {
+    hr = icon_data_writer_->WriteBytes(icon_png.value().size(),
+                                       (BYTE*)icon_png.value().data());
+  }
   DCHECK(SUCCEEDED(hr));
 
   // Store the written bytes in the stream, an async operation.

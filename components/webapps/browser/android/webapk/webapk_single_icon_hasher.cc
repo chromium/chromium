@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -170,10 +171,13 @@ void WebApkSingleIconHasher::SetIconDataAndHashFromSkBitmap(
   if (bitmap.drawsNothing()) {
     return;
   }
-  std::vector<unsigned char> png_bytes;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes);
-
-  icon->SetData(std::string(png_bytes.begin(), png_bytes.end()));
+  std::optional<std::vector<uint8_t>> png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false);
+  if (png_bytes) {
+    icon->SetData(std::string(base::as_string_view(png_bytes.value())));
+  } else {
+    icon->SetData(std::string());
+  }
   icon->set_hash(
       ComputeMurmur2Hash(response_body ? *response_body : icon->unsafe_data()));
 }

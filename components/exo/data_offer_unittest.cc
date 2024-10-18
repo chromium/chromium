@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/pickle.h"
@@ -837,10 +838,8 @@ TEST_F(DataOfferTest, SetClipboardDataImage) {
   data_offer.Receive("image/png", std::move(write_pipe2));
   task_environment()->RunUntilIdle();
   ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
-  SkBitmap decoded;
-  ASSERT_TRUE(gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(result.data()), result.size(),
-      &decoded));
+  SkBitmap decoded = gfx::PNGCodec::Decode(base::as_byte_span(result));
+  ASSERT_FALSE(decoded.isNull());
   EXPECT_TRUE(cc::MatchesBitmap(image, decoded, cc::ExactPixelComparator()));
   std::string good = result;
   ASSERT_TRUE(ReadString(std::move(read_pipe2), &result));

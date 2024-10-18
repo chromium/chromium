@@ -2643,8 +2643,8 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationIconMappingChanged) {
 
   SkBitmap bitmap = gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE);
   std::vector<SkBitmap> bitmaps = {bitmap};
-  std::vector<unsigned char> png_bytes;
-  ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes));
+  std::optional<std::vector<uint8_t>> png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
 
   // Setup
   {
@@ -2668,8 +2668,9 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationIconMappingChanged) {
   ClearBroadcastedNotifications();
 
   // MergeFavicon()
-  backend_->MergeFavicon(page_url1, icon_url1, IconType::kFavicon,
-                         new base::RefCountedBytes(png_bytes), kSmallSize);
+  backend_->MergeFavicon(
+      page_url1, icon_url1, IconType::kFavicon,
+      new base::RefCountedBytes(std::move(png_bytes).value()), kSmallSize);
   EXPECT_THAT(favicon_changed_notifications_page_urls(),
               ElementsAre(page_url1));
   EXPECT_EQ(0u, favicon_changed_notifications_icon_urls().size());
@@ -2698,9 +2699,6 @@ TEST_F(HistoryBackendTest,
   GURL icon_url("http://www.google.com/favicon.ico");
 
   SkBitmap bitmap = gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE);
-  std::vector<unsigned char> png_bytes;
-  ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes));
-
   // Setup
   {
     std::vector<SkBitmap> bitmaps = {bitmap};
@@ -2833,8 +2831,8 @@ TEST_F(HistoryBackendTest, NoFaviconChangedNotifications) {
 
   SkBitmap bitmap = gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE);
   std::vector<SkBitmap> bitmaps = {bitmap};
-  std::vector<unsigned char> png_bytes;
-  ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes));
+  std::optional<std::vector<uint8_t>> png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
 
   // Setup
   backend_->SetFavicons({page_url}, IconType::kFavicon, icon_url, bitmaps);
@@ -2844,8 +2842,9 @@ TEST_F(HistoryBackendTest, NoFaviconChangedNotifications) {
   backend_->SetFavicons({page_url}, IconType::kFavicon, icon_url, bitmaps);
 
   // MergeFavicon()
-  backend_->MergeFavicon(page_url, icon_url, IconType::kFavicon,
-                         new base::RefCountedBytes(png_bytes), kSmallSize);
+  backend_->MergeFavicon(
+      page_url, icon_url, IconType::kFavicon,
+      new base::RefCountedBytes(std::move(png_bytes).value()), kSmallSize);
 
   // UpdateFaviconMappingsAndFetch()
   {
