@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -62,19 +63,19 @@ void SuspendUnmountManager::SuspendImminent(
   }
 
   if (unmounting_paths_.empty()) {
-    VLOG(1) << "No removable device to unmount before suspending";
+    VLOG(1) << "No removable device to unmount before going to sleep";
     return;
   }
 
   VLOG(1) << "Unmounting " << unmounting_paths_.size()
-          << " removable devices before suspending";
+          << " removable drives before going to sleep";
 
   if (block_suspend_token_.is_empty()) {
     block_suspend_token_ = base::UnguessableToken::Create();
     block_suspend_time_ = base::TimeTicks::Now();
     PowerManagerClient::Get()->BlockSuspend(block_suspend_token_,
                                             "SuspendUnmountManager");
-    VLOG(1) << "Blocked the suspension";
+    VLOG(1) << "Delaying the suspension";
   }
 }
 
@@ -91,13 +92,16 @@ void SuspendUnmountManager::SuspendDone(const TimeDelta sleep_duration) {
   }
 
   if (unmounting_paths_.empty()) {
-    VLOG(1) << "Remount the removable devices";
+    VLOG(1) << "Remounting all the removable drives";
     disk_mount_manager_->EnsureMountInfoRefreshed(base::DoNothing(),
                                                   true /* force */);
   } else {
     LOG(WARNING) << "There are still " << unmounting_paths_.size()
-                 << " devices waiting to be unmounted while the suspension is"
-                 << " cancelled after " << sleep_duration;
+                 << " removable drives waiting to be unmounted when the system"
+                    " is waking up after sleeping for "
+                 << sleep_duration;
+    base::UmaHistogramSparse("CrosDisks.StillUnmountingWhenWakingUp",
+                             unmounting_paths_.size());
   }
 }
 
@@ -105,26 +109,25 @@ void SuspendUnmountManager::OnUnmountComplete(const std::string& mount_path,
                                               const MountError error_code) {
   VLOG(1) << "Unmounted '" << mount_path << "': " << error_code;
 
-  if (!unmounting_paths_.erase(mount_path)) {
-    LOG(ERROR) << "Mount point '" << mount_path << "' is not being tracked";
-    return;
-  }
+  const bool tracked = unmounting_paths_.erase(mount_path);
+  DCHECK(tracked) << " Mount point '" << mount_path << "' is not tracked";
 
   if (!unmounting_paths_.empty()) {
     VLOG(1) << "Still waiting for " << unmounting_paths_.size()
-            << " removable devices to be unmounted";
+            << " removable drives to be unmounted";
     return;
   }
 
   const TimeDelta block_time = base::TimeTicks::Now() - block_suspend_time_;
-  VLOG(1) << "Unmounted all the removable devices in " << block_time;
+  VLOG(1) << "Unmounted all the removable drives in " << block_time;
 
   if (block_suspend_token_) {
     PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
     block_suspend_token_ = {};
-    VLOG(1) << "Unblocked the suspension";
+    VLOG(1) << "Unblocked the suspension after " << block_time;
+    base::UmaHistogramMediumTimes("CrosDisks.Time.BlockSuspend", block_time);
   } else {
-    VLOG(1) << "Remount the removable devices";
+    VLOG(1) << "Remounting all the removable drives";
     disk_mount_manager_->EnsureMountInfoRefreshed(base::DoNothing(),
                                                   true /* force */);
   }
