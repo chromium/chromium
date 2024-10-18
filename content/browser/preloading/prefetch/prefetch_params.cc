@@ -252,6 +252,8 @@ bool PrefetchBrowserInitiatedTriggersEnabled() {
 
 bool UseNewWaitLoop() {
   return base::FeatureList::IsEnabled(features::kPrefetchNewWaitLoop) ||
+         (base::FeatureList::IsEnabled(features::kPrefetchReusable) &&
+          features::kPrefetchReusableUseNewWaitLoop.Get()) ||
          base::FeatureList::IsEnabled(
              features::kPrerender2FallbackPrefetchSpecRules);
 }
