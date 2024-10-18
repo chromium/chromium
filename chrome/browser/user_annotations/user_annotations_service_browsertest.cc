@@ -25,7 +25,6 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
-#include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -42,7 +41,8 @@ namespace user_annotations {
 class UserAnnotationsServiceDisabledBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(kUserAnnotations);
+    feature_list_.InitAndDisableFeature(
+        autofill_prediction_improvements::kAutofillPredictionImprovements);
     InProcessBrowserTest::SetUp();
   }
 
@@ -59,7 +59,8 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceDisabledBrowserTest,
 class UserAnnotationsServiceKioskModeBrowserTest : public InProcessBrowserTest {
  public:
   UserAnnotationsServiceKioskModeBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(kUserAnnotations);
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill_prediction_improvements::kAutofillPredictionImprovements);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -81,7 +82,8 @@ class UserAnnotationsServiceEphemeralProfileBrowserTest
     : public MixinBasedInProcessBrowserTest {
  public:
   UserAnnotationsServiceEphemeralProfileBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(kUserAnnotations);
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill_prediction_improvements::kAutofillPredictionImprovements);
   }
 
  private:
@@ -169,8 +171,7 @@ class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 
   virtual void InitializeFeatureList() {
     feature_list_.InitWithFeatures(
-        {kUserAnnotations,
-         autofill_prediction_improvements::kAutofillPredictionImprovements},
+        {autofill_prediction_improvements::kAutofillPredictionImprovements},
         {});
   }
 
@@ -201,13 +202,8 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest,
 
 // TODO(crbug.com/367201367):  Re-enable once flakiness is resolved for Windows
 // ASAN. Also flaky on Mac.
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_MAC)
-#define MAYBE_FormSubmissionFlow DISABLED_FormSubmissionFlow
-#else
-#define MAYBE_FormSubmissionFlow FormSubmissionFlow
-#endif
 IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest,
-                       MAYBE_FormSubmissionFlow) {
+                       DISABLED_FormSubmissionFlow) {
   EnableSignin();
 
   base::HistogramTester histogram_tester;
@@ -254,10 +250,8 @@ class UserAnnotationsServiceExplicitAllowlistBrowserTest
  protected:
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{kUserAnnotations,
-          {{"allowed_hosts_for_form_submissions", "allowed.com"}}},
-         {autofill_prediction_improvements::kAutofillPredictionImprovements,
-          {{"skip_allowlist", "true"}}}},
+        {{autofill_prediction_improvements::kAutofillPredictionImprovements,
+          {{"allowed_hosts_for_form_submissions", "allowed.com"}}}},
         {});
   }
 
@@ -283,8 +277,10 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
                                     0);
 }
 
+// TODO(crbug.com/367201367):  Re-enable once flakiness is resolved for Windows
+// ASAN. Also flaky on Mac.
 IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
-                       OnAllowlist) {
+                       DISABLED_OnAllowlist) {
   EnableSignin();
 
   base::HistogramTester histogram_tester;
