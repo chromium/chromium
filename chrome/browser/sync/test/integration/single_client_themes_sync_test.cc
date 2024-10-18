@@ -631,4 +631,45 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
   EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldNotApplyLocalUpdateOnLocalThemeWhenSignedIn) {
+  ASSERT_TRUE(SetupSync());
+
+  // Change to a custom theme.
+  UseCustomTheme(GetProfile(0), 0);
+  // Custom theme is uploaded to account.
+  EXPECT_TRUE(
+      ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
+
+  // Disable syncing of themes.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+
+  // Original local theme is restored.
+  EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldNotApplyRemoteUpdateOnLocalTheme) {
+  ASSERT_TRUE(SetupClients());
+
+  // Set up a custom theme first, so we can then switch back to default.
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  ASSERT_TRUE(SetupSync());
+
+  // Remote update.
+  GetFakeServer()->InjectEntity(CreateDefaultThemeEntity());
+  EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
+
+  // Disable sync.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+
+  // Original local theme should get re-applied.
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
+}
+
 }  // namespace
