@@ -8197,3 +8197,6 @@ crbug.com/372293920 [ Mac15-arm64 ] wpt_internal/webxr/ar/ar_hittestsource_lifet
 
 # Timeout on headless shell, failing on Linux
 crbug.com/366261815 external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Failure Pass Timeout ]
+
+# Gardener 2024-10-18
+crbug.com/40279363 [ Linux ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Pass ]
