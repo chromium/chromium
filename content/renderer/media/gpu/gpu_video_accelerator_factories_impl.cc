@@ -415,6 +415,11 @@ GpuVideoAcceleratorFactoriesImpl::GetVideoEncodeAcceleratorSupportedProfiles() {
   return codec_factory_->GetVideoEncodeAcceleratorSupportedProfiles();
 }
 
+std::optional<media::SupportedVideoDecoderConfigs>
+GpuVideoAcceleratorFactoriesImpl::GetSupportedVideoDecoderConfigs() {
+  return codec_factory_->GetSupportedVideoDecoderConfigs();
+}
+
 viz::RasterContextProvider*
 GpuVideoAcceleratorFactoriesImpl::GetMediaContextProvider() {
   return CheckContextLost() ? nullptr : context_provider_.get();

@@ -67,6 +67,8 @@ class CastGpuFactoryImpl : public CastGpuFactory,
   GetVideoEncodeAcceleratorSupportedProfiles() override;
   bool IsEncoderSupportKnown() override;
   void NotifyEncoderSupportKnown(base::OnceClosure) override;
+  std::optional<media::SupportedVideoDecoderConfigs>
+  GetSupportedVideoDecoderConfigs() override;
   std::unique_ptr<::media::VideoEncodeAccelerator>
   CreateVideoEncodeAccelerator() override;
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(

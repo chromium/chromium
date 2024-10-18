@@ -12,6 +12,7 @@
 #include "gpu/config/gpu_info.h"
 #include "media/base/media_util.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
+#include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/mojo/clients/mojo_video_decoder.h"
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -187,6 +188,18 @@ bool CastGpuFactoryImpl::IsEncoderSupportKnown() {
 void CastGpuFactoryImpl::NotifyEncoderSupportKnown(base::OnceClosure callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(callback));
+}
+
+std::optional<media::SupportedVideoDecoderConfigs>
+CastGpuFactoryImpl::GetSupportedVideoDecoderConfigs() {
+  if (CheckContextLost()) {
+    return std::nullopt;
+  }
+
+  return ::media::ConvertFromSupportedProfiles(
+      ::media::GpuVideoAcceleratorUtil::ConvertGpuToMediaDecodeProfiles(
+          gpu_channel_host_->gpu_info()
+              .video_decode_accelerator_supported_profiles));
 }
 
 std::unique_ptr<::media::VideoEncodeAccelerator>

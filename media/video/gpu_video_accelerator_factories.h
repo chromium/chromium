@@ -143,6 +143,13 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
       MediaLog* media_log,
       RequestOverlayInfoCB request_overlay_info_cb) = 0;
 
+  // Returns the supported video decoder configs. It is required that all
+  // clients check IsDecoderSupportKnown() before calling this method.
+  //
+  // May be called on any thread.
+  virtual std::optional<SupportedVideoDecoderConfigs>
+  GetSupportedVideoDecoderConfigs() = 0;
+
   // Returns the supported codec profiles of video encode accelerator.
   // Returns nullopt if GpuVideoAcceleratorFactories don't know the VEA
   // supported profiles.

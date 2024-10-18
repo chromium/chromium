@@ -188,6 +188,11 @@ BrowserGpuVideoAcceleratorFactories::
   return media::VideoEncodeAccelerator::SupportedProfiles();
 }
 
+std::optional<media::SupportedVideoDecoderConfigs>
+BrowserGpuVideoAcceleratorFactories::GetSupportedVideoDecoderConfigs() {
+  return std::nullopt;
+}
+
 bool BrowserGpuVideoAcceleratorFactories::IsEncoderSupportKnown() {
   return true;
 }
