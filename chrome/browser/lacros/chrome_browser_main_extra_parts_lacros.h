@@ -10,7 +10,6 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/chromeos/smart_reader/smart_reader_client_impl.h"
 #include "chrome/browser/lacros/magic_boost_state_lacros.h"
-#include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 
 class ArcIconCache;
@@ -207,9 +206,6 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Tracks the content within the current active tab in chrome to provide to
   // the smart reader manager.
   std::unique_ptr<smart_reader::SmartReaderClientImpl> smart_reader_client_;
-
-  // Controls sync-related Crosapi clients.
-  SyncCrosapiManagerLacros sync_crosapi_manager_;
 
   // Handles getting and setting multitask menu nudge related prefs from ash.
   std::unique_ptr<MultitaskMenuNudgeDelegateLacros>

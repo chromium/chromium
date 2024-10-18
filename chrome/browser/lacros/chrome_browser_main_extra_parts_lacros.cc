@@ -51,7 +51,6 @@
 #include "chrome/browser/lacros/net/network_settings_observer.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
 #include "chrome/browser/lacros/suggestion_service_lacros.h"
-#include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/views_text_services_context_menu_lacros.h"
 #include "chrome/browser/lacros/vpn_extension_tracker_lacros.h"
@@ -330,8 +329,6 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
     Profile* profile,
     bool is_initial_profile) {
-  sync_crosapi_manager_.PostProfileInit(profile);
-
   // The setup below is intended to run for only the initial profile.
   if (!is_initial_profile) {
     return;
