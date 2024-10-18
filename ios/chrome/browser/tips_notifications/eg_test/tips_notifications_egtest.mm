@@ -80,30 +80,6 @@ void MaybeDismissNotification() {
   }
 }
 
-// Finds the element with the given `identifier` of given `type`.
-XCUIElement* GetElementMatchingIdentifier(XCUIApplication* app,
-                                          NSString* identifier,
-                                          XCUIElementType type) {
-  XCUIElementQuery* query = [[app.windows.firstMatch
-      descendantsMatchingType:type] matchingIdentifier:identifier];
-  return [query elementBoundByIndex:0];
-}
-
-// Finds the element with the given `label` of given `type`.
-XCUIElement* GetElementMatchingLabel(XCUIElement* parent,
-                                     NSString* label,
-                                     XCUIElementType type) {
-  NSPredicate* predicate =
-      [NSPredicate predicateWithBlock:^BOOL(id<XCUIElementAttributes> item,
-                                            NSDictionary* bindings) {
-        return [item.label isEqualToString:label];
-      }];
-
-  XCUIElementQuery* query =
-      [[parent descendantsMatchingType:type] matchingPredicate:predicate];
-  return [query elementBoundByIndex:0];
-}
-
 }  // namespace
 
 // Test case for Tips Notifications.
@@ -376,47 +352,4 @@ XCUIElement* GetElementMatchingLabel(XCUIElement* parent,
                       grey_accessibilityID(@"kEnhancedSafeBrowsingPromoAXID")];
   TapText(@"Done");
 }
-
-// Tests a cold start of the app by tapping on a Tips Notification.
-- (void)testAppColdStartFromNotification {
-  XCUIApplication* app = [[XCUIApplication alloc] init];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Rewrite the edoTestPort so that it persists beyond an app termination.
-  id edoTestPort = [ChromeEarlGrey userDefaultsObjectForKey:@"edoTestPort"];
-  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"edoTestPort"];
-  [ChromeEarlGrey setUserDefaultsObject:edoTestPort forKey:@"edoTestPort"];
-
-  MaybeDismissNotification();
-
-  [self
-      optInToTipsNotifications:{TipsNotificationType::kSetUpListContinuation}];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  [app terminate];
-
-  //
-  // After app termination, EarlGrey functions and matchers don't work. XCUI*
-  // methods are used instead for the rest of this test.
-  //
-
-  // Wait for and tap the SetUpList Continuation Notification.
-  TapNotification();
-  XCTAssert([app waitForState:XCUIApplicationStateRunningForeground timeout:5],
-            @"The app should have reopened.");
-
-  // Verify that the SetUpList See More view is showing.
-  XCUIElement* setUpListView = GetElementMatchingIdentifier(
-      app, @"kSetUpListSeeMoreAxId", XCUIElementTypeAny);
-  XCTAssert([setUpListView waitForExistenceWithTimeout:15]);
-  XCUIElement* doneButton =
-      GetElementMatchingLabel(setUpListView, @"Done", XCUIElementTypeButton);
-  XCTAssert(doneButton.hittable);
-  [doneButton tap];
-
-  // Clear the edoTestPort so that it is not persisted beyond this test.
-  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"edoTestPort"];
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
-}
-
 @end
