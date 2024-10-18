@@ -68,7 +68,7 @@ void FakeTrustedVaultClientBackend::
 void FakeTrustedVaultClientBackend::FetchKeys(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,
-    KeyFetchedCallback completion) {
+    KeysFetchedCallback completion) {
   // Do nothing.
 }
 

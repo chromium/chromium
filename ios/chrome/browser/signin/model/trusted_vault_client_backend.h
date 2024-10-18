@@ -34,7 +34,8 @@ class TrustedVaultClientBackend : public KeyedService {
   using Observer = trusted_vault::TrustedVaultClient::Observer;
 
   // Types for the different callbacks.
-  using KeyFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
+  using KeysFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
+  using KeyFetchedCallback = KeysFetchedCallback;
   using CompletionBlock = void (^)(BOOL success, NSError* error);
   using GetPublicKeyCallback = base::OnceCallback<void(const PublicKey&)>;
   using CancelDialogCallback =
@@ -70,7 +71,7 @@ class TrustedVaultClientBackend : public KeyedService {
   // `callback` with the fetched keys.
   virtual void FetchKeys(id<SystemIdentity> identity,
                          trusted_vault::SecurityDomainId security_domain_id,
-                         KeyFetchedCallback completion) = 0;
+                         KeysFetchedCallback completion) = 0;
 
   // Invoked when the result of FetchKeys() contains keys that are not
   // up-to-date. During the execution, before `callback` is invoked, the
