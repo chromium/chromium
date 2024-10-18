@@ -31,6 +31,7 @@ source_set("ranking_model") {
     ":utils",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
+    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/segmentation_platform/embedder/home_modules",

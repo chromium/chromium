@@ -39,6 +39,10 @@ AllCardSignals CreateAllCardSignalsFromMap(
       {segmentation_platform::tips_manager::signals::kUsedGoogleTranslation, 5},
       {segmentation_platform::tips_manager::signals::kUsedPasswordAutofill, 6},
       {segmentation_platform::kHasEnhancedSafeBrowsing, 7},
+      {segmentation_platform::kEnhancedSafeBrowsingAllowedByEnterprisePolicy,
+       8},
+      {segmentation_platform::kLensAllowedByEnterprisePolicy, 9},
+      {segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy, 10},
   };
 
   return AllCardSignals(signal_map, signal_values);
@@ -108,7 +112,7 @@ TEST_F(TipsEphemeralModuleTest, OutputLabelsReturnsExpectedLabels) {
 TEST_F(TipsEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
   TipsEphemeralModule ephemeral_module;
   std::map<SignalKey, FeatureQuery> inputs = ephemeral_module.GetInputs();
-  EXPECT_EQ(inputs.size(), 8u);
+  EXPECT_EQ(inputs.size(), 11u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(inputs.find(segmentation_platform::tips_manager::signals::
                             kAddressBarPositionChoiceScreenDisplayed),
@@ -136,6 +140,15 @@ TEST_F(TipsEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
       inputs.end());
   EXPECT_NE(inputs.find(segmentation_platform::kHasEnhancedSafeBrowsing),
             inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::
+                            kEnhancedSafeBrowsingAllowedByEnterprisePolicy),
+            inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kLensAllowedByEnterprisePolicy),
+            inputs.end());
+  EXPECT_NE(
+      inputs.find(
+          segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy),
+      inputs.end());
 }
 
 // Verifies that `ComputeCardResult(…)` returns the forced tip when specified.
@@ -159,6 +172,9 @@ TEST_F(TipsEphemeralModuleTest,
       /* kUsedGoogleTranslation */ 0,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -186,6 +202,9 @@ TEST_F(TipsEphemeralModuleTest,
       /* kUsedGoogleTranslation */ 0,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -211,6 +230,9 @@ TEST_F(TipsEphemeralModuleTest,
       /* kUsedGoogleTranslation */ 0,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -238,6 +260,9 @@ TEST_F(
       /* kUsedGoogleTranslation */ 0,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -264,6 +289,9 @@ TEST_F(TipsEphemeralModuleTest,
       /* kUsedGoogleTranslation */ 0,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -290,6 +318,9 @@ TEST_F(TipsEphemeralModuleTest,
       /* kUsedGoogleTranslation */ 1,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -316,6 +347,9 @@ TEST_F(TipsEphemeralModuleTest,
       /* kUsedGoogleTranslation */ 0,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -343,6 +377,9 @@ TEST_F(
       /* kUsedGoogleTranslation */ 0,
       /* kUsedPasswordAutofill */ 1,
       /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -370,6 +407,9 @@ TEST_F(
       /* kUsedGoogleTranslation */ 0,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 1,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -396,6 +436,9 @@ TEST_F(TipsEphemeralModuleTest,
       /* kUsedGoogleTranslation */ 0,
       /* kUsedPasswordAutofill */ 1,
       /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -408,6 +451,158 @@ TEST_F(TipsEphemeralModuleTest,
   // Since Lens Search has higher priority, it should be shown.
   EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
   EXPECT_EQ(kTipsLensSearchVariation, result.result_label);
+}
+
+// Verifies that `ComputeCardResult(…)` doesn't show the Lens tip when
+// `kLensAllowedByEnterprisePolicy` is false, even if the Lens signal is
+// present.
+TEST_F(TipsEphemeralModuleTest,
+       ComputeCardResultDoesNotShowLensTipWhenEnterprisePolicyDisallows) {
+  AllCardSignals signals = CreateAllCardSignalsFromMap({
+      /* kLensUsed */ 1,
+      /* kAddressBarPositionChoiceScreenDisplayed */ 0,
+      /* kOpenedShoppingWebsite */ 0,
+      /* kOpenedWebsiteInAnotherLanguage */ 0,
+      /* kSavedPasswords */ 0,
+      /* kUsedGoogleTranslation */ 0,
+      /* kUsedPasswordAutofill */ 0,
+      /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      // Disallowed by policy
+      /* kLensAllowedByEnterprisePolicy */ 0,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+  });
+
+  CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
+
+  auto ephemeral_module = std::make_unique<TipsEphemeralModule>();
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+}
+
+// Verifies that `ComputeCardResult(…)` doesn't show the Lens Shop tip when
+// `kLensAllowedByEnterprisePolicy` is false, even if the Lens Shop signal is
+// present.
+TEST_F(TipsEphemeralModuleTest,
+       ComputeCardResultDoesNotShowLensShopTipWhenEnterprisePolicyDisallows) {
+  AllCardSignals signals = CreateAllCardSignalsFromMap({
+      /* kLensUsed */ 0,
+      /* kAddressBarPositionChoiceScreenDisplayed */ 0,
+      /* kOpenedShoppingWebsite */ 1,
+      /* kOpenedWebsiteInAnotherLanguage */ 0,
+      /* kSavedPasswords */ 0,
+      /* kUsedGoogleTranslation */ 0,
+      /* kUsedPasswordAutofill */ 0,
+      /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      // Disallowed by policy
+      /* kLensAllowedByEnterprisePolicy */ 0,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+  });
+
+  CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
+
+  auto ephemeral_module = std::make_unique<TipsEphemeralModule>();
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+}
+
+// Verifies that `ComputeCardResult(…)` doesn't show the Lens Translate tip when
+// `kLensAllowedByEnterprisePolicy` is false, even if the Lens Translate
+// signals are present.
+TEST_F(
+    TipsEphemeralModuleTest,
+    ComputeCardResultDoesNotShowLensTranslateTipWhenEnterprisePolicyDisallows) {
+  AllCardSignals signals = CreateAllCardSignalsFromMap({
+      /* kLensUsed */ 0,
+      /* kAddressBarPositionChoiceScreenDisplayed */ 0,
+      /* kOpenedShoppingWebsite */ 0,
+      /* kOpenedWebsiteInAnotherLanguage */ 1,
+      /* kSavedPasswords */ 0,
+      /* kUsedGoogleTranslation */ 0,
+      /* kUsedPasswordAutofill */ 0,
+      /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      // Disallowed by policy
+      /* kLensAllowedByEnterprisePolicy */ 0,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+  });
+
+  CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
+
+  auto ephemeral_module = std::make_unique<TipsEphemeralModule>();
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+}
+
+// Verifies that `ComputeCardResult(…)` doesn't show the saved passwords tip
+// when `kPasswordManagerAllowedByEnterprisePolicy` is false, even if the
+// saved passwords signal is present.
+TEST_F(TipsEphemeralModuleTest,
+       ComputeCardResultDoesNotShowPasswordTipWhenEnterprisePolicyDisallows) {
+  AllCardSignals signals = CreateAllCardSignalsFromMap({
+      /* kLensUsed */ 0,
+      /* kAddressBarPositionChoiceScreenDisplayed */ 0,
+      /* kOpenedShoppingWebsite */ 0,
+      /* kOpenedWebsiteInAnotherLanguage */ 0,
+      /* kSavedPasswords */ 1,
+      /* kUsedGoogleTranslation */ 0,
+      /* kUsedPasswordAutofill */ 1,
+      /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      // Disallowed by policy
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 0,
+  });
+
+  CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
+
+  auto ephemeral_module = std::make_unique<TipsEphemeralModule>();
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+}
+
+// Verifies that `ComputeCardResult(…)` doesn't show Enhanced Safe Browsing
+// tip when `kEnhancedSafeBrowsingAllowedByEnterprisePolicy` is false, even if
+// the Enhanced Safe Browsing signal is present.
+TEST_F(
+    TipsEphemeralModuleTest,
+    ComputeCardResultDoesNotShowEnhancedSafeBrowsingTipWhenEnterprisePolicyDisallows) {
+  AllCardSignals signals = CreateAllCardSignalsFromMap({
+      /* kLensUsed */ 0,
+      /* kAddressBarPositionChoiceScreenDisplayed */ 0,
+      /* kOpenedShoppingWebsite */ 0,
+      /* kOpenedWebsiteInAnotherLanguage */ 0,
+      /* kSavedPasswords */ 0,
+      /* kUsedGoogleTranslation */ 0,
+      /* kUsedPasswordAutofill */ 0,
+      /* kHasEnhancedSafeBrowsing */ 1,
+      // Disallowed by policy
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 0,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+  });
+
+  CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
+
+  auto ephemeral_module = std::make_unique<TipsEphemeralModule>();
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
 }  // namespace segmentation_platform::home_modules
