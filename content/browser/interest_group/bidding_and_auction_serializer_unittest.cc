@@ -143,8 +143,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithLargeRequestSize) {
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithSmallRequestSize) {
-  base::HistogramTester histogram_tester;
-
   const size_t kRequestSize = 2000;
   blink::mojom::AuctionDataConfigPtr config =
       blink::mojom::AuctionDataConfig::New();
@@ -162,12 +160,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithSmallRequestSize) {
 
   BiddingAndAuctionData data = serializer.Build();
   EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumGroups", 107, 1);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithTooSmallRequestSize) {
@@ -237,8 +229,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSize) {
 
 TEST_F(BiddingAndAuctionSerializerTest,
        SerializeWithPerOwnerSizeBiggerThanRequestSize) {
-  base::HistogramTester histogram_tester;
-
   const size_t kRequestSize = 2000;
   blink::mojom::AuctionDataConfigPtr config =
       blink::mojom::AuctionDataConfig::New();
@@ -265,18 +255,9 @@ TEST_F(BiddingAndAuctionSerializerTest,
 
   BiddingAndAuctionData data = serializer.Build();
   EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
-
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 3);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumGroups", 192, 1);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeExpands) {
-  base::HistogramTester histogram_tester;
-
   const size_t kRequestSize = 6000;
   blink::mojom::AuctionDataConfigPtr config =
       blink::mojom::AuctionDataConfig::New();
@@ -303,12 +284,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeExpands) {
 
   BiddingAndAuctionData data = serializer.Build();
   EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 0, 4);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumGroups", 400, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeShrinks) {
