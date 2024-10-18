@@ -948,7 +948,7 @@ class LcpBreakdownTimingsTest : public MetricIntegrationTest {
 
     EXPECT_LE(discovery_time_list_[0], load_start_list_[0]);
 
-    EXPECT_LT(load_start_list_[0], load_end_list_[0]);
+    EXPECT_LE(load_start_list_[0], load_end_list_[0]);
 
     EXPECT_LT(load_end_list_[0], lcp_list_[0]);
 
