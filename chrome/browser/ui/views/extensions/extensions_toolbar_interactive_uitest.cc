@@ -153,9 +153,7 @@ ExtensionsToolbarUITest::GetExtensionsToolbarContainer() const {
 ExtensionsToolbarContainer*
 ExtensionsToolbarUITest::GetExtensionsToolbarContainerForBrowser(
     Browser* browser) const {
-  return BrowserView::GetBrowserViewForBrowser(browser)
-      ->toolbar()
-      ->extensions_container();
+  return browser->GetBrowserView().toolbar()->extensions_container();
 }
 
 std::vector<ToolbarActionView*> ExtensionsToolbarUITest::GetToolbarActionViews()

@@ -586,9 +586,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   slow_img_response.WaitForRequest();
 
   // While the extension is loading, open a security UI.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserView& browser_view = browser()->GetBrowserView();
   views::UniqueWidgetPtr security_widget =
-      CreateTestDialogWidget(browser_view->GetWidget());
+      CreateTestDialogWidget(browser_view.GetWidget());
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
       security_widget.get());
   security_widget->Show();

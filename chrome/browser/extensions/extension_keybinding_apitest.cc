@@ -321,9 +321,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, Basic) {
 
   // Test that there are two browser actions in the toolbar.
   ExtensionsToolbarContainer* extensions_container =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar()
-          ->extensions_container();
+      browser()->GetBrowserView().toolbar()->extensions_container();
   ASSERT_EQ(2, extensions_container->GetNumberOfActionsForTesting());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -383,9 +381,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, UnpinnedPageActionTriggers) {
   ASSERT_TRUE(extension) << message_;
 
   ExtensionsToolbarContainer* extensions_container =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar()
-          ->extensions_container();
+      browser()->GetBrowserView().toolbar()->extensions_container();
   RunScheduledLayouts();
   EXPECT_FALSE(extensions_container->IsActionVisibleOnToolbar(extension->id()));
 
@@ -1254,9 +1250,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
 
   // Verify popup is shown.
   ExtensionsToolbarContainer* extensions_container =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar()
-          ->extensions_container();
+      browser()->GetBrowserView().toolbar()->extensions_container();
   ToolbarActionViewController* popup_owner =
       extensions_container->popup_owner_for_testing();
   EXPECT_TRUE(popup_owner);

@@ -32,10 +32,10 @@ views::UniqueWidgetPtr CreateTestDialogWidget(views::Widget* parent) {
 namespace extensions {
 
 IN_PROC_BROWSER_TEST_F(SecurityDialogTrackerTest, Basic) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserView& browser_view = browser()->GetBrowserView();
   SecurityDialogTracker* tracker = SecurityDialogTracker::GetInstance();
   views::UniqueWidgetPtr security_widget =
-      CreateTestDialogWidget(browser_view->GetWidget());
+      CreateTestDialogWidget(browser_view.GetWidget());
 
   // No security dialogs.
   EXPECT_FALSE(tracker->BrowserHasVisibleSecurityDialogs(browser()));
