@@ -692,27 +692,26 @@ std::optional<std::string> HttpResponseHeaders::GetNormalizedHeader(
   // If you hit this assertion, please use EnumerateHeader instead!
   DCHECK(!HttpUtil::IsNonCoalescingHeader(name));
 
-  std::string value;
-  bool found = false;
-  size_t i = 0;
-  while (i < parsed_.size()) {
+  std::optional<std::string> value;
+  for (size_t i = 0; i < parsed_.size();) {
     i = FindHeader(i, name);
     if (i == std::string::npos)
       break;
 
-    if (found)
-      value.append(", ");
-
-    found = true;
+    if (value) {
+      value->append(", ");
+    } else {
+      value.emplace();
+    }
 
     std::string::const_iterator value_begin = parsed_[i].value_begin;
     std::string::const_iterator value_end = parsed_[i].value_end;
     while (++i < parsed_.size() && parsed_[i].is_continuation())
       value_end = parsed_[i].value_end;
-    value.append(value_begin, value_end);
+    value->append(value_begin, value_end);
   }
 
-  return found ? std::make_optional(std::move(value)) : std::nullopt;
+  return value;
 }
 
 std::string HttpResponseHeaders::GetStatusLine() const {
