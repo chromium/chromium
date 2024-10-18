@@ -15,6 +15,8 @@ namespace {
 V8RTCErrorDetailType::Enum RTCErrorDetailToEnum(
     webrtc::RTCErrorDetailType detail) {
   switch (detail) {
+    case webrtc::RTCErrorDetailType::NONE:
+      return V8RTCErrorDetailType::Enum::kNoInfo;
     case webrtc::RTCErrorDetailType::DATA_CHANNEL_FAILURE:
       return V8RTCErrorDetailType::Enum::kDataChannelFailure;
     case webrtc::RTCErrorDetailType::DTLS_FAILURE:
