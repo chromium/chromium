@@ -1857,7 +1857,7 @@
       browser_process_read_access: true,
       origin_trial_feature_name: "FedCmWithStorageAccessAPI",
       copied_from_base_feature_if: "overridden",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "FencedFrames",
