@@ -12,8 +12,8 @@
 #import "base/sequence_checker.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_observer.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 class ReadingListDownloadService;
 
 namespace reading_list {

@@ -25,12 +25,12 @@
 #import "components/ukm/observers/history_delete_observer.h"
 #import "components/ukm/observers/ukm_consent_state_observer.h"
 #import "components/variations/synthetic_trial_registry.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 #import "ios/web/public/deprecated/global_web_state_observer.h"
 
 class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
+class ProfileIOS;
 class ProfileManagerIOS;
 
 namespace metrics {
