@@ -8,14 +8,16 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class TipsManagerIOS;
 class KeyedService;
+class ProfileIOS;
+class TipsManagerIOS;
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
+
 namespace web {
 class BrowserState;
 }  // namespace web
