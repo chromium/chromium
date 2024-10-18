@@ -14,8 +14,11 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
+import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.auth.AuthTabIntent;
+import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.CallbackController;
@@ -49,12 +52,8 @@ import javax.inject.Inject;
  * redirect URL when navigated to it.
  */
 @ActivityScope
+@OptIn(markerClass = ExperimentalAuthTab.class)
 public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
-    // Value to return as activity result when the verification failed.
-    // TODO(358167556): Move this to AndroidX.
-    public static final int RESULT_VERIFICATION_FAILED = 2;
-    public static final int RESULT_VERIFICATION_TIMED_OUT = 3;
-
     @VisibleForTesting static final long VERIFICATION_TIMEOUT_MS = 10000;
 
     private static boolean sDelayVerificationForTesting;
@@ -99,7 +98,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
                 android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
                         && isApprovedDomain(mRedirectHost);
         mStatus = mVerifiedByAndroid ? VerificationStatus.SUCCESS : VerificationStatus.PENDING;
-        mActivityResult = Activity.RESULT_OK;
+        mActivityResult = AuthTabIntent.RESULT_OK;
 
         CustomTabActivityTabProvider tabProvider = activity.getCustomTabActivityTabProvider();
         if (shouldRunOriginVerifier()) {
@@ -137,10 +136,10 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
                     if (mDestroyed) return;
                     if (verified) {
                         mStatus = VerificationStatus.SUCCESS;
-                        mActivityResult = Activity.RESULT_OK;
+                        mActivityResult = AuthTabIntent.RESULT_OK;
                     } else {
                         mStatus = VerificationStatus.FAILURE;
-                        mActivityResult = RESULT_VERIFICATION_FAILED;
+                        mActivityResult = AuthTabIntent.RESULT_VERIFICATION_FAILED;
                     }
                     // Handles the case where the DAL response comes after the user initiates login.
                     if (mReturnUrl != null) {
@@ -232,8 +231,8 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
         assert mStatus != VerificationStatus.PENDING : "Verification was not completed!";
         Intent intent = new Intent();
 
-        int resultCode = customScheme ? Activity.RESULT_OK : mActivityResult;
-        if (resultCode == Activity.RESULT_OK) {
+        int resultCode = customScheme ? AuthTabIntent.RESULT_OK : mActivityResult;
+        if (resultCode == AuthTabIntent.RESULT_OK) {
             intent.setData(Uri.parse(url.getSpec()));
         }
 
@@ -268,7 +267,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
 
     private void returnTimeoutAsActivityResult() {
         mStatus = VerificationStatus.FAILURE;
-        mActivityResult = RESULT_VERIFICATION_TIMED_OUT;
+        mActivityResult = AuthTabIntent.RESULT_VERIFICATION_TIMED_OUT;
         returnAsActivityResultInternal(GURL.emptyGURL(), false);
     }
 

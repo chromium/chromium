@@ -145,10 +145,10 @@ public class CustomTabExternalNavigationTest {
                         .putExtra(AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, true)
                         .putExtra(AuthTabIntent.EXTRA_REDIRECT_SCHEME, CUSTOM_SCHEME)
                         .putExtra(
-                                AuthTabIntentDataProvider.EXTRA_HTTPS_REDIRECT_HOST,
+                                AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST,
                                 AUTH_TAB_HTTPS_REDIRECT_HOST)
                         .putExtra(
-                                AuthTabIntentDataProvider.EXTRA_HTTPS_REDIRECT_PATH,
+                                AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH,
                                 AUTH_TAB_HTTPS_REDIRECT_PATH);
         String packageName = context.getPackageName();
         TrustedWebActivityTestUtil.spoofVerification(packageName, AUTH_TAB_HTTPS_REDIRECT_URL);

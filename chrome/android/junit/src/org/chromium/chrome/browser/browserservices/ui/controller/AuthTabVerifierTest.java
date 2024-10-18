@@ -14,11 +14,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier.RESULT_VERIFICATION_FAILED;
-import static org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier.RESULT_VERIFICATION_TIMED_OUT;
 import static org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier.VERIFICATION_TIMEOUT_MS;
 
 import android.app.Activity;
+
+import androidx.browser.auth.AuthTabIntent;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -148,7 +148,7 @@ public class AuthTabVerifierTest {
         simulateVerificationResultFromNetwork(url, false);
 
         mDelegate.returnAsActivityResult(new GURL(url));
-        verify(mActivity).setResult(eq(RESULT_VERIFICATION_FAILED), any());
+        verify(mActivity).setResult(eq(AuthTabIntent.RESULT_VERIFICATION_FAILED), any());
         verify(mActivity).finish();
         histograms.assertExpected();
     }
@@ -209,7 +209,7 @@ public class AuthTabVerifierTest {
         // Simulate timeout.
         mDelayedTask.run();
 
-        verify(mActivity).setResult(eq(RESULT_VERIFICATION_TIMED_OUT), any());
+        verify(mActivity).setResult(eq(AuthTabIntent.RESULT_VERIFICATION_TIMED_OUT), any());
         verify(mActivity).finish();
         histograms.assertExpected();
     }

@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider.EXTRA_HTTPS_REDIRECT_HOST;
-import static org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider.EXTRA_HTTPS_REDIRECT_PATH;
 import static org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.CCT_FEATURE_USAGE;
 
@@ -136,8 +134,8 @@ public class AuthTabIntentDataProviderUnitTest {
                                 CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_HTTPS_REDIRECT_PATH)
                         .allowExtraRecordsForHistogramsAbove()
                         .build();
-        mIntent.putExtra(EXTRA_HTTPS_REDIRECT_HOST, HOST);
-        mIntent.putExtra(EXTRA_HTTPS_REDIRECT_PATH, PATH);
+        mIntent.putExtra(AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST, HOST);
+        mIntent.putExtra(AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH, PATH);
         mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
 
         assertEquals("Wrong https redirect host.", HOST, mIntentDataProvider.getAuthRedirectHost());

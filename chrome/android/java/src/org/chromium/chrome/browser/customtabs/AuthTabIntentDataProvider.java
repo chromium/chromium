@@ -35,12 +35,6 @@ import org.chromium.url.GURL;
  */
 @OptIn(markerClass = ExperimentalAuthTab.class)
 public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider {
-    // TODO(b/358167556): Move these to AndroidX AuthTabIntent.
-    public static final String EXTRA_HTTPS_REDIRECT_HOST =
-            "androidx.browser.auth.extra.HTTPS_REDIRECT_HOST";
-    public static final String EXTRA_HTTPS_REDIRECT_PATH =
-            "androidx.browser.auth.extra.HTTPS_REDIRECT_PATH";
-
     private final @NonNull Intent mIntent;
     private final @Nullable String mClientPackageName;
     private final @NonNull ColorProvider mColorProvider;
@@ -75,8 +69,10 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
         // might want to disallow more.
         mRedirectScheme =
                 IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_REDIRECT_SCHEME);
-        String host = IntentUtils.safeGetStringExtra(intent, EXTRA_HTTPS_REDIRECT_HOST);
-        String path = IntentUtils.safeGetStringExtra(intent, EXTRA_HTTPS_REDIRECT_PATH);
+        String host =
+                IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST);
+        String path =
+                IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH);
         GURL redirectUrl = new GURL(UrlConstants.HTTPS_URL_PREFIX + host + path);
         mRedirectHost = redirectUrl.getHost();
         mRedirectPath = redirectUrl.getPath();
