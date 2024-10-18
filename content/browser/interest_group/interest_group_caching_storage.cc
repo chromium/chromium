@@ -649,7 +649,9 @@ void InterestGroupCachingStorage::StartTimerForInterestGroupHold(
 void InterestGroupCachingStorage::UpdateCachedOriginsIfEnabled(
     const url::Origin& owner,
     const std::vector<StorageInterestGroup>& interest_groups) {
-  if (!base::FeatureList::IsEnabled(features::kFledgeUsePreconnectCache)) {
+  if (!base::FeatureList::IsEnabled(features::kFledgeUsePreconnectCache) &&
+      !base::FeatureList::IsEnabled(
+          features::kFledgeStartAnticipatoryProcesses)) {
     return;
   }
   if (interest_groups.empty()) {

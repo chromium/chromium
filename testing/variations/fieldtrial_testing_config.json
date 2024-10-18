@@ -18609,6 +18609,26 @@
             ]
         }
     ],
+    "ProtectedAudienceEarlyProcessCreationStudy": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeStartAnticipatoryProcesses"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudienceMorePAggMetrics": [
         {
             "platforms": [

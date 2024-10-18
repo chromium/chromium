@@ -960,6 +960,13 @@ void AuctionWorkletManager::RequestWorkletByKey(
       std::move(worklet_available_callback), std::move(fatal_error_callback)));
 }
 
+void AuctionWorkletManager::MaybeStartAnticipatoryProcess(
+    const url::Origin& origin,
+    WorkletType worklet_type) {
+  auction_process_manager()->MaybeStartAnticipatoryProcess(
+      origin, delegate_->GetFrameSiteInstance().get(), worklet_type);
+}
+
 void AuctionWorkletManager::OnWorkletNoLongerUsable(WorkletOwner* worklet) {
   DCHECK(worklets_.count(worklet->worklet_info()));
   DCHECK_EQ(worklet, worklets_[worklet->worklet_info()]);

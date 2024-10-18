@@ -326,6 +326,14 @@ class CONTENT_EXPORT AuctionWorkletManager {
                            size_t number_of_bidder_threads,
                            AuctionMetricsRecorder* auction_metrics_recorder);
 
+  // Start an anticipatory process for an origin if we have not yet
+  // done so and are able.
+  //
+  // Refer to AuctionProcessManager::MaybeStartAnticipatoryProcess
+  // for more details.
+  void MaybeStartAnticipatoryProcess(const url::Origin& origin,
+                                     WorkletType worklet_type);
+
  private:
   void OnWorkletNoLongerUsable(WorkletOwner* worklet);
 

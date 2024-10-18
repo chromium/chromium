@@ -118,6 +118,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Used shared process"/>
   <int value="2" label="Used existing dedicated process"/>
   <int value="3" label="Created new dedicated process"/>
+  <int value="4" label="Used idle process"/>
 </enum>
 
 <enum name="SalientImageUrlFetchResult">

@@ -511,6 +511,9 @@ class CONTENT_EXPORT InterestGroupAuction
   // completion. Passes it false if there are no interest groups that may
   // participate in the auction (possibly because sellers aren't allowed to
   // participate in the auction)
+  //
+  // Worklet processes may be created at this point for cached buyers, and for
+  // any seller whose auction has a cached buyer.
   void StartLoadInterestGroupsPhase(
       AuctionPhaseCompletionCallback load_interest_groups_phase_callback);
 

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <iterator>
 #include <list>
 #include <map>
@@ -2943,7 +2944,7 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
                        weak_ptr_factory_.GetWeakPtr(), component_auction));
     ++num_pending_loads_;
   }
-
+  bool try_starting_seller_worklet = false;
   if (config_->non_shared_params.interest_group_buyers) {
     for (const auto& buyer :
          *config_->non_shared_params.interest_group_buyers) {
@@ -2956,7 +2957,26 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
           base::BindOnce(&InterestGroupAuction::OnInterestGroupRead,
                          weak_ptr_factory_.GetWeakPtr()));
       ++num_pending_loads_;
+      std::optional<url::Origin> unused_signals_origin;
+      if (interest_group_manager_->GetCachedOwnerAndSignalsOrigins(
+              buyer, unused_signals_origin)) {
+        // Try to start a process on behalf of this buyer now -- we know this
+        // owner has groups in the database, so we'll likely need this process.
+        auction_worklet_manager_->MaybeStartAnticipatoryProcess(
+            buyer, AuctionWorkletManager::WorkletType::kBidder);
+        try_starting_seller_worklet = true;
+      }
     }
+  }
+
+  // We want the top-level seller process to be started after the component
+  // seller processes to match the order that worklets are requested. Component
+  // seller processes are requested before the top-level seller processes to
+  // avoid deadlock, but anticipatory processes cannot cause deadlock because
+  // they can be cleared in order to respect process limits.
+  if (try_starting_seller_worklet) {
+    auction_worklet_manager_->MaybeStartAnticipatoryProcess(
+        config_->seller, AuctionWorkletManager::WorkletType::kSeller);
   }
 
   if (num_pending_loads_ == 0) {

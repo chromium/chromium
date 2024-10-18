@@ -44,6 +44,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/values_test_util.h"
@@ -79,6 +80,7 @@
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -24075,6 +24077,115 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionTraceTimeout) {
           })));
   EXPECT_TRUE(success);
   stop_run_loop.Run();
+}
+
+class UsesAnticipatoryProcessesTest : public InterestGroupBrowserTest {
+ public:
+  UsesAnticipatoryProcessesTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kFledgeStartAnticipatoryProcesses,
+        {{"AnticipatoryProcessHoldTime", "10s"}});
+    // Set up the conditions so that Android will have desktop-like behavior for
+    // process creation.
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kSitePerProcess);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
+                       UsesAnticipatoryProcesses) {
+  GURL joining_url = embedded_https_test_server().GetURL("c.test", "/echo");
+  url::Origin joining_origin = url::Origin::Create(joining_url);
+  ASSERT_TRUE(NavigateToURL(shell(), joining_url));
+
+  // Join an interest group. The owner, a.test, will be in the in-memory
+  // cache.
+  GURL ad_url =
+      embedded_https_test_server().GetURL("a.test", "/echo?render_winner");
+  // Use a bidding script that does not bid to prevent the auction from having a
+  // winner. If the auction has a winner, there will be a race condition where a
+  // a worklet will be created for reporting.
+  GURL script_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/bidding_logic_do_not_bid.js");
+  blink::InterestGroup interest_group =
+      blink::TestInterestGroupBuilder(
+          /*owner=*/url::Origin::Create(script_url),
+          /*name=*/"interest_group")
+          .SetBiddingUrl(script_url)
+          .SetAds({{{ad_url, std::nullopt}}})
+          .Build();
+  AttachInterestGroupObserver();
+  manager_->JoinInterestGroup(interest_group, joining_url);
+  WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
+                          interest_group.owner, "interest_group"}});
+  std::optional<url::Origin> cached_signals_origin;
+  EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(interest_group.owner,
+                                                        cached_signals_origin));
+
+  const char kConfigTemplate[] = R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        auctionSignals: "bidderAllowsComponentAuction,"+
+                        "sellerAllowsComponentAuction",
+        componentAuctions:
+            [{
+              seller: $3,
+              decisionLogicURL: $4,
+              interestGroupBuyers: [$5, $6],
+              auctionSignals: "bidderAllowsComponentAuction,"+
+                              "sellerAllowsComponentAuction"
+            }]
+      })";
+
+  GURL top_level_seller_script = embedded_https_test_server().GetURL(
+      "c.test", "/interest_group/decision_logic.js");
+  GURL component_seller_script = embedded_https_test_server().GetURL(
+      "d.test", "/interest_group/decision_logic.js");
+  content_browser_client_->AddToAllowList(
+      {url::Origin::Create(component_seller_script)});
+
+  std::string auction_config = JsReplace(
+      kConfigTemplate, url::Origin::Create(top_level_seller_script),
+      top_level_seller_script, url::Origin::Create(component_seller_script),
+      component_seller_script, interest_group.owner,
+      url::Origin::Create(embedded_https_test_server().GetURL("b.test", "/")));
+
+  // Run the auction.
+  //
+  // 1. a.test, the first buyer, is cached. That means we should start an
+  // anticipatory process for it.
+  // 2. b.test, the second buyer, doesn't have any IGs. We won't request an
+  // anticipatory process or create a worklet for it.
+  // 3. c.test, the top-level seller, will not have an anticipatory process
+  // started for it, because there are no top-level buyers cached (component
+  // auctions actually don't allow top-level buyers). A worklet
+  // will still be created for it.
+  // 4. d.test, the component seller, will have an anticipatory process
+  // started for it because there's a cached buyer in its auction (a.test).
+  //
+  // Overall there will be 2 anticipatory processes started and 3 worklets
+  // requested.
+  base::HistogramTester histogram_tester;
+  auto result = RunAuctionAndWait(auction_config);
+  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+                                      AuctionResult::kNoBids, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome", 2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      AuctionProcessManager::RequestWorkletServiceOutcome::
+          kCreatedNewDedicatedProcess,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
+      AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess, 1);
 }
 
 class AuctionConfigReportingTimeoutEnabledTest
