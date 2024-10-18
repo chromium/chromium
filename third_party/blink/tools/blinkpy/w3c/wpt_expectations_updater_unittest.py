@@ -165,6 +165,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'steps': {
                     'blink_web_tests': {},
                     'blink_wpt_tests': {},
+                    'headless_shell_wpt': {},
                     'webdriver_wpt_tests': {},
                     'fake_flag_blink_wpt_tests': {
                         'flag_specific': 'fake-flag',
@@ -177,6 +178,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(
             updater.suites_for_builder('MOCK Try Trusty'), {
                 'blink_wpt_tests',
+                'headless_shell_wpt',
                 'webdriver_wpt_tests',
                 'fake_flag_blink_wpt_tests',
             })
