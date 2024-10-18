@@ -806,7 +806,12 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
 
 void TabSearchPageHandler::TriggerSignIn() {
   Profile* profile = chrome::FindLastActive()->profile();
-  if (SigninErrorControllerFactory::GetForProfile(profile)->HasError()) {
+  const signin::IdentityManager* const identity_manager(
+      IdentityManagerFactory::GetInstance()->GetForProfile(profile));
+  CoreAccountId primary_account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_id)) {
     signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
         profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
   } else {
