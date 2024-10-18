@@ -29,6 +29,7 @@ group("updater") {
 
   if (is_win || is_mac || is_linux) {
     deps += [
+      ":updater_license",
       "//chrome/updater/test/qualification_app",
       "//chrome/updater/tools",
     ]
@@ -48,6 +49,22 @@ group("all") {
       deps += [ "win/installer:msi_custom_action" ]
     }
   }
+}
+
+action("updater_license") {
+  script = "//tools/licenses/licenses.py"
+  _license_path = "$root_out_dir/LICENSE.chromium_updater.raw"
+  args = [
+    "license_file",
+    rebase_path(_license_path, root_build_dir),
+    "--gn-target",
+    "//chrome/updater:updater",
+    "--gn-out-dir",
+    ".",
+    "--target-os",
+    target_os,
+  ]
+  outputs = [ _license_path ]
 }
 
 if (is_win || is_mac || is_linux) {
