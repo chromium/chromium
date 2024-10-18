@@ -21,6 +21,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -90,11 +91,12 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
     return dialog_shown_;
   }
 
-  void SigninWithFullInfo() {
+  void SigninWithFullInfo(
+      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-        identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
+        identity_manager, "test@gmail.com", consent_level);
     ASSERT_FALSE(account_info.IsEmpty());
 
     account_info.full_name = "Joe Testing";
@@ -163,6 +165,17 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
       IdentityManagerFactory::GetForProfile(browser()->profile());
   ASSERT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  BatchUploadService* batch_upload =
+      BatchUploadServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(batch_upload);
+  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
+  EXPECT_FALSE(batch_upload->IsDialogOpened());
+}
+
+IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
+                       SycningUserShouldNotBeAbleToOpenTheDialog) {
+  SigninWithFullInfo(signin::ConsentLevel::kSync);
 
   BatchUploadService* batch_upload =
       BatchUploadServiceFactory::GetForProfile(browser()->profile());
