@@ -261,4 +261,65 @@ TEST(EwalletTest, DifferentEwallets) {
   EXPECT_FALSE(ewallet_1 == ewallet_2);
 }
 
+// When an eWallet has empty supported payment link uri, `SupportsPaymentLink`
+// returns false.
+TEST(EwalletTest, NotSupportPaymentLink_EmptySupportedPaymentLinkUris) {
+  Ewallet ewallet(/*instrument_id=*/100, u"nickname",
+                  /*display_icon_url=*/GURL("http://www.example.com"),
+                  u"ewallet_name", u"account_display_name",
+                  /*supported_payment_link_uris=*/{},
+                  /*is_fido_enrolled=*/true);
+
+  std::string payment_link =
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd";
+  EXPECT_FALSE(ewallet.SupportsPaymentLink(payment_link));
+}
+
+// When an eWallet doesn't have any supported payment link uris for the payment
+// link, `SupportsPaymentLink` returns false.
+TEST(EwalletTest, NotSupportPaymentLink_NoSupportedPaymentLinkUri) {
+  Ewallet ewallet(/*instrument_id=*/100, u"nickname",
+                  /*display_icon_url=*/GURL("http://www.example.com"),
+                  u"ewallet_name", u"account_display_name",
+                  /*supported_payment_link_uris=*/
+                  {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$"},
+                  /*is_fido_enrolled=*/true);
+
+  std::string payment_link =
+      "duitnow://tngd.com.my?code=https://qr.tngdigital.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd";
+  EXPECT_FALSE(ewallet.SupportsPaymentLink(payment_link));
+}
+
+// When an eWallet has any supported payment link uris for the payment link,
+// `SupportsPaymentLink` returns true.
+TEST(EwalletTest, SupportPaymentLink) {
+  Ewallet ewallet(/*instrument_id=*/100, u"nickname",
+                  /*display_icon_url=*/GURL("http://www.example.com"),
+                  u"ewallet_name", u"account_display_name",
+                  /*supported_payment_link_uris=*/
+                  {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                   u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                  /*is_fido_enrolled=*/true);
+
+  std::string payment_link =
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd";
+  EXPECT_TRUE(ewallet.SupportsPaymentLink(payment_link));
+}
+
+// When an eWallet only supported payment link uris which can partially match
+// the payment link, `SupportsPaymentLink` returns false.
+TEST(EwalletTest, NotSupportPaymentLink_PartialMatch) {
+  Ewallet ewallet(100, u"nickname", GURL("http://www.example.com"),
+                  u"ewallet_name", u"account_display_name",
+                  {u"^duitnow:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                  /*is_fido_enrolled=*/true);
+
+  std::string payment_link =
+      "duitnow://tngdigital.com.my";  // Partial match, missing "?code="
+  EXPECT_FALSE(ewallet.SupportsPaymentLink(payment_link));
+}
+
 }  // namespace autofill

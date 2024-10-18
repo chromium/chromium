@@ -28,7 +28,7 @@ ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
                                     GetFacilitatedPaymentsApiClientCreator(
                                         render_frame_host->GetGlobalId()),
                                     optimization_guide_decider),
-                                std::make_unique<EwalletManager>()),
+                                std::make_unique<EwalletManager>(client)),
       render_frame_host_id_(render_frame_host->GetGlobalId()),
       security_checker_(std::move(security_checker)) {}
 

@@ -55,6 +55,10 @@ class Ewallet {
     return payment_instrument_;
   }
 
+  // Checks if the ewallet supports the given payment link by supported payment
+  // link URI regexes match.
+  bool SupportsPaymentLink(std::string_view payment_link) const;
+
  private:
   // Name of the ewallet provider.
   std::u16string ewallet_name_;

@@ -5,15 +5,19 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_EWALLET_MANAGER_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_EWALLET_MANAGER_H_
 
+#include "base/memory/raw_ref.h"
+
 class GURL;
 
 namespace payments::facilitated {
+
+class FacilitatedPaymentsClient;
 
 // A cross-platform interface that manages the eWallet push payment flow. It is
 // owned by `FacilitatedPaymentsDriver`.
 class EwalletManager {
  public:
-  EwalletManager();
+  explicit EwalletManager(FacilitatedPaymentsClient* client);
   EwalletManager(const EwalletManager&) = delete;
   EwalletManager& operator=(const EwalletManager&) = delete;
   virtual ~EwalletManager();
@@ -25,6 +29,11 @@ class EwalletManager {
   // https://github.com/aneeshali/paymentlink/blob/main/docs/explainer.md.
   virtual void TriggerEwalletPushPayment(const GURL& payment_link_url,
                                          const GURL& page_url);
+
+ private:
+  // Indirect owner. `FacilitatedPaymentsClient` owns
+  // `FacilitatedPaymentsDriver` which owns `this`.
+  const raw_ref<FacilitatedPaymentsClient> client_;
 };
 
 }  // namespace payments::facilitated
