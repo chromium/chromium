@@ -16,7 +16,8 @@
 
 namespace installer {
 
-bool ConfigureAppContainerSandbox(base::span<const base::FilePath*> paths) {
+bool ConfigureAppContainerSandbox(
+    base::span<const base::FilePath* const> paths) {
   static constexpr std::wstring_view kChromeInstallFilesCapabilitySid(
       L"S-1-15-3-1024-3424233489-972189580-2057154623-747635277-1604371224-"
       L"316187997-3786583170-1043257646");
