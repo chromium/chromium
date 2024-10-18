@@ -25,7 +25,7 @@ found in the LICENSE file.
         android:strokeWidth="2"/>
     <path
         android:name="path_2"
-        android:pathData="M 59 44 L 101 44 L 101 38 C 101 36.895 100.105 36 99 36 L 61 36 C 59.895 36 59 36.895 59 38 L 59 44 Z"
+        android:pathData="M 57 44 L 103 44 L 103 38 C 103 36.895 102.105 36 101 36 L 59 36 C 57.895 36 57 36.895 57 38 L 57 44 Z"
         android:fillColor="@color/address_bar_preference_header_primary"
         android:strokeWidth="1"/>
     <path
