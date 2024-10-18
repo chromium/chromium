@@ -524,6 +524,15 @@ bool ShellContentBrowserClient::IsSharedStorageSelectURLAllowed(
   return true;
 }
 
+bool ShellContentBrowserClient::
+    IsFencedFramesLocalUnpartitionedDataAccessAllowed(
+        content::BrowserContext* browser_context,
+        content::RenderFrameHost* rfh,
+        const url::Origin& top_frame_origin,
+        const url::Origin& accessing_origin) {
+  return true;
+}
+
 bool ShellContentBrowserClient::IsCookieDeprecationLabelAllowed(
     content::BrowserContext* browser_context) {
   return true;

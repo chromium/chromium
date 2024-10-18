@@ -7083,6 +7083,14 @@ class SharedStorageFencedFrameDocumentGetBrowserTest
         blink::features::kFencedFramesLocalUnpartitionedDataAccess);
   }
 
+  void SetUpOnMainThread() override {
+    SharedStorageFencedFrameInteractionBrowserTest::SetUpOnMainThread();
+
+    // Bypass local unpartitioned data access attestation check.
+    ON_CALL(browser_client(), IsFencedFramesLocalUnpartitionedDataAccessAllowed)
+        .WillByDefault(testing::Return(true));
+  }
+
  private:
   base::test::ScopedFeatureList fenced_frame_feature_;
 };

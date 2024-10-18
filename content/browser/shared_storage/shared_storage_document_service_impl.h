@@ -29,6 +29,10 @@ class RenderFrameHost;
 class SharedStorageWorkletHost;
 class SharedStorageWorkletHostManager;
 
+extern CONTENT_EXPORT const char
+    kFencedFrameLocalUnpartitionedDataAccessDisabledMessage[];
+extern CONTENT_EXPORT const char
+    kFencedFrameLocalUnpartitionedDataAccessWithoutRevokeNetworkMessage[];
 extern CONTENT_EXPORT const char kSharedStorageDisabledMessage[];
 extern CONTENT_EXPORT const char kSharedStorageSelectURLDisabledMessage[];
 extern CONTENT_EXPORT const char kSharedStorageAddModuleDisabledMessage[];
@@ -107,6 +111,9 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   bool IsSharedStorageAllowedForOrigin(const url::Origin& accessing_origin,
                                        std::string* out_debug_message,
                                        bool* out_block_is_site_specific);
+
+  bool IsLocalUnpartitionedDataAccessAllowed(
+      const url::Origin& accessing_origin);
 
   bool IsSharedStorageAddModuleAllowedForOrigin(
       const url::Origin& accessing_origin,

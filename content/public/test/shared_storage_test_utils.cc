@@ -107,6 +107,15 @@ GetSharedStorageWorkletHostManagerForStoragePartition(
       ->GetSharedStorageWorkletHostManager();
 }
 
+std::string GetFencedFrameLocalUnpartitionedDataAccessDisabledMessage() {
+  return kFencedFrameLocalUnpartitionedDataAccessDisabledMessage;
+}
+
+std::string
+GetFencedFrameLocalUnpartitionedDataAccessWithoutRevokeNetworkMessage() {
+  return kFencedFrameLocalUnpartitionedDataAccessWithoutRevokeNetworkMessage;
+}
+
 std::string GetSharedStorageDisabledMessage() {
   return kSharedStorageDisabledMessage;
 }

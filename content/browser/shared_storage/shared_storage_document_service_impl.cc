@@ -61,6 +61,15 @@ using GetResult = storage::SharedStorageManager::GetResult;
 
 }  // namespace
 
+const char kFencedFrameLocalUnpartitionedDataAccessDisabledMessage[] =
+    "Fenced frame local unpartitioned data access is disabled";
+
+const char
+    kFencedFrameLocalUnpartitionedDataAccessWithoutRevokeNetworkMessage[] =
+        "sharedStorage.get() is not allowed in a fenced frame until network "
+        "access for it and all descendent frames has been revoked with "
+        "window.fence.disableUntrustedNetwork()";
+
 const char kSharedStorageDisabledMessage[] = "sharedStorage is disabled";
 
 const char kSharedStorageSelectURLDisabledMessage[] =
@@ -212,13 +221,13 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
     return;
   }
 
-  std::string debug_message;
-  if (!IsSharedStorageAllowed(&debug_message)) {
-    std::move(callback).Run(blink::mojom::SharedStorageGetStatus::kError,
-                            /*error_message=*/
-                            GetSharedStorageErrorMessage(
-                                debug_message, kSharedStorageDisabledMessage),
-                            /*value=*/{});
+  if (!IsLocalUnpartitionedDataAccessAllowed(
+          /*accessing_origin=*/render_frame_host().GetLastCommittedOrigin())) {
+    std::move(callback).Run(
+        blink::mojom::SharedStorageGetStatus::kError,
+        /*error_message=*/
+        kFencedFrameLocalUnpartitionedDataAccessDisabledMessage,
+        /*value=*/{});
     return;
   }
 
@@ -227,9 +236,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
     std::move(callback).Run(
         blink::mojom::SharedStorageGetStatus::kError,
         /*error_message=*/
-        "sharedStorage.get() is not allowed in a fenced frame until network "
-        "access for it and all descendent frames has been revoked with "
-        "window.fence.disableUntrustedNetwork()",
+        kFencedFrameLocalUnpartitionedDataAccessWithoutRevokeNetworkMessage,
         /*value=*/{});
     return;
   }
@@ -522,6 +529,16 @@ bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowedForOrigin(
       render_frame_host().GetBrowserContext(), &render_frame_host(),
       main_frame_origin_, accessing_origin, out_debug_message,
       out_block_is_site_setting_specific);
+}
+
+bool SharedStorageDocumentServiceImpl::IsLocalUnpartitionedDataAccessAllowed(
+    const url::Origin& accessing_origin) {
+  return GetContentClient()
+      ->browser()
+      ->IsFencedFramesLocalUnpartitionedDataAccessAllowed(
+          render_frame_host().GetBrowserContext(), &render_frame_host(),
+          /*top_frame_origin=*/main_frame_origin_,
+          /*accessing_origin=*/accessing_origin);
 }
 
 bool SharedStorageDocumentServiceImpl::IsSharedStorageAddModuleAllowedForOrigin(

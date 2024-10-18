@@ -623,6 +623,14 @@ bool ContentBrowserClient::IsSharedStorageSelectURLAllowed(
   return false;
 }
 
+bool ContentBrowserClient::IsFencedFramesLocalUnpartitionedDataAccessAllowed(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  return false;
+}
+
 bool ContentBrowserClient::IsPrivateAggregationAllowed(
     content::BrowserContext* browser_context,
     const url::Origin& top_frame_origin,
