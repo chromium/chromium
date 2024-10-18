@@ -144,6 +144,7 @@ constexpr char kOpSplitTypeName[] = "split";
 constexpr char kOpTanhTypeName[] = "tanh";
 constexpr char kOpTileTypeName[] = "tile";
 constexpr char kOpTransposeTypeName[] = "transpose";
+constexpr char kOpTriangularTypeName[] = "band_part";
 constexpr char kOpWhereTypeName[] = "select";
 // Elementwise binary operators.
 constexpr char kOpAddTypeName[] = "add";
@@ -841,7 +842,10 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
        /*transpose_input=*/kFloatsAndInt32,
        // Triangular is not implemented.
-       /*triangular_input=*/{},
+       // Note that BOOL is also supported by CoreML, but WebNN does not have a
+       // corresponding BOOL type. See docs here:
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.band_part
+       /*triangular_input=*/kFloatsAndInt32,
        /*where_condition=*/DataTypeConstraint::kUint8,
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
@@ -1096,6 +1100,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         AddOperationForTranspose(*operation->get_transpose(), block);
         break;
       }
+      case mojom::Operation::Tag::kTriangular: {
+        RETURN_IF_ERROR(
+            AddOperationForTriangular(*operation->get_triangular(), block));
+        break;
+      }
       case mojom::Operation::Tag::kWhere: {
         RETURN_IF_ERROR(AddOperationForWhere(*operation->get_where(), block));
         break;
@@ -1111,7 +1120,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kScatterElements:
       case mojom::Operation::Tag::kScatterNd:
-      case mojom::Operation::Tag::kTriangular:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
   }
@@ -2957,6 +2965,65 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForWhere(
                       operation.false_value_operand_id);
   SetInputFromOperand(*op->mutable_inputs(), kParamCond,
                       bool_condition_operand_id);
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForTriangular(
+    const mojom::Triangular& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  CHECK(context_properties_.data_type_limits.triangular_input.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.input_operand_id).mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpTriangularTypeName);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
+
+  static constexpr char kParamLower[] = "lower";
+  static constexpr char kParamUpper[] = "upper";
+
+  // CoreML's "band_part" operator is a poor approximator of WebNN's triangular
+  // operator. WebNN's triangular operator may create a triangle:
+  //   1. from the main diagonal outwards, (diagonal == 0)
+  //   2. from the main diagonal outwards, plus additional diagonals of the
+  //      other triangle, (e.g. upper == true && diagonal < 0)
+  //   3. excluding the main diagonal (e.g. upper == true && diagonal > 0)
+  //
+  // Meanwhile, "band_part" starts from the main diagonal and offers to include
+  // additional diagonals in either the upper or lower triangles, with -1
+  // indicating to keep them all. It is not possible to exclude the main
+  // diagonal, however, so case 3 is not possible to achieve with "band_part".
+  //
+  // TODO(crbug.com/374127244): Support case 3.
+
+  if ((operation.upper && operation.diagonal > 0) ||
+      (!operation.upper && operation.diagonal < 0)) {
+    return NewNotSupportedError(
+        "Unsupported diagonal for triangular. The main diagonal must be kept.");
+  }
+
+  // Keep the entire upper or lower triangle.
+  int32_t kept_triangle = -1;
+  // Keep diagonals of the other triangle if `operation.diagonal` is non-zero.
+  int32_t other_triangle = std::abs(operation.diagonal);
+
+  int32_t upper, lower = 0;
+  if (operation.upper) {
+    upper = kept_triangle;
+    lower = other_triangle;
+  } else {
+    upper = other_triangle;
+    lower = kept_triangle;
+  }
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kParamLower, CreateScalarImmediateValue<int32_t>(lower)},
+       {kParamUpper, CreateScalarImmediateValue<int32_t>(upper)}});
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();

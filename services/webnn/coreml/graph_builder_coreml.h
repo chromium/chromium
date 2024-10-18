@@ -303,6 +303,9 @@ class GraphBuilderCoreml {
                            CoreML::Specification::MILSpec::Block& block);
   void AddOperationForTranspose(const mojom::Transpose& operation,
                                 CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTriangular(
+      const mojom::Triangular& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForWhere(
       const mojom::Where& operation,
       CoreML::Specification::MILSpec::Block& block);
