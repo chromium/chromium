@@ -5129,7 +5129,7 @@ String AXObject::TextFromElements(
 }
 
 // static
-bool AXObject::ElementsFromAttribute(Element* from,
+bool AXObject::ElementsFromAttribute(const Element* from,
                                      HeapVector<Member<Element>>& elements,
                                      const QualifiedName& attribute) {
   if (!from)
@@ -5148,7 +5148,7 @@ bool AXObject::ElementsFromAttribute(Element* from,
 }
 
 // static
-Element* AXObject::ElementFromAttribute(Element* from,
+Element* AXObject::ElementFromAttribute(const Element* from,
                                         const QualifiedName& attribute) {
   // This method only makes sense for aria-activedescendant, so make sure nobody
   // has made a typo trying to use ElementsFromAttribute.

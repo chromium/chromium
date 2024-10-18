@@ -337,10 +337,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
 
   // Returns true if |attribute| was present on |from|.
-  static bool ElementsFromAttribute(Element* from,
+  static bool ElementsFromAttribute(const Element* from,
                                     HeapVector<Member<Element>>& elements,
                                     const QualifiedName& attribute);
-  static Element* ElementFromAttribute(Element* from,
+  static Element* ElementFromAttribute(const Element* from,
                                        const QualifiedName& attribute);
 
   // Serialize the properties of this node into |node_data|.
@@ -885,8 +885,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool HasAriaAttribute(bool does_undo_role_presentation = false) const;
   virtual AXObject* ActiveDescendant() const { return nullptr; }
   virtual String AutoComplete() const { return String(); }
-  virtual void AriaOwnsElements(AXObjectVector& owns) const {}
-  virtual void AriaDescribedbyElements(AXObjectVector&) const {}
   virtual AXObjectVector ErrorMessage() const { return AXObjectVector(); }
   virtual AXObjectVector ErrorMessageFromHTML() const {
     return AXObjectVector();

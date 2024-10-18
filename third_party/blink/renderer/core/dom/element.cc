@@ -852,7 +852,7 @@ void Element::SetBooleanAttribute(const QualifiedName& name, bool value) {
 }
 
 bool Element::HasExplicitlySetAttrAssociatedElements(
-    const QualifiedName& name) {
+    const QualifiedName& name) const {
   return GetExplicitlySetElementsForAttr(this, name);
 }
 
@@ -992,7 +992,7 @@ Element* Element::GetElementAttributeResolvingReferenceTarget(
 
 HeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
     const QualifiedName& name,
-    bool resolve_reference_target) {
+    bool resolve_reference_target) const {
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-elements
   // 1. Let elements be an empty list.
   HeapVector<Member<Element>>* result_elements =
