@@ -37,6 +37,15 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*.h", "crtbegin.o"],
         },
+        "build/linux/debian_bullseye_arm64-sysroot/usr/include:include": {
+            "type": "glob",
+            "includes": ["*"],
+            # need bits/stab.def, c++/*
+        },
+        "build/linux/debian_bullseye_arm64-sysroot/usr/lib:headers": {
+            "type": "glob",
+            "includes": ["*.h", "crtbegin.o"],
+        },
         "build/linux/debian_bullseye_i386-sysroot/usr/include:include": {
             "type": "glob",
             "includes": ["*"],
@@ -120,6 +129,10 @@ def __step_config(ctx, step_config):
         "build/linux/debian_bullseye_amd64-sysroot:headers": [
             "build/linux/debian_bullseye_amd64-sysroot/usr/include:include",
             "build/linux/debian_bullseye_amd64-sysroot/usr/lib:headers",
+        ],
+        "build/linux/debian_bullseye_arm64-sysroot:headers": [
+            "build/linux/debian_bullseye_arm64-sysroot/usr/include:include",
+            "build/linux/debian_bullseye_arm64-sysroot/usr/lib:headers",
         ],
         "build/linux/debian_bullseye_i386-sysroot:headers": [
             "build/linux/debian_bullseye_i386-sysroot/usr/include:include",
