@@ -2471,47 +2471,15 @@ void StyleResolver::ClearResizedForViewportUnits() {
   was_viewport_resized_ = false;
 }
 
-bool StyleResolver::CacheSuccess::EffectiveZoomChanged(
-    const ComputedStyleBuilder& builder) const {
-  if (!cached_matched_properties) {
-    return false;
-  }
-  return cached_matched_properties->computed_style->EffectiveZoom() !=
-         builder.EffectiveZoom();
-}
-
-bool StyleResolver::CacheSuccess::FontChanged(
-    const ComputedStyleBuilder& builder) const {
-  if (!cached_matched_properties) {
-    return false;
-  }
-  return cached_matched_properties->computed_style->GetFontDescription() !=
-         builder.GetFontDescription();
-}
-
-bool StyleResolver::CacheSuccess::InheritedVariablesChanged(
-    const ComputedStyleBuilder& builder) const {
-  if (!cached_matched_properties) {
-    return false;
-  }
-  return !base::ValuesEquivalent(
-      cached_matched_properties->computed_style->InheritedVariables(),
-      builder.InheritedVariables());
-}
-
-bool StyleResolver::CacheSuccess::LineHeightChanged(
-    const ComputedStyleBuilder& builder) const {
-  if (!cached_matched_properties) {
-    return false;
-  }
-  return cached_matched_properties->computed_style->LineHeight() !=
-         builder.LineHeight();
-}
-
 bool StyleResolver::CacheSuccess::IsUsableAfterApplyInheritedOnly(
     const ComputedStyleBuilder& builder) const {
-  return !EffectiveZoomChanged(builder) && !FontChanged(builder) &&
-         !InheritedVariablesChanged(builder) && !LineHeightChanged(builder);
+  const ComputedStyle* cached_style =
+      cached_matched_properties->computed_style.Get();
+  return cached_style->EffectiveZoom() == builder.EffectiveZoom() &&
+         cached_style->GetFontDescription() == builder.GetFontDescription() &&
+         base::ValuesEquivalent(cached_style->InheritedVariables(),
+                                builder.InheritedVariables()) &&
+         cached_style->LineHeight() == builder.LineHeight();
 }
 
 StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
@@ -2851,6 +2819,11 @@ void StyleResolver::ApplyPropertiesFromCascade(StyleResolverState& state,
       cascade.Apply(filter.Add(CSSProperty::kInherited, false));
       if (!cache_success.IsUsableAfterApplyInheritedOnly(
               state.StyleBuilder())) {
+        // After applying inherited properties, we discovered that
+        // we have changed properties that would affect application
+        // of inherited properties (essentially turning our partial
+        // hit into a cache miss). We need to back off and apply
+        // all non-inherited properties as well.
         cascade.Apply(filter.Add(CSSProperty::kInherited, true));
       }
 #if DCHECK_IS_ON()
