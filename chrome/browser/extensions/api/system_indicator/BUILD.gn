@@ -1,0 +1,37 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_linux || is_mac || is_win)
+
+source_set("system_indicator") {
+  sources = [
+    "system_indicator_api.cc",
+    "system_indicator_api.h",
+    "system_indicator_manager_factory.cc",
+    "system_indicator_manager_factory.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/gfx",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/extensions",
+    "//chrome/common/extensions",
+    "//chrome/common/extensions/api",
+    "//content/public/browser",
+  ]
+}

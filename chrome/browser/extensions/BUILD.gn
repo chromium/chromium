@@ -980,15 +980,9 @@ source_set("extensions") {
 
   if (is_linux || is_mac || is_win) {
     sources += [
-      "api/system_indicator/system_indicator_api.cc",
-      "api/system_indicator/system_indicator_api.h",
       "api/system_indicator/system_indicator_manager.cc",
       "api/system_indicator/system_indicator_manager.h",
-      "api/system_indicator/system_indicator_manager_factory.cc",
-      "api/system_indicator/system_indicator_manager_factory.h",
     ]
-
-    deps += [ "//components/device_signals/core/common:features" ]
   }
 
   if (is_chromeos) {
