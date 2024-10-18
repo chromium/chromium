@@ -754,6 +754,13 @@ def main():
   if not args.skip_checkout:
     CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR)
 
+    # Apply https://github.com/zmodem/llvm-project/commit/802b816836f1 which
+    # adds printfs to the win/asan runtime which get printed at high verbosity
+    # level or on errors such as CHECK failure.
+    # TODO(crbug.com/341936875): Remove once debugging is done.
+    GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
+                  '802b816836f1dcf9544f250ee5c6977b4cb2bb41')
+
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)
     PACKAGE_VERSION = '%s-0' % CLANG_REVISION
