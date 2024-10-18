@@ -194,6 +194,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
     private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
+    private final Callback<Tab> mSendToBackground;
     private final LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
     private final OneshotSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private Callback<Integer> mOnTabStripHeightChangedCallback;
@@ -286,6 +287,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param insetObserver The {@link InsetObserver}.
      * @param backButtonShouldCloseTabFn Function which supplies whether or not the back button
      *     should close the tab.
+     * @param sendToBackground Callback exiting the app and closing the tab.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
      * @param savedInstanceState The saved bundle for the last recorded state.
@@ -338,6 +340,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull InsetObserver insetObserver,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
+            @NonNull Callback<Tab> sendToBackground,
             boolean initializeUiWithIncognitoColors,
             @NonNull BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
@@ -390,6 +393,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 edgeToEdgeStateProvider);
         mInsetObserver = insetObserver;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
+        mSendToBackground = sendToBackground;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mCanAnimateBrowserControls =
                 () -> {
@@ -672,7 +676,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                                 .closeTabs(TabClosureParams.closeTab(tab).build());
                                         break;
                                     case ActionType.EXIT_APP:
-                                        mActivity.moveTaskToBack(true);
+                                        mSendToBackground.onResult(tab);
                                         break;
                                 }
                             }
