@@ -128,17 +128,6 @@ void LogInputDeviceParametersToUma(
 
 }  // namespace
 
-// static
-bool ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate() {
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (!media::IsChromeWideEchoCancellationEnabled())
-    return true;
-  return media::kChromeWideEchoCancellationMinimizeResampling.Get();
-#else
-  return true;
-#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-}
-
 ProcessedLocalAudioSource::ProcessedLocalAudioSource(
     LocalFrame& frame,
     const blink::MediaStreamDevice& device,
@@ -434,13 +423,11 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   media::AudioSourceParameters source_config(device().session_id());
 
   if (use_remote_apm_) {
-    if (OutputAudioAtProcessingSampleRate()) {
-      // Since audio processing will be applied in the audio service, we request
-      // audio here in the audio processing output format to avoid forced
-      // resampling.
-      audio_capture_params = media::AudioProcessor::GetDefaultOutputFormat(
-          audio_capture_params, audio_processing_settings);
-    }
+    // Since audio processing will be applied in the audio service, we request
+    // audio here in the audio processing output format to avoid forced
+    // resampling.
+    audio_capture_params = media::AudioProcessor::GetDefaultOutputFormat(
+        audio_capture_params, audio_processing_settings);
 
     // Create a proxy to the audio processor in the audio service.
     audio_processor_proxy_ =
@@ -454,7 +441,6 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     source_config.processing = audio_processing_settings;
 
   } else {
-    DCHECK(OutputAudioAtProcessingSampleRate());
     // Create the MediaStreamAudioProcessor, bound to the WebRTC audio device
     // module.
 

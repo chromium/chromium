@@ -539,11 +539,7 @@ class MediaStreamConstraintsUtilAudioTest
   std::string GetMediaStreamSource() override { return GetParam(); }
 };
 
-enum class ChromeWideAecExperiment {
-  kDisabled,
-  kEnabledWithoutResamplingMitigation,
-  kEnabledWithResamplingMitigation
-};
+enum class ChromeWideAecExperiment { kDisabled, kEnabled };
 
 class MediaStreamConstraintsRemoteAPMTest
     : public MediaStreamConstraintsUtilAudioTestBase,
@@ -564,11 +560,8 @@ class MediaStreamConstraintsRemoteAPMTest
       case ChromeWideAecExperiment::kDisabled:
         experiment_string = "disabled";
         break;
-      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
-        experiment_string = "\"enabled without resampling mitigation\"";
-        break;
-      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
-        experiment_string = "\"enabled with resampling mitigation\"";
+      case ChromeWideAecExperiment::kEnabled:
+        experiment_string = "enabled";
         break;
     }
     return testing::Message()
@@ -594,10 +587,8 @@ class MediaStreamConstraintsRemoteAPMTest
     switch (GetChromeWideAecExperiment()) {
       case ChromeWideAecExperiment::kDisabled:
         return ApmLocation::kProcessedLocalAudioSource;
-      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
+      case ChromeWideAecExperiment::kEnabled:
         return ApmLocation::kAudioService;
-      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
-        return ApmLocation::kAudioServiceAvoidResampling;
     }
     NOTREACHED_IN_MIGRATION();
   }
@@ -612,17 +603,9 @@ class MediaStreamConstraintsRemoteAPMTest
         scoped_feature_list_.InitAndDisableFeature(
             media::kChromeWideEchoCancellation);
         break;
-      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
-        scoped_feature_list_.InitAndEnableFeatureWithParameters(
-            media::kChromeWideEchoCancellation,
-            {{ "minimize_resampling",
-               "false" }});
-        break;
-      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
-        scoped_feature_list_.InitAndEnableFeatureWithParameters(
-            media::kChromeWideEchoCancellation,
-            {{ "minimize_resampling",
-               "true" }});
+      case ChromeWideAecExperiment::kEnabled:
+        scoped_feature_list_.InitAndEnableFeature(
+            media::kChromeWideEchoCancellation);
         break;
     }
 #endif
@@ -2100,12 +2083,7 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {
   constraint_factory_.basic().echo_cancellation.SetExact(true);
   result = SelectSettings();
 
-  // Native sample rate is only supported by APM in the audio service, without
-  // resampling mitigations.
-  if (GetApmLocation() == ApmLocation::kAudioService)
-    EXPECT_TRUE(result.HasValue());
-  else
-    EXPECT_FALSE(result.HasValue());
+  EXPECT_FALSE(result.HasValue());
 }
 
 TEST_P(MediaStreamConstraintsRemoteAPMTest,
@@ -2119,12 +2097,7 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest,
   constraint_factory_.basic().echo_cancellation.SetExact(true);
   result = SelectSettings();
 
-  // Native sample rate is only supported by APM in the audio service, without
-  // resampling mitigations.
-  if (GetApmLocation() == ApmLocation::kAudioService)
-    EXPECT_FALSE(result.HasValue());
-  else
-    EXPECT_TRUE(result.HasValue());
+  EXPECT_TRUE(result.HasValue());
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
@@ -2233,15 +2206,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(
     All,
     MediaStreamConstraintsRemoteAPMTest,
-    testing::Combine(
-        testing::Values("",
-                        blink::kMediaStreamSourceTab,
-                        blink::kMediaStreamSourceSystem,
-                        blink::kMediaStreamSourceDesktop),
-        testing::Values(
-            ChromeWideAecExperiment::kDisabled,
-            ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation,
-            ChromeWideAecExperiment::kEnabledWithResamplingMitigation)));
+    testing::Combine(testing::Values("",
+                                     blink::kMediaStreamSourceTab,
+                                     blink::kMediaStreamSourceSystem,
+                                     blink::kMediaStreamSourceDesktop),
+                     testing::Values(ChromeWideAecExperiment::kDisabled,
+                                     ChromeWideAecExperiment::kEnabled)));
 #else
 INSTANTIATE_TEST_SUITE_P(
     All,

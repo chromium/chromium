@@ -542,10 +542,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (media::IsChromeWideEchoCancellationEnabled()) {
     LogToCircularBuffer(base::StrCat(
-        {"ChromeWideEchoCancellation : Enabled", ", minimize_resampling = ",
-         media::kChromeWideEchoCancellationMinimizeResampling.Get() ? "true"
-                                                                    : "false",
-         ", allow_all_sample_rates = ",
+        {"ChromeWideEchoCancellation : Enabled, allow_all_sample_rates = ",
          media::kChromeWideEchoCancellationAllowAllSampleRates.Get()
              ? "true"
              : "false"}));

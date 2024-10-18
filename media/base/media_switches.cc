@@ -474,13 +474,6 @@ BASE_FEATURE(kChromeWideEchoCancellation,
              "ChromeWideEchoCancellation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When audio processing is done in the audio process, at the renderer side IPC
-// is set up to receive audio at the processing sample rate. This is a
-// kill-switch to fallback to receiving audio at the default sample rate of the
-// audio capture device.
-const base::FeatureParam<bool> kChromeWideEchoCancellationMinimizeResampling{
-    &kChromeWideEchoCancellation, "minimize_resampling", true};
-
 // Dynamically sets audio::SyncReader's timeout based off of a percentage of
 // buffer duration, in an attempt to minimize glitches.
 // The default negative value indicates that no experiment is running, and

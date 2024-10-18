@@ -771,15 +771,6 @@ class ProcessingBasedContainer {
       bool is_device_capture,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
-    int sample_rate_hz = media::WebRtcAudioProcessingSampleRateHz();
-    if (stream_type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
-        !ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate()) {
-      // If audio processing runs in the audio service without any mitigations
-      // for unnecessary resmapling, ProcessedLocalAudioSource will output audio
-      // at the device sample rate.
-      // This is only enabled for mic input sources: https://crbug.com/1328012
-      sample_rate_hz = device_parameters.sample_rate();
-    }
     return ProcessingBasedContainer(
         ProcessingType::kApmProcessed,
         {EchoCancellationType::kEchoCancellationAec3,
@@ -793,7 +784,8 @@ class ProcessingBasedContainer {
         BoolSet(), /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()),    /* sample_size_range */
         GetApmSupportedChannels(device_parameters), /* channels_set */
-        IntRangeSet::FromValue(sample_rate_hz),     /* sample_rate_range */
+        IntRangeSet::FromValue(
+            media::WebRtcAudioProcessingSampleRateHz()), /* sample_rate_range */
         source_info, is_device_capture, device_parameters,
         is_reconfiguration_allowed);
   }

@@ -211,8 +211,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSaveVideoFrameAs);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSearchForVideoFrame);
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeWideEchoCancellation);
-MEDIA_EXPORT extern const base::FeatureParam<bool>
-    kChromeWideEchoCancellationMinimizeResampling;
 MEDIA_EXPORT extern const base::FeatureParam<double>
     kChromeWideEchoCancellationDynamicMixingTimeout;
 MEDIA_EXPORT extern const base::FeatureParam<bool>

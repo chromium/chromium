@@ -46,11 +46,7 @@ constexpr int kSampleRate = 48000;
 constexpr media::ChannelLayout kChannelLayout = media::CHANNEL_LAYOUT_STEREO;
 constexpr int kDeviceBufferSize = 512;
 
-enum class ProcessingLocation {
-  kProcessedLocalAudioSource,
-  kAudioService,
-  kAudioServiceAvoidResampling
-};
+enum class ProcessingLocation { kProcessedLocalAudioSource, kAudioService };
 
 std::tuple<int, int> ComputeExpectedSourceAndOutputBufferSizes(
     ProcessingLocation processing_location) {
@@ -72,10 +68,6 @@ std::tuple<int, int> ComputeExpectedSourceAndOutputBufferSizes(
       // processor.
       return {kExpectedUnprocessedBufferSize, kExpectedOutputBufferSize};
     case ProcessingLocation::kAudioService:
-      // With processing in the audio service, the stream is locked to a
-      // device- and processing-friendly format.
-      return {kExpectedUnprocessedBufferSize, kExpectedUnprocessedBufferSize};
-    case ProcessingLocation::kAudioServiceAvoidResampling:
       // To minimize resampling after processing in the audio service,
       // ProcessedLocalAudioSource requests audio in the post-processing format.
       return {kExpectedOutputBufferSize, kExpectedOutputBufferSize};
@@ -202,11 +194,8 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   base::test::ScopedFeatureList scoped_feature_list;
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (GetParam() == ProcessingLocation::kAudioService) {
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        media::kChromeWideEchoCancellation, {{"minimize_resampling", "false"}});
-  } else if (GetParam() == ProcessingLocation::kAudioServiceAvoidResampling) {
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        media::kChromeWideEchoCancellation, {{"minimize_resampling", "true"}});
+    scoped_feature_list.InitAndEnableFeature(
+        media::kChromeWideEchoCancellation);
   } else {
     scoped_feature_list.InitAndDisableFeature(
         media::kChromeWideEchoCancellation);
@@ -278,8 +267,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ProcessedLocalAudioSourceTest,
     testing::Values(ProcessingLocation::kProcessedLocalAudioSource,
-                    ProcessingLocation::kAudioService,
-                    ProcessingLocation::kAudioServiceAvoidResampling));
+                    ProcessingLocation::kAudioService));
 #else
 INSTANTIATE_TEST_SUITE_P(
     All,

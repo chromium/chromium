@@ -510,11 +510,7 @@ void MediaInternals::SendGeneralAudioInformation() {
   std::string chrome_wide_echo_cancellation_value_string =
       media::IsChromeWideEchoCancellationEnabled()
           ? base::StrCat(
-                {"Enabled, minimize_resampling = ",
-                 media::kChromeWideEchoCancellationMinimizeResampling.Get()
-                     ? "true"
-                     : "false",
-                 ", allow_all_sample_rates = ",
+                {"Enabled, allow_all_sample_rates = ",
                  media::kChromeWideEchoCancellationAllowAllSampleRates.Get()
                      ? "true"
                      : "false"})

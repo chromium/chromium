@@ -92,12 +92,6 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
 
   void SetOutputDeviceForAec(const std::string& output_device_id);
 
-  // Returns true if ProcessedLocalAudioSource produces audio at the processing
-  // sample rate, false if it outputs audio at the device sample rate. This only
-  // applies for stream type DEVICE_AUDIO_CAPTURE, for other stream types the
-  // output is always at the processing sample rate.
-  static bool OutputAudioAtProcessingSampleRate();
-
  protected:
   // MediaStreamAudioSource implementation.
   void* GetClassIdentifier() const final;
