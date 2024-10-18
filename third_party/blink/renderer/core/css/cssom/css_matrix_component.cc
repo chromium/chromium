@@ -49,7 +49,7 @@ CSSMatrixComponent* CSSMatrixComponent::FromCSSValue(
   }
 
   return CSSMatrixComponent::Create(
-      DOMMatrixReadOnly::CreateForSerialization(entries.data(), entries.size()),
+      DOMMatrixReadOnly::CreateForSerialization(entries),
       CSSMatrixComponentOptions::Create());
 }
 
