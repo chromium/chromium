@@ -8,8 +8,7 @@ import android.util.ArrayMap;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
-import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
-import org.chromium.base.cached_flags.ValuesOverridden;
+import org.chromium.base.FeatureList;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -136,6 +135,7 @@ public class FieldTrials {
     private static void overrideCachedFieldTrialParams(
             Map<String, Set<String>> trialToFeatures,
             Map<String, Map<String, String>> trialToParamValueMap) {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
         for (Map.Entry<String, Map<String, String>> entry : trialToParamValueMap.entrySet()) {
             String trialName = entry.getKey();
             Set<String> featureSet = trialToFeatures.get(trialName);
@@ -159,14 +159,13 @@ public class FieldTrials {
 
                 // Override value for each CachedFieldTrialParameter
                 for (Map.Entry<String, String> param : params.entrySet()) {
-                    String variationName = param.getKey();
-                    String preferenceKey =
-                            CachedFlagsSharedPreferences.generateParamSharedPreferenceKey(
-                                    featureName, variationName);
+                    String paramName = param.getKey();
                     String overrideValue = param.getValue();
-                    ValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
+                    testValues.addFieldTrialParamOverride(featureName, paramName, overrideValue);
                 }
             }
         }
+
+        FeatureList.mergeTestValues(testValues, /* replace= */ true);
     }
 }

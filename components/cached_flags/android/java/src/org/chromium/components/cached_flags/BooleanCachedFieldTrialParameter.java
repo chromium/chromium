@@ -8,9 +8,9 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
-import org.chromium.base.cached_flags.ValuesOverridden;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
@@ -35,14 +35,13 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter<
     public boolean getValue() {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
-        String preferenceName = getSharedPreferenceKey();
-
-        Boolean value = ValuesOverridden.getBool(preferenceName);
-        if (value != null) {
-            return value;
+        String testValue = FeatureList.getTestValueForFieldTrialParam(mFeatureName, mParamName);
+        if (testValue != null) {
+            return Boolean.parseBoolean(testValue);
         }
 
-        return ValuesReturned.getReturnedOrNewBoolValue(preferenceName, getValueSupplier());
+        return ValuesReturned.getReturnedOrNewBoolValue(
+                getSharedPreferenceKey(), getValueSupplier());
     }
 
     private Supplier<Boolean> getValueSupplier() {
@@ -79,13 +78,11 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter<
     /**
      * Forces the parameter to return a specific value for testing.
      *
-     * <p>Caveat: this does not affect the value returned by native, only by {@link
-     * CachedFieldTrialParameter}.
-     *
      * @param overrideValue the value to be returned
      */
     public void setForTesting(boolean overrideValue) {
-        ValuesOverridden.setOverrideForTesting(
-                getSharedPreferenceKey(), String.valueOf(overrideValue));
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(this, String.valueOf(overrideValue));
+        FeatureList.mergeTestValues(testValues, /* replace= */ true);
     }
 }

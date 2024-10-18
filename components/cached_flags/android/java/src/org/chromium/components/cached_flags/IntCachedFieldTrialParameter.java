@@ -8,9 +8,9 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
-import org.chromium.base.cached_flags.ValuesOverridden;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
@@ -30,14 +30,13 @@ public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter<Inte
     public int getValue() {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
-        String preferenceName = getSharedPreferenceKey();
-
-        Integer value = ValuesOverridden.getInt(preferenceName);
-        if (value != null) {
-            return value;
+        String testValue = FeatureList.getTestValueForFieldTrialParam(mFeatureName, mParamName);
+        if (testValue != null) {
+            return Integer.parseInt(testValue);
         }
 
-        return ValuesReturned.getReturnedOrNewIntValue(preferenceName, getValueSupplier());
+        return ValuesReturned.getReturnedOrNewIntValue(
+                getSharedPreferenceKey(), getValueSupplier());
     }
 
     private Supplier<Integer> getValueSupplier() {
@@ -74,13 +73,11 @@ public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter<Inte
     /**
      * Forces the parameter to return a specific value for testing.
      *
-     * <p>Caveat: this does not affect the value returned by native, only by {@link
-     * CachedFieldTrialParameter}.
-     *
      * @param overrideValue the value to be returned
      */
     public void setForTesting(int overrideValue) {
-        ValuesOverridden.setOverrideForTesting(
-                getSharedPreferenceKey(), String.valueOf(overrideValue));
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(this, String.valueOf(overrideValue));
+        FeatureList.mergeTestValues(testValues, /* replace= */ true);
     }
 }

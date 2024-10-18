@@ -14,7 +14,6 @@ import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_A;
 import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_B;
 import static org.chromium.base.test.util.BaseFlagTestRule.assertIsEnabledMatches;
 
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +23,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
-import org.chromium.base.cached_flags.ValuesOverridden;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
@@ -39,12 +37,6 @@ public class CachedFlagUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private FeatureMap mFeatureMap;
-
-    @After
-    public void tearDown() {
-        ValuesReturned.clearForTesting();
-        ValuesOverridden.removeOverrides();
-    }
 
     @Test(expected = AssertionError.class)
     public void testDuplicateFeature_throwsException() {
@@ -98,7 +90,6 @@ public class CachedFlagUnitTest {
 
         // Pretend the app was restarted. The SharedPrefs should remain.
         ValuesReturned.clearForTesting();
-        ValuesOverridden.removeOverrides();
 
         // Simulate ChromeFeatureList retrieving new, different values for the flags.
         when(mFeatureMap.isEnabledInNative(FEATURE_A)).thenReturn(true);
@@ -117,7 +108,6 @@ public class CachedFlagUnitTest {
 
         // Pretend the app was restarted again.
         ValuesReturned.clearForTesting();
-        ValuesOverridden.removeOverrides();
 
         // The SharedPrefs should retain the latest values.
         assertIsEnabledMatches(A_ON_B_ON, featureA, featureB);

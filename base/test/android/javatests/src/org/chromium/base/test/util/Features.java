@@ -10,7 +10,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureParam;
 import org.chromium.base.Flag;
-import org.chromium.base.cached_flags.ValuesOverridden;
 import org.chromium.base.cached_flags.ValuesReturned;
 
 import java.lang.annotation.Retention;
@@ -52,7 +51,6 @@ public class Features {
     static void resetCachedFlags() {
         // TODO(agrieve): Allow cached flags & field trials to be set in @BeforeClass.
         ValuesReturned.clearForTesting();
-        ValuesOverridden.removeOverrides();
         Flag.resetAllInMemoryCachedValuesForTesting();
         FeatureParam.resetAllInMemoryCachedValuesForTesting();
     }

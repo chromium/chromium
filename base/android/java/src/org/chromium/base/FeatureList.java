@@ -74,6 +74,36 @@ public class FeatureList {
         Map<String, String> getAllFieldTrialParamOverridesForFeature(String featureName) {
             return mFieldTrialParams.get(featureName);
         }
+
+        public void merge(TestValues testValuesToMerge, boolean replace) {
+            if (replace) {
+                mFeatureFlags.putAll(testValuesToMerge.mFeatureFlags);
+            } else {
+                for (Map.Entry<String, Boolean> toMerge :
+                        testValuesToMerge.mFeatureFlags.entrySet()) {
+                    mFeatureFlags.putIfAbsent(toMerge.getKey(), toMerge.getValue());
+                }
+            }
+
+            for (Map.Entry<String, Map<String, String>> e :
+                    testValuesToMerge.mFieldTrialParams.entrySet()) {
+                String featureName = e.getKey();
+                var fieldTrialParamsForFeature = mFieldTrialParams.get(featureName);
+                if (fieldTrialParamsForFeature == null) {
+                    fieldTrialParamsForFeature = new ArrayMap<>();
+                    mFieldTrialParams.put(featureName, fieldTrialParamsForFeature);
+                }
+
+                if (replace) {
+                    fieldTrialParamsForFeature.putAll(e.getValue());
+                } else {
+                    for (Map.Entry<String, String> toMerge : e.getValue().entrySet()) {
+                        fieldTrialParamsForFeature.putIfAbsent(
+                                toMerge.getKey(), toMerge.getValue());
+                    }
+                }
+            }
+        }
     }
 
     /** Map that stores substitution feature flags for tests. */
@@ -157,39 +187,11 @@ public class FeatureList {
      * @param replace if true, replaces existing values (e.g. from @EnableFeatures annotations)
      */
     public static void mergeTestValues(@NonNull TestValues testValuesToMerge, boolean replace) {
-        TestValues newTestValues;
-        if (sTestFeatures == null) {
-            newTestValues = new TestValues();
-        } else {
-            newTestValues = sTestFeatures;
+        TestValues newTestValues = new TestValues();
+        if (sTestFeatures != null) {
+            newTestValues.merge(sTestFeatures, /* replace= */ true);
         }
-
-        if (replace) {
-            newTestValues.mFeatureFlags.putAll(testValuesToMerge.mFeatureFlags);
-        } else {
-            for (Map.Entry<String, Boolean> toMerge : testValuesToMerge.mFeatureFlags.entrySet()) {
-                newTestValues.mFeatureFlags.putIfAbsent(toMerge.getKey(), toMerge.getValue());
-            }
-        }
-
-        for (Map.Entry<String, Map<String, String>> e :
-                testValuesToMerge.mFieldTrialParams.entrySet()) {
-            String featureName = e.getKey();
-            var fieldTrialParamsForFeature = newTestValues.mFieldTrialParams.get(featureName);
-            if (fieldTrialParamsForFeature == null) {
-                fieldTrialParamsForFeature = new ArrayMap<>();
-                newTestValues.mFieldTrialParams.put(featureName, fieldTrialParamsForFeature);
-            }
-
-            if (replace) {
-                fieldTrialParamsForFeature.putAll(e.getValue());
-            } else {
-                for (Map.Entry<String, String> toMerge : e.getValue().entrySet()) {
-                    fieldTrialParamsForFeature.putIfAbsent(toMerge.getKey(), toMerge.getValue());
-                }
-            }
-        }
-
+        newTestValues.merge(testValuesToMerge, replace);
         setTestValues(newTestValues);
     }
 
