@@ -197,7 +197,7 @@ BASE_FEATURE(kNotificationWidthIncrease,
 // PWA.
 BASE_FEATURE(kOfficeNavigationCapturingReimpl,
              "OfficeNavigationCapturingReimpl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, "Orca", base::FEATURE_ENABLED_BY_DEFAULT);
