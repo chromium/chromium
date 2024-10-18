@@ -34,6 +34,7 @@ ${this.enableHistoryEmbeddings_ ? html`
       .searchQuery="${this.query}"
       .showRelativeTimes="${true}"
       .forceSuppressLogging="${this.historyEmbeddingsDisclaimerLinkClicked_}"
+      .otherHistoryResultClicked="${this.nonEmbeddingsResultClicked_}"
       @answer-click="${this.onHistoryEmbeddingsResultClick_}"
       @answer-context-menu="${this.onHistoryEmbeddingsResultContextMenu_}"
       @result-click="${this.onHistoryEmbeddingsResultClick_}"
@@ -45,6 +46,7 @@ ${this.enableHistoryEmbeddings_ ? html`
       query="${this.query}"
       path="journeys"
       @query-changed-by-user="${this.onQueryChangedByUser_}"
+      @record-history-link-click="${this.onClusterLinkClick_}"
       class="${this.getClustersComponentClass_()}"
       .scrollTarget="${this.scrollTarget_}">
   </history-clusters>
