@@ -9,6 +9,8 @@ source_set("model") {
     "lens_overlay_snapshot_controller_delegate.h",
     "lens_overlay_tab_helper.h",
     "lens_overlay_tab_helper.mm",
+    "snapshot_cover_view_controller.h",
+    "snapshot_cover_view_controller.mm",
   ]
   deps = [
     "//base",
