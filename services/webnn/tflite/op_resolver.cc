@@ -56,6 +56,8 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              /* max_version = */ 4);
   AddBuiltin(::tflite::BuiltinOperator_COS,
              ::tflite::ops::builtin::Register_COS());
+  AddBuiltin(::tflite::BuiltinOperator_CUMSUM,
+             ::tflite::ops::builtin::Register_CUMSUM());
   AddBuiltin(::tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
              ::tflite::ops::builtin::Register_DEPTHWISE_CONV_2D(),
              /* min_version = */ 1,

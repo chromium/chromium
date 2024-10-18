@@ -355,8 +355,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*concat_inputs=*/kAllDataTypesExceptUint4,
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
-       // CumulativeSum is not implemented.
-       /*cumulative_sum_input=*/{},
+       /*cumulative_sum_input=*/kFloat16To32AndInt32To64,
        // DequantizeLinear is not implemented.
        /*dequantize_linear_input=*/{},
        /*dequantize_linear_scale=*/{},
@@ -679,6 +678,11 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeConcat(*op.get_concat()));
       break;
     }
+    case mojom::Operation::Tag::kCumulativeSum: {
+      ASSIGN_OR_RETURN(operator_offset,
+                       SerializeCumulativeSum(*op.get_cumulative_sum()));
+      break;
+    }
     case mojom::Operation::Tag::kDequantizeLinear:
       return base::unexpected(
           "DequantizeLinear operation is not implemented in tflite.");
@@ -848,7 +852,6 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeWhere(*op.get_where()));
       break;
     }
-    case mojom::Operation::Tag::kCumulativeSum:
     case mojom::Operation::Tag::kGatherElements:
     case mojom::Operation::Tag::kScatterElements:
     case mojom::Operation::Tag::kScatterNd:
@@ -1576,6 +1579,37 @@ auto GraphBuilderTflite::SerializeConcat(const mojom::Concat& concat)
 
   return SerializeConcatOperation(operator_inputs_index,
                                   output_tensor_info.index, concat.axis);
+}
+
+auto GraphBuilderTflite::SerializeCumulativeSum(
+    const mojom::CumulativeSum& cumulative_sum)
+    -> base::expected<OperatorOffset, std::string> {
+  CHECK(context_properties_.data_type_limits.cumulative_sum_input.Has(
+      GetOperand(cumulative_sum.input_operand_id).descriptor.data_type()));
+
+  // The axis is validated by ValidateCumulativeSumAndInferOutput(), so the axis
+  // doesn't overflow.
+  const int32_t axis_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      /*buffer=*/std::array<int32_t, 1>{base::checked_cast<int32_t>(
+          cumulative_sum.axis)},
+      /*dimensions=*/{});
+
+  const auto cumulative_sum_options = ::tflite::CreateCumsumOptions(
+      builder_, cumulative_sum.exclusive, cumulative_sum.reversed);
+
+  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
+                   SerializeInputTensorInfo(cumulative_sum.input_operand_id));
+  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                   SerializeOutputTensorInfo(cumulative_sum.output_operand_id));
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_CUMSUM);
+  const std::array<int32_t, 2> op_inputs = {input_tensor_info.index,
+                                            axis_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_info.index};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
+      ::tflite::BuiltinOptions_CumsumOptions, cumulative_sum_options.Union());
 }
 
 auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)

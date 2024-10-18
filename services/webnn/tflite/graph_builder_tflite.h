@@ -484,6 +484,8 @@ class GraphBuilderTflite final {
       const mojom::Conv2d& conv2d);
   base::expected<OperatorOffset, std::string> SerializeConcat(
       const mojom::Concat& concat);
+  base::expected<OperatorOffset, std::string> SerializeCumulativeSum(
+      const mojom::CumulativeSum& cumulative_sum);
   base::expected<OperatorOffset, std::string> SerializeElementWiseBinary(
       const mojom::ElementWiseBinary& op);
   base::expected<OperatorOffset, std::string> SerializeElementWiseUnary(
