@@ -16,6 +16,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "components/viz/service/input/render_input_router_delegate_impl.h"
+#include "components/viz/service/input/render_input_router_support_base.h"
 #include "gpu/ipc/common/surface_handle.h"
 
 namespace input {
@@ -43,7 +44,8 @@ struct FrameSinkMetadata {
 
 class VIZ_SERVICE_EXPORT InputManager
     : public FrameSinkObserver,
-      public input::RenderWidgetHostInputEventRouter::Delegate {
+      public input::RenderWidgetHostInputEventRouter::Delegate,
+      public RenderInputRouterSupportBase::Delegate {
  public:
   explicit InputManager(FrameSinkManagerImpl* frame_sink_manager);
 
@@ -65,6 +67,11 @@ class VIZ_SERVICE_EXPORT InputManager
 
   // RenderWidgetHostInputEventRouter::Delegate implementation.
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
+
+  // RenderInputRouterSupportBase::Delegate implementation.
+  float GetDeviceScaleFactorForId(const FrameSinkId& frame_sink_id) override;
+  FrameSinkId GetRootCompositorFrameSinkId(
+      const FrameSinkId& child_frame_sink_id) override;
 
  private:
 #if BUILDFLAG(IS_ANDROID)

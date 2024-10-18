@@ -629,6 +629,8 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
   if (is_showing_)
     local_surface_id_allocator_.GenerateId();
 
+  input_helper_ = std::make_unique<input::AndroidInputHelper>(this, this);
+
   delegated_frame_host_client_ =
       std::make_unique<DelegatedFrameHostClientAndroid>(this);
   delegated_frame_host_ = std::make_unique<ui::DelegatedFrameHostAndroid>(
@@ -1321,21 +1323,8 @@ bool RenderWidgetHostViewAndroid::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
     RenderWidgetHostViewInput* target_view,
     gfx::PointF* transformed_point) {
-  if (target_view == this) {
-    *transformed_point = point;
-    return true;
-  }
-
-  auto frame_sink_id = GetFrameSinkId();
-  if (!frame_sink_id.is_valid()) {
-    return false;
-  }
-
-  // In TransformPointToLocalCoordSpace() there is a Point-to-Pixel conversion,
-  // but it is not necessary here because the final target view is responsible
-  // for converting before computing the final transform.
-  return target_view->TransformPointToLocalCoordSpace(point, frame_sink_id,
-                                                      transformed_point);
+  return input_helper_->TransformPointToCoordSpaceForView(point, target_view,
+                                                          transformed_point);
 }
 
 void RenderWidgetHostViewAndroid::SetGestureListenerManager(
@@ -1717,8 +1706,7 @@ RenderWidgetHostViewAndroid::CreateSyntheticGestureTarget() {
 }
 
 bool RenderWidgetHostViewAndroid::ShouldRouteEvents() const {
-  DCHECK(host());
-  return host()->delegate() && host()->delegate()->GetInputEventRouter();
+  return input_helper_->ShouldRouteEvents();
 }
 
 void RenderWidgetHostViewAndroid::UpdateWebViewBackgroundColorIfNecessary() {
@@ -2177,30 +2165,7 @@ void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
     const input::TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
   TRACE_EVENT0("input", "RenderWidgetHostViewAndroid::ProcessAckedTouchEvent");
-  const bool event_consumed =
-      ack_result == blink::mojom::InputEventResultState::kConsumed;
-  // |is_source_touch_event_set_non_blocking| defines a blocking behaviour of
-  // the future inputs.
-  const bool is_source_touch_event_set_non_blocking =
-      input::InputEventResultStateIsSetBlocking(ack_result);
-  // |was_touch_blocked| indicates whether the current event was dispatched
-  // blocking to the Renderer.
-  const bool was_touch_blocked =
-      ui::WebInputEventTraits::ShouldBlockEventStream(touch.event);
-  gesture_provider_.OnTouchEventAck(
-      touch.event.unique_touch_event_id, event_consumed,
-      is_source_touch_event_set_non_blocking,
-      was_touch_blocked
-          ? std::make_optional(touch.event.GetEventLatencyMetadata())
-          : std::nullopt);
-  if (touch.event.touch_start_or_first_touch_move && event_consumed &&
-      host()->delegate() && host()->delegate()->GetInputEventRouter()) {
-    host()
-        ->delegate()
-        ->GetInputEventRouter()
-        ->OnHandledTouchStartOrFirstTouchMove(
-            touch.event.unique_touch_event_id);
-  }
+  input_helper_->ProcessAckedTouchEvent(touch, ack_result);
 }
 
 void RenderWidgetHostViewAndroid::GestureEventAck(
@@ -2434,6 +2399,10 @@ void RenderWidgetHostViewAndroid::SendGestureEvent(
   }
 }
 
+ui::FilteredGestureProvider& RenderWidgetHostViewAndroid::GetGestureProvider() {
+  return gesture_provider_;
+}
+
 bool RenderWidgetHostViewAndroid::ShowSelectionMenu(
     RenderFrameHost* render_frame_host,
     const ContextMenuParams& params) {
@@ -2638,28 +2607,11 @@ bool RenderWidgetHostViewAndroid::OnMouseWheelEvent(
 
 void RenderWidgetHostViewAndroid::OnGestureEvent(
     const ui::GestureEventData& gesture) {
-  if ((gesture.type() == ui::EventType::kGesturePinchBegin ||
-       gesture.type() == ui::EventType::kGesturePinchUpdate ||
-       gesture.type() == ui::EventType::kGesturePinchEnd) &&
-      !input::switches::IsPinchToZoomEnabled()) {
-    return;
-  }
-
-  blink::WebGestureEvent web_gesture =
-      ui::CreateWebGestureEventFromGestureEventData(gesture);
-  // TODO(jdduke): Remove this workaround after Android fixes UiAutomator to
-  // stop providing shift meta values to synthetic MotionEvents. This prevents
-  // unintended shift+click interpretation of all accessibility clicks.
-  // See crbug.com/443247.
-  if (web_gesture.GetType() == blink::WebInputEvent::Type::kGestureTap &&
-      web_gesture.GetModifiers() == blink::WebInputEvent::kShiftKey) {
-    web_gesture.SetModifiers(blink::WebInputEvent::kNoModifiers);
-  }
-  SendGestureEvent(web_gesture);
+  input_helper_->OnGestureEvent(gesture);
 }
 
 bool RenderWidgetHostViewAndroid::RequiresDoubleTapGestureEvents() const {
-  return true;
+  return input_helper_->RequiresDoubleTapGestureEvents();
 }
 
 void RenderWidgetHostViewAndroid::OnSizeChanged() {

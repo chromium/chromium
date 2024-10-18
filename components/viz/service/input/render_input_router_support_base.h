@@ -25,6 +25,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportBase
    public:
     virtual float GetDeviceScaleFactorForId(
         const FrameSinkId& frame_sink_id) = 0;
+    virtual FrameSinkId GetRootCompositorFrameSinkId(
+        const FrameSinkId& child_frame_sink_id) = 0;
   };
 
   // StylusInterface implementation.
@@ -47,6 +49,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportBase
   void OnAutoscrollStart() override;
   float GetDeviceScaleFactor() const final;
   bool IsPointerLocked() override;
+
+  Delegate* delegate() { return delegate_; }
 
  protected:
   explicit RenderInputRouterSupportBase(input::RenderInputRouter* rir,

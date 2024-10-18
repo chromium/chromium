@@ -161,6 +161,20 @@ input::TouchEmulator* InputManager::GetTouchEmulator(bool create_if_necessary) {
   return nullptr;
 }
 
+float InputManager::GetDeviceScaleFactorForId(
+    const FrameSinkId& frame_sink_id) {
+  auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
+  CHECK(support);
+  CHECK(support->GetLastActivatedFrameMetadata());
+  return support->GetLastActivatedFrameMetadata()->device_scale_factor;
+}
+
+FrameSinkId InputManager::GetRootCompositorFrameSinkId(
+    const FrameSinkId& child_frame_sink_id) {
+  return frame_sink_manager_->GetOldestRootCompositorFrameSinkId(
+      child_frame_sink_id);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void InputManager::CreateAndroidInputReceiver(
     const FrameSinkId& frame_sink_id,

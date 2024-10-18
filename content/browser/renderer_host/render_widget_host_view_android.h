@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "cc/trees/render_frame_metadata.h"
+#include "components/input/android_input_helper.h"
 #include "components/viz/common/quads/selection.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/browser/device_posture/device_posture_platform_provider.h"
@@ -94,7 +95,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       public ui::TouchSelectionControllerClient,
       public ui::ViewAndroidObserver,
       public ui::WindowAndroidObserver,
-      public DevicePosturePlatformProvider::Observer {
+      public DevicePosturePlatformProvider::Observer,
+      public input::AndroidInputHelper::Delegate {
  public:
   static RenderWidgetHostViewAndroid* FromRenderWidgetHostView(
       RenderWidgetHostView* view);
@@ -291,9 +293,13 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void SendMouseEvent(const blink::WebMouseEvent& event,
                       const ui::LatencyInfo& info);
   void SendMouseWheelEvent(const blink::WebMouseWheelEvent& event);
-  void SendGestureEvent(const blink::WebGestureEvent& event);
   bool ShowSelectionMenu(RenderFrameHost* render_frame_host,
                          const ContextMenuParams& params);
+
+  // AndroidInputHelper::Delegate implementation.
+  void SendGestureEvent(const blink::WebGestureEvent& event) override;
+  ui::FilteredGestureProvider& GetGestureProvider() override;
+
   void set_ime_adapter(ImeAdapterAndroid* ime_adapter) {
     ime_adapter_android_ = ime_adapter;
   }
@@ -621,6 +627,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   // Specifies whether touch selection handles are hidden due to text selection.
   bool handles_hidden_by_selection_ui_ = false;
+
+  std::unique_ptr<input::AndroidInputHelper> input_helper_;
 
   raw_ptr<ImeAdapterAndroid> ime_adapter_android_;
   raw_ptr<SelectionPopupController> selection_popup_controller_;

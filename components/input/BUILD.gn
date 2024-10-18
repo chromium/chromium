@@ -109,6 +109,8 @@ component("input") {
       "android/scoped_input_receiver_callbacks.h",
       "android/scoped_input_transfer_token.cc",
       "android/scoped_input_transfer_token.h",
+      "android_input_helper.cc",
+      "android_input_helper.h",
       "native_web_keyboard_event_android.cc",
       "web_input_event_builders_android.cc",
       "web_input_event_builders_android.h",
