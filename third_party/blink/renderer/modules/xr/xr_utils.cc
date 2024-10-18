@@ -274,8 +274,9 @@ bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
     case device::mojom::XRSessionFeature::HAND_INPUT:
       return RuntimeEnabledFeatures::WebXRHandInputEnabled(context);
     case device::mojom::XRSessionFeature::LAYERS:
-    case device::mojom::XRSessionFeature::WEBGPU:
       return RuntimeEnabledFeatures::WebXRLayersEnabled(context);
+    case device::mojom::XRSessionFeature::WEBGPU:
+      return RuntimeEnabledFeatures::WebXRGPUBindingEnabled(context);
     case device::mojom::XRSessionFeature::FRONT_FACING:
       return RuntimeEnabledFeatures::WebXRFrontFacingEnabled(context);
     case device::mojom::XRSessionFeature::HIT_TEST:

@@ -15,7 +15,7 @@ enum XRLayerLayout {
 [
   SecureContext,
   Exposed=Window,
-  RuntimeEnabled=WebXRLayers
+  RuntimeEnabled=WebXRLayersCommon
 ] interface XRCompositionLayer : XRLayer {
   readonly attribute XRLayerLayout layout;
 

@@ -4914,6 +4914,13 @@
       base_feature: "none",
     },
     {
+      name: "WebXRGPUBinding",
+      depends_on: ["WebXR"],
+      public: true,
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WebXRHandInput",
       depends_on: ["WebXR"],
       public: true,
@@ -4936,6 +4943,13 @@
     {
       name: "WebXRLayers",
       depends_on: ["WebXR"],
+      public: true,
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
+      name: "WebXRLayersCommon",
+      implied_by: ["WebXRLayers", "WebXRGPUBinding"],
       public: true,
       status: "experimental",
       base_feature: "none",

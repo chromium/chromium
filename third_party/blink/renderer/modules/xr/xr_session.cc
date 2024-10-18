@@ -499,7 +499,7 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
     return;
   }
 
-  if (RuntimeEnabledFeatures::WebXRLayersEnabled() && init->hasLayers() &&
+  if (RuntimeEnabledFeatures::WebXRLayersCommonEnabled() && init->hasLayers() &&
       init->layers() && !init->layers()->empty()) {
     // Validate that we don't have both layers and baseLayer set.
     if (init->hasBaseLayer() && init->baseLayer()) {
