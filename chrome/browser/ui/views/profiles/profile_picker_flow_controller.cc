@@ -81,9 +81,6 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
       return base_url.Resolve("new-profile");
-    case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
-      return base_url.Resolve("account-selection-lacros");
-    case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
     case ProfilePicker::EntryPoint::kFirstRun:
       // Should not be used for this entry point.
       NOTREACHED();
@@ -489,8 +486,6 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
       ExitFlow();
       return;
     }
-    case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
-    case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
     case ProfilePicker::EntryPoint::kFirstRun:
       NOTREACHED()
           << "CancelPostSignInFlow() is not reachable from this entry point";

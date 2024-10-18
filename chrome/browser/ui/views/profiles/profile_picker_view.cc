@@ -137,8 +137,6 @@ class ProfilePickerWidget : public views::Widget {
 // using static calls and global variables, and keep calls to native contained
 // within their own steps. See crbug.com/1359352.
 bool IsClassicProfilePickerFlow(const ProfilePicker::Params& params) {
-  // TODO(crbug.com/40237764): Implement more use cases outside of the classic
-  // profile picker flow. e.g.: kLacrosSelectAvailableAccount.
   switch (params.entry_point()) {
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuManageProfiles:
@@ -151,11 +149,9 @@ bool IsClassicProfilePickerFlow(const ProfilePicker::Params& params) {
     case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
     case ProfilePicker::EntryPoint::kBackgroundModeManager:
     case ProfilePicker::EntryPoint::kProfileIdle:
-    case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
     case ProfilePicker::EntryPoint::kOnStartupNoProfile:
     case ProfilePicker::EntryPoint::kNewSessionOnExistingProcessNoProfile:
       return true;
-    case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
     case ProfilePicker::EntryPoint::kFirstRun:
       return false;
   }
@@ -297,10 +293,8 @@ bool ProfilePicker::IsOpen() {
 // static
 bool ProfilePicker::IsFirstRunOpen() {
   return ProfilePicker::IsOpen() &&
-         (g_profile_picker_view->params_.entry_point() ==
-              ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun ||
-          g_profile_picker_view->params_.entry_point() ==
-              ProfilePicker::EntryPoint::kFirstRun);
+         g_profile_picker_view->params_.entry_point() ==
+             ProfilePicker::EntryPoint::kFirstRun;
 }
 
 bool ProfilePicker::IsActive() {
@@ -829,9 +823,7 @@ void ProfilePickerView::FinishInit() {
 std::unique_ptr<ProfileManagementFlowController>
 ProfilePickerView::CreateFlowController(Profile* picker_profile,
                                         ClearHostClosure clear_host_callback) {
-  if (params_.entry_point() ==
-          ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun ||
-      params_.entry_point() == ProfilePicker::EntryPoint::kFirstRun) {
+  if (params_.entry_point() == ProfilePicker::EntryPoint::kFirstRun) {
     auto first_run_exited_callback =
         base::BindOnce(&ProfilePicker::Params::NotifyFirstRunExited,
                        // Unretained ok because the controller is owned

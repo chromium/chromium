@@ -1938,32 +1938,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ReShow) {
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileLocked));
   EXPECT_FALSE(widget_weak->IsClosed());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Show the account selection.
-  base::test::TestFuture<const std::string&> account_future_1;
-  ProfilePicker::Show(ProfilePicker::Params::ForLacrosSelectAvailableAccount(
-      base::FilePath(), account_future_1.GetCallback()));
-  // The picker is not reused
-  EXPECT_TRUE(widget_weak->IsClosed());
-  WaitForPickerClosedAndReopenedImmediately();
-
-  // Show the account selection again.
-  base::test::TestFuture<const std::string&> account_future_2;
-  EXPECT_FALSE(account_future_1.IsReady());
-  widget_weak = widget()->GetWeakPtr();
-  ProfilePicker::Show(ProfilePicker::Params::ForLacrosSelectAvailableAccount(
-      base::FilePath(), account_future_2.GetCallback()));
-  // The picker is reused, and the previous callback is called.
-  EXPECT_FALSE(widget_weak->IsClosed());
-  EXPECT_TRUE(account_future_1.Get().empty());
-  EXPECT_FALSE(account_future_2.IsReady());
-
-  // Hide the picker. The callback is called.
-  ProfilePicker::Hide();
-  EXPECT_TRUE(widget_weak->IsClosed());
-  EXPECT_TRUE(account_future_2.Get().empty());
-#endif
 }
 
 // TODO(crbug.com/325310963): Re-enable this flaky test on macOS.
