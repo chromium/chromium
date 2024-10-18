@@ -69,10 +69,17 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
         // might want to disallow more.
         mRedirectScheme =
                 IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_REDIRECT_SCHEME);
+        boolean httpsEnabled = ChromeFeatureList.sCctAuthTabEnableHttpsRedirects.isEnabled();
         String host =
-                IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST);
+                httpsEnabled
+                        ? IntentUtils.safeGetStringExtra(
+                                intent, AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST)
+                        : null;
         String path =
-                IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH);
+                httpsEnabled
+                        ? IntentUtils.safeGetStringExtra(
+                                intent, AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH)
+                        : null;
         GURL redirectUrl = new GURL(UrlConstants.HTTPS_URL_PREFIX + host + path);
         mRedirectHost = redirectUrl.getHost();
         mRedirectPath = redirectUrl.getPath();

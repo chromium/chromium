@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.JankTrackerExperiment;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -92,6 +93,7 @@ public class ChromeCachedFlags {
 
         List<CachedFieldTrialParameter<?>> fieldTrialsToCache =
                 List.of(
+                        AuthTabVerifier.VERIFICATION_TIMEOUT_MS,
                         AuxiliarySearchProvider.MAX_FAVICON_NUMBER,
                         BackPressManager.TAB_HISTORY_RECOVER,
                         ChimeFeatures.ALWAYS_REGISTER,

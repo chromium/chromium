@@ -16,7 +16,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsService;
@@ -33,9 +32,11 @@ import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVeri
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -54,7 +55,11 @@ import javax.inject.Inject;
 @ActivityScope
 @OptIn(markerClass = ExperimentalAuthTab.class)
 public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
-    @VisibleForTesting static final long VERIFICATION_TIMEOUT_MS = 10000;
+    public static final IntCachedFieldTrialParameter VERIFICATION_TIMEOUT_MS =
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
+                    ChromeFeatureList.CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS,
+                    "verification_timeout_ms",
+                    10_000);
 
     private static boolean sDelayVerificationForTesting;
 
@@ -223,7 +228,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::returnTimeoutAsActivityResult),
-                    VERIFICATION_TIMEOUT_MS);
+                    VERIFICATION_TIMEOUT_MS.getValue());
         }
     }
 

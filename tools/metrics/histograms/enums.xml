@@ -17491,6 +17491,7 @@ from previous Chrome versions.
   <int value="-1074107607" label="data-reduction-proxy-experiment"/>
   <int value="-1073479583" label="ShowArcFilesApp:disabled"/>
   <int value="-1073388569" label="TerminalDev:enabled"/>
+  <int value="-1072961492" label="CCTAuthTabEnableHttpsRedirects:disabled"/>
   <int value="-1072911844" label="HoldingSpaceSuggestions:enabled"/>
   <int value="-1072337227" label="FilesArchivemount2:disabled"/>
   <int value="-1071471678" label="enable-finch-seed-delta-compression"/>
@@ -19433,6 +19434,7 @@ from previous Chrome versions.
   <int value="-276042128" label="ShortcutsNotApps:disabled"/>
   <int value="-275870837"
       label="OmniboxUIExperimentHideSuggestionUrlPath:enabled"/>
+  <int value="-275638251" label="CCTAuthTabEnableHttpsRedirects:enabled"/>
   <int value="-275619817"
       label="disable-proximity-auth-bluetooth-low-energy-discovery"/>
   <int value="-275503658" label="SpeakOnMuteOptInNudgePrefsReset:enabled"/>

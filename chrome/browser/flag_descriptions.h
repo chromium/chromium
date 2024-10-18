@@ -2497,6 +2497,9 @@ extern const char kCCTAuthTabDescription[];
 extern const char kCCTAuthTabDisableAllExternalIntentsName[];
 extern const char kCCTAuthTabDisableAllExternalIntentsDescription[];
 
+extern const char kCCTAuthTabEnableHttpsRedirectsName[];
+extern const char kCCTAuthTabEnableHttpsRedirectsDescription[];
+
 extern const char kCCTBeforeUnloadName[];
 extern const char kCCTBeforeUnloadDescription[];
 

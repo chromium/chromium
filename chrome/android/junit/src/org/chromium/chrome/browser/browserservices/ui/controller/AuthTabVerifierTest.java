@@ -205,7 +205,7 @@ public class AuthTabVerifierTest {
         verify(mActivity, never()).setResult(anyInt(), any());
         verify(mActivity, never()).finish();
 
-        ShadowSystemClock.advanceBy(VERIFICATION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        ShadowSystemClock.advanceBy(VERIFICATION_TIMEOUT_MS.getValue(), TimeUnit.MILLISECONDS);
         // Simulate timeout.
         mDelayedTask.run();
 
