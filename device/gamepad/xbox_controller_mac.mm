@@ -24,6 +24,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -555,8 +556,7 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
     if (i == read_endpoint_) {
       if (direction != kUSBIn)
         return OPEN_FAILED;
-      read_buffer_.reset(new uint8_t[max_packet_size]);
-      read_buffer_size_ = max_packet_size;
+      read_buffer_ = base::HeapArray<uint8_t>::Uninit(max_packet_size);
       if (!QueueRead())
         return OPEN_FAILED;
     } else if (i == control_endpoint_) {
@@ -652,11 +652,11 @@ void XboxControllerMac::ProcessXbox360Packet(size_t length) {
   if (length < kXbox360HeaderBytes)
     return;
 
-  DCHECK_LE(length, read_buffer_size_);
-  if (length > read_buffer_size_)
+  if (length > read_buffer_.size()) {
     return;
+  }
 
-  uint8_t* buffer = read_buffer_.get();
+  uint8_t* buffer = read_buffer_.data();
 
   if (buffer[1] != length)
     // Length in packet doesn't match length reported by USB.
@@ -694,11 +694,11 @@ void XboxControllerMac::ProcessXboxOnePacket(size_t length) {
   if (length < kXboxOneHeaderBytes)
     return;
 
-  DCHECK_LE(length, read_buffer_size_);
-  if (length > read_buffer_size_)
+  if (length > read_buffer_.size()) {
     return;
+  }
 
-  uint8_t* buffer = read_buffer_.get();
+  uint8_t* buffer = read_buffer_.data();
   uint8_t type = buffer[0];
   bool needs_ack = (buffer[1] == 0x30);
   uint8_t sequence_number = buffer[2];
@@ -758,8 +758,8 @@ void XboxControllerMac::ProcessXboxOnePacket(size_t length) {
 bool XboxControllerMac::QueueRead() {
   kern_return_t kr =
       (*interface_.get())
-          ->ReadPipeAsync(interface_.get(), read_endpoint_, read_buffer_.get(),
-                          read_buffer_size_, GotData, this);
+          ->ReadPipeAsync(interface_.get(), read_endpoint_, read_buffer_.data(),
+                          read_buffer_.size(), GotData, this);
   if (kr != KERN_SUCCESS)
     DLOG(ERROR) << "Read error: Failed to queue next read.";
   return kr == KERN_SUCCESS;
