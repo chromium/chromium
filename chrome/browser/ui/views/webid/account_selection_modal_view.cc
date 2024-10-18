@@ -454,6 +454,14 @@ void AccountSelectionModalView::ShowVerifyingSheet(
 
   queued_announcement_ = l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
 
+  // When a user signs in to the IdP with a returning account while the loading
+  // modal is shown, we can exit without updating the UI.
+  if (account.browser_trusted_login_state != Account::LoginState::kSignUp &&
+      !account_chooser_) {
+    InitDialogWidget();
+    return;
+  }
+
   // Disable account chooser.
   CHECK(account_chooser_);
   bool is_single_account_chooser = false;
