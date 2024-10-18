@@ -73,10 +73,6 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   static void SetPlatformWindowFactoryDelegateForTesting(
       PlatformWindowFactoryDelegateForTesting* delegate);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::string GetUniqueId() const override;
-#endif
-
  protected:
   // NOTE: this does not call CreateCompositor(); subclasses must call
   // CreateCompositor() at the appropriate time.

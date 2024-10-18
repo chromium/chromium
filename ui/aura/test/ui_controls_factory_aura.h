@@ -16,7 +16,7 @@ class WindowTreeHost;
 
 namespace test {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 ui_controls::UIControlsAura* CreateUIControlsAura(WindowTreeHost* host);
 #endif
 

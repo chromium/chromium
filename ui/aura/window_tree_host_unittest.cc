@@ -133,7 +133,7 @@ TEST_F(WindowTreeHostTest,
   EXPECT_EQ(gfx::Rect(300, 400), host()->window()->bounds());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(WindowTreeHostTest, HoldPointerMovesOnChildResizing) {
   aura::WindowEventDispatcher* dispatcher = host()->dispatcher();
 
@@ -157,7 +157,7 @@ TEST_F(WindowTreeHostTest, HoldPointerMovesOnChildResizing) {
 }
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Tests if scale factor changes take effect. Previously a scale factor change
 // wouldn't take effect without a bounds change. For context see
 // https://crbug.com/1087626
@@ -331,22 +331,19 @@ TEST_F(WindowTreeHostTest, LostCaptureDuringTearDown) {
   TestWindowTreeHost host;
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN)
 class WindowTreeHostWithReleaseTest : public test::AuraTestBase {
  public:
   // AuraTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-#if BUILDFLAG(IS_WIN)
-            {features::kCalculateNativeWinOcclusion, {}},
-#endif
-            {features::kApplyNativeOcclusionToCompositor,
-             {{features::kApplyNativeOcclusionToCompositorType.name,
-               features::kApplyNativeOcclusionToCompositorTypeRelease}}},
-            // Disable the headless check as the bots run with CHROME_HEADLESS
-            // set.
-            {features::kAlwaysTrackNativeWindowOcclusionForTest, {}}},
+        {{features::kCalculateNativeWinOcclusion, {}},
+         {features::kApplyNativeOcclusionToCompositor,
+          {{features::kApplyNativeOcclusionToCompositorType.name,
+            features::kApplyNativeOcclusionToCompositorTypeRelease}}},
+         // Disable the headless check as the bots run with CHROME_HEADLESS
+         // set.
+         {features::kAlwaysTrackNativeWindowOcclusionForTest, {}}},
         {});
     AuraTestBase::SetUp();
   }
@@ -482,9 +479,7 @@ class WindowTreeHostWithThrottleTest : public test::AuraTestBase {
     // Disable the headless check as the bots run with CHROME_HEADLESS set.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-#if BUILDFLAG(IS_WIN)
             {features::kCalculateNativeWinOcclusion, {}},
-#endif
             {features::kApplyNativeOcclusionToCompositor,
              {{features::kApplyNativeOcclusionToCompositorType.name,
                features::kApplyNativeOcclusionToCompositorTypeThrottle}}},
@@ -602,9 +597,7 @@ class WindowTreeHostWithThrottleAndReleaseTest : public test::AuraTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-#if BUILDFLAG(IS_WIN)
             {features::kCalculateNativeWinOcclusion, {}},
-#endif
             {features::kApplyNativeOcclusionToCompositor,
              {{features::kApplyNativeOcclusionToCompositorType.name,
                features::
@@ -770,6 +763,6 @@ TEST_F(WindowTreeHostWithThrottleAndReleaseTest,
   EXPECT_TRUE(host()->compositor()->IsVisible());
 }
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace aura

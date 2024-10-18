@@ -480,8 +480,6 @@ WindowTreeHost::WindowTreeHost(std::unique_ptr<Window> window)
   native_window_occlusion_enabled_ =
       !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless) &&
       base::FeatureList::IsEnabled(features::kCalculateNativeWinOcclusion);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  native_window_occlusion_enabled_ = true;
 #endif
 }
 
@@ -655,7 +653,7 @@ void WindowTreeHost::OnDisplayMetricsChanged(const display::Display& display,
 // Chrome OS is handled in WindowTreeHostManager::OnDisplayMetricsChanged.
 // Chrome OS requires additional handling for the bounds that we do not need to
 // do for other OSes.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (metrics & DISPLAY_METRIC_DEVICE_SCALE_FACTOR &&
       display.id() == GetDisplayId())
     OnHostResizedInPixels(GetBoundsInPixels().size());
@@ -670,7 +668,8 @@ gfx::Rect WindowTreeHost::GetTransformedRootWindowBoundsFromPixelSize(
 void WindowTreeHost::SetNativeWindowOcclusionEnabled(bool enable) {
   native_window_occlusion_enabled_ = enable;
   // TODO(crbug.com/40118412) If enabled is false, make this
-  // turn off native window occlusion on this window.
+  // turn off native window occlusion on this window. Only Windows has
+  // native window occlusion currently.
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -725,8 +724,6 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
     case Window::OcclusionState::VISIBLE:
       return true;
     case Window::OcclusionState::OCCLUDED: {
-      // TODO(crbug.com/40208263): For lacros, make sure non-maximized but
-      // occluded windows are visible.
       // The compositor needs to be visible when capturing video.
       return video_capture_count_for_occlusion_tracking_ != 0;
     }
@@ -738,7 +735,7 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
 }
 
 bool WindowTreeHost::NativeOcclusionAffectsThrottle() const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor) ||
       !IsNativeWindowOcclusionEnabled()) {
@@ -756,7 +753,7 @@ bool WindowTreeHost::NativeOcclusionAffectsThrottle() const {
 }
 
 bool WindowTreeHost::NativeOcclusionAffectsVisibility() const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor) ||
       !IsNativeWindowOcclusionEnabled()) {
@@ -803,7 +800,7 @@ void WindowTreeHost::MoveCursorToInternal(const gfx::Point& root_location,
 void WindowTreeHost::OnCompositingAckDeprecated(ui::Compositor* compositor) {
   // Currently, input is only throttled on ash and is not well supported on
   // other platforms. See crbug.com/41359082.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!holding_pointer_moves_)
     return;
 
@@ -815,7 +812,7 @@ void WindowTreeHost::OnCompositingAckDeprecated(ui::Compositor* compositor) {
 void WindowTreeHost::OnCompositingChildResizing(ui::Compositor* compositor) {
   // Currently, input is only throttled on ash and is not well supported on
   // other platforms. See crbug.com/41359082.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!Env::GetInstance()->throttle_input_on_resize() || holding_pointer_moves_)
     return;
   dispatcher_->HoldPointerMoves();

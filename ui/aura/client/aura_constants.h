@@ -117,7 +117,7 @@ AURA_EXPORT extern const WindowProperty<struct ui::OwnedWindowAnchor*>* const
 // immediately resizes its shadows. Generally, resizing and content rendering
 // happen in server side without any client involved, so without any delay in
 // communication this value should be true: shadow bounds are the same as
-// window bounds which define content bounds. For LaCros and other windows with
+// window bounds which define content bounds. For other clients' windows with
 // server-controlled shadow but client-controlled content, this value should be
 // false to ensure that the shadow is not immediately resized along with window
 // in server side. Instead, the shadow waits for client content to catch up with
@@ -160,7 +160,8 @@ AURA_EXPORT extern const WindowProperty<ui::mojom::WindowShowState>* const
     kRestoreShowStateKey;
 
 // A property key to store the raster scale. This affects the scale that exo
-// windows are rasterized at. Currently, this only applies for lacros windows.
+// windows are rasterized at.
+// TODO(b/374122147): consider removing this.
 AURA_EXPORT extern const WindowProperty<float>* const kRasterScale;
 
 // A property key to indicate if a window is currently being restored. Normally
