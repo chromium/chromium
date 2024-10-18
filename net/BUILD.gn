@@ -4011,8 +4011,7 @@ fuzzer_test("net_hpack_decoder_fuzzer") {
 proto_library("reporting_policy_proto") {
   proto_in_dir = "//"
   sources = [ "reporting/reporting_policy.proto" ]
-  link_deps = [ "//testing/libfuzzer/proto:json_proto" ]
-  proto_data_sources = [ "//testing/libfuzzer/proto/json.proto" ]
+  deps = [ "//testing/libfuzzer/proto:json_proto" ]
 }
 
 fuzzer_test("net_reporting_header_parser_fuzzer") {
