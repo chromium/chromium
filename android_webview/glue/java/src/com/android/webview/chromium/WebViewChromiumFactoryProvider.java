@@ -359,7 +359,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                                     != 0x7f000000;
                     ClassLoaderContextWrapperFactory.setOverrideInfo(
                             packageInfo.packageName,
-                            isStandaloneWebView
+                            isStandaloneWebView || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                                     ? android.R.style.Theme_DeviceDefault_DayNight
                                     : R.style.WebViewBaseTheme,
                             Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
