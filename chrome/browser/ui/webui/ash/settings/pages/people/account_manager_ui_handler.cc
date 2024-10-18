@@ -188,10 +188,8 @@ AccountManagerUIHandler::AccountManagerUIHandler(
   DCHECK(account_manager_);
   DCHECK(account_manager_facade_);
   DCHECK(identity_manager_);
-  if (AreArcAccountsRestricted()) {
-    account_apps_availability_ = account_apps_availability;
-    DCHECK(account_apps_availability_);
-  }
+  account_apps_availability_ = account_apps_availability;
+  DCHECK(account_apps_availability_);
 }
 
 AccountManagerUIHandler::~AccountManagerUIHandler() = default;
@@ -248,16 +246,10 @@ void AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts(
     base::Value callback_id,
     const std::vector<std::pair<::account_manager::Account, bool>>&
         account_dummy_token_list) {
-  if (AreArcAccountsRestricted()) {
-    account_apps_availability_->GetAccountsAvailableInArc(
-        base::BindOnce(&AccountManagerUIHandler::FinishHandleGetAccounts,
-                       weak_factory_.GetWeakPtr(), std::move(callback_id),
-                       std::move(account_dummy_token_list)));
-    return;
-  }
-  FinishHandleGetAccounts(std::move(callback_id),
-                          std::move(account_dummy_token_list),
-                          base::flat_set<account_manager::Account>());
+  account_apps_availability_->GetAccountsAvailableInArc(
+      base::BindOnce(&AccountManagerUIHandler::FinishHandleGetAccounts,
+                     weak_factory_.GetWeakPtr(), std::move(callback_id),
+                     std::move(account_dummy_token_list)));
 }
 
 void AccountManagerUIHandler::FinishHandleGetAccounts(
@@ -343,9 +335,7 @@ base::Value::List AccountManagerUIHandler::GetSecondaryGaiaAccounts(
         .SetIsSignedIn(!identity_manager_
                             ->HasAccountWithRefreshTokenInPersistentErrorState(
                                 maybe_account_info.account_id));
-    if (AreArcAccountsRestricted()) {
-      account.SetIsAvailableInArc(arc_accounts.contains(stored_account));
-    }
+    account.SetIsAvailableInArc(arc_accounts.contains(stored_account));
 
     if (!maybe_account_info.account_image.IsEmpty()) {
       account.SetPic(
@@ -511,10 +501,6 @@ void AccountManagerUIHandler::OnAccountUnavailableInArc(
 
 void AccountManagerUIHandler::RefreshUI() {
   FireWebUIListener("accounts-changed");
-}
-
-bool AccountManagerUIHandler::AreArcAccountsRestricted() {
-  return true;
 }
 
 }  // namespace ash::settings

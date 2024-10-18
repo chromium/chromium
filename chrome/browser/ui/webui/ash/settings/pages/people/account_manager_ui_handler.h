@@ -126,9 +126,6 @@ class AccountManagerUIHandler
   // Refreshes the UI.
   void RefreshUI();
 
-  // Whether some accounts may not be available in ARC due to policy or config.
-  static bool AreArcAccountsRestricted();
-
   raw_ptr<Profile> profile_ = nullptr;
 
   // A non-owning pointer to |account_manager::AccountManager|.
