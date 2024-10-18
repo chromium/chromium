@@ -1081,6 +1081,17 @@ chromium-metrics-reviews@google.com.
       variants="BrowserInitializationStatus"/>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.ConnectionReuseStatus"
+    enum="ConnectionReuseStatus" expires_after="2025-08-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The possible status of connection reuse for Google search page loads. This
+    is only recorded for Search navigations and is recorded once after
+    navigation commit.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.GoogleSearch.ConnectTiming.FinalRequestConnectDelay"
     units="ms" expires_after="2025-02-10">
@@ -1272,15 +1283,24 @@ chromium-metrics-reviews@google.com.
   <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
 </histogram>
 
-<histogram name="PageLoad.Clients.GoogleSearch.NavigationSourceType"
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationSourceType{ConnectionReuseStatus}"
     enum="NavigationSourceTypeEnum" expires_after="2025-08-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The type of source which the navigation started from, for Google Search page
     loads. This is only recorded for Search navigations and is recorded once
-    after navigation commit.
+    after navigation commit. This metric is recorded {ConnectionReuseStatus}.
   </summary>
+  <token key="ConnectionReuseStatus">
+    <variant name="" summary="for any case"/>
+    <variant name=".ConnectionReuse"
+        summary="for possible connection reuse cases"/>
+    <variant name=".DNSReuse" summary="for possible dns reuse cases"/>
+    <variant name=".NonConnectionReuse"
+        summary="for non connection reuse cases"/>
+  </token>
 </histogram>
 
 <histogram

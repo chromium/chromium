@@ -93,9 +93,18 @@ const char kHistogramGWSTimeBetweenHCTAndSCT[] =
 
 const char kHistogramGWSNavigationSourceType[] =
     HISTOGRAM_PREFIX "NavigationSourceType";
+const char kHistogramGWSNavigationSourceTypeReuse[] =
+    HISTOGRAM_PREFIX "NavigationSourceType.ConnectionReuse";
+const char kHistogramGWSNavigationSourceTypeDNSReuse[] =
+    HISTOGRAM_PREFIX "NavigationSourceType.DNSReuse";
+const char kHistogramGWSNavigationSourceTypeNonReuse[] =
+    HISTOGRAM_PREFIX "NavigationSourceType.NonConnectionReuse";
 
 const char kHistogramGWSIsFirstNavigationForGWS[] =
     HISTOGRAM_PREFIX "IsFirstNavigationForGWS";
+
+const char kHistogramGWSConnectionReuseStatus[] =
+    HISTOGRAM_PREFIX "ConnectionReuseStatus";
 
 }  // namespace internal
 
@@ -182,6 +191,7 @@ GWSPageLoadMetricsObserver::OnCommit(
   }
 
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
+  was_cached_ = navigation_handle->WasResponseCached();
   RecordPreCommitHistograms();
   return CONTINUE_OBSERVING;
 }
@@ -418,6 +428,41 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
 void GWSPageLoadMetricsObserver::RecordPreCommitHistograms() {
   base::UmaHistogramEnumeration(internal::kHistogramGWSNavigationSourceType,
                                 source_type_);
+  if (!was_cached_) {
+    RecordConnectionReuseHistograms();
+  }
+}
+
+void GWSPageLoadMetricsObserver::RecordConnectionReuseHistograms() {
+  DCHECK(!was_cached_);
+
+  const content::NavigationHandleTiming& timing = navigation_handle_timing_;
+  ConnectionReuseStatus status = ConnectionReuseStatus::kNonReuse;
+  // If domain lookup duration is zero and connect duration is also zero,
+  // this is most-likely a connection reuse.
+  if (timing.first_request_domain_lookup_delay.is_zero()) {
+    status = ConnectionReuseStatus::kDNSReused;
+    if (timing.first_request_connect_delay.is_zero()) {
+      status = ConnectionReuseStatus::kReused;
+    }
+  }
+  base::UmaHistogramEnumeration(internal::kHistogramGWSConnectionReuseStatus,
+                                status);
+
+  switch (status) {
+    case ConnectionReuseStatus::kNonReuse:
+      base::UmaHistogramEnumeration(
+          internal::kHistogramGWSNavigationSourceTypeNonReuse, source_type_);
+      break;
+    case ConnectionReuseStatus::kDNSReused:
+      base::UmaHistogramEnumeration(
+          internal::kHistogramGWSNavigationSourceTypeDNSReuse, source_type_);
+      break;
+    case ConnectionReuseStatus::kReused:
+      base::UmaHistogramEnumeration(
+          internal::kHistogramGWSNavigationSourceTypeReuse, source_type_);
+      break;
+  }
 }
 
 bool GWSPageLoadMetricsObserver::IsFromNewTabPage(
