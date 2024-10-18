@@ -523,8 +523,8 @@ bool LineTruncator::TruncateChild(
       return false;
     offset_to_fit = !offset_to_fit ? 1 : offset_to_fit - 1;
   }
-  *truncated_child =
-      TruncateText(child, *shape_result, offset_to_fit, line_direction_);
+  truncated_child->emplace(
+      TruncateText(child, *shape_result, offset_to_fit, line_direction_));
   return true;
 }
 
