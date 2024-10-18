@@ -18,17 +18,17 @@ namespace media {
 // CDM creation status.
 // These are reported to UMA server. Do not renumber or reuse values.
 enum class CreateCdmStatus : StatusCodeType {
-  kSuccess,                    // Succeeded
-  kUnknownError,               // Unknown error.
-  kCdmCreationAborted,         // CDM creation aborted.
-  kLoadCdmFailed,              // Failed to load the CDM.
-  kCreateCdmFuncNotAvailable,  // CreateCdmFunc not available.
-  kCdmHelperCreationFailed,    // CDM helper creation failed.
-  kGetCdmPrefDataFailed,       // Failed to get the CDM preference data.
-  kGetCdmOriginIdFailed,       // Failed to get the CDM origin ID.
-  kInitCdmFailed,              // Failed to initialize CDM.
-  kCdmFactoryCreationFailed,   // CDM Factory creation failed.
-  kCdmNotSupported,            // CDM not supported.
+  kSuccess,                       // Succeeded
+  kUnknownError,                  // Unknown error.
+  kCdmCreationAborted,            // CDM creation aborted.
+  kLoadCdmFailed [[deprecated]],  // Failed to load the CDM.
+  kCreateCdmFuncNotAvailable,     // CreateCdmFunc not available.
+  kCdmHelperCreationFailed,       // CDM helper creation failed.
+  kGetCdmPrefDataFailed,          // Failed to get the CDM preference data.
+  kGetCdmOriginIdFailed,          // Failed to get the CDM origin ID.
+  kInitCdmFailed,                 // Failed to initialize CDM.
+  kCdmFactoryCreationFailed,      // CDM Factory creation failed.
+  kCdmNotSupported,               // CDM not supported.
   kInvalidCdmConfig,  // Invalid CdmConfig. e.g. MediaFoundationService requires
                       // both distinctive identifier and persistent state.
   kUnsupportedKeySystem,  // Unsupported key system.

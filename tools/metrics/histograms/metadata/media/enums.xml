@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Succeeded."/>
   <int value="1" label="Unknown error."/>
   <int value="2" label="CDM creation aborted."/>
-  <int value="3" label="Failed to load the CDM."/>
+  <int value="3" label="(Obsolete) Failed to load the CDM."/>
   <int value="4" label="CreateCdmFunc not available."/>
   <int value="5" label="CDM helper creation failed."/>
   <int value="6" label="Failed to get the CDM preference data."/>

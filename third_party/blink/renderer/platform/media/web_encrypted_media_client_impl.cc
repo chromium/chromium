@@ -38,8 +38,6 @@ std::string ConvertCreateCdmStatusToString(media::CreateCdmStatus status) {
       return "Unknown error.";
     case media::CreateCdmStatus::kCdmCreationAborted:
       return "CDM creation aborted.";
-    case media::CreateCdmStatus::kLoadCdmFailed:
-      return "Failed to load the CDM.";
     case media::CreateCdmStatus::kCreateCdmFuncNotAvailable:
       return "CreateCdmFunc not available.";
     case media::CreateCdmStatus::kCdmHelperCreationFailed:

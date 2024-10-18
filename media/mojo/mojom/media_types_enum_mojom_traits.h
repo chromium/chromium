@@ -448,8 +448,6 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return media::mojom::CreateCdmStatus::kUnknownError;
       case media::CreateCdmStatus::kCdmCreationAborted:
         return media::mojom::CreateCdmStatus::kCdmCreationAborted;
-      case media::CreateCdmStatus::kLoadCdmFailed:
-        return media::mojom::CreateCdmStatus::kLoadCdmFailed;
       case media::CreateCdmStatus::kCreateCdmFuncNotAvailable:
         return media::mojom::CreateCdmStatus::kCreateCdmFuncNotAvailable;
       case media::CreateCdmStatus::kCdmHelperCreationFailed:
@@ -521,9 +519,6 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return true;
       case media::mojom::CreateCdmStatus::kCdmCreationAborted:
         *output = media::CreateCdmStatus::kCdmCreationAborted;
-        return true;
-      case media::mojom::CreateCdmStatus::kLoadCdmFailed:
-        *output = media::CreateCdmStatus::kLoadCdmFailed;
         return true;
       case media::mojom::CreateCdmStatus::kCreateCdmFuncNotAvailable:
         *output = media::CreateCdmStatus::kCreateCdmFuncNotAvailable;
