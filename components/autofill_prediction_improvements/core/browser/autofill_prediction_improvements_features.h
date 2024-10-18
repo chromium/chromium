@@ -46,6 +46,11 @@ inline constexpr base::FeatureParam<bool> kExtractAXTreeForPredictions{
     /*name=*/"extract_ax_tree_for_predictions",
     /*default_value=*/false};
 
+inline constexpr base::FeatureParam<bool> kShowDetailsText{
+    &kAutofillPredictionImprovements,
+    /*name=*/"show_details_text",
+    /*default_value=*/false};
+
 // Indicates whether Autofill Prediction Improvements are available (but not
 // necessary enabled). This considers the AutofillPredictionSettings policy.
 // If this function returns false, no AutofillPredictionImprovementsClient
