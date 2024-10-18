@@ -201,13 +201,8 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest,
 
 // TODO(crbug.com/367201367):  Re-enable once flakiness is resolved for Windows
 // ASAN. Also flaky on Mac.
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_MAC)
-#define MAYBE_FormSubmissionFlow DISABLED_FormSubmissionFlow
-#else
-#define MAYBE_FormSubmissionFlow FormSubmissionFlow
-#endif
 IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest,
-                       MAYBE_FormSubmissionFlow) {
+                       DISABLED_FormSubmissionFlow) {
   EnableSignin();
 
   base::HistogramTester histogram_tester;
@@ -283,8 +278,10 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
                                     0);
 }
 
+// TODO(crbug.com/367201367):  Re-enable once flakiness is resolved for Windows
+// ASAN. Also flaky on Mac.
 IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
-                       OnAllowlist) {
+                       DISABLED_OnAllowlist) {
   EnableSignin();
 
   base::HistogramTester histogram_tester;
