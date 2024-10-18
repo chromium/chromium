@@ -261,23 +261,19 @@ enum class AccessPoint : int {
 // could be initiated. Transactional reauth is used when the user already has
 // a valid refresh token but a system still wants to verify user's identity.
 enum class ReauthAccessPoint {
-  // The code expects kUnknown to be the first, so it should not be reordered.
-  kUnknown = 0,
-
+  kUnknown,
   // Account password storage opt-in:
-  kAutofillDropdown = 1,
+  kAutofillDropdown,
   // The password save bubble, which included the destination picker (set to
   // "Save to your Google Account").
-  kPasswordSaveBubble = 2,
-  kPasswordSettings = 3,
-  kGeneratePasswordDropdown = 4,
-  kGeneratePasswordContextMenu = 5,
-  // kPasswordMoveBubble = 6, (deprecated)
+  kPasswordSaveBubble,
+  kPasswordSettings,
+  kGeneratePasswordDropdown,
+  kGeneratePasswordContextMenu,
   // The password save bubble *without* a destination picker, i.e. the password
   // was already saved locally.
-  kPasswordSaveLocallyBubble = 7,
-
-  kMaxValue = kPasswordSaveLocallyBubble
+  kPasswordSaveLocallyBubble,
+  kMax = kPasswordSaveLocallyBubble
 };
 
 // Enum values which enumerates all user actions on the sign-in promo.
