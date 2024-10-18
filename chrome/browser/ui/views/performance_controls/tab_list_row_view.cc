@@ -95,17 +95,7 @@ class TextContainer : public views::View {
     SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
 
     GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    if (tab_list_model_->count() > 1) {
-      node_data->SetNameChecked(title_->GetText());
-    } else {
-      node_data->SetNameChecked(base::StrCat(
-          {title_->GetText(), u" ",
-           l10n_util::GetStringUTF16(
-               IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME)}));
-    }
+    UpdateAccessibleName();
   }
 
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
@@ -115,6 +105,21 @@ class TextContainer : public views::View {
   }
 
   views::Label* title() { return title_; }
+
+  void UpdateAccessibleName() {
+    if (tab_list_model_->count() > 1) {
+      GetViewAccessibility().SetName(title_->GetText());
+    } else {
+      // TODO (crbug/374094198): Its not ideal to concatenate two strings like
+      // this and necessarily produce a comprehensible sentence. We probably
+      // need IDS_CONCAT_TWO_STRINGS_WITH_COMMA instead with the two strings as
+      // placeholders.
+      GetViewAccessibility().SetName(base::StrCat(
+          {title_->GetText(), u" ",
+           l10n_util::GetStringUTF16(
+               IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME)}));
+    }
+  }
 
  private:
   raw_ptr<TabListModel> tab_list_model_;
@@ -274,6 +279,7 @@ void TabListRowView::OnTabCountChanged(int count) {
   if (count <= 1) {
     RefreshInkDropAndCloseButton();
   }
+  text_container_->UpdateAccessibleName();
 }
 
 void TabListRowView::RefreshInkDropAndCloseButton() {
