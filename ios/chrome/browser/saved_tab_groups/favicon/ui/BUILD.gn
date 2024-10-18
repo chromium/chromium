@@ -9,6 +9,7 @@ source_set("ui") {
   ]
 
   deps = [
+    "//ios/chrome/browser/saved_tab_groups/favicon/ui/resources",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
