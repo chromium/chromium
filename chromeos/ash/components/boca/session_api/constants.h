@@ -10,7 +10,7 @@
 namespace ash::boca {
 
 inline constexpr char kSchoolToolsApiBaseUrl[] =
-    "https://staging-schooltools-pa.sandbox.googleapis.com";
+    "https://schooltools-pa.googleapis.com";
 
 inline constexpr char kCreateSessionUrlTemplate[] = "v1/teachers/$1/sessions";
 
