@@ -132,6 +132,10 @@ class InputController final : public StreamMonitor {
   };
 #endif
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  static constexpr int kProcessingFifoSize = 10;
+#endif
+
   // An event handler that receives events from the InputController. The
   // following methods are all called on the audio thread.
   class EventHandler {

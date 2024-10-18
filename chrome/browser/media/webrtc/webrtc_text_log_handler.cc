@@ -552,14 +552,6 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
   } else {
     LogToCircularBuffer("ChromeWideEchoCancellation : Disabled");
   }
-
-  if (base::FeatureList::IsEnabled(media::kDecreaseProcessingAudioFifoSize)) {
-    LogToCircularBuffer(base::StrCat(
-        {"DecreaseProcessingAudioFifoSize : Enabled", ", fifo_size = ",
-         base::NumberToString(media::GetProcessingAudioFifoSize())}));
-  } else {
-    LogToCircularBuffer("DecreaseProcessingAudioFifoSize : Disabled");
-  }
 #endif
 
   // Audio manager

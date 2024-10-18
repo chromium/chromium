@@ -498,24 +498,6 @@ const base::FeatureParam<double>
 const base::FeatureParam<bool> kChromeWideEchoCancellationAllowAllSampleRates{
     &kChromeWideEchoCancellation, "allow_all_sample_rates", true};
 
-// https://crbug.com/1420568
-// Applicable only if kChromeWideEchoCancellation is enabled.
-// If disabled, the ProcessingAudioFifo size defaults to 110.
-// If enabled, the ProcessingAudioFifo size is set to the value of the fifo_size
-// parameter.
-//
-// If the ProcessingAudioFifo size is non-zero, audio processing is done on a
-// dedicated processing thread which receives audio from the audio capture
-// thread via a fifo of a specified size.
-// If the ProcessingAudioFifo size is zero, the usage of this processing thread
-// is disabled and processing is done on the audio capture thread itself.
-BASE_FEATURE(kDecreaseProcessingAudioFifoSize,
-             "DecreaseProcessingAudioFifoSize",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kDecreaseProcessingAudioFifoSizeValue{
-    &kDecreaseProcessingAudioFifoSize, "fifo_size", 10};
-
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1812,20 +1794,6 @@ bool IsDedicatedMediaServiceThreadEnabled(gl::ANGLEImplementation impl) {
 #endif
 
   return base::FeatureList::IsEnabled(kDedicatedMediaServiceThread);
-}
-
-int GetProcessingAudioFifoSize() {
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (!IsChromeWideEchoCancellationEnabled()) {
-    return 0;
-  }
-  if (base::FeatureList::IsEnabled(media::kDecreaseProcessingAudioFifoSize)) {
-    return media::kDecreaseProcessingAudioFifoSizeValue.Get();
-  }
-  return 110;
-#else
-  return 0;
-#endif
 }
 
 bool IsHardwareSecureDecryptionEnabled() {

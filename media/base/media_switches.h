@@ -217,9 +217,6 @@ MEDIA_EXPORT extern const base::FeatureParam<double>
     kChromeWideEchoCancellationDynamicMixingTimeout;
 MEDIA_EXPORT extern const base::FeatureParam<bool>
     kChromeWideEchoCancellationAllowAllSampleRates;
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kDecreaseProcessingAudioFifoSize);
-MEDIA_EXPORT extern const base::FeatureParam<int>
-    kDecreaseProcessingAudioFifoSizeValue;
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSSystemAEC);
@@ -563,7 +560,6 @@ MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
 MEDIA_EXPORT bool IsChromeWideEchoCancellationEnabled();
 MEDIA_EXPORT bool IsDedicatedMediaServiceThreadEnabled(
     gl::ANGLEImplementation impl);
-MEDIA_EXPORT int GetProcessingAudioFifoSize();
 MEDIA_EXPORT bool IsHardwareSecureDecryptionEnabled();
 MEDIA_EXPORT bool IsLiveTranslateEnabled();
 MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
