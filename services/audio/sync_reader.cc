@@ -65,7 +65,6 @@ SyncReader::SyncReader(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   maximum_wait_time_ = params.GetBufferDuration() / 2;
-  maximum_wait_time_for_mixing_ = maximum_wait_time_;
 #else
   if (base::FeatureList::IsEnabled(kDynamicAudioTimeout)) {
     maximum_wait_time_ =
@@ -73,21 +72,6 @@ SyncReader::SyncReader(
   } else {
     maximum_wait_time_ = base::Milliseconds(20);
   }
-  maximum_wait_time_for_mixing_ = maximum_wait_time_;
-
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (media::IsChromeWideEchoCancellationEnabled()) {
-    double mixing_timeout_percent =
-        media::kChromeWideEchoCancellationDynamicMixingTimeout.Get();
-
-    // The default negative value means we should ignore this parameter.
-    if (mixing_timeout_percent > 0) {
-      maximum_wait_time_for_mixing_ =
-          params.GetBufferDuration() * mixing_timeout_percent;
-    }
-  }
-#endif
-
 #endif
 
   base::CheckedNumeric<size_t> memory_size =
@@ -190,7 +174,7 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
 }
 
 bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
-  bool missed_callback = !WaitUntilDataIsReady(is_mixing);
+  bool missed_callback = !WaitUntilDataIsReady();
   glitch_counter_->ReportMissedCallback(missed_callback, is_mixing);
   if (missed_callback) {
     ++renderer_missed_callback_count_;
@@ -243,10 +227,9 @@ void SyncReader::Close() {
   output_bus_.reset();
 }
 
-bool SyncReader::WaitUntilDataIsReady(bool is_mixing) {
+bool SyncReader::WaitUntilDataIsReady() {
   TRACE_EVENT0("audio", "SyncReader::WaitUntilDataIsReady");
-  base::TimeDelta timeout =
-      is_mixing ? maximum_wait_time_for_mixing_ : maximum_wait_time_;
+  base::TimeDelta timeout = maximum_wait_time_;
   const base::TimeTicks start_time = base::TimeTicks::Now();
   const base::TimeTicks finish_time = start_time + timeout;
 
