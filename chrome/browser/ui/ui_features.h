@@ -133,6 +133,14 @@ extern const base::FeatureParam<bool> kPreloadTopChromeWebUISmartPreload;
 extern const char kPreloadTopChromeWebUIDelayPreloadName[];
 extern const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload;
 
+// An list of exclude origins for WebUIs that don't participate in preloading.
+// The list is a string of format "<origin>,<origin2>,...,<origin-n>", where
+// each <origin> is a WebUI origin, e.g. "chrome://tab-search.top-chrome". This
+// is used for emergency preloading shutoff for problematic WebUIs.
+extern const char kPreloadTopChromeWebUIExcludeOriginsName[];
+extern const base::FeatureParam<std::string>
+    kPreloadTopChromeWebUIExcludeOrigins;
+
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 #endif
