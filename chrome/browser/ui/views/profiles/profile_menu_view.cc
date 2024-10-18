@@ -850,14 +850,23 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
     return;
   }
 
-  // Show the settings button when signed in to Chrome or to the web. Do not
-  // show if sync is enabled.
-  const bool has_sync_consent =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
-  const bool should_show_settings_button =
-      !has_sync_consent &&
+  // Show the settings button when signed in to Chrome or to the web.
+  bool should_show_settings_button =
       !identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken()
            .empty();
+
+  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+      should_show_settings_button = true;
+    }
+  } else {
+    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+      // Do not show if sync is enabled with the legacy design, because there is
+      // already a similar button in the sync info card.
+      should_show_settings_button = false;
+    }
+  }
+
   if (!should_show_settings_button) {
     return;
   }
@@ -871,7 +880,31 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
 
 void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
   Profile* profile = browser()->profile();
-  if (!HasUnconstentedProfile(profile) || IsSyncPaused(profile)) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  if (!identity_manager) {
+    return;
+  }
+
+  bool show_button = true;
+  switch (signin_util::GetSignedInState(identity_manager)) {
+    case signin_util::SignedInState::kSignInPending:
+      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        show_button = false;
+      }
+      break;
+    case signin_util::SignedInState::kSyncPaused:
+    case signin_util::SignedInState::kSignedOut:
+    case signin_util::SignedInState::kWebOnlySignedIn:
+      show_button = false;
+      break;
+    case signin_util::SignedInState::kSignedIn:
+    case signin_util::SignedInState::kSyncing:
+      // Show the button.
+      break;
+  }
+  if (!show_button) {
     return;
   }
 
