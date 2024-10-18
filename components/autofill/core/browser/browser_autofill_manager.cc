@@ -2036,8 +2036,8 @@ void BrowserAutofillManager::FillOrPreviewField(
   const FillingProduct filling_product =
       GetFillingProductFromSuggestionType(type);
   form_filler_->FillOrPreviewField(action_persistence, action_type, form, field,
-                                   form_structure, autofill_field, value,
-                                   filling_product, field_type_used);
+                                   autofill_field, value, filling_product,
+                                   field_type_used);
   if (action_persistence == mojom::ActionPersistence::kFill) {
     if (type == SuggestionType::kAddressFieldByFieldFilling) {
       metrics_->address_form_event_logger.OnFilledByFieldByFieldFilling(type);

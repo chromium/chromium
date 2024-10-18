@@ -129,7 +129,6 @@ class FormFiller {
                           mojom::FieldActionType action_type,
                           const FormData& form,
                           const FormFieldData& field,
-                          FormStructure* form_structure,
                           AutofillField* autofill_field,
                           const std::u16string& value,
                           FillingProduct filling_product,
