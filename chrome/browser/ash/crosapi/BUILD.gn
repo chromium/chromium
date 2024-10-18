@@ -127,8 +127,6 @@ static_library("crosapi") {
     "environment_provider.h",
     "extension_info_private_ash.cc",
     "extension_info_private_ash.h",
-    "extension_printer_service_ash.cc",
-    "extension_printer_service_ash.h",
     "eye_dropper_ash.cc",
     "eye_dropper_ash.h",
     "field_trial_service_ash.cc",
@@ -824,10 +822,6 @@ source_set("browser_tests") {
     "suggestion_service_ash_browsertest.cc",
     "video_conference_ash_browsertest.cc",
   ]
-
-  if (enable_print_preview) {
-    sources += [ "extension_printer_service_ash_browsertest.cc" ]
-  }
 
   deps = [
     ":crosapi",

@@ -59,7 +59,6 @@
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom.h"
 #include "chromeos/crosapi/mojom/extension_info_private.mojom.h"
-#include "chromeos/crosapi/mojom/extension_printer.mojom.h"
 #include "chromeos/crosapi/mojom/eye_dropper.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/field_trial.mojom.h"
@@ -392,10 +391,6 @@ LacrosService::LacrosService()
       crosapi::mojom::ExtensionInfoPrivate,
       &crosapi::mojom::Crosapi::BindExtensionInfoPrivate,
       Crosapi::MethodMinVersions::kBindExtensionInfoPrivateMinVersion>();
-  ConstructRemote<
-      crosapi::mojom::ExtensionPrinterService,
-      &crosapi::mojom::Crosapi::BindExtensionPrinterService,
-      Crosapi::MethodMinVersions::kBindExtensionPrinterServiceMinVersion>();
   ConstructRemote<crosapi::mojom::EyeDropper,
                   &crosapi::mojom::Crosapi::BindEyeDropper,
                   Crosapi::MethodMinVersions::kBindEyeDropperMinVersion>();

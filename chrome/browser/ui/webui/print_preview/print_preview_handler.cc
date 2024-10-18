@@ -93,7 +93,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ui/webui/print_preview/extension_printer_handler_adapter_ash.h"
 #endif
 
 #if DCHECK_IS_ON()
@@ -1138,18 +1137,6 @@ void PrintPreviewHandler::ClearInitiatorDetails() {
 PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     mojom::PrinterType printer_type) {
   if (printer_type == mojom::PrinterType::kExtension) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // When Lacros is enabled, uses the ExtensionPrinterHandlerAdapterAsh to
-    // talk to Lacros's extension printers.
-    if (ash::features::IsLacrosExtensionPrintingEnabled() &&
-        crosapi::browser_util::IsLacrosEnabled()) {
-      if (!extension_printer_handler_adapter_) {
-        extension_printer_handler_adapter_ =
-            std::make_unique<ExtensionPrinterHandlerAdapterAsh>();
-      }
-      return extension_printer_handler_adapter_.get();
-    }
-#endif
     if (!extension_printer_handler_) {
       extension_printer_handler_ = PrinterHandler::CreateForExtensionPrinters(
           Profile::FromWebUI(web_ui()));

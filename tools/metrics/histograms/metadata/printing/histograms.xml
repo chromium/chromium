@@ -490,32 +490,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.LacrosExtensions.FromAsh.Job.Result"
-    enum="ExtensionPrintJobStatus" expires_after="2025-06-03">
-  <owner>xiangdongkong@google.com</owner>
-  <owner>cros-device-enablement@google.com</owner>
-  <summary>
-    Records the result of sending a print job to a lacros extension printer from
-    ash. When lacros is enabled, printing extensions can only be installed in
-    lacros browser. When printing from CrOS native apps, print requests will be
-    sent from ash side to lacros side via mojom service.
-  </summary>
-</histogram>
-
-<histogram name="Printing.LacrosExtensions.FromAsh.NumberOfPrinters"
-    units="printers" expires_after="2025-06-03">
-  <owner>xiangdongkong@google.com</owner>
-  <owner>cros-device-enablement@google.com</owner>
-  <summary>
-    Records the number of printers reported by lacros extensions when getting
-    printers request comes from ash. When lacros is enabled, printing extensions
-    can only be installed in lacros browser. When printing from CrOS native
-    apps, get printers requests will be sent from ash side to lacros side via
-    mojom service. Since not many users have extension printers, Only non-zero
-    values will be recorded.
-  </summary>
-</histogram>
-
 <histogram name="Printing.Oop.PrintResult" enum="PrintOopResult"
     expires_after="2025-04-13">
   <owner>awscreen@chromium.org</owner>

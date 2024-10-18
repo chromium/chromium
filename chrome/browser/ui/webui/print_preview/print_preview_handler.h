@@ -48,9 +48,6 @@ class WebContents;
 
 namespace printing {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class ExtensionPrinterHandlerAdapterAsh;
-#endif
 class PdfPrinterHandler;
 class PrinterHandler;
 class PrintPreviewUI;
@@ -324,12 +321,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // lacros will automatically be restarted.
   raw_ptr<crosapi::mojom::LocalPrinter, DanglingUntriaged> local_printer_ =
       nullptr;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Used when Lacros is enabled.
-  std::unique_ptr<ExtensionPrinterHandlerAdapterAsh>
-      extension_printer_handler_adapter_;
 #endif
 
   base::WeakPtrFactory<PrintPreviewHandler> weak_factory_{this};
