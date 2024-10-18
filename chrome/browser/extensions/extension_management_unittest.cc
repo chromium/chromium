@@ -1469,6 +1469,40 @@ TEST_F(ExtensionManagementServiceTest, IsAllowedByUnpackedDeveloperModePolicy) {
       *unpacked_extension));
 }
 
+TEST_F(ExtensionManagementServiceTest, IsForceInstalledInLowTrustEnvironment) {
+  {
+    // Low trust environment. Verify that the extension is considered
+    // force-installed in a low-trust environment on Windows and Mac.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    constexpr bool expect_low_trust =
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+        true;
+#else
+        false;
+#endif
+    EXPECT_EQ(extension_management_->IsForceInstalledInLowTrustEnvironment(
+                  *forced_extension),
+              expect_low_trust);
+  }
+  {
+    // High trust environment. Verify that the extension is not considered
+    // force-installed in a low-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    EXPECT_FALSE(extension_management_->IsForceInstalledInLowTrustEnvironment(
+        *forced_extension));
+  }
+}
+
 TEST_F(ExtensionManagementServiceTest,
        ShouldBlockForceInstalledOffstoreExtension) {
   {

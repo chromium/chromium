@@ -265,8 +265,11 @@ bool InstallVerifier::MustRemainDisabled(const Extension* extension,
     return false;
   if (extension->location() == mojom::ManifestLocation::kComponent)
     return false;
-  if (AllowedByEnterprisePolicy(extension->id()))
+  if (AllowedByEnterprisePolicy(extension->id()) &&
+      !ExtensionManagementFactory::GetForBrowserContext(context_)
+           ->IsForceInstalledInLowTrustEnvironment(*extension)) {
     return false;
+  }
 
   bool verified = true;
   if (base::Contains(InstallSigner::GetForcedNotFromWebstore(),
