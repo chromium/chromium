@@ -56,7 +56,10 @@ HEVCDecoderConfigurationRecord::HEVCDecoderConfigurationRecord()
       numOfArrays(0),
       alpha_mode(VideoDecoderConfig::AlphaMode::kIsOpaque) {}
 
-HEVCDecoderConfigurationRecord::~HEVCDecoderConfigurationRecord() {}
+HEVCDecoderConfigurationRecord::HEVCDecoderConfigurationRecord(
+    const HEVCDecoderConfigurationRecord& other) = default;
+HEVCDecoderConfigurationRecord::~HEVCDecoderConfigurationRecord() = default;
+
 FourCC HEVCDecoderConfigurationRecord::BoxType() const { return FOURCC_HVCC; }
 
 bool HEVCDecoderConfigurationRecord::Parse(BoxReader* reader) {

@@ -374,6 +374,11 @@ const TestParams kTestCases[] = {
     {VideoCodec::kAV1, AudioCodec::kOpus, 1, 0},
     {VideoCodec::kAV1, AudioCodec::kOpus, 0, 1},
     {VideoCodec::kAV1, AudioCodec::kOpus, 1, 1},
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    {VideoCodec::kHEVC, AudioCodec::kOpus, 1, 0},
+    {VideoCodec::kHEVC, AudioCodec::kOpus, 0, 1},
+    {VideoCodec::kHEVC, AudioCodec::kOpus, 1, 1},
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(All, WebmMuxerTest, ValuesIn(kTestCases));

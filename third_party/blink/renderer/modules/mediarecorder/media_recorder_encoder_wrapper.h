@@ -18,7 +18,7 @@ class GpuVideoAcceleratorFactories;
 
 namespace blink {
 
-// VideoTrackRecorder::Encoder class encodes h264, vp8, vp9 and av1 using
+// VideoTrackRecorder::Encoder class encodes h264, hevc, vp8, vp9 and av1 using
 // media::VideoEncoder implementation.
 class MODULES_EXPORT MediaRecorderEncoderWrapper final
     : public VideoTrackRecorder::Encoder {

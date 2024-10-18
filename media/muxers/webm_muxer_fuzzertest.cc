@@ -31,7 +31,13 @@ const int kMinNumIterations = 1;
 const int kMaxNumIterations = 10;
 
 static const media::VideoCodec kSupportedVideoCodecs[] = {
-    media::VideoCodec::kVP8, media::VideoCodec::kVP9, media::VideoCodec::kH264};
+    media::VideoCodec::kVP8,
+    media::VideoCodec::kVP9,
+    media::VideoCodec::kH264,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    media::VideoCodec::kHEVC,
+#endif
+};
 static const media::AudioCodec kSupportedAudioCodecs[] = {
     media::AudioCodec::kOpus, media::AudioCodec::kPCM};
 

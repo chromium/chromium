@@ -131,6 +131,9 @@ static const struct {
     {CodecId::kH264, media::H264PROFILE_MIN, media::H264PROFILE_MAX},
 #endif
     {CodecId::kAv1, media::AV1PROFILE_MIN, media::AV1PROFILE_MAX},
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    {CodecId::kHevc, media::HEVCPROFILE_MIN, media::HEVCPROFILE_MAX},
+#endif
 };
 
 static_assert(std::size(kPreferredCodecIdAndVEAProfiles) ==
@@ -202,7 +205,8 @@ void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
     kH264Hw = 6,
     kAv1Sw = 7,
     kAv1Hw = 8,
-    kMaxValue = kAv1Hw,
+    kHevcHw = 9,
+    kMaxValue = kHevcHw,
   };
   auto histogram = VideoTrackRecorderCodecHistogram::kUnknown;
   if (uses_acceleration) {
@@ -221,6 +225,11 @@ void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
       case CodecId::kAv1:
         histogram = VideoTrackRecorderCodecHistogram::kAv1Hw;
         break;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      case CodecId::kHevc:
+        histogram = VideoTrackRecorderCodecHistogram::kHevcHw;
+        break;
+#endif
       case CodecId::kLast:
         break;
     }
@@ -240,6 +249,9 @@ void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
       case CodecId::kAv1:
         histogram = VideoTrackRecorderCodecHistogram::kAv1Sw;
         break;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      case CodecId::kHevc:
+#endif
       case CodecId::kLast:
         break;
     }

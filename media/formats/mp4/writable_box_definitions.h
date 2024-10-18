@@ -19,6 +19,10 @@
 #include "media/media_buildflags.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/formats/mp4/hevc.h"
+#endif
+
 namespace media::mp4::writable_boxes {
 
 enum class TrackHeaderFlags : uint16_t {
@@ -102,6 +106,16 @@ struct MEDIA_EXPORT AVCDecoderConfiguration : Box {
 };
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+// HEVC DecoderConfiguration Record (`hvcC`) box.
+struct MEDIA_EXPORT HEVCDecoderConfiguration : Box {
+  // Refer HEVCDecoderConfigurationRecord of hevc.h
+  // because it provides Serialize method and the format
+  // is hard to be correct.
+  HEVCDecoderConfigurationRecord hevc_config_record;
+};
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
 // VP9 DecoderConfiguration Record (`vpcC`) box.
 struct MEDIA_EXPORT VPCodecConfiguration : FullBox {
   VPCodecConfiguration(VideoCodecProfile profile,
@@ -122,7 +136,7 @@ struct MEDIA_EXPORT AV1CodecConfiguration : FullBox {
   std::vector<uint8_t> av1_decoder_configuration_data;
 };
 
-// VisualSampleEntry (`avc1`, 'vp09', 'av01') box.
+// VisualSampleEntry (`avc1`, `hvc1`, `vp09`, `av01`) box.
 struct MEDIA_EXPORT VisualSampleEntry : Box {
   explicit VisualSampleEntry(VideoCodec codec);
   ~VisualSampleEntry();
@@ -143,6 +157,9 @@ struct MEDIA_EXPORT VisualSampleEntry : Box {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   std::optional<AVCDecoderConfiguration> avc_decoder_configuration;
 #endif
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  std::optional<HEVCDecoderConfiguration> hevc_decoder_configuration;
+#endif
   std::optional<VPCodecConfiguration> vp_decoder_configuration;
   std::optional<AV1CodecConfiguration> av1_decoder_configuration;
 
@@ -150,7 +167,7 @@ struct MEDIA_EXPORT VisualSampleEntry : Box {
   BitRate bit_rate;
 };
 
-// Opus media data ('dOps') box.
+// Opus media data (`dOps`) box.
 // Spec is https://opus-codec.org/docs/opus_in_isobmff.html.
 struct MEDIA_EXPORT OpusSpecificBox : Box {
   OpusSpecificBox();
@@ -162,7 +179,7 @@ struct MEDIA_EXPORT OpusSpecificBox : Box {
   uint32_t sample_rate;
 };
 
-// Audio Sample Entry (`mp4a` or 'Opus') box.
+// Audio Sample Entry (`mp4a` or `Opus`) box.
 struct MEDIA_EXPORT AudioSampleEntry : Box {
   AudioSampleEntry(AudioCodec codec,
                    uint32_t sample_rate,

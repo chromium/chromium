@@ -55,10 +55,11 @@ MediaRecorderEncoderWrapper::MediaRecorderEncoderWrapper(
   CHECK(create_encoder_cb_);
   CHECK(on_error_cb_);
   constexpr media::VideoCodec kSupportedCodecs[] = {
-      media::VideoCodec::kH264,
-      media::VideoCodec::kVP8,
-      media::VideoCodec::kVP9,
-      media::VideoCodec::kAV1,
+      media::VideoCodec::kH264, media::VideoCodec::kVP8,
+      media::VideoCodec::kVP9,  media::VideoCodec::kAV1,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      media::VideoCodec::kHEVC,
+#endif
   };
   CHECK(base::Contains(kSupportedCodecs, codec_));
   options_.latency_mode = media::VideoEncoder::LatencyMode::Quality;
@@ -70,6 +71,11 @@ MediaRecorderEncoderWrapper::MediaRecorderEncoderWrapper(
   if (codec_ == media::VideoCodec::kH264) {
     options_.avc.produce_annexb = true;
   }
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  else if (codec_ == media::VideoCodec::kHEVC) {
+    options_.hevc.produce_annexb = true;
+  }
+#endif
 }
 
 MediaRecorderEncoderWrapper::~MediaRecorderEncoderWrapper() {

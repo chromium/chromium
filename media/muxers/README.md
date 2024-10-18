@@ -15,8 +15,9 @@ More details on synchronization can be found in the
 spec.
 
 Currently the following codecs are supported in each muxer:
- * mkv / webm: VP8, VP9, AV1, H.264 for video plus Opus for audio.
- * mp4: VP9, AV1, H.264 for video and Opus, AAC for audio.
+ * webm: VP8, VP9, AV1, H.264 for video plus Opus for audio.
+ * mkv: VP8, VP9, AV1, H.264, H.265 for video plus Opus for audio.
+ * mp4: VP9, AV1, H.264, H.265 for video and Opus, AAC for audio.
 
 Note: webm is a subset of mkv that technically only supports vp8, vp9,
 and av1 codecs.

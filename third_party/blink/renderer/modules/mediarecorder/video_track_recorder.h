@@ -75,6 +75,9 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     kH264,
 #endif
     kAv1,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    kHevc,
+#endif
     kLast
   };
 
@@ -123,6 +126,14 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     CodecProfile(CodecId codec_id,
                  media::VideoCodecProfile profile,
                  media::VideoCodecLevel level);
+
+    bool operator==(const CodecProfile& others) const {
+      return (codec_id == others.codec_id) && (profile == others.profile) &&
+             (level == others.level);
+    }
+    bool operator!=(const CodecProfile& others) const {
+      return !(*this == others);
+    }
   };
 
   using OnEncodedVideoCB = base::RepeatingCallback<void(

@@ -10,12 +10,15 @@
 #include "media/muxers/mp4_muxer_delegate.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "components/version_info/version_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_definitions.h"
+#include "media/formats/mp4/fourccs.h"
+#include "media/formats/mp4/mp4_status.h"
 #include "media/muxers/box_byte_stream.h"
 #include "media/muxers/mp4_box_writer.h"
 #include "media/muxers/mp4_fragment_box_writer.h"
@@ -25,8 +28,13 @@
 #include "media/muxers/output_position_tracker.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-#include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/formats/mp4/h26x_annex_b_to_bitstream_converter.h"
+#endif
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/formats/mp4/hevc.h"
 #endif
 
 namespace media {
@@ -111,12 +119,14 @@ void CopyCreationTimeAndDuration(mp4::writable_boxes::Track& track,
 
 Mp4MuxerDelegate::Mp4MuxerDelegate(
     AudioCodec audio_codec,
+    VideoCodec video_codec,
     std::optional<VideoCodecProfile> video_profile,
     std::optional<VideoCodecLevel> video_level,
     Muxer::WriteDataCB write_callback,
     size_t audio_sample_count_per_fragment)
     : write_callback_(std::move(write_callback)),
       audio_codec_(audio_codec),
+      video_codec_(video_codec),
       video_profile_(std::move(video_profile)),
       video_level_(std::move(video_level)),
       audio_sample_count_per_fragment_(audio_sample_count_per_fragment) {}
@@ -131,12 +141,12 @@ void Mp4MuxerDelegate::AddVideoFrame(
   DVLOG(1) << __func__ << ", " << params.AsHumanReadableString();
 
   if (!video_track_index_.has_value()) {
-    CHECK(codec_description.has_value() || (params.codec != VideoCodec::kH264));
+    CHECK(codec_description.has_value() || (params.codec != VideoCodec::kH264 &&
+                                            params.codec != VideoCodec::kHEVC));
     CHECK(encoded_data->is_key_frame());
     CHECK(start_video_time_.is_null());
     CHECK_NE(params.codec, VideoCodec::kUnknown);
-
-    video_codec_ = params.codec;
+    CHECK_EQ(params.codec, video_codec_);
 
     EnsureInitialized();
     last_video_time_ = start_video_time_ = timestamp;
@@ -183,6 +193,21 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
 
     avc_config.avc_config_record = std::move(avc_config_record);
     visual_sample_entry.avc_decoder_configuration = std::move(avc_config);
+#else
+    NOTREACHED_IN_MIGRATION();
+#endif
+  } else if (video_codec_ == VideoCodec::kHEVC) {
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    visual_sample_entry.compressor_name = "HVC1 Coding";
+
+    mp4::writable_boxes::HEVCDecoderConfiguration hevc_config;
+    mp4::HEVCDecoderConfigurationRecord hevc_config_record;
+    bool result = hevc_config_record.Parse(codec_description.value().data(),
+                                           codec_description.value().size());
+    DCHECK(result);
+
+    hevc_config.hevc_config_record = std::move(hevc_config_record);
+    visual_sample_entry.hevc_decoder_configuration = std::move(hevc_config);
 #else
     NOTREACHED_IN_MIGRATION();
 #endif
@@ -256,8 +281,12 @@ void Mp4MuxerDelegate::AddDataToVideoFragment(
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (video_codec_ == VideoCodec::kH264) {
-    // Convert Annex-B to AVC bitstream.
+  if (video_codec_ == VideoCodec::kH264
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      || video_codec_ == VideoCodec::kHEVC
+#endif
+  ) {
+    // Convert Annex-B to AVC/HEVC bitstream.
     encoded_data = ConvertNALUData(std::move(encoded_data));
   }
 #endif
@@ -504,7 +533,23 @@ void Mp4MuxerDelegate::BuildFileTypeBox(
   mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_ISOM);
   mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_ISO6);
   mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_ISO2);
-  mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_AVC1);
+  switch (video_codec_) {
+    case VideoCodec::kVP9:
+      mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_VP09);
+      break;
+    case VideoCodec::kAV1:
+      mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_AV01);
+      break;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoCodec::kHEVC:
+      mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_HVC1);
+      break;
+#endif
+    case VideoCodec::kH264:
+    default:
+      mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_AVC1);
+      break;
+  }
   mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_MP41);
 }
 
@@ -636,29 +681,20 @@ void Mp4MuxerDelegate::EnsureInitialized() {
       mp4::writable_boxes::TrackExtends());
 }
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 scoped_refptr<DecoderBuffer> Mp4MuxerDelegate::ConvertNALUData(
     scoped_refptr<DecoderBuffer> encoded_data) {
-  if (!h264_converter_) {
-    h264_converter_ =
-        std::make_unique<media::H264AnnexBToAvcBitstreamConverter>();
+  CHECK(video_codec_ == VideoCodec::kH264 || video_codec_ == VideoCodec::kHEVC);
+  if (!h26x_converter_) {
+    h26x_converter_ =
+        std::make_unique<H26xAnnexBToBitstreamConverter>(video_codec_);
   }
 
-  bool config_changed = false;
-  size_t desired_size = 0;
-  std::vector<uint8_t> output_chunk;
-  auto status = h264_converter_->ConvertChunk(
-      encoded_data->AsSpan(), output_chunk, &config_changed, &desired_size);
-  CHECK_EQ(status.code(), media::MP4Status::Codes::kBufferTooSmall);
-  output_chunk.resize(desired_size);
-  status = h264_converter_->ConvertChunk(encoded_data->AsSpan(), output_chunk,
-                                         &config_changed, &desired_size);
-  CHECK(status.is_ok());
-
-  auto converted_encoded_data = media::DecoderBuffer::CopyFrom(output_chunk);
-  return converted_encoded_data;
+  return h26x_converter_->Convert(encoded_data->AsSpan());
 }
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) ||
+        // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 int Mp4MuxerDelegate::GetNextTrackIndex() {
   return next_track_index_++;

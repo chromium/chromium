@@ -26,8 +26,9 @@ class AudioParameters;
 class Mp4MuxerDelegateFragment;
 enum VideoCodecProfile;
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-class H264AnnexBToAvcBitstreamConverter;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+class H26xAnnexBToBitstreamConverter;
 #endif
 
 class Mp4MuxerDelegateInterface {
@@ -59,6 +60,7 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
  public:
   Mp4MuxerDelegate(
       AudioCodec audio_codec,
+      VideoCodec video_codec,
       std::optional<VideoCodecProfile> profile,
       std::optional<VideoCodecLevel> level,
       Muxer::WriteDataCB write_callback,
@@ -116,7 +118,8 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   void MaybeFlushMoofAndMfraBoxes(size_t written_offset);
   size_t GetAudioOnlyFragmentCount() const;
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   scoped_refptr<DecoderBuffer> ConvertNALUData(
       scoped_refptr<DecoderBuffer> encoded_data);
 #endif
@@ -171,8 +174,9 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   const size_t audio_sample_count_per_fragment_;
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  std::unique_ptr<media::H264AnnexBToAvcBitstreamConverter> h264_converter_;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  std::unique_ptr<H26xAnnexBToBitstreamConverter> h26x_converter_;
 #endif
 
   Muxer::WriteDataCB write_data_callback_ GUARDED_BY_CONTEXT(sequence_checker_);

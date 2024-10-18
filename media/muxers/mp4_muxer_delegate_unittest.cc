@@ -148,7 +148,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   std::vector<uint8_t> second_moof_written_data;
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -179,8 +179,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   base::TimeDelta delta;
 
   media::Muxer::VideoParameters params(gfx::Size(kWidth, kHeight), 30,
-                                       media::VideoCodec::kH264,
-                                       gfx::ColorSpace());
+                                       VideoCodec::kH264, gfx::ColorSpace());
   video_stream_1->set_is_key_frame(true);
   delegate.AddVideoFrame(params, video_stream_1, video_codec_description,
                          base_time_ticks);
@@ -464,7 +463,7 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
   // Default Mp4MuxerDelegate with default max default audio duration of
   // 5 seconds.
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      AudioCodec::kAAC, VideoCodec::kUnknown, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -687,7 +686,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      AudioCodec::kAAC, VideoCodec::kUnknown, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -809,7 +808,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -856,9 +855,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
   std::vector<uint8_t> video_code_description;
   PopulateAVCDecoderConfiguration(video_code_description);
 
-  media::Muxer::VideoParameters video_params(gfx::Size(kWidth, kHeight), 30,
-                                             media::VideoCodec::kH264,
-                                             gfx::ColorSpace());
+  media::Muxer::VideoParameters video_params(
+      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace());
   video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_code_description,
                          base_time_ticks);
@@ -1013,7 +1011,7 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -1061,9 +1059,8 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   std::vector<uint8_t> video_codec_description;
   PopulateAVCDecoderConfiguration(video_codec_description);
 
-  media::Muxer::VideoParameters video_params(gfx::Size(kWidth, kHeight), 30,
-                                             media::VideoCodec::kH264,
-                                             gfx::ColorSpace());
+  media::Muxer::VideoParameters video_params(
+      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace());
   video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
                          base_time_ticks);
@@ -1217,7 +1214,7 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -1245,9 +1242,8 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
   std::vector<uint8_t> video_codec_description;
   PopulateAVCDecoderConfiguration(video_codec_description);
 
-  media::Muxer::VideoParameters video_params(gfx::Size(kWidth, kHeight), 30,
-                                             media::VideoCodec::kH264,
-                                             gfx::ColorSpace());
+  media::Muxer::VideoParameters video_params(
+      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace());
   video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
                          base_time_ticks);
@@ -1362,7 +1358,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -1393,9 +1389,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
 
   base::TimeTicks base_time_ticks = base::TimeTicks::Now();
   constexpr base::TimeDelta kDelta = base::Milliseconds(30);
-  media::Muxer::VideoParameters video_params(gfx::Size(kWidth, kHeight), 30,
-                                             media::VideoCodec::kH264,
-                                             gfx::ColorSpace());
+  media::Muxer::VideoParameters video_params(
+      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace());
 
   // The first fragment; audio (1 sample) -> video (2 samples) track.
   delegate.AddAudioFrame(params, audio_stream, audio_codec_description,
@@ -1487,7 +1482,7 @@ TEST_F(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc1) {
   int callback_count = 0;
   int moof_box_start_offset = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         switch (++callback_count) {
           case 1:
@@ -1524,9 +1519,8 @@ TEST_F(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc1) {
   PopulateAVCDecoderConfiguration(video_codec_description);
 
   base::TimeTicks base_time_ticks = base::TimeTicks::Now();
-  media::Muxer::VideoParameters video_params(gfx::Size(kWidth, kHeight), 30,
-                                             media::VideoCodec::kH264,
-                                             gfx::ColorSpace());
+  media::Muxer::VideoParameters video_params(
+      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace());
 
   video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,

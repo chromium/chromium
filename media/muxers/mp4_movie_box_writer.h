@@ -63,6 +63,10 @@ DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAVCDecoderConfigurationBoxWriter,
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieElementaryStreamDescriptorBoxWriter,
                              mp4::writable_boxes::ElementaryStreamDescriptor);
 #endif
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieHEVCDecoderConfigurationBoxWriter,
+                             mp4::writable_boxes::HEVCDecoderConfiguration);
+#endif
 
 DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MoviePixelAspectRatioBoxBoxWriter);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieBitRateBoxWriter,

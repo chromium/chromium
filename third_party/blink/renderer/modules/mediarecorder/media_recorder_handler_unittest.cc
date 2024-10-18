@@ -489,6 +489,14 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
   const String example_unsupported_codecs_2("vorbis");
   EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(
       mime_type_audio, example_unsupported_codecs_2));
+
+  const String example_good_codecs_with_unsupported_tag("HEV1");
+  EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(
+      mime_type_video, example_good_codecs_with_unsupported_tag));
+
+  const String example_good_codecs_with_supported_tag("hvc1");
+  EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(
+      mime_type_video, example_good_codecs_with_supported_tag));
 }
 
 // Checks that it uses the specified bitrate mode.
@@ -1700,5 +1708,54 @@ TEST_F(MediaRecorderHandlerPassthroughTest, ErrorsOutOnCodecSwitch) {
 INSTANTIATE_TEST_SUITE_P(All,
                          MediaRecorderHandlerPassthroughTest,
                          ValuesIn(kMediaRecorderPassthroughTestParams));
+
+struct MediaRecorderCodecProfileTestParams {
+  const char* const codecs;
+  VideoTrackRecorder::CodecProfile codec_profile;
+};
+
+static const MediaRecorderCodecProfileTestParams
+    kMediaRecorderCodecProfileTestParams[] = {
+        {"vp8,mp4a.40.2",
+         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kVp8)},
+        {"vp9,opus",
+         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kVp9)},
+        {"av1,opus",
+         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kAv1)},
+        {"av01,opus",
+         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kAv1)},
+        {"av01.0.04M.08,opus",
+         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kAv1)},
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+        {"h264,mp4a.40.2",
+         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kH264)},
+        {"avc1,opus",
+         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kH264)},
+        {"avc1.42E01E,opus", VideoTrackRecorder::CodecProfile(
+                                 VideoTrackRecorder::CodecId::kH264,
+                                 media::VideoCodecProfile::H264PROFILE_BASELINE,
+                                 30u)},
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+        {"hvc1,opus",
+         VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kHevc)},
+        {"hvc1.1.6.L93.B0,opus", VideoTrackRecorder::CodecProfile(
+                                     VideoTrackRecorder::CodecId::kHevc,
+                                     media::VideoCodecProfile::HEVCPROFILE_MAIN,
+                                     93u)},
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+};
+
+class MediaRecorderHandlerCodecProfileTest
+    : public TestWithParam<MediaRecorderCodecProfileTestParams> {};
+
+TEST_P(MediaRecorderHandlerCodecProfileTest, VideoStringToCodecProfile) {
+  EXPECT_EQ(VideoStringToCodecProfile(GetParam().codecs),
+            GetParam().codec_profile);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MediaRecorderHandlerCodecProfileTest,
+                         ValuesIn(kMediaRecorderCodecProfileTestParams));
 
 }  // namespace blink

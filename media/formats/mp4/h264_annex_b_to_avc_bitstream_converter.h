@@ -36,7 +36,7 @@ class MEDIA_EXPORT H264AnnexBToAvcBitstreamConverter {
   //
   // |input| - where to read the data from
   // |output| - where to put the converted video data
-  // If error kH264BufferTooSmall is returned, it means that |output| was not
+  // If error kBufferTooSmall is returned, it means that |output| was not
   // big enough to contain a converted video chunk. In this case |size_out|
   // is populated.
   // |config_changed_out| is set to True if the video chunk
