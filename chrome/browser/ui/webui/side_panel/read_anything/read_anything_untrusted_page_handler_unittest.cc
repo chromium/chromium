@@ -100,7 +100,8 @@ class TestReadAnythingUntrustedPageHandler
       : ReadAnythingUntrustedPageHandler(
             std::move(page),
             mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>(),
-            test_web_ui) {}
+            test_web_ui,
+            /*use_screen_ai_service=*/false) {}
 
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
                             ui::AXNodeID target_node_id) override {
@@ -120,9 +121,10 @@ class TestReadAnythingUntrustedPageHandler
 class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud},
-        {features::kReadAnythingWithScreen2x, features::kPdfOcr});
+    // `TestReadAnythingUntrustedPageHandler` disables ScreenAI service, which
+    // disables using ReadAnythingWithScreen2x and PdfOcr.
+    scoped_feature_list_.InitAndEnableFeature(
+        {features::kReadAnythingReadAloud});
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL(url::kAboutBlankURL));
     web_contents_ = content::WebContents::Create(

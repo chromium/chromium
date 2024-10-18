@@ -264,11 +264,13 @@ void ReadAnythingWebContentsObserver::WebContentsDestroyed() {
 ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     mojo::PendingRemote<UntrustedPage> page,
     mojo::PendingReceiver<UntrustedPageHandler> receiver,
-    content::WebUI* web_ui)
+    content::WebUI* web_ui,
+    bool use_screen_ai_service)
     : profile_(Profile::FromWebUI(web_ui)),
       web_ui_(web_ui),
       receiver_(this, std::move(receiver)),
-      page_(std::move(page)) {
+      page_(std::move(page)),
+      use_screen_ai_service_(use_screen_ai_service) {
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
@@ -328,18 +330,25 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   prefs_lang = language::ExtractBaseLanguage(prefs_lang);
   SetDefaultLanguageCode(prefs_lang);
 
-  if (features::IsReadAnythingWithScreen2xEnabled()) {
-    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-        ->GetServiceStateAsync(
-            screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
-            base::BindOnce(
-                &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
-                weak_factory_.GetWeakPtr()));
-  }
-  if (features::IsPdfOcrEnabled()) {
-    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-        ->GetServiceStateAsync(screen_ai::ScreenAIServiceRouter::Service::kOCR,
-                               base::DoNothing());
+  if (use_screen_ai_service_) {
+    if (features::IsReadAnythingWithScreen2xEnabled()) {
+      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+          ->GetServiceStateAsync(
+              screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
+              base::BindOnce(&ReadAnythingUntrustedPageHandler::
+                                 OnScreenAIServiceInitialized,
+                             weak_factory_.GetWeakPtr()));
+    }
+#if BUILDFLAG(ENABLE_PDF)
+    // PDF searchify feature adds OCR text to images while loading the PDF, so
+    // warming up the OCR service is not needed.
+    if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+          ->GetServiceStateAsync(
+              screen_ai::ScreenAIServiceRouter::Service::kOCR,
+              base::DoNothing());
+    }
+#endif  // BUILDFLAG(ENABLE_PDF)
   }
 
   // Enable accessibility for the top level render frame and all descendants.
@@ -729,7 +738,10 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
           weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
     }
   }
-  if (features::IsPdfOcrEnabled()) {
+  // PDF searchify feature adds OCR text to images while loading the PDF, so
+  // activating PDF OCR is not needed.
+  if (use_screen_ai_service_ &&
+      !base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
     screen_ai::PdfOcrControllerFactory::GetForProfile(profile_)->Activate();
   }
 #endif  // BUILDFLAG(ENABLE_PDF)

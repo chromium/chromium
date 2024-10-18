@@ -94,7 +94,8 @@ class ReadAnythingUntrustedPageHandler :
       mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
       mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
           receiver,
-      content::WebUI* web_ui);
+      content::WebUI* web_ui,
+      bool use_screen_ai_service);
   ReadAnythingUntrustedPageHandler(const ReadAnythingUntrustedPageHandler&) =
       delete;
   ReadAnythingUntrustedPageHandler& operator=(
@@ -224,6 +225,8 @@ class ReadAnythingUntrustedPageHandler :
   base::ScopedObservation<ui::AXActionHandlerRegistry,
                           ui::AXActionHandlerObserver>
       ax_action_handler_observer_{this};
+
+  const bool use_screen_ai_service_;
 
   void OnScreenAIServiceInitialized(bool successful);
 

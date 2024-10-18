@@ -212,7 +212,8 @@ void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(
   DCHECK(page);
   read_anything_untrusted_page_handler_ =
       std::make_unique<ReadAnythingUntrustedPageHandler>(
-          std::move(page), std::move(receiver), web_ui());
+          std::move(page), std::move(receiver), web_ui(),
+          /*use_screen_ai_service=*/true);
 
   // This code is called as part of a screen2x data generation workflow, where
   // the browser is opened by a CLI and the read-anything side panel is
