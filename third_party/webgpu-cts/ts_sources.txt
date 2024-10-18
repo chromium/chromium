@@ -578,6 +578,9 @@ src/webgpu/shader/execution/expression/call/builtin/pack4xU8.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/pack4xU8Clamp.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/pow.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/pow.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroup_util.ts
+src/webgpu/shader/execution/expression/call/builtin/quadBroadcast.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/quadSwap.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/quantizeToF16.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/quantizeToF16.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/radians.cache.ts
@@ -605,11 +608,11 @@ src/webgpu/shader/execution/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/step.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/step.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/storageBarrier.spec.ts
-src/webgpu/shader/execution/expression/call/builtin/subgroup_util.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupAdd.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupAll.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupAny.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBallot.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroupBitwise.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBroadcast.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupMul.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.cache.ts
