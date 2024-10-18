@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/buildflags.h"
+#include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
@@ -36,7 +37,6 @@ class WebMouseEvent;
 
 namespace chrome_pdf {
 
-class PdfInkBrush;
 class PdfInkModuleClient;
 
 class PdfInkModule {
@@ -174,8 +174,8 @@ class PdfInkModule {
     DrawingStrokeState& operator=(const DrawingStrokeState&) = delete;
     ~DrawingStrokeState();
 
-    // The current brush to use for drawing strokes. Never null.
-    std::unique_ptr<PdfInkBrush> brush;
+    // The current brush type to use for drawing strokes.
+    PdfInkBrush::Type brush_type;
 
     std::optional<base::TimeTicks> start_time;
 
@@ -266,6 +266,10 @@ class PdfInkModule {
     return absl::get<EraserState>(current_tool_state_);
   }
 
+  // Returns the current brush. Must be in a drawing stroke state.
+  PdfInkBrush& GetDrawingBrush();
+  const PdfInkBrush& GetDrawingBrush() const;
+
   // Converts `current_tool_state_` into segments of `ink::InProgressStroke`.
   // Requires `current_tool_state_` to hold a `DrawingStrokeState`. If there is
   // no `DrawingStrokeState`, or the state currently has no inputs, then the
@@ -299,6 +303,11 @@ class PdfInkModule {
 
   // Generates IDs for use in FinishedStrokeState and PdfInkUndoRedoModel.
   StrokeIdGenerator stroke_id_generator_;
+
+  // Store a PdfInkBrush for each brush type so that the brush parameters are
+  // saved when swapping between brushes.
+  PdfInkBrush highlighter_brush_;
+  PdfInkBrush pen_brush_;
 
   // The state of the current tool that is in use.
   absl::variant<DrawingStrokeState, EraserState> current_tool_state_;

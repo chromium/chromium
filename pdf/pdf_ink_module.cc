@@ -68,10 +68,17 @@ PdfInkModule::StrokeInputPoints GetStrokePointsForTesting(  // IN-TEST
   return stroke_points;
 }
 
-// Default to a black pen brush.
-std::unique_ptr<PdfInkBrush> CreateDefaultBrush() {
-  return std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, SK_ColorBLACK,
-                                       /*size=*/1.0f);
+PdfInkBrush CreateDefaultHighlighterBrush() {
+  return PdfInkBrush(PdfInkBrush::Type::kHighlighter,
+                     SkColorSetRGB(0xF2, 0x8B, 0x82),
+                     /*size=*/8.0f);
+}
+
+PdfInkBrush CreateDefaultPenBrush() {
+  // TODO(crbug.com/369653190): Change the size to the actual default value.
+  // The expectation for the PdfInkModuleStrokeTest.DrawRenderTransform test
+  // needs to be modified first.
+  return PdfInkBrush(PdfInkBrush::Type::kPen, SK_ColorBLACK, /*size=*/1.0f);
 }
 
 // Check if `color` is a valid color value within range.
@@ -100,10 +107,15 @@ SkRect GetDrawPageClipRect(const gfx::Rect& content_rect,
 
 }  // namespace
 
-PdfInkModule::PdfInkModule(PdfInkModuleClient& client) : client_(client) {
+PdfInkModule::PdfInkModule(PdfInkModuleClient& client)
+    : client_(client),
+      highlighter_brush_(CreateDefaultHighlighterBrush()),
+      pen_brush_(CreateDefaultPenBrush()) {
   CHECK(base::FeatureList::IsEnabled(features::kPdfInk2));
   CHECK(is_drawing_stroke());
-  drawing_stroke_state().brush = CreateDefaultBrush();
+
+  // Default to a pen brush.
+  drawing_stroke_state().brush_type = PdfInkBrush::Type::kPen;
 }
 
 PdfInkModule::~PdfInkModule() = default;
@@ -238,7 +250,7 @@ void PdfInkModule::OnGeometryChanged() {
 }
 
 const PdfInkBrush* PdfInkModule::GetPdfInkBrushForTesting() const {
-  return is_drawing_stroke() ? drawing_stroke_state().brush.get() : nullptr;
+  return is_drawing_stroke() ? &GetDrawingBrush() : nullptr;
 }
 
 std::optional<float> PdfInkModule::GetEraserSizeForTesting() const {
@@ -341,7 +353,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   state.inputs.push_back(std::move(segment));
 
   // Invalidate area around this one point.
-  client_->Invalidate(state.brush->GetInvalidateArea(position, position));
+  client_->Invalidate(GetDrawingBrush().GetInvalidateArea(position, position));
 
   std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
       undo_redo_model_.StartDraw();
@@ -392,8 +404,8 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
       // Record the last point before leaving the page, if `last_position` was
       // not already on the page boundary.
       RecordStrokePosition(boundary_position, timestamp);
-      client_->Invalidate(
-          state.brush->GetInvalidateArea(last_position, boundary_position));
+      client_->Invalidate(GetDrawingBrush().GetInvalidateArea(
+          last_position, boundary_position));
     }
 
     // Remember `position` for use in the next event and treat event as handled.
@@ -422,7 +434,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
   // Invalidate area covering a straight line between this position and the
   // previous one.
   client_->Invalidate(
-      state.brush->GetInvalidateArea(position, invalidation_position));
+      GetDrawingBrush().GetInvalidateArea(position, invalidation_position));
 
   // Remember `position` for use in the next event.
   state.input_last_event_position = position;
@@ -625,8 +637,12 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
       PdfInkBrush::StringToType(brush_type_string);
   CHECK(brush_type.has_value());
   current_tool_state_.emplace<DrawingStrokeState>();
-  drawing_stroke_state().brush = std::make_unique<PdfInkBrush>(
-      brush_type.value(), SkColorSetRGB(color_r, color_g, color_b), size);
+  drawing_stroke_state().brush_type = brush_type.value();
+
+  PdfInkBrush& current_brush = GetDrawingBrush();
+  current_brush.SetColor(SkColorSetRGB(color_r, color_g, color_b));
+  current_brush.SetSize(size);
+
   MaybeSetCursor();
 }
 
@@ -637,6 +653,24 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
   MaybeSetCursor();
 }
 
+PdfInkBrush& PdfInkModule::GetDrawingBrush() {
+  // Use the const PdfInkBrush getter and remove the const qualifier to avoid
+  // duplicate getter logic.
+  return const_cast<PdfInkBrush&>(
+      static_cast<PdfInkModule const&>(*this).GetDrawingBrush());
+}
+
+const PdfInkBrush& PdfInkModule::GetDrawingBrush() const {
+  CHECK(is_drawing_stroke());
+  switch (drawing_stroke_state().brush_type) {
+    case (PdfInkBrush::Type::kHighlighter):
+      return highlighter_brush_;
+    case (PdfInkBrush::Type::kPen):
+      return pen_brush_;
+  }
+  NOTREACHED();
+}
+
 std::vector<ink::InProgressStroke>
 PdfInkModule::CreateInProgressStrokeSegmentsFromInputs() const {
   if (!is_drawing_stroke()) {
@@ -644,6 +678,7 @@ PdfInkModule::CreateInProgressStrokeSegmentsFromInputs() const {
   }
 
   const DrawingStrokeState& state = drawing_stroke_state();
+  const ink::Brush& brush = GetDrawingBrush().ink_brush();
   std::vector<ink::InProgressStroke> stroke_segments;
   stroke_segments.reserve(state.inputs.size());
   for (size_t segment_number = 0; const auto& segment : state.inputs) {
@@ -656,7 +691,7 @@ PdfInkModule::CreateInProgressStrokeSegmentsFromInputs() const {
     }
 
     ink::InProgressStroke stroke;
-    stroke.Start(state.brush->ink_brush());
+    stroke.Start(brush);
     auto enqueue_results =
         stroke.EnqueueInputs(segment, /*predicted_inputs=*/{});
     CHECK(enqueue_results.ok());
@@ -818,7 +853,7 @@ void PdfInkModule::MaybeSetCursor() {
   SkColor color;
   float brush_size;
   if (is_drawing_stroke()) {
-    const auto& ink_brush = drawing_stroke_state().brush->ink_brush();
+    const auto& ink_brush = GetDrawingBrush().ink_brush();
     color = GetSkColorFromInkBrush(ink_brush);
     brush_size = ink_brush.GetSize();
   } else {
