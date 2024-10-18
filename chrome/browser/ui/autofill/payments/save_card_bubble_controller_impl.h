@@ -110,6 +110,15 @@ class SaveCardBubbleControllerImpl
           payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
           on_confirmation_closed_callback);
 
+  // Gets a callback to `ShowConfirmationBubbleView` with a weak ptr to the
+  // controller, passing `card_saved` as true and
+  // `on_confirmation_closed_callback` as std::nullopt.
+  base::OnceClosure GetShowConfirmationForCardSuccessfullySavedCallback();
+
+  // Gets a callback to `EndSaveCardPromptFlow` with a weak ptr to the
+  // controller.
+  base::OnceClosure GetEndSaveCardPromptFlowCallback();
+
   // SaveCardBubbleController:
   std::u16string GetWindowTitle() const override;
   std::u16string GetExplanatoryMessage() const override;
@@ -177,6 +186,10 @@ class SaveCardBubbleControllerImpl
 
   // Returns whether the web contents related to the controller is active.
   bool IsWebContentsActive();
+
+  // Hides the bubble if it currently being shown, and sets the bubble to
+  // inactive, effectively ending the save card flow.
+  void EndSaveCardPromptFlow();
 
   // Should outlive this object.
   raw_ptr<PersonalDataManager> personal_data_manager_;

@@ -31,6 +31,7 @@
 #include "ui/android/window_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
+#include "chrome/browser/ui/ui_features.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using ::testing::_;
@@ -603,5 +604,38 @@ TEST_F(ChromePaymentsAutofillClientTest, RiskDataCaching_DataCached) {
 
   chrome_payments_client()->LoadRiskData(callback2.Get());
 }
+
+// TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING buildflag.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+class ChromePaymentsAutofillIOSPromoClientTest
+    : public ChromePaymentsAutofillClientTest {
+ public:
+  ChromePaymentsAutofillIOSPromoClientTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {::features::kIOSPromoPaymentBubble,
+         features::kAutofillEnableSaveCardLoadingAndConfirmation,
+         features::kAutofillEnableVcnEnrollLoadingAndConfirmation,
+         features::kAutofillEnableCvcStorageAndFilling,
+         features::kAutofillEnablePrefetchingRiskDataForRetrieval},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that calling `CreditCardUploadCompleted` still calls
+// SaveCardBubbleControllerImpl::ShowConfirmationBubbleView on card upload
+// success as callback, after failing to show the iOS promo.
+TEST_F(ChromePaymentsAutofillIOSPromoClientTest,
+       IOSPaymentPromoFailedToShow_CallsShowConfirmationBubbleView) {
+  EXPECT_CALL(save_card_bubble_controller(),
+              ShowConfirmationBubbleView(true, _));
+  chrome_payments_client()->CreditCardUploadCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      std::nullopt);
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace autofill
