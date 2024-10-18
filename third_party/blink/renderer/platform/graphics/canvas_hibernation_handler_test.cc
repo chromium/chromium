@@ -340,22 +340,23 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
+  CanvasHibernationHandler handler;
+  FakeCanvasResourceHost host(gfx::Size(300, 200));
+  host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
-  auto& handler = bridge->GetHibernationHandler();
+  Draw(host);
+
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
-  SetPageVisible(Host(), &handler, platform, false);
+  SetPageVisible(&host, &handler, platform, false);
   // Wait for the encoding task to be posted.
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
   EXPECT_TRUE(TestSingleThreadTaskRunner::RunOne(task_runner->immediate()));
   // Come back to foreground after (or during) compression, but before the
   // callback.
-  SetPageVisible(Host(), &handler, platform, true);
+  SetPageVisible(&host, &handler, platform, true);
   // And back to background.
-  SetPageVisible(Host(), &handler, platform, false);
+  SetPageVisible(&host, &handler, platform, false);
   EXPECT_TRUE(handler.IsHibernating());
 
   // The callback is still pending.
