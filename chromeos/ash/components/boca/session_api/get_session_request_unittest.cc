@@ -86,6 +86,7 @@ class MockRequestHandler {
     }]
   },
   "sessionState": "ACTIVE",
+  "tachyonGroupId": "tachyon-group",
   "studentGroupConfigs": {
     "main": {
       "captionsConfig": {
@@ -310,6 +311,7 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
   EXPECT_EQ(::boca::StudentStatus::ACTIVE,
             session->student_statuses().at("3").state());
 
+  EXPECT_EQ("tachyon-group", session->tachyon_group_id());
   ASSERT_EQ(2, session->roster().student_groups()[0].students().size());
   EXPECT_EQ(kMainStudentGroupName,
             session->roster().student_groups()[0].title());

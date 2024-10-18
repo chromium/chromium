@@ -262,7 +262,11 @@ void BocaSessionManager::NotifyCaptionConfigUpdate() {
       current_session_caption_config.SerializeAsString()) {
     for (auto& observer : observers_) {
       observer.OnSessionCaptionConfigUpdated(
-          kMainStudentGroupName, current_session_caption_config, std::string());
+          kMainStudentGroupName, current_session_caption_config,
+          // TODO(crbug.com/374200256):Should not notify events when session
+          // ended. Remove the null check after that.
+          current_session_ ? current_session_->tachyon_group_id()
+                           : std::string());
     }
   }
 }

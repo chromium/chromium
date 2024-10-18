@@ -292,6 +292,10 @@ std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json) {
     session->set_session_state(SessionStateJsonToProto(*ptr));
   }
 
+  if (auto* ptr = session_dict->FindString(kTachyonGroupId)) {
+    session->set_tachyon_group_id(*ptr);
+  }
+
   ParseTeacherProtoFromJson(session_dict, session.get());
 
   ParseRosterProtoFromJson(session_dict, session.get());
