@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -87,9 +86,6 @@
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  // BrowserCoordinatorCommands to show the activity indicator when the view
-  // controller is dismissed.
-  id<BrowserCoordinatorCommands> _browserCoordinatorCommands;
   // Callback to hide the activity overlay.
   base::ScopedClosureRunner _activityOverlayCallback;
   // The add account coordinator if it’s open.
@@ -123,9 +119,6 @@
   _prefService = profile->GetPrefs();
   _applicationHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                            ApplicationCommands);
-
-  _browserCoordinatorCommands = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
 
   _viewController = [[AccountMenuViewController alloc]
       initWithStyle:UITableViewStyleInsetGrouped];
@@ -177,7 +170,6 @@
 
   // Sets the service to nil.
   _authenticationService = nil;
-  _browserCoordinatorCommands = nil;
   _identityManager = nil;
   _prefService = nil;
   _applicationHandler = nil;
@@ -277,17 +269,6 @@
   CHECK_EQ(mediator, _mediator);
   [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
                  completion:nil];
-}
-
-// Requests to dismiss the account menu view. Keeps the coordinator open and
-// show a spinner instead.
-- (void)mediatorWantsToDismissTheView:(AccountMenuMediator*)mediator {
-  CHECK_EQ(mediator, _mediator);
-  CHECK(_viewController);
-  [self stopChildrenAndViewControllerWithAction:SigninCoordinatorInterrupt::
-                                                    DismissWithAnimation
-                                     completion:nil];
-  _activityOverlayCallback = [_browserCoordinatorCommands showActivityOverlay];
 }
 
 - (AuthenticationFlow*)

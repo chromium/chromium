@@ -96,6 +96,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   UIButton* _closeButton;
   UIButton* _ellipsisButton;
   CentralAccountView* _identityAccountView;
+  // The index path of the cell on which the user tapped.
+  // It should be nil when the data source update the table content.
+  NSIndexPath* _selectedIndexPath;
 }
 
 #pragma mark - UIViewController
@@ -123,6 +126,15 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 #pragma mark - Private
+
+- (void)setActivityIndicator:(TableViewAccountCell*)cell {
+  UIActivityIndicatorView* activityIndicatorView =
+      [[UIActivityIndicatorView alloc] init];
+  activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  activityIndicatorView.color = [UIColor colorNamed:kTextSecondaryColor];
+  cell.accessoryView = activityIndicatorView;
+  [activityIndicatorView startAnimating];
+}
 
 // Returns the height of the navigation bar.
 - (CGFloat)navigationBarHeight {
@@ -270,6 +282,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     cell.userInteractionEnabled = YES;
     cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
+    if ([indexPath isEqual:_selectedIndexPath]) {
+      // In theory, this can occur if, during the account switch process, the
+      // user scrolls a lot, and scroll back.
+      [self setActivityIndicator:cell];
+    }
     BOOL lastSecondaryIdentity =
         (indexPath.row == [_accountMenuDataSource tableView:self.tableView
                                       numberOfRowsInSection:indexPath.section] -
@@ -432,7 +449,12 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     base::RecordAction(
         base::UserMetricsAction("Signin_AccountMenu_SelectAccount"));
     CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
+    TableViewAccountCell* cell =
+        base::apple::ObjCCastStrict<TableViewAccountCell>(
+            [self.tableView cellForRowAtIndexPath:indexPath]);
+    [self setActivityIndicator:cell];
     [self.mutator accountTappedWithGaiaID:gaiaID targetRect:cellRect];
+    _selectedIndexPath = indexPath;
   } else {
     // Otherwise `itemIdentifier` is a `RowIdentifier`.
     RowIdentifier rowIdentifier = static_cast<RowIdentifier>(
@@ -457,8 +479,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         [self.mutator signOutFromTargetRect:cellRect];
         break;
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
   }
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -526,6 +548,12 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)indicesToAdd
                           gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove {
+  [self.tableView deselectRowAtIndexPath:_selectedIndexPath animated:YES];
+  TableViewAccountCell* cell =
+      base::apple::ObjCCastStrict<TableViewAccountCell>(
+          [self.tableView cellForRowAtIndexPath:_selectedIndexPath]);
+  cell.accessoryView = nil;
+  _selectedIndexPath = nil;
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
 
   NSMutableArray* accountsIdentifiersToAdd = [[NSMutableArray alloc] init];

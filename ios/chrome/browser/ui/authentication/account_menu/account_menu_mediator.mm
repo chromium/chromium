@@ -427,6 +427,7 @@
         previousIdentity,
         signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH);
     _blockUserInteractions = NO;
+    [self restartUpdates];
   } else {
     self.signinCoordinatorResult = result;
     [_delegate mediatorWantsToBeDismissed:self];

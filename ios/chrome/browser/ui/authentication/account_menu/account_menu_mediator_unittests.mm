@@ -362,6 +362,9 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   // The delegate should not receive any message. The mediator directly sign the
   // user back in the previous account.
   OCMExpect([delegate_ unblockOtherScenesIfPossible]);
+  OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
+                                         gaiaIDsToRemove:@[]]);
+  OCMExpect([consumer_ updatePrimaryAccount]);
   onSigninSuccess(SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
 
   // Checks the user is signed-back in.
