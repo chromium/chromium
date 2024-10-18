@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/public/cpp/context_properties.h"
@@ -981,10 +982,39 @@ ScriptPromise<MLTensor> MLContext::createTensor(
                     return ScriptPromise<MLTensor>();
                   });
 
-  // WebNN bitfield values have the same value as enums.
+  // Map the IDL tensor usage flags to the `MLTensorUsage` enumset.
+  //
+  // This assertion protects against the usage flags changing without updating
+  // this mapping.
+  static_assert(base::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 2);
   webnn::MLTensorUsage usage;
+  if (descriptor->importableToWebGPU()) {
+    usage.Put(webnn::MLTensorUsageFlags::kWebGpuInterop);
+  }
+  if (descriptor->readable()) {
+    usage.Put(webnn::MLTensorUsageFlags::kRead);
+  }
+  if (descriptor->writable()) {
+    usage.Put(webnn::MLTensorUsageFlags::kWrite);
+  }
+
+  // TODO(crbug.com/343638938): Remove this after the M132 branch cut.
   if (descriptor->hasUsage()) {
-    usage = webnn::MLTensorUsage::FromEnumBitmask(descriptor->usage());
+    LogConsoleWarning(
+        script_state,
+        "WARNING: MLTensorUsage flags are deprecated. Set the boolean fields "
+        "of the MLTensorDescriptor dictionary instead.",
+        mojom::blink::ConsoleMessageSource::kDeprecation);
+
+    webnn::MLTensorUsage usage_specified_using_deprecated_api =
+        webnn::MLTensorUsage::FromEnumBitmask(descriptor->usage());
+
+    if (usage.empty()) {
+      usage = usage_specified_using_deprecated_api;
+    } else if (usage != usage_specified_using_deprecated_api) {
+      exception_state.ThrowTypeError("MLTensor usage flags are inconsistent.");
+      return ScriptPromise<MLTensor>();
+    }
   }
 
   auto tensor_info =

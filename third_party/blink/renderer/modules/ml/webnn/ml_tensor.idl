@@ -10,6 +10,11 @@
 ] interface MLTensor {
   readonly attribute MLOperandDataType dataType;
   readonly attribute FrozenArray<unsigned long> shape;
+  readonly attribute boolean importableToWebGPU;
+  readonly attribute boolean readable;
+  readonly attribute boolean writable;
+
+// TODO(crbug.com/343638938): Remove this after the M132 branch cut.
   readonly attribute MLTensorUsageFlags usage;
 
   void destroy();

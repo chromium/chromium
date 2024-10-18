@@ -7,6 +7,7 @@
 
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
@@ -55,6 +56,11 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // ml_tensor.idl
   V8MLOperandDataType dataType() const;
   Vector<uint32_t> shape() const;
+  bool importableToWebGPU() const;
+  bool readable() const;
+  bool writable() const;
+
+  // TODO(crbug.com/343638938): Remove this after the M132 branch cut.
   uint32_t usage() const;
 
   void destroy();
@@ -117,7 +123,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // Represents a valid MLTensorDescriptor.
   const webnn::OperandDescriptor descriptor_;
 
-  // Represents a valid MLTensorUsage.
+  // Represents usage flags for the MLTensor.
   const webnn::MLTensorUsage usage_;
 
   // Identifies this `WebNNTensor` mojo instance in the service process.

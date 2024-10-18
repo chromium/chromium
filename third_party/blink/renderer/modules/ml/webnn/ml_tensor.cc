@@ -54,6 +54,18 @@ Vector<uint32_t> MLTensor::shape() const {
   return Vector<uint32_t>(descriptor_.shape());
 }
 
+bool MLTensor::importableToWebGPU() const {
+  return usage_.Has(webnn::MLTensorUsageFlags::kWebGpuInterop);
+}
+
+bool MLTensor::readable() const {
+  return usage_.Has(webnn::MLTensorUsageFlags::kRead);
+}
+
+bool MLTensor::writable() const {
+  return usage_.Has(webnn::MLTensorUsageFlags::kWrite);
+}
+
 uint32_t MLTensor::usage() const {
   return static_cast<uint32_t>(usage_.ToEnumBitmask());
 }

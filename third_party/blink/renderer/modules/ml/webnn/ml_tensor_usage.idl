@@ -4,6 +4,8 @@
 
 // https://www.w3.org/TR/webnn/#api-mltensor
 
+// TODO(crbug.com/343638938): Remove this file after the M132 branch cut.
+
 typedef unsigned long MLFlagsConstant;
 
 typedef [EnforceRange] unsigned long MLTensorUsageFlags;
