@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Jau išsaugojote šį naudotojo vardą šioje svetainėje</translation>
 <translation id="1497590942294823549">Meniu → Slaptažodžių tvarkyklė</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> paskyra nebus ištrinta.</translation>
+<translation id="1506061864768559482">Paieškos variklis</translation>
 <translation id="1506063256525392513">Galite fotografuoti ir įkelti nuotraukas bei nuskaityti QR kodus</translation>
 <translation id="1509486075633541495">Prisijungti prie svetainės</translation>
 <translation id="1509960214886564027">Funkcijos gali neveikti daugybėje svetainių.</translation>
@@ -368,6 +369,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2664621323652615289">Sustabdyti</translation>
 <translation id="2666092431469916601">Į viršų</translation>
 <translation id="2669454659051515572">Visi šį įrenginį naudojantys asmenys gali peržiūrėti atsisiųstus failus</translation>
+<translation id="2671423594960767771">Bendrinti grupę</translation>
 <translation id="2673508731173059946">Apsilankyti nukopijuotos nuorodos adresu</translation>
 <translation id="2687403674020088961">Blokuoti visus slapukus (nerekomenduojama)</translation>
 <translation id="2690858294534178585">Fotoaparatas naudojamas</translation>
@@ -412,6 +414,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="288655811176831528">Uždaryti skirtuką</translation>
 <translation id="2888631381369839306">Kainų stebėjimo pranešimai įjungti</translation>
 <translation id="288902476966286676">Grąžinti siuntėjui</translation>
+<translation id="2893168226686371498">Numatytoji naršyklė</translation>
 <translation id="2894757982205307093">Naujas skirtukas grupėje</translation>
 <translation id="2905479111267140204">Turite pakartotinai naudojamų slaptažodžių (iš viso: <ph name="NUMBER_OF_PASSWORDS" />), dėl kurių gali kilti saugos pavojus.</translation>
 <translation id="291754862089661335">QR arba brūkšninis kodas turėtų būti rodomas šiame rėmelyje</translation>
@@ -778,7 +781,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4764612367328936189">Organizacijoje leidžiama prisijungti tik naudojant tam tikras paskyras. Neleidžiamos paskyros yra paslėptos. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">„Discover“ ir stebėjimas</translation>
 <translation id="4769198578611055647">Padeda pasiekti išsaugotus prieigos raktus bet kuriame įrenginyje</translation>
-<translation id="4775879719735953715">Numatytoji naršyklė</translation>
 <translation id="4777866634702576038">Ištrinti skirtukų grupę?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Atidaryti skirtukai, kurie nenaudojami vieną dieną ar ilgiau, perkeliami į Neaktyvius skirtukus, kad galėtumėte lengvai sutelkti dėmesį į dažniausiai naudojamus skirtukus. Tai galite bet kada pakeisti skiltyje „Nustatymai“.}one{Atidaryti skirtukai, kurie nenaudojami {COUNT} dieną ar ilgiau, perkeliami į Neaktyvius skirtukus, kad galėtumėte lengvai sutelkti dėmesį į dažniausiai naudojamus skirtukus. Tai galite bet kada pakeisti skiltyje „Nustatymai“.}few{Atidaryti skirtukai, kurie nenaudojami {COUNT} dienas ar ilgiau, perkeliami į Neaktyvius skirtukus, kad galėtumėte lengvai sutelkti dėmesį į dažniausiai naudojamus skirtukus. Tai galite bet kada pakeisti skiltyje „Nustatymai“.}many{Atidaryti skirtukai, kurie nenaudojami {COUNT} dienos ar ilgiau, perkeliami į Neaktyvius skirtukus, kad galėtumėte lengvai sutelkti dėmesį į dažniausiai naudojamus skirtukus. Tai galite bet kada pakeisti skiltyje „Nustatymai“.}other{Atidaryti skirtukai, kurie nenaudojami {COUNT} dienų ar ilgiau, perkeliami į Neaktyvius skirtukus, kad galėtumėte lengvai sutelkti dėmesį į dažniausiai naudojamus skirtukus. Tai galite bet kada pakeisti skiltyje „Nustatymai“.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5819208479324046259">Valdo „<ph name="MANAGER" />“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinchronizuojama…</translation>
 <translation id="5844284118433003733">Kai esate prisijungę, šie duomenys susiejami su jūsų „Google“ paskyra, siekiant apsaugoti jus „Google“ paslaugose, pvz., užtikrinant didesnę apsaugą sistemoje „Gmail“ po saugos incidento.</translation>
-<translation id="5846482154967366008">Paieškos variklis</translation>
 <translation id="5854790677617711513">Senesni nei 30 dienų</translation>
 <translation id="5857770089550859117">Norint pradėti sinchronizuoti reikalinga slaptafrazė.</translation>
 <translation id="5859715514067755465">Pirmyn</translation>

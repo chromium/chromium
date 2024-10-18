@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Već ste spremili ovo korisničko ime za ovu web-lokaciju</translation>
 <translation id="1497590942294823549">Izbornik → Upravitelj zaporki</translation>
 <translation id="1498283581832036924">Vaš <ph name="WEBSITE" /> račun neće se izbrisati.</translation>
+<translation id="1506061864768559482">Tražilica</translation>
 <translation id="1506063256525392513">To vam omogućuje snimanje i prijenos fotografija te skeniranje QR kodova.</translation>
 <translation id="1509486075633541495">Prijavite se na web-lokaciju</translation>
 <translation id="1509960214886564027">Značajke na mnogim web-lokacijama mogu prestati funkcionirati</translation>
@@ -124,7 +125,7 @@
 <translation id="1531038290222364269">Prikažite kartice</translation>
 <translation id="1536390784834419204">Prevedi stranicu</translation>
 <translation id="1540800554400757039">1. adresni redak</translation>
-<translation id="1545749641540134597">Skeniranje QR koda</translation>
+<translation id="1545749641540134597">Skenirajte QR kod</translation>
 <translation id="1554477036522844996">Novi prozor</translation>
 <translation id="1558391695376153246">Zatvori anonimne kartice</translation>
 <translation id="1571780780926010134">Anonimne kartice</translation>
@@ -368,6 +369,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2664621323652615289">Zaustavi</translation>
 <translation id="2666092431469916601">Gornji</translation>
 <translation id="2669454659051515572">Svi koji upotrebljavaju ovaj uređaj mogu vidjeti preuzete datoteke</translation>
+<translation id="2671423594960767771">Dijeli grupu</translation>
 <translation id="2673508731173059946">Otvori kopiranu vezu</translation>
 <translation id="2687403674020088961">Blokiranje svih kolačića (ne preporučuje se)</translation>
 <translation id="2690858294534178585">Fotoaparat je aktivan</translation>
@@ -412,6 +414,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="288655811176831528">Zatvori karticu</translation>
 <translation id="2888631381369839306">Obavijesti o praćenju cijena su uključene</translation>
 <translation id="288902476966286676">Vratiti pošiljatelju</translation>
+<translation id="2893168226686371498">Zadani preglednik</translation>
 <translation id="2894757982205307093">Nova kartica u grupi</translation>
 <translation id="2905479111267140204">Imate višestruko korištene zaporke (<ph name="NUMBER_OF_PASSWORDS" />) koje bi mogle ugroziti vašu sigurnost.</translation>
 <translation id="291754862089661335">Postavite QR ili crtični kôd u ovaj okvir</translation>
@@ -778,7 +781,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4764612367328936189">Vaša organizacija dopušta da se prijavite samo putem određenih računa. Nedopušteni su računi skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Preporuke i praćenje</translation>
 <translation id="4769198578611055647">Pomaže vam da pristupite spremljenim pristupnim ključevima na bilo kojem uređaju</translation>
-<translation id="4775879719735953715">Zadani preglednik</translation>
 <translation id="4777866634702576038">Želite li izbrisati grupu kartica?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Otvorene kartice koje se ne koriste jedan ili više dana premještaju se u Neaktivne kartice kako biste se lako usredotočili na kartice koje najčešće koristite. To uvijek možete promijeniti u postavkama.}one{Otvorene kartice koje se ne koriste {COUNT} ili više dana premještaju se u Neaktivne kartice kako biste se lako usredotočili na kartice koje najčešće koristite. To uvijek možete promijeniti u postavkama.}few{Otvorene kartice koje se ne koriste {COUNT} ili više dana premještaju se u Neaktivne kartice kako biste se lako usredotočili na kartice koje najčešće koristite. To uvijek možete promijeniti u postavkama.}other{Otvorene kartice koje se ne koriste {COUNT} ili više dana premještaju se u Neaktivne kartice kako biste se lako usredotočili na kartice koje najčešće koristite. To uvijek možete promijeniti u postavkama.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5819208479324046259">Uređajem upravlja <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinkronizacija…</translation>
 <translation id="5844284118433003733">Kad ste prijavljeni, ti se podaci povezuju s vašim Google računom kako biste dobili zaštitu na svim Googleovim uslugama, na primjer radi poboljšanja zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
-<translation id="5846482154967366008">Tražilica</translation>
 <translation id="5854790677617711513">Starije od 30 dana</translation>
 <translation id="5857770089550859117">Za pokretanje sinkronizacije potrebna je zaporka.</translation>
 <translation id="5859715514067755465">Unaprijed</translation>
@@ -1035,7 +1036,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5937560539988385583">Stranica je prevedena</translation>
 <translation id="5938160824633642847">Uređaj je gotovo pun. Oslobodite prostor i pokušajte ponovo.</translation>
 <translation id="594324569139756587">Blokiraj treće strane</translation>
-<translation id="5944869793365969636">Skeniranje QR koda</translation>
+<translation id="5944869793365969636">Skenirajte QR kod</translation>
 <translation id="5948291296578561264">To vam omogućuje da spremite fotografije u zbirku fotografija.</translation>
 <translation id="5956112131836209882">Kartica grupe kartica. <ph name="TAB_INDEX_IN_GROUP" /> od <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Pretraživanje pomoću usluge <ph name="SEARCH_PROVIDER" /></translation>

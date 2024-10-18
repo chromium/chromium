@@ -4578,7 +4578,6 @@ Catatan: Kebijakan ini menghentikan penggunaan kebijakan <ph name="ARC_GLS_POLIC
 <translation id="4341199399451274159">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> akan menentukan encoding karakter yang didukung oleh penyedia penelusuran. Encoding adalah nama halaman kode seperti UTF-8, GB2312, dan ISO-8859-1. Encoding dicoba sesuai urutan yang diberikan.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> tidak disetel, UTF-8 akan digunakan.</translation>
-<translation id="4343382787226139147">Menentukan sertifikat klien yang seharusnya didaftarkan menggunakan protokol pengelolaan perangkat.</translation>
 <translation id="4347908978527632940">Jika nilai disetel ke "true" dan pengguna adalah pengguna yang dilindungi, aplikasi Android lainnya dapat mengajukan kueri batasan web pengguna melalui penyedia konten.
 
           Jika nilai disetel ke "false" atau tidak disetel, penyedia konten tidak mengembalikan informasi apa pun.</translation>
@@ -6652,7 +6651,6 @@ Anda dapat menambahkan pembatasan akun lebih lanjut dengan kebijakan <ph name="M
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, rekomendasi ini tidak akan muncul.
 
       Jika kebijakan ini disetel, pengguna tidak dapat mengubahnya.</translation>
-<translation id="5848438019586925019">Algoritme untuk pembuatan pasangan kunci.</translation>
 <translation id="5851248808417680865">Gunakan Tema gelap</translation>
 <translation id="585270638818921943">Cegah pengguna menggunakan aplikasi Android dari sumber yang tidak tepercaya</translation>
 <translation id="5859344336338527083">Menyetel kebijakan akan menentukan URL mana yang dapat menginstal ekstensi, aplikasi, dan tema. Sebelum <ph name="PRODUCT_NAME" /> 21, pengguna dapat mengklik link ke file *.crx, dan <ph name="PRODUCT_NAME" /> akan menawarkan untuk menginstal file setelah menampilkan beberapa peringatan. Setelah itu, file tersebut harus didownload dan ditarik ke halaman setelan <ph name="PRODUCT_NAME" />. Setelan ini memungkinkan URL tertentu menggunakan alur penginstalan lama yang lebih mudah.
@@ -9501,7 +9499,6 @@ Nonaktifkan kebijakan ini hanya jika Anda menggunakan solusi keamanan endpoint y
       Jika tidak disetel, situs akan dapat meminta akses tetapi pengguna dapat mengubah setelan ini.
 
       Kebijakan ini dapat diganti untuk pola <ph name="URL_LABEL" /> tertentu menggunakan kebijakan <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> dan <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="7951605113561734721">Menentukan sertifikat klien di seluruh perangkat yang seharusnya didaftarkan menggunakan protokol pengelolaan perangkat.</translation>
 <translation id="7952007677054834789">Mengonfigurasi halaman yang akan dimuat saat permulaan, halaman beranda default, dan halaman tab baru default di <ph name="PRODUCT_NAME" /> dan mencegah pengguna mengubahnya.
 
       Setelan halaman beranda pengguna hanya terkunci sepenuhnya jika Anda memilih halaman beranda untuk menjadi halaman tab baru, atau menetapkannya menjadi URL dan menentukan URL halaman beranda. Jika Anda tidak menentukan URL halaman beranda, maka pengguna masih dapat menetapkan halaman beranda ke halaman tab baru dengan menentukan 'chrome://newtab'.

@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">您已為此網站儲存此使用者名稱</translation>
 <translation id="1497590942294823549">選單 → 密碼管理工具</translation>
 <translation id="1498283581832036924">系統不會刪除您的 <ph name="WEBSITE" /> 帳戶。</translation>
+<translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1506063256525392513">此操作允許您拍攝並上載相片，以及掃瞄 QR 碼</translation>
 <translation id="1509486075633541495">登入網站</translation>
 <translation id="1509960214886564027">很多網站的功能可能會無法正常運作</translation>
@@ -368,6 +369,7 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2666092431469916601">返回頁首</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
+<translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2673508731173059946">前往已複製的連結</translation>
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2690858294534178585">正在使用相機</translation>
@@ -412,6 +414,7 @@
 <translation id="288655811176831528">關閉分頁</translation>
 <translation id="2888631381369839306">價格追蹤通知已開啟</translation>
 <translation id="288902476966286676">退回給寄件者</translation>
+<translation id="2893168226686371498">預設瀏覽器</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="2905479111267140204">你有 <ph name="NUMBER_OF_PASSWORDS" /> 個重用密碼，可能導致安全風險。</translation>
 <translation id="291754862089661335">將二維條碼或條碼放置此頁框中</translation>
@@ -778,7 +781,6 @@
 <translation id="4764612367328936189">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">探索和追蹤</translation>
 <translation id="4769198578611055647">讓你在任何裝置上存取所儲存的密鑰</translation>
-<translation id="4775879719735953715">預設瀏覽器</translation>
 <translation id="4777866634702576038">要刪除分頁群組嗎？</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{如開啟的分頁已有 1 日或以上未使用，就會轉為「閒置分頁」，方便你順暢使用常用分頁。你可隨時在設定中變更此設定。}other{如開啟的分頁已有 {COUNT} 日或以上未使用，就會轉成「閒置分頁」，方便你順暢使用常用分頁。你可隨時在設定中變更此設定。}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">同步中…</translation>
 <translation id="5844284118433003733">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
-<translation id="5846482154967366008">搜尋引擎</translation>
 <translation id="5854790677617711513">超過 30 天</translation>
 <translation id="5857770089550859117">必須輸入密碼短語，才能開始同步資料。</translation>
 <translation id="5859715514067755465">繼續</translation>

@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
 <translation id="1497590942294823549">菜单 → 密码管理工具</translation>
 <translation id="1498283581832036924">您的 <ph name="WEBSITE" /> 账号不会被删除。</translation>
+<translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1506063256525392513">这样您就能拍摄并上传照片，还能扫描二维码</translation>
 <translation id="1509486075633541495">登录网站</translation>
 <translation id="1509960214886564027">很多网站上的功能可能会无法正常运作</translation>
@@ -368,6 +369,7 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2666092431469916601">顶部</translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
+<translation id="2671423594960767771">分享组</translation>
 <translation id="2673508731173059946">访问复制的链接</translation>
 <translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
@@ -412,6 +414,7 @@
 <translation id="288655811176831528">关闭标签页</translation>
 <translation id="2888631381369839306">已开启价格跟踪通知</translation>
 <translation id="288902476966286676">退回给发件人</translation>
+<translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2894757982205307093">在组内添加新标签页</translation>
 <translation id="2905479111267140204">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个密码重复使用，可能会导致安全风险。</translation>
 <translation id="291754862089661335">将 QR 码或条形码放到此框内</translation>
@@ -778,7 +781,6 @@
 <translation id="4764612367328936189">贵单位要求您只能使用特定账号登录。不允许使用的账号会处于隐藏状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">探索与关注</translation>
 <translation id="4769198578611055647">有助于您在任意设备上访问已保存的通行密钥</translation>
-<translation id="4775879719735953715">默认浏览器</translation>
 <translation id="4777866634702576038">要删除标签页分组吗？</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{如果打开的标签页未使用的时间达到或超过 1 天，则会移至“闲置标签页”部分，以便您能轻松地专注于最常使用的标签页。您随时可以在设置中更改此设置。}other{如果打开的标签页未使用的时间达到或超过 {COUNT} 天，则会移至“闲置标签页”部分，以便您能轻松地专注于最常使用的标签页。您随时可以在设置中更改此设置。}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">正在同步…</translation>
 <translation id="5844284118433003733">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：于安全事件发生后在 Gmail 中加强对您的保护力度。</translation>
-<translation id="5846482154967366008">搜索引擎</translation>
 <translation id="5854790677617711513">30 天之前的</translation>
 <translation id="5857770089550859117">必须输入密码才能开始同步。</translation>
 <translation id="5859715514067755465">前进</translation>

@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Þú varst þegar búin(n) að vista þetta notandanafn fyrir vefsvæðið</translation>
 <translation id="1497590942294823549">Valmynd → Aðgangsorðastjórnun</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-reikningnum þínum verður ekki eytt.</translation>
+<translation id="1506061864768559482">Leitarvél</translation>
 <translation id="1506063256525392513">Með þessu móti geturðu tekið myndir og hlaðið þeim upp og skannað QR-kóða.</translation>
 <translation id="1509486075633541495">Skrá inn á vefsvæði</translation>
 <translation id="1509960214886564027">Eiginleikar gætu bilað á mörgum vefsvæðum</translation>
@@ -368,6 +369,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2664621323652615289">Stöðva</translation>
 <translation id="2666092431469916601">Efst</translation>
 <translation id="2669454659051515572">Allir sem nota þetta tæki geta séð sóttar skrár</translation>
+<translation id="2671423594960767771">Deila hópi</translation>
 <translation id="2673508731173059946">Opna afritaðan tengil</translation>
 <translation id="2687403674020088961">Loka á öll fótspor (ekki mælt með)</translation>
 <translation id="2690858294534178585">Myndavélin er í notkun</translation>
@@ -412,6 +414,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="288655811176831528">Loka flipa</translation>
 <translation id="2888631381369839306">Kveikt er á tilkynningum fyrir verðrakningu</translation>
 <translation id="288902476966286676">Endursenda til sendanda</translation>
+<translation id="2893168226686371498">Sjálfgefinn vafri</translation>
 <translation id="2894757982205307093">Nýr flipi í hópi</translation>
 <translation id="2905479111267140204">Þú ert með <ph name="NUMBER_OF_PASSWORDS" /> endurnýtt aðgangsorð sem gætu stefnt öryggi þínu í hættu.</translation>
 <translation id="291754862089661335">Staðsettu QR-kóða eða strikamerkið innan rammans</translation>
@@ -778,7 +781,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4764612367328936189">Fyrirtækið þitt leyfir þér eingöngu að skrá þig inn með tilteknum reikningum. Bannaðir reikningar eru faldir. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Tillögur og fylgir</translation>
 <translation id="4769198578611055647">Auðveldar þér aðgang að vistuðum aðgangslyklum í öllum tækjum</translation>
-<translation id="4775879719735953715">Sjálfgefinn vafri</translation>
 <translation id="4777866634702576038">Eyða flipahóp?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Opnir flipar sem ekki eru notaðir í sólarhring eða lengur verða færðir í „Óvirkir flipar“ svo að þú getir einbeitt þér betur að flipunum sem þú notar mest. Þú getur breytt þessu hvenær sem er í stillingunum.}one{Opnir flipar sem ekki eru notaðir í {COUNT} dag eða lengur verða færðir í „Óvirkir flipar“ svo að þú getir einbeitt þér betur að flipunum sem þú notar mest. Þú getur breytt þessu hvenær sem er í stillingunum.}other{Opnir flipar sem ekki eru notaðir í {COUNT} daga eða lengur verða færðir í „Óvirkir flipar“ svo að þú getir einbeitt þér betur að flipunum sem þú notar mest. Þú getur breytt þessu hvenær sem er í stillingunum.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5819208479324046259">Stjórnað af <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Samstillir…</translation>
 <translation id="5844284118433003733">Þegar þú ert innskráð(ur) eru þessi gögn tengd við Google-reikninginn þinn til að vernda þig í Google-þjónustum, t.d. með því að auka vernd í Gmail eftir öryggistilvik.</translation>
-<translation id="5846482154967366008">Leitarvél</translation>
 <translation id="5854790677617711513">Eldra en 30 dagar</translation>
 <translation id="5857770089550859117">Aðgangsorð er nauðsynlegt til að hefja samstillingu.</translation>
 <translation id="5859715514067755465">Áfram</translation>

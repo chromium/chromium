@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Već ste sačuvali ovo korisničko ime za ovu web lokaciju</translation>
 <translation id="1497590942294823549">Meni → Upravitelj lozinki</translation>
 <translation id="1498283581832036924">Vaš račun na web lokaciji <ph name="WEBSITE" /> se neće izbrisati.</translation>
+<translation id="1506061864768559482">Pretraživač</translation>
 <translation id="1506063256525392513">To vam omogućava da snimate i otpremate fotografije kao i da skenirate QR kodove</translation>
 <translation id="1509486075633541495">Prijava na web lokaciju</translation>
 <translation id="1509960214886564027">Moguće je da će funkcije na mnogim web lokacijama prestati s radom</translation>
@@ -368,6 +369,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2664621323652615289">Zaustavljanje</translation>
 <translation id="2666092431469916601">Gornji</translation>
 <translation id="2669454659051515572">Svako ko koristi ovaj uređaj može vidjeti preuzete fajlove</translation>
+<translation id="2671423594960767771">Dijeli grupu</translation>
 <translation id="2673508731173059946">Posjeti kopirani link</translation>
 <translation id="2687403674020088961">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="2690858294534178585">Kamera se koristi</translation>
@@ -412,6 +414,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="288655811176831528">Zatvori karticu</translation>
 <translation id="2888631381369839306">Obavještenja o praćenju cijena su uključena</translation>
 <translation id="288902476966286676">Vraćanje pošiljaocu</translation>
+<translation id="2893168226686371498">Zadani preglednik</translation>
 <translation id="2894757982205307093">Nova kartica u grupi</translation>
 <translation id="2905479111267140204">Imate ovoliko već korištenih lozinki koje mogu ugroziti sigurnost: <ph name="NUMBER_OF_PASSWORDS" />.</translation>
 <translation id="291754862089661335">Postavite QR kôd ili barkod u ovaj okvir</translation>
@@ -778,7 +781,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4764612367328936189">Vaša organizacija vam dozvoljava da se prijavite samo s određenim računima. Računi koji nisu dozvoljeni su skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Otkrijte i pratite</translation>
 <translation id="4769198578611055647">Pomaže vam da pristupate sačuvanim pristupnim ključevima na bilo kojem uređaju</translation>
-<translation id="4775879719735953715">Zadani preglednik</translation>
 <translation id="4777866634702576038">Izbrisati grupu kartica?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Otvorene kartice koje ne koristite jedan ili više dana se premještaju u Neaktivne kartice da se možete lako fokusirati na kartice koje najviše koristite. Možete promijeniti ovo bilo kada u postavkama.}one{Otvorene kartice koje ne koristite {COUNT} ili više dana se premještaju u Neaktivne kartice da se možete lako fokusirati na kartice koje najviše koristite. Možete promijeniti ovo bilo kada u postavkama.}few{Otvorene kartice koje ne koristite {COUNT} ili više dana se premještaju u Neaktivne kartice da se možete lako fokusirati na kartice koje najviše koristite. Možete promijeniti ovo bilo kada u postavkama.}other{Otvorene kartice koje ne koristite {COUNT} ili više dana se premještaju u Neaktivne kartice da se možete lako fokusirati na kartice koje najviše koristite. Možete promijeniti ovo bilo kada u postavkama.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5819208479324046259">Preglednikom upravlja <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinhronizacija…</translation>
 <translation id="5844284118433003733">Kada ste prijavljeni, ovi podaci se povezuju s vašim Google računom radi vaše zaštite na svim Googleovim uslugama, naprimjer, povećavanjem zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
-<translation id="5846482154967366008">Pretraživač</translation>
 <translation id="5854790677617711513">Starije od 30 dana</translation>
 <translation id="5857770089550859117">Potreban je pristupni izraz za pokretanje sinhronizacije.</translation>
 <translation id="5859715514067755465">Naprijed</translation>

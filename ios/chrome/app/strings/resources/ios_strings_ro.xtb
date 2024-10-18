@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Ai salvat deja acest nume de utilizator pentru site</translation>
 <translation id="1497590942294823549">Meniu → Manager de parole</translation>
 <translation id="1498283581832036924">Contul tău <ph name="WEBSITE" /> nu se va șterge.</translation>
+<translation id="1506061864768559482">Motor de căutare</translation>
 <translation id="1506063256525392513">Astfel, poți să fotografiezi, să încarci fotografiile și să scanezi coduri QR</translation>
 <translation id="1509486075633541495">Conectează-te la site</translation>
 <translation id="1509960214886564027">Este posibil ca funcțiile de pe mai multe site-uri să fie întrerupte</translation>
@@ -368,6 +369,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2664621323652615289">Oprește</translation>
 <translation id="2666092431469916601">Sus</translation>
 <translation id="2669454659051515572">Oricine folosește acest dispozitiv poate să vadă fișierele descărcate</translation>
+<translation id="2671423594960767771">Trimite grupul</translation>
 <translation id="2673508731173059946">Accesează linkul copiat</translation>
 <translation id="2687403674020088961">Blochează toate cookie-urile (nu este recomandat)</translation>
 <translation id="2690858294534178585">Camera foto este în uz</translation>
@@ -412,6 +414,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="288655811176831528">Închide fila</translation>
 <translation id="2888631381369839306">Notificările de urmărire a prețurilor sunt activate</translation>
 <translation id="288902476966286676">Returnat expeditorului</translation>
+<translation id="2893168226686371498">Browserul prestabilit</translation>
 <translation id="2894757982205307093">Filă nouă în grup</translation>
 <translation id="2905479111267140204">Ai <ph name="NUMBER_OF_PASSWORDS" /> parole refolosite care îți pot periclita securitatea.</translation>
 <translation id="291754862089661335">Poziționează codul QR sau codul de bare în acest cadru</translation>
@@ -778,7 +781,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4764612367328936189">Organizația îți permite să te conectezi doar cu anumite conturi. Conturile nepermise sunt ascunse. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Descoperă și urmărește</translation>
 <translation id="4769198578611055647">Te ajută să accesezi cheile de acces salvate pe orice dispozitiv</translation>
-<translation id="4775879719735953715">Browser prestabilit</translation>
 <translation id="4777866634702576038">Ștergi grupul de file?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Filele deschise care nu sunt folosite timp de o zi sau mai mult sunt mutate în File inactive, astfel încât să te poți concentra cu ușurință pe filele pe care le folosești cel mai des. Poți modifica oricând opțiunea din setări.}few{Filele deschise care nu sunt folosite timp de {COUNT} zile sau mai mult sunt mutate în File inactive, ca să te poți concentra cu ușurință pe filele pe care le folosești cel mai des. Poți modifica oricând opțiunea din setări.}other{Filele deschise care nu sunt folosite timp de {COUNT} de zile sau mai mult sunt mutate în File inactive, ca să te poți concentra cu ușurință pe filele pe care le folosești cel mai des. Poți modifica oricând opțiunea din setări.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5819208479324046259">Gestionat de <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Se sincronizează…</translation>
 <translation id="5844284118433003733">Când te conectezi, aceste date sunt asociate Contului tău Google pentru a te proteja în toate serviciile Google, de exemplu, sporind gradul de protecție în Gmail după un incident de securitate.</translation>
-<translation id="5846482154967366008">Motor de căutare</translation>
 <translation id="5854790677617711513">Mai vechi de 30 de zile</translation>
 <translation id="5857770089550859117">Pentru a începe sincronizarea este necesară expresia de acces.</translation>
 <translation id="5859715514067755465">Înainte</translation>

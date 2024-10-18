@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Xa gardaches este nome de usuario para este sitio</translation>
 <translation id="1497590942294823549">Menú → Xestor de contrasinais</translation>
 <translation id="1498283581832036924">Non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
+<translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1506063256525392513">Permíteche tirar e cargar fotos, así como escanear códigos QR</translation>
 <translation id="1509486075633541495">Iniciar sesión no sitio web</translation>
 <translation id="1509960214886564027">As funcións de moitos sitios poden deixar de funcionar</translation>
@@ -368,6 +369,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2664621323652615289">Deter</translation>
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
+<translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2673508731173059946">Visitar ligazón copiada</translation>
 <translation id="2687403674020088961">Bloquear todas as cookies (non recomendado)</translation>
 <translation id="2690858294534178585">Estase utilizando a cámara</translation>
@@ -412,6 +414,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="288655811176831528">Pechar pestana</translation>
 <translation id="2888631381369839306">Activáronse as notificacións de seguimento de prezos</translation>
 <translation id="288902476966286676">Devolver aos remitente</translation>
+<translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2894757982205307093">Nova pestana no grupo</translation>
 <translation id="2905479111267140204">Tes <ph name="NUMBER_OF_PASSWORDS" /> contrasinais reutilizados que poderían poñer en perigo a túa seguranza.</translation>
 <translation id="291754862089661335">Coloca o código QR ou o código de barras neste marco</translation>
@@ -778,7 +781,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4764612367328936189">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover e Seguindo</translation>
 <translation id="4769198578611055647">Axúdache a acceder ás claves de acceso gardadas en calquera dispositivo</translation>
-<translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4777866634702576038">Queres eliminar o grupo de pestanas?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{As pestanas abertas que leven un día ou máis sen uso moveranse a Pestanas inactivas para que te poidas centrar nas que máis utilizas. Podes cambiar esta opción en calquera momento na configuración.}other{As pestanas abertas que leven {COUNT} días ou máis sen uso moveranse a Pestanas inactivas para que te poidas centrar nas que máis utilizas. Podes cambiar esta opción en calquera momento na configuración.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5819208479324046259">Xestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
 <translation id="5844284118433003733">Cando tes a sesión iniciada, estes datos asócianse á túa Conta de Google para protexerte nos servizos de Google (por exemplo, aumentando a protección en Gmail despois dun incidente de seguranza).</translation>
-<translation id="5846482154967366008">Motor de busca</translation>
 <translation id="5854790677617711513">Con máis de 30 días</translation>
 <translation id="5857770089550859117">Introduce a frase de acceso para iniciar a sincronización.</translation>
 <translation id="5859715514067755465">Avanzar</translation>

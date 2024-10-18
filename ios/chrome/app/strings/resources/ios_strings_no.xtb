@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Du har allerede lagret dette brukernavnet for dette nettstedet</translation>
 <translation id="1497590942294823549">Meny → Passordlagring</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-kontoen din slettes ikke</translation>
+<translation id="1506061864768559482">Søkemotor</translation>
 <translation id="1506063256525392513">Dette gjør at du kan ta og laste opp bilder samt skanne QR-koder</translation>
 <translation id="1509486075633541495">Logg på nettstedet</translation>
 <translation id="1509960214886564027">Det kan hende at funksjoner på mange nettsteder slutter å fungere</translation>
@@ -368,6 +369,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2664621323652615289">Stopp</translation>
 <translation id="2666092431469916601">Topp</translation>
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
+<translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2673508731173059946">Besøk den kopierte linken</translation>
 <translation id="2687403674020088961">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
@@ -412,6 +414,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="288655811176831528">Lukk fane</translation>
 <translation id="2888631381369839306">Varsler om prissporing er slått på</translation>
 <translation id="288902476966286676">Returner til avsender</translation>
+<translation id="2893168226686371498">Standardnettleser</translation>
 <translation id="2894757982205307093">Ny fane i gruppen</translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> gjenbrukte passord som kan utgjøre en sikkerhetsrisiko.</translation>
 <translation id="291754862089661335">Plassér QR-/strekkoden i denne rammen.</translation>
@@ -778,7 +781,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4764612367328936189">Organisasjonen din lar deg kun logge på med visse kontoer. Kontoer som ikke tillates, er skjult. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover og følger</translation>
 <translation id="4769198578611055647">Hjelper deg med å få tilgang til lagrede passnøkler på alle enheter</translation>
-<translation id="4775879719735953715">Standardnettleser</translation>
 <translation id="4777866634702576038">Vil du slette fanegruppen?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Åpne faner som ikke har vært i bruk den siste dagen, flyttes til inaktive faner, slik at du enkelt kan fokusere på fanene du bruker mest. Du kan når som helst endre dette i innstillingene.}other{Åpne faner som ikke har vært i bruk på {COUNT} dager eller mer, flyttes til inaktive faner, slik at du enkelt kan fokusere på fanene du bruker mest. Du kan når som helst endre dette i innstillingene.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5819208479324046259">Administreres av <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkroniserer …</translation>
 <translation id="5844284118433003733">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
-<translation id="5846482154967366008">Søkemotor</translation>
 <translation id="5854790677617711513">Eldre enn 30 dager</translation>
 <translation id="5857770089550859117">Det kreves en passordfrase for å starte synkroniseringen.</translation>
 <translation id="5859715514067755465">Fremover</translation>

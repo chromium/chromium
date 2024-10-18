@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">E ke ruajtur tashmë këtë emër përdoruesi për këtë sajt</translation>
 <translation id="1497590942294823549">Menyja → Menaxheri i fjalëkalimeve</translation>
 <translation id="1498283581832036924">Llogaria jote e <ph name="WEBSITE" /> nuk do të fshihet.</translation>
+<translation id="1506061864768559482">Motori i kërkimit</translation>
 <translation id="1506063256525392513">Kjo të lejon të bësh dhe të ngarkosh fotografi, si dhe të skanosh kode QR</translation>
 <translation id="1509486075633541495">Identifikohu në sajtin e uebit</translation>
 <translation id="1509960214886564027">Veçoritë në shumë sajte mund të ndalojnë së funksionuari</translation>
@@ -368,6 +369,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2664621323652615289">Ndalo</translation>
 <translation id="2666092431469916601">I sipërm</translation>
 <translation id="2669454659051515572">Çdo person që e përdor këtë pajisje mund t'i shikojë skedarët e shkarkuar</translation>
+<translation id="2671423594960767771">Ndaj grupin</translation>
 <translation id="2673508731173059946">Vizito lidhjen e kopjuar</translation>
 <translation id="2687403674020088961">Blloko të gjitha kukit (nuk rekomandohet)</translation>
 <translation id="2690858294534178585">Kamera është në përdorim</translation>
@@ -412,6 +414,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="288655811176831528">Mbylle skedën</translation>
 <translation id="2888631381369839306">Njoftimet për monitorimin e çmimeve janë aktivizuar</translation>
 <translation id="288902476966286676">Ktheje te dërguesi</translation>
+<translation id="2893168226686371498">Shfletuesi i parazgjedhur</translation>
 <translation id="2894757982205307093">Skedë e re në grup</translation>
 <translation id="2905479111267140204">Ke <ph name="NUMBER_OF_PASSWORDS" /> fjalëkalime të ripërdorura që mund ta rrezikojnë sigurinë tënde.</translation>
 <translation id="291754862089661335">Pozicionoje kodin QR ose barkodin në këtë kornizë</translation>
@@ -778,7 +781,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4764612367328936189">Organizata jote të lejon të identifikohesh vetëm me llogari të caktuara. Llogaritë që nuk lejohen janë të fshehura. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">"Zbulo" dhe "Po ndjek"</translation>
 <translation id="4769198578611055647">Të ndihmon që të qasesh te çelësat e ruajtur të kalimit në çdo pajisje</translation>
-<translation id="4775879719735953715">Shfletuesi i parazgjedhur</translation>
 <translation id="4777866634702576038">Të fshihet grupi i skedave?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Skedat e hapura që nuk përdoren për një ditë ose më shumë zhvendosen te "Skedat joaktive" që të mund të përqendrohesh me lehtësi te skedat që përdor më shumë. Këtë mund ta ndryshosh në çdo kohë te cilësimet.}other{Skedat e hapura që nuk përdoren për {COUNT} ditë ose më shumë zhvendosen te "Skedat joaktive" që të mund të përqendrohesh me lehtësi te skedat që përdor më shumë. Këtë mund ta ndryshosh në çdo kohë te cilësimet.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5819208479324046259">Menaxhohet nga <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Po sinkronizohen…</translation>
 <translation id="5844284118433003733">Kur je i identifikuar, këto të dhëna lidhen me "Llogarinë tënde të Google" për të të mbrojtur nëpër shërbimet e Google, p.sh. duke rritur mbrojtjen në Gmail pas një incidenti sigurie.</translation>
-<translation id="5846482154967366008">Motori i kërkimit</translation>
 <translation id="5854790677617711513">Më të vjetra se 30 ditë</translation>
 <translation id="5857770089550859117">Kërkohet shprehja e kalimit për të nisur sinkronizimin.</translation>
 <translation id="5859715514067755465">Shko përpara</translation>

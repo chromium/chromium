@@ -1506,7 +1506,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2053312383184521053">Dane o stanie bezczynności</translation>
 <translation id="205560151218727633">Logo Asystenta Google</translation>
 <translation id="2058456167109518507">Wykryto urządzenie</translation>
-<translation id="2058581283817163201">Potwierdzenie na telefonie</translation>
 <translation id="2059913712424898428">Strefa czasowa</translation>
 <translation id="2060375639911876205">Usuń profil eSIM</translation>
 <translation id="2061366302742593739">Brak wydatków do wyświetlenia</translation>
@@ -3139,7 +3138,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3241680850019875542">Wybierz główny katalog rozszerzenia, które chcesz umieścić w pakiecie. Aby zaktualizować rozszerzenie, wybierz również plik kluczy prywatnych do ponownego użycia.</translation>
 <translation id="3241810535741601486">Ta zmiana jest trwała i nie można jej cofnąć. Rozszerzone aktualizacje dotyczą wszystkich użytkowników tego urządzenia. <ph name="LINK_START" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">Aplikację z atrybutem „kiosk_only” w pliku manifestu należy zainstalować w Chrome OS w trybie kiosku</translation>
-<translation id="3242665648857227438">Ten profil korzysta z ustawień serwera proxy Chrome OS.</translation>
 <translation id="3243017971870859287">Odczytywanie numerów seryjnych urządzeń z ChromeOS Flex i komponentów</translation>
 <translation id="324366796737464147">Wyciszanie szumów</translation>
 <translation id="3244294424315804309">Nadal wyciszaj dźwięk</translation>
@@ -4864,7 +4862,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4486333480498805415">Dokładność lokalizacji</translation>
 <translation id="4487489714832036847">Zamiast tradycyjnego oprogramowania Chromebooki używają aplikacji. Pobierz je, by wydajnie pracować, cieszyć się rozrywką i korzystać z innych funkcji.</translation>
 <translation id="4488257340342212116">Zezwolono na używanie kamery</translation>
-<translation id="4490086832405043258">Używaj ustawień serwera proxy Chrome OS w tym profilu.</translation>
 <translation id="4490798467014431984">Rozszerzenia w tej witrynie są niedozwolone</translation>
 <translation id="449102748655090594">Grupuję karty…</translation>
 <translation id="449126573531210296">Szyfruj synchronizowane hasła, używając danych konta Google</translation>
@@ -5955,7 +5952,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5294068591166433464">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Google.</translation>
 <translation id="5294097441441645251">Musi zaczynać się od małej litery lub podkreślenia</translation>
 <translation id="5294618183559481278">Twoje urządzenie <ph name="DEVICE_TYPE" /> korzysta z wbudowanego czujnika, który wykrywa osoby znajdujące się przed ekranem. Wszystkie dane są od razu przetwarzane na urządzeniu i potem usuwane. Czujnik nigdy nie wysyła zebranych danych do Google. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">Rozszerzenia mogą prosić o dostęp do tej strony</translation>
 <translation id="5295349205180144885">Nazwa grupy kart: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Umożliwia odtwarzanie komunikatów głosowych, aby można było korzystać z urządzenia bez patrzenia na ekran. Komunikaty brajlowskie są dostępne na połączonych urządzeniach.</translation>
 <translation id="5296536303670088158">Korzystasz z najlepszych zabezpieczeń Chrome przed szkodliwymi stronami</translation>
@@ -6838,7 +6834,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5951303645598168883"><ph name="ORIGIN" /> chce korzystać z lokalnych czcionek</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5952020381407136867">touchpad</translation>
-<translation id="595262438437661818">Żadne rozszerzenia nie potrzebują dostępu do tej strony</translation>
 <translation id="5953211687820750364">Na tę listę wpływają zasady <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           i <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">Twoje hasło utraciło ważność. Wyloguj się, a potem zaloguj się jeszcze raz, by je zmienić.</translation>
@@ -8872,7 +8867,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7450761244949417357">Otwieram w przeglądarce <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7450926666485653189">Wysyła zaciemnioną część adresu URL do Google przez serwer prywatności, który ukrywa Twój adres IP</translation>
 <translation id="7453008956351770337">Wybierając tę drukarkę, zezwalasz na dostęp do niej temu rozszerzeniu:</translation>
-<translation id="7453467225369441013">Wylogowuje z większości stron internetowych. Nie wyloguje Cię z konta Google.</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Twoja organizacja wyłączyła zapisywanie haseł</translation>
 <translation id="7455730275746867420">Zarządzaj dodatkowymi kontenerami</translation>
@@ -8954,7 +8948,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7508707215237589321">Usunąć „<ph name="CERT_NAME" />”?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Zamknąć kartę i usunąć grupę?}=1{Zamknąć kartę i usunąć grupę?}few{Zamknąć karty i usunąć grupy?}many{Zamknąć karty i usunąć grupy?}other{Zamknąć karty i usunąć grupy?}}</translation>
 <translation id="7509097596023256288">Konfiguruję zarządzanie</translation>
-<translation id="7509246181739783082">Weryfikacja tożsamości</translation>
 <translation id="7509539379068593709">Odinstaluj aplikację</translation>
 <translation id="7514239104543605883">Skopiuj na swoje urządzenie</translation>
 <translation id="7514365320538308">Pobierz</translation>

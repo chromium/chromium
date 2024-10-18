@@ -1513,7 +1513,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2053312383184521053">Data om hviletilstand</translation>
 <translation id="205560151218727633">Google Assistent-logo</translation>
 <translation id="2058456167109518507">Enhet oppdaget</translation>
-<translation id="2058581283817163201">Bekreft med denne telefonen</translation>
 <translation id="2059913712424898428">Tidssone</translation>
 <translation id="2060375639911876205">Fjern eSIM-kortprofilen</translation>
 <translation id="2061366302742593739">Ingenting å vise</translation>
@@ -3164,7 +3163,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3241680850019875542">Velg rotkatalogen til utvidelsen som skal pakkes. Hvis du vil oppdatere en utvidelse, velger du også den private nøkkelfilen.</translation>
 <translation id="3241810535741601486">Denne endringen er permanent og kan ikke angres. Forlenget periode for oppdateringer gjelder for alle brukere av denne enheten. <ph name="LINK_START" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">Apper med manifest-attributtet «kiosk_only» må være installert i ChromeOS-kioskmodus</translation>
-<translation id="3242665648857227438">Denne profilen bruker proxy-innstillingene i ChromeOS.</translation>
 <translation id="3243017971870859287">lese serienumrene til ChromeOS Flex-enheten og -komponenter</translation>
 <translation id="324366796737464147">Støyreduksjon</translation>
 <translation id="3244294424315804309">Fortsett med å kutte lyden</translation>
@@ -4889,7 +4887,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4486333480498805415">Posisjonsnøyaktighet</translation>
 <translation id="4487489714832036847">Chromebook bruker apper i stedet for tradisjonell programvare. Skaff deg apper for produktivitet, underholdning med mer.</translation>
 <translation id="4488257340342212116">Nettsteder som har lov til å bruke kameraet ditt</translation>
-<translation id="4490086832405043258">Bruk proxy-innstillingene i ChromeOS for denne profilen.</translation>
 <translation id="4490798467014431984">Utvidelser er ikke tillatt på dette nettstedet</translation>
 <translation id="449102748655090594">Grupperer fanene dine …</translation>
 <translation id="449126573531210296">Kryptér synkroniserte passord med Google-kontoen din</translation>
@@ -5980,7 +5977,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5294068591166433464">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Google</translation>
 <translation id="5294097441441645251">Må begynne med liten bokstav eller understrek</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> bruker en innebygd sensor for å registrere personer foran enheten. Alle data behandles umiddelbart på enheten og slettes deretter. Sensordata sendes aldri til Google. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">Utvidelser kan be om tilgang til dette nettstedet</translation>
 <translation id="5295349205180144885">Navn på fanegruppen: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Hør taletilbakemeldinger, slik at du kan bruke enheten uten å se på skjermen. Tilbakemelding med punktskrift er tilgjengelig med en tilkoblet enhet.</translation>
 <translation id="5296536303670088158">Du har den sterkeste sikkerheten i Chrome mot skadelige nettsteder</translation>
@@ -6863,7 +6859,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5951303645598168883"><ph name="ORIGIN" /> vil bruke lokale skrifttyper</translation>
 <translation id="5951624318208955736">Skjerm</translation>
 <translation id="5952020381407136867">styreflate</translation>
-<translation id="595262438437661818">Ingen utvidelser trenger tilgang til dette nettstedet</translation>
 <translation id="5953211687820750364">Denne listen påvirkes av <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           og <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">Passordet ditt er utløpt. Logg av og på igjen for å endre det.</translation>
@@ -8896,7 +8891,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7450761244949417357">Åpnes i <ph name="ALTERNATIVE_BROWSER_NAME" /> nå</translation>
 <translation id="7450926666485653189">Sender en obfuskert del av nettadressen til Google via en personverntjener som skjuler IP-adressen din</translation>
 <translation id="7453008956351770337">Ved å velge denne skriveren gir du følgende utvidelse tillatelse til å bruke skriveren din:</translation>
-<translation id="7453467225369441013">Logger deg av de fleste nettsteder. Du blir ikke logget av Google-kontoen din.</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Organisasjonen din har slått av lagring av passord</translation>
 <translation id="7455730275746867420">Administrer tilleggsbeholdere</translation>
@@ -8978,7 +8972,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7508707215237589321">Vil du slette «<ph name="CERT_NAME" />»?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Vil du lukke fanen og slette gruppen?}=1{Vil du lukke fanene og slette gruppen?}other{Vil du lukke fanene og slette gruppene?}}</translation>
 <translation id="7509097596023256288">Konfigurerer av administrasjon</translation>
-<translation id="7509246181739783082">Bekreft identiteten din</translation>
 <translation id="7509539379068593709">Avinstaller appen</translation>
 <translation id="7514239104543605883">Kopiér til enheten din</translation>
 <translation id="7514365320538308">Last ned</translation>

@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">Укључите или искључите навигацију курсором</translation>
 <translation id="2531025035050312891">спор уређај</translation>
 <translation id="2531107890083353124">Док превлачите картицу, притисните <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Покушавате да користите Home? Користите</translation>
 <translation id="254900897760075745">Копирај изабрани садржај у привремену меморију</translation>
 <translation id="2549711466868162843">Побољшано осветљење</translation>
 <translation id="2549985041256363841">Започни снимање</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">Прикажи све апликације</translation>
 <translation id="2992272421330787632">Сакриј све предлоге за медије</translation>
 <translation id="2992327365391326550">Дугме за микрофон на уређају је искључено.</translation>
+<translation id="2993956882370897557">Покушавате да користите End? Користите</translation>
 <translation id="3000461861112256445">Моно звук</translation>
 <translation id="3001391739687111021">Измените величину екрана</translation>
 <translation id="3009178788565917040">Излаз</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> враћа <ph name="DEVICE_TYPE" /> на претходну верзију. Уређај ће се ресетовати и сви подаци ће бити избрисани.</translation>
 <translation id="316798519864381606">Google презентација</translation>
 <translation id="3171170659304083361">Подешавања метода уноса</translation>
+<translation id="3174897399179348329">Покушавате да користите Page Up? Користите</translation>
 <translation id="3176221688814061633">Chromebook или Bluetooth уређај користи старију верзију Bluetooth-а. Укључите Bluetooth супер резолуцију или користите интерни микрофон за бољи квалитет звука.</translation>
 <translation id="3181441307743005334">Рестартовање може да потраје</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Повезани сте са једним уређајем}one{Повезани сте са # уређајем}few{Повезани сте са # уређаја}other{Повезани сте са # уређаја}}</translation>
@@ -1262,6 +1265,7 @@
 <translation id="5297704307811127955">Искључено</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5302048478445481009">Језик</translation>
+<translation id="5302531370473608800">Ажурирајте <ph name="DEVICE_TYPE" /> да бисте користили YouTube Music</translation>
 <translation id="5303319262469238330">Преостало је <ph name="PERCENTAGE" />% батерије.
 Неке функције су ограничене да би се продужило трајање батерије.</translation>
 <translation id="5308380583665731573">Повежи</translation>
@@ -1821,6 +1825,7 @@
 <translation id="7144942256906679589">Статус батерије</translation>
 <translation id="7145639536026937076">Батерија је на <ph name="PERCENTAGE" />% и пуни се. Уштеда батерије је укључена.</translation>
 <translation id="7147587499155271409">Нема историје прегледања</translation>
+<translation id="7147657298465433425">Да бисте приступили F тастерима, притисните тастер fn + тастере у горњем реду</translation>
 <translation id="7149149900052329230">Управљајте локалним фајловима и фајловима са Google диска, све у апликацији Фајлови.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1931,6 +1936,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> тренутно користи микрофон</translation>
 <translation id="7561982940498449837">Затвори мени</translation>
 <translation id="7564874036684306347">Премештање прозора на други рачунар може да доведе до неочекиваног понашања. Накнадна обавештења, прозори и дијалози ће можда бити подељени између рачунара.</translation>
+<translation id="7568154670718626683">Покушавате да користите Delete? Користите</translation>
 <translation id="7568790562536448087">Ажурирање</translation>
 <translation id="7569509451529460200">Брајева азбука и ChromeVox су омогућени</translation>
 <translation id="7569886975397378678">Одбаците подешавање прегледа обавештења и апликација на телефону</translation>
@@ -2133,6 +2139,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> Фокус у трајању од <ph name="FOCUSED_TIME" /> је управо истекао. Отворите Брза подешавања да бисте поново фокусирали.</translation>
 <translation id="8203224998425013577">Прикажи више емоџија и GIF-ова</translation>
 <translation id="8203795194971602413">Десни клик</translation>
+<translation id="8205469348819768313">Покушавате да користите Page Down? Користите</translation>
 <translation id="8214996719228530800">Canary канал</translation>
 <translation id="8219451629189078428">Chromebook треба да остане укључен и повезан на извор напајања током тог периода. Уверите се да су каблови пуњача или адаптера исправно прикључени, и у Chromebook и у утичницу Не искључујте Chromebook.</translation>
 <translation id="8220076512072059941">Додајте <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2325,6 +2332,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google помоћник не говори овај језик.</translation>
 <translation id="8926951137623668982">Полица је увек сакривена</translation>
+<translation id="8929566928381252430">Покушавате да користите Caps Lock? Користите</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>
 <translation id="8938800817013097409">Уређај са USB прикључком типа C (задњи десни порт)</translation>

@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Du har redan sparat användarnamnet för den här webbplatsen</translation>
 <translation id="1497590942294823549">Meny → Lösenordshantering</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-kontot raderas inte.</translation>
+<translation id="1506061864768559482">Sökmotor</translation>
 <translation id="1506063256525392513">Det här gör att du kan ta och ladda upp foton samt skanna QR-koder</translation>
 <translation id="1509486075633541495">Logga in på webbplats</translation>
 <translation id="1509960214886564027">Funktioner kan sluta att fungera på många webbplatser</translation>
@@ -368,6 +369,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2664621323652615289">Stopp</translation>
 <translation id="2666092431469916601">Överst</translation>
 <translation id="2669454659051515572">Alla som använder enheten kan se nedladdade filer</translation>
+<translation id="2671423594960767771">Dela grupp</translation>
 <translation id="2673508731173059946">Besök kopierad länk</translation>
 <translation id="2687403674020088961">Blockera alla cookies (rekommenderas inte)</translation>
 <translation id="2690858294534178585">Kameran används</translation>
@@ -412,6 +414,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="288655811176831528">Stäng fliken</translation>
 <translation id="2888631381369839306">Aviseringar om prisbevakning har aktiverats</translation>
 <translation id="288902476966286676">Retur till avsändaren</translation>
+<translation id="2893168226686371498">Standardwebbläsare</translation>
 <translation id="2894757982205307093">Ny flik i grupp</translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> återanvända lösenord som kan innebära en säkerhetsrisk.</translation>
 <translation id="291754862089661335">Passa in QR-koden eller streckkoden i den här rutan</translation>
@@ -778,7 +781,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4764612367328936189">Organisationen tillåter inloggning med endast vissa konton. Konton som inte tillåts är dolda. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Förslag och följer</translation>
 <translation id="4769198578611055647">Hjälper dig att få åtkomst till sparade nycklar på vilken enhet som helst</translation>
-<translation id="4775879719735953715">Standardwebbläsare</translation>
 <translation id="4777866634702576038">Vill du radera flikgruppen?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Öppna flikar som inte har använts på minst en dag flyttas till Inaktiva flikar så att du enkelt hittar de flikar du använder mest. Du kan när som helst ändra detta i inställningarna.}other{Öppna flikar som inte har använts på minst {COUNT} dagar flyttas till Inaktiva flikar så att du enkelt hittar de flikar du använder mest. Du kan när som helst ändra detta i inställningarna.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5819208479324046259">Hanteras av <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkroniserar …</translation>
 <translation id="5844284118433003733">När du är inloggad kopplas denna data till ditt Google-konto för att skydda dig i Googles tjänster, till exempel genom att öka skyddet i Gmail efter en säkerhetsincident.</translation>
-<translation id="5846482154967366008">Sökmotor</translation>
 <translation id="5854790677617711513">Äldre än 30 dagar</translation>
 <translation id="5857770089550859117">Lösenfras krävs för att starta synkroniseringen.</translation>
 <translation id="5859715514067755465">Framåt</translation>

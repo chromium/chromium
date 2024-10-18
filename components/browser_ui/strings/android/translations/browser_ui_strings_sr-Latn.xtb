@@ -65,6 +65,7 @@
 <translation id="2182457891543959921">Pre nego što dozvolite sajtovima da prave 3D mapu okruženja ili prate položaj kamere prikazuje se upit (preporučeno)</translation>
 <translation id="2185965788978862351">Ovim brišete <ph name="DATASIZE" /> podataka i kolačića koje čuvaju sajtovi ili aplikacije na početnom ekranu.</translation>
 <translation id="2194856509914051091">Šta treba imati u vidu</translation>
+<translation id="2215727959747642672">Menjanje datoteka</translation>
 <translation id="2228071138934252756">Da biste dozvolili da <ph name="APP_NAME" /> pristupa kameri, uključite kameru i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
 <translation id="2238944249568001759">Predložene pretrage na osnovu vaše poslednje kartice</translation>
@@ -295,6 +296,7 @@
 <translation id="5553374991681107062">Najnovije</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> je blokiran</translation>
+<translation id="560980142378233747">To znači da bi funkcije sajta trebalo da rade na očekivani način, ali možda ćete imati manje zaštite pri pregledanju. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Pokaži mi kako</translation>
 <translation id="5649053991847567735">Automatska preuzimanja</translation>
 <translation id="5668404140385795438">Odbijanje zahteva veb-sajta da se spreči uvećavanje</translation>

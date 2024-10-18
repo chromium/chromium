@@ -1506,7 +1506,6 @@
 <translation id="2053312383184521053">アイドル状態のデータ</translation>
 <translation id="205560151218727633">Google アシスタントのロゴ</translation>
 <translation id="2058456167109518507">デバイスが検出されました</translation>
-<translation id="2058581283817163201">このスマートフォンで認証</translation>
 <translation id="2059913712424898428">タイムゾーン</translation>
 <translation id="2060375639911876205">eSIM プロファイルの削除</translation>
 <translation id="2061366302742593739">表示するものがありません</translation>
@@ -3149,7 +3148,6 @@
 <translation id="3241680850019875542">パッケージ化する拡張機能のルート ディレクトリを選択します。拡張機能を更新するには、再使用する秘密鍵ファイルも選択してください。</translation>
 <translation id="3241810535741601486">この変更は恒久的なもので、元に戻すことはできません。アップデートの延長は、このデバイスのすべてのユーザーに適用されます。<ph name="LINK_START" />詳細<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">「kiosk_only」マニフェスト属性が指定されているアプリは、Chrome OS キオスクモードでインストールする必要があります。</translation>
-<translation id="3242665648857227438">このプロフィールは Chrome OS のプロキシ設定を使用します。</translation>
 <translation id="3243017971870859287">ChromeOS Flex デバイスとコンポーネントのシリアル番号を読み取る</translation>
 <translation id="324366796737464147">ノイズ キャンセリング</translation>
 <translation id="3244294424315804309">音声のミュートを続行する</translation>
@@ -4873,7 +4871,6 @@
 <translation id="4486333480498805415">位置情報の精度</translation>
 <translation id="4487489714832036847">Chromebook では従来のソフトウェアではなくアプリを使用します。仕事効率化やエンタメなど、豊富なアプリが揃っています。</translation>
 <translation id="4488257340342212116">カメラの使用を許可するサイト</translation>
-<translation id="4490086832405043258">このプロフィールで Chrome OS のプロキシ設定を使用する。</translation>
 <translation id="4490798467014431984">拡張機能はこのサイトで許可されていません</translation>
 <translation id="449102748655090594">タブをグループ化しています...</translation>
 <translation id="449126573531210296">Google アカウントで同期パスワードを暗号化する</translation>
@@ -5963,7 +5960,6 @@
 <translation id="5294068591166433464">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部を　Google に送信することがあります</translation>
 <translation id="5294097441441645251">先頭は英小文字かアンダースコアにしてください</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> では、内蔵センサーを使用してデバイスの前にいる人を検出します。すべてのデータがデバイス上ですぐに処理され、その後に削除されます。センサーデータは Google には一切送信されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">拡張機能はこのサイトへのアクセスをリクエストできます</translation>
 <translation id="5295349205180144885">タブグループ名: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">画面を見なくてもデバイスを使用できるように、音声フィードバックを読み上げます。点字によるフィードバックは接続されたデバイスで利用できます。</translation>
 <translation id="5296536303670088158">Chrome の最高強度のセキュリティで有害なウェブサイトから保護します</translation>
@@ -6846,7 +6842,6 @@
 <translation id="5951303645598168883"><ph name="ORIGIN" /> から、ローカル フォントの使用許可を求められています</translation>
 <translation id="5951624318208955736">モニター</translation>
 <translation id="5952020381407136867">タッチパッド</translation>
-<translation id="595262438437661818">このサイトへのアクセスを必要としている拡張機能はありません</translation>
 <translation id="5953211687820750364">このリストは、<ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> と
           <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> の影響を受けます</translation>
 <translation id="5955282598396714173">パスワードの有効期限が切れています。パスワードを変更するには、いったんログアウトして再度ログインしてください。</translation>
@@ -8876,7 +8871,6 @@
 <translation id="7450761244949417357">まもなく <ph name="ALTERNATIVE_BROWSER_NAME" /> で開きます</translation>
 <translation id="7450926666485653189">ユーザーの　IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します</translation>
 <translation id="7453008956351770337">このプリンタを選択すると、次の拡張機能にプリンタへのアクセスを許可することになります。</translation>
-<translation id="7453467225369441013">ほとんどのサイトからログアウトします。Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="7454548535253569100">ポータル: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">パスワードの保存は組織によってオフにされています</translation>
 <translation id="7455730275746867420">他のコンテナの管理</translation>
@@ -8958,7 +8952,6 @@
 <translation id="7508707215237589321">「<ph name="CERT_NAME" />」を削除しますか？</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{タブを閉じてグループを削除しますか？}=1{タブを閉じてグループを削除しますか？}other{タブを閉じてグループを削除しますか？}}</translation>
 <translation id="7509097596023256288">管理対象の設定</translation>
-<translation id="7509246181739783082">本人確認</translation>
 <translation id="7509539379068593709">アプリをアンインストール</translation>
 <translation id="7514239104543605883">デバイスにコピー</translation>
 <translation id="7514365320538308">ダウンロード</translation>

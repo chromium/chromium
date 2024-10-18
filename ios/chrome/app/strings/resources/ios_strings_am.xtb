@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">ይህንን የተጠቃሚ ስም ለዚህ ጣቢያ ቀድሞውኑ አስቀምጠዋል</translation>
 <translation id="1497590942294823549">ምናሌ → የሚስጥር ቁልፍ አስተዳዳሪ</translation>
 <translation id="1498283581832036924">የእርስዎ የ<ph name="WEBSITE" /> መለያ አይሰረዝም።</translation>
+<translation id="1506061864768559482">የፍለጋ ፕሮግራም</translation>
 <translation id="1506063256525392513">ይህ ፎቶዎችን እንዲያነሱ እና እንዲሰቅሉና እንዲሁም የQR ኮዶችን እንዲቃኙ ያስችልዎታል</translation>
 <translation id="1509486075633541495">ወደ የድር ጣቢያ በመለያ ይግቡ</translation>
 <translation id="1509960214886564027">በበርካታ ጣቢያዎች ላይ ያሉ ባሕሪያት ሊሰበሩ ይችላሉ</translation>
@@ -368,6 +369,7 @@
 <translation id="2664621323652615289">አቁም</translation>
 <translation id="2666092431469916601">ላይ</translation>
 <translation id="2669454659051515572">ይህን መሣሪያ የሚጠቀም ማንኛውም ሰው የወረዱ ፋይሎችን መመልከት ይችላል</translation>
+<translation id="2671423594960767771">ቡድንን አጋራ</translation>
 <translation id="2673508731173059946">የተቀዳ አገናኝ ይጎብኙ</translation>
 <translation id="2687403674020088961">ሁሉንም ኩኪዎች አግድ (አይመከርም)</translation>
 <translation id="2690858294534178585">ካሜራ ሥራ ላይ ነው</translation>
@@ -412,6 +414,7 @@
 <translation id="288655811176831528">ትር ዝጋ</translation>
 <translation id="2888631381369839306">የዋጋ ክትትል ማሳወቂያዎች በርተዋል</translation>
 <translation id="288902476966286676">ወደ ላኪ ይመልሱ</translation>
+<translation id="2893168226686371498">ነባሪ አሳሽ</translation>
 <translation id="2894757982205307093">በቡድን ውስጥ አዲስ ትር</translation>
 <translation id="2905479111267140204">የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገቡ የሚችሉ <ph name="NUMBER_OF_PASSWORDS" /> ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላት አሉዎት።</translation>
 <translation id="291754862089661335">የQR ኮድ ወይም የአሞሌ ኮድ በዚህ ክፈፍ ውስጥ ያምጡት</translation>
@@ -778,7 +781,6 @@
 <translation id="4764612367328936189">በተወሰኑ መለያዎች አማካኝነት ብቻ እንዲገቡ ድርጅትዎ ይፈቅድልዎታል። ያልተፈቀዱ መለያዎች ተደብቀዋል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">ምርምር እና በመከተል ላይ</translation>
 <translation id="4769198578611055647">በማንኛውም መሣሪያ ላይ የተቀመጡ ማናቸውንም የይለፍ ቁልፎች ለመድረስ ያግዝዎታል</translation>
-<translation id="4775879719735953715">ነባሪ አሳሽ፦</translation>
 <translation id="4777866634702576038">የትር ቡድን ይሰረዝ?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{ለአንድ ቀን ወይም ከዚያ በላይ ጥቅም ላይ ያልዋሉ ክፍት ትሮች እርስዎ በቀላሉ በጣም የሚጠቀሟቸው ትሮች ላይ እንዲያተኩሩ ወደ ገቢር ያልሆኑ ትሮች ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።}one{ለ{COUNT} ቀን ወይም ከዚያ በላይ ጥቅም ላይ ያልዋሉ ክፍት ትሮች እርስዎ በቀላሉ በጣም የሚጠቀሟቸው ትሮች ላይ እንዲያተኩሩ ወደ ገቢር ያልሆኑ ትሮች ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።}other{ለ{COUNT} ቀናት ወይም ከዚያ በላይ ጥቅም ላይ ያልዋሉ ክፍት ትሮች እርስዎ በቀላሉ በጣም የሚጠቀሟቸው ትሮች ላይ እንዲያተኩሩ ወደ ገቢር ያልሆኑ ትሮች ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />፣ <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5819208479324046259">በ<ph name="MANAGER" /> የሚተዳደር ነው። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">በማስመር ላይ…</translation>
 <translation id="5844284118433003733">በመለያዎ ሲገቡ ይህ ውሂብ በመላው የGoogle አገልግሎቶች ላይ እርስዎን ለመጠበቅ ከGoogle መለያዎ ጋር ይገናኛል፣ ለምሳሌ ከደህንነት ክስተት በኋላ Gmail ውስጥ ጥበቃን መጨመር።</translation>
-<translation id="5846482154967366008">የፍለጋ ፕሮግራም</translation>
 <translation id="5854790677617711513">ከ30 ቀናት በላይ የቆየ</translation>
 <translation id="5857770089550859117">ስምረትን ለመጀመር የይለፍ ሐረግ ያስፈልጋል።</translation>
 <translation id="5859715514067755465">ወደፊት</translation>

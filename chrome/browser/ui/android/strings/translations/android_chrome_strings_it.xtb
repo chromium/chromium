@@ -218,7 +218,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2021896219286479412">Controlli sito a schermo intero</translation>
 <translation id="2038563949887743358">Attiva Richiedi sito desktop</translation>
 <translation id="204321170514947529">Anche <ph name="APP_NAME" /> presenta dati in Chrome</translation>
-<translation id="2046634576464120978">Registrazione non riuscita</translation>
 <translation id="2047378580182589770">Tocca e tieni premuto per uscire dalla modalità di navigazione in incognito</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Se possibile, utilizza HTTPS e ricevi un avviso prima di caricare i siti che non lo supportano. Non puoi modificare questa impostazione perché hai attivato la protezione avanzata.</translation>
@@ -242,7 +241,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2141396931810938595">In base al tuo utilizzo</translation>
 <translation id="2145315049852051678">Chrome esegue controlli regolari per verificare che il browser disponga delle impostazioni più sicure. Ti informeremo qualora fosse necessario un controllo da parte tua.</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
-<translation id="2155214902713132423">Questo metodo di verifica non è disponibile per il dispositivo in uso. Scegli un'opzione diversa sull'altro dispositivo.</translation>
 <translation id="2158408438301413340">Chrome non ha potuto controllare tutte le password</translation>
 <translation id="2163089732491971196">Per usare e salvare i dati di Chrome nel tuo Account Google, inserisci la tua passphrase</translation>
 <translation id="2166228530126694506">Versione <ph name="VERSION_NUMBER" /></translation>
@@ -386,10 +384,8 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda di navigazione in incognito verrà chiusa}other{<ph name="TAB_COUNT_MANY" /> schede di navigazione in incognito verranno chiuse}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Eseguito 1 giorno fa}other{Eseguito # giorni fa}}</translation>
 <translation id="2842985007712546952">Cartella principale</translation>
-<translation id="2853415089995957805">Chrome precarica le pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
 <translation id="2854916915045135148">Tocca e tieni premuto per passare alla navigazione in incognito</translation>
 <translation id="2855243985454069333">Consente di eliminare la cronologia da tutti i dispositivi sincronizzati</translation>
-<translation id="2856503607207334158">Accesso non riuscito</translation>
 <translation id="2860954141821109167">Assicurati che su questo dispositivo ci sia un'app per telefono attiva</translation>
 <translation id="2861923151411510142">Alcune funzionalità di Chrome non saranno più disponibili</translation>
 <translation id="2869430948265924908">Per proteggere i tuoi contenuti sensibili in auto, devi creare un blocco del profilo dell'auto.  Puoi farlo con un PIN, un codice o una password.</translation>
@@ -417,7 +413,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2936980480904111527">Le notifiche di Chrome semplificano le cose</translation>
 <translation id="2940075786175545812">Opzione per approvare o meno un sito web</translation>
 <translation id="2942036813789421260">La scheda di anteprima è chiusa</translation>
-<translation id="2946420957526726953">Aggiornamento di Chrome per la connessione ad altri dispositivi</translation>
 <translation id="2951071800649516099">Aggiungi pagine al tuo Elenco di lettura per consultarle in un secondo momento</translation>
 <translation id="2956070106555335453">Riepilogo</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pagina da leggere}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pagine da leggere}}</translation>
@@ -435,7 +430,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2996291259634659425">Crea passphrase</translation>
 <translation id="2996809686854298943">URL obbligatorio</translation>
 <translation id="2997081575621687554">Quando un sito Google richiede di precaricare privatamente i link sulle sue pagine, Chrome cripta e precarica le pagine tramite i server di Google senza usare cookie. In questo modo la tua identità rimane nascosta ai siti precaricati.</translation>
-<translation id="3003253259757197230">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro e per mostrarti informazioni aggiuntive sulla pagina che stai visitando</translation>
 <translation id="3026955690410463085">Includi link</translation>
 <translation id="3027644380269727216">In base alla tua attività svolta su un sito. Questa impostazione è attiva.</translation>
 <translation id="3027950907978057636">Da <ph name="APP_LABEL" /></translation>
@@ -474,8 +468,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> è stato eliminato</translation>
 <translation id="3214996641768123781">La <ph name="BEGIN_LINK1" />cronologia delle ricerche<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />altri tipi di attività<ph name="END_LINK2" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
 <translation id="3220943972464248773">Per sincronizzare le tue password devi verificare la tua identità</translation>
-<translation id="3226612997184048185">Se salvi anche i preferiti nel tuo Account Google, puoi monitorare i prezzi dei prodotti in Chrome e ricevere notifiche quando il prezzo scende</translation>
-<translation id="3227557059438308877">Google Chrome come token di sicurezza</translation>
 <translation id="3232293466644486101">Elimina dati di navigazione…</translation>
 <translation id="3232754137068452469">App web</translation>
 <translation id="3236059992281584593">1 min rimanente</translation>
@@ -485,7 +477,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3250563604907490871">Le descrizioni delle immagini verranno ripristinate quando avrai effettuato la connessione alla rete Wi-Fi</translation>
 <translation id="3254409185687681395">Aggiungi ai Preferiti</translation>
 <translation id="3259831549858767975">Rimpicciolisci i contenuti della pagina</translation>
-<translation id="3264259168916048410">Il computer chiede di usare questo dispositivo per accedere a un sito</translation>
 <translation id="3265093782546847662">Tutte le pagine di <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Carica immagine</translation>
 <translation id="327204079441056603">Abbiamo cambiato la modalità di salvataggio delle password su questo dispositivo</translation>
@@ -577,7 +568,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3720422586473670527">No, grazie</translation>
 <translation id="3721119614952978349">Tu e Google</translation>
 <translation id="3737319253362202215">Impostazioni di traduzione</translation>
-<translation id="3737402728074743863">Per usare questo dispositivo come token di sicurezza devi impostare un blocco schermo</translation>
 <translation id="3738139272394829648">Tocca per cercare</translation>
 <translation id="3739899004075612870">Aggiunto ai preferiti di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Ricerca vocale non disponibile su questo dispositivo</translation>
@@ -632,7 +622,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4016425174436051808">Non è possibile seguire. Si è verificato un errore.</translation>
 <translation id="4024768890073681126">Il tuo browser è gestito da un genitore</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ora}other{# ore}}</translation>
-<translation id="4035877632587724847">Non consentire</translation>
 <translation id="4042941173059740150">Continua su <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Gruppo senza nome</translation>
 <translation id="4044708993631234325">Riquadro inferiore</translation>
@@ -646,10 +635,8 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4072805772816336153">Riprova più tardi</translation>
 <translation id="4084682180776658562">Aggiungi ai Preferiti</translation>
 <translation id="4084712963632273211">Di <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />pubblicata da Google<ph name="END_DEEMPHASIZED" /></translation>
-<translation id="409109920254068737">Puoi utilizzare questo tablet per accedere sul dispositivo che mostra questo codice QR.</translation>
 <translation id="4092709865241032354">Per aiutare Gestore delle password di Google a salvare i tuoi dati di accesso, aggiungi il tuo nome utente per questo sito</translation>
 <translation id="4095146165863963773">Eliminare i dati delle app?</translation>
-<translation id="4095425503313512126">La navigazione e la ricerca sono più veloci</translation>
 <translation id="4096227151372679484">Flusso di salvataggio dei preferiti aperto nella parte inferiore dello schermo</translation>
 <translation id="4108314971463891922">Segui</translation>
 <translation id="4113030288477039509">Gestito dall'amministratore</translation>
@@ -741,10 +728,8 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4543131175509360848">Nessun foglio di passkey</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda}other{<ph name="TAB_COUNT_MANY" /> schede, <ph name="TAB_COUNT_INCOGNITO" /> in incognito}}</translation>
 <translation id="4558311620361989323">Scorciatoie delle pagine web</translation>
-<translation id="4561730552726921821">Registrazione effettuata</translation>
 <translation id="4565377596337484307">Nascondi password</translation>
 <translation id="4572422548854449519">Accedi all'account gestito</translation>
-<translation id="4576892426230499203">Prova con un'altra opzione di verifica</translation>
 <translation id="4577115723294378384">Ordina dalla A alla Z</translation>
 <translation id="4578289292431526768">Inizia</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto fa}other{# minuti fa}}</translation>
@@ -862,14 +847,12 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5017529052065664584">Ultimi 15 minuti</translation>
 <translation id="5032430150487044192">Impossibile creare codice QR</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> schede - <ph name="URL_LIST" />}}</translation>
-<translation id="5039804452771397117">Consenti</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="504456571576643789">Aspetti da considerare</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Altri tipi di attività<ph name="END_LINK1" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
 <translation id="506254248375231072">Nessuna scheda</translation>
 <translation id="5062960805900435602">Aggiornamento sull'unione delle password chiuso</translation>
 <translation id="5075939510584558547">Salva senza crittografia</translation>
-<translation id="5081960376148623587">Scegli se precaricare o meno le pagine</translation>
 <translation id="5085038751173179818">Accedi a questo sito e a Chrome per trovare i tuoi preferiti e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="5091199029769593641">A breve vedrai storie di <ph name="SITE_NAME" /> quando aprirai una nuova scheda. I siti che segui vengono salvati nel tuo Account Google. Puoi gestirli nelle impostazioni di Discover.</translation>
 <translation id="509429900233858213">Si è verificato un errore.</translation>
@@ -916,7 +899,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5316947901395241499">Il salvataggio delle password è stato disattivato dall'amministratore</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5319359161174645648">Google consiglia Chrome</translation>
-<translation id="5320351714793324716">Se consenti i cookie, Chromium potrebbe usarli durante il precaricamento</translation>
 <translation id="5326921373682845375">Poiché le pagine precaricate sono criptate e il sito che vi rimanda è un sito Google, i server di Google non ricevono nuove informazioni quando precaricano tali pagine privatamente.</translation>
 <translation id="5328542107300944283">Utilizza con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Richieste di autorizzazione</translation>
@@ -965,7 +947,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="557018954714092179">Crea nuova cartella</translation>
 <translation id="5578795271662203820">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK1" />impostazioni<ph name="END_LINK1" />.</translation>
-<translation id="5590372121997663538">Ricorda questo computer</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5599455543593328020">Modalità di navigazione in incognito</translation>
 <translation id="5601180634394228718">Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chrome, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
@@ -1065,7 +1046,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6026538407078977628">Espandi a schermo intero</translation>
 <translation id="6030719887161080597">Gestisci le informazioni utilizzate dai siti per misurare il rendimento dell'annuncio</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
-<translation id="6040143037577758943">Chiudi</translation>
 <translation id="6040939430773295212">Contenuti ripetitivi</translation>
 <translation id="604124094241169006">Automatico</translation>
 <translation id="6042308850641462728">Altro</translation>
@@ -1128,7 +1108,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6316139424528454185">Vers. Android non supportata</translation>
 <translation id="6324916366299863871">Modifica scorciatoia</translation>
 <translation id="6324977638108296054">Impossibile creare un link al testo evidenziato</translation>
-<translation id="6324997754869598316">(Errore <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Condividi tramite <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Crittografia</translation>
 <translation id="6340526405444716530">Personalizzazione</translation>
@@ -1138,7 +1117,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6344622098450209924">Protezione antitracciamento</translation>
 <translation id="6345878117466430440">Segna come letto</translation>
 <translation id="6356893102071098867">Verifica di aver scelto l'account corretto</translation>
-<translation id="6357653805084533597">Puoi utilizzare questo telefono per accedere sul dispositivo che mostra questo codice QR.</translation>
 <translation id="6363990818884053551">Per avviare la sincronizzazione devi verificare la tua identità</translation>
 <translation id="6364438453358674297">Rimuovere il suggerimento dalla cronologia?</translation>
 <translation id="6380100320871303656">Precarica più di frequente le pagine che Chrome ritiene tu possa visitare. Questa impostazione potrebbe comportare un maggior utilizzo dei dati.</translation>
@@ -1149,7 +1127,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6401458660421980302">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su quel dispositivo</translation>
 <translation id="6404511346730675251">Modifica preferito</translation>
 <translation id="6406506848690869874">Sincronizzazione</translation>
-<translation id="6407224748847589805">Impossibile connettersi al computer. Prova con un'altra opzione di verifica.</translation>
 <translation id="6410883413783534063">Apri più schede per visitare pagine diverse contemporaneamente</translation>
 <translation id="6411219469806822692">Non puoi scorrere più in alto di così. Prova a partire da un punto più in alto nella pagina.</translation>
 <translation id="641643625718530986">Stampa…</translation>
@@ -1230,7 +1207,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="671481426037969117">Il timer di <ph name="FQDN" /> è scaduto. Verrà riavviato domani.</translation>
 <translation id="6715020873764921614">Vuoi comunque scaricare <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="671928215901716392">Blocca schermo</translation>
-<translation id="6719634564325948108">Vuoi eseguire la connessione con il codice QR?</translation>
 <translation id="6723740634201835758">Nell'Account Google</translation>
 <translation id="6734310707649923383">Puoi visualizzare le pagine che hai visitato o eliminarle dalla cronologia</translation>
 <translation id="6738867403308150051">Download in corso…</translation>
@@ -1252,7 +1228,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6813446258015311409">Accedi a Chrome, foglio aperto.</translation>
 <translation id="6817747507826986771">Condividi rapidamente questa pagina. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="6820686453637990663">CVC</translation>
-<translation id="6823561724060793716">Dalla barra degli indirizzi, puoi aprire le informazioni sulla pagina per trovare maggiori dettagli sulla pagina che stai visitando</translation>
 <translation id="6828070228333235514">Interrompi monitoraggio prezzo</translation>
 <translation id="6830728435402077660">Non sicuro</translation>
 <translation id="6831043979455480757">Traduci</translation>
@@ -1362,7 +1337,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in attesa}other{# download in attesa}}</translation>
 <translation id="7230064152164845085">Passa alla navigazione in incognito</translation>
 <translation id="72415438529550637">Il suggerimento per la password è chiuso.</translation>
-<translation id="7252076891734325316">Avvicina il telefono al computer</translation>
 <translation id="7260367682327802201">Il tuo dispositivo Android potrebbe includere un'impostazione simile. Se la misurazione degli annunci è attiva in Chrome e sul tuo dispositivo Android, una società potrebbe essere in grado di misurare l'efficacia di un annuncio sui siti web che visiti e sulle app che utilizzi</translation>
 <translation id="727288900855680735">Inviare <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sito bloccato</translation>
@@ -1377,7 +1351,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7304873321153398381">Offline. Chrome non può controllare le tue password.</translation>
 <translation id="7313188324932846546">Tocca per configurare la sincronizzazione</translation>
 <translation id="7324354302972299151">Invia una richiesta "Do Not Track"</translation>
-<translation id="7332075081379534664">Accesso eseguito</translation>
 <translation id="7333041109965360609">Hai annullato l'iscrizione alle notifiche</translation>
 <translation id="7333232495927792353">Attiva la sincronizzazione per ricevere i contenuti più pertinenti di Google</translation>
 <translation id="7336259382292148213">Non ci sono problemi con le notifiche</translation>
@@ -1456,7 +1429,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7638584964844754484">Passphrase sbagliata</translation>
 <translation id="7646772052135772216">La sincronizzazione delle password non funziona</translation>
 <translation id="7655240423373329753">ultimi 7 giorni</translation>
-<translation id="7655900163790317559">Attivazione del Bluetooth in corso…</translation>
 <translation id="7656721520530864426">Nessun sito</translation>
 <translation id="7656862631699126784">Attiva il blocco delle schede di navigazione in incognito</translation>
 <translation id="7658239707568436148">Annulla</translation>
@@ -1497,7 +1469,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7821130663268546430">Puoi trovare tutte le schede aperte nel Selettore di schede</translation>
 <translation id="7822705602465980873">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
 <translation id="7824665136384946951">La tua organizzazione ha disattivato Navigazione sicura</translation>
-<translation id="78270725016672455">Il computer chiede di registrare questo dispositivo per accedere a un sito</translation>
 <translation id="7844171778363018843">Nessun dato selezionato da sincronizzare</translation>
 <translation id="7846161022626028328">Si è verificato un errore. Riprova.</translation>
 <translation id="7846296061357476882">Servizi Google</translation>
@@ -1506,13 +1477,11 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7853202427316060426">Attività</translation>
 <translation id="7859988229622350291">Non tradurre mai</translation>
 <translation id="7866213166286285359">Traduci le pagine qui</translation>
-<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> richiede l'autorizzazione Dispositivi nelle vicinanze per potersi connettere al tuo dispositivo</translation>
 <translation id="7875915731392087153">Crea email</translation>
 <translation id="7876243839304621966">Rimuovi tutto</translation>
 <translation id="7886917304091689118">In esecuzione in Chrome</translation>
 <translation id="7887174313503389866">Fai un tour guidato dei controlli per la privacy e la sicurezza più importanti. Per altre opzioni, vai alle impostazioni individuali.</translation>
 <translation id="7896724475402191389">Contenuti per giovani menti - off</translation>
-<translation id="7903184275147100332">L'operazione potrebbe richiedere un minuto</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 download è stato bloccato dalla tua organizzazione}other{# download sono stati bloccati dalla tua organizzazione}}</translation>
 <translation id="7914399737746719723">App installata</translation>
@@ -1561,7 +1530,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8084114998886531721">Password salvata</translation>
 <translation id="8084285576995584326">Controlla i dati del tuo Account Google</translation>
 <translation id="8084864785646838999">Parte della tua cronologia potrebbe non essere mostrata qui. Per vedere tutta la cronologia di Chrome, apri la cronologia completa del browser. Inoltre, il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="808747664143081553">Collegamento al dispositivo effettuato</translation>
 <translation id="8088176524274673045">Per condividere i contenuti con le persone qui vicino, fa' scansionare loro questo codice QR</translation>
 <translation id="8090732854597034573">Se hai bisogno di aiuto, rivolgiti al tuo genitore</translation>
 <translation id="8101414242770404289">Nessuna scheda da <ph name="TIME_PERIOD" /></translation>
@@ -1600,6 +1568,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8243077599929149377">Aggiungi il tuo nome utente</translation>
 <translation id="8250920743982581267">Documenti</translation>
 <translation id="8255617931166444521">I siti possono utilizzare i cookie per vedere la tua attività di navigazione solo sul proprio sito</translation>
+<translation id="8258999165172757081">Aggiunto</translation>
 <translation id="8259179246279078674">Poiché le pagine precaricate sono criptate, Google non accederà ai contenuti di tali pagine. I server di Google memorizzeranno quali siti vengono precaricati privatamente. Queste informazioni vengono utilizzate solo per precaricare le pagine e non sono collegate ad altri dati provenienti dal tuo Account Google.</translation>
 <translation id="8260126382462817229">Prova ad accedere nuovamente</translation>
 <translation id="8261506727792406068">Elimina</translation>
@@ -1611,7 +1580,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8282297628636750033">Applica il tema scuro ai siti, se possibile</translation>
 <translation id="8282950411412455249">Vai alle impostazioni di sicurezza</translation>
-<translation id="829672787777123339">Collegamento al dispositivo in corso…</translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ha rimosso la scheda "<ph name="TAB_NAME" />"</translation>
 <translation id="831192587911042850">Consente di aggiungere il sito web corrente all'elenco di siti web che segui.</translation>
 <translation id="8342727528718219152">Chrome ti avviserà quando dei siti potrebbero inviare troppe notifiche</translation>
@@ -1707,7 +1675,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8756969031206844760">Aggiornare la password?</translation>
 <translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito</translation>
 <translation id="8766529642647037772">Vuoi creare un link evidenziato come questo?</translation>
-<translation id="8773160212632396039">Elaborazione della richiesta in corso…</translation>
 <translation id="8788265440806329501">La cronologia di navigazione è chiusa</translation>
 <translation id="8788968922598763114">Riapri l'ultima scheda chiusa</translation>
 <translation id="8790193082819560975">Tocca per cercare le opzioni di acquisto del prodotto in una nuova scheda.</translation>
@@ -1785,7 +1752,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9104217018994036254">Elenco di dispositivi con cui condividere una scheda.</translation>
 <translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Non usate per almeno 1 giorno}other{Non usate per almeno # giorni}}</translation>
 <translation id="9106148373857059373">Flusso di salvataggio dei preferiti chiuso</translation>
-<translation id="9108312223223904744">Assistenza relativa a Telefono come token di sicurezza</translation>
 <translation id="9108808586816295166">Il sistema DNS sicuro potrebbe non essere sempre disponibile</translation>
 <translation id="910908805481542201">Aiutami a risolvere il problema</translation>
 <translation id="9130135798965366513">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo <ph name="FIELDS_STRING" /> con questo sito. Leggi le <ph name="BEGIN_LINK1" />norme sulla privacy<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />termini di servizio<ph name="END_LINK2" /> del sito.</translation>

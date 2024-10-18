@@ -4374,7 +4374,6 @@ Hinweis: Diese Richtlinie ersetzt die Richtlinie „<ph name="ARC_GLS_POLICY_NAM
 <translation id="4341199399451274159">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" die Zeichencodierungen an, die vom Suchanbieter unterstützt werden. Dazu werden Codeseiten-Namen wie "UTF-8", "GB2312" oder "ISO-8859-1" verwendet. Sie werden in der angegebenen Reihenfolge ausprobiert
 
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" nicht konfiguriert ist, wird "UTF-8" verwendet.</translation>
-<translation id="4343382787226139147">Diese Richtlinie gibt Clientzertifikate an, die über das Geräteverwaltungsprotokoll registriert werden sollen.</translation>
 <translation id="4347908978527632940">Wenn "true" eingestellt ist und der Nutzer ein betreuter Nutzer ist, können andere Android-Apps die Webeinschränkungen des Nutzers über einen Contentanbieter abfragen.
 
           Wenn "false" oder nichts eingestellt ist, gibt der Contentanbieter keine Informationen zurück.</translation>
@@ -6381,7 +6380,6 @@ Mit der Richtlinie „<ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />“ 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden diese Empfehlungen nicht angezeigt.
 
       Wenn diese Richtlinie konfiguriert ist, kann sie von Nutzern nicht geändert werden.</translation>
-<translation id="5848438019586925019">Algorithmus für die Generierung von Schlüsselpaaren.</translation>
 <translation id="5851248808417680865">Dunkles Design verwenden</translation>
 <translation id="585270638818921943">Nutzer daran hindern, Android-Apps aus nicht vertrauenswürdigen Quellen zu verwenden</translation>
 <translation id="5859344336338527083">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, über welche URLs Erweiterungen, Apps und Designs installiert werden dürfen. Vor <ph name="PRODUCT_NAME" />-Version 21 konnten Nutzer auf den Link zu einer CRX-Datei klicken und die Datei nach einigen Hinweisen in <ph name="PRODUCT_NAME" /> installieren. In allen nachfolgenden Versionen müssen solche Dateien zuerst heruntergeladen und dann auf die Seite "Einstellungen" in <ph name="PRODUCT_NAME" /> gezogen werden. Anhand dieser Einstellung kann bei bestimmten URLs der alte, einfachere Installationsvorgang angewendet werden.
@@ -9098,7 +9096,6 @@ Deaktiviere die Richtlinie nur, wenn du eine Endpunkt-Sicherheitslösung verwend
       Wenn sie nicht konfiguriert ist, können Websites um Zugriff bitten, aber Nutzer können diese Einstellung ändern.
 
       Die Richtlinie kann für bestimmte <ph name="URL_LABEL" />-Muster überschrieben werden. Hierfür stehen die Richtlinien <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> und <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> zur Verfügung.</translation>
-<translation id="7951605113561734721">Diese Richtlinie gibt geräteübergreifende Clientzertifikate an, die über das Geräteverwaltungsprotokoll registriert werden sollen.</translation>
 <translation id="7952007677054834789">Hiermit werden die Seiten konfiguriert, die beim Start geladen werden: die standardmäßige Startseite und die Standardseite "Neuer Tab" in <ph name="PRODUCT_NAME" />. Außerdem wird verhindert, dass Nutzer diese Einstellungen ändern.
 
       Die Startseiteneinstellungen des Nutzers sind nur dann vollständig gesperrt, wenn du entweder die Seite "Neuer Tab" als Startseite festlegst oder angibst, dass du eine URL als Startseite festlegen möchtest, und dann eine Startseiten-URL angibst. Falls du die Startseiten-URL nicht angibst, kann der Nutzer die Seite "Neuer Tab" zur Startseite machen, indem er "chrome://newtab" eingibt.

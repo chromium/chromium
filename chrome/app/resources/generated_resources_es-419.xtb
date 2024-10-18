@@ -1506,7 +1506,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2053312383184521053">Datos de estado de inactividad</translation>
 <translation id="205560151218727633">Logotipo del Asistente de Google</translation>
 <translation id="2058456167109518507">Se detectó un dispositivo</translation>
-<translation id="2058581283817163201">Verificar con este teléfono</translation>
 <translation id="2059913712424898428">Zona horaria</translation>
 <translation id="2060375639911876205">Quitar el perfil de eSIM</translation>
 <translation id="2061366302742593739">No hay elementos para mostrar</translation>
@@ -2927,7 +2926,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3048589239114571785">Reproducir (k)</translation>
 <translation id="3048742847101793553">Tu organización bloqueó este archivo porque falló el análisis.</translation>
 <translation id="3048917188684939573">Registros de dispositivo y transmisión</translation>
-<translation id="3051250416341590778">Tamaño de la pantalla</translation>
+<translation id="3051250416341590778">Tamaño de visualización</translation>
 <translation id="3053013834507634016">Uso de la clave del certificado</translation>
 <translation id="3053273573829329829">Habilitar el PIN de usuario</translation>
 <translation id="3053274730492362225">Sin parpadeo</translation>
@@ -3154,7 +3153,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3241680850019875542">Seleccionar el directorio de raíz de la extensión que debe empaquetarse. Para actualizar una extensión, también debes seleccionar el archivo de clave privada que será reutilizado.</translation>
 <translation id="3241810535741601486">Este cambio es permanente y no se puede revertir. Las actualizaciones extendidas se aplican a todos los usuarios de este dispositivo. <ph name="LINK_START" />Más información<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">La app con el atributo del manifiesto "kiosk_only" se debe instalar en el modo kiosco del ChromeOS.</translation>
-<translation id="3242665648857227438">Este perfil usa la configuración de proxy de ChromeOS.</translation>
 <translation id="3243017971870859287">Leer los números de serie del componente y del dispositivo ChromeOS Flex</translation>
 <translation id="324366796737464147">Cancelación de ruido</translation>
 <translation id="3244294424315804309">Continuar silenciando el sonido</translation>
@@ -4881,7 +4879,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4486333480498805415">Precisión de la ubicación</translation>
 <translation id="4487489714832036847">En lugar de software tradicional, las Chromebooks utilizan apps. Obtén apps de productividad, entretenimiento y mucho más.</translation>
 <translation id="4488257340342212116">Puede usar la cámara</translation>
-<translation id="4490086832405043258">Usar la configuración de proxy de ChromeOS en este perfil</translation>
 <translation id="4490798467014431984">No se permiten las extensiones en este sitio</translation>
 <translation id="449102748655090594">Agrupando tus pestañas…</translation>
 <translation id="449126573531210296">Encriptar las contraseñas sincronizadas con tu Cuenta de Google</translation>
@@ -5974,7 +5971,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5294068591166433464">Si un sitio intenta robar tu contraseña, o si descargas un archivo dañino, es posible que Chrome también envíe las URLs, con partes del contenido de la página, a Google.</translation>
 <translation id="5294097441441645251">Debe comenzar con una letra minúscula o un guion bajo</translation>
 <translation id="5294618183559481278">Tu <ph name="DEVICE_TYPE" /> utiliza un sensor integrado para detectar personas que estén frente a tu dispositivo. Toda la información se procesa automáticamente en tu dispositivo y, luego, se borra. Los datos de sensores nunca se envían a Google. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">Las extensiones pueden solicitar acceso a este sitio</translation>
 <translation id="5295349205180144885">Nombre del grupo de pestañas: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Escucha comentarios por voz para usar el dispositivo sin mirar la pantalla. Los comentarios en braille están disponibles con un dispositivo conectado.</translation>
 <translation id="5296536303670088158">Tienes la seguridad más sólida de Chrome contra sitios web dañinos</translation>
@@ -6858,7 +6854,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5951303645598168883"><ph name="ORIGIN" /> desea usar fuentes locales</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5952020381407136867">panel táctil</translation>
-<translation id="595262438437661818">Ninguna extensión necesita acceso a este sitio</translation>
 <translation id="5953211687820750364">Esta lista se ve afectada por <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           y <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">Tu contraseña caducó. Para cambiarla, sal de la cuenta y vuelve a acceder.</translation>
@@ -8891,7 +8886,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7450761244949417357">Se está abriendo en <ph name="ALTERNATIVE_BROWSER_NAME" /> en este momento</translation>
 <translation id="7450926666485653189">Envía una parte ofuscada de la URL a Google con un servidor de privacidad que oculta tu dirección IP</translation>
 <translation id="7453008956351770337">Al seleccionar esta impresora, concedes a la siguiente extensión permiso para acceder a tu impresora.</translation>
-<translation id="7453467225369441013">Esta acción te hace salir de la mayoría de los sitios. No saldrás de tu cuenta de Google.</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Tu organización desactivó la opción para guardar contraseñas</translation>
 <translation id="7455730275746867420">Administrar contenedores adicionales</translation>
@@ -8973,7 +8967,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7508707215237589321">¿Quieres borrar "<ph name="CERT_NAME" />"?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{¿Quieres cerrar la pestaña y borrar el grupo?}=1{¿Quieres cerrar la pestaña y borrar el grupo?}other{¿Quieres cerrar las pestañas y borrar los grupos?}}</translation>
 <translation id="7509097596023256288">Se está configurando la administración</translation>
-<translation id="7509246181739783082">Verifica tu identidad</translation>
 <translation id="7509539379068593709">Desinstalar app</translation>
 <translation id="7514239104543605883">Copiar a tu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>

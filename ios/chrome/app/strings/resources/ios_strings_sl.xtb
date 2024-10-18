@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Za to spletno mesto ste že shranili to uporabniško ime.</translation>
 <translation id="1497590942294823549">Meni → Upravitelj gesel</translation>
 <translation id="1498283581832036924">Vaš račun za <ph name="WEBSITE" /> ne bo izbrisan.</translation>
+<translation id="1506061864768559482">Iskalnik</translation>
 <translation id="1506063256525392513">To vam omogoča fotografiranje in nalaganje fotografij ter optično branje kod QR.</translation>
 <translation id="1509486075633541495">Prijavite se na spletnem mestu</translation>
 <translation id="1509960214886564027">Funkcije na številnih spletnih mestih morda ne bodo delovale</translation>
@@ -368,6 +369,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2664621323652615289">Ustavi</translation>
 <translation id="2666092431469916601">Na vrh</translation>
 <translation id="2669454659051515572">Prenesene datoteke lahko vidijo vsi, ki uporabljajo to napravo.</translation>
+<translation id="2671423594960767771">Deli skupino</translation>
 <translation id="2673508731173059946">Obisk povezave, ki ste jo kopirali</translation>
 <translation id="2687403674020088961">Blokiranje vseh piškotkov (ni priporočljivo)</translation>
 <translation id="2690858294534178585">Kamera je v uporabi</translation>
@@ -412,6 +414,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="288655811176831528">Zapri zavihek</translation>
 <translation id="2888631381369839306">Obvestila o spremljanju cen so vklopljena</translation>
 <translation id="288902476966286676">Vrnitev pošiljatelju</translation>
+<translation id="2893168226686371498">Privzeti brskalnik</translation>
 <translation id="2894757982205307093">Novi zavihek v skupini</translation>
 <translation id="2905479111267140204">Imate toliko znova uporabljenih gesel, ki lahko ogrozijo vašo varnost: <ph name="NUMBER_OF_PASSWORDS" />.</translation>
 <translation id="291754862089661335">Kodo QR ali črtno kodo postavite v ta okvir</translation>
@@ -778,7 +781,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4764612367328936189">Organizacija dovoli prijavo samo z nekaterimi računi. Nedovoljeni računi so skriti. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Odkrivanje in spremljanje</translation>
 <translation id="4769198578611055647">Pomaga vam pri dostopu do shranjenih ključev za dostop v kateri koli napravi</translation>
-<translation id="4775879719735953715">Privzeti brskalnik</translation>
 <translation id="4777866634702576038">Želite izbrisati skupino zavihkov?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Odprti zavihki, ki jih ne uporabljate en dan ali več, se premaknejo na neaktivne zavihke, da se lahko preprosto osredotočite na zavihke, ki jih najpogosteje uporabljate. To lahko kadar koli spremenite v nastavitvah.}one{Odprti zavihki, ki jih ne uporabljate {COUNT} dan ali več, se premaknejo na neaktivne zavihke, da se lahko preprosto osredotočite na zavihke, ki jih najpogosteje uporabljate. To lahko kadar koli spremenite v nastavitvah.}two{Odprti zavihki, ki jih ne uporabljate {COUNT} dneva ali več, se premaknejo na neaktivne zavihke, da se lahko preprosto osredotočite na zavihke, ki jih najpogosteje uporabljate. To lahko kadar koli spremenite v nastavitvah.}few{Odprti zavihki, ki jih ne uporabljate {COUNT} dni ali več, se premaknejo na neaktivne zavihke, da se lahko preprosto osredotočite na zavihke, ki jih najpogosteje uporabljate. To lahko kadar koli spremenite v nastavitvah.}other{Odprti zavihki, ki jih ne uporabljate {COUNT} dni ali več, se premaknejo na neaktivne zavihke, da se lahko preprosto osredotočite na zavihke, ki jih najpogosteje uporabljate. To lahko kadar koli spremenite v nastavitvah.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5819208479324046259">Brskalnik upravlja podjetje <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Poteka sinhronizacija …</translation>
 <translation id="5844284118433003733">Ko ste prijavljeni, so ti podatki povezani z vašim računom Google, da vas zaščitijo v Googlovih storitvah, na primer za povečanje zaščite v Gmailu po varnostnem dogodku.</translation>
-<translation id="5846482154967366008">Iskalnik</translation>
 <translation id="5854790677617711513">Starejše od 30 dni</translation>
 <translation id="5857770089550859117">Passphrase required to start sync.</translation>
 <translation id="5859715514067755465">Naprej</translation>

@@ -1509,7 +1509,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2053312383184521053">Jarduerarik gabeko egoeraren datuak</translation>
 <translation id="205560151218727633">Google-ren Laguntzailea zerbitzuaren logotipoa</translation>
 <translation id="2058456167109518507">Hautemandako gailua</translation>
-<translation id="2058581283817163201">Egiaztatu telefono honekin</translation>
 <translation id="2059913712424898428">Ordu-zona</translation>
 <translation id="2060375639911876205">Kendu eSIMaren profila</translation>
 <translation id="2061366302742593739">Ez dago ezer erakusteko</translation>
@@ -1938,7 +1937,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="235028206512346451">Gailutik aldentzen bazara, pantaila automatikoki blokeatuko da. Gailuaren aurrean bazaude, aldiz, pantaila tarte luzeago batez mantenduko da aktibo. Pantaila blokeaturik ez badarabilzu, gailua inaktibo ezarriko da blokeatu beharrean.</translation>
 <translation id="2351923523007389195">Baimena dauka (<ph name="PERMISSION_DETAILS" />). Aktibatu <ph name="LINK_BEGIN" />sistemaren kokapena erabiltzeko baimena<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Pantaila blokeatuko oharrak <ph name="LOCK_SCREEN_APP_NAME" /> aplikazioan gordetzen dira automatikoki. Azken oharra geldituko da pantaila blokeatuan.</translation>
+<translation id="2352810082280059586">Pantaila blokeatuko oharrak <ph name="LOCK_SCREEN_APP_NAME" /> aplikazioan gordetzen dira automatikoki. Azkenaldiko oharra geldituko da pantaila blokeatuan.</translation>
 <translation id="2353168619378866466">Ireki taldea</translation>
 <translation id="2353297238722298836">Kamera eta mikrofonoa erabil daitezke</translation>
 <translation id="2353910600995338714">Esportatu dira</translation>
@@ -3155,7 +3154,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3241680850019875542">Hautatu paketatu beharreko luzapenaren erroko direktorioa. Luzapenak eguneratzeko, hautatu berriro erabili beharreko gako pribatuaren fitxategia ere.</translation>
 <translation id="3241810535741601486">Aldaketa hau behin betikoa da eta ezin da alderantzikatu. Gailua darabilten pertsona guztiei aplikatuko zaizkie eguneratze hedatuak. <ph name="LINK_START" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">kiosk_only manifestu-atributua duen aplikazio bat instalatu behar da Chrome OS-ren kiosko moduan</translation>
-<translation id="3242665648857227438">Profil honek Chrome OS-ren proxy-ezarpenak erabiltzen ditu.</translation>
 <translation id="3243017971870859287">Irakurri ChromeOS Flex-eko gailuaren eta osagaien serie-zenbakiak</translation>
 <translation id="324366796737464147">Zarata-murrizketa</translation>
 <translation id="3244294424315804309">Ez aktibatu audioa</translation>
@@ -4882,7 +4880,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4486333480498805415">Kokapen-zehaztasuna</translation>
 <translation id="4487489714832036847">Chromebook-ek aplikazioak erabiltzen dituzte ohiko softwarearen ordez. Lortu aplikazioak produktibitatea handitzeko, aisialdirako eta gehiagorako.</translation>
 <translation id="4488257340342212116">Kamera erabil dezakete</translation>
-<translation id="4490086832405043258">Erabili profil honek Chrome OS-n dituen proxy-ezarpenak.</translation>
 <translation id="4490798467014431984">Webgune honetan ezin da erabili luzapenik</translation>
 <translation id="449102748655090594">Fitxak taldekatzen…</translation>
 <translation id="449126573531210296">Enkriptatu sinkronizatutako pasahitzak Google-ko kontuarekin</translation>
@@ -5973,7 +5970,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5294068591166433464">Webguneren bat pasahitza lapurtzen saiatzen bada edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Google-ri</translation>
 <translation id="5294097441441645251">Minuskula edo azpimarra batekin hasi behar da</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" />-ak sentsore integratu bat dauka gailuaren aurrean dauden pertsonak hautemateko. Datu guztiak berehala prozesatzen dira gailuan eta, gero, ezabatu egiten dira. Sentsorearen datuak ez dira inoiz bidaltzen Google-ra. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">Luzapenek webgunerako sarbidea eska dezakete</translation>
 <translation id="5295349205180144885">Fitxa taldearen izena: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Entzun ahozko argibideak gailua pantailari begiratu gabe erabili ahal izateko. Braillea erabilita ematen diren argibideak konektatutako gailuekin erabilgarri daude.</translation>
 <translation id="5296536303670088158">Chrome-ren segurtasun-aukerarik sendoena darabilzu webgune kaltegarrien aurka</translation>
@@ -6855,7 +6851,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5951303645598168883"><ph name="ORIGIN" /> webguneak gailuko letrak erabili nahi ditu</translation>
 <translation id="5951624318208955736">Monitorea</translation>
 <translation id="5952020381407136867">ukipen-panela</translation>
-<translation id="595262438437661818">Luzapen batek ere ez du behar webgunerako sarbiderik</translation>
 <translation id="5953211687820750364"><ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> gidalerroek dute eragina zerrenda honetan</translation>
 <translation id="5955282598396714173">Pasahitza iraungi egin da. Aldatzeko, amaitu saioa eta has ezazu berriro.</translation>
 <translation id="5955304353782037793">app</translation>
@@ -8885,7 +8880,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7450761244949417357"><ph name="ALTERNATIVE_BROWSER_NAME" /> arakatzailean irekiko da orain</translation>
 <translation id="7450926666485653189">URLaren zati nahasi bat bidaltzen dio Google-ri, zure IP helbidea ezkutatzen duen pribatutasun-zerbitzari baten bidez</translation>
 <translation id="7453008956351770337">Inprimagailu hau aukeratzean, inprimagailua erabiltzeko baimena ematen diozu luzapen honi:</translation>
-<translation id="7453467225369441013">Webgune gehienetako saioak amaitzen ditu. Ez da amaituko Google-ko kontuko saioa.</translation>
 <translation id="7454548535253569100">Ataria: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Erakundeak pasahitzak gordetzeko aukera desaktibatu du</translation>
 <translation id="7455730275746867420">Kudeatu edukiontzi gehigarriak</translation>
@@ -8967,7 +8961,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7508707215237589321">"<ph name="CERT_NAME" />" ezabatu nahi duzu?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Fitxa itxi, eta taldea ezabatu nahi duzu?}=1{Fitxak itxi, eta taldea ezabatu nahi duzu?}other{Fitxak itxi, eta taldeak ezabatu nahi dituzu?}}</translation>
 <translation id="7509097596023256288">Kudeaketa konfiguratzen</translation>
-<translation id="7509246181739783082">Egiaztatu zeu zarela</translation>
 <translation id="7509539379068593709">Desinstalatu aplikazioa</translation>
 <translation id="7514239104543605883">Kopiatu zure gailuan</translation>
 <translation id="7514365320538308">Deskargatu</translation>
@@ -10152,7 +10145,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8350789879725387295">Arkatzaren tresnak oinarrian</translation>
 <translation id="8351316842353540018">Erakutsi beti erabilerraztasun-aukerak</translation>
 <translation id="8351419472474436977">Luzapen honek zure proxy-ezarpenen kontrola hartu du; alegia, sarean egiten duzun edozer alda, honda edo zelata dezake. Aldaketa zergatik gertatu den ziur ez badakizu, baliteke aldaketa nahi ez izatea.</translation>
-<translation id="8351630282875799764">Bateria ez da ari kargatzen</translation>
+<translation id="8351630282875799764">Bateria ez da kargatzen ari</translation>
 <translation id="8352287103893778223">Fitxa taldearen izena</translation>
 <translation id="835238322900896202">Errore bat gertatu da desinstalatu bitartean. Desinstalatu terminala erabilita.</translation>
 <translation id="8353420862507374944">Igorri, gorde eta partekatu</translation>

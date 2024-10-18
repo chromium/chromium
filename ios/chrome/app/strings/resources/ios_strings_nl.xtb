@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Je hebt deze gebruikersnaam al opgeslagen voor deze site</translation>
 <translation id="1497590942294823549">Menu → Wachtwoordmanager</translation>
 <translation id="1498283581832036924">Je account voor <ph name="WEBSITE" /> wordt niet verwijderd.</translation>
+<translation id="1506061864768559482">Zoekmachine</translation>
 <translation id="1506063256525392513">Zo kun je foto's maken en uploaden, maar ook QR-codes scannen</translation>
 <translation id="1509486075633541495">Inloggen op website</translation>
 <translation id="1509960214886564027">Functies op veel sites werken mogelijk niet meer</translation>
@@ -368,6 +369,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2664621323652615289">Stoppen</translation>
 <translation id="2666092431469916601">Boven</translation>
 <translation id="2669454659051515572">Iedereen die dit apparaat gebruikt, kan gedownloade bestanden zien</translation>
+<translation id="2671423594960767771">Groep delen</translation>
 <translation id="2673508731173059946">Gekopieerde link bezoeken</translation>
 <translation id="2687403674020088961">Alle cookies blokkeren (niet aanbevolen)</translation>
 <translation id="2690858294534178585">Camera wordt gebruikt</translation>
@@ -412,6 +414,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="288655811176831528">Tabblad sluiten</translation>
 <translation id="2888631381369839306">Meldingen voor prijzen volgen aangezet</translation>
 <translation id="288902476966286676">Terug naar afzender</translation>
+<translation id="2893168226686371498">Standaardbrowser</translation>
 <translation id="2894757982205307093">Nieuw tabblad in groep</translation>
 <translation id="2905479111267140204">Je hebt <ph name="NUMBER_OF_PASSWORDS" /> hergebruikte wachtwoorden die een beveiligingsrisico kunnen vormen.</translation>
 <translation id="291754862089661335">Positioneer de QR-/streepjescode binnen dit kader</translation>
@@ -778,7 +781,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4764612367328936189">Je organisatie vereist dat je alleen met bepaalde accounts inlogt. Niet-toegestane accounts zijn verborgen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover en volgen</translation>
 <translation id="4769198578611055647">Hiermee kun je op elk apparaat toegang krijgen tot opgeslagen toegangssleutels</translation>
-<translation id="4775879719735953715">Standaardbrowser</translation>
 <translation id="4777866634702576038">Tabbladgroep verwijderen?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Geopende tabbladen die een dag of langer niet zijn gebruikt, worden verplaatst naar Inactieve tabbladen. Zo kun je je makkelijk focussen op de tabbladen die je het meest gebruikt. Je kunt dit altijd wijzigen in de instellingen.}other{Geopende tabbladen die {COUNT} dagen of langer niet zijn gebruikt, worden verplaatst naar Inactieve tabbladen. Zo kun je je makkelijk focussen op de tabbladen die je het meest gebruikt. Je kunt dit altijd wijzigen in de instellingen.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5819208479324046259">Beheerd door <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synchroniseren…</translation>
 <translation id="5844284118433003733">Als je bent ingelogd, worden deze gegevens gekoppeld aan je Google-account om je te beschermen in Google-services, bijvoorbeeld om de beveiliging in Gmail te verbeteren na een beveiligingsincident.</translation>
-<translation id="5846482154967366008">Zoekmachine</translation>
 <translation id="5854790677617711513">Ouder dan 30 dagen</translation>
 <translation id="5857770089550859117">Wachtwoordzin vereist om de synchronisatie te starten.</translation>
 <translation id="5859715514067755465">Vooruit</translation>

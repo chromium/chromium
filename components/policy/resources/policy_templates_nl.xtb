@@ -4366,7 +4366,6 @@ Opmerking: Met dit beleid wordt het beleid <ph name="ARC_GLS_POLICY_NAME" /> be�
 <translation id="4341199399451274159">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> instelt, worden de tekencoderingen gespecificeerd die worden ondersteund door de zoekprovider. Deze coderingen zijn codepaginanamen zoals UTF-8, GB2312 en ISO-8859-1. Ze worden getest in de volgorde waarin ze worden opgegeven.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> niet instelt, wordt UTF-8 gebruikt.</translation>
-<translation id="4343382787226139147">Specificeert clientcertificaten die moeten worden ingeschreven via het protocol voor apparaatbeheer.</translation>
 <translation id="4347908978527632940">Als beleid 'True' is en de gebruiker een gebruiker met beperkte rechten is, kunnen andere Android-apps de internetbeperkingen van de gebruiker opvragen via de contentprovider.
 
           Als het beleid 'False' of niet ingesteld is, retourneert de contentprovider geen informatie.</translation>
@@ -6348,7 +6347,6 @@ Je kunt meer accountbeperkingen toevoegen met het beleid <ph name="MICROSOFT_ONE
       Als je het beleid uitzet of niet instelt, worden deze aanbevelingen niet getoond.
 
       Als dit beleid is ingesteld, kunnen gebruikers het niet wijzigen.</translation>
-<translation id="5848438019586925019">Het algoritme voor het genereren van sleutelparen.</translation>
 <translation id="5851248808417680865">Donker thema gebruiken</translation>
 <translation id="585270638818921943">Voorkomen dat de gebruiker Android-apps van niet-vertrouwde bronnen gebruikt</translation>
 <translation id="5859344336338527083">Als je dit beleid instelt, kun je opgeven welke URL's extensies, apps en thema's mogen installeren. Vóór <ph name="PRODUCT_NAME" /> 21 konden gebruikers op een link naar een *.crx-bestand klikken en bood <ph name="PRODUCT_NAME" /> aan het bestand te installeren na een aantal waarschuwingen. Sindsdien moeten bestanden worden gedownload en naar de instellingenpagina van <ph name="PRODUCT_NAME" /> worden gesleept. Met deze instelling kunnen specifieke URL's het oude, eenvoudigere installatieproces gebruiken.
@@ -9063,7 +9061,6 @@ Zet het beleid alleen uit als je een oplossing voor beveiliging van eindpunten g
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.
 
       Dit beleid kan via het beleid <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> en <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> worden overschreven voor specifieke <ph name="URL_LABEL" />-patronen.</translation>
-<translation id="7951605113561734721">Specificeert clientcertificaten voor het hele apparaat die moeten worden ingeschreven via het protocol voor apparaatbeheer.</translation>
 <translation id="7952007677054834789">Hiermee wordt geconfigureerd welke pagina's worden geladen bij het opstarten, wat de standaard homepage is en welke pagina standaard wordt gebruikt voor nieuwe tabbladen in <ph name="PRODUCT_NAME" />. Ook verhinder je hiermee dat gebruikers deze pagina's kunnen wijzigen.
 
       De instellingen voor de homepage worden alleen volledig voor de gebruiker vergrendeld als je de pagina 'Nieuw tabblad' als de homepage selecteert of als je zelf een URL voor de homepage specificeert. Als je geen URL voor de homepage opgeeft, kan de gebruiker nog steeds de pagina 'Nieuw tabblad' als homepage instellen door 'chrome://newtab' op te geven.

@@ -1519,7 +1519,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2053312383184521053">Rustoestand-data</translation>
 <translation id="205560151218727633">Google Assistent-logo</translation>
 <translation id="2058456167109518507">Toestel is bespeur</translation>
-<translation id="2058581283817163201">Verifieer met hierdie foon</translation>
 <translation id="2059913712424898428">Tydsone</translation>
 <translation id="2060375639911876205">Verwyder e-SIM-profiel</translation>
 <translation id="2061366302742593739">Niks om te wys nie.</translation>
@@ -3170,7 +3169,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3241680850019875542">Kies die wortelgids vir die uitbreiding om te pak. Om 'n uitbreiding op te dateer, kies ook die private sleutel om te hergebruik.</translation>
 <translation id="3241810535741601486">Hierdie verandering is permanent en kan nie omgekeer word nie. Uitgebreide opdaterings geld vir alle gebruikers van hierdie toestel. <ph name="LINK_START" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">Program met "net_kiosk"-manifeseienskap moet in Chrome-bedryfstelsel se kioskmodus geïnstalleer word</translation>
-<translation id="3242665648857227438">Hierdie profiel gebruik Chrome-bedryfstelsel se instaanbedienerinstellings.</translation>
 <translation id="3243017971870859287">Lees ChromeOS Flex-toestel- en -komponentreeksnommers</translation>
 <translation id="324366796737464147">Geraasvermindering</translation>
 <translation id="3244294424315804309">Hou aan om klank te demp</translation>
@@ -4897,7 +4895,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4486333480498805415">Liggingakkuraatheid</translation>
 <translation id="4487489714832036847">Chromebooks gebruik programme pleks van tradisionele sagteware. Kry programme vir produktiwiteit, vermaak en meer.</translation>
 <translation id="4488257340342212116">Mag jou kamera gebruik</translation>
-<translation id="4490086832405043258">Gebruik Chrome-bedryfstelsel se instaanbedienerinstellings vir hierdie profiel.</translation>
 <translation id="4490798467014431984">Uitbreidings word nie op hierdie werf toegelaat nie</translation>
 <translation id="449102748655090594">Groepeer tans jou oortjies …</translation>
 <translation id="449126573531210296">Enkripteer gesinkroniseerde wagwoorde met jou Google-rekening</translation>
@@ -5990,7 +5987,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5294068591166433464">As ’n werf probeer om jou wagwoord te steel, of wanneer jy ’n skadelike lêer aflaai, sal Chrome dalk ook URL’e, insluitend stukkies bladsyinhoud, na Google toe stuur</translation>
 <translation id="5294097441441645251">Moet met 'n kleinletter of onderstreep begin</translation>
 <translation id="5294618183559481278">Jou <ph name="DEVICE_TYPE" /> gebruik 'n ingeboude sensor om mense voor jou toestel te bespeur. Alle data word onmiddellik op jou toestel verwerk en dan uitgevee. Sensordata word nooit na Google toe gestuur nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">Uitbreidings kan toegang tot hierdie werf versoek</translation>
 <translation id="5295349205180144885">Oortjiegroepnaam: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Hoor gesproke terugvoer sodat jy jou toestel kan gebruik sonder om na die skerm te kyk. Braille-terugvoer is beskikbaar met ’n gekoppelde toestel.</translation>
 <translation id="5296536303670088158">Jy het Chrome se sterkste sekuriteit teen skadelike webwerwe</translation>
@@ -6875,7 +6871,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> wil plaaslike lettertipes gebruik</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5952020381407136867">raakpaneel</translation>
-<translation id="595262438437661818">Geen uitbreidings het toegang tot hierdie werf nodig nie</translation>
 <translation id="5953211687820750364">Hierdie lys word beïnvloed deur <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           en <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">Jou wagwoord het verval. Meld af en meld dan weer aan om dit te verander.</translation>
@@ -8907,7 +8902,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7450761244949417357">Maak tans <ph name="ALTERNATIVE_BROWSER_NAME" /> oop</translation>
 <translation id="7450926666485653189">Stuur ’n verdoeselde gedeelte van die URL na Google deur ’n privaatheidbediener wat jou IP-adres versteek</translation>
 <translation id="7453008956351770337">Deur hierdie drukker te kies, gee jy die volgende uitbreiding toestemming om toegang tot jou drukker te verkry:</translation>
-<translation id="7453467225369441013">Meld jou by die meeste werwe af. Jy sal nie by jou Google-rekening afgemeld word nie.</translation>
 <translation id="7454548535253569100">Portaal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Jou organisasie het die stoor van wagwoorde afgeskakel</translation>
 <translation id="7455730275746867420">Bestuur ekstra houers</translation>
@@ -8989,7 +8983,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7508707215237589321">Vee “<ph name="CERT_NAME" />” uit?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Maak oortjie toe en vee groep uit?}=1{Maak oortjies toe en vee groep uit?}other{Maak oortjies toe en vee groepe uit?}}</translation>
 <translation id="7509097596023256288">Stel tans bestuur op</translation>
-<translation id="7509246181739783082">Verifieer jou identiteit</translation>
 <translation id="7509539379068593709">Deïnstalleer program</translation>
 <translation id="7514239104543605883">Kopieer na jou toestel toe</translation>
 <translation id="7514365320538308">Laai af</translation>

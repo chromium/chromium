@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Dagoeneko gorde duzu erabiltzaile-izen hau webgune honetarako</translation>
 <translation id="1497590942294823549">Menua → Pasahitz-kudeatzailea</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> webguneko kontua ez da ezabatuko.</translation>
+<translation id="1506061864768559482">Bilatzailea</translation>
 <translation id="1506063256525392513">Horrela, argazkiak atera eta kargatu ahal izango dituzu, eta QR kodeak eskaneatu</translation>
 <translation id="1509486075633541495">Hasi saioa webgunean</translation>
 <translation id="1509960214886564027">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
@@ -368,6 +369,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2664621323652615289">Gelditu</translation>
 <translation id="2666092431469916601">Goiko elementua</translation>
 <translation id="2669454659051515572">Gailu hau darabilen edonork ikus ditzake deskargatutako fitxategiak</translation>
+<translation id="2671423594960767771">Partekatu taldea</translation>
 <translation id="2673508731173059946">Joan kopiatu duzun estekara</translation>
 <translation id="2687403674020088961">Blokeatu cookie guztiak (ez da gomendatzen)</translation>
 <translation id="2690858294534178585">Kamera abian da</translation>
@@ -412,6 +414,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="288655811176831528">Itxi fitxa</translation>
 <translation id="2888631381369839306">Aktibatu dira prezioen jarraipenari buruzko jakinarazpenak</translation>
 <translation id="288902476966286676">Itzuli igorleari</translation>
+<translation id="2893168226686371498">Arakatzaile lehenetsia</translation>
 <translation id="2894757982205307093">Gehitu fitxa bat taldean</translation>
 <translation id="2905479111267140204">Beste nonbait erabilitako <ph name="NUMBER_OF_PASSWORDS" /> pasahitz dauzkazu, eta baliteke horrek segurtasunari eragitea.</translation>
 <translation id="291754862089661335">Ezarri QR kodea edo barra-kodea marko honetan</translation>
@@ -778,7 +781,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4764612367328936189">Erakundeak kontu jakin batzuekin soilik uzten du saioa hasten. Baimenduta ez dauden kontuak ezkutatuta daude. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover eta jarraitzen</translation>
 <translation id="4769198578611055647">Gordetako sarbide-gakoak edozein gailutatik atzitu ahal izango dituzu</translation>
-<translation id="4775879719735953715">Arakatzaile lehenetsia</translation>
 <translation id="4777866634702576038">Fitxa taldea ezabatu nahi duzu?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Egun batez edo gehiagoz erabili ez diren fitxa irekiak Fitxa inaktiboak atalera eramaten dira, gehien erabiltzen dituzun fitxak errazago ikusi ahal izan ditzazun. Hori aldatzeko, joan Ezarpenak atalera.}other{{COUNT} egunez edo gehiagoz erabili ez diren fitxa irekiak Fitxa inaktiboak atalera eramaten dira, gehien erabiltzen dituzun fitxak errazago ikusi ahal izan ditzazun. Hori aldatzeko, joan Ezarpenak atalera.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" /> (<ph name="ADDITIONAL_INFO" />)</translation>
@@ -1014,7 +1016,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5819208479324046259"><ph name="MANAGER" /> da arakatzailearen kudeatzailea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinkronizatzen…</translation>
 <translation id="5844284118433003733">Saioa hasita daukazunean, datuak Google-ko kontuarekin lotzen dira Google-ren zerbitzu guztietan babestuta egon zaitezen; adibidez, Gmail-en babesa handiagotzen da segurtasun-gertakariren bat izan bada.</translation>
-<translation id="5846482154967366008">Bilatzailea</translation>
 <translation id="5854790677617711513">Duela 30 egunetik gorakoak</translation>
 <translation id="5857770089550859117">Pasaesaldia behar da sinkronizatzen hasteko.</translation>
 <translation id="5859715514067755465">Aurrera</translation>

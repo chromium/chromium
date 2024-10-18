@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Na-save mo na ang username na ito para sa site na ito</translation>
 <translation id="1497590942294823549">Menu → Password Manager</translation>
 <translation id="1498283581832036924">Hindi made-delete ang iyong <ph name="WEBSITE" /> account.</translation>
+<translation id="1506061864768559482">Search engine</translation>
 <translation id="1506063256525392513">Nagbibigay-daan ito sa iyong kumuha at mag-upload ng mga larawan, pati na rin mag-scan ng mga QR code</translation>
 <translation id="1509486075633541495">Mag-sign in sa website</translation>
 <translation id="1509960214886564027">Posibleng masira ang mga feature sa maraming site</translation>
@@ -368,6 +369,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2664621323652615289">Ihinto</translation>
 <translation id="2666092431469916601">Tuktok</translation>
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
+<translation id="2671423594960767771">Ibahagi ang pangkat</translation>
 <translation id="2673508731173059946">Bisitahin ang kinopyang link</translation>
 <translation id="2687403674020088961">I-block ang lahat ng cookies (hindi inirerekomenda)</translation>
 <translation id="2690858294534178585">Ginagamit ang camera</translation>
@@ -412,6 +414,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="288655811176831528">Isara ang Tab</translation>
 <translation id="2888631381369839306">Naka-on ang mga notification sa pagsubaybay sa presyo</translation>
 <translation id="288902476966286676">Ibabalik sa sender</translation>
+<translation id="2893168226686371498">Default na browser</translation>
 <translation id="2894757982205307093">Bagong tab sa grupo</translation>
 <translation id="2905479111267140204">Mayroon kang <ph name="NUMBER_OF_PASSWORDS" /> (na) password na ginamit ulit na puwedeng maglagay ng iyong seguridad sa panganib.</translation>
 <translation id="291754862089661335">Itapat ang QR code o barcode sa loob ng frame na ito.</translation>
@@ -778,7 +781,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4764612367328936189">Pinapayagan ka lang ng iyong organisasyon na mag-sign in gamit ang ilang partikular na account. Nakatago ang mga account na hindi pinapayagan. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover at Sinusubaybayan</translation>
 <translation id="4769198578611055647">Tinutulungan kang i-access ang mga naka-save na passkey sa anumang device</translation>
-<translation id="4775879719735953715">Default na Browser</translation>
 <translation id="4777866634702576038">I-delete ang grupo ng tab?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Ang mga bukas na tab na hindi ginagamit sa loob ng mahigit isang araw o higit pa ay ililipat sa Mga Hindi Aktibong tab para madali mong mapagtuunan ang mga tab na pinakamadalas mong gamitin. Puwede mo itong baguhin anumang oras sa mga setting.}one{Ang mga bukas na tab na hindi ginagamit sa loob ng mahigit {COUNT} araw o higit pa ay ililipat sa Mga Hindi Aktibong tab para madali mong mapagtuunan ang mga tab na pinakamadalas mong gamitin. Puwede mo itong baguhin anumang oras sa mga setting.}other{Ang mga bukas na tab na hindi ginagamit sa loob ng mahigit {COUNT} na araw o higit pa ay ililipat sa Mga Hindi Aktibong tab para madali mong mapagtuunan ang mga tab na pinakamadalas mong gamitin. Puwede mo itong baguhin anumang oras sa mga setting.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5819208479324046259">Pinapamahalaan ng <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Nagsi-sync…</translation>
 <translation id="5844284118433003733">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>
-<translation id="5846482154967366008">Search Engine</translation>
 <translation id="5854790677617711513">Mas matagal sa 30 araw</translation>
 <translation id="5857770089550859117">Kinakailangan ang passphrase upang masimulan ang pag-sync.</translation>
 <translation id="5859715514067755465">I-forward</translation>

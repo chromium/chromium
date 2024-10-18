@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Tallensit jo tämän käyttäjänimen sivustolle</translation>
 <translation id="1497590942294823549">Valikko → Salasanat</translation>
 <translation id="1498283581832036924">Tiliäsi (<ph name="WEBSITE" />) ei poisteta.</translation>
+<translation id="1506061864768559482">Hakukone</translation>
 <translation id="1506063256525392513">Tämän avulla voit ottaa kuvia ja ladata niitä palvelimelle sekä skannata QR-koodeja</translation>
 <translation id="1509486075633541495">Kirjaudu sisään verkkosivustolle</translation>
 <translation id="1509960214886564027">Useiden sivustojen ominaisuudet saattavat lakata toimimasta</translation>
@@ -368,6 +369,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2664621323652615289">Lopeta</translation>
 <translation id="2666092431469916601">Yleisin</translation>
 <translation id="2669454659051515572">Kaikki tämän laitteen käyttäjät voivat nähdä ladatut tiedostot</translation>
+<translation id="2671423594960767771">Jaa ryhmä</translation>
 <translation id="2673508731173059946">Avaa kopioitu linkki</translation>
 <translation id="2687403674020088961">Estä kaikki evästeet (ei suositella)</translation>
 <translation id="2690858294534178585">Kamera on käytössä</translation>
@@ -412,6 +414,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="288655811176831528">Sulje välilehti</translation>
 <translation id="2888631381369839306">Hintaseurantailmoitukset ovat päällä</translation>
 <translation id="288902476966286676">Palauta lähettäjälle</translation>
+<translation id="2893168226686371498">Oletusselain</translation>
 <translation id="2894757982205307093">Uusi välilehti ryhmässä</translation>
 <translation id="2905479111267140204">Sinulla on <ph name="NUMBER_OF_PASSWORDS" /> uudelleenkäytettyä salasanaa, jotka voivat vaarantaa turvallisuutesi.</translation>
 <translation id="291754862089661335">Aseta QR- tai viivakoodi tämän kehyksen sisälle.</translation>
@@ -778,7 +781,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4764612367328936189">Organisaatiosi sallii sinun kirjautua sisään vain tietyillä tileillä. Kielletyt tilit on piilotettu. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover ja seuraaminen</translation>
 <translation id="4769198578611055647">Auttaa sinua käyttämään tallennettuja avainkoodeja kaikilla laitteilla</translation>
-<translation id="4775879719735953715">Oletusselain</translation>
 <translation id="4777866634702576038">Poistetaanko välilehtiryhmä?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Avoimet välilehdet, joita ei ole käytetty vähintään päivään, siirretään ei-aktiivisille välilehdille, jotta voit keskittyä useimmin käyttämiisi välilehtiin. Voit muuttaa valintasi milloin tahansa asetuksista.}other{Avoimet välilehdet, joita ei ole käytetty vähintään {COUNT} päivään, siirretään ei-aktiivisille välilehdille, jotta voit keskittyä useimmin käyttämiisi välilehtiin. Voit muuttaa valintasi milloin tahansa asetuksista.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" /> klo <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5819208479324046259">Ylläpitäjä on <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkronoidaan…</translation>
 <translation id="5844284118433003733">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
-<translation id="5846482154967366008">Hakukone</translation>
 <translation id="5854790677617711513">Yli 30 päivää vanhat</translation>
 <translation id="5857770089550859117">Synkronointi edellyttää tunnuslausetta.</translation>
 <translation id="5859715514067755465">Eteenpäin</translation>

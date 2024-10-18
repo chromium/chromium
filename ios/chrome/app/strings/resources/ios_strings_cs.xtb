@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Toto uživatelské jméno jste pro tento web už uložili</translation>
 <translation id="1497590942294823549">Nabídka → Správce hesel</translation>
 <translation id="1498283581832036924">Účet v doméně <ph name="WEBSITE" /> smazán nebude</translation>
+<translation id="1506061864768559482">Vyhledávač</translation>
 <translation id="1506063256525392513">Toto umožňuje pořizovat a nahrávat fotky a skenovat QR kódy</translation>
 <translation id="1509486075633541495">Přihlásit se k webu</translation>
 <translation id="1509960214886564027">Mnoho webů může přestat fungovat</translation>
@@ -368,6 +369,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2664621323652615289">Ukončit</translation>
 <translation id="2666092431469916601">Nahoru</translation>
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
+<translation id="2671423594960767771">Sdílet skupinu</translation>
 <translation id="2673508731173059946">Navštívit zkopírovaný odkaz</translation>
 <translation id="2687403674020088961">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
 <translation id="2690858294534178585">Kamera je používána</translation>
@@ -412,6 +414,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="288655811176831528">Zavřít kartu</translation>
 <translation id="2888631381369839306">Oznámení o sledování cen jsou zapnutá</translation>
 <translation id="288902476966286676">Vráceno odesílateli</translation>
+<translation id="2893168226686371498">Výchozí prohlížeč</translation>
 <translation id="2894757982205307093">Nová karta ve skupině</translation>
 <translation id="2905479111267140204">Máte několik (<ph name="NUMBER_OF_PASSWORDS" />) opakovaně použitých hesel, která by mohla ohrozit vaši bezpečnost.</translation>
 <translation id="291754862089661335">Do tohoto rámce umístěte QR kód nebo čárový kód.</translation>
@@ -778,7 +781,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4764612367328936189">Vaše organizace umožňuje pouze přihlášení pomocí určitých účtů. Nepovolené účty jsou skryty. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Objevování a sledování</translation>
 <translation id="4769198578611055647">Pomáhá získat přístup k uloženým přístupovým klíčům na kterémkoli zařízení</translation>
-<translation id="4775879719735953715">Výchozí prohlížeč</translation>
 <translation id="4777866634702576038">Smazat skupinu karet?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Otevřené karty, které jste nejméně den nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}few{Otevřené karty, které jste nejméně {COUNT} dny nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}many{Otevřené karty, které jste nejméně {COUNT} dne nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}other{Otevřené karty, které jste nejméně {COUNT} dní nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5819208479324046259">Spravováno společností <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Probíhá synchronizace…</translation>
 <translation id="5844284118433003733">Když jste přihlášeni, jsou tato data propojena s vaším účtem Google, aby vás ve službách Google bylo možné lépe chránit, například zvýšit ochranu v Gmailu po bezpečnostním incidentu.</translation>
-<translation id="5846482154967366008">Vyhledávač</translation>
 <translation id="5854790677617711513">Starší než 30 dnů</translation>
 <translation id="5857770089550859117">K zahájení synchronizace je potřeba heslová fráze.</translation>
 <translation id="5859715514067755465">Vpřed</translation>

@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Tayari umehifadhi jina hili la mtumiaji kwa ajili ya tovuti hii</translation>
 <translation id="1497590942294823549">Menyu → Kidhibiti cha Manenosiri</translation>
 <translation id="1498283581832036924">Akaunti yako ya <ph name="WEBSITE" /> haitafutwa.</translation>
+<translation id="1506061864768559482">Mtambo wa utafutaji</translation>
 <translation id="1506063256525392513">Hali hii hukuwezesha kupiga na kupakia picha pamoja na kuchanganua misimbo ya QR</translation>
 <translation id="1509486075633541495">Ingia katika akaunti ya tovuti</translation>
 <translation id="1509960214886564027">Huenda vipengele kwenye tovuti nyingi vikakosa kufanya kazi</translation>
@@ -368,6 +369,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2664621323652615289">Sitisha</translation>
 <translation id="2666092431469916601">Ya Juu</translation>
 <translation id="2669454659051515572">Mtu yeyote anayetumia kifaa hiki anaweza kuona faili zilizopakuliwa</translation>
+<translation id="2671423594960767771">Shiriki kikundi</translation>
 <translation id="2673508731173059946">Fungua kiungo ulichonakili</translation>
 <translation id="2687403674020088961">Zuia vidakuzi vyote (haipendekezwi)</translation>
 <translation id="2690858294534178585">Kamera inatumika</translation>
@@ -412,6 +414,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="288655811176831528">Funga Kichupo</translation>
 <translation id="2888631381369839306">Arifa za ufuatiliaji wa bei zimewashwa</translation>
 <translation id="288902476966286676">Kimerejeshwa kwa mtumaji</translation>
+<translation id="2893168226686371498">Kivinjari chaguomsingi</translation>
 <translation id="2894757982205307093">Kichupo kipya katika kikundi</translation>
 <translation id="2905479111267140204">Una manenosiri <ph name="NUMBER_OF_PASSWORDS" /> yaliyotumiwa kwingine yanayoweza kuhatarisha usalama wako.</translation>
 <translation id="291754862089661335">Weka msimbo wa QR au msimbo upau katika fremu hii</translation>
@@ -778,7 +781,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4764612367328936189">Shirika lako hukuruhusu kuingia kwa kutumia baadhi ya akaunti tu. Akaunti zisizoruhusiwa zimefichwa. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Gundua na Unazofuatilia</translation>
 <translation id="4769198578611055647">Hukusaidia kufikia funguo za siri zilizohifadhiwa kwenye kifaa chochote</translation>
-<translation id="4775879719735953715">Kivinjari Chaguomsingi</translation>
 <translation id="4777866634702576038">Ungependa kufuta kikundi cha vichupo?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Vichupo vilivyofunguliwa ambavyo havijatumika kwa siku moja au zaidi vitahamishiwa kwenye Vichupo visivyotumika ili uweze kuangazia kwa urahisi vichupo unavyovitumia zaidi. Unaweza kubadilisha hali hii wakati wowote katika mipangilio.}other{Vichupo vilivyofunguliwa ambavyo havijatumika kwa siku {COUNT} au zaidi vitahamishiwa kwenye Vichupo visivyotumika ili uweze kuangazia kwa urahisi vichupo unavyovitumia zaidi. Unaweza kubadilisha hali hii wakati wowote katika mipangilio.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5819208479324046259">Inadhibitiwa na <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Inasawazisha…</translation>
 <translation id="5844284118433003733">Unapoingia katika akaunti, data hii huunganishwa kwenye Akaunti yako ya Google ili kukulinda kwenye huduma zote za Google, kwa mfano kuongeza ulinzi katika Gmail baada ya tukio lililotishia usalama.</translation>
-<translation id="5846482154967366008">Mtambo wa Kutafuta</translation>
 <translation id="5854790677617711513">Iliyohifadhiwa kwa zaidi ya siku 30</translation>
 <translation id="5857770089550859117">Kauli ya siri inahitajika ili kuanza kusawazisha.</translation>
 <translation id="5859715514067755465">Sogeza Mbele</translation>

@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Du hast diesen Nutzernamen für diese Website bereits gespeichert</translation>
 <translation id="1497590942294823549">Menü → Passwortmanager</translation>
 <translation id="1498283581832036924">Dein <ph name="WEBSITE" />-Konto wird nicht gelöscht.</translation>
+<translation id="1506061864768559482">Suchmaschine</translation>
 <translation id="1506063256525392513">Dadurch kannst du Fotos aufnehmen und hochladen und QR-Codes scannen</translation>
 <translation id="1509486075633541495">Auf der Website anmelden</translation>
 <translation id="1509960214886564027">Funktionen auf vielen Websites funktionieren möglicherweise nicht mehr</translation>
@@ -368,6 +369,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2664621323652615289">Beenden</translation>
 <translation id="2666092431469916601">Oben</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
+<translation id="2671423594960767771">Gruppe teilen</translation>
 <translation id="2673508731173059946">Kopierten Link aufrufen</translation>
 <translation id="2687403674020088961">Alle Cookies blockieren (nicht empfohlen)</translation>
 <translation id="2690858294534178585">Kamera wird verwendet</translation>
@@ -412,6 +414,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="288655811176831528">Tab schließen</translation>
 <translation id="2888631381369839306">Benachrichtigungen zum Preis-Tracking aktiviert</translation>
 <translation id="288902476966286676">Zurück an Absender</translation>
+<translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
 <translation id="2905479111267140204">Du nutzt <ph name="NUMBER_OF_PASSWORDS" /> wiederverwendete Passwörter, die deine Sicherheit gefährden könnten.</translation>
 <translation id="291754862089661335">Positioniere den QR-Code oder Barcode in diesem Bereich</translation>
@@ -778,7 +781,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4764612367328936189">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover &amp; Folgen</translation>
 <translation id="4769198578611055647">Mit dieser PIN kannst du von jedem Gerät auf deine gespeicherten Passkeys zugreifen</translation>
-<translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4777866634702576038">Tabgruppe löschen?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Geöffnete Tabs, die einen Tag oder länger nicht verwendet wurden, werden in die inaktiven Tabs verschoben. So kannst du dich besser auf die Tabs konzentrieren, die du am häufigsten verwendest. Du kannst dies jederzeit in den Einstellungen ändern.}other{Geöffnete Tabs, die {COUNT} Tage oder länger nicht verwendet wurden, werden in die inaktiven Tabs verschoben. So kannst du dich besser auf die Tabs konzentrieren, die du am häufigsten verwendest. Du kannst dies jederzeit in den Einstellungen ändern.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5819208479324046259">Verwaltet von <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Wird synchronisiert…</translation>
 <translation id="5844284118433003733">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, wie beispielsweise nach einem Sicherheitsvorfall in Gmail.</translation>
-<translation id="5846482154967366008">Suchmaschine</translation>
 <translation id="5854790677617711513">Älter als 30 Tage</translation>
 <translation id="5857770089550859117">Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>
 <translation id="5859715514067755465">Weiter</translation>

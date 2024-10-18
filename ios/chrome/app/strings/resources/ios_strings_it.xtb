@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
 <translation id="1497590942294823549">Menu → Gestore delle password</translation>
 <translation id="1498283581832036924">Il tuo account <ph name="WEBSITE" /> non verrà eliminato.</translation>
+<translation id="1506061864768559482">Motore di ricerca</translation>
 <translation id="1506063256525392513">In questo modo puoi scattare e caricare foto, nonché scansionare codici QR</translation>
 <translation id="1509486075633541495">Accedi al sito web</translation>
 <translation id="1509960214886564027">Le funzionalità su molti siti potrebbero non essere disponibili</translation>
@@ -368,6 +369,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2664621323652615289">Interrompi</translation>
 <translation id="2666092431469916601">In alto</translation>
 <translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
+<translation id="2671423594960767771">Condividi gruppo</translation>
 <translation id="2673508731173059946">Visita il link copiato</translation>
 <translation id="2687403674020088961">Blocca tutti i cookie (non consigliato)</translation>
 <translation id="2690858294534178585">La videocamera è in uso</translation>
@@ -412,6 +414,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="288655811176831528">Chiudi scheda</translation>
 <translation id="2888631381369839306">Notifiche per il monitoraggio del prezzo attivate</translation>
 <translation id="288902476966286676">Restituire al mittente</translation>
+<translation id="2893168226686371498">Browser predefinito</translation>
 <translation id="2894757982205307093">Nuova scheda nel gruppo</translation>
 <translation id="2905479111267140204">Hai <ph name="NUMBER_OF_PASSWORDS" /> password riutilizzate che potrebbero mettere a rischio la tua sicurezza.</translation>
 <translation id="291754862089661335">Posiziona il codice a barre o QR all'interno di quest'area</translation>
@@ -778,7 +781,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4764612367328936189">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover e Stai seguendo</translation>
 <translation id="4769198578611055647">Ti consente di accedere alle passkey salvate su qualsiasi dispositivo</translation>
-<translation id="4775879719735953715">Browser predefinito</translation>
 <translation id="4777866634702576038">Eliminare il gruppo di schede?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Le schede aperte che non vengono usate per uno o più giorni vengono spostate nella sezione Schede non attive in modo da poterti concentrare facilmente sulle schede che utilizzi di più. Puoi modificare questa preferenza in qualsiasi momento nelle impostazioni.}other{Le schede aperte che non vengono usate per {COUNT} giorni o più vengono spostate nella sezione Schede non attive in modo da poterti concentrare facilmente sulle schede che utilizzi di più. Puoi modificare questa preferenza in qualsiasi momento nelle impostazioni.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5819208479324046259">Gestito da <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizzazione in corso…</translation>
 <translation id="5844284118433003733">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
-<translation id="5846482154967366008">Motore di ricerca</translation>
 <translation id="5854790677617711513">Oltre 30 giorni fa</translation>
 <translation id="5857770089550859117">Per avviare la sincronizzazione è obbligatoria la passphrase.</translation>
 <translation id="5859715514067755465">Avanti</translation>

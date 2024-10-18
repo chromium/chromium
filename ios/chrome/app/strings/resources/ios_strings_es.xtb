@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Ya has guardado ese nombre de usuario en este sitio web</translation>
 <translation id="1497590942294823549">Menú → Gestor de contraseñas</translation>
 <translation id="1498283581832036924">Tu cuenta de <ph name="WEBSITE" /> no se eliminará.</translation>
+<translation id="1506061864768559482">Buscador</translation>
 <translation id="1506063256525392513">Esto te permite hacer y subir fotos, así como escanear códigos QR</translation>
 <translation id="1509486075633541495">Inicia sesión en el sitio web</translation>
 <translation id="1509960214886564027">Es posible que las funciones de muchos sitios no funcionen correctamente.</translation>
@@ -368,6 +369,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2664621323652615289">Detener</translation>
 <translation id="2666092431469916601">Superior</translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
+<translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2673508731173059946">Ir al enlace copiado</translation>
 <translation id="2687403674020088961">Bloquear todas las cookies (no recomendado)</translation>
 <translation id="2690858294534178585">La cámara se está utilizando</translation>
@@ -412,6 +414,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="288655811176831528">Cerrar pestaña</translation>
 <translation id="2888631381369839306">Notificaciones de seguimiento de precios activadas</translation>
 <translation id="288902476966286676">Devolución al remitente</translation>
+<translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
 <translation id="2905479111267140204">Tienes <ph name="NUMBER_OF_PASSWORDS" /> contraseñas reutilizadas que podrían poner en riesgo tu seguridad.</translation>
 <translation id="291754862089661335">Coloca el código QR o de barras en este marco</translation>
@@ -778,7 +781,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4764612367328936189">Tu organización solo te permite iniciar sesión con determinadas cuentas. Las cuentas no permitidas están ocultas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover y Siguiendo</translation>
 <translation id="4769198578611055647">Te ayuda a acceder a las llaves de acceso guardadas en cualquier dispositivo</translation>
-<translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4777866634702576038">¿Eliminar grupo de pestañas?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Las pestañas abiertas que no se utilicen durante un día o más se moverán a las pestañas inactivas para que puedas centrarte fácilmente en las pestañas que más utilizas. Puedes cambiar esta opción en cualquier momento en la configuración.}other{Las pestañas abiertas que no se utilicen durante {COUNT} días o más se moverán a las pestañas inactivas para que puedas centrarte fácilmente en las pestañas que más utilizas. Puedes cambiar esta opción en cualquier momento en la configuración.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5819208479324046259">Gestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
 <translation id="5844284118433003733">Cuando inicias sesión, estos datos se vinculan a tu cuenta de Google para protegerte en los servicios de Google (por ejemplo, con una mayor protección en Gmail tras un incidente de seguridad).</translation>
-<translation id="5846482154967366008">Buscador</translation>
 <translation id="5854790677617711513">Más de 30 días</translation>
 <translation id="5857770089550859117">Se requiere una frase de contraseña para iniciar la sincronización.</translation>
 <translation id="5859715514067755465">Avanzar</translation>

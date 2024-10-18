@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">You already saved this username for this site</translation>
 <translation id="1497590942294823549">Menu → Password Manager</translation>
 <translation id="1498283581832036924">Your <ph name="WEBSITE" /> account won't be deleted.</translation>
+<translation id="1506061864768559482">Search engine</translation>
 <translation id="1506063256525392513">This lets you take and upload photos, as well as scan QR codes</translation>
 <translation id="1509486075633541495">Sign in to website</translation>
 <translation id="1509960214886564027">Features on many sites may break</translation>
@@ -368,6 +369,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2664621323652615289">Stop</translation>
 <translation id="2666092431469916601">Top</translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
+<translation id="2671423594960767771">Share group</translation>
 <translation id="2673508731173059946">Visit copied link</translation>
 <translation id="2687403674020088961">Block all cookies (not recommended)</translation>
 <translation id="2690858294534178585">Camera is in use</translation>
@@ -412,6 +414,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="288655811176831528">Close Tab</translation>
 <translation id="2888631381369839306">Price tracking notifications turned on</translation>
 <translation id="288902476966286676">Return to sender</translation>
+<translation id="2893168226686371498">Default browser</translation>
 <translation id="2894757982205307093">New tab in group</translation>
 <translation id="2905479111267140204">You have <ph name="NUMBER_OF_PASSWORDS" /> reused passwords that could put your security at risk.</translation>
 <translation id="291754862089661335">Position QR code or bar code in this frame</translation>
@@ -778,7 +781,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4764612367328936189">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover and following</translation>
 <translation id="4769198578611055647">Helps you access saved passkeys on any device</translation>
-<translation id="4775879719735953715">Default Browser</translation>
 <translation id="4777866634702576038">Delete tab group?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Open tabs not used for one day or more get moved to inactive tabs so that you can easily focus on the tabs that you use the most. You can change this at any time in settings.}other{Open tabs not used for {COUNT} days or more get moved to inactive tabs so that you can easily focus on the tabs you use the most. You can change this at any time in settings.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Syncing…</translation>
 <translation id="5844284118433003733">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
-<translation id="5846482154967366008">Search Engine</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
 <translation id="5857770089550859117">Passphrase required to start sync.</translation>
 <translation id="5859715514067755465">Forward</translation>

@@ -69,7 +69,7 @@
 <translation id="1312721752506309252">La protecció millorada està activada</translation>
 <translation id="1317821187353201763">Tanca la pestanya</translation>
 <translation id="1320164290882380380">{COUNT,plural, =1{Fes el seguiment d'aquest paquet}other{Fes el seguiment de tots els paquets}}</translation>
-<translation id="1321993286294231467">S'ha produït un error en desar la imatge.</translation>
+<translation id="1321993286294231467">Hi ha hagut un error en desar la imatge.</translation>
 <translation id="1322735045095424339">La teva organització requereix el mode d'incògnit</translation>
 <translation id="1323735185997015385">Suprimeix</translation>
 <translation id="132683371494960526">Feu doble toc per canviar la carpeta principal.</translation>
@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Ja has desat aquest nom d'usuari per a aquest lloc web</translation>
 <translation id="1497590942294823549">Menú → Gestor de contrasenyes</translation>
 <translation id="1498283581832036924">El teu compte de <ph name="WEBSITE" /> no se suprimirà.</translation>
+<translation id="1506061864768559482">Motor de cerca</translation>
 <translation id="1506063256525392513">Això et permet fer i penjar fotos, així com escanejar codis QR</translation>
 <translation id="1509486075633541495">Inicia la sessió al lloc web</translation>
 <translation id="1509960214886564027">Pot ser que les funcions de molts llocs web no funcionin</translation>
@@ -368,6 +369,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2664621323652615289">Atura</translation>
 <translation id="2666092431469916601">Superior</translation>
 <translation id="2669454659051515572">Qualsevol persona que utilitzi aquest dispositiu pot veure els fitxers baixats</translation>
+<translation id="2671423594960767771">Comparteix el grup</translation>
 <translation id="2673508731173059946">Ves a l'enllaç copiat</translation>
 <translation id="2687403674020088961">Bloqueja totes les galetes (opció no recomanada)</translation>
 <translation id="2690858294534178585">La càmera s'està utilitzant</translation>
@@ -412,6 +414,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="288655811176831528">Tanca la pestanya</translation>
 <translation id="2888631381369839306">Les notificacions de seguiment de preus estan activades</translation>
 <translation id="288902476966286676">Torna al remitent</translation>
+<translation id="2893168226686371498">Navegador predeterminat</translation>
 <translation id="2894757982205307093">Pestanya nova al grup</translation>
 <translation id="2905479111267140204">Tens <ph name="NUMBER_OF_PASSWORDS" /> contrasenyes reutilitzades que podrien posar en perill la teva seguretat.</translation>
 <translation id="291754862089661335">Situa el codi QR o el codi de barres dins d'aquest marc</translation>
@@ -778,7 +781,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4764612367328936189">La teva organització només et permet iniciar la sessió amb determinats comptes. Els comptes no admesos estan amagats. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover i Seguint</translation>
 <translation id="4769198578611055647">T'ajuda a accedir a les claus d'accés desades en qualsevol dispositiu</translation>
-<translation id="4775879719735953715">Navegador predeterminat</translation>
 <translation id="4777866634702576038">Vols suprimir el grup de pestanyes?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Les pestanyes obertes que no utilitzis durant un dia o més es mouran a Pestanyes inactives perquè et puguis centrar fàcilment en les pestanyes que més facis servir. Pots canviar aquesta opció en qualsevol moment a la configuració.}other{Les pestanyes obertes que no utilitzis durant {COUNT} dies o més es mouran a Pestanyes inactives perquè et puguis centrar fàcilment en les pestanyes que més facis servir. Pots canviar aquesta opció en qualsevol moment a la configuració.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -823,7 +825,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4936354130727646074">No moguis mai</translation>
 <translation id="4937410517508563815">Desa les contrasenyes al compte</translation>
 <translation id="4938338714234463591">Això et permetrà fer servir la veu amb determinades funcions als llocs web.</translation>
-<translation id="4941089862236492464">S'ha produït un problema en compartir el vostre element.</translation>
+<translation id="4941089862236492464">Hi ha hagut un problema en compartir el vostre element.</translation>
 <translation id="4944543191714094452">Cerca a la pàgina…</translation>
 <translation id="4945756290001680296">Accedeix a la configuració de la contrasenya</translation>
 <translation id="4949302115427722371">Gestiona la configuració…</translation>
@@ -991,7 +993,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="572328651809341494">Pestanyes recents</translation>
 <translation id="5724941645893276623">Per navegar pel web de manera privada, obre una pestanya nova</translation>
 <translation id="5728072125198221967">Serveis de Google enllaçats</translation>
-<translation id="5728700505257787410">S'ha produït un problema en iniciar la sessió al vostre compte.</translation>
+<translation id="5728700505257787410">Hi ha hagut un problema en iniciar la sessió al vostre compte.</translation>
 <translation id="5737974891429562743">Actualitza les dades d'inici de sessió del compte per iniciar la sincronització.</translation>
 <translation id="5738385766833540397">Gestiona com reps les alertes de baixada de preu dels productes que segueixes</translation>
 <translation id="5738887413654608789">Això et permet detectar pàgines web rellevants del teu entorn.</translation>
@@ -1014,7 +1016,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5819208479324046259">Gestionat per <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">S'està sincronitzant…</translation>
 <translation id="5844284118433003733">Si tens la sessió iniciada, aquestes dades s'enllacen al teu Compte de Google per protegir-te als serveis de Google; per exemple, augmentant la protecció a Gmail després d'un incident de seguretat.</translation>
-<translation id="5846482154967366008">Motor de cerca</translation>
 <translation id="5854790677617711513">Anterior a 30 dies</translation>
 <translation id="5857770089550859117">Cal una frase de contrasenya per iniciar la sincronització.</translation>
 <translation id="5859715514067755465">Endavant</translation>

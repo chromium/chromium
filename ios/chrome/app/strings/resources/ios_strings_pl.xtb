@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Ta nazwa użytkownika została już zapisana w tej witrynie</translation>
 <translation id="1497590942294823549">Menu → Menedżer haseł</translation>
 <translation id="1498283581832036924">Twoje konto na stronie <ph name="WEBSITE" /> nie zostanie usunięte.</translation>
+<translation id="1506061864768559482">Wyszukiwarka</translation>
 <translation id="1506063256525392513">Umożliwia robienie i przesyłanie zdjęć oraz skanowanie kodów QR</translation>
 <translation id="1509486075633541495">Zaloguj się w witrynie</translation>
 <translation id="1509960214886564027">Funkcje wielu stron mogą nie działać prawidłowo</translation>
@@ -368,6 +369,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2664621323652615289">Zatrzymaj</translation>
 <translation id="2666092431469916601">Do góry</translation>
 <translation id="2669454659051515572">Pobrane pliki może zobaczyć każdy użytkownik tego urządzenia</translation>
+<translation id="2671423594960767771">Udostępnij grupę</translation>
 <translation id="2673508731173059946">Otwórz skopiowany link</translation>
 <translation id="2687403674020088961">Blokuj wszystkie pliki cookie (niezalecane)</translation>
 <translation id="2690858294534178585">Aparat jest w użyciu</translation>
@@ -412,6 +414,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="288655811176831528">Zamknij kartę</translation>
 <translation id="2888631381369839306">Powiadomienia ze śledzenia cen zostały włączone</translation>
 <translation id="288902476966286676">Zwrot do nadawcy</translation>
+<translation id="2893168226686371498">Domyślna przeglądarka</translation>
 <translation id="2894757982205307093">Nowa karta w grupie</translation>
 <translation id="2905479111267140204">Masz hasła, które zostały użyte ponownie (<ph name="NUMBER_OF_PASSWORDS" />), a to może narazić Cię na niebezpieczeństwo.</translation>
 <translation id="291754862089661335">Umieść kod QR lub kod kreskowy w tej ramce</translation>
@@ -778,7 +781,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4764612367328936189">Twoja organizacja pozwala logować się tylko na określone konta. Niedozwolone konta zostały ukryte. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Odkrywanie i obserwowanie</translation>
 <translation id="4769198578611055647">Ułatwia dostęp do zapisanych kluczy dostępu na dowolnym urządzeniu</translation>
-<translation id="4775879719735953715">Domyślna przeglądarka</translation>
 <translation id="4777866634702576038">Usunąć grupę kart?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Otwarte karty, które nie były używane przez co najmniej 1 dzień, są przenoszone do sekcji Nieaktywne karty, dzięki czemu możesz się skupić na tych, których używasz najczęściej. Możesz to zmienić w dowolnym momencie w ustawieniach.}few{Otwarte karty, które nie były używane przez co najmniej {COUNT} dni, są przenoszone do sekcji Nieaktywne karty, dzięki czemu możesz się skupić na tych, których używasz najczęściej. Możesz to zmienić w dowolnym momencie w ustawieniach.}many{Otwarte karty, które nie były używane przez co najmniej {COUNT} dni, są przenoszone do sekcji Nieaktywne karty, dzięki czemu możesz się skupić na tych, których używasz najczęściej. Możesz to zmienić w dowolnym momencie w ustawieniach.}other{Otwarte karty, które nie były używane przez co najmniej {COUNT} dnia, są przenoszone do sekcji Nieaktywne karty, dzięki czemu możesz się skupić na tych, których używasz najczęściej. Możesz to zmienić w dowolnym momencie w ustawieniach.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5819208479324046259">Przeglądarką zarządza <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synchronizuję…</translation>
 <translation id="5844284118433003733">Gdy się zalogujesz, dane te będą powiązane z Twoim kontem Google, co pozwoli chronić Cię we wszystkich usługach Google. Na przykład w razie incydentu związanego z bezpieczeństwem zwiększy się ochrona w Gmailu.</translation>
-<translation id="5846482154967366008">Wyszukiwarka</translation>
 <translation id="5854790677617711513">Sprzed ponad 30 dni</translation>
 <translation id="5857770089550859117">Wpisz hasło wielowyrazowe, by rozpocząć synchronizację.</translation>
 <translation id="5859715514067755465">Dalej</translation>

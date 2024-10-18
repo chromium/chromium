@@ -30,6 +30,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1330562121671411446">Otkriveni jezik</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> zahteva da pročitate i prihvatite sledeće Uslove korišćenja usluge pre korišćenja ovog uređaja. Ovi uslovi ne proširuju, menjaju niti ograničavaju Uslove za Google Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Možete da se prebacite da biste videli lozinke sa drugog Chrome profila</translation>
+<translation id="1356661055722410047">Novo. Možete da prevodite i tekst i slike na ekranu</translation>
 <translation id="1363996462118479832">Chrome OS ne može da sinhronizuje podatke zbog greške pri prijavljivanju.</translation>
 <translation id="137466361146087520">Google Chrome beta</translation>
 <translation id="1399397803214730675">Ovaj računar već ima noviju verziju Google Chrome pregledača. Ako softver ne funkcioniše, deinstalirajte Google Chrome i pokušajte ponovo.</translation>
@@ -51,6 +52,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kako možete da upravljate podacima:<ph name="END_BOLD" /> Radi zaštite privatnosti automatski brišemo interesovanja starija od 4 nedelje. Kada nastavite da pregledate, interesovanje će se možda ponovo pojaviti na listi. Možete i da uklanjate interesovanja za koja ne želite da ih Chrome uzima u obzir.</translation>
 <translation id="1628000112320670027">Pronađite pomoć za Chrome</translation>
 <translation id="1640672724030957280">Preuzimanje...</translation>
+<translation id="1651617469580841801">Kada koristite Google objektiv, naslov, URL i sadržaj stranice, uključujući PDF-ove, šalju se Google-u. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">O Chrome OS Flex-u</translation>
 <translation id="1674870198290878346">Otvori link u Chrome prozoru bez arhi&amp;viranja</translation>
 <translation id="1682634494516646069">Google Chrome ne može da čita podatke iz svog direktorijuma sa podacima niti da ih u njih upisuje:
@@ -197,6 +199,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3261565993776444564">Isprobajte novu boju da biste prilagodili pregledač</translation>
 <translation id="3282568296779691940">Prijavljivanje u Chrome</translation>
 <translation id="3286538390144397061">Restartuj odmah</translation>
+<translation id="3289358082435924389">Kasnije će vas Chrome pitati da li želite da koristite sačuvane informacije za automatsko popunjavanje obrazaca</translation>
 <translation id="3292333338048274092">Zatim treba da restartujete Chrome.</translation>
 <translation id="3360895254066713204">Chrome pomoćnik</translation>
 <translation id="3379938682270551431">{0,plural, =0{Ponovo ćemo pokrenuti Chrome}=1{Ponovo ćemo pokrenuti Chrome za 1 sekundu}one{Ponovo ćemo pokrenuti Chrome za # sekundu}few{Ponovo ćemo pokrenuti Chrome za # sekunde}other{Ponovo ćemo pokrenuti Chrome za # sekundi}}</translation>
@@ -512,6 +515,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="7308322188646931570">Chrome traži pristup memorijskom prostoru da bi preuzimao datoteke</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7352881504289275361">Poboljšano bezbedno pregledanje nudi najjaču Chrome onlajn zaštitu da biste bili bezbedni dok pregledate</translation>
+<translation id="7386878009611068389">Ako želiš veću bezbednost onlajn uz izbore roditelja, pređi na svoj Chrome profil na kom si već prijavljen/a kao <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7394745511930161845">Napravite sopstvenu temu pomoću veštačke inteligencije da biste pregledaču dali jedinstven izgled</translation>
 <translation id="7398801000654795464">Bili ste prijavljeni u Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti nalog da biste se ponovo prijavili.</translation>
 <translation id="7412494426921990001">Kliknite na Chrome meni</translation>
@@ -525,6 +529,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="7477130805345743099">Chrome će vas upozoriti pre učitavanja bilo kog sajta pomoću nebezbedne veze</translation>
 <translation id="7481213027396403996">Nabavite najjaču Chrome zaštitu</translation>
 <translation id="749228101751499733">Dok ste prijavljeni, možete da koristite lozinke i drugo sa Google naloga u Chrome-u. <ph name="SHORTCUT" /> može da menja podešavanja Google usluga.</translation>
+<translation id="7512187482580860950">Chrome može da razume više tipova informacija i da brže popunjava obrasce. Saznajte više o <ph name="BEGIN_LINK" />Chrome automatskom popunjavanju<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Usluga ažuriranja Google-a</translation>
 <translation id="7515191208480168435">Možete da zakačite Google objektiv radi jednostavnog pristupa</translation>
 <translation id="7535429826459677826">Programerska verzija Google Chrome-a</translation>
@@ -567,6 +572,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="7886087451482920026">Izaberite tekst pomoću Google objektiva</translation>
 <translation id="7890208801193284374">Ako delite računar, prijatelji i porodica mogu zasebno da pregledaju i da podese Chrome baš onako kako žele.</translation>
 <translation id="7896673875602241923">Neko se prethodno prijavio na Chrome na ovom računaru kao <ph name="ACCOUNT_EMAIL_LAST" />. Napravite novog korisnika Chrome-a da bi informacije bile razdvojene.</translation>
+<translation id="7917470403848199310">Chrome će vas pitati da li želite da sačuvate informacije iz obrasca, poput rođendana, uzrasta i broja pasoša</translation>
 <translation id="7917876797003313048">Možete da upravljate Google nalozima na koje ste prijavljeni. Google nalozi se koriste za Chrome pregledač, Play prodavnicu, Gmail i drugo. Ako želite da dodate nalog za nekog drugog, npr. člana porodice, umesto toga dodajte novu osobu na svoj uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome je blokirao ovo preuzimanje jer je ovaj fajl obmanjujući i može da izvrši neočekivane promene na uređaj</translation>
 <translation id="7947083960301164556">Prikaži šta je novo</translation>
@@ -623,6 +629,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8550334526674375523">Ovaj poslovni profil je potpuno odvojen od ličnog profila.</translation>
 <translation id="8555465886620020932">Greška u usluzi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Pomoću Chrome profila možete da razdvojite sve Chrome sadržaje. Na taj način ćete lakše moći da razdvojite posao i zabavu.</translation>
+<translation id="8601359445272098721">Novo. Možete da prevodite i tekst i slike na ekranu  tako što ćete izabrati dugme „Prevedi ekran“</translation>
 <translation id="8614913330719544658">Google Chrome ne reaguje. Želite li da ga odmah ponovo pokrenete?</translation>
 <translation id="861702415419836452">Chrome traži dozvolu da pristupi kameri da bi napravio 3D mapu okruženja</translation>
 <translation id="8625237574518804553">{0,plural, =1{Ponovo ćemo pokrenuti Chrome za 1 minut}one{Ponovo ćemo pokrenuti Chrome za # minut}few{Ponovo ćemo pokrenuti Chrome za # minuta}other{Ponovo ćemo pokrenuti Chrome za # minuta}}</translation>

@@ -4370,7 +4370,6 @@ Remarque : cette règle rend obsolète la règle <ph name="ARC_GLS_POLICY_NAME"
 <translation id="4341199399451274159">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> vous permet de spécifier les encodages de caractères compatibles avec le moteur de recherche. Ces encodages sont des noms de page de codes, comme UTF-8, GB2312 et ISO-8859-1, qui sont testés dans l'ordre dans lequel ils sont indiqués.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> n'est pas configurée, l'encodage UTF-8 est alors utilisé.</translation>
-<translation id="4343382787226139147">Indique les certificats clients qui doivent être enregistrés à l'aide du protocole de gestion des appareils.</translation>
 <translation id="4347908978527632940">Si la valeur est définie sur "True" et si l'utilisateur est supervisé, d'autres applications Android peuvent envoyer une requête concernant les restrictions Web de ce dernier via un fournisseur de contenu.
 
           Si la valeur est définie sur "False" ou si elle n'est pas définie, le fournisseur de contenu n'envoie aucune information.</translation>
@@ -6394,7 +6393,6 @@ Vous pouvez ajouter une autre restriction de compte avec la règle <ph name="MIC
       Si cette règle est désactivée ou n'est pas configurée, ces recommandations ne s'affichent pas.
 
       Si elle est configurée, les utilisateurs ne peuvent pas la modifier.</translation>
-<translation id="5848438019586925019">Algorithme pour la génération de paires de clés.</translation>
 <translation id="5851248808417680865">Utiliser le thème sombre</translation>
 <translation id="585270638818921943">Empêche l'utilisateur de se servir d'applications Android provenant de sources non approuvées</translation>
 <translation id="5859344336338527083">Permet de déterminer quelles URL peuvent installer des extensions, des applications et des thèmes. Avant la version 21 de <ph name="PRODUCT_NAME" />, les utilisateurs pouvaient cliquer sur un lien qui renvoyait vers un fichier *.crx, et <ph name="PRODUCT_NAME" /> leur proposait d'installer ce fichier, tout en affichant d'abord quelques avertissements. Depuis, les fichiers de ce type doivent être téléchargés et glissés vers la page des paramètres <ph name="PRODUCT_NAME" />. Cette règle permet d'appliquer à des URL spécifiques l'ancienne procédure d'installation, plus facile à suivre.
@@ -9114,7 +9112,6 @@ Désactivez cette règle uniquement si vous utilisez une solution de sécurité 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.
 
       Pour les formats <ph name="URL_LABEL" /> spécifiques, cette règle peut être remplacée par les règles <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> et <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="7951605113561734721">Indique les certificats clients qui doivent être enregistrés au niveau de l'appareil à l'aide du protocole de gestion des appareils.</translation>
 <translation id="7952007677054834789">Permet de configurer les pages à charger au démarrage, la page d'accueil par défaut et la page Nouvel onglet par défaut dans <ph name="PRODUCT_NAME" />, tout en empêchant les utilisateurs de les modifier.
 
       Les paramètres de page d'accueil de l'utilisateur ne sont verrouillés complètement que si vous définissez la page Nouvel onglet ou une URL spécifique comme page d'accueil. Si vous ne précisez pas l'URL de la page d'accueil, l'utilisateur est toujours en mesure de définir la page d'accueil sur la page Nouvel onglet en spécifiant "chrome://newtab".

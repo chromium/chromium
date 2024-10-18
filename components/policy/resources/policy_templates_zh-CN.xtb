@@ -4355,7 +4355,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4341199399451274159">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> 来指定搜索服务提供商支持的字符编码。编码是 UTF-8、GB2312 和 ISO-8859-1 之类的代码页名称。系统会按照您指定的顺序尝试这些编码。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />，系统将使用 UTF-8。</translation>
-<translation id="4343382787226139147">指定应使用设备管理协议注册的客户端证书。</translation>
 <translation id="4347908978527632940">如果设为 true 且该用户是受监管用户，则其他 Android 应用可以通过内容提供方查询该用户的网络限制。
 
           如果设为 false 或未设置，则内容提供方不会返回任何信息。</translation>
@@ -6337,7 +6336,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策已停用或未设置，系统便不会显示推荐应用。
 
       如果您设置了此政策，用户便无法更改相关设置。</translation>
-<translation id="5848438019586925019">用于生成密钥对的算法。</translation>
 <translation id="5851248808417680865">使用深色主题</translation>
 <translation id="585270638818921943">禁止用户使用来源不受信任的 Android 应用</translation>
 <translation id="5859344336338527083">通过设置此政策，您可以指定哪些网址可安装扩展程序、应用和主题背景。在 <ph name="PRODUCT_NAME" /> 21 以前，用户可以点击指向 *.crx 文件的链接，<ph name="PRODUCT_NAME" /> 虽然会显示一些警告，但仍会让用户安装该文件。但从 21 版开始，用户必须下载此类文件并将其拖动到 <ph name="PRODUCT_NAME" /> 的设置页面中。此设置可允许特定网址采用较简便的旧安装流程。
@@ -9051,7 +9049,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策未设置，系统会允许网站请求获取访问权限，但用户可以更改此设置。
 
       您可通过在 <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策中设置特定<ph name="URL_LABEL" />格式来覆盖此政策。</translation>
-<translation id="7951605113561734721">指定应使用设备管理协议注册的设备级客户端证书。</translation>
 <translation id="7952007677054834789">在 <ph name="PRODUCT_NAME" /> 中配置启动时加载的页面、默认主页和默认新标签页，并禁止用户更改它们。
 
       只有将主页设为新标签页或某个特定的主页网址，才能完全锁定用户的主页设置。如果您不指定主页网址，则用户仍可通过指定“chrome://newtab”将主页设为新标签页。

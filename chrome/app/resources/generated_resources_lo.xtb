@@ -1516,7 +1516,6 @@
 <translation id="2053312383184521053">ຂໍ້ມູນສະພາວະຢູ່ຊື່ໆ</translation>
 <translation id="205560151218727633">ໂລໂກ້ຜູ້ຊ່ວຍ Google</translation>
 <translation id="2058456167109518507">ກວດພົບອຸປະກອນ</translation>
-<translation id="2058581283817163201">ຢັ້ງຢືນດ້ວຍໂທລະສັບນີ້</translation>
 <translation id="2059913712424898428">ເຂດເວລາ</translation>
 <translation id="2060375639911876205">ລຶບໂປຣໄຟລ໌ eSIM ອອກ</translation>
 <translation id="2061366302742593739">ບໍ່ມີຫຍັງໃຫ້ສະແດງ</translation>
@@ -3169,7 +3168,6 @@
 <translation id="3241680850019875542">ເລືອກໄດເຣັກຕໍຣີພື້ນຖານຂອງສ່ວນຂະຫຍາຍເພື່ອບັນຈຸ. ເພື່ອອັບເດດສ່ວນຂະຫຍາຍ, ເລືອກໄຟລ໌ລະຫັດສ່ວນຕົວເພື່ອ​ໃຊ້​ຄືນອີກ.</translation>
 <translation id="3241810535741601486">ການປ່ຽນແປງນີ້ຈະເປັນການປ່ຽນແປງຢ່າງຖາວອນ ແລະ ຈະບໍ່ສາມາດຍ້ອນກັບໄດ້. ການອັບເດດເພີ່ມເຕີມຈະມີຜົນກັບຜູ້ໃຊ້ອຸປະກອນນີ້ທຸກຄົນ. <ph name="LINK_START" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">ຕ້ອງຕິດຕັ້ງແອັບທີ່ມີ​ຄຸນ​ສົມ​ບັດ manifest 'kiosk_only' ຢູ່ໃນໂໝດ kiosk ຂອງ ChromeOS</translation>
-<translation id="3242665648857227438">ໂປຣໄຟລ໌ນີ້ໃຊ້ການຕັ້ງຄ່າພຣັອກຊີຂອງ ChromeOS.</translation>
 <translation id="3243017971870859287">ອ່ານອຸປະກອນ ChromeOS Flex ແລະ ໝາຍເລກຊີຣຽວສ່ວນປະກອບ</translation>
 <translation id="324366796737464147">ການຕັດສຽງລົບກວນ</translation>
 <translation id="3244294424315804309">ສືບຕໍ່ປິດສຽງ</translation>
@@ -4896,7 +4894,6 @@
 <translation id="4486333480498805415">ຄວາມຖືກຕ້ອງຂອງສະຖານທີ່</translation>
 <translation id="4487489714832036847">Chromebooks ໃຊ້ແອັບແທນຊອບແວດັ້ງເດີມ. ດາວໂຫຼດແອັບສຳລັບປະສິດທິພາບການເຮັດວຽກ, ການບັນເທີງ ແລະ ອື່ນໆອີກ.</translation>
 <translation id="4488257340342212116">ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ກ້ອງຂອງທ່ານ</translation>
-<translation id="4490086832405043258">ໃຊ້ການຕັ້ງຄ່າພຣັອກຊີຂອງ ChromeOS ສຳລັບໂປຣໄຟລ໌ນີ້.</translation>
 <translation id="4490798467014431984">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ສ່ວນຂະຫຍາຍຢູ່ເວັບໄຊນີ້</translation>
 <translation id="449102748655090594">ກຳລັງຈັດກຸ່ມແຖບຂອງທ່ານ…</translation>
 <translation id="449126573531210296">ເຂົ້າລະຫັດລະຫັດຜ່ານທີ່ຊິ້ງຂໍ້ມູນໄວ້ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
@@ -5989,7 +5986,6 @@
 <translation id="5294068591166433464">ຫາກເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ທີ່ເປັນອັນຕະລາຍ, Chrome ອາດສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Google ນຳ</translation>
 <translation id="5294097441441645251">ຕ້ອງເລີ່ມດ້ວຍຕົວອັກສອນຕົວພິມນ້ອຍ ຫຼື ຂີດກ້ອງ</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> ຂອງທ່ານຈະໃຊ້ເຊັນເຊີທີ່ມີມາໃນຕົວເພື່ອກວດຫາຄົນທີ່ຢູ່ໜ້າອຸປະກອນຂອງທ່ານ. ຂໍ້ມູນທັງໝົດຈະຖືກປະມວນຜົນຢູ່ອຸປະກອນຂອງທ່ານທັນທີແລ້ວຈາກນັ້ນຈະຖືກລຶບອອກ. ຂໍ້ມູນເຊັນເຊີຈະບໍ່ຖືກສົ່ງໃຫ້ Google ເດັດຂາດ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">ສ່ວນຂະຫຍາຍສາມາດຮ້ອງຂໍສິດເຂົ້າເຖິງເວັບໄຊນີ້ໄດ້</translation>
 <translation id="5295349205180144885">ຊື່ກຸ່ມແຖບ: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">ຟັງການຕອບສະໜອງແບບສຽງເວົ້າເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ອຸປະກອນຂອງທ່ານໂດຍບໍ່ຕ້ອງເບິ່ງໜ້າຈໍ. ສາມາດສະແດງຄໍາຕິຊົມເປັນອັກສອນນູນໄດ້ກັບອຸປະກອນທີ່ເຊື່ອມຕໍ່ແລ້ວ.</translation>
 <translation id="5296536303670088158">ທ່ານໄດ້ຮັບການດູແລຢ່າງເຂັ້ມງວດທີ່ສຸດຂອງ Chrome ໃຫ້ປອດໄພຈາກເວັບໄຊທີ່ເປັນອັນຕະລາຍ</translation>
@@ -6872,7 +6868,6 @@
 <translation id="5951303645598168883"><ph name="ORIGIN" /> ຕ້ອງການໃຊ້ຟອນໃນເຄື່ອງ</translation>
 <translation id="5951624318208955736">ໜ້າຈໍ</translation>
 <translation id="5952020381407136867">ແຜ່ນສຳຜັດ</translation>
-<translation id="595262438437661818">ບໍ່ມີສ່ວນຂະຫຍາຍທີ່ຕ້ອງການເຂົ້າເຖິງເວັບໄຊນີ້</translation>
 <translation id="5953211687820750364">ລາຍຊື່ນີ້ແມ່ນໄດ້ຮັບຜົນກະທົບໂດຍ <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           ແລະ <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">ລະຫັດຜ່ານຂອງທ່ານໝົດອາຍຸແລ້ວ. ກະລຸນາອອກຈາກລະບົບ ແລ້ວເຂົ້າສູ່ລະບົບຄືນໃໝ່ເພື່ອປ່ຽນມັນ.</translation>
@@ -8903,7 +8898,6 @@
 <translation id="7450761244949417357">ກຳລັງເປີດໃນ <ph name="ALTERNATIVE_BROWSER_NAME" /> ຕອນນີ້</translation>
 <translation id="7450926666485653189">ເອົາສະເພາະບາງສ່ວນຂອງ URL ມາສ້າງຄວາມສັບສົນແລ້ວສົ່ງໄປໃຫ້ Google ຜ່ານເຊີບເວີຄວາມເປັນສ່ວນຕົວທີ່ເຊື່ອງທີ່ຢູ່ IP ຂອງທ່ານ</translation>
 <translation id="7453008956351770337">ໂດຍການເລືອກເຄື່ອງພິມນີ້, ທ່ານກຳລັງໃຫ້ການອະນຸຍາດເຂົ້າເຖິງເຄື່ອງພິມຂອງທ່ານແກ່ສ່ວນຂະຫຍາຍຕໍ່ໄປນີ້:</translation>
-<translation id="7453467225369441013">ນຳທ່ານອອກຈາກລະບົບເວັບໄຊສ່ວນໃຫຍ່. ທ່ານຈະບໍ່ຖືກນຳອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="7454548535253569100">ໜ້າເວັບ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">ອົງການຂອງທ່ານໄດ້ປິດການບັນທຶກລະຫັດຜ່ານໄວ້ແລ້ວ</translation>
 <translation id="7455730275746867420">ຈັດການກ່ອງບັນຈຸເພີ່ມເຕີມ</translation>
@@ -8985,7 +8979,6 @@
 <translation id="7508707215237589321">ລຶບ "<ph name="CERT_NAME" />" ບໍ?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ປິດແຖບ ແລະ ລຶບກຸ່ມບໍ?}=1{ປິດແຖບ ແລະ ລຶບກຸ່ມບໍ?}other{ປິດແຖບ ແລະ ລຶບກຸ່ມບໍ?}}</translation>
 <translation id="7509097596023256288">ກຳລັງຕັ້ງຄ່າການຈັດການ</translation>
-<translation id="7509246181739783082">ຢັ້ງຢືນຕົວຕົນຂອງທ່ານ</translation>
 <translation id="7509539379068593709">ຖອນການຕິດຕັ້ງແອັບ</translation>
 <translation id="7514239104543605883">ສຳເນົາໄປໃສ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>

@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Bu sayt uchun login allaqachon saqlangan</translation>
 <translation id="1497590942294823549">Menyu → Parollar menejeri</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> hisobingiz oʻchirilmaydi</translation>
+<translation id="1506061864768559482">Qidiruv tizimi</translation>
 <translation id="1506063256525392513">Rasmlarni suratga olish va internetga yuklash, QR kodlarni skanerlash imkonini beradi</translation>
 <translation id="1509486075633541495">Saytga kirish</translation>
 <translation id="1509960214886564027">Aksariyat saytlardagi funksiyalar ishalamay qolishi mumkin</translation>
@@ -368,6 +369,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2664621323652615289">Toʻxtatish</translation>
 <translation id="2666092431469916601">Tepaga</translation>
 <translation id="2669454659051515572">Bu qurilmaning barcha foydalanuvchilar yuklab olingan fayllarni koʻra oladi</translation>
+<translation id="2671423594960767771">Guruhni ulashish</translation>
 <translation id="2673508731173059946">Nusxalangan havolani ochish</translation>
 <translation id="2687403674020088961">Barcha cookie fayllarini taqiqlash (tavsiya etilmaydi)</translation>
 <translation id="2690858294534178585">Kamera band.</translation>
@@ -412,6 +414,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="288655811176831528">Varaqni yopish</translation>
 <translation id="2888631381369839306">Xavfsizlik tekshiruvi bildirishnomalari yoqildi</translation>
 <translation id="288902476966286676">Yuboruvchiga qaytarish</translation>
+<translation id="2893168226686371498">Standart brauzer</translation>
 <translation id="2894757982205307093">Joriy guruhda yangi varaq ochish</translation>
 <translation id="2905479111267140204">Xavfsizlikka tahdid qilishi mumkin <ph name="NUMBER_OF_PASSWORDS" /> ta qayta ishlatilgan parol bor.</translation>
 <translation id="291754862089661335">Bu kadrga QR yoki shtrix kodni joylang</translation>
@@ -778,7 +781,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4764612367328936189">Tashkilotingiz faqat ayrim hisoblardan kirishga ruxsat beradi. Ruxsat etilmagan hisoblar yashirilgan. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover va kuzatuvdagi</translation>
 <translation id="4769198578611055647">Istalgan qurilmada saqlangan kalitlardan foydalanishga yordam beradi</translation>
-<translation id="4775879719735953715">Standart brauzer</translation>
 <translation id="4777866634702576038">Varaqlar guruhi oʻchirilsinmi?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Bir kun yoki undan uzoqroq foydalanilmagan ochiq varaqlar Nofaol varaqlarga koʻchiriladi, shunda koʻp foydalanadigan varaqlarga eʼtibor qaratasiz. Buni istalgan vaqtda sozlamalardan oʻzgartirish mumkin.}other{{COUNT} kun yoki undan uzoqroq foydalanilmagan ochiq varaqlar Nofaol varaqlarga koʻchiriladi, shunda koʻp foydalanadigan varaqlarga eʼtibor qaratasiz. Buni istalgan vaqtda sozlamalardan oʻzgartirish mumkin.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5819208479324046259"><ph name="MANAGER" /> tomonidan boshqariladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinxronlanmoqda…</translation>
 <translation id="5844284118433003733">Hisobingizga kirsangiz, maʼlumotlar Google hisobingizga ulanadi. Bu sizni Google xizmatlarida himoya qilishda (masalan, xavfsizlik hodisasidan keyin Gmailda himoyani kuchaytirishda) yordam beradi.</translation>
-<translation id="5846482154967366008">Qidiruv tizimi</translation>
 <translation id="5854790677617711513">30 kundan oldin saqlanganlar</translation>
 <translation id="5857770089550859117">Sinxronizatsiyani boshlash uchun kodli ibora zarur.</translation>
 <translation id="5859715514067755465">Oldinga oʻtkazish</translation>

@@ -1509,7 +1509,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2053312383184521053">Dati sullo stato di inattività</translation>
 <translation id="205560151218727633">Logo dell'Assistente Google</translation>
 <translation id="2058456167109518507">Dispositivo rilevato</translation>
-<translation id="2058581283817163201">Verifica con questo telefono</translation>
 <translation id="2059913712424898428">Fuso orario</translation>
 <translation id="2060375639911876205">Rimuovi profilo eSIM</translation>
 <translation id="2061366302742593739">Nulla da mostrare</translation>
@@ -3157,7 +3156,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3241680850019875542">Seleziona la directory principale dell'estensione di cui creare il pacchetto. Per aggiornare un'estensione, seleziona anche il file delle chiave privata da riutilizzare.</translation>
 <translation id="3241810535741601486">Questa modifica è definitiva e irreversibile. Gli aggiornamenti estesi vengono applicati a tutti gli utenti di questo dispositivo. <ph name="LINK_START" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">L'app con l'attributo del file manifest "kiosk_only" deve essere installata in modalità kiosk di ChromeOS</translation>
-<translation id="3242665648857227438">Questo profilo usa le impostazioni del proxy di ChromeOS.</translation>
 <translation id="3243017971870859287">Lettura dei numeri di serie del dispositivo ChromeOS Flex e dei componenti</translation>
 <translation id="324366796737464147">Cancellazione del rumore</translation>
 <translation id="3244294424315804309">Continua a tenere l'audio disattivato</translation>
@@ -4884,7 +4882,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4486333480498805415">Precisione della localizzazione</translation>
 <translation id="4487489714832036847">Al posto del software tradizionale i Chromebook usano le app. Scarica app per la produttività, l'intrattenimento e altro.</translation>
 <translation id="4488257340342212116">Possono utilizzare la videocamera</translation>
-<translation id="4490086832405043258">Usa le impostazioni del proxy di ChromeOS per questo profilo.</translation>
 <translation id="4490798467014431984">Le estensioni non sono consentite su questo sito</translation>
 <translation id="449102748655090594">Raggruppamento delle schede in corso…</translation>
 <translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
@@ -5976,7 +5973,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5294068591166433464">Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Google</translation>
 <translation id="5294097441441645251">Deve iniziare con un carattere minuscolo o un trattino basso</translation>
 <translation id="5294618183559481278">Il tuo dispositivo <ph name="DEVICE_TYPE" /> usa un sensore incorporato per rilevare la presenza di persone davanti allo schermo. Tutti i dati vengono subito elaborati sul dispositivo e poi eliminati. I dati del sensore non vengono mai inviati a Google. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">Le estensioni possono richiedere l'accesso a questo sito</translation>
 <translation id="5295349205180144885">Nome del gruppo di schede: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Attiva la funzione di lettura vocale per usare il dispositivo senza dover guardare lo schermo. Il feedback braille è disponibile con un dispositivo connesso.</translation>
 <translation id="5296536303670088158">Disponi della misura di sicurezza più efficace di Chrome contro siti web pericolosi</translation>
@@ -6858,7 +6854,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5951303645598168883"><ph name="ORIGIN" /> vuole usare caratteri locali</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5952020381407136867">Touchpad</translation>
-<translation id="595262438437661818">Nessuna estensione richiede l'accesso a questo sito</translation>
 <translation id="5953211687820750364">Questo elenco è influenzato da <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">La password è scaduta. Esci e accedi nuovamente per modificarla.</translation>
 <translation id="5955304353782037793">app</translation>
@@ -8890,7 +8885,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7450761244949417357">Apertura in <ph name="ALTERNATIVE_BROWSER_NAME" /> ora</translation>
 <translation id="7450926666485653189">Invia una parte offuscata dell'URL a Google tramite un server di tutela della privacy che nasconde il tuo indirizzo IP</translation>
 <translation id="7453008956351770337">Se selezioni questa stampante, autorizzi la seguente estensione ad accedere alla tua stampante:</translation>
-<translation id="7453467225369441013">Verrai disconnesso dalla maggior parte dei siti, ma non dal tuo Account Google.</translation>
 <translation id="7454548535253569100">Portale: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">La tua organizzazione ha disattivato il salvataggio delle password</translation>
 <translation id="7455730275746867420">Gestisci altri container</translation>
@@ -8972,7 +8966,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7508707215237589321">Eliminare "<ph name="CERT_NAME" />"?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Chiudere scheda ed eliminare gruppo?}=1{Chiudere scheda ed eliminare gruppo?}other{Chiudere le schede ed eliminare i gruppi?}}</translation>
 <translation id="7509097596023256288">Impostazione della gestione in corso…</translation>
-<translation id="7509246181739783082">Verifica la tua identità</translation>
 <translation id="7509539379068593709">Disinstalla app</translation>
 <translation id="7514239104543605883">Copia sul tuo dispositivo</translation>
 <translation id="7514365320538308">Scarica</translation>

@@ -1506,7 +1506,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2053312383184521053">Të dhënat e gjendjes së qetë</translation>
 <translation id="205560151218727633">Logoja e asistentit të Google</translation>
 <translation id="2058456167109518507">U diktua pajisje</translation>
-<translation id="2058581283817163201">Verifikohu me këtë telefon</translation>
 <translation id="2059913712424898428">Brezi orar</translation>
 <translation id="2060375639911876205">Hiq profilin e kartës eSIM</translation>
 <translation id="2061366302742593739">Nuk ka asgjë për të shfaqur</translation>
@@ -3153,7 +3152,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3241680850019875542">Përzgjidh direktorinë kryesore të shtesës prej nga do të krijosh paketën. Për të përditësuar një shtesë, përzgjidh gjithashtu skedarin e çelësit privat për ripërdorim.</translation>
 <translation id="3241810535741601486">Ky ndryshim është i përhershëm dhe nuk mund të anulohet. Përditësimet për një periudhë të zgjatur zbatohen për të gjithë përdoruesit e kësaj pajisjeje. <ph name="LINK_START" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">Aplikacioni me atributin e manifestimit "kiosk_only" duhet të instalohet në modalitetin "kioskë" të ChromeOS.</translation>
-<translation id="3242665648857227438">Ky profil përdor cilësimet e proxy-it të ChromeOS.</translation>
 <translation id="3243017971870859287">Të lexojë numrat e serisë të pajisjes me ChromeOS Flex dhe të komponentit</translation>
 <translation id="324366796737464147">Anulimi i zhurmës</translation>
 <translation id="3244294424315804309">Vazhdo ta çaktivizosh tingullin</translation>
@@ -4880,7 +4878,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4486333480498805415">Saktësia e vendndodhjes</translation>
 <translation id="4487489714832036847">Pajisjet Chromebook përdorin aplikacione në vend të softuerëve tradicionalë. Merr aplikacione për produktivitet, zbavitje etj.</translation>
 <translation id="4488257340342212116">Lejohen të përdorin kamerën</translation>
-<translation id="4490086832405043258">Përdor cilësimet e proxy-it të ChromeOS për këtë profil.</translation>
 <translation id="4490798467014431984">Shtesat nuk lejohen në këtë sajt</translation>
 <translation id="449102748655090594">Skedat e tua po grupohen…</translation>
 <translation id="449126573531210296">Enkripto fjalëkalimet e sinkronizuara me "Llogarinë tënde të Google"</translation>
@@ -5971,7 +5968,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5294068591166433464">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te Google.</translation>
 <translation id="5294097441441645251">Duhet të fillojë me një shkronjë të vogël ose vizë poshtë</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> përdor një sensor të integruar për të zbuluar personat përpara pajisjes sate. Të gjitha të dhënat përpunohen në pajisjen tënde menjëherë dhe më pas fshihen. Të dhënat e sensorit nuk i dërgohen asnjëherë Google. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">Shtesat mund të kërkojnë qasje në këtë sajt</translation>
 <translation id="5295349205180144885">Emri i grupit të skedave: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Dëgjo komentet me zë që të mund ta përdorësh pajisjen pa shikuar në ekran. Komentet në breil ofrohen me një pajisje të lidhur.</translation>
 <translation id="5296536303670088158">Ti ke sigurinë më të fortë të Chrome kundër sajteve të dëmshme të uebit</translation>
@@ -6855,7 +6851,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5951303645598168883"><ph name="ORIGIN" /> dëshiron të përdorë fontet lokale</translation>
 <translation id="5951624318208955736">Monitori</translation>
 <translation id="5952020381407136867">blloku me prekje</translation>
-<translation id="595262438437661818">Asnjë shtesë nuk ka nevojë për qasje te ky sajt</translation>
 <translation id="5953211687820750364">Kjo listë ndikohet nga <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           dhe <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">Fjalëkalimi yt ka skaduar. Dil dhe më pas identifikohu përsëri për ta ndryshuar atë.</translation>
@@ -8887,7 +8882,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7450761244949417357">Po hapet në <ph name="ALTERNATIVE_BROWSER_NAME" /> tani</translation>
 <translation id="7450926666485653189">Dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP</translation>
 <translation id="7453008956351770337">Duke zgjedhur këtë printer, po i jep shtesës së mëposhtme lejen për qasjen te printeri yt:</translation>
-<translation id="7453467225369441013">Të nxjerr nga shumica e sajteve. Nuk do të dalësh nga llogaria jote e Google.</translation>
 <translation id="7454548535253569100">Portali: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Organizata jote ka çaktivizuar ruajtjen e fjalëkalimeve</translation>
 <translation id="7455730275746867420">Menaxho kontejnerët shtesë</translation>
@@ -8969,7 +8963,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7508707215237589321">Të fshihet "<ph name="CERT_NAME" />"?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Të mbyllet skeda dhe të fshihet grupi?}=1{Të mbyllen skedat dhe të fshihet grupi?}other{Të mbyllen skedat dhe të fshihen grupet?}}</translation>
 <translation id="7509097596023256288">Menaxhimi po konfigurohet</translation>
-<translation id="7509246181739783082">Verifiko identitetin</translation>
 <translation id="7509539379068593709">Çinstalo aplikacionin</translation>
 <translation id="7514239104543605883">Kopjo te pajisja jote</translation>
 <translation id="7514365320538308">Shkarko</translation>

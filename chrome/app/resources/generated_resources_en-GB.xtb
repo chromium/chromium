@@ -1519,7 +1519,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2053312383184521053">Idle State Data</translation>
 <translation id="205560151218727633">Google assistant logo</translation>
 <translation id="2058456167109518507">Device detected</translation>
-<translation id="2058581283817163201">Verify with this phone</translation>
 <translation id="2059913712424898428">Time zone</translation>
 <translation id="2060375639911876205">Remove eSIM profile</translation>
 <translation id="2061366302742593739">Nothing to show</translation>
@@ -3170,7 +3169,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3241680850019875542">Select the root directory of the extension to pack. To update an extension, also select the private key file to reuse.</translation>
 <translation id="3241810535741601486">This change is permanent and can't be reversed. Extended updates apply to all users of this device. <ph name="LINK_START" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode</translation>
-<translation id="3242665648857227438">This profile uses Chrome OS proxy settings.</translation>
 <translation id="3243017971870859287">Read ChromeOS Flex device and component serial numbers</translation>
 <translation id="324366796737464147">Noise cancellation</translation>
 <translation id="3244294424315804309">Continue muting sound</translation>
@@ -4897,7 +4895,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4486333480498805415">Location accuracy</translation>
 <translation id="4487489714832036847">Chromebooks use apps instead of traditional software. Get apps for productivity, entertainment and more.</translation>
 <translation id="4488257340342212116">Allowed to use your camera</translation>
-<translation id="4490086832405043258">Use Chrome OS proxy settings for this profile.</translation>
 <translation id="4490798467014431984">Extensions are not allowed on this site</translation>
 <translation id="449102748655090594">Grouping your tabs…</translation>
 <translation id="449126573531210296">Encrypt synced passwords with your Google Account</translation>
@@ -5990,7 +5987,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5294068591166433464">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
 <translation id="5294097441441645251">Must start with a lowercase character or underscore</translation>
 <translation id="5294618183559481278">Your <ph name="DEVICE_TYPE" /> uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">Extensions can request access to this site</translation>
 <translation id="5295349205180144885">Tab group name: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Hear spoken feedback so that you can use your device without looking at the screen. Braille feedback is available with a connected device.</translation>
 <translation id="5296536303670088158">You have Chrome's strongest security against harmful websites</translation>
@@ -6874,7 +6870,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5951303645598168883"><ph name="ORIGIN" /> wants to use local fonts</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5952020381407136867">touchpad</translation>
-<translation id="595262438437661818">No extensions need access to this site</translation>
 <translation id="5953211687820750364">This list is affected by <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           and <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">Your password has expired. Please sign out then sign in again to change it.</translation>
@@ -8907,7 +8902,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7450761244949417357">Opening in <ph name="ALTERNATIVE_BROWSER_NAME" /> now</translation>
 <translation id="7450926666485653189">Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address</translation>
 <translation id="7453008956351770337">By selecting this printer, you are giving the following extension the permission to access your printer:</translation>
-<translation id="7453467225369441013">Signs you out of most sites. You won't be signed out of your Google Account.</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Your organisation turned off saving passwords</translation>
 <translation id="7455730275746867420">Manage extra containers</translation>
@@ -8989,7 +8983,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7508707215237589321">Delete '<ph name="CERT_NAME" />'?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Close tab and delete group?}=1{Close tab and delete group?}other{Close tabs and delete groups?}}</translation>
 <translation id="7509097596023256288">Setting up management</translation>
-<translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7509539379068593709">Uninstall app</translation>
 <translation id="7514239104543605883">Copy to your device</translation>
 <translation id="7514365320538308">Download</translation>

@@ -1516,7 +1516,6 @@
 <translation id="2053312383184521053">داده‌های حالت بیکار</translation>
 <translation id="205560151218727633">‏نشان‌واره «دستیار Google»</translation>
 <translation id="2058456167109518507">دستگاه شناسایی شد</translation>
-<translation id="2058581283817163201">تأیید کردن با این تلفن</translation>
 <translation id="2059913712424898428">منطقه زمانی</translation>
 <translation id="2060375639911876205">برداشتن نمایه سیم‌کارت داخلی</translation>
 <translation id="2061366302742593739">چیزی برای نمایش وجود ندارد</translation>
@@ -3167,7 +3166,6 @@
 <translation id="3241680850019875542">دایرکتوری ریشه برنامهٔ افزودنی را برای فشرده کردن انتخاب کنید. همچنین برای به‌روزرسانی برنامهٔ افزودنی، فایل کلید خصوصی را برای استفاده مجدد انتخاب کنید.</translation>
 <translation id="3241810535741601486">این تغییر دائمی است و قابل‌بازگرداندن نیست. به‌روزرسانی‌های تمدیدشده برای همه کاربران این دستگاه اعمال می‌شود. <ph name="LINK_START" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">‏برنامه‌ای با مشخصه مانیفست «kiosk_only» باید در حالت کیوسک ChromeOS نصب شود</translation>
-<translation id="3242665648857227438">‏این نمایه از تنظیمات پراکسی ChromeOS استفاده می‌کند.</translation>
 <translation id="3243017971870859287">‏خواندن شماره‌های سریال عنصر و دستگاه ChromeOS Flex</translation>
 <translation id="324366796737464147">حذف نوفه زمینه</translation>
 <translation id="3244294424315804309">همچنان بی‌صدا</translation>
@@ -4894,7 +4892,6 @@
 <translation id="4486333480498805415">دقت مکان</translation>
 <translation id="4487489714832036847">‏دستگاه‌های Chromebook به‌جای نرم‌افزار قدیمی از برنامه‌ها استفاده می‌کنند. برنامه‌هایی ویژه بهره‌وری، سرگرمی، و غیره دریافت کنید.</translation>
 <translation id="4488257340342212116">اجازه دارد از دوربین استفاده کند</translation>
-<translation id="4490086832405043258">‏از تنظیمات پراکسی ChromeOS برای این نمایه استفاده شود.</translation>
 <translation id="4490798467014431984">افزونه‌ها در این سایت مجاز نیست</translation>
 <translation id="449102748655090594">درحال گروه‌بندی برگه‌های شما…</translation>
 <translation id="449126573531210296">‏رمزگذاری گذرواژه‌های همگام‌سازی‌شده با «حساب Google» شما</translation>
@@ -5987,7 +5984,6 @@
 <translation id="5294068591166433464">‏اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی را بارگیری می‌کنید، Chrome ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه به Google ارسال کند</translation>
 <translation id="5294097441441645251">باید با نویسه حروف کوچک یا زیرخط شروع شود</translation>
 <translation id="5294618183559481278">‏<ph name="DEVICE_TYPE" /> از حسگر داخلی برای شناسایی افراد مقابل دستگاه استفاده می‌کند. همه داده‌ها بلافاصله در دستگاهتان پردازش و سپس حذف می‌شود. داده‌های حسگر هرگز به Google ارسال نمی‌شود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">افزونه‌ها می‌توانند درخواست دسترسی به این سایت را داشته باشند</translation>
 <translation id="5295349205180144885">نام گروه برگه: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">با شنیدن بازخورد گفتاری می‌توانید بدون نگاه کردن به صفحه‌نمایش از دستگاهتان استفاده کنید. بازخورد بریل ازطریق دستگاه متصل دردسترس است.</translation>
 <translation id="5296536303670088158">‏از قوی‌ترین امنیت Chrome دربرابر وب‌سایت‌های مضر برخوردار هستید</translation>
@@ -6871,7 +6867,6 @@
 <translation id="5951303645598168883"><ph name="ORIGIN" /> می‌خواهد از قلم‌های محلی استفاده کند</translation>
 <translation id="5951624318208955736">نمایشگر</translation>
 <translation id="5952020381407136867">صفحه لمسی</translation>
-<translation id="595262438437661818">هیچ افزونه‌ای نیاز به دسترسی به این سایت ندارد</translation>
 <translation id="5953211687820750364">‏این فهرست از <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           و <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> تأثیر می‌گیرد</translation>
 <translation id="5955282598396714173">گذرواژه‌تان منقضی شده است. لطفاً برای تغییر آن از سیستم خارج شوید و دوباره به سیستم وارد شوید.</translation>
@@ -8906,7 +8901,6 @@
 <translation id="7450761244949417357">اکنون درحال باز کردن در <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7450926666485653189">‏بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق یک سرور حافظ حریم خصوصی که نشانی IP شما را پنهان می‌کند به Google ارسال می‌کند</translation>
 <translation id="7453008956351770337">با انتخاب این چاپگر، به افزونه زیر اجازه دسترسی به چاپگرتان را می‌دهید:</translation>
-<translation id="7453467225369441013">‏شما را از سیستم اکثر سایت‌ها خارج می‌‌کند. از سیستم حساب Google خارج نمی‌شوید.</translation>
 <translation id="7454548535253569100">پورتال: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">سازمانتان ذخیره‌سازی گذرواژه‌ها را خاموش کرده است</translation>
 <translation id="7455730275746867420">مدیریت محتوی‌های اضافه</translation>
@@ -8988,7 +8982,6 @@
 <translation id="7508707215237589321">‫«<ph name="CERT_NAME" />» حذف شود؟</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{برگه بسته و گروه حذف شود؟}=1{برگه بسته و گروه حذف شود؟}one{برگه بسته و گروه حذف شود؟}other{برگه‌ها بسته و گروه‌ها حذف شود؟}}</translation>
 <translation id="7509097596023256288">درحال راه‌اندازی مدیریت</translation>
-<translation id="7509246181739783082">هویتتان را به‌تأیید برسانید</translation>
 <translation id="7509539379068593709">حذف نصب برنامه</translation>
 <translation id="7514239104543605883">کپی در دستگاه</translation>
 <translation id="7514365320538308">بارگیری</translation>

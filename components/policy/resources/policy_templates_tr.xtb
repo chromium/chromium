@@ -4475,7 +4475,6 @@ Not: Bu politika ile birlikte <ph name="ARC_GLS_POLICY_NAME" /> politikasının 
 <translation id="4341199399451274159"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> politikasının ayarlanması, arama sağlayıcı tarafından desteklenen karakter kodlamalarını belirtir. Kodlamalar UTF-8, GB2312 ve ISO-8859-1 gibi kod sayfası adlarıdır. Bunlar, sağlandıkları sırada denenirler.
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> politikası ayarlanmazsa UTF-8 kullanılır.</translation>
-<translation id="4343382787226139147">Cihaz yönetim protokolü kullanılarak kaydolunması gereken istemci sertifikalarını belirtir.</translation>
 <translation id="4347908978527632940">Doğru seçeneğine ayarlanırsa ve kullanıcı denetlenen bir kullanıcıysa, diğer Android uygulamaları kullanıcının web kısıtlamalarını bir içerik sağlayıcısı aracılığıyla sorgulayabilir.
 
           Yanlış seçeneğine ayarlanırsa veya ayarlanmadan bırakılırsa içerik sağlayıcısı herhangi bir bilgi sağlamaz.</translation>
@@ -6492,7 +6491,6 @@ Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel 
       Bu politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa bu öneriler görünmez.
 
       Bu politika ayarlanırsa kullanıcılar değiştiremez.</translation>
-<translation id="5848438019586925019">Anahtar çifti oluşturmak için kullanılan algoritma.</translation>
 <translation id="5851248808417680865">Koyu temayı kullan</translation>
 <translation id="585270638818921943">Kullanıcının güvenilmeyen kaynaklardan Android uygulamaları kullanmasını engelle</translation>
 <translation id="5859344336338527083">Politikayı ayarlamak uzantı, uygulama ve tema yükleyebilecek URL'leri belirtir. <ph name="PRODUCT_NAME" /> 21 sürümünden önce, kullanıcılar bir *.crx dosyası bağlantısını tıklayarak <ph name="PRODUCT_NAME" /> ürününün birkaç uyarıdan sonra dosyayı yüklemesini sağlayabiliyordu. Daha sonra, bu tür dosyaların indirilip <ph name="PRODUCT_NAME" /> ayarları sayfasına sürüklenmesi zorunlu hale getirilmiştir. Bu ayar, belirli URL'lerin eski, daha kolay yükleme akışına sahip olmasına olanak tanır.
@@ -9275,7 +9273,6 @@ Politikayı yalnızca geçici imza içeren uygulamaların engellendiği bir uç 
       Politikayı ayarlanmadan bırakırsanız web siteleri erişim izni isteyebilir. Kullanıcılar bu ayarı değiştirebilir.
 
       Bu politika, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> ve <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> politikaları kullanılarak belirli <ph name="URL_LABEL" /> kalıpları için geçersiz kılınabilir.</translation>
-<translation id="7951605113561734721">Cihaz yönetim protokolü kullanılarak kaydolunması gereken, cihaz genelinde istemci sertifikalarını belirtir.</translation>
 <translation id="7952007677054834789">Başlangıçta yüklenecek sayfaları, <ph name="PRODUCT_NAME" /> varsayılan ana sayfasını, varsayılan yeni sekme sayfasını yapılandırın ve kullanıcıların bunları değiştirmesini engelleyin.
 
       Kullanıcının ana sayfa ayarları sadece ana sayfayı yeni sayfa sekmesi olarak seçerseniz veya onu bir URL olarak ayarlayıp bir ana sayfa URL'si belirtirseniz tamamen kilitlenir. Ana sayfa URL'sini belirtmezseniz, kullanıcı "chrome://newtab" dizesini belirterek yine de ana sayfayı yeni sekme sayfası olarak ayarlayabilir.

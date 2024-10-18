@@ -351,7 +351,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a 30 segons.</t
 <translation id="2248634276911611268">Obre l'enllaç en una pestanya nova i canvia a aquesta pestanya nova</translation>
 <translation id="2253808149208613283">Instal·la l'aplicació per personalitzar aquest dispositiu</translation>
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
-<translation id="2257486738914982088">S'ha produït un error en baixar <ph name="FILENAME" /></translation>
+<translation id="2257486738914982088">Hi ha hagut un error en baixar <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fitxers suggerits</translation>
 <translation id="2268130516524549846">S'ha desactivat el Bluetooth</translation>
 <translation id="2268731132310444948">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Un cop s'hagi activat el menú d'aplicacions, tindràs una barra de cerca millorada. Podràs començar a escriure-hi per cercar fitxers, aplicacions i més. També hi podràs obtenir respostes a preguntes sobre el teu <ph name="PRODUCT_NAME" />.</translation>

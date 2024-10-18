@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Já guardou este nome de utilizador para este site.</translation>
 <translation id="1497590942294823549">Menu → Gestor de Palavras-passe</translation>
 <translation id="1498283581832036924">A sua conta de <ph name="WEBSITE" /> não vai ser apagada.</translation>
+<translation id="1506061864768559482">Motor de pesquisa</translation>
 <translation id="1506063256525392513">Isto permite-lhe tirar e carregar fotos, bem como ler códigos QR</translation>
 <translation id="1509486075633541495">Inicie sessão no Website</translation>
 <translation id="1509960214886564027">As funcionalidades em muitos sites podem falhar.</translation>
@@ -368,6 +369,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2664621323652615289">Parar</translation>
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os ficheiros transferidos</translation>
+<translation id="2671423594960767771">Partilhar grupo</translation>
 <translation id="2673508731173059946">Aceder ao link copiado</translation>
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado).</translation>
 <translation id="2690858294534178585">A câmara está a ser utilizada</translation>
@@ -412,6 +414,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="288655811176831528">Fechar separador</translation>
 <translation id="2888631381369839306">Notificações de acompanhamento de preço ativadas</translation>
 <translation id="288902476966286676">Devolver ao remetente</translation>
+<translation id="2893168226686371498">Navegador predefinido</translation>
 <translation id="2894757982205307093">Novo separador no grupo</translation>
 <translation id="2905479111267140204">Tem <ph name="NUMBER_OF_PASSWORDS" /> palavras-passe reutilizadas que podem pôr a sua segurança em risco.</translation>
 <translation id="291754862089661335">Posicione o código QR ou o código de barras nesta moldura</translation>
@@ -778,7 +781,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4764612367328936189">A sua organização permite-lhe iniciar sessão apenas com determinadas contas. As contas que não estão autorizadas estão ocultas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover e A seguir</translation>
 <translation id="4769198578611055647">Ajuda a aceder às chaves de acesso guardadas em qualquer dispositivo</translation>
-<translation id="4775879719735953715">Navegador predefinido</translation>
 <translation id="4777866634702576038">Eliminar o grupo de separadores?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Os separadores abertos não usados há um ou mais dias são movidos para os separadores inativos, para que se possa concentrar facilmente nos separadores que mais usa. Pode alterar esta definição em qualquer altura nas definições.}other{Os separadores abertos não usados há {COUNT} dias ou mais são movidos para os separadores inativos, para que se possa concentrar facilmente nos separadores que mais usa. Pode alterar esta definição em qualquer altura nas definições.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5819208479324046259">Gerido por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">A sincronizar…</translation>
 <translation id="5844284118433003733">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
-<translation id="5846482154967366008">Motor de Pesquisa</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857770089550859117">A frase de acesso é necessária para iniciar a sincronização.</translation>
 <translation id="5859715514067755465">Avançar</translation>

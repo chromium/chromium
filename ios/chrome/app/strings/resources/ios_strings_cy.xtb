@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Rydych eisoes wedi cadw'r enw defnyddiwr hwn ar gyfer y wefan hon.</translation>
 <translation id="1497590942294823549">Dewislen → Rheolwr Cyfrineiriau</translation>
 <translation id="1498283581832036924">Ni fydd eich cyfrif <ph name="WEBSITE" /> yn cael ei ddileu.</translation>
+<translation id="1506061864768559482">Peiriant chwilio</translation>
 <translation id="1506063256525392513">Mae hyn yn eich galluogi i dynnu ac uwchlwytho lluniau, yn ogystal â sganio codau QR</translation>
 <translation id="1509486075633541495">Mewngofnodi i'r wefan</translation>
 <translation id="1509960214886564027">Mae'n bosib y bydd nodweddion ar lawer o wefannau yn torri</translation>
@@ -368,6 +369,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2664621323652615289">Stopio</translation>
 <translation id="2666092431469916601">Brig</translation>
 <translation id="2669454659051515572">Gall unrhyw un sy'n defnyddio'r ddyfais hon weld ffeiliau sydd wedi'u lawrlwytho</translation>
+<translation id="2671423594960767771">Rhannu â grŵp</translation>
 <translation id="2673508731173059946">Mynd i ddolen a gopïwyd</translation>
 <translation id="2687403674020088961">Rhwystro pob cwci (ni argymhellir)</translation>
 <translation id="2690858294534178585">Mae'r camera'n cael ei ddefnyddio</translation>
@@ -412,6 +414,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="288655811176831528">Cau'r Tab</translation>
 <translation id="2888631381369839306">Hysbysiadau olrhain prisiau wedi'u troi ymlaen</translation>
 <translation id="288902476966286676">Dychwelyd i'r anfonwr</translation>
+<translation id="2893168226686371498">Porwr diofyn</translation>
 <translation id="2894757982205307093">Mae tab newydd yn y grŵp</translation>
 <translation id="2905479111267140204">Mae gennych <ph name="NUMBER_OF_PASSWORDS" /> o gyfrineiriau sydd wedi cael eu hailddefnyddio a allai beryglu eich diogelwch.</translation>
 <translation id="291754862089661335">Gosod cod QR neu god bar yn y ffrâm hon</translation>
@@ -778,7 +781,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4764612367328936189">Mae eich sefydliad yn caniatáu i chi fewngofnodi gyda rhai cyfrifon yn unig. Mae cyfrifon na chaniateir yn cael eu cuddio. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Darganfod a Dilynir</translation>
 <translation id="4769198578611055647">Yn eich helpu i gael mynediad at godau pas sydd wedi'u cadw ar unrhyw ddyfais</translation>
-<translation id="4775879719735953715">Porwr Diofyn</translation>
 <translation id="4777866634702576038">Dileu'r grŵp tabiau?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Mae tabiau sydd ar agor a heb eu defnyddio am un diwrnod neu fwy yn cael eu symud i dabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}zero{Mae tabiau sydd ar agor a heb eu defnyddio am {COUNT} diwrnod neu fwy yn cael eu symud i dabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}two{Mae tabiau sydd ar agor a heb eu defnyddio am {COUNT} diwrnod neu fwy yn cael eu symud i dabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}few{Mae tabiau sydd ar agor a heb eu defnyddio am {COUNT} diwrnod neu fwy yn cael eu symud i dabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}many{Mae tabiau sydd ar agor a heb eu defnyddio am {COUNT} diwrnod neu fwy yn cael eu symud i dabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}other{Mae tabiau sydd ar agor a heb eu defnyddio am {COUNT} diwrnod neu fwy yn cael eu symud i dabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5819208479324046259">Rheolir gan <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Wrthi'n cysoni…</translation>
 <translation id="5844284118433003733">Pan fyddwch wedi mewngofnodi, mae'r data hyn wedi'u cysylltu â'ch Cyfrif Google i'ch diogelu ar draws gwasanaethau Google, er enghraifft cynyddu diogelwch yn Gmail ar ôl digwyddiad diogelwch.</translation>
-<translation id="5846482154967366008">Peiriant Chwilio</translation>
 <translation id="5854790677617711513">Hŷn na 30 diwrnod</translation>
 <translation id="5857770089550859117">Mae angen cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="5859715514067755465">Ymlaen</translation>

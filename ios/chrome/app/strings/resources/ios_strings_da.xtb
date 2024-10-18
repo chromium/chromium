@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Du har allerede gemt dette brugernavn for dette website</translation>
 <translation id="1497590942294823549">Menu → Adgangs­kode­admin­istrator</translation>
 <translation id="1498283581832036924">Din <ph name="WEBSITE" />-konto slettes ikke.</translation>
+<translation id="1506061864768559482">Søgemaskine</translation>
 <translation id="1506063256525392513">Det giver dig mulighed for at tage og uploade billeder samt scanne QR-koder</translation>
 <translation id="1509486075633541495">Log ind på website</translation>
 <translation id="1509960214886564027">Funktioner på mange websites virker muligvis ikke</translation>
@@ -368,6 +369,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2664621323652615289">Stop</translation>
 <translation id="2666092431469916601">Top</translation>
 <translation id="2669454659051515572">Alle, der bruger denne enhed, kan se downloadede filer</translation>
+<translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2673508731173059946">Gå til kopieret link</translation>
 <translation id="2687403674020088961">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="2690858294534178585">Kameraet er i brug</translation>
@@ -412,6 +414,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="288655811176831528">Luk fane</translation>
 <translation id="2888631381369839306">Notifikationer om prissporing er aktiveret</translation>
 <translation id="288902476966286676">Returneres til afsender</translation>
+<translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2894757982205307093">Ny fane i gruppe</translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> genbrugte adgangskoder, hvilket kan udgøre en sikkerhedsrisiko.</translation>
 <translation id="291754862089661335">Placer QR-kode eller stregkode i denne ramme</translation>
@@ -778,7 +781,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4764612367328936189">Din organisation tillader kun login med bestemte konti. Konti, der ikke tillades, skjules. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover og Følger</translation>
 <translation id="4769198578611055647">Hjælper dig med at tilgå gemte adgangsnøgler på enhver enhed</translation>
-<translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4777866634702576038">Vil du slette fanegruppen?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Åbne faner, der ikke har været i brug i mindst én dag, flyttes til Inaktive faner, så du nemt kan fokusere på de faner, du bruger mest. Du kan til enhver tid ændre dette i indstillingerne.}one{Åbne faner, der ikke har været i brug i mindst {COUNT} dag, flyttes til Inaktive faner, så du nemt kan fokusere på de faner, du bruger mest. Du kan til enhver tid ændre dette i indstillingerne.}other{Åbne faner, der ikke har været i brug i mindst {COUNT} dage, flyttes til Inaktive faner, så du nemt kan fokusere på de faner, du bruger mest. Du kan til enhver tid ændre dette i indstillingerne.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5819208479324046259">Administreres af <ph name="MANAGER" /> <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkroniserer…</translation>
 <translation id="5844284118433003733">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
-<translation id="5846482154967366008">Søgemaskine</translation>
 <translation id="5854790677617711513">Ældre end 30 dage</translation>
 <translation id="5857770089550859117">Angiv adgangssætningen for at påbegynde synkroniseringen.</translation>
 <translation id="5859715514067755465">Frem</translation>

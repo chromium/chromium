@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Jūs jau saglabājāt šo lietotājvārdu šai vietnei</translation>
 <translation id="1497590942294823549">Izvēlne → Paroļu pārvaldnieks</translation>
 <translation id="1498283581832036924">Jūsu <ph name="WEBSITE" /> konts netiks dzēsts.</translation>
+<translation id="1506061864768559482">Meklētājprogramma</translation>
 <translation id="1506063256525392513">Varat uzņemt un augšupielādēt fotoattēlus, kā arī skenēt kvadrātkodus</translation>
 <translation id="1509486075633541495">Pierakstieties tīmekļa vietnē</translation>
 <translation id="1509960214886564027">Daudzās vietnēs funkcijas var nedarboties</translation>
@@ -368,6 +369,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="2664621323652615289">Apturēt</translation>
 <translation id="2666092431469916601">Augša</translation>
 <translation id="2669454659051515572">Lejupielādētie faili ir redzami visiem šīs ierīces lietotājiem.</translation>
+<translation id="2671423594960767771">Kopīgot grupu</translation>
 <translation id="2673508731173059946">Apmeklēt kopēto saiti</translation>
 <translation id="2687403674020088961">Bloķēt visus sīkfailus (nav ieteicams)</translation>
 <translation id="2690858294534178585">Tiek izmantota kamera.</translation>
@@ -412,6 +414,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="288655811176831528">Aizvērt cilni</translation>
 <translation id="2888631381369839306">Cenu izsekošanas paziņojumi ir ieslēgti</translation>
 <translation id="288902476966286676">Atgriezts sūtītājam</translation>
+<translation id="2893168226686371498">Noklusējuma pārlūks</translation>
 <translation id="2894757982205307093">Jauna cilne grupā</translation>
 <translation id="2905479111267140204">Jums ir <ph name="NUMBER_OF_PASSWORDS" /> atkārtoti izmantotas paroles, kas var apdraudēt jūsu drošību.</translation>
 <translation id="291754862089661335">Novietojiet kvadrātkodu vai svītrkodu šajā ietvarā.</translation>
@@ -778,7 +781,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4764612367328936189">Jūsu organizācija ir atļāvusi pierakstīšanos tikai ar noteiktiem kontiem. Konti, kas nav atļauti, ir paslēpti. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4766112107778026136">Discover un sekošana</translation>
 <translation id="4769198578611055647">Palīdz piekļūt saglabātajām piekļuves atslēgām jebkurā ierīcē</translation>
-<translation id="4775879719735953715">Noklusējuma pārlūks</translation>
 <translation id="4777866634702576038">Vai dzēst ciļņu grupu?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Atvērtās cilnes, ko neizmantojat vismaz vienu dienu, tiek pārvietotas uz režģi “Neaktīvās cilnes”, lai jūs varētu ērti koncentrēties uz visbiežāk izmantotajām cilnēm. Iestatījumos varat jebkurā laikā mainīt šo iespēju.}zero{Atvērtās cilnes, ko neizmantojat vismaz {COUNT} dienas, tiek pārvietotas uz režģi “Neaktīvās cilnes”, lai jūs varētu ērti koncentrēties uz visbiežāk izmantotajām cilnēm. Iestatījumos varat jebkurā laikā mainīt šo iespēju.}one{Atvērtās cilnes, ko neizmantojat vismaz {COUNT} dienu, tiek pārvietotas uz režģi “Neaktīvās cilnes”, lai jūs varētu ērti koncentrēties uz visbiežāk izmantotajām cilnēm. Iestatījumos varat jebkurā laikā mainīt šo iespēju.}other{Atvērtās cilnes, ko neizmantojat vismaz {COUNT} dienas, tiek pārvietotas uz režģi “Neaktīvās cilnes”, lai jūs varētu ērti koncentrēties uz visbiežāk izmantotajām cilnēm. Iestatījumos varat jebkurā laikā mainīt šo iespēju.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5819208479324046259">Pārvalda <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Notiek sinhronizēšana…</translation>
 <translation id="5844284118433003733">Kad esat pierakstījies, šie dati tiek saistīti ar jūsu Google kontu, lai aizsargātu jūs dažādos Google pakalpojumos, piemēram, palielinot aizsardzību pakalpojumā Gmail pēc drošības incidenta.</translation>
-<translation id="5846482154967366008">Meklētājprogramma</translation>
 <translation id="5854790677617711513">Vecāki par 30 dienām</translation>
 <translation id="5857770089550859117">Lai sāktu sinhronizāciju, ievadiet ieejas frāzi.</translation>
 <translation id="5859715514067755465">Uz priekšu</translation>

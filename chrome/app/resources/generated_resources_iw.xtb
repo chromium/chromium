@@ -1518,7 +1518,6 @@
 <translation id="2053312383184521053">נתוני מצב של חוסר פעילות</translation>
 <translation id="205560151218727633">‏הלוגו של Google Assistant</translation>
 <translation id="2058456167109518507">אותר מכשיר</translation>
-<translation id="2058581283817163201">אימות באמצעות הטלפון הזה</translation>
 <translation id="2059913712424898428">אזור זמן</translation>
 <translation id="2060375639911876205">‏הסרת פרופיל של eSIM</translation>
 <translation id="2061366302742593739">אין מה להציג</translation>
@@ -3169,7 +3168,6 @@
 <translation id="3241680850019875542">יש לבחור את ספריית הבסיס של התוסף שיש לארוז. כדי לעדכן תוסף, יש לבחור גם את קובץ המפתח הפרטי שבו ניתן להשתמש שוב.</translation>
 <translation id="3241810535741601486">השינוי הזה הוא קבוע ואי אפשר לבטל אותו. העדכונים המורחבים יחולו על כל המשתמשים במכשיר הזה. <ph name="LINK_START" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">‏במצב קיוסק של ChromeOS, יש להתקין אפליקציות עם מאפיין המניפסט 'kiosk_only'</translation>
-<translation id="3242665648857227438">‏בפרופיל הזה נעשה שימוש בהגדרות לשרת proxy של ChromeOS.</translation>
 <translation id="3243017971870859287">‏קריאת מספרים סידוריים של מכשירי ChromeOS Flex והרכיבים</translation>
 <translation id="324366796737464147">סינון רעשים</translation>
 <translation id="3244294424315804309">המשך השתקת הצלילים</translation>
@@ -4897,7 +4895,6 @@
 <translation id="4486333480498805415">קביעת מיקום יותר מדויקת</translation>
 <translation id="4487489714832036847">‏במכשירי Chromebook משתמשים באפליקציות במקום בתוכנות רגילות. ניתן להוריד אפליקציות לפרודוקטיביות, לבידור ועוד.</translation>
 <translation id="4488257340342212116">מורשים להשתמש במצלמה</translation>
-<translation id="4490086832405043258">‏שימוש בהגדרות לשרת proxy של ChromeOS עבור הפרופיל הזה.</translation>
 <translation id="4490798467014431984">אין הרשאה לתוספים באתר הזה</translation>
 <translation id="449102748655090594">קיבוץ הכרטיסיות מתבצע…</translation>
 <translation id="449126573531210296">‏הצפנת סיסמאות מסונכרנות באמצעות חשבון Google</translation>
@@ -5990,7 +5987,6 @@
 <translation id="5294068591166433464">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL וקטעי תוכן מדפים לבדיקה</translation>
 <translation id="5294097441441645251">השם צריך להתחיל באות קטנה או בקו תחתון</translation>
 <translation id="5294618183559481278">‏חיישן מובנה ב-<ph name="DEVICE_TYPE" /> משמש לזיהוי אנשים שנמצאים מול המכשיר. מתבצע עיבוד מיידי של כל הנתונים במכשיר ואז הם נמחקים. נתוני החיישנים אף פעם לא נשלחים אל Google. <ph name="LINK_BEGIN" />למידע נוסף<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">לתוספים יש הרשאה לבקש גישה לאתר הזה</translation>
 <translation id="5295349205180144885">שם קבוצת הכרטיסיות: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">אפשר להאזין לקורא מסך קולי כדי להשתמש במכשיר בלי להסתכל במסך. ניתן לקבל משוב ברייל ממכשיר מחובר.</translation>
 <translation id="5296536303670088158">‏האבטחה הכי יעילה של Chrome מגינה עליך מפני אתרים מזיקים</translation>
@@ -6874,7 +6870,6 @@
 <translation id="5951303645598168883"><ph name="ORIGIN" /> רוצה להשתמש בגופנים מקומיים</translation>
 <translation id="5951624318208955736">צג</translation>
 <translation id="5952020381407136867">לוח מגע</translation>
-<translation id="595262438437661818">אין תוספים שנדרשת להם גישה לאתר הזה</translation>
 <translation id="5953211687820750364">‏הרשימה הזו מושפעת מהמדיניות של הרשימות <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           ו‑<ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">תוקף הסיסמה פג. כדי לשנות אותה, צריך לצאת ולהיכנס מחדש.</translation>
@@ -8911,7 +8906,6 @@
 <translation id="7450761244949417357">נפתח ב-<ph name="ALTERNATIVE_BROWSER_NAME" /> עכשיו</translation>
 <translation id="7450926666485653189">‏שליחת קטע קוד מעורפל מכתובת ה-URL ל-Google דרך שרת פרטיות שמסתיר את כתובת ה-IP</translation>
 <translation id="7453008956351770337">הבחירה במדפסת הזו מעניקה לתוסף הבא את ההרשאה לגשת למדפסת:</translation>
-<translation id="7453467225369441013">‏הפעולה תוציא אותך מרוב האתרים אבל לא מחשבון Google שלך.</translation>
 <translation id="7454548535253569100">פורטל: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">שמירת הסיסמאות הושבתה על ידי הארגון שלך</translation>
 <translation id="7455730275746867420">ניהול קונטיינרים נוספים</translation>
@@ -8993,7 +8987,6 @@
 <translation id="7508707215237589321">למחוק את '<ph name="CERT_NAME" />'?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{לסגור את הכרטיסייה ולמחוק את הקבוצה?}=1{לסגור את הכרטיסיות ולמחוק את הקבוצה?}one{לסגור את הכרטיסיות ולמחוק את הקבוצות?}two{לסגור את הכרטיסיות ולמחוק את הקבוצות?}other{לסגור את הכרטיסיות ולמחוק את הקבוצות?}}</translation>
 <translation id="7509097596023256288">מתבצעת הגדרה של הניהול</translation>
-<translation id="7509246181739783082">אימות זהות</translation>
 <translation id="7509539379068593709">הסרת האפליקציה</translation>
 <translation id="7514239104543605883">העתקה למכשיר שלך</translation>
 <translation id="7514365320538308">הורדה</translation>

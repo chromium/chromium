@@ -65,6 +65,7 @@
 <translation id="2182457891543959921">Пре него што дозволите сајтовима да праве 3D мапу окружења или прате положај камере приказује се упит (препоручено)</translation>
 <translation id="2185965788978862351">Овим бришете <ph name="DATASIZE" /> података и колачића које чувају сајтови или апликације на почетном екрану.</translation>
 <translation id="2194856509914051091">Шта треба имати у виду</translation>
+<translation id="2215727959747642672">Мењање датотека</translation>
 <translation id="2228071138934252756">Да бисте дозволили да <ph name="APP_NAME" /> приступа камери, укључите камеру и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Колачићи треће стране су блокирани</translation>
 <translation id="2238944249568001759">Предложене претраге на основу ваше последње картице</translation>
@@ -295,6 +296,7 @@
 <translation id="5553374991681107062">Најновије</translation>
 <translation id="5556459405103347317">Учитај поново</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> је блокиран</translation>
+<translation id="560980142378233747">То значи да би функције сајта требало да раде на очекивани начин, али можда ћете имати мање заштите при прегледању. <ph name="BEGIN_LINK" />Пошаљите повратне информације<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Покажи ми како</translation>
 <translation id="5649053991847567735">Аутоматска преузимања</translation>
 <translation id="5668404140385795438">Одбијање захтева веб-сајта да се спречи увећавање</translation>

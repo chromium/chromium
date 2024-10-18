@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Anda telah pun menyimpan nama pengguna ini untuk tapak ini</translation>
 <translation id="1497590942294823549">Menu → Password Manager</translation>
 <translation id="1498283581832036924">Akaun <ph name="WEBSITE" /> anda tidak akan dipadamkan.</translation>
+<translation id="1506061864768559482">Enjin carian</translation>
 <translation id="1506063256525392513">Langkah ini membolehkan anda mengambil dan memuat naik foto serta mengimbas Kod QR</translation>
 <translation id="1509486075633541495">Log masuk ke laman web</translation>
 <translation id="1509960214886564027">Ciri pada banyak tapak mungkin rosak</translation>
@@ -368,6 +369,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2664621323652615289">Berhenti</translation>
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
+<translation id="2671423594960767771">Kongsi kumpulan</translation>
 <translation id="2673508731173059946">Lawati pautan disalin</translation>
 <translation id="2687403674020088961">Sekat semua kuki (tidak disyorkan)</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
@@ -412,6 +414,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="288655811176831528">Tutup Tab</translation>
 <translation id="2888631381369839306">Pemberitahuan penjejakan harga dihidupkan</translation>
 <translation id="288902476966286676">Kembalikan kepada pengirim</translation>
+<translation id="2893168226686371498">Penyemak imbas lalai</translation>
 <translation id="2894757982205307093">Tab baharu dalam kumpulan</translation>
 <translation id="2905479111267140204">Anda mempunyai <ph name="NUMBER_OF_PASSWORDS" /> kata laluan yang digunakan semula yang boleh mendedahkan keselamatan anda kepada risiko.</translation>
 <translation id="291754862089661335">Letakkan kod QR atau kod bar dalam bingkai ini</translation>
@@ -778,7 +781,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4764612367328936189">Organisasi anda membenarkan anda log masuk dengan akaun tertentu sahaja. Akaun yang tidak dibenarkan disembunyikan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover &amp; Mengikuti</translation>
 <translation id="4769198578611055647">Membantu anda mengakses kunci laluan yang disimpan pada mana-mana peranti</translation>
-<translation id="4775879719735953715">Penyemak Imbas Lalai</translation>
 <translation id="4777866634702576038">Padamkan kumpulan tab?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Tab terbuka yang tidak digunakan selama satu hari atau lebih akan dialihkan kepada tab Tidak Aktif supaya anda mudah fokus pada tab yang sering digunakan. Anda boleh menukar pilihan ini pada bila-bila masa dalam tetapan.}other{Tab terbuka yang tidak digunakan selama {COUNT} hari atau lebih akan dialihkan kepada tab Tidak Aktif supaya anda mudah fokus pada tab yang sering digunakan. Anda boleh menukar pilihan ini pada bila-bila masa dalam tetapan.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5819208479324046259">Diurus oleh <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Menyegerak…</translation>
 <translation id="5844284118433003733">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
-<translation id="5846482154967366008">Enjin Carian</translation>
 <translation id="5854790677617711513">Lebih lama daripada 30 hari</translation>
 <translation id="5857770089550859117">Ungkapan laluan diperlukan untuk memulakan penyegerakan.</translation>
 <translation id="5859715514067755465">Mundar</translation>

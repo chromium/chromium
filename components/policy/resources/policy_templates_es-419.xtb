@@ -4566,7 +4566,6 @@ Nota: Esta política da de baja la política <ph name="ARC_GLS_POLICY_NAME" />. 
 <translation id="4341199399451274159">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> especificará la codificación de caracteres que admite el proveedor de búsqueda. Las codificaciones son nombres de página de código como UTF-8, GB2312 y ISO-8859-1. Estos se prueban en el orden establecido.
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se utilizará UTF-8.</translation>
-<translation id="4343382787226139147">Especifica los Certificados de cliente que deben inscribirse con el protocolo de administración de dispositivos.</translation>
 <translation id="4347908978527632940">Si la política se establece en true y el usuario es uno supervisado, otras apps de Android pueden consultar las restricciones web del usuario mediante un proveedor de contenido.
 
           Si la política se establece en false o no se establece, el proveedor de contenido no muestra ninguna información.</translation>
@@ -6639,7 +6638,6 @@ Se podrán agregar más restricciones de cuentas con la política <ph name="MICR
       Si inhabilitas esta política o no la estableces, no se mostrarán estas recomendaciones.
 
       Si la estableces, los usuarios no podrán cambiarla.</translation>
-<translation id="5848438019586925019">El algoritmo para la generación del par de claves.</translation>
 <translation id="5851248808417680865">Usar el Tema oscuro</translation>
 <translation id="585270638818921943">Impide que el usuario use apps para Android de fuentes no confiables</translation>
 <translation id="5859344336338527083">Si estableces esta política, se especificarán las URL que pueden instalar extensiones, apps y temas. Antes de la versión <ph name="PRODUCT_NAME" /> 21, los usuarios podían hacer clic en un vínculo que los dirigía a un archivo *.crx y <ph name="PRODUCT_NAME" /> ofrecía instalar el archivo después de unas advertencias. A partir de esa versión, este tipo de archivos debe descargarse y arrastrarse a la página de configuración de <ph name="PRODUCT_NAME" />. Esta configuración permite especificar las URL que tendrán el flujo de instalación anterior, que es más sencillo.
@@ -9488,7 +9486,6 @@ Solo desactiva la política si usas una solución de seguridad de endpoint que b
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.
 
       Esta política puede anularse para patrones de <ph name="URL_LABEL" />específicos a través de las políticas de <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="7951605113561734721">Especifica los Certificados de cliente de todo el dispositivo que deben inscribirse con el protocolo de administración de dispositivos.</translation>
 <translation id="7952007677054834789">Configura las páginas que deben cargarse en el inicio, la página principal y la página Nueva pestaña predeterminadas en <ph name="PRODUCT_NAME" />, y evita que los usuarios las cambien.
 
       Las opciones de configuración de la página principal del usuario solo estarán completamente bloqueadas si se selecciona la página principal como la página Nueva pestaña o si se establece como una dirección URL y se especifica la dirección URL de la página principal. Si no se establece la dirección URL de la página principal, el usuario aún podrá configurar la página principal como la página Nueva pestaña al especificar la opción "chrome://newtab".

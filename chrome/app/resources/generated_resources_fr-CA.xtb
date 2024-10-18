@@ -1510,7 +1510,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2053312383184521053">Données sur l'état de veille</translation>
 <translation id="205560151218727633">Logo de l'Assistant Google</translation>
 <translation id="2058456167109518507">Appareil détecté</translation>
-<translation id="2058581283817163201">Vérifier avec ce téléphone</translation>
 <translation id="2059913712424898428">Fuseau horaire</translation>
 <translation id="2060375639911876205">Retirer le profil de la carte eSIM</translation>
 <translation id="2061366302742593739">Rien à afficher</translation>
@@ -3160,7 +3159,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3241680850019875542">Sélectionnez le répertoire racine de l'extension à empaqueter. Pour mettre à jour une extension, sélectionnez également le fichier de clé privée à réutiliser.</translation>
 <translation id="3241810535741601486">Cette modification est permanente et irréversible. Les mises à jour étendues s'appliquent à tous les utilisateurs de cet appareil. <ph name="LINK_START" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">L'application dont le fichier de configuration comporte un attribut « kiosk_only » doit être installée en mode Kiosque pour Chrome OS</translation>
-<translation id="3242665648857227438">Ce profil utilise les paramètres du mandataire de Chrome OS.</translation>
 <translation id="3243017971870859287">Lire les numéros de série de l'appareil et des composantes ChromeOS Flex</translation>
 <translation id="324366796737464147">Suppression du bruit</translation>
 <translation id="3244294424315804309">Continuer à désactiver le son</translation>
@@ -4887,7 +4885,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4486333480498805415">Précision de la localisation</translation>
 <translation id="4487489714832036847">Les Chromebook utilisent des applications au lieu de logiciels traditionnels. Vous trouverez des applications pour la productivité, les divertissements et plus encore.</translation>
 <translation id="4488257340342212116">Autorisés à utiliser votre caméra</translation>
-<translation id="4490086832405043258">Utilisez les paramètres du mandataire de Chrome OS pour ce profil.</translation>
 <translation id="4490798467014431984">Les extensions ne sont pas autorisées sur ce site</translation>
 <translation id="449102748655090594">Regroupement de vos onglets en cours…</translation>
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
@@ -5978,7 +5975,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5294068591166433464">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à Google</translation>
 <translation id="5294097441441645251">Doit commencer par un caractère minuscule ou un tiret de soulignement</translation>
 <translation id="5294618183559481278">Votre <ph name="DEVICE_TYPE" /> utilise un capteur intégré pour détecter les personnes devant votre appareil. Toutes les données sont traitées sur votre appareil immédiatement, puis supprimées. Les données des capteurs ne sont jamais envoyées à Google. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="5295188371713072404">Les extensions peuvent demander l'accès à ce site</translation>
 <translation id="5295349205180144885">Nom du groupe d'onglets : <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Écoutez la rétroaction vocale afin de pouvoir utiliser votre appareil sans regarder l'écran. Vous pouvez utiliser la rétroaction en braille avec les appareils connectés.</translation>
 <translation id="5296536303670088158">Vous disposez de la sécurité la plus robuste de Chrome contre les sites Web dangereux</translation>
@@ -6862,7 +6858,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5951303645598168883"><ph name="ORIGIN" /> souhaite utiliser les polices locales</translation>
 <translation id="5951624318208955736">Moniteur</translation>
 <translation id="5952020381407136867">pavé tactile</translation>
-<translation id="595262438437661818">Aucune extension n'a besoin d'accéder à ce site</translation>
 <translation id="5953211687820750364">Cette liste est soumise aux politiques <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           et <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">Votre mot de passe est expiré. Veuillez vous déconnecter, puis vous reconnecter pour le modifier.</translation>
@@ -8896,7 +8891,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7450761244949417357">Ouverture dans <ph name="ALTERNATIVE_BROWSER_NAME" /> en cours…</translation>
 <translation id="7450926666485653189">Envoie une partie brouillée de l'URL à Google à l'aide d'un serveur confidentiel qui masque votre adresse IP</translation>
 <translation id="7453008956351770337">En sélectionnant cette imprimante, vous permettez à l'extension suivante d'y accéder :</translation>
-<translation id="7453467225369441013">Vous déconnecte de la plupart des sites. Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="7454548535253569100">Portail : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Votre organisation a désactivé l'enregistrement des mots de passe</translation>
 <translation id="7455730275746867420">Gérer des conteneurs supplémentaires</translation>
@@ -8978,7 +8972,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7508707215237589321">Supprimer « <ph name="CERT_NAME" /> »?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Fermer l'onglet et supprimer le groupe?}=1{Fermer l'onglet et supprimer le groupe?}one{Fermer l'onglet et supprimer le groupe?}other{Fermer les onglets et supprimer les groupes?}}</translation>
 <translation id="7509097596023256288">Configuration de la gestion en cours…</translation>
-<translation id="7509246181739783082">Vérifier votre identité</translation>
 <translation id="7509539379068593709">Désinstaller l'application</translation>
 <translation id="7514239104543605883">Copier vers votre appareil</translation>
 <translation id="7514365320538308">Télécharger</translation>

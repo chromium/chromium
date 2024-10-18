@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Você já salvou este nome de usuário para este site</translation>
 <translation id="1497590942294823549">Menu → Gerenciador de senhas</translation>
 <translation id="1498283581832036924">Sua conta de <ph name="WEBSITE" /> não será excluída.</translation>
+<translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1506063256525392513">Esse app permite que você tire fotos, faça upload delas e leia QR codes</translation>
 <translation id="1509486075633541495">Fazer login no site</translation>
 <translation id="1509960214886564027">Os recursos de muitos sites podem apresentar falhas</translation>
@@ -368,6 +369,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2664621323652615289">Parar</translation>
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos baixados</translation>
+<translation id="2671423594960767771">Compartilhar grupo</translation>
 <translation id="2673508731173059946">Visitar link copiado</translation>
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado)</translation>
 <translation id="2690858294534178585">A câmera está sendo usada</translation>
@@ -412,6 +414,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="288655811176831528">Fechar guia</translation>
 <translation id="2888631381369839306">Notificações de monitoramento de preços ativadas</translation>
 <translation id="288902476966286676">Devolver ao remetente</translation>
+<translation id="2893168226686371498">Navegador padrão</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
 <translation id="2905479111267140204">Você tem <ph name="NUMBER_OF_PASSWORDS" /> senhas reutilizadas que podem colocar sua segurança em risco.</translation>
 <translation id="291754862089661335">Posicione o QR code ou o código de barras neste quadro</translation>
@@ -778,7 +781,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4764612367328936189">Sua organização permite que você faça login apenas com determinadas contas. As contas que não têm permissão para fazer login ficam ocultas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover e seguindo</translation>
 <translation id="4769198578611055647">Ajuda você a acessar as chaves de acesso salvas em qualquer dispositivo</translation>
-<translation id="4775879719735953715">Navegador padrão</translation>
 <translation id="4777866634702576038">Excluir grupo de guias?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{As guias abertas que não forem usadas por um dia ou mais serão movidas para a sessão de guias inativas. Assim, você pode se concentrar nas que mais usa. Você pode mudar isso quando quiser nas configurações.}one{As guias abertas que não forem usadas por {COUNT} dia ou mais serão movidas para a sessão de guias inativas. Assim, você pode se concentrar nas que mais usa. Você pode mudar isso quando quiser nas configurações.}other{As guias abertas que não forem usadas por {COUNT} dias ou mais serão movidas para a sessão de guias inativas. Assim, você pode se concentrar nas que mais usa. Você pode mudar isso quando quiser nas configurações.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
 <translation id="5844284118433003733">Quando sua Conta do Google está conectada, esses dados são vinculados a ela para proteger você nos Serviços do Google, por exemplo, aumentando a proteção no Gmail após um incidente de segurança.</translation>
-<translation id="5846482154967366008">Mecanismo de pesquisa</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857770089550859117">É necessário ter uma senha longa para iniciar a sincronização.</translation>
 <translation id="5859715514067755465">Avançar</translation>

@@ -142,7 +142,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1420408895951708260">Activer/Désactiver l'éclairage nocturne. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1435537621343861112">Impossible de commencer la dictée. Votre micro est désactivé.</translation>
-<translation id="1445031758921122223">Fichiers de contrôle du visage téléchargés</translation>
+<translation id="1445031758921122223">Fichiers de commande par le visage téléchargés</translation>
 <translation id="1447907279406111651">Maintenant · Finit à <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Points d'accès de votre appareil</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
@@ -1135,7 +1135,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4889868803215848840">Ajoutez des commentaires pour améliorer les suggestions (facultatif) :</translation>
 <translation id="4890187583552566966">L'administrateur a désactivé l'Assistant Google.</translation>
 <translation id="4890408602550914571">Vérifiez que votre téléphone est à proximité et que le Bluetooth est activé.</translation>
-<translation id="4892981359753171125">Contrôle du visage</translation>
+<translation id="4892981359753171125">Commande par le visage</translation>
 <translation id="4895488851634969361">La batterie est pleine.</translation>
 <translation id="4902797682482387055">Tâche suggérée sur laquelle se concentrer</translation>
 <translation id="490375751687810070">Vertical</translation>
@@ -1286,7 +1286,7 @@ Aucun appareil connecté.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Accéder à cet onglet</translation>
 <translation id="5363835273551457276">Vous pouvez tester le son de votre micro. Fermez le panneau pour arrêter.</translation>
 <translation id="5364693579536176785">espace de stockage</translation>
-<translation id="5369573834963677938">Le contrôle du visage sera disponible pour les autres utilisateurs de l'appareil</translation>
+<translation id="5369573834963677938">La commande par le visage sera disponible pour les autres utilisateurs de l'appareil</translation>
 <translation id="5369717264580061086">Prévisualiser le fichier dans l'appli Fichiers</translation>
 <translation id="5377367976106153749">Activer l'accès à l'appareil photo ?</translation>
 <translation id="5378450298115733949">Plus</translation>
@@ -1485,7 +1485,7 @@ Aucun appareil connecté.</translation>
 <translation id="6020147141355393792">Configurer l'affichage des notifications et des applis de votre téléphone</translation>
 <translation id="6022924867608035986">Effacer le texte de la zone de recherche</translation>
 <translation id="602472752137106327">Afficher toutes les fenêtres du bureau, case d'option cochée</translation>
-<translation id="6024768346262692989">Impossible de télécharger les fichiers de contrôle du visage</translation>
+<translation id="6024768346262692989">Impossible de télécharger les fichiers de commande par le visage</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6027518778343897451">Aucun événement le <ph name="CURRENT_MONTH_DAY" />. Appuyez sur Entrée pour ouvrir Google Agenda dans le navigateur.</translation>
 <translation id="6030495522958826102">Le menu a été déplacé dans l'angle inférieur gauche de l'écran.</translation>

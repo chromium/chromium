@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
 <translation id="1497590942294823549">Menu → Gestionnaire de mots depasse</translation>
 <translation id="1498283581832036924">Votre compte <ph name="WEBSITE" /> ne sera pas supprimé.</translation>
+<translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1506063256525392513">Cela vous permet de prendre et d'importer des photos, et de scanner des codes QR</translation>
 <translation id="1509486075633541495">Connectez-vous au site Web</translation>
 <translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
@@ -368,6 +369,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2664621323652615289">Arrêter</translation>
 <translation id="2666092431469916601">En haut</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
+<translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2673508731173059946">Consulter le lien copié</translation>
 <translation id="2687403674020088961">Bloquer tous les cookies (non recommandé)</translation>
 <translation id="2690858294534178585">Caméra en cours d'utilisation</translation>
@@ -412,6 +414,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="288655811176831528">Fermer l'onglet</translation>
 <translation id="2888631381369839306">Notifications de suivi des prix activées</translation>
 <translation id="288902476966286676">Retour à l'expéditeur</translation>
+<translation id="2893168226686371498">Navigateur par défaut</translation>
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
 <translation id="2905479111267140204">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe réutilisés qui peuvent compromettre votre sécurité.</translation>
 <translation id="291754862089661335">Positionnez le code QR ou le code-barres dans ce cadre</translation>
@@ -778,7 +781,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4764612367328936189">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover et Suivi</translation>
 <translation id="4769198578611055647">Vous permet d'accéder à vos clés d'accès enregistrées sur n'importe quel appareil</translation>
-<translation id="4775879719735953715">Navigateur par défaut</translation>
 <translation id="4777866634702576038">Supprimer le groupe d'onglets ?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Les onglets ouverts inutilisés pendant une journée ou plus sont déplacés vers "Onglets inactifs" afin que vous puissiez facilement vous concentrer sur ceux que vous utilisez le plus. Vous pouvez modifier cette option à tout moment dans les paramètres.}one{Les onglets ouverts inutilisés pendant {COUNT} jour ou plus sont déplacés vers "Onglets inactifs" afin que vous puissiez facilement vous concentrer sur ceux que vous utilisez le plus. Vous pouvez modifier cette option à tout moment dans les paramètres.}other{Les onglets ouverts inutilisés pendant {COUNT} jours ou plus sont déplacés vers "Onglets inactifs" afin que vous puissiez facilement vous concentrer sur ceux que vous utilisez le plus. Vous pouvez modifier cette option à tout moment dans les paramètres.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5819208479324046259">Géré par <ph name="MANAGER" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synchronisation…</translation>
 <translation id="5844284118433003733">Lorsque vous êtes connecté, ces données sont associées à votre compte Google afin de vous protéger dans tous les services Google, par exemple pour renforcer la protection dans Gmail après un incident de sécurité.</translation>
-<translation id="5846482154967366008">Moteur de recherche</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
 <translation id="5857770089550859117">Veuillez saisir la phrase secrète pour lancer la synchronisation.</translation>
 <translation id="5859715514067755465">Suivant</translation>

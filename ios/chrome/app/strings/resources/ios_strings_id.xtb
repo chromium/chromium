@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Anda telah menyimpan nama pengguna ini untuk situs ini</translation>
 <translation id="1497590942294823549">Menu → Pengelola Sandi</translation>
 <translation id="1498283581832036924">Akun <ph name="WEBSITE" /> Anda tidak akan dihapus.</translation>
+<translation id="1506061864768559482">Mesin telusur</translation>
 <translation id="1506063256525392513">Hal ini memungkinkan Anda mengambil dan mengupload foto, serta memindai kode QR</translation>
 <translation id="1509486075633541495">Login ke situs</translation>
 <translation id="1509960214886564027">Fitur di banyak situs mungkin error</translation>
@@ -368,6 +369,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2664621323652615289">Hentikan</translation>
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Siapa pun yang menggunakan perangkat ini dapat melihat file yang didownload</translation>
+<translation id="2671423594960767771">Bagikan grup</translation>
 <translation id="2673508731173059946">Buka link yang disalin</translation>
 <translation id="2687403674020088961">Blokir semua cookie (tidak direkomendasikan)</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
@@ -412,6 +414,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="288655811176831528">Tutup Tab</translation>
 <translation id="2888631381369839306">Notifikasi pemantauan harga diaktifkan</translation>
 <translation id="288902476966286676">Kembali ke pengirim</translation>
+<translation id="2893168226686371498">Browser default</translation>
 <translation id="2894757982205307093">Tab baru di grup</translation>
 <translation id="2905479111267140204">Anda memiliki <ph name="NUMBER_OF_PASSWORDS" /> sandi yang digunakan ulang yang dapat membahayakan keamanan Anda.</translation>
 <translation id="291754862089661335">Letakkan kode QR atau kode batang dalam bingkai ini</translation>
@@ -778,7 +781,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4764612367328936189">Organisasi mengizinkan Anda login hanya dengan akun tertentu. Akun yang tidak diizinkan akan disembunyikan. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover &amp; Mengikuti</translation>
 <translation id="4769198578611055647">Membantu Anda mengakses kunci sandi tersimpan di perangkat mana pun</translation>
-<translation id="4775879719735953715">Browser Default</translation>
 <translation id="4777866634702576038">Hapus grup tab?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Tab terbuka yang tidak digunakan selama satu hari atau lebih akan dipindahkan ke tab Tidak Aktif, sehingga Anda dapat mudah berfokus pada tab yang paling sering digunakan. Anda dapat mengubahnya kapan saja di setelan.}other{Tab terbuka yang tidak digunakan selama {COUNT} hari atau lebih akan dipindahkan ke tab Tidak Aktif, sehingga Anda dapat mudah berfokus pada tab yang paling sering digunakan. Anda dapat mengubahnya kapan saja di setelan.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5819208479324046259">Dikelola oleh <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Menyinkronkan…</translation>
 <translation id="5844284118433003733">Jika Anda login, data ini akan ditautkan ke Akun Google Anda untuk melindungi Anda di berbagai layanan Google, misalnya, meningkatkan perlindungan di Gmail setelah insiden keamanan.</translation>
-<translation id="5846482154967366008">Mesin Telusur</translation>
 <translation id="5854790677617711513">Lebih dari 30 hari</translation>
 <translation id="5857770089550859117">Perlu frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="5859715514067755465">Maju</translation>

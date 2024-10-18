@@ -218,7 +218,6 @@
 <translation id="2021896219286479412">પૂર્ણ સ્ક્રીન સાઇટ નિયંત્રણો</translation>
 <translation id="2038563949887743358">વિનંતી ડેસ્કટૉપ સાઇટ ચાલુ કરો</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> નો ડેટા Chromeમાં પણ છે</translation>
-<translation id="2046634576464120978">નોંધણી કરવામાં નિષ્ફળ થયા</translation>
 <translation id="2047378580182589770">છૂપા મોડમાંથી બહાર નીકળવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">જ્યારે પણ શક્ય હોય ત્યારે HTTPSનો ઉપયોગ કરો અને તેને સપોર્ટ કરતી ન હોય તેવી સાઇટને લોડ કરતા પહેલાં ચેતવણી મેળવો. તમે વિગતવાર સુરક્ષાનું સેટિંગ ચાલુ કરેલું હોવાથી તમે આ સેટિંગ બદલી શકતા નથી.</translation>
@@ -242,7 +241,6 @@
 <translation id="2141396931810938595">તમારા વપરાશ પર આધારિત</translation>
 <translation id="2145315049852051678">Chrome નિયમિત રીતે ચેક કરીને એ વાતની ખાતરી કરતું રહે છે કે તમારા બ્રાઉઝરના સેટિંગ સૌથી સલામત છે. જો કોઈ બાબતનો રિવ્યૂ કરવો જરૂરી હશે તો અમે તમને તેની જાણ કરીશું.</translation>
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
-<translation id="2155214902713132423">આ ડિવાઇસ માટે ચકાસણીની આ પદ્ધતિ ઉપલબ્ધ નથી. તમારા અન્ય ડિવાઇસ પર કોઈ અલગ વિકલ્પ પસંદ કરો.</translation>
 <translation id="2158408438301413340">Chrome બધા પાસવર્ડ ચેક કરી શક્યું નથી</translation>
 <translation id="2163089732491971196">તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="2166228530126694506">વર્ઝન <ph name="VERSION_NUMBER" /></translation>
@@ -386,10 +384,8 @@
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> છૂપું ટૅબ બંધ કરવામાં આવશે}one{<ph name="TAB_COUNT_MANY" /> છૂપું ટૅબ બંધ કરવામાં આવશે}other{<ph name="TAB_COUNT_MANY" /> છૂપા ટૅબ બંધ કરવામાં આવશે}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 દિવસ પહેલાં ચેક કર્યું}one{# દિવસ પહેલાં ચેક કર્યું}other{# દિવસ પહેલાં ચેક કર્યું}}</translation>
 <translation id="2842985007712546952">પેરન્ટ ફોલ્ડર</translation>
-<translation id="2853415089995957805">તમે જે પેજની મુલાકાત લેવાની શક્યતા વધુ હોય, Chrome તેને પહેલેથી લોડ કરે છે, જેથી જ્યારે તમે તેમની મુલાકાત લો, ત્યારે તે વધુ ઝડપથી લોડ થઈ શકે</translation>
 <translation id="2854916915045135148">છૂપા મોડ પર સ્વિચ કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="2855243985454069333">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ ડિલીટ કરે છે</translation>
-<translation id="2856503607207334158">સાઇન ઇન નિષ્ફળ થયું</translation>
 <translation id="2860954141821109167">ખાતરી કરો કે આ ડિવાઇસ પર ફોન ઍપ ચાલુ કરેલી છે</translation>
 <translation id="2861923151411510142">Chromeની કેટલીક સુવિધાઓ હવે ઉપલબ્ધ રહેશે નહીં</translation>
 <translation id="2869430948265924908">કારમાંના તમારા સંવેદનશીલ કન્ટેન્ટને સુરક્ષિત રાખવા માટે, તમારે કાર પ્રોફાઇલ લૉક બનાવવું આવશ્યક છે.  તમે કોઈ પિન, કોડ કે પાસવર્ડ વડે આમ કરી શકો છો.</translation>
@@ -417,7 +413,6 @@
 <translation id="2936980480904111527">Chrome નોટિફિકેશન થકી કાર્યો વધુ સરળ બને છે</translation>
 <translation id="2940075786175545812">કોઈ વેબસાઇટને મંજૂરી આપવાનો અથવા ન આપવાનો વિકલ્પ</translation>
 <translation id="2942036813789421260">પ્રીવ્યૂની ટૅબ બંધ કરવામાં આવી</translation>
-<translation id="2946420957526726953">અન્ય ડિવાઇસને કનેક્ટ કરવા માટે, Chrome અપડેટ કરી રહ્યાં છીએ</translation>
 <translation id="2951071800649516099">પછીથી વાંચવા માટે, તમારી વાંચન સૂચિમાં પેજ ઉમેરો</translation>
 <translation id="2956070106555335453">સારાંશ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> પેજ}one{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}other{વાંચ્યા વગરના <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}}</translation>
@@ -435,7 +430,6 @@
 <translation id="2996291259634659425">પાસફ્રેઝ બનાવો</translation>
 <translation id="2996809686854298943">URL આવશ્યક છે</translation>
 <translation id="2997081575621687554">જ્યારે Google site દ્વારા તેમના પેજ પર લિંકને ખાનગી રીતે પહેલેથી લોડ કરવાનું કહેવામાં આવે, ત્યારે Chrome, કુકી વિના Googleના સર્વર મારફતે પેજને એન્ક્રિપ્ટ અને પહેલેથી લોડ કરે છે. આ પહેલેથી લોડ કરેલી સાઇટથી તમારી ઓળખ છુપાવે છે.</translation>
-<translation id="3003253259757197230">તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે તેમજ તમે જેની મુલાકાત લઈ રહ્યાં હો તે પેજ વિશે વધારાની માહિતી તમને બતાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="3026955690410463085">લિંકનો સમાવેશ કરો</translation>
 <translation id="3027644380269727216">કોઈ સાઇટ પરની તમારી પ્રવૃત્તિના આધારે. આ સેટિંગ ચાલુ છે.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" />માંથી</translation>
@@ -474,8 +468,6 @@
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> કાઢી નાખી</translation>
 <translation id="3214996641768123781">જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK1" />શોધ ઇતિહાસ<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK2" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.</translation>
 <translation id="3220943972464248773">તમારો પાસવર્ડ સિંક કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
-<translation id="3226612997184048185">જો તમે બુકમાર્કને તમારા Google એકાઉન્ટમાં પણ સાચવશો, તો તમે પ્રોડક્ટની કિંમતો Chromeમાં ટ્રૅક કરી શકશો તેમજ જ્યારે પણ કિંમતમાં ઘટાડો થાય ત્યારે નોટિફિકેશન મેળવશો</translation>
-<translation id="3227557059438308877">સિક્યુરિટી કી તરીકે Google Chrome</translation>
 <translation id="3232293466644486101">બ્રાઉઝિંગ ડેટા ડિલીટ કરો…</translation>
 <translation id="3232754137068452469">વેબ ઍપ</translation>
 <translation id="3236059992281584593">1 મિનિટ બાકી</translation>
@@ -485,7 +477,6 @@
 <translation id="3250563604907490871">તમે વાઇ-ફાઇથી કનેક્ટ થશો ત્યારે છબીના વર્ણનોની સુવિધા ફરીથી કાર્ય કરશે</translation>
 <translation id="3254409185687681395">આ પેજને બુકમાર્ક કરો</translation>
 <translation id="3259831549858767975">પેજ પરની તમામ કન્ટેન્ટને નાની કરો</translation>
-<translation id="3264259168916048410">કોઈ સાઇટમાં સાઇન ઇન કરવા માટે તમારું કમ્પ્યુટર આ ડિવાઇસનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />ના બધા પેજ</translation>
 <translation id="3269093882174072735">છબી લોડ કરો</translation>
 <translation id="327204079441056603">અમે આ ડિવાઇસમાં પાસવર્ડ સાચવવાની રીત બદલી છે</translation>
@@ -577,7 +568,6 @@
 <translation id="3720422586473670527">ના, આભાર</translation>
 <translation id="3721119614952978349">તમે અને Google</translation>
 <translation id="3737319253362202215">અનુવાદ માટેના સેટિંગ</translation>
-<translation id="3737402728074743863">આ ડિવાઇસનો સિક્યુરિટી કી તરીકે ઉપયોગ કરવા માટે, સ્ક્રીન લૉક સેટ કરો</translation>
 <translation id="3738139272394829648">શોધવા માટે ટચ કરો</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> માં બુકમાર્ક કર્યું</translation>
 <translation id="3740525748616366977">આ ડિવાઇસ પર વૉઇસ શોધ ઉપલબ્ધ નથી</translation>
@@ -632,7 +622,6 @@
 <translation id="4016425174436051808">ફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
 <translation id="4024768890073681126">તમારા માતાપિતા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# કલાક}one{# કલાક}other{# કલાક}}</translation>
-<translation id="4035877632587724847">મંજૂરી આપશો નહીં</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખો</translation>
 <translation id="404352903042073578">નામ વિનાનું ગ્રૂપ</translation>
 <translation id="4044708993631234325">બોટમ શીટ</translation>
@@ -646,10 +635,8 @@
 <translation id="4072805772816336153">થોડા સમય પછી ફરી પ્રયાસ કરો</translation>
 <translation id="4084682180776658562">બુકમાર્ક</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> તરફથી - <ph name="BEGIN_DEEMPHASIZED" />Google દ્વારા વિતરિત <ph name="END_DEEMPHASIZED" /></translation>
-<translation id="409109920254068737">આ QR કોડ બતાવતા હોય એવા ડિવાઇસ પર સાઇન ઇન કરવા માટે તમે આ ટૅબ્લેટનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="4092709865241032354">Google Password Managerને તમારી સાઇન-ઇનની માહિતી સાચવવામાં સહાય કરવા માટે, આ સાઇટ માટેનું તમારું વપરાશકર્તાનું નામ ઉમેરો</translation>
 <translation id="4095146165863963773">ઍપનો ડેટા ડિલીટ કરીએ?</translation>
-<translation id="4095425503313512126">બ્રાઉઝ કરવું અને શોધવું વધુ ઝડપી બને છે</translation>
 <translation id="4096227151372679484">બુકમાર્ક સાચવવાનો ફ્લો અડધી ઊંચાઈએ ખુલ્લો છે</translation>
 <translation id="4108314971463891922">ફૉલો કરો</translation>
 <translation id="4113030288477039509">તમારા વ્યવસ્થાપક દ્વારા મેનેજ થયેલ</translation>
@@ -741,10 +728,8 @@
 <translation id="4543131175509360848">કોઈ પાસકી શીટ નથી</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}other{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}}</translation>
 <translation id="4558311620361989323">વેબ પેજના શૉર્ટકટ</translation>
-<translation id="4561730552726921821">નોંધણી કરવામાં સફળ રહ્યાં</translation>
 <translation id="4565377596337484307">પાસવર્ડ છુપાવો</translation>
 <translation id="4572422548854449519">મેનેજ એકાઉન્ટમાં સાઇન ઇન કરો</translation>
-<translation id="4576892426230499203">ચકાસણી માટે બીજો કોઈ વિકલ્પ અજમાવો</translation>
 <translation id="4577115723294378384">Aથી Z અનુસાર સૉર્ટ કરો</translation>
 <translation id="4578289292431526768">ચાલો, શરૂ કરીએ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# મિનિટ પહેલાં}one{# મિનિટ પહેલાં}other{# મિનિટ પહેલાં}}</translation>
@@ -862,14 +847,12 @@
 <translation id="5017529052065664584">છેલ્લી 15 મિનિટ</translation>
 <translation id="5032430150487044192">QR કોડ બનાવી શકતા નથી</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબ - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> ટૅબ - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ટૅબ - <ph name="URL_LIST" />}}</translation>
-<translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5040262127954254034">પ્રાઇવસી</translation>
 <translation id="504456571576643789">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="5054455334322721892">જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK1" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK1" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.</translation>
 <translation id="506254248375231072">કોઈ ટૅબ નથી</translation>
 <translation id="5062960805900435602">પાસવર્ડ મર્જ કરવાની સુવિધા બંધ છે વિશેની અપડેટ</translation>
 <translation id="5075939510584558547">એન્ક્રિપ્શન વિના સાચવો</translation>
-<translation id="5081960376148623587">પેજ પહેલેથી લોડ કરવા કે નહીં તે પસંદ કરો</translation>
 <translation id="5085038751173179818">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક વગેરે મેળવવા માટે, આ સાઇટ અને Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="5091199029769593641">ટૂંક સમયમાં, જ્યારે તમે નવી ટૅબ ખોલશો ત્યારે તમને <ph name="SITE_NAME" /> પરથી સ્ટોરી દેખાશે. તમે જે સાઇટ ફૉલો કરો છો તેને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. તમે તેમને Discoverના સેટિંગમાં મેનેજ કરી શકો છો.</translation>
 <translation id="509429900233858213">કોઈ ભૂલ આવી છે.</translation>
@@ -916,7 +899,6 @@
 <translation id="5316947901395241499">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પાસવર્ડ સાચવવાની સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5319359161174645648">Google Chromeની ભલામણ કરે છે</translation>
-<translation id="5320351714793324716">જો તમે કુકીને મંજૂરી આપો, તો Chrome પહેલેથી લોડ કરતી વખતે તેનો ઉપયોગ કરી શકે છે</translation>
 <translation id="5326921373682845375">પહેલેથી લોડ કરેલા પેજ એન્ક્રિપ્ટેડ હોવાથી અને પેજને લિંક કરતી સાઇટ, Google સાઇટ હોવાથી, આ પેજને ખાનગી રીતે પહેલેથી લોડ કરતી વખતે Googleના સર્વરને નવી માહિતી મળતી નથી.</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> સાથે ઉપયોગ કરો</translation>
 <translation id="5342314432463739672">પરવાનગીની વિનંતી કરી</translation>
@@ -965,7 +947,6 @@
 <translation id="557018954714092179">નવું ફોલ્ડર બનાવો</translation>
 <translation id="5578795271662203820">આ છબી માટે <ph name="SEARCH_ENGINE" /> માં શોધો</translation>
 <translation id="5581519193887989363">શું સિંક કરવું તે હંમેશાં તમે <ph name="BEGIN_LINK1" />સેટિંગ<ph name="END_LINK1" />માં પસંદ કરી શકો છો.</translation>
-<translation id="5590372121997663538">આ કમ્પ્યુટર પર યાદ રાખો</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5599455543593328020">છૂપો મોડ</translation>
 <translation id="5601180634394228718">તમારા Chromeના અનુભવને બહેતર બનાવવા માટે ડેટાનો ઉપયોગ કરતા વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> પર જાઓ.</translation>
@@ -1065,7 +1046,6 @@
 <translation id="6026538407078977628">પૂર્ણ સ્ક્રીન જેટલું મોટું કરો</translation>
 <translation id="6030719887161080597">જાહેરાતના પર્ફોર્મન્સની માપણી કરવા માટે સાઇટ દ્વારા ઉપયોગમાં લેવાતી માહિતીને મેનેજ કરો</translation>
 <translation id="6039379616847168523">આગલા ટૅબ પર જાઓ</translation>
-<translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6040939430773295212">પુનરાવર્તિત</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
 <translation id="6042308850641462728">વધુ</translation>
@@ -1128,7 +1108,6 @@
 <translation id="6316139424528454185">Android વર્ઝન અસમર્થિત છે</translation>
 <translation id="6324916366299863871">શૉર્ટકટમાંમાં ફેરફાર કરો</translation>
 <translation id="6324977638108296054">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક બનાવી શકતા નથી</translation>
-<translation id="6324997754869598316">(ભૂલ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> મારફતે શેર કરો</translation>
 <translation id="6337234675334993532">એન્ક્રિપ્શન</translation>
 <translation id="6340526405444716530">મનગમતું બનાવવું</translation>
@@ -1138,7 +1117,6 @@
 <translation id="6344622098450209924">ટ્રૅકિંગ સંબંધિત સુરક્ષા</translation>
 <translation id="6345878117466430440">વાંચેલાં તરીકે માર્ક કરો</translation>
 <translation id="6356893102071098867">ચેક કરો કે તમે યોગ્ય એકાઉન્ટ પસંદ કર્યું હોય</translation>
-<translation id="6357653805084533597">આ QR કોડ બતાવતા હોય એવા ડિવાઇસ પર સાઇન ઇન કરવા માટે તમે આ ફોનનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="6363990818884053551">સિંક કરવાનું શરૂ કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6364438453358674297">ઇતિહાસમાંથી સૂચનને દૂર કરીએ?</translation>
 <translation id="6380100320871303656">તમે મુલાકાત લઈ શકો છો એવી સંભાવના ધરાવતા પેજને Chrome વારંવાર પહેલેથી લોડ કરે છે. આ સેટિંગના પરિણામે ડેટાનો વપરાશ વધી શકે છે.</translation>
@@ -1149,7 +1127,6 @@
 <translation id="6401458660421980302">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, એ ડિવાઇસના Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6404511346730675251">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="6406506848690869874">સમન્વયન</translation>
-<translation id="6407224748847589805">તમારા કમ્પ્યુટર સાથે કનેક્ટ કરી શકાતું નથી. ચકાસણી માટે બીજો કોઈ વિકલ્પ અજમાવો.</translation>
 <translation id="6410883413783534063">એકસાથે વિભિન્ન પેજની મુલાકાત લેવા માટે ટૅબ ખોલો</translation>
 <translation id="6411219469806822692">વધુ ઉપર જઈ શકાતું નથી. પેજ પર વધુ ઉપરથી શરૂ કરીને જુઓ.</translation>
 <translation id="641643625718530986">પ્રિન્ટ…</translation>
@@ -1230,7 +1207,6 @@
 <translation id="671481426037969117">તમારું <ph name="FQDN" /> ટાઇમર સમાપ્ત થયું. તે આવતી કાલે ફરી શરૂ થશે.</translation>
 <translation id="6715020873764921614">શું તમે તેમ છતાં <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="671928215901716392">સ્ક્રીન લૉક કરો</translation>
-<translation id="6719634564325948108">QR કોડ વડે કનેક્ટ કરીએ?</translation>
 <translation id="6723740634201835758">તમારા Google એકાઉન્ટમાં</translation>
 <translation id="6734310707649923383">તમે જે પેજની મુલાકાત લીધી હોય તે પેજને તમારા ઇતિહાસમાં જોઈ શકો છો અથવા તેમાંથી તેને ડિલીટ કરી શકો છો</translation>
 <translation id="6738867403308150051">ડાઉનલોડ કરી રહ્યું છે...</translation>
@@ -1252,7 +1228,6 @@
 <translation id="6813446258015311409">Chromeમાં સાઇન ઇન કરવાની શીટ ખોલવામાં આવી.</translation>
 <translation id="6817747507826986771">આ પેજ ઝડપથી શેર કરો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="6820686453637990663">CVC</translation>
-<translation id="6823561724060793716">તમે જેની મુલાકાત લઈ રહ્યાં હો તે પેજ વિશે વધારાની માહિતી જોવા માટે, તમે ઍડ્રેસ બારમાંથી પેજ વિશેની માહિતી ખોલી શકો છો</translation>
 <translation id="6828070228333235514">કિંમત ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="6830728435402077660">સુરક્ષિત નથી</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
@@ -1362,7 +1337,6 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ડાઉનલોડ બાકી}one{# ડાઉનલોડ બાકી}other{# ડાઉનલોડ બાકી}}</translation>
 <translation id="7230064152164845085">છૂપા મોડ પર સ્વિચ કરો</translation>
 <translation id="72415438529550637">પાસવર્ડ સૂચવવાની સુવિધા બંધ છે.</translation>
-<translation id="7252076891734325316">તમારા ફોનને કમ્પ્યુટરની નજીક રાખો</translation>
 <translation id="7260367682327802201">તમારા Android ડિવાઇસમાં કદાચ આ જ સેટિંગ શામેલ હોઈ શકે. જો Chromeમાં અને તમારા Android ડિવાઇસ પર જાહેરાત માપણીની સુવિધા ચાલુ કરેલી હોય, તો કંપની તમે મુલાકાત લો છો તેવી સમગ્ર વેબસાઇટ પર અને તમે ઉપયોગ કરો છો તેવી ઍપ પર જાહેરાતની અસરકારકતાની માપણી કરી શકે છે.</translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" />ને <ph name="ORIGIN" /> પર સબમિટ કરીએ?</translation>
 <translation id="7274013316676448362">અવરોધિત સાઇટ</translation>
@@ -1377,7 +1351,6 @@
 <translation id="7304873321153398381">ઑફલાઇન. Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી.</translation>
 <translation id="7313188324932846546">સિંકની સુવિધા સેટઅપ કરવાનો પ્રયાસ કરો</translation>
 <translation id="7324354302972299151">“Do Not Track"ની વિનંતી મોકલો</translation>
-<translation id="7332075081379534664">સાઇન-ઇન કરવામાં સફળ રહ્યાં</translation>
 <translation id="7333041109965360609">નોટિફિકેશનમાંથી અનસબ્સ્ક્રાઇબ કર્યું</translation>
 <translation id="7333232495927792353">Googleનું સૌથી વધુ સંબંધિત કન્ટેન્ટ મેળવવા માટે સિંક કરો</translation>
 <translation id="7336259382292148213">બરાબર લાગે છે</translation>
@@ -1456,7 +1429,6 @@
 <translation id="7638584964844754484">ખોટો પાસફ્રેઝ</translation>
 <translation id="7646772052135772216">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
 <translation id="7655240423373329753">છેલ્લા 7 દિવસ</translation>
-<translation id="7655900163790317559">બ્લૂટૂથ ચાલુ કરી રહ્યાં છીએ…</translation>
 <translation id="7656721520530864426">કોઈ સાઇટ નથી</translation>
 <translation id="7656862631699126784">છૂપી ટૅબને લૉક કરવાનો મોડ ચાલુ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
@@ -1497,7 +1469,6 @@
 <translation id="7821130663268546430">ટૅબ સ્વિચરમાં તમે બધા ખુલ્લા ટૅબ મેળવી શકશો</translation>
 <translation id="7822705602465980873">તમે સાઇન ઇન હો ત્યારે, આ ડેટા તમારા Google એકાઉન્ટ સાથે લિંક કરવામાં આવે છે, જેથી સમગ્ર Googleની સેવાઓમાં તમારી સુરક્ષા કરી શકાય, ઉદાહરણ તરીકે સુરક્ષા સંબંધી કોઈ બનાવ બાદ Gmailમાં સુરક્ષા વધારવી.</translation>
 <translation id="7824665136384946951">તમારી સંસ્થા દ્વારા Safe Browsingની સુવિધા બંધ કરવામાં આવી છે</translation>
-<translation id="78270725016672455">કોઈ સાઇટમાં સાઇન ઇન કરવા માટે તમારું કમ્પ્યુટર આ ડિવાઇસને રજિસ્ટર કરવા માગે છે</translation>
 <translation id="7844171778363018843">સિંક કરવા માટે કોઈ ડેટા પસંદ કર્યો નથી</translation>
 <translation id="7846161022626028328">કોઈ ભૂલ આવી હતી. ફરી પ્રયાસ કરો.</translation>
 <translation id="7846296061357476882">Googleની સેવાઓ</translation>
@@ -1506,13 +1477,11 @@
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7859988229622350291">ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="7866213166286285359">અહીં પેજનો અનુવાદ કરો</translation>
-<translation id="78707286264420418"><ph name="PRODUCT_NAME" />ને તમારા ડિવાઇસ સાથે કનેક્ટ કરવા માટે નજીકના ડિવાઇસની પરવાનગીની જરૂર છે</translation>
 <translation id="7875915731392087153">ઇમેઇલ બનાવો</translation>
 <translation id="7876243839304621966">બધું દૂર કરો</translation>
 <translation id="7886917304091689118">Chromeમાં ચાલી રહ્યું છે</translation>
 <translation id="7887174313503389866">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોની મુલાકાત લો. વધુ વિકલ્પો માટે, વ્યક્તિગત સેટિંગ પર જાઓ.</translation>
 <translation id="7896724475402191389">બાળકો માટે કન્ટેન્ટ - બંધ છે</translation>
-<translation id="7903184275147100332">આમાં એક મિનિટ લાગી શકે છે</translation>
 <translation id="7907478394153853634">Lorem ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{તમારી સંસ્થા દ્વારા 1 ડાઉનલોડ બ્લૉક કરવામાં આવ્યું હતું}one{તમારી સંસ્થા દ્વારા # ડાઉનલોડ બ્લૉક કરવામાં આવ્યું હતું}other{તમારી સંસ્થા દ્વારા # ડાઉનલોડ બ્લૉક કરવામાં આવ્યા હતા}}</translation>
 <translation id="7914399737746719723">ઍપ ઇન્સ્ટૉલ કરી</translation>
@@ -1561,7 +1530,6 @@
 <translation id="8084114998886531721">સાચવેલ પાસવર્ડ</translation>
 <translation id="8084285576995584326">તમારા Google એકાઉન્ટનો ડેટા નિયંત્રિત કરો</translation>
 <translation id="8084864785646838999">તમારો અમુક ઇતિહાસ કદાચ અહીં જોવા ન પણ મળી શકે. તમારો બધો Chrome ઇતિહાસ જોવા માટે, સંપૂર્ણ Chrome ઇતિહાસ ખોલો. તે ઉપરાંત, તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના અન્ય સ્વરૂપો પણ હોઈ શકે છે.</translation>
-<translation id="808747664143081553">ડિવાઇસ સાથે કનેક્ટ કરેલો છે</translation>
 <translation id="8088176524274673045">નજીકના લોકો સાથે શેર કરવા માટે, તેમને આ QR કોડ સ્કૅન કરવા દો</translation>
 <translation id="8090732854597034573">જો તમને સહાયની કોઈ જરૂર હોય, તો માતાપિતાને પૂછો</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />માં ખોલવામાં આવેલું કોઈપણ ટૅબ બંધ કરાશે નહીં</translation>
@@ -1600,6 +1568,7 @@
 <translation id="8243077599929149377">તમારું વપરાશકર્તાનું નામ ઉમેરો</translation>
 <translation id="8250920743982581267">દસ્તાવેજો</translation>
 <translation id="8255617931166444521">અલગ-અલગ સાઇટ તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે માત્ર તેમની પોતાની સાઇટ પર જ તમારી કુકીનો ઉપયોગ કરી શકે છે</translation>
+<translation id="8258999165172757081">ઉમેરી</translation>
 <translation id="8259179246279078674">પહેલેથી લોડ કરેલા પેજ એન્ક્રિપ્ટેડ હોવાથી, પહેલેથી લોડ કરેલા પેજના કન્ટેન્ટ વિશે Googleને જાણ થશે નહીં. કઈ સાઇટ ખાનગી રીતે પહેલેથી લોડ કરવામાં આવી છે, તે Googleના સર્વરને જાણવા મળશે. આ માહિતીનો ઉપયોગ માત્ર પેજને પહેલેથી લોડ કરવા માટે થાય છે અને તમારા Google એકાઉન્ટમાંથી અન્ય માહિતી સાથે લિંક કરવામાં આવતી નથી.</translation>
 <translation id="8260126382462817229">ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
@@ -1611,7 +1580,6 @@
 <translation id="8281886186245836920">છોડો</translation>
 <translation id="8282297628636750033">શક્ય હોય ત્યારે સાઇટ પર ઘેરી થીમ લાગુ કરો</translation>
 <translation id="8282950411412455249">સુરક્ષા સેટિંગ પર જાઓ</translation>
-<translation id="829672787777123339">તમારા ડિવાઇસ સાથે કનેક્ટ કરી રહ્યાં છીએ…</translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> દ્વારા “<ph name="TAB_NAME" />” ટૅબ કાઢી નાખવામાં આવ્યું</translation>
 <translation id="831192587911042850">તમે ફૉલો કરતા હો તે વેબસાઇટની સૂચિમાં હાલની વેબસાઇટને ઉમેરે છે.</translation>
 <translation id="8342727528718219152">Chrome ઘણા નોટિફિકેશન મોકલતી હોઈ શકે તેવી સાઇટ વિશે તમને જાણકારી આપશે</translation>
@@ -1707,7 +1675,6 @@
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="8765470054473112089">જ્યારે તમે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં ટાઇપ કરો છો, ત્યારે બહેતર સૂચનો મેળવવા માટે Chrome તમે જે ટાઇપ કરો છો તેને તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે. આ સુવિધા છૂપા મોડમાં કામ કરતી નથી.</translation>
 <translation id="8766529642647037772">શું આના જેવી હાઇલાઇટ કરેલી લિંક બનાવીએ?</translation>
-<translation id="8773160212632396039">વિનંતી પર પ્રક્રિયા ચાલુ છે</translation>
 <translation id="8788265440806329501">નૅવિગેશન ઇતિહાસ બંધ છે</translation>
 <translation id="8788968922598763114">છેલ્લે બંધ કરેલ ટૅબ ફરીથી ખોલો</translation>
 <translation id="8790193082819560975">કોઈ નવા ટૅબમાં, પ્રોડક્ટની ખરીદી કરવાના વિકલ્પો શોધવા માટે ટૅપ કરો.</translation>
@@ -1785,7 +1752,6 @@
 <translation id="9104217018994036254">ટૅબ જે ડિવાઇસ સાથે શેર કરવું છે તેની સૂચિ.</translation>
 <translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{1 દિવસ કે તેથી વધુ સમયથી ઉપયોગ થયો નથી}one{# દિવસ કે તેથી વધુ સમયથી ઉપયોગ થયો નથી}other{# દિવસ કે તેથી વધુ સમયથી ઉપયોગ થયો નથી}}</translation>
 <translation id="9106148373857059373">બુકમાર્ક સાચવવાનો ફ્લો બંધ છે</translation>
-<translation id="9108312223223904744">સિક્યુરિટી કી તરીકે ફોનનો ઉપયોગ</translation>
 <translation id="9108808586816295166">સુરક્ષિત DNS હંમેશાં ઉપલબ્ધ ન હોઈ શકે</translation>
 <translation id="910908805481542201">આને સુધારવામાં મારી સહાય કરો</translation>
 <translation id="9130135798965366513">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> આ સાઇટ સાથે તમારું <ph name="FIELDS_STRING" /> શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />સેવાની શરતો<ph name="END_LINK2" /> જુઓ.</translation>

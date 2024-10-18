@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Olete selle kasutajanime selle saidi jaoks juba salvestanud</translation>
 <translation id="1497590942294823549">Menüü → Paroolihaldur</translation>
 <translation id="1498283581832036924">Teie teenuse <ph name="WEBSITE" /> kontot ei kustutata.</translation>
+<translation id="1506061864768559482">Otsingumootor</translation>
 <translation id="1506063256525392513">See võimaldab fotosid jäädvustada ja üles laadida ning QR-koode skannida</translation>
 <translation id="1509486075633541495">Logi veebisaidile sisse</translation>
 <translation id="1509960214886564027">Paljude saitide funktsioonid ei pruugi töötada</translation>
@@ -368,6 +369,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2664621323652615289">Peatamine</translation>
 <translation id="2666092431469916601">Üles</translation>
 <translation id="2669454659051515572">Kõik inimesed, kes seda seadet kasutavad, näevad allalaaditud faile</translation>
+<translation id="2671423594960767771">Jaga gruppi</translation>
 <translation id="2673508731173059946">Ava kopeeritud link</translation>
 <translation id="2687403674020088961">Blokeeri kõik küpsised (ei ole soovitatav)</translation>
 <translation id="2690858294534178585">Kaamera on kasutusel</translation>
@@ -412,6 +414,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="288655811176831528">Sule vaheleht</translation>
 <translation id="2888631381369839306">Hinnajälgimise märguanded on sisse lülitatud</translation>
 <translation id="288902476966286676">Tagastage saatjale</translation>
+<translation id="2893168226686371498">Vaikebrauser</translation>
 <translation id="2894757982205307093">Uus vaheleht grupis</translation>
 <translation id="2905479111267140204">Teil on <ph name="NUMBER_OF_PASSWORDS" /> korduvalt kasutatud parooli, mis võivad teie turvalisuse ohtu seada.</translation>
 <translation id="291754862089661335">Paigutage QR-kood või ribakood sellesse kaadrisse</translation>
@@ -778,7 +781,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4764612367328936189">Teie organisatsioon lubab sisse logida vaid teatud kontodega. Kontod, mis pole lubatud, on peidetud. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover ja jälgimine</translation>
 <translation id="4769198578611055647">Selle abil pääsete juurde oma salvestatud pääsuvõtmetele igas seadmes</translation>
-<translation id="4775879719735953715">Vaikebrauser</translation>
 <translation id="4777866634702576038">Kas kustutada vahelehegrupp?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Avatud vahelehed, mida pole päeva jooksul kasutatud, teisaldatakse inaktiivsete vahelehtede hulka, et saaksite keskenduda vahelehtedele, mida kõige enam kasutate. Saate seda alati seadetes muuta.}other{Avatud vahelehed, mida pole {COUNT} päeva kasutatud, teisaldatakse inaktiivsete vahelehtede hulka, et saaksite hõlpsalt keskenduda vahelehtedele, mida kõige enam kasutate. Saate seda alati seadetes muuta.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5819208479324046259">Seadet haldab <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sünkroonimine …</translation>
 <translation id="5844284118433003733">Kui olete sisse logitud, lingitakse need andmed teie Google'i kontoga, et teid Google'i teenustest kaitsta. Näiteks suurendades pärast turvaintsidenti Gmailis kaitset.</translation>
-<translation id="5846482154967366008">Otsingumootor</translation>
 <translation id="5854790677617711513">Vanemad kui 30 päeva</translation>
 <translation id="5857770089550859117">Sünkroonimise alustamiseks on vaja parooli.</translation>
 <translation id="5859715514067755465">Edasi</translation>

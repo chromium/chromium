@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
 <translation id="1497590942294823549">Kieslys → Wagwoordbestuuder</translation>
 <translation id="1498283581832036924">Jou <ph name="WEBSITE" />-rekening sal nie uitgevee word nie.</translation>
+<translation id="1506061864768559482">Soekenjin</translation>
 <translation id="1506063256525392513">Dit maak dit vir jou moontlik om foto's te neem en op te laai, asook om QR-kodes te skandeer.</translation>
 <translation id="1509486075633541495">Meld by webwerf aan</translation>
 <translation id="1509960214886564027">Kenmerke op baie werwe kan breek</translation>
@@ -368,6 +369,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2664621323652615289">Stop</translation>
 <translation id="2666092431469916601">Top</translation>
 <translation id="2669454659051515572">Enigiemand wat hierdie toestel gebruik, kan afgelaaide lêers sien</translation>
+<translation id="2671423594960767771">Deel groep</translation>
 <translation id="2673508731173059946">Besoek gekopieerde skakel</translation>
 <translation id="2687403674020088961">Blokkeer alle webkoekies (nie aanbeveel nie)</translation>
 <translation id="2690858294534178585">Kamera word tans gebruik</translation>
@@ -412,6 +414,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="288655811176831528">Maak oortjie toe</translation>
 <translation id="2888631381369839306">Prysnasporingkennisgewings is aangeskakel</translation>
 <translation id="288902476966286676">Stuur terug na stuurder</translation>
+<translation id="2893168226686371498">Verstekblaaier</translation>
 <translation id="2894757982205307093">Nuwe oortjie in groep</translation>
 <translation id="2905479111267140204">Jy het <ph name="NUMBER_OF_PASSWORDS" /> hergebruikte wagwoorde wat jou sekuriteit in gevaar kan stel.</translation>
 <translation id="291754862089661335">Plaas QR- of strepieskode in hierdie raam</translation>
@@ -778,7 +781,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4764612367328936189">Jou organisasie laat jou toe om net met sekere rekeninge aan te meld. Rekeninge wat nie toegelaat word nie, word versteek. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Ontdek en volg</translation>
 <translation id="4769198578611055647">Help jou om toegang tot gestoorde toegangsleutels op enige toestel te kry</translation>
-<translation id="4775879719735953715">Verstekblaaier</translation>
 <translation id="4777866634702576038">Vee oortjiegroep uit?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Oop oortjies wat vir een dag of langer nie gebruik word nie, word na Onaktiewe Oortjies toe geskuif sodat jy maklik kan fokus op die oortjies wat jy die meeste gebruik. Jy kan dit enige tyd in instellings verander.}other{Oop oortjies wat vir {COUNT} dae of langer nie gebruik word nie, word na Onaktiewe Oortjies toe geskuif sodat jy maklik kan fokus op die oortjies wat jy die meeste gebruik. Jy kan dit enige tyd in instellings verander.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5819208479324046259">Bestuur deur <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinkroniseer tans …</translation>
 <translation id="5844284118433003733">Wanneer jy aangemeld is, word hierdie data aan jou Google-rekening gekoppel om jou oral in Google-dienste te beskerm, byvoorbeeld deur beskerming in Gmail te verhoog ná ’n sekuriteitvoorval.</translation>
-<translation id="5846482154967366008">Soekenjin</translation>
 <translation id="5854790677617711513">Ouer as 30 dae</translation>
 <translation id="5857770089550859117">Wagfrase word vereis om sinkronisering te begin.</translation>
 <translation id="5859715514067755465">Vorentoe</translation>

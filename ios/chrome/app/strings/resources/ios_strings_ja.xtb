@@ -113,6 +113,7 @@
 <translation id="1492417797159476138">このユーザー名はこのサイトですでに保存されています</translation>
 <translation id="1497590942294823549">メニュー → パスワード マネージャー</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> のアカウントは削除されません。</translation>
+<translation id="1506061864768559482">検索エンジン</translation>
 <translation id="1506063256525392513">写真を撮影してアップロードしたり、QR コードをスキャンしたりできます</translation>
 <translation id="1509486075633541495">ウェブサイトにログイン</translation>
 <translation id="1509960214886564027">多くサイトで機能を使用できなくなる可能性があります</translation>
@@ -368,6 +369,7 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2666092431469916601">一番上</translation>
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
+<translation id="2671423594960767771">グループを共有</translation>
 <translation id="2673508731173059946">コピーしたリンクにアクセス</translation>
 <translation id="2687403674020088961">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="2690858294534178585">カメラが使用中です</translation>
@@ -412,6 +414,7 @@
 <translation id="288655811176831528">タブを閉じる</translation>
 <translation id="2888631381369839306">価格トラッキングの通知がオンになりました</translation>
 <translation id="288902476966286676">発送者に返送</translation>
+<translation id="2893168226686371498">既定のブラウザ</translation>
 <translation id="2894757982205307093">グループにタブを追加</translation>
 <translation id="2905479111267140204">使い回しのパスワード <ph name="NUMBER_OF_PASSWORDS" /> 件: セキュリティが危険にさらされる可能性があります。</translation>
 <translation id="291754862089661335">QR コードまたはバーコードをこの枠に合わせてください</translation>
@@ -778,7 +781,6 @@
 <translation id="4764612367328936189">組織が特定のアカウントでのログインしか許可していません。許可されていないアカウントは非表示になっています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover とフォロー</translation>
 <translation id="4769198578611055647">どのデバイスからでも保存済みのパスキーにアクセスできるようになります</translation>
-<translation id="4775879719735953715">既定のブラウザ</translation>
 <translation id="4777866634702576038">タブグループを削除しますか？</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{開いているタブのうち、1 日以上使用していないタブは [アクティブでないタブ] に移されるため、よく使用するタブをすばやく見つけることができます。これは [設定] でいつでも変更できます。}other{開いているタブのうち、{COUNT} 日以上使用していないタブは [アクティブでないタブ] に移されるため、よく使用するタブをすばやく見つけることができます。これは [設定] でいつでも変更できます。}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />、<ph name="ADDITIONAL_INFO" /></translation>
@@ -1014,7 +1016,6 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">同期しています…</translation>
 <translation id="5844284118433003733">ログイン中は、このデータを Google アカウントにリンクして、すべての Google サービスで保護します（セキュリティ インシデント後に Gmail で保護を強化するなど）。</translation>
-<translation id="5846482154967366008">検索エンジン</translation>
 <translation id="5854790677617711513">30 日以上経過</translation>
 <translation id="5857770089550859117">同期を開始するにはパスフレーズが必要です。</translation>
 <translation id="5859715514067755465">進む</translation>
