@@ -23,7 +23,6 @@
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,8 +68,7 @@ TEST(TranscriptSenderImplTest, SendOneMessageLongerThanMaxAllowed) {
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      TRAFFIC_ANNOTATION_FOR_TESTS, {.max_allowed_char = kMaxAllowedChar},
-      failure_future.GetCallback());
+      {.max_allowed_char = kMaxAllowedChar}, failure_future.GetCallback());
 
   media::SpeechRecognitionResult transcript(kTranscriptText,
                                             /*is_final=*/false);
@@ -134,8 +132,7 @@ TEST(TranscriptSenderImplTest, SendNewTranscript) {
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      TRAFFIC_ANNOTATION_FOR_TESTS, {.max_allowed_char = kMaxAllowedChar},
-      failure_future.GetCallback());
+      {.max_allowed_char = kMaxAllowedChar}, failure_future.GetCallback());
 
   media::SpeechRecognitionResult transcript1(kTranscriptText,
                                              /*is_final=*/true);
@@ -195,7 +192,6 @@ TEST(TranscriptSenderImplTest, ReplyWithErrrorOnMaxErrorsReached) {
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
       {.max_allowed_char = kMaxAllowedChar, .max_errors_num = 2},
       failure_future.GetCallback());
 
@@ -227,7 +223,6 @@ TEST(TranscriptSenderImplTest, ResetErrorCountOnSuccess) {
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
       {.max_allowed_char = kMaxAllowedChar, .max_errors_num = 2},
       failure_future.GetCallback());
 
@@ -271,7 +266,6 @@ TEST(TranscriptSenderImplTest, InflightRequestsAreHandledOnFailure) {
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
       {.max_allowed_char = kMaxAllowedChar, .max_errors_num = 2},
       failure_future.GetCallback());
 
@@ -316,7 +310,6 @@ TEST_P(TranscriptSenderImplTest, SendTwoMessages) {
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
       {.max_allowed_char = GetParam().max_allowed_char}, base::DoNothing());
 
   media::SpeechRecognitionResult transcript1(GetParam().transcript1,
@@ -370,8 +363,7 @@ TEST_P(TranscriptSenderImplMissingDataTest, FailWithMissing) {
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      TRAFFIC_ANNOTATION_FOR_TESTS, TranscriptSenderImpl::Options(),
-      failure_future.GetCallback());
+      TranscriptSenderImpl::Options(), failure_future.GetCallback());
 
   media::SpeechRecognitionResult transcript(kTranscriptText,
                                             /*is_final=*/false);

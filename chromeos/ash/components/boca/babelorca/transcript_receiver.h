@@ -14,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_streaming_client.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom-forward.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace media {
 struct SpeechRecognitionResult;
@@ -42,7 +41,6 @@ class TranscriptReceiver {
                                    std::string language)>;
   TranscriptReceiver(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
       TachyonRequestDataProvider* request_data_provider,
       StreamingClientGetter streaming_client_getter,
       int max_retries = 3);
@@ -63,7 +61,6 @@ class TranscriptReceiver {
   void OnResponse(TachyonResponse response);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const net::NetworkTrafficAnnotationTag network_traffic_annotation_;
   const raw_ptr<TachyonRequestDataProvider> request_data_provider_;
   const StreamingClientGetter streaming_client_getter_;
 

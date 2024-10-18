@@ -358,6 +358,8 @@ after discussions on the right group.
       <annotation id="forms_predictions_model_execution"/>
       <annotation id="chromeos_scanner_drive"/>
       <annotation id="ash_babelorca_tachyon_registrar"/>
+      <annotation id="ash_babelorca_transcript_receiver"/>
+      <annotation id="ash_babelorca_transcript_sender_impl"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

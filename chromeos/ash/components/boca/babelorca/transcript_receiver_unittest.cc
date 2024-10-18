@@ -25,7 +25,6 @@
 #include "chromeos/ash/components/boca/babelorca/tachyon_streaming_client.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -53,8 +52,7 @@ class TranscriptReceiverTest : public testing::Test {
 
   void CreateReceiver(FakeTachyonRequestDataProvider* data_provider) {
     receiver_ = std::make_unique<TranscriptReceiver>(
-        url_loader_factory_.GetSafeWeakWrapper(), TRAFFIC_ANNOTATION_FOR_TESTS,
-        data_provider,
+        url_loader_factory_.GetSafeWeakWrapper(), data_provider,
         base::BindLambdaForTesting(
             [this](
                 scoped_refptr<network::SharedURLLoaderFactory> loader_factory,

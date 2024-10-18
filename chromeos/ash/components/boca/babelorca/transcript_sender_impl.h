@@ -18,15 +18,10 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/transcript_sender.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace media {
 struct SpeechRecognitionResult;
 }  // namespace media
-
-namespace net {
-struct NetworkTrafficAnnotationTag;
-}  // namespace net
 
 namespace ash::babelorca {
 
@@ -43,13 +38,11 @@ class TranscriptSenderImpl : public TranscriptSender {
     size_t max_errors_num = 2;
   };
 
-  TranscriptSenderImpl(
-      TachyonAuthedClient* authed_client,
-      TachyonRequestDataProvider* request_data_provider,
-      base::Time init_timestamp,
-      const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-      Options options,
-      base::OnceClosure failure_cb);
+  TranscriptSenderImpl(TachyonAuthedClient* authed_client,
+                       TachyonRequestDataProvider* request_data_provider,
+                       base::Time init_timestamp,
+                       Options options,
+                       base::OnceClosure failure_cb);
 
   TranscriptSenderImpl(const TranscriptSenderImpl&) = delete;
   TranscriptSenderImpl& operator=(const TranscriptSenderImpl&) = delete;
@@ -88,7 +81,6 @@ class TranscriptSenderImpl : public TranscriptSender {
   const raw_ptr<TachyonAuthedClient> authed_client_;
   const raw_ptr<TachyonRequestDataProvider> request_data_provider_;
   const int64_t init_timestamp_ms_;
-  const net::NetworkTrafficAnnotationTag network_traffic_annotation_;
   const Options options_;
   base::OnceClosure failure_cb_;
   size_t errors_num_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
