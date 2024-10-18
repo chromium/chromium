@@ -27,14 +27,18 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/menu_model_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_types.h"
@@ -48,6 +52,7 @@
 #include "components/sync_sessions/synced_session.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,7 +113,7 @@ void VerifyModel(const ui::MenuModel* model, base::span<const ModelData> data) {
 
 }  // namespace
 
-class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
+class RecentTabsSubMenuModelTest : public InProcessBrowserTest {
  public:
   RecentTabsSubMenuModelTest() = default;
   RecentTabsSubMenuModelTest(const RecentTabsSubMenuModelTest&) = delete;
@@ -118,9 +123,9 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
 
   void WaitForLoadFromLastSession() { content::RunAllTasksUntilIdle(); }
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    session_sync_service_ = SessionSyncServiceFactory::GetForProfile(profile());
+  virtual void Init() {
+    session_sync_service_ =
+        SessionSyncServiceFactory::GetForProfile(browser()->profile());
 
     syncer::DataTypeActivationRequest activation_request;
     activation_request.cache_guid = "test_cache_guid";
@@ -165,6 +170,23 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
     helper->VerifyExport(session_sync_service_->GetOpenTabsUIDelegate());
   }
 
+  void AddTabToBrowser(const GURL& tab_url) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), tab_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  Browser* AddBrowser(Browser* browser, const GURL& url) {
+    ui_test_utils::BrowserChangeObserver new_browser_observer(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser, url, WindowOpenDisposition::NEW_WINDOW,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+    Browser* new_browser = new_browser_observer.Wait();
+    ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
+    return new_browser;
+  }
+
  private:
   raw_ptr<sync_sessions::SessionSyncService, DanglingUntriaged>
       session_sync_service_;
@@ -193,7 +215,9 @@ class FakeIconDelegate : public AppMenuIconController::Delegate {
       AppMenuIconController::TypeAndSeverity type_and_severity) override {}
 };
 
-TEST_F(RecentTabsSubMenuModelTest, LogMenuMetricsForShowHistory) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
+                       LogMenuMetricsForShowHistory) {
+  Init();
   FakeIconDelegate fake_delegate;
   AppMenuIconController app_menu_icon_controller(browser()->profile(),
                                                  &fake_delegate);
@@ -208,7 +232,9 @@ TEST_F(RecentTabsSubMenuModelTest, LogMenuMetricsForShowHistory) {
   EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
 }
 
-TEST_F(RecentTabsSubMenuModelTest, LogMenuMetricsForShowGroupedHistory) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
+                       LogMenuMetricsForShowGroupedHistory) {
+  Init();
   FakeIconDelegate fake_delegate;
   AppMenuIconController app_menu_icon_controller(browser()->profile(),
                                                  &fake_delegate);
@@ -224,8 +250,9 @@ TEST_F(RecentTabsSubMenuModelTest, LogMenuMetricsForShowGroupedHistory) {
   EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
 }
 
-TEST_F(RecentTabsSubMenuModelTest,
-       LogMenuMetricsForRecentTabsLoginForDeviceTabs) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
+                       LogMenuMetricsForRecentTabsLoginForDeviceTabs) {
+  Init();
   FakeIconDelegate fake_delegate;
   AppMenuIconController app_menu_icon_controller(browser()->profile(),
                                                  &fake_delegate);
@@ -242,7 +269,8 @@ TEST_F(RecentTabsSubMenuModelTest,
 }
 
 // Test disabled "Recently closed" header with no foreign tabs.
-TEST_F(RecentTabsSubMenuModelTest, NoTabs) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest, NoTabs) {
+  Init();
   DisableSync();
 
   RecentTabsSubMenuModel model(nullptr, browser());
@@ -264,22 +292,29 @@ TEST_F(RecentTabsSubMenuModelTest, NoTabs) {
 }
 
 // Test enabled "Recently closed" header with no foreign tabs.
-TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
+                       RecentlyClosedTabsFromCurrentSession) {
+  Init();
   DisableSync();
 
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&RecentTabsSubMenuModelTest::GetTabRestoreService));
+  TabRestoreServiceFactory::GetForProfile(browser()->profile());
 
   // Add 2 tabs and close them.
-  AddTab(browser(), GURL("http://foo/1"));
-  AddTab(browser(), GURL("http://foo/2"));
-  browser()->tab_strip_model()->CloseAllTabs();
+  content::WebContents* tab1 =
+      chrome::AddAndReturnTabAt(browser(), GURL("http://foo/1"), 0, true);
+  content::WebContents* tab2 =
+      chrome::AddAndReturnTabAt(browser(), GURL("http://foo/2"), 1, true);
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), GURL("http://foo/0"), 1);
+
+  chrome::CloseWebContents(browser(), tab1, true);
+  chrome::CloseWebContents(browser(), tab2, true);
 
   RecentTabsSubMenuModel model(nullptr, browser());
 
   std::vector<ModelData> kData;
-
+  EXPECT_TRUE(browser()->GetFeatures().side_panel_coordinator() != nullptr);
   kData = {
       {ui::MenuModel::TYPE_COMMAND, true},    // History
       {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
@@ -296,18 +331,18 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
 }
 
 // Test recently closed groups with no foreign tabs.
-TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
+                       RecentlyClosedGroupsFromCurrentSession) {
+  Init();
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   DisableSync();
 
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&RecentTabsSubMenuModelTest::GetTabRestoreService));
+  TabRestoreServiceFactory::GetForProfile(browser()->profile());
 
-  AddTab(browser(), GURL("http://foo/1"));
-  AddTab(browser(), GURL("http://foo/2"));
-  AddTab(browser(), GURL("http://foo/3"));
+  AddTabToBrowser(GURL("http://foo/1"));
+  AddTabToBrowser(GURL("http://foo/2"));
+  AddTabToBrowser(GURL("http://foo/3"));
   tab_groups::TabGroupId group1 =
       browser()->tab_strip_model()->AddToNewGroup({0});
   tab_groups::TabGroupId group2 =
@@ -353,60 +388,12 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
   VerifyModel(model.GetSubmenuModelAt(5), kGroup0Data);
 }
 
-TEST_F(RecentTabsSubMenuModelTest,
-       RecentlyClosedTabsAndWindowsFromLastSessionWithRefresh) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
+                       RecentlyClosedTabsAndWindowsFromLastSessionWithRefresh) {
+  Init();
   DisableSync();
 
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&RecentTabsSubMenuModelTest::GetTabRestoreService));
-
-  // Add 2 tabs and close them.
-  AddTab(browser(), GURL("http://wnd/tab0"));
-  AddTab(browser(), GURL("http://wnd/tab1"));
-  browser()->tab_strip_model()->CloseAllTabs();
-
-  // Create a SessionService for the profile (profile owns the service) and add
-  // a window with two tabs to this session.
-  SessionService* session_service = new SessionService(profile());
-  SessionServiceFactory::SetForTestProfile(profile(),
-                                           base::WrapUnique(session_service));
-  const SessionID tab_id_0 = SessionID::FromSerializedValue(1);
-  const SessionID tab_id_1 = SessionID::FromSerializedValue(2);
-  const SessionID window_id = SessionID::FromSerializedValue(3);
-  const tab_groups::TabGroupId tab_group_id =
-      tab_groups::TabGroupId::GenerateNew();
-  session_service->SetWindowType(window_id, Browser::TYPE_NORMAL);
-  session_service->SetTabWindow(window_id, tab_id_0);
-  session_service->SetTabWindow(window_id, tab_id_1);
-  session_service->SetTabIndexInWindow(window_id, tab_id_0, 0);
-  session_service->SetTabIndexInWindow(window_id, tab_id_1, 1);
-  session_service->SetSelectedTabInWindow(window_id, 0);
-  session_service->SetTabGroup(window_id, tab_id_1,
-                               std::make_optional(tab_group_id));
-  session_service->UpdateTabNavigation(
-      window_id, tab_id_0,
-      sessions::ContentTestHelper::CreateNavigation("http://wnd1/tab0",
-                                                    "title"));
-  session_service->UpdateTabNavigation(
-      window_id, tab_id_1,
-      sessions::ContentTestHelper::CreateNavigation("http://wnd1/tab1",
-                                                    "title"));
-  // Set this, otherwise previous session won't be loaded.
-  ExitTypeService::GetInstanceForProfile(profile())
-      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
-  // Move this session to the last so that TabRestoreService will load it as the
-  // last session.
-  SessionServiceFactory::GetForProfile(profile())
-      ->MoveCurrentSessionToLastSession();
-
-  // Create a new TabRestoreService so that it'll load the recently closed tabs
-  // and windows afresh.
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&RecentTabsSubMenuModelTest::GetTabRestoreService));
-  // Let the shutdown of previous TabRestoreService run.
-  content::RunAllTasksUntilIdle();
+  TabRestoreServiceFactory::GetForProfile(browser()->profile());
 
   RecentTabsSubMenuModel model(nullptr, browser());
   TestRecentTabsMenuModelDelegate delegate(&model);
@@ -425,8 +412,29 @@ TEST_F(RecentTabsSubMenuModelTest,
 
   VerifyModel(model, kDataBeforeLoad);
 
-  // Wait for tabs from last session to be loaded.
-  WaitForLoadFromLastSession();
+  // Add 2 tabs and close them.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("http://wnd/tab0"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("http://wnd/tab1"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  browser()->tab_strip_model()->CloseSelectedTabs();
+  browser()->tab_strip_model()->CloseSelectedTabs();
+
+  Browser* new_browser = AddBrowser(browser(), {GURL("http://wnd1/tab0")});
+  ui_test_utils::NavigateToURLWithDisposition(
+      new_browser, GURL("http://wnd1/tab1"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  chrome::GroupTab(new_browser);
+  chrome::CloseWindow(new_browser);
+
   EXPECT_TRUE(delegate.got_changes());
 
   // Expected menu items after tabs/windows from last session are loaded:
@@ -465,7 +473,8 @@ TEST_F(RecentTabsSubMenuModelTest,
 
 // Test disabled "Recently closed" header with multiple sessions, multiple
 // windows, and multiple enabled tabs from other devices.
-TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
+  Init();
   EnableSync();
 
   // Tabs are populated in decreasing timestamp.
@@ -513,7 +522,8 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
   VerifyModel(model, kData);
 }
 
-TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
+  Init();
   EnableSync();
 
   // Before creating menu fill foreign sessions.
@@ -566,7 +576,8 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   VerifyModel(model, kDataAfterUpdate);
 }
 
-TEST_F(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
+  Init();
   EnableSync();
 
   // Create 4 sessions. Each session has 1 window with 1 tab.
@@ -603,7 +614,9 @@ TEST_F(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
                           model.GetSubmenuModelAt(9)->GetLabelAt(0)));
 }
 
-TEST_F(RecentTabsSubMenuModelTest, MaxTabsPerSessionAndRecency) {
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
+                       MaxTabsPerSessionAndRecency) {
+  Init();
   EnableSync();
 
   // Create a session: 2 windows with 5 tabs each.
@@ -620,7 +633,7 @@ TEST_F(RecentTabsSubMenuModelTest, MaxTabsPerSessionAndRecency) {
   RecentTabsSubMenuModel model(nullptr, browser());
 
   std::vector<ModelData> kData;
-    // Expected menu items:
+  // Expected menu items:
 
   kData = {
       {ui::MenuModel::TYPE_COMMAND, true},    // History
