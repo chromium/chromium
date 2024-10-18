@@ -56,16 +56,17 @@ void HttpAuth::ChooseBestChallenge(
   // Choose the challenge whose authentication handler gives the maximum score.
   std::unique_ptr<HttpAuthHandler> best;
   const std::string header_name = GetChallengeHeaderName(target);
-  std::string cur_challenge;
+  std::optional<std::string_view> cur_challenge;
   size_t iter = 0;
-  while (response_headers.EnumerateHeader(&iter, header_name, &cur_challenge)) {
+  while (
+      (cur_challenge = response_headers.EnumerateHeader(&iter, header_name))) {
     std::unique_ptr<HttpAuthHandler> cur;
     int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
-        cur_challenge, target, ssl_info, network_anonymization_key,
+        *cur_challenge, target, ssl_info, network_anonymization_key,
         scheme_host_port, net_log, host_resolver, &cur);
     if (rv != OK) {
-      VLOG(1) << "Unable to create AuthHandler. Status: "
-              << ErrorToString(rv) << " Challenge: " << cur_challenge;
+      VLOG(1) << "Unable to create AuthHandler. Status: " << ErrorToString(rv)
+              << " Challenge: " << *cur_challenge;
       continue;
     }
     if (cur.get() && (!best.get() || best->score() < cur->score()) &&

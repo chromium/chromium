@@ -1039,7 +1039,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   // Set all cookies, without waiting for them to be set. Any subsequent
   // read will see the combined result of all cookie operation.
   const std::string_view name("Set-Cookie");
-  std::string cookie_string;
+  std::optional<std::string_view> cookie_string_view;
   size_t iter = 0;
 
   // NotifyHeadersComplete needs to be called once and only once after the
@@ -1051,7 +1051,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   // still waiting when the loop ends, then NotifyHeadersComplete will be
   // called when it reaches 0 in the callback itself.
   num_cookie_lines_left_ = 1;
-  while (headers->EnumerateHeader(&iter, name, &cookie_string)) {
+  while ((cookie_string_view = headers->EnumerateHeader(&iter, name))) {
+    // Will need a copy of the string on all paths, so go ahead and make on now.
+    std::string cookie_string(*cookie_string_view);
     CookieInclusionStatus returned_status;
 
     num_cookie_lines_left_++;
@@ -1093,7 +1095,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
         std::move(cookie), request_->url(), options,
         base::BindOnce(&URLRequestHttpJob::OnSetCookieResult,
                        weak_factory_.GetWeakPtr(), options, cookie_to_return,
-                       cookie_string),
+                       std::move(cookie_string)),
         std::move(cookie_access_result));
   }
   // Removing the 1 that |num_cookie_lines_left| started with, signifing that
@@ -1449,10 +1451,10 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
   HttpResponseHeaders* headers = GetResponseHeaders();
   std::vector<SourceStream::SourceType> types;
   size_t iter = 0;
-  for (std::string type;
-       headers->EnumerateHeader(&iter, "Content-Encoding", &type);) {
+  while (std::optional<std::string_view> type =
+             headers->EnumerateHeader(&iter, "Content-Encoding")) {
     SourceStream::SourceType source_type =
-        FilterSourceStream::ParseEncodingType(type);
+        FilterSourceStream::ParseEncodingType(*type);
     switch (source_type) {
       case SourceStream::TYPE_BROTLI:
       case SourceStream::TYPE_DEFLATE:

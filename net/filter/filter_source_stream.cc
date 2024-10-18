@@ -78,7 +78,7 @@ bool FilterSourceStream::MayHaveMoreBytes() const {
 }
 
 FilterSourceStream::SourceType FilterSourceStream::ParseEncodingType(
-    const std::string& encoding) {
+    std::string_view encoding) {
   std::string lower_encoding = base::ToLowerASCII(encoding);
   static constexpr auto kEncodingMap =
       base::MakeFixedFlatMap<std::string_view, SourceType>({

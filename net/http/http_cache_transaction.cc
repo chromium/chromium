@@ -2880,12 +2880,11 @@ bool HttpCache::Transaction::
     }
 
     // Retrieve either the cached response's "etag" or "last-modified" header.
-    std::string validator;
-    response_.headers->EnumerateHeader(
-        nullptr, kValidationHeaders[i].related_response_header_name,
-        &validator);
+    std::optional<std::string_view> validator =
+        response_.headers->EnumerateHeader(
+            nullptr, kValidationHeaders[i].related_response_header_name);
 
-    if (validator != external_validation_.values[i]) {
+    if (validator && *validator != external_validation_.values[i]) {
       return false;
     }
   }

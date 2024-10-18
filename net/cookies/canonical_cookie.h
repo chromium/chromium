@@ -111,7 +111,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // understand and choose their inputs.
   static std::unique_ptr<CanonicalCookie> Create(
       const GURL& url,
-      const std::string& cookie_line,
+      std::string_view cookie_line,
       const base::Time& creation_time,
       std::optional<base::Time> server_time,
       std::optional<CookiePartitionKey> cookie_partition_key,
