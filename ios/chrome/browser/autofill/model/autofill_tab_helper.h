@@ -9,13 +9,13 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @class AutofillAgent;
 @protocol AutofillCommands;
 @protocol FormSuggestionProvider;
+class ProfileIOS;
 @class UIViewController;
 
 namespace autofill {
