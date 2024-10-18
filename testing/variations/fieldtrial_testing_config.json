@@ -18680,6 +18680,26 @@
             ]
         }
     ],
+    "ProtectedAudienceTrustedKVSupport": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeTrustedSignalsKVv2Support"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudiencesHeaderDirectFromSellerSignalsStudy": [
         {
             "platforms": [
