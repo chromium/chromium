@@ -256,8 +256,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     new SafetyHubModuleDelegateImpl(
                             mProfile,
                             mModalDialogManagerSupplier,
-                            SigninAndHistorySyncActivityLauncherImpl.get(),
-                            SyncConsentActivityLauncherImpl.get()));
+                            SigninAndHistorySyncActivityLauncherImpl.get()));
             // TODO(crbug.com/40751023): Create a shared interface for fragments that need access to
             // LaunchIntentDispatcher::createCustomTabActivityIntent.
             safetyHubFragment.setCustomTabIntentHelper(

@@ -27,12 +27,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -46,9 +43,7 @@ public class SafetyHubModuleDelegateTest {
 
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
-    @Mock private SyncConsentActivityLauncher mSyncLauncher;
 
-    private ModalDialogManager mModalDialogManager;
     private Context mContext;
     private SafetyHubModuleDelegate mSafetyHubModuleDelegate;
     private Profile mProfile;
@@ -61,19 +56,19 @@ public class SafetyHubModuleDelegateTest {
         mPasswordCheckIntentForAccountCheckup =
                 mSafetyHubTestRule.getIntentForAccountPasswordCheckup();
 
-        mModalDialogManager =
+        ModalDialogManager modalDialogManager =
                 new ModalDialogManager(
                         mock(ModalDialogManager.Presenter.class),
                         ModalDialogManager.ModalDialogType.APP);
-        when(mModalDialogManagerSupplier.get()).thenReturn(mModalDialogManager);
+        when(mModalDialogManagerSupplier.get()).thenReturn(modalDialogManager);
 
         mSafetyHubModuleDelegate =
                 new SafetyHubModuleDelegateImpl(
-                        mProfile, mModalDialogManagerSupplier, mSigninLauncher, mSyncLauncher);
+                        mProfile, mModalDialogManagerSupplier, mSigninLauncher);
     }
 
     @Test
-    public void testOpenPasswordCheckUI() throws PendingIntent.CanceledException {
+    public void testOpenPasswordCheckUi() throws PendingIntent.CanceledException {
         mSafetyHubTestRule.setSignedInState(true);
         mSafetyHubTestRule.setUPMStatus(true);
 
@@ -82,10 +77,9 @@ public class SafetyHubModuleDelegateTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testLaunchSigninPromo() {
         mSafetyHubTestRule.setSignedInState(false);
-        mSafetyHubModuleDelegate.launchSyncOrSigninPromo(mContext);
+        mSafetyHubModuleDelegate.launchSigninPromo(mContext);
         verify(mSigninLauncher)
                 .launchActivityIfAllowed(
                         eq(mContext),
@@ -100,14 +94,5 @@ public class SafetyHubModuleDelegateTest {
                         eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.SAFETY_CHECK),
                         isNull());
-    }
-
-    @Test
-    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testLaunchSyncPromo() {
-        mSafetyHubTestRule.setSignedInState(false);
-        mSafetyHubModuleDelegate.launchSyncOrSigninPromo(mContext);
-        verify(mSyncLauncher)
-                .launchActivityIfAllowed(eq(mContext), eq(SigninAccessPoint.SAFETY_CHECK));
     }
 }

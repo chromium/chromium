@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -23,7 +22,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -37,7 +35,6 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     private final @NonNull Profile mProfile;
     private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final @NonNull SigninAndHistorySyncActivityLauncher mSigninLauncher;
-    private final @NonNull SyncConsentActivityLauncher mSyncLauncher;
 
     /**
      * @param profile A supplier for {@link Profile} that owns the data being deleted.
@@ -47,12 +44,10 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     public SafetyHubModuleDelegateImpl(
             @NonNull Profile profile,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull SigninAndHistorySyncActivityLauncher signinLauncher,
-            @NonNull SyncConsentActivityLauncher syncLauncher) {
+            @NonNull SigninAndHistorySyncActivityLauncher signinLauncher) {
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSigninLauncher = signinLauncher;
-        mSyncLauncher = syncLauncher;
     }
 
     @Override
@@ -96,29 +91,23 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     }
 
     @Override
-    public void launchSyncOrSigninPromo(Context context) {
+    public void launchSigninPromo(Context context) {
         assert !SafetyHubUtils.isSignedIn(mProfile);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            AccountPickerBottomSheetStrings strings =
-                    new AccountPickerBottomSheetStrings.Builder(
-                                    R.string.signin_account_picker_bottom_sheet_title)
-                            .setSubtitleStringId(R.string.safety_check_passwords_error_signed_out)
-                            .build();
-            // Open the sign-in page.
-            mSigninLauncher.launchActivityIfAllowed(
-                    context,
-                    mProfile,
-                    strings,
-                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                    SigninAccessPoint.SAFETY_CHECK,
-                    /* selectedCoreAccountId= */ null);
-        } else {
-            // Open the sync page.
-            mSyncLauncher.launchActivityIfAllowed(context, SigninAccessPoint.SAFETY_CHECK);
-        }
+        AccountPickerBottomSheetStrings strings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .setSubtitleStringId(R.string.safety_check_passwords_error_signed_out)
+                        .build();
+        // Open the sign-in page.
+        mSigninLauncher.launchActivityIfAllowed(
+                context,
+                mProfile,
+                strings,
+                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                SigninAccessPoint.SAFETY_CHECK,
+                /* selectedCoreAccountId= */ null);
     }
 }

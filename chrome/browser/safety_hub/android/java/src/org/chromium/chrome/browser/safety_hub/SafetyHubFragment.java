@@ -679,7 +679,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             mPasswordCheckPropertyModel.set(
                     SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                     v -> {
-                        mDelegate.launchSyncOrSigninPromo(getContext());
+                        mDelegate.launchSigninPromo(getContext());
                         recordDashboardInteractions(DashboardInteractions.SHOW_SIGN_IN_PROMO);
                     });
         }
