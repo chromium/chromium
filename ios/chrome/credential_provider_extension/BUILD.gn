@@ -79,6 +79,8 @@ source_set("unit_tests") {
     ":passkey_util",
     "//base",
     "//base/test:test_support",
+    "//components/sync/protocol",
+    "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
     "//testing/gtest",

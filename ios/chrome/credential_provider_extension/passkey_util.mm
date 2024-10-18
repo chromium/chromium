@@ -55,10 +55,10 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
 
   // Decrypt the private key using the security domain secret.
   sync_pb::WebauthnCredentialSpecifics credential_specifics;
-  if (encrypted_private_key) {
+  if ([encrypted_private_key length] > 0) {
     credential_specifics.set_private_key(encrypted_private_key.bytes,
                                          encrypted_private_key.length);
-  } else if (encrypted_message) {
+  } else if ([encrypted_message length] > 0) {
     credential_specifics.set_encrypted(encrypted_message.bytes,
                                        encrypted_message.length);
   } else {
@@ -191,6 +191,10 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
   NSData* signature = GenerateSignature(
       credential.privateKey, credential.encrypted, authenticatorData,
       client_data_hash, security_domain_secret);
+
+  if (!signature) {
+    return nil;
+  }
 
   // Update the credential's last used time.
   credential.lastUsedTime =

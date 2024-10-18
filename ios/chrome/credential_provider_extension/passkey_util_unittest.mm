@@ -6,14 +6,20 @@
 
 #import <CommonCrypto/CommonCrypto.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/string_number_conversions.h"
-#import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
+#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
 
-constexpr int64_t kJan1st2024 = 1704085200;
+void Append(std::vector<uint8_t>& container, NSData* data) {
+  base::span<const uint8_t> span = base::apple::NSDataToSpan(data);
+  container.insert(container.end(), span.begin(), span.end());
+}
 
 NSData* StringToData(std::string str) {
   return [NSData dataWithBytes:str.data() length:str.length()];
@@ -39,20 +45,28 @@ NSData* SecurityDomainSecret() {
 }
 
 ArchivableCredential* TestPasskeyCredential() {
-  return
-      [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                               gaia:nil
-                                   recordIdentifier:@"recordIdentifier"
-                                             syncId:StringToData("syncId")
-                                           username:@"username"
-                                    userDisplayName:@"userDisplayName"
-                                             userId:StringToData("userId")
-                                       credentialId:StringToData("credentialId")
-                                               rpId:@"rpId"
-                                         privateKey:StringToData("privateKey")
-                                          encrypted:StringToData("encrypted")
-                                       creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+  std::vector<uint8_t> trusted_vault_key;
+  NSData* security_domain_secret = SecurityDomainSecret();
+  Append(trusted_vault_key, security_domain_secret);
+
+  std::vector<uint8_t> user_id;
+  Append(user_id, StringToData("userId"));
+  std::string rp_id_str("rpId");
+  std::string user_name_str("username");
+
+  // Generate a key pair containing the webauthn specifics and the public key.
+  std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
+      generated_passkey =
+          webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
+              rp_id_str,
+              webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
+                                                 user_name_str),
+              trusted_vault_key,
+              /*trusted_vault_key_version=*/0);
+
+  return [[ArchivableCredential alloc] initWithFavicon:nil
+                                                  gaia:nil
+                                               passkey:generated_passkey.first];
 }
 
 }  // namespace
