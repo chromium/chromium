@@ -303,7 +303,7 @@ bool IsPasscodeSettingsAvailable() {
   // TODO(crbug.com/40274927): Move to ReauthenticationCoordinatorDelegate.
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
-  [_dispatcher closeSettingsUIAndOpenURL:command];
+  [_dispatcher closePresentedViewsAndOpenURL:command];
 }
 
 - (void)openPasscodeSettings {

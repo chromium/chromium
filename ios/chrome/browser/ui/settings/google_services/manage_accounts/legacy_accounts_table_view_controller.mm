@@ -539,7 +539,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self handleAuthenticationOperationDidFinish];
   if (result == SigninCoordinatorResult::SigninCoordinatorResultSuccess &&
       _closeSettingsOnAddAccount) {
-    [_applicationHandler closeSettingsUI];
+    [_applicationHandler closePresentedViews];
   }
 }
 
@@ -807,7 +807,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [_applicationHandler closeSettingsUIAndOpenURL:command];
+  [_applicationHandler closePresentedViewsAndOpenURL:command];
 }
 
 #pragma mark - Internal

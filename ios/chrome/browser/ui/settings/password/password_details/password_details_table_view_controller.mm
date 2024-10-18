@@ -670,7 +670,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
         OpenNewTabCommand* command = [OpenNewTabCommand
             commandWithURLFromChrome:passwordDetails.changePasswordURL.value()];
-        [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
+        [self.applicationCommandsHandler closePresentedViewsAndOpenURL:command];
       }
       break;
     case PasswordDetailsItemTypeNote: {

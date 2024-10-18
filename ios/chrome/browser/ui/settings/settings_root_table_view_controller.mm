@@ -273,7 +273,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   DCHECK(self.applicationHandler);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [self.applicationHandler closeSettingsUIAndOpenURL:command];
+  [self.applicationHandler closePresentedViewsAndOpenURL:command];
 }
 
 #pragma mark - Private

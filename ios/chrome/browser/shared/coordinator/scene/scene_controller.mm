@@ -1481,8 +1481,7 @@ void OnListFamilyMembersResponse(
   [self.historyCoordinator start];
 }
 
-// Opens an url from a link in the settings UI.
-- (void)closeSettingsUIAndOpenURL:(OpenNewTabCommand*)command {
+- (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command {
   DCHECK([command fromChrome]);
   UrlLoadParams params = UrlLoadParams::InNewTab([command URL]);
   params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
@@ -1498,7 +1497,7 @@ void OnListFamilyMembersResponse(
   [self closePresentedViews:YES completion:completion];
 }
 
-- (void)closeSettingsUI {
+- (void)closePresentedViews {
   [self closePresentedViews:YES completion:nullptr];
 }
 
@@ -2524,7 +2523,7 @@ using UserFeedbackDataCallback =
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
-  [self closeSettingsUI];
+  [self closePresentedViews];
 }
 
 - (void)settingsWasDismissed {
@@ -3626,7 +3625,7 @@ using UserFeedbackDataCallback =
                 ApplicationCommands);
             OpenNewTabCommand* command = [OpenNewTabCommand
                 commandWithURLFromChrome:GURL(kChromeUIManagementURL)];
-            [dispatcher closeSettingsUIAndOpenURL:command];
+            [dispatcher closePresentedViewsAndOpenURL:command];
             break;
         }
 
@@ -3789,7 +3788,7 @@ using UserFeedbackDataCallback =
 #pragma mark - PasswordManagerReauthenticationDelegate
 
 - (void)dismissPasswordManagerAfterFailedReauthentication {
-  [self closeSettingsUI];
+  [self closePresentedViews];
 }
 
 #pragma mark - Helpers for web state list events

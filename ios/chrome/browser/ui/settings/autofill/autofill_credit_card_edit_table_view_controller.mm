@@ -130,7 +130,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         autofill::payments::GetManageInstrumentUrl(_creditCard.instrument_id());
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
-    [self.applicationHandler closeSettingsUIAndOpenURL:command];
+    [self.applicationHandler closePresentedViewsAndOpenURL:command];
 
     return;
   }

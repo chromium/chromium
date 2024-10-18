@@ -260,7 +260,7 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (void)dismissSettings {
-  [chrome_test_util::HandlerForActiveBrowser() closeSettingsUI];
+  [chrome_test_util::HandlerForActiveBrowser() closePresentedViews];
 }
 
 + (void)primesStopLogging {

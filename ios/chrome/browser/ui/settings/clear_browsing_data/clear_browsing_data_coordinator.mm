@@ -80,7 +80,7 @@
                               wantsToOpenURL:(const GURL&)URL {
   CHECK_EQ(self.viewController, controller);
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [self.handler closeSettingsUIAndOpenURL:command];
+  [self.handler closePresentedViewsAndOpenURL:command];
 }
 
 - (void)clearBrowsingDataTableViewControllerWantsDismissal:

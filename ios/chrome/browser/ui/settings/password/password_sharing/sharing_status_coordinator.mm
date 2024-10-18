@@ -143,7 +143,7 @@
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [handler closeSettingsUIAndOpenURL:command];
+  [handler closePresentedViewsAndOpenURL:command];
 }
 
 @end

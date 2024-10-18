@@ -142,7 +142,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [handler closeSettingsUIAndOpenURL:command];
+  [handler closePresentedViewsAndOpenURL:command];
 }
 
 - (void)showBrowsingDataPageWithTimeRange:(browsing_data::TimePeriod)timeRange {

@@ -122,11 +122,11 @@ enum class TabGridOpeningMode {
 // Shows the History UI.
 - (void)showHistory;
 
-// Closes the History UI and opens a URL.
-- (void)closeSettingsUIAndOpenURL:(OpenNewTabCommand*)command;
+// Closes presented views and opens a URL in a new tab.
+- (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command;
 
-// Closes the History UI.
-- (void)closeSettingsUI;
+// Closes presented views.
+- (void)closePresentedViews;
 
 // Prepare to show the TabSwitcher UI.
 - (void)prepareTabSwitcher;

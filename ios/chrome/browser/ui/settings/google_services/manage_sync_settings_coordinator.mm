@@ -401,7 +401,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [handler closeSettingsUIAndOpenURL:command];
+  [handler closePresentedViewsAndOpenURL:command];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect {

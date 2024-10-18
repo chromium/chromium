@@ -969,7 +969,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
 
-  [applicationHandler closeSettingsUI];
+  [applicationHandler closePresentedViews];
 }
 
 #pragma mark PasswordDetailsCoordinatorDelegate

@@ -104,8 +104,8 @@ TEST_F(FamilyPickerCoordinatorTest, OpensHelpCenterOnLearnMoreTap) {
   base::HistogramTester histogram_tester;
 
   OCMExpect([mock_application_commands_handler_
-      closeSettingsUIAndOpenURL:[OCMArg checkWithBlock:^BOOL(
-                                            OpenNewTabCommand* command) {
+      closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(
+                                                OpenNewTabCommand* command) {
         return command.URL ==
                GURL("https://support.google.com/chrome/?p=password_sharing");
       }]]);

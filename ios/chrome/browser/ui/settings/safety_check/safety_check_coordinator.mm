@@ -238,7 +238,7 @@ using password_manager::WarningType;
 
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:convertedURL];
-  [self.handler closeSettingsUIAndOpenURL:command];
+  [self.handler closePresentedViewsAndOpenURL:command];
 }
 
 #pragma mark - SafetyCheckNavigationCommands
@@ -281,7 +281,7 @@ using password_manager::WarningType;
   }
   const GURL url(base::SysNSStringToUTF8(location));
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
-  [self.handler closeSettingsUIAndOpenURL:command];
+  [self.handler closePresentedViewsAndOpenURL:command];
 }
 
 - (void)showSafeBrowsingPreferencePage {

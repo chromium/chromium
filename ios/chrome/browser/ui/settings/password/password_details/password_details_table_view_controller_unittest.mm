@@ -601,11 +601,12 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestChangePasswordOnWebsite) {
       [model indexPathForItemType:PasswordDetailsItemTypeChangePasswordButton];
 
   OCMExpect([applicationCommandsMock
-      closeSettingsUIAndOpenURL:[OCMArg checkWithBlock:^BOOL(id value) {
-        // This block verifies that the closeSettingsUIAndOpenURL function is
-        // called with a URL argument which matches the initial URL passed to
-        // the password form above. Information may have been appended to the
-        // URL argument, so we only make sure it includes the initial URL.
+      closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(id value) {
+        // This block verifies that the closePresentedViewsAndOpenURL
+        // function is called with a URL argument which matches the initial URL
+        // passed to the password form above. Information may have been appended
+        // to the URL argument, so we only make sure it includes the initial
+        // URL.
         return base::Contains(((OpenNewTabCommand*)value).URL.spec(),
                               kExampleCom);
       }]]);

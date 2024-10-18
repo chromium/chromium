@@ -166,7 +166,7 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:GURL(kPasswordSharingLearnMoreURL)];
-  [handler closeSettingsUIAndOpenURL:command];
+  [handler closePresentedViewsAndOpenURL:command];
   [self.delegate familyPickerCoordinatorWasDismissed:self];
 }
 

@@ -175,7 +175,7 @@ const CGFloat kDefaultHeight = 70;
 
 - (void)openURL:(GURL)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [self.applicationHandler closeSettingsUIAndOpenURL:command];
+  [self.applicationHandler closePresentedViewsAndOpenURL:command];
 }
 
 - (std::string)versionString {

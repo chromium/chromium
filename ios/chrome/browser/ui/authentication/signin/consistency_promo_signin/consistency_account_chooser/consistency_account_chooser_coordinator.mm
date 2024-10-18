@@ -93,7 +93,7 @@
       commandWithURLFromChrome:GURL(kManagementLearnMoreURL)];
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [handler closeSettingsUIAndOpenURL:command];
+  [handler closePresentedViewsAndOpenURL:command];
 }
 
 @end

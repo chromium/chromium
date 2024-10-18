@@ -1537,7 +1537,7 @@ struct EnhancedSafeBrowsingActivePromoData
               GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
       id<ApplicationCommands> handler = HandlerForProtocol(
           _browser->GetCommandDispatcher(), ApplicationCommands);
-      [handler closeSettingsUIAndOpenURL:command];
+      [handler closePresentedViewsAndOpenURL:command];
       break;
     }
     case SettingsItemTypeSwitchProfile:

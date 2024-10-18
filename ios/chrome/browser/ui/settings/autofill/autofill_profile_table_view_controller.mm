@@ -431,7 +431,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     OpenNewTabCommand* command = [OpenNewTabCommand
         commandWithURLFromChrome:
             GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
-    [self.applicationHandler closeSettingsUIAndOpenURL:command];
+    [self.applicationHandler closePresentedViewsAndOpenURL:command];
     return;
   }
 

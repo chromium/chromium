@@ -194,7 +194,7 @@ using password_manager::PasswordCheckReferrer;
 - (void)dismissAndOpenURL:(CrURL*)URL {
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [self.dispatcher closeSettingsUIAndOpenURL:command];
+  [self.dispatcher closePresentedViewsAndOpenURL:command];
 }
 
 - (void)dismissAfterAllPasswordsGone {

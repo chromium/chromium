@@ -325,13 +325,13 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
       GURL(kOnDeviceEncryptionOptInURL),
       GetApplicationContext()->GetApplicationLocale());
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [_dispatcher closeSettingsUIAndOpenURL:command];
+  [_dispatcher closePresentedViewsAndOpenURL:command];
 }
 
 - (void)showOnDeviceEncryptionHelp {
   GURL URL = GURL(kOnDeviceEncryptionLearnMoreURL);
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [_dispatcher closeSettingsUIAndOpenURL:command];
+  [_dispatcher closePresentedViewsAndOpenURL:command];
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate
@@ -560,7 +560,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 - (void)showPasscodeHelp {
   GURL URL = GURL(kPasscodeArticleURL);
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [_dispatcher closeSettingsUIAndOpenURL:command];
+  [_dispatcher closePresentedViewsAndOpenURL:command];
 }
 
 // Helper to show the "set passcode" dialog with customizable content.
