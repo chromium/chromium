@@ -7,8 +7,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/location_bar_model_delegate.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 class WebStateList;
 
 namespace web {

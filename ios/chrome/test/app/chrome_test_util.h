@@ -6,21 +6,20 @@
 #define IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 
 @protocol ApplicationCommands;
-@protocol CountryCodePickerCommands;
-@protocol UnitConversionCommands;
-@protocol DriveFilePickerCommands;
-
 class Browser;
+@protocol CountryCodePickerCommands;
+@protocol DriveFilePickerCommands;
 @class MainController;
 @class NewTabPageController;
+class ProfileIOS;
 @class SceneController;
 @class SceneState;
 @class UIViewController;
+@protocol UnitConversionCommands;
 
 namespace chrome_test_util {
 

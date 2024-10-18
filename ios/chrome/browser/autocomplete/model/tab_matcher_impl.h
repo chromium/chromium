@@ -7,7 +7,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/tab_matcher.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 class TabMatcherImpl : public TabMatcher {
  public:

@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 
 class GURL;
+class ProfileIOS;
 class TabGroup;
 
 namespace web {

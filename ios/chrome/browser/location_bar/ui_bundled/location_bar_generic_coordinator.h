@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 
 class WebStateList;
@@ -19,6 +18,7 @@ class WebStateList;
 @protocol LocationBarAnimatee;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
+class ProfileIOS;
 
 @protocol LocationBarGenericCoordinator <NSObject,
                                          LocationBarURLLoader,
