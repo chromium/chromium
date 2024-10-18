@@ -385,22 +385,33 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
            {mojom::CustomizationRestriction::
                 kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
+          // HyperX Pulsefire Haste Gaming Mouse
+          {{0x03f0, 0x0f8f},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey,
+            "HyperX Pulsefire Haste Gaming Mouse"}},
+          // HyperX Pulsefire Surge Gaming Mouse
+          {{0x03f0, 0x0490},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey,
+            "HyperX Pulsefire Surge Gaming Mouse"}},
+          // HyperX Pulsefire Haste 2 Gaming Mouse
+          {{0x03f0, 0x0b97},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey,
+            "HyperX Pulsefire Haste 2 Gaming Mouse"}},
           /////////////////////////////////
           // Below is data for imposter devices, and is not official metadata.
           /////////////////////////////////
-          // HP HyperX Pulsefire Haste Wireless
+          // HyperX Pulsefire Haste Wireless
           {{0x03f0, 0x028e},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
-          // HP HyperX Pulsefire Core
+          // HyperX Pulsefire Core
           {{0x03f0, 0x0d8f},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
-          // HP HyperX Pulsefire Haste
-          {{0x03f0, 0x0f8f},
-           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
-            mojom::MouseButtonConfig::kNoConfig}},
-          // HP HyperX Pulsefire Haste 2 Wireless
+          // HyperX Pulsefire Haste 2 Wireless
           {{0x03f0, 0x0f98},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
@@ -1529,6 +1540,10 @@ const base::flat_map<VendorProductId, VendorProductId>& GetVidPidAliasList() {
           {{0x0111, 0x185a}, {0x1038, 0x185a}},
           // Razer Naga Pro (Bluetooth -> USB Dongle)
           {{0x1532, 0x0092}, {0x1532, 0x0090}},
+          // HyperX Pulsefire Haste Wireless (Bluetooth -> USB Dongle)
+          {{0x03f0, 0x028e}, {0x03f0, 0x0f8f}},
+          // HyperX Pulsefire Haste 2 Wireless (Bluetooth -> USB Dongle)
+          {{0x03f0, 0x0f98}, {0x03f0, 0x0b97}},
           /////////////////////////////////
           // Below is data for imposter devices, and is not official metadata.
           /////////////////////////////////
