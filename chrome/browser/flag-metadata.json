@@ -3110,22 +3110,22 @@
   },
   {
     "name": "enable-expkit-text-classifier-address",
-    "owners": [ "djean@chromium.org", "chrome-intelligence-core@google.com" ],
+    "owners": [ "olivierrobin@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "enable-expkit-text-classifier-date",
-    "owners": [ "djean@chromium.org", "chrome-intelligence-core@google.com" ],
+    "owners": [ "olivierrobin@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "enable-expkit-text-classifier-email",
-    "owners": [ "djean@chromium.org", "chrome-intelligence-core@google.com" ],
+    "owners": [ "olivierrobin@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "enable-expkit-text-classifier-phonenumber",
-    "owners": [ "djean@chromium.org", "chrome-intelligence-core@google.com" ],
+    "owners": [ "olivierrobin@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 130
   },
   {
@@ -3857,12 +3857,12 @@
   },
   {
     "name": "enable-save-to-drive",
-    "owners": [ "qpubert@google.com", "djean@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
+    "owners": [ "qpubert@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 128
   },
   {
     "name": "enable-save-to-photos",
-    "owners": [ "qpubert@google.com", "djean@google.com", "bling-flags@google.com" ],
+    "owners": [ "qpubert@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 128
   },
   {
@@ -5219,7 +5219,7 @@
   },
   {
     "name": "improve-parcel-detection",
-    "owners": [ "djean@google.com", "smcgruer@chromium.org", "bling-flags@google.com" ],
+    "owners": [ "smcgruer@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 136
   },
   {
@@ -5312,12 +5312,12 @@
   },
   {
     "name": "intents-on-measurements",
-    "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
+    "owners": [ "erahmaoui@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 132
   },
   {
     "name": "intents-on-viewport",
-    "owners": [ "djean@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
+    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 130
   },
   {
@@ -5334,7 +5334,7 @@
   },
   {
     "name": "ios-choose-from-drive",
-    "owners": [ "qpubert@google.com", "djean@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
+    "owners": [ "qpubert@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 135
   },
   {
@@ -6673,7 +6673,7 @@
   },
   {
     "name": "one-tap-experience-maps",
-    "owners": [ "djean@google.com", "olivierrobin@chromium.org", "bling-flags@google.com" ],
+    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 130
   },
   {
