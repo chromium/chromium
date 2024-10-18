@@ -327,6 +327,16 @@ FormData CreateTestPasswordFormData() {
   return form;
 }
 
+[[nodiscard]] FormData CreateTestSignupFormData() {
+  FormData form = autofill::test::CreateTestPasswordFormData();
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password (confirm)", /*name=*/"password_2",
+      /*value=*/"", FormControlType::kInputPassword));
+  form.set_fields(std::move(fields));
+  return form;
+}
+
 FormData CreateTestUnclassifiedFormData() {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));

@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/plus_addresses/fake_plus_address_allocator.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_allocator.h"
@@ -39,6 +40,7 @@ using autofill::FormData;
 using autofill::PasswordFormClassification;
 using autofill::Suggestion;
 using autofill::SuggestionType;
+using autofill::test::CreateTestSignupFormData;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -67,17 +69,6 @@ auto IsCreateInlineSuggestion(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Returns a sample sign-up form.
-FormData CreateSignupForm() {
-  FormData form = autofill::test::CreateTestPasswordFormData();
-  std::vector<autofill::FormFieldData> fields = form.ExtractFields();
-  fields.push_back(autofill::test::CreateTestFormField(
-      /*label=*/"Password (confirm)", /*name=*/"password_2",
-      /*value=*/"", autofill::FormControlType::kInputPassword));
-  form.set_fields(std::move(fields));
-  return form;
-}
-
 // Returns `form` with a non-null host form id and frame token.
 FormData SetGeneratedFrameTokenAndHostFormId(FormData form) {
   // Ensure that the form is not unowned.
@@ -92,44 +83,6 @@ FormData SetGeneratedFrameTokenAndHostFormId(FormData form) {
   return autofill::test::CreateFormDataForFrame(
       std::move(form), autofill::test::MakeLocalFrameToken());
 }
-
-class FakePlusAddressAllocator : public PlusAddressAllocator {
- public:
-  FakePlusAddressAllocator() = default;
-
-  void AllocatePlusAddress(const url::Origin& origin,
-                           AllocationMode mode,
-                           PlusAddressRequestCallback callback) override {
-    std::move(callback).Run(profile_or_error_);
-  }
-
-  std::optional<PlusProfile> AllocatePlusAddressSynchronously(
-      const url::Origin& origin,
-      AllocationMode mode) override {
-    if (!is_next_allocation_synchronous_ || !profile_or_error_.has_value()) {
-      return std::nullopt;
-    }
-    return profile_or_error_.value();
-  }
-
-  bool IsRefreshingSupported(const url::Origin& origin) const override {
-    return true;
-  }
-
-  void RemoveAllocatedPlusAddress(const PlusAddress& plus_address) override {}
-
-  void set_is_next_allocation_synchronous(bool is_next_allocation_synchronous) {
-    is_next_allocation_synchronous_ = is_next_allocation_synchronous;
-  }
-
-  void set_profile_or_error(PlusProfileOrError profile_or_error) {
-    profile_or_error_ = std::move(profile_or_error);
-  }
-
- private:
-  bool is_next_allocation_synchronous_ = false;
-  PlusProfileOrError profile_or_error_ = test::CreatePlusProfile();
-};
 
 class PlusAddressSuggestionGeneratorTest : public ::testing::Test {
  public:
@@ -162,7 +115,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
-  FormData form = CreateSignupForm();
+  FormData form = CreateTestSignupFormData();
   EXPECT_THAT(
       generator.GetSuggestions(
           /*affiliated_plus_addresses=*/{},
@@ -184,7 +137,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
-  FormData form = CreateSignupForm();
+  FormData form = CreateTestSignupFormData();
   EXPECT_THAT(
       generator.GetSuggestions(
           /*affiliated_plus_addresses=*/{},
@@ -281,7 +234,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest, FirstTimeCreateSuggestion) {
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
-  FormData form = CreateSignupForm();
+  FormData form = CreateTestSignupFormData();
   EXPECT_THAT(
       generator.GetSuggestions(
           /*affiliated_plus_addresses=*/{},
@@ -372,7 +325,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest, ProfileInLabel) {
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
 
-  FormData form = CreateSignupForm();
+  FormData form = CreateTestSignupFormData();
   std::vector<Suggestion> suggestions = generator.GetSuggestions(
       /*affiliated_plus_addresses=*/{},
       /*is_creation_enabled=*/true, form, /*form_field_type_groups=*/{},

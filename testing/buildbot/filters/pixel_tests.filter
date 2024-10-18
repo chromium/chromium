@@ -96,6 +96,7 @@ PermissionPromptPreviewBrowserTest.InvokeUi_*
 *PlusAddressCreationDialogUiVariationsOnboardingTest*
 PlusAddressCreationDialogWithNoticeTest.ShowNoticeAndCancel
 *PopupViewViewsBrowsertest*
+*PopupViewViewsPlusAddressSuggestionBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*
 PrivacySandboxNoticeBubbleBrowserTest.*
 PrivacySandboxSettingsTopicsInteractiveTest.*

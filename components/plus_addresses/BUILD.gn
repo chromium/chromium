@@ -173,6 +173,8 @@ source_set("unit_tests") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "fake_plus_address_allocator.cc",
+    "fake_plus_address_allocator.h",
     "fake_plus_address_service.cc",
     "fake_plus_address_service.h",
     "mock_plus_address_http_client.cc",

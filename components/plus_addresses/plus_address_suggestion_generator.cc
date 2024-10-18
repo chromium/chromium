@@ -323,15 +323,12 @@ bool PlusAddressSuggestionGenerator::IsInlineGenerationEnabled() const {
 #endif
 }
 
-// TODO(crbug.com/362445807): Add tests for the inline suggestion once we set
-// more suggestion properties.
 autofill::Suggestion
 PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kCreateNewPlusAddressInline);
 
-  // TODO(crbug.com/362445807): Reconsider the allocation mode.
   if (std::optional<PlusProfile> profile =
           allocator_->AllocatePlusAddressSynchronously(
               origin_, PlusAddressAllocator::AllocationMode::kNewPlusAddress)) {

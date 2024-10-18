@@ -24,6 +24,11 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/plus_addresses/fake_plus_address_allocator.h"
+#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_suggestion_generator.h"
+#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -524,6 +529,75 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
+                         Combine(Bool(), Bool()),
+                         PopupViewViewsBrowsertestBase::GetTestSuffix);
+
+class PopupViewViewsPlusAddressSuggestionBrowsertest
+    : public PopupViewViewsBrowsertestBase {
+ public:
+  PopupViewViewsPlusAddressSuggestionBrowsertest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/
+        {plus_addresses::features::kPlusAddressUserOnboardingEnabled,
+         plus_addresses::features::kPlusAddressInlineCreation},
+        /*disabled_features*/ {});
+    setting_service().set_is_plus_addresses_enabled(true);
+  }
+
+ protected:
+  plus_addresses::FakePlusAddressAllocator& allocator() { return allocator_; }
+  plus_addresses::FakePlusAddressSettingService& setting_service() {
+    return setting_service_;
+  }
+
+  std::vector<Suggestion> GetPlusAddressSuggestion(
+      const std::vector<std::string>& affiliated_plus_addresses) {
+    plus_addresses::PlusAddressSuggestionGenerator generator(
+        &setting_service(), &allocator(),
+        url::Origin::Create(GURL("https://foo.bar")), "foo@gmail.com");
+    FormData form = autofill::test::CreateTestSignupFormData();
+    return generator.GetSuggestions(
+        affiliated_plus_addresses,
+        /*is_creation_enabled=*/true, form, /*form_field_type_groups=*/{},
+        PasswordFormClassification(), form.fields()[0].global_id(),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+  autofill::test::AutofillUnitTestEnvironment autofill_env_;
+
+  plus_addresses::FakePlusAddressAllocator allocator_;
+  plus_addresses::FakePlusAddressSettingService setting_service_;
+};
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
+                       FirstTimeCreation) {
+  setting_service().set_has_accepted_notice(false);
+  PrepareSuggestions(
+      GetPlusAddressSuggestion(/*affiliated_plus_addresses=*/{}));
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
+                       InlineGenerationWithPreallocatedAddresses) {
+  setting_service().set_has_accepted_notice(true);
+  allocator().set_is_next_allocation_synchronous(true);
+  PrepareSuggestions(
+      GetPlusAddressSuggestion(/*affiliated_plus_addresses=*/{}));
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
+                       Filling) {
+  setting_service().set_has_accepted_notice(true);
+  PrepareSuggestions(
+      GetPlusAddressSuggestion(/*affiliated_plus_addresses=*/{"foo@moo.com"}));
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PopupViewViewsPlusAddressSuggestionBrowsertest,
                          Combine(Bool(), Bool()),
                          PopupViewViewsBrowsertestBase::GetTestSuffix);
 
