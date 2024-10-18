@@ -290,7 +290,7 @@ TEST_P(AshNotificationViewPixelTest, NotificationPopupFocusRing) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("notification_popup_focus_ring",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/2, notification_view));
+      /*revision_number=*/3, notification_view));
 }
 
 // Tests that a notification's icon is sized and positioned correctly at

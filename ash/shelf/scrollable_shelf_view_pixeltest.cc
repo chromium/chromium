@@ -42,7 +42,7 @@ INSTANTIATE_TEST_SUITE_P(RTL, ScrollableShelfViewPixelRTLTest, testing::Bool());
 TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overflow",
-      /*revision_number=*/8, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/9, GetPrimaryShelf()->GetWindow()));
 
   ASSERT_TRUE(scrollable_shelf_view_->right_arrow());
   const gfx::Point right_arrow_center =
@@ -53,19 +53,19 @@ TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overflow_end",
-      /*revision_number=*/8, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/9, GetPrimaryShelf()->GetWindow()));
 }
 
 TEST_P(ScrollableShelfViewPixelRTLTest, LeftRightShelfAlignment) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "left_shelf_alignment",
-      /*revision_number=*/5, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/6, GetPrimaryShelf()->GetWindow()));
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "right_shelf_alignment",
-      /*revision_number=*/5, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/6, GetPrimaryShelf()->GetWindow()));
 }
 
 class ScrollableShelfViewWithGuestModePixelTest
@@ -105,7 +105,7 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   // Verify the shelf context menu and the shelf.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "shelf_context_menu",
-      /*revision_number=*/23,
+      /*revision_number=*/24,
       GetPrimaryShelf()
           ->shelf_widget()
           ->shelf_view_for_testing()

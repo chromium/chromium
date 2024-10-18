@@ -210,7 +210,7 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
 
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_answer_card_search_results", 13,
+      "bubble_launcher_answer_card_search_results", 14,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -232,7 +232,7 @@ TEST_P(AppListViewPixelRTLTest, URLSearchResult) {
 
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_url_search_results", 12,
+      "bubble_launcher_url_search_results", 13,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -267,7 +267,7 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
   UseFixedPlaceholderTextAndHideCursor(
       GetAppListTestHelper()->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_basics", 12, GetAppListTestHelper()->GetBubbleView(),
+      "bubble_launcher_basics", 13, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -288,7 +288,7 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
                                 /*position=*/20);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_gradient_zone", 12,
+      "bubble_launcher_gradient_zone", 13,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -478,7 +478,7 @@ TEST_P(AppListViewAssistantZeroStateTest, Basic) {
       assistant_page_view->GetViewByID(AssistantViewID::kZeroStateView));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "app_list_view_assistant_zero_state", 9,
+      "app_list_view_assistant_zero_state", 10,
       assistant_page_view->GetViewByID(AssistantViewID::kZeroStateView)));
 }
 

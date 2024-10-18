@@ -231,18 +231,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_LEGACY_INITWITHPREV_LAYER_SIZING
 
-#define SK_USE_LEGACY_BLUR_RASTER
-
-#define SK_USE_LEGACY_BLUR_GANESH
-
-#define SK_USE_LEGACY_BLUR_GRAPHITE
-
 #define SK_USE_LEGACY_CLIP_GRAPHITE
 
 #define SK_USE_LEGACY_ARCS_GRAPHITE
-
-#define SK_USE_SRCOVER_FOR_FILTERS
-
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
