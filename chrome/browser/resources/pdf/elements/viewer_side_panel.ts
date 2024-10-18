@@ -93,8 +93,8 @@ export class ViewerSidePanelElement extends CrLitElement {
     }
   }
 
-  protected onBrushChange_(e: CustomEvent<{type: AnnotationBrushType}>) {
-    this.currentType_ = e.detail.type;
+  protected onBrushChange_(e: CustomEvent<{value: AnnotationBrushType}>) {
+    this.currentType_ = e.detail.value;
     this.brushDirty_ = true;
   }
 

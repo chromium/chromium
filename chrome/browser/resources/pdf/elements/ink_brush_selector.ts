@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
 
@@ -39,31 +38,19 @@ export class InkBrushSelectorElement extends CrLitElement {
 
   static override get properties() {
     return {
-      currentType_: {state: true, type: String},
+      currentType: {
+        notify: true,
+        type: String,
+      },
     };
   }
 
-  private currentType_: AnnotationBrushType = AnnotationBrushType.PEN;
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('currentType_')) {
-      this.onBrushChanged_();
-    }
-  }
+  currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
   protected onBrushClick_(e: Event) {
     const targetElement = e.currentTarget as HTMLElement;
     const newType = targetElement.dataset['brush'] as AnnotationBrushType;
-    if (this.currentType_ === newType) {
-      return;
-    }
-
-    this.currentType_ = newType;
+    this.currentType = newType;
   }
 
   protected getIcon_(type: AnnotationBrushType): string {
@@ -80,11 +67,7 @@ export class InkBrushSelectorElement extends CrLitElement {
   }
 
   protected isCurrentType_(type: AnnotationBrushType): boolean {
-    return this.currentType_ === type;
-  }
-
-  private onBrushChanged_(): void {
-    this.fire('ink-brush-change', {type: this.currentType_});
+    return this.currentType === type;
   }
 }
 

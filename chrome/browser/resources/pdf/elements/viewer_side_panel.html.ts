@@ -9,7 +9,7 @@ import type {ViewerSidePanelElement} from './viewer_side_panel.js';
 export function getHtml(this: ViewerSidePanelElement) {
   // clang-format off
   return html`
-    <ink-brush-selector @ink-brush-change="${this.onBrushChange_}">
+    <ink-brush-selector @current-type-changed="${this.onBrushChange_}">
     </ink-brush-selector>
     <div id="brush-options">
       <h2>Size</h2>
