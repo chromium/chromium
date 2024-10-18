@@ -127,17 +127,19 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
                                   int* slice_height,
                                   gfx::Size* encoded_size) override;
   MediaCodecResult QueueInputBuffer(int index,
-                                    const uint8_t* data,
-                                    size_t data_size,
+                                    base::span<const uint8_t> data,
                                     base::TimeDelta presentation_time) override;
+  MediaCodecResult QueueFilledInputBuffer(
+      int index,
+      size_t data_size,
+      base::TimeDelta presentation_time) override;
   MediaCodecResult QueueInputBlock(int index,
                                    base::span<const uint8_t> data,
                                    base::TimeDelta presentation_time,
                                    bool is_eos) override;
   MediaCodecResult QueueSecureInputBuffer(
       int index,
-      const uint8_t* data,
-      size_t data_size,
+      base::span<const uint8_t> data,
       const std::string& key_id,
       const std::string& iv,
       const std::vector<SubsampleEntry>& subsamples,
@@ -156,9 +158,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
                                        bool* key_frame) override;
 
   void ReleaseOutputBuffer(int index, bool render) override;
-  MediaCodecResult GetInputBuffer(int input_buffer_index,
-                                  uint8_t** data,
-                                  size_t* capacity) override;
+  base::span<uint8_t> GetInputBuffer(int input_buffer_index) override;
   MediaCodecResult CopyFromOutputBuffer(int index,
                                         size_t offset,
                                         void* dst,
@@ -179,9 +179,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
 
   // Fills the given input buffer. Returns false if |data_size| exceeds the
   // input buffer's capacity (and doesn't touch the input buffer in that case).
-  [[nodiscard]] bool FillInputBuffer(int index,
-                                     const uint8_t* data,
-                                     size_t data_size);
+  [[nodiscard]] bool FillInputBuffer(int index, base::span<const uint8_t> data);
 
   // Gets the address of the data in the given output buffer given by |index|
   // and |offset|. The number of bytes available to read is written to

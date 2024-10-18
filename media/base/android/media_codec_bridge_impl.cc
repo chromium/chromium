@@ -600,23 +600,25 @@ MediaCodecResult MediaCodecBridgeImpl::GetInputFormat(int* stride,
                             Java_MediaFormatWrapper_height(env, result));
   return OkStatus();
 }
-
 MediaCodecResult MediaCodecBridgeImpl::QueueInputBuffer(
     int index,
-    const uint8_t* data,
+    base::span<const uint8_t> data,
+    base::TimeDelta presentation_time) {
+  DVLOG(3) << __func__ << " " << index << ": " << data.size();
+  CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
+  if (!FillInputBuffer(index, data)) {
+    return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
+  }
+  return QueueFilledInputBuffer(index, data.size(), presentation_time);
+}
+
+MediaCodecResult MediaCodecBridgeImpl::QueueFilledInputBuffer(
+    int index,
     size_t data_size,
     base::TimeDelta presentation_time) {
   DVLOG(3) << __func__ << " " << index << ": " << data_size;
-  if (data_size >
-      base::checked_cast<size_t>(std::numeric_limits<int32_t>::max())) {
-    return {MediaCodecResult::Codes::kError, "Input buffer size is too large."};
-  }
-  if (data && !FillInputBuffer(index, data, data_size)) {
-    return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
-  }
-
   JNIEnv* env = AttachCurrentThread();
-  MediaCodecStatus status =
+  auto status =
       static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBuffer(
           env, j_bridge_, index, 0, data_size,
           presentation_time.InMicroseconds(), 0));
@@ -629,10 +631,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
     base::TimeDelta presentation_time,
     bool is_eos) {
   DVLOG(3) << __func__ << " " << index << ": " << data.size();
-  if (data.size() >
-      base::checked_cast<size_t>(std::numeric_limits<int32_t>::max())) {
-    return {MediaCodecResult::Codes::kError, "Input block size is too large."};
-  }
+  CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_result =
@@ -662,20 +661,17 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
 
 MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
     int index,
-    const uint8_t* data,
-    size_t data_size,
+    base::span<const uint8_t> data,
     const std::string& key_id,
     const std::string& iv,
     const std::vector<SubsampleEntry>& subsamples,
     EncryptionScheme encryption_scheme,
     std::optional<EncryptionPattern> encryption_pattern,
     base::TimeDelta presentation_time) {
-  DVLOG(3) << __func__ << " " << index << ": " << data_size;
-  if (data_size >
-      base::checked_cast<size_t>(std::numeric_limits<int32_t>::max())) {
-    return {MediaCodecResult::Codes::kError, "Input buffer is too large."};
-  }
-  if (data && !FillInputBuffer(index, data, data_size)) {
+  DVLOG(3) << __func__ << " " << index << ": " << data.size();
+  CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
+
+  if (!FillInputBuffer(index, data)) {
     return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
   }
 
@@ -694,7 +690,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
 
   if (subsamples.empty()) {
     native_clear_array[0] = 0;
-    native_cypher_array[0] = data_size;
+    native_cypher_array[0] = data.size();
   } else {
     for (size_t i = 0; i < subsamples.size(); ++i) {
       DCHECK(subsamples[i].clear_bytes <= std::numeric_limits<uint16_t>::max());
@@ -786,20 +782,14 @@ void MediaCodecBridgeImpl::ReleaseOutputBuffer(int index, bool render) {
   Java_MediaCodecBridge_releaseOutputBuffer(env, j_bridge_, index, render);
 }
 
-MediaCodecResult MediaCodecBridgeImpl::GetInputBuffer(int input_buffer_index,
-                                                      uint8_t** data,
-                                                      size_t* capacity) {
+base::span<uint8_t> MediaCodecBridgeImpl::GetInputBuffer(
+    int input_buffer_index) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_buffer(
       Java_MediaCodecBridge_getInputBuffer(env, j_bridge_, input_buffer_index));
-  if (j_buffer.is_null()) {
-    return {MediaCodecResult::Codes::kError, "Unable to obtain input buffer."};
-  }
-
-  *data = static_cast<uint8_t*>(env->GetDirectBufferAddress(j_buffer.obj()));
-  *capacity =
-      base::checked_cast<size_t>(env->GetDirectBufferCapacity(j_buffer.obj()));
-  return OkStatus();
+  return j_buffer.is_null()
+             ? base::span<uint8_t>()
+             : base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj());
 }
 
 MediaCodecResult MediaCodecBridgeImpl::CopyFromOutputBuffer(int index,
@@ -880,23 +870,18 @@ size_t MediaCodecBridgeImpl::GetMaxInputSize() {
 }
 
 bool MediaCodecBridgeImpl::FillInputBuffer(int index,
-                                           const uint8_t* data,
-                                           size_t size) {
-  uint8_t* dst = nullptr;
-  size_t capacity = 0;
-  if (!GetInputBuffer(index, &dst, &capacity).is_ok()) {
+                                           base::span<const uint8_t> data) {
+  auto dst = GetInputBuffer(index);
+  if (dst.empty()) {
     LOG(ERROR) << "GetInputBuffer failed";
     return false;
   }
-  CHECK(dst);
-
-  if (size > capacity) {
-    LOG(ERROR) << "Input buffer size " << size
-               << " exceeds MediaCodec input buffer capacity: " << capacity;
+  if (data.size() > dst.size()) {
+    LOG(ERROR) << "Input buffer size " << data.size()
+               << " exceeds MediaCodec input buffer capacity: " << dst.size();
     return false;
   }
-
-  memcpy(dst, data, size);
+  dst.first(data.size()).copy_from_nonoverlapping(data);
   return true;
 }
 

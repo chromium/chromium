@@ -47,7 +47,7 @@ class CodecWrapperTest : public testing::Test {
         .WillByDefault(Return(OkStatus()));
     ON_CALL(*codec_, DequeueInputBuffer(_, _))
         .WillByDefault(DoAll(SetArgPointee<1>(12), Return(OkStatus())));
-    ON_CALL(*codec_, QueueInputBuffer(_, _, _, _))
+    ON_CALL(*codec_, QueueInputBuffer(_, _, _))
         .WillByDefault(Return(OkStatus()));
 
     uint8_t data = 0;
@@ -329,7 +329,7 @@ TEST_F(CodecWrapperTest, RejectedInputBuffersAreReused) {
   // queue a buffer the previous input buffer should be reused.
   EXPECT_CALL(*codec_, DequeueInputBuffer(_, _))
       .WillOnce(DoAll(SetArgPointee<1>(666), Return(OkStatus())));
-  EXPECT_CALL(*codec_, QueueInputBuffer(666, _, _, _))
+  EXPECT_CALL(*codec_, QueueInputBuffer(666, _, _))
       .WillOnce(Return(MediaCodecResult::Codes::kNoKey))
       .WillOnce(Return(OkStatus()));
   auto status = wrapper_->QueueInputBuffer(*fake_decoder_buffer_);

@@ -135,7 +135,10 @@ class MEDIA_EXPORT MediaCodecBridge {
   // |data_size| must be less than kint32max (because Java).
   virtual MediaCodecResult QueueInputBuffer(
       int index,
-      const uint8_t* data,
+      base::span<const uint8_t> data,
+      base::TimeDelta presentation_time) = 0;
+  virtual MediaCodecResult QueueFilledInputBuffer(
+      int index,
       size_t data_size,
       base::TimeDelta presentation_time) = 0;
 
@@ -149,8 +152,7 @@ class MEDIA_EXPORT MediaCodecBridge {
   // whole buffer is encrypted.
   virtual MediaCodecResult QueueSecureInputBuffer(
       int index,
-      const uint8_t* data,
-      size_t data_size,
+      base::span<const uint8_t> data,
       const std::string& key_id,
       const std::string& iv,
       const std::vector<SubsampleEntry>& subsamples,
@@ -187,9 +189,7 @@ class MEDIA_EXPORT MediaCodecBridge {
   virtual void ReleaseOutputBuffer(int index, bool render) = 0;
 
   // Returns an input buffer's base pointer and capacity.
-  virtual MediaCodecResult GetInputBuffer(int input_buffer_index,
-                                          uint8_t** data,
-                                          size_t* capacity) = 0;
+  virtual base::span<uint8_t> GetInputBuffer(int input_buffer_index) = 0;
 
   // Copies |num| bytes from output buffer |index|'s |offset| into the memory
   // region pointed to by |dst|. To avoid overflows, the size of both source

@@ -114,8 +114,7 @@ class MEDIA_EXPORT MediaCodecLoop {
     InputData(const InputData&);
     ~InputData();
 
-    raw_ptr<const uint8_t> memory = nullptr;
-    size_t length = 0;
+    base::span<const uint8_t> memory;
 
     std::string key_id;
     std::string iv;

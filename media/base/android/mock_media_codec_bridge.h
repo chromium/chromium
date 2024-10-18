@@ -40,9 +40,12 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                MediaCodecResult(int* stride,
                                 int* slice_height,
                                 gfx::Size* encoded_size));
-  MOCK_METHOD4(QueueInputBuffer,
+  MOCK_METHOD3(QueueInputBuffer,
                MediaCodecResult(int index,
-                                const uint8_t* data,
+                                base::span<const uint8_t> data,
+                                base::TimeDelta presentation_time));
+  MOCK_METHOD3(QueueFilledInputBuffer,
+               MediaCodecResult(int index,
                                 size_t data_size,
                                 base::TimeDelta presentation_time));
   MOCK_METHOD4(QueueInputBlock,
@@ -50,11 +53,10 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                                 base::span<const uint8_t> data,
                                 base::TimeDelta presentation_time,
                                 bool is_eos));
-  MOCK_METHOD9(
+  MOCK_METHOD8(
       QueueSecureInputBuffer,
       MediaCodecResult(int index,
-                       const uint8_t* data,
-                       size_t data_size,
+                       base::span<const uint8_t> data,
                        const std::string& key_id,
                        const std::string& iv,
                        const std::vector<SubsampleEntry>& subsamples,
@@ -73,10 +75,7 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                                 bool* end_of_stream,
                                 bool* key_frame));
   MOCK_METHOD2(ReleaseOutputBuffer, void(int index, bool render));
-  MOCK_METHOD3(GetInputBuffer,
-               MediaCodecResult(int input_buffer_index,
-                                uint8_t** data,
-                                size_t* capacity));
+  MOCK_METHOD1(GetInputBuffer, base::span<uint8_t>(int input_buffer_index));
   MOCK_METHOD4(
       CopyFromOutputBuffer,
       MediaCodecResult(int index, size_t offset, void* dst, size_t num));

@@ -309,20 +309,17 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
   const DecryptConfig* decrypt_config = buffer.decrypt_config();
   MediaCodecResult result;
   if (decrypt_config) {
-    // TODO(crbug.com/40563697): Use encryption scheme settings from
-    // DecryptConfig.
     result = codec_->QueueSecureInputBuffer(
-        input_buffer, buffer.data(), buffer.size(), decrypt_config->key_id(),
-        decrypt_config->iv(), decrypt_config->subsamples(),
-        decrypt_config->encryption_scheme(),
+        input_buffer, buffer, decrypt_config->key_id(), decrypt_config->iv(),
+        decrypt_config->subsamples(), decrypt_config->encryption_scheme(),
         decrypt_config->encryption_pattern(), buffer.timestamp());
   } else {
     if (use_block_model_) {
-      result = codec_->QueueInputBlock(input_buffer, buffer.AsSpan(),
-                                       buffer.timestamp(), false);
+      result = codec_->QueueInputBlock(input_buffer, buffer, buffer.timestamp(),
+                                       false);
     } else {
-      result = codec_->QueueInputBuffer(input_buffer, buffer.data(),
-                                        buffer.size(), buffer.timestamp());
+      result =
+          codec_->QueueInputBuffer(input_buffer, buffer, buffer.timestamp());
     }
   }
 

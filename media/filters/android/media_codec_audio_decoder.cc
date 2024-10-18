@@ -339,14 +339,13 @@ bool MediaCodecAudioDecoder::IsAnyInputPending() const {
 MediaCodecLoop::InputData MediaCodecAudioDecoder::ProvideInputData() {
   DVLOG(3) << __func__;
 
-  const DecoderBuffer* decoder_buffer = input_queue_.front().first.get();
+  const auto& decoder_buffer = input_queue_.front().first;
 
   MediaCodecLoop::InputData input_data;
   if (decoder_buffer->end_of_stream()) {
     input_data.is_eos = true;
   } else {
-    input_data.memory = static_cast<const uint8_t*>(decoder_buffer->data());
-    input_data.length = decoder_buffer->size();
+    input_data.memory = *decoder_buffer;
     const DecryptConfig* decrypt_config = decoder_buffer->decrypt_config();
     if (decrypt_config) {
       input_data.key_id = decrypt_config->key_id();

@@ -25,7 +25,6 @@ MediaCodecLoop::InputData::InputData() {}
 
 MediaCodecLoop::InputData::InputData(const InputData& other)
     : memory(other.memory),
-      length(other.length),
       key_id(other.key_id),
       iv(other.iv),
       subsamples(other.subsamples),
@@ -202,15 +201,13 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
     // re-send of a buffer that was sent before decryption keys arrived.
 
     result = media_codec_->QueueSecureInputBuffer(
-        input_buffer.index, input_data.memory, input_data.length,
-        input_data.key_id, input_data.iv, input_data.subsamples,
-        input_data.encryption_scheme, input_data.encryption_pattern,
-        input_data.presentation_time);
+        input_buffer.index, input_data.memory, input_data.key_id, input_data.iv,
+        input_data.subsamples, input_data.encryption_scheme,
+        input_data.encryption_pattern, input_data.presentation_time);
 
   } else {
     result = media_codec_->QueueInputBuffer(
-        input_buffer.index, input_data.memory, input_data.length,
-        input_data.presentation_time);
+        input_buffer.index, input_data.memory, input_data.presentation_time);
   }
 
   switch (result.code()) {
@@ -233,7 +230,7 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
       // MediaCodec has a copy of the data already.  When we call again, be sure
       // to send in nullptr for the source.  Note that the client doesn't
       // guarantee that the pointer will remain valid after we return anyway.
-      pending_input_buf_data_.memory = nullptr;
+      pending_input_buf_data_.memory = {};
       client_->OnWaiting(WaitingReason::kNoDecryptionKey);
       SetState(STATE_WAITING_FOR_KEY);
       // Do not call OnInputDataQueued yet.
