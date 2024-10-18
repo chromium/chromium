@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_CAPABILITIES_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_CAPABILITIES_H_
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+class ProfileIOS;
 
 namespace supervised_user {
 

@@ -7,7 +7,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 // Delegate handling iOS logic that is invoked from SupervisedUserService.
 class SupervisedUserServicePlatformDelegate

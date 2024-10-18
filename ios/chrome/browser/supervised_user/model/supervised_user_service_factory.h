@@ -7,8 +7,9 @@
 
 #import "base/no_destructor.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 namespace supervised_user {
 // Factory helper method that returns true if we need to show the first
