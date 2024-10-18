@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
@@ -81,6 +82,10 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 }
 
 const CGFloat kSelectionOffsetPadding = 100.0f;
+
+// The maximum height of the bottom sheet before it automatically closes when
+// released.
+const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 
 // The expected number of animations happening at the same time when exiting.
 const int kExpectedExitAnimationCount = 2;
@@ -164,6 +169,10 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   BOOL _isExiting;
   /// Forces the device orientation in portrait mode.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
+  /// Tracks whether the user is currently touching the screen.
+  LensOverlayPanTracker* _windowPanTracker;
+  /// Used to monitor the results sheet position relative to the container.
+  CADisplayLink* _displayLink;
 }
 
 #pragma mark - public
@@ -1112,9 +1121,58 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
       presentViewController:_resultViewController
                    animated:YES
                  completion:^{
+                   [weakSelf monitorResultsBottomSheetPosition];
                    [weakSelf handlePanRecognizersAddedAfter:
                                  panRecognizersBeforePresenting];
                  }];
+}
+
+- (void)monitorResultsBottomSheetPosition {
+  UIWindow* sceneWindow = self.browser->GetSceneState().window;
+  if (!sceneWindow) {
+    return;
+  }
+
+  // Currently there is no system API for reactively obtaining the position of a
+  // bottom sheet. For the lifetime of the LRP, use the display link to monitor
+  // the position of it's frame relative to the container.
+  _displayLink =
+      [CADisplayLink displayLinkWithTarget:self
+                                  selector:@selector(onDisplayLinkUpdate:)];
+  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop]
+                     forMode:NSRunLoopCommonModes];
+
+  _windowPanTracker = [[LensOverlayPanTracker alloc] initWithView:sceneWindow];
+  [_windowPanTracker startTracking];
+}
+
+- (void)onDisplayLinkUpdate:(CADisplayLink*)sender {
+  if (!_resultViewController) {
+    return;
+  }
+
+  CGRect presentedFrame = _resultViewController.view.frame;
+  CGRect newFrame =
+      [_resultViewController.view convertRect:presentedFrame
+                                       toView:_containerViewController.view];
+  CGFloat containerHeight = _containerViewController.view.frame.size.height;
+  CGFloat currentSheetHeight = containerHeight - newFrame.origin.y;
+
+  // Trigger the Lens UI exit flow when the release occurs below the threshold,
+  // allowing the overlay animation to run concurrently with the sheet dismissal
+  // one.
+  BOOL sheetClosedThresholdReached =
+      currentSheetHeight <= kThresholdHeightForClosingSheet;
+  BOOL userTouchesTheScreen = _windowPanTracker.isPanning;
+  BOOL shouldDestroyLensUI =
+      sheetClosedThresholdReached && !userTouchesTheScreen;
+  if (shouldDestroyLensUI) {
+    [_displayLink invalidate];
+    [_windowPanTracker stopTracking];
+    [self
+        destroyLensUI:YES
+               reason:lens::LensOverlayDismissalSource::kBottomSheetDismissed];
+  }
 }
 
 - (NSSet<UIPanGestureRecognizer*>*)panGestureRecognizersOnWindow {

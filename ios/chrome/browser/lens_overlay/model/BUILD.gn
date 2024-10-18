@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "lens_overlay_pan_tracker.h",
+    "lens_overlay_pan_tracker.mm",
     "lens_overlay_snapshot_controller.h",
     "lens_overlay_snapshot_controller.mm",
     "lens_overlay_snapshot_controller_delegate.h",
