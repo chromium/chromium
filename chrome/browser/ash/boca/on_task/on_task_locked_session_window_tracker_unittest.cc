@@ -489,6 +489,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
       LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
   const GURL url_a(kTabUrl1);
   const GURL url_b(kTabUrl2);
+  const GURL url_c(kTabUrl1WithSubPage);
   AddTab(browser(), url_a);
   const auto* const tab_strip_model = browser()->tab_strip_model();
 
@@ -503,7 +504,11 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   task_environment()->RunUntilIdle();
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+  EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(url_a),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST);
   EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(url_b),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
+  EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(url_c),
             policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
 }
 

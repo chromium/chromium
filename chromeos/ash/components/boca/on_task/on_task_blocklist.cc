@@ -53,8 +53,7 @@ base::Value::List GetDomainLevelTrafficFilter(const GURL& url) {
 
 base::Value::List GetLimitedTrafficFilter(const GURL& url) {
   base::Value::List allowed_traffic;
-  std::string domain_traffic_filter = "." + url.spec();
-  allowed_traffic.Append(domain_traffic_filter);
+  allowed_traffic.Append("." + url.spec());
   return allowed_traffic;
 }
 }  // namespace
@@ -92,6 +91,14 @@ policy::URLBlocklist::URLBlocklistState OnTaskBlocklist::GetURLBlocklistState(
         !google_util::HasGoogleSearchQueryParam(url.query_piece())) {
       return policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
     }
+  }
+
+  if (previous_url_.is_valid() &&
+      current_page_restriction_level_ ==
+          OnTaskBlocklist::RestrictionLevel::kLimitedNavigation) {
+    return previous_url_ == url
+               ? policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
+               : policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
   }
   return url_blocklist_manager_->GetURLBlocklistState(url);
 }

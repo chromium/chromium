@@ -134,22 +134,22 @@ bool OnTaskLockedSessionNavigationThrottle::
 
 content::NavigationThrottle::ThrottleCheckResult
 OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
-  if (ShouldBlockSensitiveUrlNavigation()) {
+  LockedSessionWindowTracker* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(
+          navigation_handle()->GetWebContents()->GetBrowserContext());
+
+  if (ShouldBlockSensitiveUrlNavigation() &&
+      !window_tracker->oauth_in_progress()) {
     return CANCEL;
   }
-
   const GURL& url = navigation_handle()->GetURL();
 
   // Checks if the query is the end of an OAuth login. If so, then we want
   // to let these pass.
-  if (IsOauthLoginComplete(navigation_handle()->GetURL())) {
+  if (IsOauthLoginComplete(url)) {
     should_redirects_pass_ = true;
     return PROCEED;
   }
-
-  LockedSessionWindowTracker* const window_tracker =
-      LockedSessionWindowTrackerFactory::GetForBrowserContext(
-          navigation_handle()->GetWebContents()->GetBrowserContext());
 
   // Checks if the query is the start of an OAuth login. If so, then we want
   // to let these pass.
@@ -284,7 +284,11 @@ OnTaskLockedSessionNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 OnTaskLockedSessionNavigationThrottle::WillProcessResponse() {
-  if (ShouldBlockSensitiveUrlNavigation()) {
+  LockedSessionWindowTracker* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(
+          navigation_handle()->GetWebContents()->GetBrowserContext());
+  if (ShouldBlockSensitiveUrlNavigation() &&
+      !window_tracker->oauth_in_progress()) {
     return CANCEL;
   }
   return PROCEED;
