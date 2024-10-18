@@ -44,12 +44,6 @@ std::unique_ptr<KeyedService> BuildInMemoryURLIndex(
 }  // namespace
 
 // static
-InMemoryURLIndex* InMemoryURLIndexFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 InMemoryURLIndex* InMemoryURLIndexFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<InMemoryURLIndex*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

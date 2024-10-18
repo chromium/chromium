@@ -15,12 +15,6 @@
 namespace ios {
 
 // static
-ProviderStateService* ProviderStateServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 ProviderStateService* ProviderStateServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<ProviderStateService*>(

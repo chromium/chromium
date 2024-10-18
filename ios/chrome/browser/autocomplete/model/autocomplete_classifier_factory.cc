@@ -34,12 +34,6 @@ std::unique_ptr<KeyedService> BuildAutocompleteClassifier(
 }  // namespace
 
 // static
-AutocompleteClassifier* AutocompleteClassifierFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 AutocompleteClassifier* AutocompleteClassifierFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<AutocompleteClassifier*>(

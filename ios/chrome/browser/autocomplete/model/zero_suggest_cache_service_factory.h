@@ -17,9 +17,6 @@ namespace ios {
 // profiles.
 class ZeroSuggestCacheServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static ZeroSuggestCacheService* GetForBrowserState(ProfileIOS* profile);
-
   static ZeroSuggestCacheService* GetForProfile(ProfileIOS* profile);
   static ZeroSuggestCacheServiceFactory* GetInstance();
   // Returns the default factory used to build ZeroSuggestCacheService. Can be

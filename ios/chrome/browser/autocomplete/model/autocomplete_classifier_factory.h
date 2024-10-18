@@ -18,9 +18,6 @@ namespace ios {
 // profiles.
 class AutocompleteClassifierFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static AutocompleteClassifier* GetForBrowserState(ProfileIOS* profile);
-
   static AutocompleteClassifier* GetForProfile(ProfileIOS* profile);
   static AutocompleteClassifierFactory* GetInstance();
 

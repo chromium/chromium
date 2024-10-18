@@ -18,9 +18,6 @@ namespace ios {
 // profiles.
 class InMemoryURLIndexFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static InMemoryURLIndex* GetForBrowserState(ProfileIOS* profile);
-
   static InMemoryURLIndex* GetForProfile(ProfileIOS* profile);
   static InMemoryURLIndexFactory* GetInstance();
 

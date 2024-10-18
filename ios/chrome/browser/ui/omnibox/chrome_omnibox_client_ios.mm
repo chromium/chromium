@@ -117,7 +117,7 @@ ChromeOmniboxClientIOS::GetSchemeClassifier() const {
 }
 
 AutocompleteClassifier* ChromeOmniboxClientIOS::GetAutocompleteClassifier() {
-  return ios::AutocompleteClassifierFactory::GetForBrowserState(profile_);
+  return ios::AutocompleteClassifierFactory::GetForProfile(profile_);
 }
 
 bool ChromeOmniboxClientIOS::ShouldDefaultTypedNavigationsToHttps() const {
