@@ -8,6 +8,10 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
+
 /** UI-less activity which launches host browser. */
 public class TransparentLauncherActivity extends Activity {
     @Override
@@ -20,8 +24,11 @@ public class TransparentLauncherActivity extends Activity {
                         new LaunchHostBrowserSelector.Callback() {
                             @Override
                             public void onBrowserSelected(
-                                    String hostBrowserPackageName, boolean dialogShown) {
-                                if (hostBrowserPackageName == null) {
+                                    @Nullable
+                                            PackageNameAndComponentName
+                                                    hostBrowserPackageNameAndComponentName,
+                                    boolean dialogShown) {
+                                if (hostBrowserPackageNameAndComponentName == null) {
                                     finish();
                                     return;
                                 }
@@ -29,7 +36,7 @@ public class TransparentLauncherActivity extends Activity {
                                         HostBrowserLauncherParams.createForIntent(
                                                 TransparentLauncherActivity.this,
                                                 getIntent(),
-                                                hostBrowserPackageName,
+                                                hostBrowserPackageNameAndComponentName,
                                                 dialogShown,
                                                 activityStartTimeMs,
                                                 /* splashShownTimeMs= */ -1);

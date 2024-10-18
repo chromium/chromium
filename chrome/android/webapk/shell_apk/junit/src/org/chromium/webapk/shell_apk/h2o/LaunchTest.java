@@ -146,7 +146,8 @@ public final class LaunchTest {
                         H2OTransparentLauncherActivity.class);
         Assert.assertEquals(5, launchedIntents.size());
         assertIntentComponentClassNameEquals(H2OMainActivity.class, launchedIntents.get(0));
-        Assert.assertEquals(BROWSER_PACKAGE_NAME, launchedIntents.get(1).getPackage());
+        Assert.assertEquals(
+                BROWSER_PACKAGE_NAME, launchedIntents.get(1).getComponent().getPackageName());
         assertIntentComponentClassNameEquals(
                 H2OTransparentLauncherActivity.class, launchedIntents.get(2));
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(3));
@@ -215,7 +216,8 @@ public final class LaunchTest {
                         launchIntent,
                         H2OMainActivity.class);
         Assert.assertEquals(4, launchedIntents.size());
-        Assert.assertEquals(BROWSER_PACKAGE_NAME, launchedIntents.get(0).getPackage());
+        Assert.assertEquals(
+                BROWSER_PACKAGE_NAME, launchedIntents.get(0).getComponent().getPackageName());
         assertIntentComponentClassNameEquals(
                 H2OTransparentLauncherActivity.class, launchedIntents.get(1));
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(2));
@@ -629,7 +631,7 @@ public final class LaunchTest {
 
     private static void assertIntentIsForCustomBrowserLaunchWithCustomAction(
             Intent intent, String browserPackage, String expectedStartUrl, String action) {
-        Assert.assertEquals(browserPackage, intent.getPackage());
+        Assert.assertTrue(intentIsForBrowser(intent, browserPackage));
         Assert.assertEquals(action, intent.getAction());
         Assert.assertEquals(expectedStartUrl, intent.getStringExtra(WebApkConstants.EXTRA_URL));
         Assert.assertTrue(intent.hasExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME));
@@ -766,7 +768,7 @@ public final class LaunchTest {
 
             activityIntentChain.add(startedActivityIntent);
 
-            if (browserPackage.equals(startedActivityIntent.getPackage())) {
+            if (intentIsForBrowser(startedActivityIntent, browserPackage)) {
                 if (!startedActivityIntent.hasExtra(WebApkConstants.EXTRA_RELAUNCH)) break;
 
                 // Emulate host browser relaunch behaviour.
@@ -796,6 +798,12 @@ public final class LaunchTest {
             buildActivityFully(startedActivityClass, startedActivityIntent);
         }
         return activityIntentChain;
+    }
+
+    private static boolean intentIsForBrowser(Intent intent, String browserPackage) {
+        return browserPackage.equals(intent.getPackage())
+                || (intent.getComponent() != null
+                        && browserPackage.equals(intent.getComponent().getPackageName()));
     }
 
     private static void buildActivityFully(Class<? extends Activity> activityClass, Intent intent) {

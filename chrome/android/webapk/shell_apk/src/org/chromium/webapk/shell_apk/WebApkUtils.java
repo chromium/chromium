@@ -33,6 +33,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 import java.util.ArrayList;
@@ -100,10 +102,11 @@ public class WebApkUtils {
         return returnUrlBuilder.toString();
     }
 
-    /** Returns the package name for the passed-in ResolveInfo. */
-    public static String getPackageNameFromResolveInfo(ResolveInfo resolveInfo) {
+    /** Returns the component name for the passed-in ResolveInfo. */
+    public static @Nullable ComponentName getComponentNameFromResolveInfo(ResolveInfo resolveInfo) {
         return (resolveInfo != null && resolveInfo.activityInfo != null)
-                ? resolveInfo.activityInfo.packageName
+                ? new ComponentName(
+                        resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name)
                 : null;
     }
 

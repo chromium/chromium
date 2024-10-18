@@ -13,7 +13,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
+import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 
 /** Selects host browser to launch. */
 public class LaunchHostBrowserSelector {
@@ -31,7 +34,9 @@ public class LaunchHostBrowserSelector {
      * preferences/<meta-data> lookup or via the user selecting the host browser from a dialog.
      */
     public static interface Callback {
-        void onBrowserSelected(String hostBrowserPackageName, boolean dialogShown);
+        void onBrowserSelected(
+                @Nullable PackageNameAndComponentName hostBrowserPackageNameAndComponentName,
+                boolean dialogShown);
     }
 
     public LaunchHostBrowserSelector(Activity parentActivity) {
@@ -66,8 +71,9 @@ public class LaunchHostBrowserSelector {
         String packageName = mContext.getPackageName();
         Log.v(TAG, "Package name of the WebAPK:" + packageName);
 
-        String runtimeHost = HostBrowserUtils.computeHostBrowserPackageName(mContext);
-        if (!TextUtils.isEmpty(runtimeHost)) {
+        PackageNameAndComponentName runtimeHost =
+                HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext);
+        if (runtimeHost != null && !TextUtils.isEmpty(runtimeHost.getPackageName())) {
             selectCallback.onBrowserSelected(runtimeHost, /* dialogShown= */ false);
             return;
         }

@@ -274,7 +274,9 @@ public final class MainActivityTest {
      */
     private void assertTabbedBrowserLaunched(
             Intent intent, String browserPackageName, String expectedStartUrl) {
-        Assert.assertEquals(browserPackageName, intent.getPackage());
+        Assert.assertEquals(browserPackageName, intent.getComponent().getPackageName());
+        Assert.assertEquals(
+                TestBrowserInstaller.COMPONENT_CLASS, intent.getComponent().getClassName());
         Assert.assertEquals(Intent.ACTION_VIEW, intent.getAction());
         Assert.assertEquals(expectedStartUrl, intent.getDataString());
     }

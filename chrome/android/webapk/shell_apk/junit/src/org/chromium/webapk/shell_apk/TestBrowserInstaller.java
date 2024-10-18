@@ -22,6 +22,8 @@ import java.util.Set;
  * browsers.
  */
 public class TestBrowserInstaller {
+    public static final String COMPONENT_CLASS = "com.component.class.name";
+
     Set<String> mInstalledBrowsers = new HashSet<String>();
 
     /** Changes the installed browsers to the passed-in list. */
@@ -85,6 +87,7 @@ public class TestBrowserInstaller {
     private static ResolveInfo newResolveInfo(String packageName) {
         ActivityInfo activityInfo = new ActivityInfo();
         activityInfo.packageName = packageName;
+        activityInfo.name = COMPONENT_CLASS;
         ResolveInfo resolveInfo = new ResolveInfo();
         resolveInfo.activityInfo = activityInfo;
         return resolveInfo;
