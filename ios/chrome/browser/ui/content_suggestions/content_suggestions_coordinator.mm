@@ -489,6 +489,8 @@ using segmentation_platform::TipIdentifier;
                        localState:GetApplicationContext()->GetLocalState()
                   moduleMediators:moduleMediators
                       tipsManager:TipsManagerIOSFactory::GetForProfile(
+                                      self.browser->GetProfile())
+               templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
                                       self.browser->GetProfile())];
   _magicStackRankingModel.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;

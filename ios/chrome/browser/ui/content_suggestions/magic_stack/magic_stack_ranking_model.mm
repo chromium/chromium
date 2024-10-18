@@ -15,6 +15,8 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/search/search.h"
+#import "components/search_engines/template_url_service.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
@@ -61,6 +63,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_prefs.h"
+#import "ios/chrome/browser/ui/lens/lens_availability.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ui/base/device_form_factor.h"
 
 using segmentation_platform::TipIdentifier;
@@ -107,6 +111,7 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
   raw_ptr<TipsManagerIOS> _tipsManager;
   base::TimeTicks ranking_fetch_start_time_;
   ContentSuggestionsModuleType _ephemeralCardToShow;
+  raw_ptr<TemplateURLService> _templateURLService;
 }
 
 - (instancetype)
@@ -117,7 +122,8 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
                     prefService:(PrefService*)prefService
                      localState:(PrefService*)localState
                 moduleMediators:(NSArray*)moduleMediators
-                    tipsManager:(TipsManagerIOS*)tipsManager {
+                    tipsManager:(TipsManagerIOS*)tipsManager
+             templateURLService:(TemplateURLService*)templateURLService {
   self = [super init];
   if (self) {
     _segmentationService = segmentationService;
@@ -126,6 +132,7 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
     _prefService = prefService;
     _localState = localState;
     _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
+    _templateURLService = templateURLService;
 
     if (IsTipsMagicStackEnabled()) {
       CHECK(tipsManager);
@@ -449,18 +456,17 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
                 segmentation_platform::tips_manager::signals::
                     kAddressBarPositionChoiceScreenDisplayed)));
 
-    inputContext->metadata_args.emplace(
-        segmentation_platform::kLensAllowedByEnterprisePolicy,
-        segmentation_platform::processing::ProcessedValue::FromFloat(
-            _localState->GetBoolean(
-                prefs::kLensCameraAssistedSearchPolicyAllowed)));
-
     // Miscellaneous signals
     BOOL isPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
 
     inputContext->metadata_args.emplace(
         segmentation_platform::kIsPhoneFormFactor,
         segmentation_platform::processing::ProcessedValue::FromFloat(isPhone));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kLensAllowedByEnterprisePolicy,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            [self isLensEnabled]));
   }
 
   __weak MagicStackRankingModel* weakSelf = self;
@@ -806,6 +812,15 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
          !tab_resumption_prefs::IsTabResumptionDisabled(
              IsHomeCustomizationEnabled() ? _prefService : _localState) &&
          _tabResumptionMediator.itemConfig;
+}
+
+// Returns `YES` if Lens is enabled.
+- (BOOL)isLensEnabled {
+  bool isGoogleDefaultSearchProvider =
+      search::DefaultSearchProviderIsGoogle(_templateURLService);
+
+  return lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+      LensEntrypoint::NewTabPage, isGoogleDefaultSearchProvider);
 }
 
 @end

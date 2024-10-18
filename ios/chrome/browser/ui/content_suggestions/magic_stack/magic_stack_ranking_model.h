@@ -22,6 +22,7 @@ enum class ContentSuggestionsModuleType;
 @class MagicStackModule;
 @protocol MagicStackRankingModelDelegate;
 class PrefService;
+class TemplateURLService;
 class TipsManagerIOS;
 
 // Manages the Magic Stack module ranking fetch and returns the
@@ -48,6 +49,7 @@ class TipsManagerIOS;
                      localState:(PrefService*)localState
                 moduleMediators:(NSArray*)moduleMediators
                     tipsManager:(TipsManagerIOS*)tipsManager
+             templateURLService:(TemplateURLService*)templateURLService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
