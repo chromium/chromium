@@ -748,6 +748,11 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       ProcessCloseWhenNestedTag<IsLi>(token);
       break;
     case HTMLTag::kInput: {
+      if (RuntimeEnabledFeatures::InputClosesSelectEnabled()) {
+        if (tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
+          ProcessFakeEndTag(HTMLTag::kSelect);
+        }
+      }
       // Per spec https://html.spec.whatwg.org/C/#parsing-main-inbody,
       // section "A start tag whose tag name is "input""
 

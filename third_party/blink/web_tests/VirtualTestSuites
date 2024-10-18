@@ -3497,6 +3497,16 @@
     "expires": "Feb 1, 2025",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
+  {
+    "prefix": "input-closes-select",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-parsing.tentative.html"
+    ],
+    "args": ["--enable-features=InputClosesSelect,SelectParserRelaxation"],
+    "expires": "Feb 1, 2025",
+    "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
+  },
   "css-custom-state-deprecated-syntax-enabled is the configuration that is",
   "currently shipping to stable.",
   {
