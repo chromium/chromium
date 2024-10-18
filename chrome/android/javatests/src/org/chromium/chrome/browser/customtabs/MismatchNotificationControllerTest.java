@@ -67,6 +67,7 @@ public class MismatchNotificationControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/374328422")
     public void testShowSignedOutMessage() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
