@@ -8145,8 +8145,8 @@ crbug.com/364948306 external/wpt/fullscreen/api/element-request-fullscreen-witho
 crbug.com/368549362 external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_started_initial_navigation_tentative.py [ Failure Pass ]
 
 # Flaky on Windows and Linux.
-crbug.com/358889281 [ Linux ] external/wpt/event-timing/TapToStopFling.html [ Failure Pass ]
-crbug.com/358889281 [ Win ] external/wpt/event-timing/TapToStopFling.html [ Failure Pass ]
+crbug.com/358889281 [ Linux ] external/wpt/event-timing/TapToStopFling.html [ Failure Pass Timeout ]
+crbug.com/358889281 [ Win ] external/wpt/event-timing/TapToStopFling.html [ Failure Pass Timeout ]
 
 # Gardener 2024-09-30
 crbug.com/626703 [ Release Win ] external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
