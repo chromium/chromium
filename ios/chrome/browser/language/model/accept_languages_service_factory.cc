@@ -15,18 +15,18 @@
 
 namespace {
 
-// AcceptLanguagesServiceForBrowserState is a thin container for
-// AcceptLanguagesService to enable associating it with a BrowserState.
-class AcceptLanguagesServiceForBrowserState : public KeyedService {
+// AcceptLanguagesServiceForProfile is a thin container for
+// AcceptLanguagesService to enable associating it with a Profile.
+class AcceptLanguagesServiceForProfile : public KeyedService {
  public:
-  explicit AcceptLanguagesServiceForBrowserState(PrefService* prefs);
+  explicit AcceptLanguagesServiceForProfile(PrefService* prefs);
 
-  AcceptLanguagesServiceForBrowserState(
-      const AcceptLanguagesServiceForBrowserState&) = delete;
-  AcceptLanguagesServiceForBrowserState& operator=(
-      const AcceptLanguagesServiceForBrowserState&) = delete;
+  AcceptLanguagesServiceForProfile(const AcceptLanguagesServiceForProfile&) =
+      delete;
+  AcceptLanguagesServiceForProfile& operator=(
+      const AcceptLanguagesServiceForProfile&) = delete;
 
-  ~AcceptLanguagesServiceForBrowserState() override;
+  ~AcceptLanguagesServiceForProfile() override;
 
   // Returns the associated AcceptLanguagesService.
   language::AcceptLanguagesService& accept_languages() {
@@ -37,12 +37,11 @@ class AcceptLanguagesServiceForBrowserState : public KeyedService {
   language::AcceptLanguagesService accept_languages_;
 };
 
-AcceptLanguagesServiceForBrowserState::AcceptLanguagesServiceForBrowserState(
+AcceptLanguagesServiceForProfile::AcceptLanguagesServiceForProfile(
     PrefService* prefs)
     : accept_languages_(prefs, language::prefs::kAcceptLanguages) {}
 
-AcceptLanguagesServiceForBrowserState::
-    ~AcceptLanguagesServiceForBrowserState() {}
+AcceptLanguagesServiceForProfile::~AcceptLanguagesServiceForProfile() {}
 
 }  // namespace
 
@@ -61,15 +60,15 @@ AcceptLanguagesServiceFactory::GetForBrowserState(ProfileIOS* profile) {
 // static
 language::AcceptLanguagesService* AcceptLanguagesServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  AcceptLanguagesServiceForBrowserState* service =
-      static_cast<AcceptLanguagesServiceForBrowserState*>(
+  AcceptLanguagesServiceForProfile* service =
+      static_cast<AcceptLanguagesServiceForProfile*>(
           GetInstance()->GetServiceForBrowserState(profile, true));
   return &service->accept_languages();
 }
 
 AcceptLanguagesServiceFactory::AcceptLanguagesServiceFactory()
     : BrowserStateKeyedServiceFactory(
-          "AcceptLanguagesServiceForBrowserState",
+          "AcceptLanguagesServiceForProfile",
           BrowserStateDependencyManager::GetInstance()) {}
 
 AcceptLanguagesServiceFactory::~AcceptLanguagesServiceFactory() {}
@@ -78,7 +77,7 @@ std::unique_ptr<KeyedService>
 AcceptLanguagesServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  return std::make_unique<AcceptLanguagesServiceForBrowserState>(
+  return std::make_unique<AcceptLanguagesServiceForProfile>(
       profile->GetPrefs());
 }
 
