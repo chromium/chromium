@@ -33,7 +33,7 @@ bool g_needs_set_up_for_test_case = true;
 @implementation BaseEarlGreyTestCase
 
 + (BOOL)forceRestartAndWipe {
-  return NO;
+  return YES;
 }
 
 + (void)setUpForTestCase {
