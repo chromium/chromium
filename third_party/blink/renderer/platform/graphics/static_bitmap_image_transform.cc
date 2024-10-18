@@ -25,6 +25,18 @@ namespace blink {
 
 namespace {
 
+// Transformations of StaticBitmapImages have historically also converted them
+// to kN32_SkColorType. This function very cautiously only lifts this
+// restriction for StaticBitmapImages that are already kRGBA_F16_SkColorType.
+// This caution is a response to issues such as the one described in
+// https://crrev.com/1364046.
+SkColorType GetDestColorType(SkColorType source_color_type) {
+  if (source_color_type == kRGBA_F16_SkColorType) {
+    return kRGBA_F16_SkColorType;
+  }
+  return kN32_SkColorType;
+}
+
 void FlipSkPixmapInPlace(SkPixmap& pm, bool horizontal) {
   uint8_t* data = reinterpret_cast<uint8_t*>(pm.writable_addr());
   const size_t row_bytes = pm.rowBytes();
@@ -129,9 +141,10 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
         bm_alpha_type = kUnpremul_SkAlphaType;
       }
     }
-    const auto bm_info = source_info.makeDimensions(source_rect.size())
-                             .makeAlphaType(bm_alpha_type)
-                             .makeColorType(kN32_SkColorType);
+    const auto bm_info =
+        source_info.makeDimensions(source_rect.size())
+            .makeAlphaType(bm_alpha_type)
+            .makeColorType(GetDestColorType(source_info.colorType()));
     if (!bm.tryAllocPixels(bm_info)) {
       return nullptr;
     }
@@ -199,42 +212,44 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
 // premultiplied-alpha result.
 scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
     FlushReason flush_reason,
-    scoped_refptr<StaticBitmapImage> src,
+    scoped_refptr<StaticBitmapImage> source,
     const StaticBitmapImageTransform::Params& options) {
   // This path will necessarily premultiply alpha.
   CHECK(options.premultiply_alpha);
 
-  auto paint_image = src->PaintImageForCurrentFrame();
-  const auto source_orientation = GetSourceOrientation(src, options);
+  auto source_paint_image = source->PaintImageForCurrentFrame();
+  const auto source_info = source_paint_image.GetSkImageInfo();
+  const auto source_orientation = GetSourceOrientation(source, options);
 
   // Compute the parameters for the blit.
-  const SkAlphaType dst_alpha_type =
-      paint_image.GetAlphaType() == kOpaque_SkAlphaType ? kOpaque_SkAlphaType
-                                                        : kPremul_SkAlphaType;
-  auto dst_color_space = paint_image.GetSkImageInfo().refColorSpace();
+  const SkColorType dest_color_type = GetDestColorType(source_info.colorType());
+  const SkAlphaType dest_alpha_type =
+      source_info.alphaType() == kOpaque_SkAlphaType ? kOpaque_SkAlphaType
+                                                     : kPremul_SkAlphaType;
+  auto dest_color_space = source_info.refColorSpace();
   SkIRect source_rect;
   SkIRect source_rect_valid;
   SkISize dest_size;
-  ComputeSubsetParameters(src, options, source_rect, source_rect_valid,
+  ComputeSubsetParameters(source, options, source_rect, source_rect_valid,
                           dest_size);
 
   // Create the resource provider for the target for the blit.
   std::unique_ptr<CanvasResourceProvider> resource_provider;
   {
-    SkImageInfo dest_info = SkImageInfo::Make(dest_size, kN32_SkColorType,
-                                              dst_alpha_type, dst_color_space);
+    SkImageInfo dest_info = SkImageInfo::Make(
+        dest_size, dest_color_type, dest_alpha_type, dest_color_space);
     constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kLow;
     constexpr auto kShouldInitialize =
         CanvasResourceProvider::ShouldInitialize::kNo;
-    // If `src` is accelerated, then use a SharedImage provider.
-    if (paint_image.IsTextureBacked()) {
+    // If `source` is accelerated, then use a SharedImage provider.
+    if (source_paint_image.IsTextureBacked()) {
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider =
-          src->ContextProviderWrapper();
+          source->ContextProviderWrapper();
       if (context_provider) {
         const gpu::SharedImageUsageSet shared_image_usage_flags =
             context_provider->ContextProvider()
                 ->SharedImageInterface()
-                ->UsageForMailbox(src->GetMailboxHolder().mailbox);
+                ->UsageForMailbox(source->GetMailboxHolder().mailbox);
         resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
             dest_info, kFilterQuality, kShouldInitialize, context_provider,
             RasterMode::kGPU, shared_image_usage_flags);
@@ -260,7 +275,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
       canvas.scale(1, -1);
     }
   }
-  canvas.drawImageRect(paint_image, SkRect::Make(source_rect),
+  canvas.drawImageRect(source_paint_image, SkRect::Make(source_rect),
                        SkRect::Make(dest_size), options.sampling, &paint,
                        SkCanvas::kStrict_SrcRectConstraint);
   return resource_provider->Snapshot(flush_reason, source_orientation);
