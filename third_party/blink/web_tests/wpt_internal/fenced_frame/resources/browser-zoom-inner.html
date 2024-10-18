@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<head>
+  <script src="utils.js"></script>
+  <style>
+    body {
+      margin: 10px;
+      overflow: scroll !important;
+    }
+
+    h1 {
+      width: 100%;
+      font-size: 20px;
+      padding: 0px;
+      margin: 0px;
+    }
+  </style>
+  <script>
+  </script>
+</head>
+<body bgcolor="green" onload="main()">
+  <h1>This is the page.</h1>
+  <script>
+    function main() {
+      const [uuid] = parseKeylist();
+      // testRunner.setPageZoomFactor() does not propagate to child fenced
+      // frames the way that browser zoom does, so this has to be called in both
+      // the main frame as well as the child fenced frame.
+      if (window.testRunner) {
+        testRunner.setPageZoomFactor(2);
+      }
+      writeValueToServer(uuid, "Ready");
+    }
+  </script>
+</body>
+</html>

@@ -276,8 +276,6 @@ void RemoteFrameView::SetFrameRect(const gfx::Rect& rect) {
 }
 
 void RemoteFrameView::UpdateFrozenSize() {
-  if (frozen_size_)
-    return;
   auto* layout_embedded_content = GetLayoutEmbeddedContent();
   if (!layout_embedded_content)
     return;
