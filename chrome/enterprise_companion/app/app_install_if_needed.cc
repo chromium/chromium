@@ -36,18 +36,6 @@ class AppInstallIfNeeded : public App {
       return;
     }
 
-#if BUILDFLAG(IS_WIN)
-    std::optional<base::FilePath> alt_install_dir =
-        GetInstallDirectoryForAlternateArch();
-    if (alt_install_dir &&
-        base::PathExists(alt_install_dir->AppendASCII(kExecutableName))) {
-      VLOG(1) << "Found an existing installation in " << *alt_install_dir
-              << ". The application will not be installed.";
-      Shutdown(EnterpriseCompanionStatus::Success());
-      return;
-    }
-#endif
-
     scoped_refptr<device_management_storage::DMStorage> dm_storage =
         device_management_storage::GetDefaultDMStorage();
     if (dm_storage->GetEnrollmentToken().empty() &&

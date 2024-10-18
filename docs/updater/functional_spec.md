@@ -1020,7 +1020,7 @@ The updater fetches all machine level app CBCM policies and caches them in the
 file system.  The cached policy files are global readable for other apps to
 consume. Location of the policy cache folder:
 
-* **Windows**: `%PROGRAMFILESX86%\{COMPANY_SHORTNAME}\Policies`
+* **Windows**: `%PROGRAMFILES(X86)%\{COMPANY_SHORTNAME}\Policies`
 * **macOS**: `/Library/{COMPANY_SHORTNAME}/GoogleSoftwareUpdate/DeviceManagement`
 * **Linux**: `/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/DeviceManagement`
 
@@ -1529,6 +1529,17 @@ The integrity of the payload is verified.
 There is no download cache. Payloads are re-downloaded for applications which
 fail to install.
 
+### Install location
+On Windows for system-scope updaters, the install location for both 32-bit and
+64-bit updaters is `%PROGRAMFILES(X86)%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`.
+In addition to this, there is a legacy install location at
+`%PROGRAMFILES(X86)%\{COMPANY_SHORTNAME}\Update`.
+
+On Windows for user-scope updaters, the install location is
+`%LOCALAPPDATA%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`. In addition to this,
+there is a legacy install location at
+`%LOCALAPPDATA%\{COMPANY_SHORTNAME}\Update`.
+
 ### Logging
 All updater logs are written to `{UPDATER_DATA_DIR}\updater.log`.
 
@@ -1543,8 +1554,7 @@ On macOS for user-scope updaters, `{UPDATER_DATA_DIR}` is
 `~/Library/Application Support/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}`.
 
 On Windows for system-scope updaters, `{UPDATER_DATA_DIR}` is
-`%PROGRAMFILES%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`. (A 32-bit updater uses
-use `%PROGRAMFILESX86%` if appropriate instead.)
+`%PROGRAMFILES(X86)%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`.
 
 On Windows for user-scope updaters, `{UPDATER_DATA_DIR}` is
 `%LOCALAPPDATA%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`.

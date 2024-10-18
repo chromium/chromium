@@ -302,14 +302,6 @@ class IntegrationTests : public ::testing::Test {
     ASSERT_NO_FATAL_FAILURE(
         CopyApplicationArtifacts(*install_dir, artifacts_dir));
 
-#if BUILDFLAG(IS_WIN)
-    std::optional<base::FilePath> alt_install_dir =
-        GetInstallDirectoryForAlternateArch();
-    if (alt_install_dir) {
-      ASSERT_NO_FATAL_FAILURE(CopyApplicationArtifacts(
-          *alt_install_dir, artifacts_dir.AppendASCII("alt_arch")));
-    }
-#endif
   }
 
   void CopyApplicationArtifacts(const base::FilePath& install_dir,
@@ -410,29 +402,6 @@ TEST_F(IntegrationTests, InstallIfNeeded_AlreadyInstalled_SkipsInstall) {
       install_dir->AppendASCII(kExecutableName), &exe_contents, 64));
   EXPECT_EQ(exe_contents, "fake_exe");
 }
-
-#if BUILDFLAG(IS_WIN)
-// Running the application's "install if needed" command should not install the
-// application if the application is already installed for a different
-// architecture.
-TEST_F(IntegrationTests, InstallIfNeeded_AlreadyInstalledAltArch_SkipsInstall) {
-  std::optional<base::FilePath> install_dir =
-      GetInstallDirectoryForAlternateArch();
-  if (!install_dir) {
-    GTEST_SKIP() << "Not implemented for x86 hosts.";
-  }
-  ASSERT_TRUE(base::CreateDirectory(*install_dir));
-  ASSERT_TRUE(
-      base::WriteFile(install_dir->AppendASCII(kExecutableName), "fake_exe"));
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallIfNeeded());
-
-  std::string exe_contents;
-  ASSERT_TRUE(base::ReadFileToStringWithMaxSize(
-      install_dir->AppendASCII(kExecutableName), &exe_contents, 64));
-  EXPECT_EQ(exe_contents, "fake_exe");
-}
-#endif
 
 // Attempting to shut down the server when it's not running should fail.
 TEST_F(IntegrationTests, ShutdownWithoutServerFails) {

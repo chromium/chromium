@@ -45,12 +45,8 @@ class InstallerTest : public ::testing::Test {
 
  protected:
   base::test::TaskEnvironment environment_;
-  // The install directory for the current process architecture.
+  // The install directory.
   base::FilePath install_dir_;
-  // If 64-on-64, the 32-bit install directory. If 32-on-64 the 64-bit install
-  // directory. Otherwise nullopt.
-  std::optional<base::FilePath> alt_install_dir_ =
-      GetInstallDirectoryForAlternateArch();
 
   // Run the installer and expect success or failure.
   void RunInstaller(bool expect_success) {
@@ -85,12 +81,10 @@ TEST_F(InstallerTest, FirstInstall) {
   RunInstaller(true);
 
   ASSERT_TRUE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
-  ASSERT_FALSE(alt_install_dir_ && base::PathExists(*alt_install_dir_));
-
   ExpectUpdaterRegistration();
 }
 
-TEST_F(InstallerTest, OverinstallSameArch) {
+TEST_F(InstallerTest, Overinstall) {
   SetUpdaterRegistration(L"0.0.0.1", L"Prehistoric Enterprise Companion");
   ASSERT_TRUE(base::CreateDirectory(install_dir_));
   ASSERT_TRUE(base::WriteFile(install_dir_.AppendASCII(kExecutableName), ""));
@@ -98,33 +92,10 @@ TEST_F(InstallerTest, OverinstallSameArch) {
   RunInstaller(true);
 
   ASSERT_TRUE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
-  ASSERT_FALSE(alt_install_dir_ && base::PathExists(*alt_install_dir_));
-
   int64_t exe_size = 0;
   ASSERT_TRUE(
       base::GetFileSize(install_dir_.AppendASCII(kExecutableName), &exe_size));
   EXPECT_GT(exe_size, 0);
-
-  ExpectUpdaterRegistration();
-}
-
-TEST_F(InstallerTest, OverinstallDifferentArch) {
-  if (!alt_install_dir_) {
-    LOG(WARNING) << "OverinstallDifferentArch not implemented for x86 hosts.";
-    return;
-  }
-
-  SetUpdaterRegistration(L"0.0.0.1", L"Prehistoric Enterprise Companion");
-  ASSERT_TRUE(base::CreateDirectory(*alt_install_dir_));
-  ASSERT_TRUE(
-      base::WriteFile(alt_install_dir_->AppendASCII(kExecutableName), ""));
-
-  RunInstaller(true);
-
-  ASSERT_TRUE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
-  ASSERT_FALSE(alt_install_dir_ && base::PathExists(*alt_install_dir_));
-
-  EXPECT_FALSE(base::PathExists(*alt_install_dir_));
 
   ExpectUpdaterRegistration();
 }
