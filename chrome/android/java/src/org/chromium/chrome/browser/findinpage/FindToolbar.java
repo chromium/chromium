@@ -61,8 +61,6 @@ import java.lang.annotation.RetentionPolicy;
 
 /** A toolbar providing find in page functionality. */
 public class FindToolbar extends LinearLayout implements BackPressHandler {
-    private static final long ACCESSIBLE_ANNOUNCEMENT_DELAY_MILLIS = 500;
-
     @IntDef({
         FindLocationBarState.SHOWN,
         FindLocationBarState.SHOWING,
@@ -109,8 +107,6 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     private @FindLocationBarState int mDesiredState = FindLocationBarState.HIDDEN;
 
     private Handler mHandler = new Handler();
-    private Runnable mAccessibleAnnouncementRunnable;
-    private boolean mAccessibilityDidActivateResult;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
 
@@ -263,7 +259,6 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                 new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
-                        mAccessibilityDidActivateResult = false;
                         if (!hasFocus) {
                             if (mFindQuery.getText().length() > 0) {
                                 mSearchKeyShouldTriggerSearch = true;
@@ -277,8 +272,6 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                         if (mFindInPageBridge == null) return;
-
-                        mAccessibilityDidActivateResult = false;
 
                         if (mSettingFindTextProgrammatically) return;
 
@@ -320,7 +313,6 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                         } else {
                             mWindowAndroid.getKeyboardDelegate().hideKeyboard(mFindQuery);
                             mFindInPageBridge.activateFindInPageResultForAccessibility();
-                            mAccessibilityDidActivateResult = true;
                         }
                         return true;
                     }
@@ -328,6 +320,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
 
         mFindStatus = findViewById(R.id.find_status);
         setStatus("", false);
+        mFindStatus.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
 
         mFindPrevButton = findViewById(R.id.find_prev_button);
         mFindPrevButton.setOnClickListener(
@@ -386,7 +379,6 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         mWindowAndroid.getKeyboardDelegate().hideKeyboard(mFindQuery);
         mFindInPageBridge.startFinding(findQuery, forward, false);
         mFindInPageBridge.activateFindInPageResultForAccessibility();
-        mAccessibilityDidActivateResult = true;
     }
 
     private boolean mShowKeyboardOnceWindowIsFocused;
@@ -495,7 +487,6 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                 getAccessibleStatusText(
                         Math.max(result.activeMatchOrdinal, 0), result.numberOfMatches);
         mFindStatus.setContentDescription(accessibleText);
-        announceStatusForAccessibility(accessibleText);
 
         // Vibrate when no results are found, unless you're just deleting chars.
         if (result.numberOfMatches == 0
@@ -526,29 +517,6 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                                 activeMatchOrdinal,
                                 numberOfMatches)
                 : context.getResources().getString(R.string.accessible_find_in_page_no_results);
-    }
-
-    private void announceStatusForAccessibility(final String announcementText) {
-        // Don't announce if the user has already activated a result by pressing Enter/Search
-        // or clicking on the Next/Previous buttons.
-        if (mAccessibilityDidActivateResult) return;
-
-        // Delay the announcement briefly, and if any additional announcements come in,
-        // have them preempt the previous queued one. That makes for a better user experience
-        // than speaking instantly as you're typing and constantly interrupting itself.
-
-        if (mAccessibleAnnouncementRunnable != null) {
-            mHandler.removeCallbacks(mAccessibleAnnouncementRunnable);
-        }
-
-        mAccessibleAnnouncementRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mFindQuery.announceForAccessibility(announcementText);
-                    }
-                };
-        mHandler.postDelayed(mAccessibleAnnouncementRunnable, ACCESSIBLE_ANNOUNCEMENT_DELAY_MILLIS);
     }
 
     /** The find toolbar's container must provide access to its TabModel. */
