@@ -426,7 +426,7 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
   // kDoNotRespectImageOrientation in order to avoid wasted work looking
   // at orientation.
   return DragImage::Create(image.get(), kDoNotRespectImageOrientation,
-                           kInterpolationDefault, opacity);
+                           GetDefaultInterpolationQuality(), opacity);
 }
 
 // static

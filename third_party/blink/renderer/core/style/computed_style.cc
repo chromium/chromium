@@ -1451,7 +1451,7 @@ InterpolationQuality ComputedStyle::GetInterpolationQuality() const {
     return kInterpolationLow;
   }
 
-  return kInterpolationDefault;
+  return GetDefaultInterpolationQuality();
 }
 
 void ComputedStyle::LoadDeferredImages(Document& document) const {

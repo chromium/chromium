@@ -365,7 +365,7 @@ InterpolationQuality ComputeInterpolationQuality(float src_width,
     return kInterpolationLow;
 
   // Everything else gets resampled at default quality.
-  return kInterpolationDefault;
+  return GetDefaultInterpolationQuality();
 }
 
 SkColor ScaleAlpha(SkColor color, float alpha) {

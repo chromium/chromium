@@ -4396,6 +4396,16 @@
       },
     },
     {
+      // Android currently uses low-quality interpolation, while other platforms
+      // default to medium-quality. This flag is for experimenting with changing
+      // the value on Android. See: https://crbug.com/374315986.
+      name: "UseLowQualityInterpolation",
+      status: {
+        "Android": "stable",
+        "default": "",
+      },
+    },
+    {
       name: "UserActivationSameOriginVisibility",
       base_feature: "none",
       public: true,

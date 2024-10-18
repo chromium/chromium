@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -88,6 +89,13 @@ String CanvasCompositeOperatorName(CompositeOperator op, BlendMode blend_op) {
   if (blend_op != BlendMode::kNormal)
     return kCanvasBlendModeNames[static_cast<unsigned>(blend_op)];
   return kCanvasCompositeOperatorNames[op];
+}
+
+InterpolationQuality GetDefaultInterpolationQuality() {
+  if (RuntimeEnabledFeatures::UseLowQualityInterpolationEnabled()) {
+    return InterpolationQuality::kInterpolationLow;
+  }
+  return InterpolationQuality::kInterpolationMedium;
 }
 
 String BlendModeToString(BlendMode blend_op) {

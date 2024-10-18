@@ -1106,7 +1106,7 @@ std::unique_ptr<DragImage> DragImageForImage(
   if (image_size.Area64() > kMaxOriginalImageArea)
     return nullptr;
 
-  InterpolationQuality interpolation_quality = kInterpolationDefault;
+  InterpolationQuality interpolation_quality = GetDefaultInterpolationQuality();
   if (layout_image->StyleRef().ImageRendering() == EImageRendering::kPixelated)
     interpolation_quality = kInterpolationNone;
 
