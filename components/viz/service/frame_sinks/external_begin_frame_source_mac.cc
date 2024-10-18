@@ -272,12 +272,13 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
 
   auto callback_delay =
       params.callback_times_valid ? (now - frame_time) : base::Microseconds(0);
-  auto time_to_display = params.display_times_valid
-                             ? (params.display_timebase - frame_time)
-                             : base::Microseconds(0);
+  auto callback_timebase_to_display =
+      params.display_times_valid ? (params.display_timebase - frame_time)
+                                 : base::Microseconds(0);
   TRACE_EVENT2("viz", "ExternalBeginFrameSourceMac::OnDisplayLinkCallback",
-               "time_to_display", time_to_display.InMicroseconds(),
-               "callback_delay", callback_delay.InMicroseconds());
+               "callback_timebase_to_display",
+               callback_timebase_to_display.InMicroseconds(), "callback_delay",
+               callback_delay.InMicroseconds());
   RecordVSyncCallbackDelay(callback_delay);
 
   bool display_link_frame_interval_changed =

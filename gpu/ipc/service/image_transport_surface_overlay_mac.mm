@@ -108,6 +108,7 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   // Commit the first pending frame before adding one more in Present() if there
   // are more than supported .
   if (ca_layer_tree_coordinator_->NumPendingSwaps() >= cap_max_pending_swaps_) {
+    TRACE_EVENT0("gpu", "Commit now. Exceeds the max pending swaps.");
     CommitPresentedFrameToCA();
   }
 
@@ -186,13 +187,14 @@ void ImageTransportSurfaceOverlayMacEGL::CommitPresentedFrameToCA() {
   // Update the CALayer tree in the GPU process.
   {
     base::TimeTicks before_transaction_time = base::TimeTicks::Now();
-    TRACE_EVENT0("gpu", "CommitPresentedFrameToCA");
     base::TimeTicks display_time;
     base::TimeDelta frame_interval;
 #if BUILDFLAG(IS_MAC)
     display_time = GetDisplaytime(base::TimeTicks::Now());
     frame_interval = frame_interval_;
 #endif
+    TRACE_EVENT1("gpu", "CommitPresentedFrameToCA", "now_to_display",
+                 (display_time - base::TimeTicks::Now()).InMicroseconds());
     ca_layer_tree_coordinator_->CommitPresentedFrameToCA(frame_interval,
                                                          display_time);
 
@@ -326,6 +328,17 @@ void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
     ui::VSyncParamsMac params) {
   // Documentation for the CVDisplayLink display_time
   // https://developer.apple.com/documentation/corevideo/cvdisplaylinkoutputcallback
+
+  base::TimeDelta callback_delay;
+  base::TimeDelta callback_timebase_to_display;
+  if (params.callback_times_valid && params.display_times_valid) {
+    callback_delay = base::TimeTicks::Now() - params.callback_timebase;
+    callback_timebase_to_display =
+        params.display_timebase - params.callback_timebase;
+  }
+  TRACE_EVENT2("gpu", "OnVSyncPresentation", "callback_timebase_to_display",
+               callback_timebase_to_display.InMicroseconds(), "callback_delay",
+               callback_delay.InMicroseconds());
 
   current_display_time_ = next_display_time_;
 
