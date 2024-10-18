@@ -240,10 +240,6 @@
       name: "AccessibilityMinRoleTabbable",
     },
     {
-      name: "AccessibilityObjectModel",
-      status: "experimental",
-    },
-    {
       name: "AccessibilityOSLevelBoldText",
       status: "experimental",
       public: true,

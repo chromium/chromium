@@ -40,8 +40,6 @@ target(link_target_type, "renderer") {
     "accessibility/annotations/ax_image_annotator.h",
     "accessibility/annotations/ax_image_stopwords.cc",
     "accessibility/annotations/ax_image_stopwords.h",
-    "accessibility/aom_content_ax_tree.cc",
-    "accessibility/aom_content_ax_tree.h",
     "accessibility/ax_action_target_factory.cc",
     "accessibility/ax_action_target_factory.h",
     "accessibility/ax_tree_snapshotter_impl.cc",

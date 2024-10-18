@@ -14,7 +14,6 @@
 namespace content {
 
 constexpr const char kARIA[]{"aria"};
-constexpr const char kAOM[]{"aom"};
 constexpr const char kCSS[]{"css"};
 constexpr const char kFormControls[]{"form-controls"};
 constexpr const char kHTML[]{"html"};
@@ -58,10 +57,6 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 
   void RunAriaTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kARIA>(file_path);
-  }
-
-  void RunAomTest(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kAOM>(file_path);
   }
 
   void RunCSSTest(const base::FilePath::CharType* file_path) {

@@ -7615,7 +7615,6 @@ bool AXObject::HasARIAOwns(Element* element) {
 
   // TODO(accessibility): do we need to check !AriaOwnsElements.empty() ? Is
   // that fundamentally different from HasExplicitlySetAttrAssociatedElements()?
-  // And is an element even necessary in the case of virtual nodes?
   return !aria_owns.empty() || element->HasExplicitlySetAttrAssociatedElements(
                                    html_names::kAriaOwnsAttr);
 }

@@ -178,7 +178,6 @@ source_set("blink_headers") {
     "platform/web_cache.h",
     "platform/web_callbacks.h",
     "platform/web_common.h",
-    "platform/web_computed_ax_tree.h",
     "platform/web_connection_type.h",
     "platform/web_content_decryption_module.h",
     "platform/web_content_decryption_module_access.h",

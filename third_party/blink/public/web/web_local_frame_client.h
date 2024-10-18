@@ -124,7 +124,6 @@ enum class TreeScopeType;
 
 class AssociatedInterfaceProvider;
 class WebBackgroundResourceFetchAssets;
-class WebComputedAXTree;
 class WebContentDecryptionModule;
 class WebDedicatedWorkerHostFactoryClient;
 class WebDocumentLoader;
@@ -759,12 +758,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual std::unique_ptr<URLLoader> CreateURLLoaderForTesting();
 
   virtual void OnStopLoading() {}
-
-  // Accessibility Object Model -------------------------------------------
-
-  // This method is used to expose the AX Tree stored in content/renderer to the
-  // DOM as part of AOM Phase 4.
-  virtual WebComputedAXTree* GetOrCreateWebComputedAXTree() { return nullptr; }
 
   // WebSocket -----------------------------------------------------------
   virtual std::unique_ptr<WebSocketHandshakeThrottle>

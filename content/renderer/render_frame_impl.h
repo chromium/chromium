@@ -140,7 +140,6 @@ class WebAgentGroupScheduler;
 
 class WeakWrapperResourceLoadInfoNotifier;
 class WebBackgroundResourceFetchAssets;
-class WebComputedAXTree;
 class WebContentDecryptionModule;
 class WebElement;
 class WebLocalFrame;
@@ -1143,8 +1142,6 @@ class CONTENT_EXPORT RenderFrameImpl
       mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
       const std::optional<base::UnguessableToken>& embedding_token);
 
-  blink::WebComputedAXTree* GetOrCreateWebComputedAXTree() override;
-
   std::unique_ptr<blink::WebSocketHandshakeThrottle>
   CreateWebSocketHandshakeThrottle() override;
   bool IsPluginHandledExternally(
@@ -1545,10 +1542,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // True if the frame host wants stack traces on JavaScript console messages of
   // kError severity.
   bool want_error_message_stack_trace_ = false;
-
-  // Contains a representation of the accessibility tree stored in content for
-  // use inside of Blink.
-  std::unique_ptr<blink::WebComputedAXTree> computed_ax_tree_;
 
   // Used for tracking a frame's main frame document intersection and
   // replicating it to the browser when it changes.

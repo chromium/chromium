@@ -6,8 +6,6 @@
 <video controls></video>
 <script>
 async_test(t => {
-  assert_true(internals.runtimeFlags.accessibilityObjectModelEnabled);
-
   var video = document.querySelector('video');
   video.src = '../content/test.ogv';
 
