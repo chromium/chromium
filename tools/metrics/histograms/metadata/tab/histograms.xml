@@ -346,6 +346,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Organization.Declutter.EntryPoint"
+    enum="TabDeclutterEntryPoint" expires_after="2025-02-10">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Logs the entry point that caused the Tab Declutter feature to be shown on
+    Desktop. This is logged each time the feature is invoked.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Organization.Declutter.ExcludedTabCount" units="tabs"
     expires_after="2025-02-10">
   <owner>emshack@chromium.org</owner>

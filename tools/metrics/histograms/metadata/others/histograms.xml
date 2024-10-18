@@ -10510,6 +10510,7 @@ regressions. -->
     <variant name="CreateQrCode"/>
     <variant name="CustomizeChrome"/>
     <variant name="Cut"/>
+    <variant name="DeclutterTabs"/>
     <variant name="DevTools"/>
     <variant name="DevToolsConsole"/>
     <variant name="DevToolsDevices"/>

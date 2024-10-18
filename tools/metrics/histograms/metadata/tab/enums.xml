@@ -210,6 +210,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Not loaded on creation"/>
 </enum>
 
+<enum name="TabDeclutterEntryPoint">
+  <int value="0" label="Nudge"/>
+  <int value="1" label="AppMenu"/>
+  <int value="2" label="Selector"/>
+</enum>
+
 <!-- LINT.IfChange(TabGroupEvent) -->
 
 <enum name="TabGroupEvent">

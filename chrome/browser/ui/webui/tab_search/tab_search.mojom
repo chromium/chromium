@@ -28,6 +28,15 @@ enum SelectorCTREvent {
   kDeclutterClicked = 2,
 };
 
+// These values are persisted and must not be renumbered or reordered.
+// See TabDeclutterEntryPoint at
+// tools/metrics/histograms/metadata/tab/enums.xml.
+enum TabDeclutterEntryPoint {
+  kNudge = 0,
+  kAppMenu = 1,
+  kSelector = 2,
+};
+
 enum TabOrganizationState {
   kInitializing,
   kNotStarted,

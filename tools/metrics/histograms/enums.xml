@@ -35059,6 +35059,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="90" label="Show Lens overlay"/>
   <int value="91" label="Open extension settings (Safety Hub)"/>
   <int value="92" label="Show customize chrome side panel"/>
+  <int value="93" label="Show tab search declutter page"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

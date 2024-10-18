@@ -16,6 +16,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
 
 class TabStripModel;
 class TabSearchContainer;
@@ -27,6 +28,9 @@ namespace tabs {
 // browser.
 class TabDeclutterController {
  public:
+  static void EmitEntryPointHistogram(
+      tab_search::mojom::TabDeclutterEntryPoint entry_point);
+
   explicit TabDeclutterController(
       BrowserWindowInterface* browser_window_interface);
   TabDeclutterController(const TabDeclutterController&) = delete;

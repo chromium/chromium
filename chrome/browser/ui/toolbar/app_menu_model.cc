@@ -16,6 +16,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -64,6 +65,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
@@ -1655,6 +1657,15 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
             delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_SAFETY_HUB);
+      break;
+    case IDC_DECLUTTER_TABS:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.DeclutterTabs",
+                                      delta);
+      }
+      tabs::TabDeclutterController::EmitEntryPointHistogram(
+          tab_search::mojom::TabDeclutterEntryPoint::kAppMenu);
+      LogMenuAction(MENU_ACTION_DECLUTTER_TABS);
       break;
     case IDC_SAFETY_HUB_MANAGE_EXTENSIONS:
       if (!uma_action_recorded_) {

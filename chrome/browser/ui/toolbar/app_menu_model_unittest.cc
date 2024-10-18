@@ -380,12 +380,14 @@ TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
 
 TEST_F(TestAppMenuModelCR2023, DeclutterTabsItem) {
   TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
-  AppMenuModel model(this, browser());
+  TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel toolModel(&model, browser());
   size_t declutter_tabs_index =
       toolModel.GetIndexOfCommandId(IDC_DECLUTTER_TABS).value();
   EXPECT_TRUE(toolModel.IsEnabledAt(declutter_tabs_index));
+  model.ExecuteCommand(IDC_DECLUTTER_TABS, 0);
+  EXPECT_EQ(1, model.log_metrics_count_);
 }
 
 TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "content/public/browser/browser_context.h"
 
 namespace tabs {
@@ -31,6 +33,13 @@ constexpr int kMinTabCountForNudge = 15;
 // Minimum percentage of stale tabs in the tabstrip to show the nudge.
 constexpr double kStaleTabPercentageThreshold = 0.10;
 }  // namespace
+
+// static
+void TabDeclutterController::EmitEntryPointHistogram(
+    tab_search::mojom::TabDeclutterEntryPoint entry_point) {
+  base::UmaHistogramEnumeration("Tab.Organization.Declutter.EntryPoint",
+                                entry_point);
+}
 
 TabDeclutterController::TabDeclutterController(
     BrowserWindowInterface* browser_window_interface)
@@ -224,5 +233,4 @@ void TabDeclutterController::SetTimerForTesting(
   next_nudge_valid_time_ticks_ =
       usage_tick_clock_->NowTicks() + nudge_timer_interval_;
 }
-
 }  // namespace tabs
