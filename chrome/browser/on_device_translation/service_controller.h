@@ -15,6 +15,7 @@
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
 
 namespace on_device_translation {
 enum class LanguagePackKey;
@@ -49,9 +50,11 @@ class OnDeviceTranslationServiceController {
 
   // Checks if the translate service can do translation from `source_lang` to
   // `target_lang`.
-  void CanTranslate(const std::string& source_lang,
-                    const std::string& target_lang,
-                    base::OnceCallback<void(bool)> callback);
+  void CanTranslate(
+      const std::string& source_lang,
+      const std::string& target_lang,
+      base::OnceCallback<void(blink::mojom::CanCreateTranslatorResult)>
+          callback);
 
   // Returns the language packs that are registered.
   static std::set<on_device_translation::LanguagePackKey>
@@ -98,6 +101,12 @@ class OnDeviceTranslationServiceController {
 
   OnDeviceTranslationServiceController();
   ~OnDeviceTranslationServiceController();
+
+  // Checks if the translate service can do translation from `source_lang` to
+  // `target_lang`.
+  blink::mojom::CanCreateTranslatorResult CanTranslateImpl(
+      const std::string& source_lang,
+      const std::string& target_lang);
 
   // Send the CreateTranslator IPC call to the OnDeviceTranslationService.
   void CreateTranslatorImpl(

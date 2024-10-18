@@ -72,7 +72,8 @@ void TranslationManagerImpl::CanCreateTranslator(
               ->GetPrefs()
               ->GetString(language::prefs::kAcceptLanguages),
           source_lang, target_lang)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        blink::mojom::CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
     return;
   }
   OnDeviceTranslationServiceController::GetInstance()->CanTranslate(

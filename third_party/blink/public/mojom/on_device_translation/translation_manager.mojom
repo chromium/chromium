@@ -6,13 +6,39 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/on_device_translation/translator.mojom";
 
+// The result of TranslationManager's CanCreateTranslator IPC.
+enum CanCreateTranslatorResult {
+  // Both the library and the language pack are ready.
+  kReadily = 0,
+
+  // The language packs are ready, but the library needs to be downloaded.
+  kAfterDownloadLibraryNotReady = 1,
+
+  // The library is ready, but the language packs need to be downloaded.
+  kAfterDownloadLanguagePackNotReady = 2,
+
+  // Both the library and the language packs need to be downloaded.
+  kAfterDownloadLibraryAndLanguagePackNotReady = 3,
+
+  // The translator cannot be created because the transltion for the specified
+  // language pair is not supported.
+  kNoNotSupportedLanguage = 4,
+
+  // The translator cannot be created because the Accept-Language check failed.
+  kNoAcceptLanguagesCheckFailed = 5,
+
+  // The translator cannot be created. New models need to be downloaded,
+  // but the number of downloaded language packs will exceedd the limit.
+  kNoExceedsLanguagePackCountLimitation = 6,
+};
+
 // The manager for on-device translation.
 interface TranslationManager {
   // Returns if it is supported to create a translator that could translate
   // texts from `source_lang` to `target_lang`.
   CanCreateTranslator(
     string source_lang, string target_lang
-  ) => (bool can_create);
+  ) => (CanCreateTranslatorResult result);
   // Creates a translator that could translate texts from `source_lang`
   // to `target_lang`. The translator will be bound to the `receiver`, and the
   // result will be passed to the callback.
