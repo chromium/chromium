@@ -146,6 +146,9 @@ class TouchToFillControllerAutofillDelegate
 
   void ShowPasswordMigrationWarningIfNeeded();
 
+  void OnFillingCredentialComplete(const std::u16string& username,
+                                   bool triggered_submission);
+
   // Callback to the controller to be invoked when a finalizing action has
   // completed. This will result in the destruction of the delegate so
   // no internal state should be touched after its invocation.

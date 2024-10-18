@@ -905,9 +905,11 @@ void PasswordAutofillAgent::TrackAutofilledElement(
 
 void PasswordAutofillAgent::FillPasswordSuggestion(
     const std::u16string& username,
-    const std::u16string& password) {
+    const std::u16string& password,
+    base::OnceCallback<void(bool)> callback) {
   auto focused_element = last_queried_element().DynamicTo<WebInputElement>();
   if (!focused_element || !IsElementEditable(focused_element)) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   WebInputElement username_element;
@@ -916,6 +918,7 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
   if (!HasElementsToFill(focused_element, UseFallbackData(true),
                          &username_element, &password_element,
                          &password_info)) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   if (focused_element.FormControlTypeForAutofill() == kInputPassword) {
@@ -923,8 +926,9 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
     password_info->password_field_suggestion_was_accepted = true;
     password_info->password_field = FieldRef(password_element);
   }
-  FillUsernameAndPasswordElements(username_element, password_element, username,
-                                  password);
+  bool success = FillUsernameAndPasswordElements(
+      username_element, password_element, username, password);
+  std::move(callback).Run(success);
 }
 
 void PasswordAutofillAgent::FillPasswordSuggestionById(
@@ -943,7 +947,7 @@ void PasswordAutofillAgent::FillPasswordSuggestionById(
       username, password);
 }
 
-void PasswordAutofillAgent::FillUsernameAndPasswordElements(
+bool PasswordAutofillAgent::FillUsernameAndPasswordElements(
     blink::WebInputElement username_element,
     blink::WebInputElement password_element,
     const std::u16string& username,
@@ -984,6 +988,11 @@ void PasswordAutofillAgent::FillUsernameAndPasswordElements(
   }
   auto length = base::checked_cast<unsigned>(focused_element.Value().length());
   focused_element.SetSelectionRange(length, length);
+
+  // Returns whether the fields were filled with the requested values
+  // successfully.
+  return (!username_element || username_element.Value().Utf16() == username) &&
+         (!password_element || password_element.Value().Utf16() == password);
 }
 
 void PasswordAutofillAgent::FillIntoFocusedField(

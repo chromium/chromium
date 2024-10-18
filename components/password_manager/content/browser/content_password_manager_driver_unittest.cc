@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -97,7 +98,9 @@ class FakePasswordAutofillAgent
               (override));
   MOCK_METHOD(void,
               FillPasswordSuggestion,
-              (const std::u16string&, const std::u16string&),
+              (const std::u16string&,
+               const std::u16string&,
+               base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
               FillPasswordSuggestionById,
@@ -369,7 +372,7 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 1);
 
-  driver->FillSuggestion(u"username", u"password");
+  driver->FillSuggestion(u"username", u"password", base::NullCallback());
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 2);
 

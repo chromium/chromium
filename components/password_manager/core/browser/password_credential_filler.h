@@ -27,8 +27,10 @@ class PasswordCredentialFiller {
 
   // Fills the given username and password to the form. It can also submit the
   // form if signaled.
-  virtual void FillUsernameAndPassword(const std::u16string& username,
-                                       const std::u16string& password) = 0;
+  virtual void FillUsernameAndPassword(
+      const std::u16string& username,
+      const std::u16string& password,
+      base::OnceCallback<void(bool)> success_callback) = 0;
 
   // Instructs the filler to submit the form or not.
   virtual void UpdateTriggerSubmission(bool new_value) = 0;

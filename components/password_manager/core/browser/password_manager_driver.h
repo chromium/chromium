@@ -91,8 +91,10 @@ class PasswordManagerDriver {
 
   // Tells the driver to fill the currently focused form with the `username` and
   // `password`.
-  virtual void FillSuggestion(const std::u16string& username,
-                              const std::u16string& password) = 0;
+  virtual void FillSuggestion(
+      const std::u16string& username,
+      const std::u16string& password,
+      base::OnceCallback<void(bool)> success_callback) = 0;
 
   // Similar to `FillSuggestion` but also passes the FieldRendererIds of the
   // elements to be filled.

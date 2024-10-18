@@ -4,7 +4,11 @@
 
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
 
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -25,6 +29,7 @@ using ToShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
 using password_manager::PasswordCredentialFillerImpl;
 using password_manager::PasswordFillingParams;
+using testing ::_;
 using testing::ReturnRefOfCopy;
 
 constexpr char kExampleCom[] = "https://example.com/";
@@ -34,7 +39,9 @@ const std::u16string kPassword = u"383KySrSpR38";
 struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
   MOCK_METHOD(void,
               FillSuggestion,
-              (const std::u16string&, const std::u16string&),
+              (const std::u16string&,
+               const std::u16string&,
+               base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
               KeyboardReplacingSurfaceClosed,
@@ -230,11 +237,13 @@ TEST_P(PasswordCredentialFillerTest, FillWithUsername) {
 
   EXPECT_CALL(driver(),
               KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false)));
-  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword));
+  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
   EXPECT_CALL(driver(), TriggerFormSubmission)
       .Times(submission_expected ? 1 : 0);
 
-  filler.FillUsernameAndPassword(kUsername, kPassword);
+  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
 }
 
 TEST_P(PasswordCredentialFillerTest, FillWithEmptyUsername) {
@@ -243,10 +252,12 @@ TEST_P(PasswordCredentialFillerTest, FillWithEmptyUsername) {
 
   EXPECT_CALL(driver(),
               KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false)));
-  EXPECT_CALL(driver(), FillSuggestion(kEmptyUsername, kPassword));
+  EXPECT_CALL(driver(), FillSuggestion(kEmptyUsername, kPassword, _))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
   EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
 
-  filler.FillUsernameAndPassword(kEmptyUsername, kPassword);
+  filler.FillUsernameAndPassword(kEmptyUsername, kPassword, base::DoNothing());
 }
 
 TEST_P(PasswordCredentialFillerTest,
@@ -256,10 +267,12 @@ TEST_P(PasswordCredentialFillerTest,
   filler.UpdateTriggerSubmission(true);
   EXPECT_CALL(driver(),
               KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false)));
-  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword));
+  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
   EXPECT_CALL(driver(), TriggerFormSubmission).Times(1);
 
-  filler.FillUsernameAndPassword(kUsername, kPassword);
+  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
 }
 
 TEST_P(PasswordCredentialFillerTest,
@@ -269,10 +282,12 @@ TEST_P(PasswordCredentialFillerTest,
   filler.UpdateTriggerSubmission(false);
   EXPECT_CALL(driver(),
               KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false)));
-  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword));
+  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
   EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
 
-  filler.FillUsernameAndPassword(kUsername, kPassword);
+  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
 }
 
 TEST_P(PasswordCredentialFillerTest, FillWithNullDriver) {
@@ -280,7 +295,7 @@ TEST_P(PasswordCredentialFillerTest, FillWithNullDriver) {
       nullptr, PasswordFillingParams(FormData(), 0, 0,
                                      autofill::FieldRendererId(), GetParam()));
   // Should not crash.
-  filler.FillUsernameAndPassword(kUsername, kPassword);
+  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
 }
 
 TEST_P(PasswordCredentialFillerTest, Dismiss) {
@@ -305,7 +320,7 @@ INSTANTIATE_TEST_SUITE_P(
                     SubmissionReadinessState::kTwoFields,
                     SubmissionReadinessState::kNoPasswordField));
 
-class PasswordCredentialFillerV2Test
+class PasswordCredentialFillerV2ParameterTest
     : public PasswordCredentialFillerBaseTest,
       public testing::WithParamInterface<
           std::tuple<PasswordFillingParams, SubmissionReadinessState>> {
@@ -314,7 +329,7 @@ class PasswordCredentialFillerV2Test
       password_manager::features::kPasswordSuggestionBottomSheetV2};
 };
 
-TEST_P(PasswordCredentialFillerV2Test, SubmissionReadiness) {
+TEST_P(PasswordCredentialFillerV2ParameterTest, SubmissionReadiness) {
   PasswordFillingParams params = std::get<0>(GetParam());
 
   PasswordCredentialFillerImpl filler(driver().AsWeakPtr(), params);
@@ -323,5 +338,35 @@ TEST_P(PasswordCredentialFillerV2Test, SubmissionReadiness) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    PasswordCredentialFillerV2Test,
+    PasswordCredentialFillerV2ParameterTest,
     testing::ValuesIn(kPasswordCredentialFillerV2TestCases));
+
+class PasswordCredentialFillerV2Test : public PasswordCredentialFillerBaseTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      password_manager::features::kPasswordSuggestionBottomSheetV2};
+};
+
+TEST_F(PasswordCredentialFillerV2Test, FillingFailed) {
+  PasswordCredentialFillerImpl filler(
+      driver().AsWeakPtr(),
+      PasswordFillingParams(
+          PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
+                           FormFieldFocusabilityType::kFocusableInput},
+                          /*has_captcha=*/false),
+          /*username_field_index=*/0,
+          /*password_field_index=*/1,
+          /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
+          SubmissionReadinessState::kNoInformation));
+
+  ASSERT_EQ(filler.GetSubmissionReadinessState(),
+            autofill::mojom::SubmissionReadinessState::kTwoFields);
+  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(/*was_filling_successful=*/false));
+  EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
+  base::MockCallback<base::OnceCallback<void(bool)>> reply_call;
+  EXPECT_CALL(reply_call, Run(false));
+
+  filler.FillUsernameAndPassword(kUsername, kPassword, reply_call.Get());
+}

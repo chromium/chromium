@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
@@ -140,7 +142,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // mojom::PasswordAutofillAgent:
   void SetPasswordFillData(const PasswordFormFillData& form_data) override;
   void FillPasswordSuggestion(const std::u16string& username,
-                              const std::u16string& password) override;
+                              const std::u16string& password,
+                              base::OnceCallback<void(bool)> callback) override;
   void FillPasswordSuggestionById(FieldRendererId username_element_id,
                                   FieldRendererId password_element_id,
                                   const std::u16string& username,
@@ -490,7 +493,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Given `username_element` and `password_element`, fills `username` and
   // `password` respectively into them.
-  void FillUsernameAndPasswordElements(blink::WebInputElement username_element,
+  bool FillUsernameAndPasswordElements(blink::WebInputElement username_element,
                                        blink::WebInputElement password_element,
                                        const std::u16string& username,
                                        const std::u16string& password);

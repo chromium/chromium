@@ -72,7 +72,8 @@ class ContentPasswordManagerDriver final
   void FocusNextFieldAfterPasswords() override;
   void FillField(const std::u16string& value) override;
   void FillSuggestion(const std::u16string& username,
-                      const std::u16string& password) override;
+                      const std::u16string& password,
+                      base::OnceCallback<void(bool)> success_callback) override;
   void FillSuggestionById(autofill::FieldRendererId username_element_id,
                           autofill::FieldRendererId password_element_id,
                           const std::u16string& username,
