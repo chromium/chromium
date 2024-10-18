@@ -4,11 +4,8 @@
 
 package org.chromium.components.signin.identitymanager;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-
-import android.graphics.Bitmap;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -22,32 +19,16 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.signin.base.AccountCapabilities;
-import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountId;
-
-import java.util.HashMap;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Unit tests for {@link AccountInfoServiceImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountInfoServiceImplTest {
-    private static final String ACCOUNT_EMAIL = "test@gmail.com";
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private IdentityManager mIdentityManagerMock;
 
     @Mock private AccountInfoService.Observer mObserverMock;
-
-    private final AccountInfo mAccountInfoWithAvatar =
-            new AccountInfo(
-                    new CoreAccountId("gaia-id-test"),
-                    ACCOUNT_EMAIL,
-                    "gaia-id-test",
-                    "full name",
-                    "given name",
-                    mock(Bitmap.class),
-                    new AccountCapabilities(new HashMap<>()));
 
     private AccountInfoServiceImpl mService;
 
@@ -80,8 +61,8 @@ public class AccountInfoServiceImplTest {
     public void testObserverIsNotifiedWhenAdded() {
         mService.addObserver(mObserverMock);
 
-        mService.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
-        verify(mObserverMock).onAccountInfoUpdated(mAccountInfoWithAvatar);
+        mService.onExtendedAccountInfoUpdated(TestAccounts.ACCOUNT1);
+        verify(mObserverMock).onAccountInfoUpdated(TestAccounts.ACCOUNT1);
     }
 
     @Test
@@ -89,8 +70,8 @@ public class AccountInfoServiceImplTest {
         mService.addObserver(mObserverMock);
         mService.removeObserver(mObserverMock);
 
-        mService.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
-        verify(mObserverMock, never()).onAccountInfoUpdated(mAccountInfoWithAvatar);
+        mService.onExtendedAccountInfoUpdated(TestAccounts.ACCOUNT1);
+        verify(mObserverMock, never()).onAccountInfoUpdated(TestAccounts.ACCOUNT1);
     }
 
     @Test

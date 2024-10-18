@@ -34,8 +34,6 @@ import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 
-import java.util.HashMap;
-
 /**
  * This test rule mocks AccountManagerFacade.
  *
@@ -198,16 +196,12 @@ public class AccountManagerTestRule implements TestRule {
     @Deprecated
     public AccountInfo addAccount(String accountName) {
         final String baseName = accountName.split("@", 2)[0];
-        String gaiaId = FakeAccountManagerFacade.toGaiaId(accountName);
         AccountInfo accountInfo =
-                new AccountInfo(
-                        new CoreAccountId(gaiaId),
-                        accountName,
-                        gaiaId,
-                        baseName + ".full",
-                        baseName + ".given",
-                        createAvatar(),
-                        new AccountCapabilities(new HashMap<>()));
+                new AccountInfo.Builder(accountName, FakeAccountManagerFacade.toGaiaId(accountName))
+                        .fullName(baseName + ".full")
+                        .givenName(baseName + ".given")
+                        .accountImage(createAvatar())
+                        .build();
         addAccount(accountInfo);
         return accountInfo;
     }
@@ -219,16 +213,12 @@ public class AccountManagerTestRule implements TestRule {
     @Deprecated
     public AccountInfo addAccount(
             String email, String fullName, String givenName, @Nullable Bitmap avatar) {
-        String gaiaId = FakeAccountManagerFacade.toGaiaId(email);
         AccountInfo accountInfo =
-                new AccountInfo(
-                        new CoreAccountId(gaiaId),
-                        email,
-                        gaiaId,
-                        fullName,
-                        givenName,
-                        avatar,
-                        new AccountCapabilities(new HashMap<>()));
+                new AccountInfo.Builder(email, FakeAccountManagerFacade.toGaiaId(email))
+                        .fullName(fullName)
+                        .givenName(givenName)
+                        .accountImage(avatar)
+                        .build();
         addAccount(accountInfo);
         return accountInfo;
     }

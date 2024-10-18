@@ -42,7 +42,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -53,7 +52,6 @@ import org.chromium.ui.widget.ChromeImageView;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /** Tests for {@link ProfileDataCache} image scaling. */
@@ -181,14 +179,10 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
                 () -> {
                     mIdentityManager.onExtendedAccountInfoUpdated(TestAccounts.ACCOUNT1);
                     final AccountInfo emptyAccountInfo =
-                            new AccountInfo(
-                                    TestAccounts.ACCOUNT1.getId(),
-                                    TestAccounts.ACCOUNT1.getEmail(),
-                                    TestAccounts.ACCOUNT1.getGaiaId(),
-                                    null,
-                                    null,
-                                    null,
-                                    new AccountCapabilities(new HashMap<>()));
+                            new AccountInfo.Builder(
+                                            TestAccounts.ACCOUNT1.getEmail(),
+                                            TestAccounts.ACCOUNT1.getGaiaId())
+                                    .build();
                     mIdentityManager.onExtendedAccountInfoUpdated(emptyAccountInfo);
                     checkImageIsScaled(TestAccounts.ACCOUNT1.getEmail());
                 });
