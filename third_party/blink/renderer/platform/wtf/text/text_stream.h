@@ -48,7 +48,6 @@ class WTF_EXPORT TextStream final {
   TextStream& operator<<(float);
   TextStream& operator<<(double);
   TextStream& operator<<(const char*);
-  TextStream& operator<<(const void*);
   TextStream& operator<<(const String&);
   TextStream& operator<<(const std::string&);
 

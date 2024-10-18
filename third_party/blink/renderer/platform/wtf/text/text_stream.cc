@@ -30,10 +30,6 @@
 
 namespace WTF {
 
-// large enough for any integer or floating point value in string format,
-// including trailing null character
-static const size_t kPrintBufferSize = 100;
-
 TextStream& TextStream::operator<<(bool b) {
   return *this << (b ? "1" : "0");
 }
@@ -81,12 +77,6 @@ TextStream& TextStream::operator<<(double d) {
 TextStream& TextStream::operator<<(const char* string) {
   text_.Append(string);
   return *this;
-}
-
-TextStream& TextStream::operator<<(const void* p) {
-  char buffer[kPrintBufferSize];
-  snprintf(buffer, sizeof(buffer) - 1, "%p", p);
-  return *this << buffer;
 }
 
 TextStream& TextStream::operator<<(const std::string& string) {

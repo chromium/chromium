@@ -175,7 +175,7 @@ void WriteLayoutObject(WTF::TextStream& ts,
   ts << o.DecoratedName();
 
   if (behavior & kLayoutAsTextShowAddresses)
-    ts << " " << static_cast<const void*>(&o);
+    ts << String::Format(" %p", &o);
 
   if (o.Style() && o.StyleRef().ZIndex())
     ts << " zI: " << o.StyleRef().ZIndex();
@@ -481,7 +481,7 @@ static void Write(WTF::TextStream& ts,
   ts << "layer ";
 
   if (behavior & kLayoutAsTextShowAddresses)
-    ts << static_cast<const void*>(&layer) << " ";
+    ts << String::Format("%p ", &layer);
 
   ts << "at " << adjusted_layer_offset;
 
