@@ -28,12 +28,16 @@ TEST(MathUtilTest, ProjectionOfPerpendicularPlane) {
   transform.MakeIdentity();
   transform.set_rc(2, 2, 0);
 
-  gfx::RectF rect = gfx::RectF(0, 0, 1, 1);
-  gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
+  gfx::PointF point(100, 100);
+  bool clipped = false;
+  gfx::PointF projected_point =
+      MathUtil::ProjectPoint(transform, point, &clipped);
+  EXPECT_TRUE(clipped);
+  EXPECT_EQ(gfx::PointF(), projected_point);
 
-  EXPECT_EQ(0, projected_rect.x());
-  EXPECT_EQ(0, projected_rect.y());
-  EXPECT_TRUE(projected_rect.IsEmpty());
+  gfx::RectF rect(0, 0, 100, 100);
+  gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
+  EXPECT_EQ(gfx::RectF(0, 0, 0, 0), projected_rect);
 }
 
 TEST(MathUtilTest, ProjectionOfAlmostPerpendicularPlane) {
@@ -53,12 +57,16 @@ TEST(MathUtilTest, ProjectionOfAlmostPerpendicularPlane) {
   transform.set_rc(2, 2, -1e-33);
   transform.set_rc(2, 3, 51346917453137000267776.0);
 
-  gfx::RectF rect = gfx::RectF(0, 0, 1, 1);
-  gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
+  gfx::PointF point(100, 100);
+  bool clipped = false;
+  gfx::PointF projected_point =
+      MathUtil::ProjectPoint(transform, point, &clipped);
+  EXPECT_TRUE(clipped);
+  EXPECT_EQ(gfx::PointF(), projected_point);
 
-  EXPECT_EQ(0, projected_rect.x());
-  EXPECT_EQ(0, projected_rect.y());
-  EXPECT_TRUE(projected_rect.IsEmpty()) << projected_rect.ToString();
+  gfx::RectF rect(0, 0, 100, 100);
+  gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
+  EXPECT_EQ(gfx::RectF(0, 0, 0, 0), projected_rect);
 }
 
 TEST(MathUtilTest, EnclosingClippedRectHandlesInfinityY) {
