@@ -6,7 +6,6 @@
 #define PDF_TEST_PDF_INK_TEST_HELPERS_H_
 
 #include <optional>
-#include <string>
 
 #include "base/containers/span.h"
 #include "base/time/time.h"
@@ -17,14 +16,6 @@
 #include "ui/gfx/geometry/point_f.h"
 
 namespace chrome_pdf {
-
-// Optional parameters that the `setAnnotationBrushMessage` may have, depending
-// on the brush type.
-struct TestAnnotationBrushMessageParams {
-  int color_r;
-  int color_g;
-  int color_b;
-};
 
 // Used to generate ink::StrokeInput. Many tests may need both a `position` and
 // a `time` to consistently generate the same results.
@@ -38,11 +29,6 @@ std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
     base::span<const PdfInkInputData> inputs);
 
 base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable);
-
-base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
-    const std::string& type,
-    double size,
-    const TestAnnotationBrushMessageParams* params);
 
 MATCHER_P6(InkAffineTransformEq,
            expected_a,
