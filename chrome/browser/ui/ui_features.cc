@@ -30,13 +30,6 @@ BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 #endif  // BUILDFLAG(IS_WIN)
 );
 
-// Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
-BASE_FEATURE(kChromeLabs, "ChromeLabs", base::FEATURE_ENABLED_BY_DEFAULT);
-const char kChromeLabsActivationParameterName[] =
-    "chrome_labs_activation_percentage";
-const base::FeatureParam<int> kChromeLabsActivationPercentage{
-    &kChromeLabs, kChromeLabsActivationParameterName, 99};
-
 // When enabled, clicks outside the omnibox and its popup will close an open
 // omnibox popup.
 BASE_FEATURE(kCloseOmniboxPopupOnInactiveAreaClick,

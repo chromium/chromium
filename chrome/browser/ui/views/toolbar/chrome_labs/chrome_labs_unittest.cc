@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/about_flags.h"
@@ -123,13 +122,10 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
               FEATURE_VALUE_TYPE(kExpiredFlagTestFeature)}}) {
     // Set expiration milestone such that the flag is expired.
     flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
+    ForceChromeLabsActivationForTesting();
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kChromeLabs,
-        {{features::kChromeLabsActivationPercentage.name, "100"}});
-
     // Set up test data on the model.
     scoped_chrome_labs_model_data_.SetModelDataForTesting(TestLabInfo());
 
@@ -169,7 +165,6 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
   chrome::ScopedChannelOverride channel_override_;
 #endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ChromeLabsCoordinatorTest, ShowBubbleTest) {
@@ -251,13 +246,10 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
               FEATURE_VALUE_TYPE(kExpiredFlagTestFeature)}}) {
     // Set expiration milestone such that the flag is expired.
     flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
+    ForceChromeLabsActivationForTesting();
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kChromeLabs,
-        {{features::kChromeLabsActivationPercentage.name, "100"}});
-
     // Set up test data on the model.
     scoped_chrome_labs_model_data_.SetModelDataForTesting(TestLabInfo());
     TestWithBrowserView::SetUp();
@@ -371,7 +363,6 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
   chrome::ScopedChannelOverride channel_override_;
 #endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<flags_ui::PrefServiceFlagsStorage> flags_storage_;
 };
 

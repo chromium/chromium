@@ -1947,13 +1947,6 @@ const FeatureEntry::FeatureVariation kScrollableTabStripOverflowVariations[] = {
 };
 #endif
 
-const FeatureEntry::FeatureParam kChromeLabsEnabledInFlags[] = {
-    {features::kChromeLabsActivationParameterName, "100"}};
-
-const FeatureEntry::FeatureVariation kChromeLabsVariations[] = {
-    {" use this one!", kChromeLabsEnabledInFlags,
-     std::size(kChromeLabsEnabledInFlags), nullptr}};
-
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kNtpCalendarModuleFakeData[] = {
     {ntp_features::kNtpCalendarModuleDataParam, "fake"}};
@@ -8917,12 +8910,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableOmniboxClientSearchPrefetchName,
      flag_descriptions::kEnableOmniboxClientSearchPrefetchDescription, kOsAll,
      FEATURE_VALUE_TYPE(kSearchNavigationPrefetch)},
-
-    {"chrome-labs", flag_descriptions::kChromeLabsName,
-     flag_descriptions::kChromeLabsDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kChromeLabs,
-                                    kChromeLabsVariations,
-                                    "ChromeLabs")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-offers-in-clank-keyboard-accessory",

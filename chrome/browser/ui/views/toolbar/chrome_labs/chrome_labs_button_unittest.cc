@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
@@ -62,11 +61,9 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
                                   FEATURE_VALUE_TYPE(kTestFeature1)}})
 
   {
+    ForceChromeLabsActivationForTesting();
   }
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kChromeLabs,
-        {{features::kChromeLabsActivationPercentage.name, "100"}});
     std::vector<LabInfo> test_feature_info = {
         {kFirstTestFeatureId, u"", u"", "", version_info::Channel::STABLE}};
     scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
@@ -81,7 +78,6 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
   chrome::ScopedChannelOverride channel_override_;
 #endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 
@@ -190,13 +186,10 @@ class ChromeLabsButtonNoExperimentsAvailableTest : public TestWithBrowserView {
 #endif
         scoped_feature_entries_({{kSecondTestFeatureId, "", "", 0,
                                   FEATURE_VALUE_TYPE(kTestFeature2)}}) {
+    ForceChromeLabsActivationForTesting();
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kChromeLabs,
-        {{features::kChromeLabsActivationPercentage.name, "100"}});
-
     std::vector<LabInfo> test_feature_info = {
         {kSecondTestFeatureId, u"", u"", "", version_info::Channel::STABLE}};
     scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
@@ -211,7 +204,6 @@ class ChromeLabsButtonNoExperimentsAvailableTest : public TestWithBrowserView {
   chrome::ScopedChannelOverride channel_override_;
 #endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 
@@ -232,12 +224,9 @@ class ChromeLabsButtonOnlyExpiredFeaturesAvailableTest
                                   flags_ui::FlagsState::GetCurrentPlatform(),
                                   FEATURE_VALUE_TYPE(kTestFeatureExpired)}}) {
     flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
+    ForceChromeLabsActivationForTesting();
   }
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kChromeLabs,
-        {{features::kChromeLabsActivationPercentage.name, "100"}});
-
     std::vector<LabInfo> test_feature_info = {{kExpiredFlagTestFeatureId, u"",
                                                u"", "",
                                                version_info::Channel::STABLE}};
@@ -253,7 +242,6 @@ class ChromeLabsButtonOnlyExpiredFeaturesAvailableTest
   chrome::ScopedChannelOverride channel_override_;
 #endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 

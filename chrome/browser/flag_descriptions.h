@@ -551,9 +551,6 @@ extern const char kCaptivePortalPopupWindowDescription[];
 extern const char kCapturedSurfaceControlName[];
 extern const char kCapturedSurfaceControlDescription[];
 
-extern const char kChromeLabsName[];
-extern const char kChromeLabsDescription[];
-
 extern const char kCommerceHintAndroidName[];
 extern const char kCommerceHintAndroidDescription[];
 

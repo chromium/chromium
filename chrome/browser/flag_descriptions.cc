@@ -951,11 +951,6 @@ const char kCaptivePortalPopupWindowDescription[] =
     "Use a popup window with proxies disabled for captive portal signin.";
 #endif
 
-const char kChromeLabsName[] = "Chrome Labs";
-const char kChromeLabsDescription[] =
-    "Access Chrome Labs through the toolbar menu to see featured user-facing "
-    "experimental features.";
-
 const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
     "Enables commerce hint detection on Android.";

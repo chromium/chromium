@@ -30,4 +30,9 @@ bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
 // pre-stable channels will have Chrome Labs enabled by default.
 bool IsChromeLabsEnabled();
 
-#endif  //  CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_UTILS_H_
+// Forces the activation of the feature for testing purposes to happen 100% of
+// the time. In prod code this only happens 99% of the time. Other conditions
+// that control the feature's visibility are not affected by this call.
+void ForceChromeLabsActivationForTesting();
+
+#endif  // CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_UTILS_H_

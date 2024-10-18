@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/browser.h"
@@ -53,13 +52,11 @@ class ChromeLabsUiTest : public DialogBrowserTest {
         scoped_feature_entries_({{kFirstTestFeatureId, "", "",
                                   flags_ui::FlagsState::GetCurrentPlatform(),
                                   FEATURE_VALUE_TYPE(kTestFeature1)}}) {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kChromeLabs,
-        {{features::kChromeLabsActivationPercentage.name, "100"}});
     std::vector<LabInfo> test_feature_info = {
         {kFirstTestFeatureId, u"Feature 1", u"Feature description", "",
          version_info::Channel::STABLE}};
     scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
+    ForceChromeLabsActivationForTesting();
   }
 
   void SetUpOnMainThread() override {
@@ -92,7 +89,6 @@ class ChromeLabsUiTest : public DialogBrowserTest {
   chrome::ScopedChannelOverride channel_override_;
 #endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 
@@ -115,9 +111,6 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
         scoped_feature_entries_({{kFirstTestFeatureId, "", "",
                                   flags_ui::FlagsState::GetCurrentPlatform(),
                                   FEATURE_VALUE_TYPE(kTestFeature1)}}) {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kChromeLabs,
-        {{features::kChromeLabsActivationPercentage.name, "100"}});
     // Add a lot of features to trigger the scrolling functionality.
     // All the entries are linked to the same feature using kFirstTestFeatureId
     // since it doesn't matter what feature is linked.
@@ -137,6 +130,7 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
     };
     scoped_chrome_labs_model_data_.SetModelDataForTesting(
         std::move(test_feature_info));
+    ForceChromeLabsActivationForTesting();
   }
 
   void SetUpOnMainThread() override {
@@ -181,7 +175,6 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
   chrome::ScopedChannelOverride channel_override_;
 #endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 
