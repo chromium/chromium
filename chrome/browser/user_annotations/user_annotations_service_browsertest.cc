@@ -25,6 +25,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -41,8 +42,7 @@ namespace user_annotations {
 class UserAnnotationsServiceDisabledBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        autofill_prediction_improvements::kAutofillPredictionImprovements);
+    feature_list_.InitAndDisableFeature(kUserAnnotations);
     InProcessBrowserTest::SetUp();
   }
 
@@ -59,8 +59,7 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceDisabledBrowserTest,
 class UserAnnotationsServiceKioskModeBrowserTest : public InProcessBrowserTest {
  public:
   UserAnnotationsServiceKioskModeBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill_prediction_improvements::kAutofillPredictionImprovements);
+    scoped_feature_list_.InitAndEnableFeature(kUserAnnotations);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -82,8 +81,7 @@ class UserAnnotationsServiceEphemeralProfileBrowserTest
     : public MixinBasedInProcessBrowserTest {
  public:
   UserAnnotationsServiceEphemeralProfileBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill_prediction_improvements::kAutofillPredictionImprovements);
+    scoped_feature_list_.InitAndEnableFeature(kUserAnnotations);
   }
 
  private:
@@ -171,7 +169,8 @@ class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 
   virtual void InitializeFeatureList() {
     feature_list_.InitWithFeatures(
-        {autofill_prediction_improvements::kAutofillPredictionImprovements},
+        {kUserAnnotations,
+         autofill_prediction_improvements::kAutofillPredictionImprovements},
         {});
   }
 
@@ -255,8 +254,10 @@ class UserAnnotationsServiceExplicitAllowlistBrowserTest
  protected:
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{autofill_prediction_improvements::kAutofillPredictionImprovements,
-          {{"allowed_hosts_for_form_submissions", "allowed.com"}}}},
+        {{kUserAnnotations,
+          {{"allowed_hosts_for_form_submissions", "allowed.com"}}},
+         {autofill_prediction_improvements::kAutofillPredictionImprovements,
+          {{"skip_allowlist", "true"}}}},
         {});
   }
 

@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/user_annotations/test_user_annotations_service.h"
+#include "components/user_annotations/user_annotations_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -866,7 +867,7 @@ class AutofillPredictionImprovementsManagerImportFormTest
  public:
   AutofillPredictionImprovementsManagerImportFormTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillPredictionImprovements,
+        user_annotations::kUserAnnotations,
         {{"should_extract_ax_tree_for_forms_annotations",
           std::get<1>(GetParam()) ? "true" : "false"}});
   }
@@ -977,7 +978,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
        MaybeImportFormRunsCallbackWithFalseWhenImportIsNotAttempted) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements,
+      user_annotations::kUserAnnotations,
       {{"allowed_hosts_for_form_submissions", "otherhost.com"}});
   base::MockCallback<user_annotations::ImportFormCallback> import_form_callback;
 

@@ -24,6 +24,7 @@
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -299,10 +300,11 @@ class AutofillPredictionImprovementsBrowserBaseTest
  public:
   AutofillPredictionImprovementsBrowserBaseTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{kAutofillPredictionImprovements,
-                               {{"skip_allowlist", "true"},
-                                {"allowed_hosts_for_form_submissions",
-                                 "a.com"}}}},
+        /*enabled_features=*/{{user_annotations::kUserAnnotations,
+                               {{"allowed_hosts_for_form_submissions",
+                                 "a.com"}}},
+                              {kAutofillPredictionImprovements,
+                               {{"skip_allowlist", "true"}}}},
         /*disabled_features=*/{});
   }
 
