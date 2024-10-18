@@ -9,9 +9,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/scoped_refptr.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/credential_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
+
+class ProfileIOS;
 
 namespace password_manager {
 struct CredentialUIEntry;
