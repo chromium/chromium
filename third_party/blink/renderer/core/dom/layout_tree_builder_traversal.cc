@@ -357,19 +357,20 @@ static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
   if (current.IsScrollMarkerGroupPseudoElement()) {
     return false;
   }
-  const ComputedStyle* style = current.GetComputedStyle();
-  if (style && !style->ScrollMarkerGroupNone()) {
-    return false;
+  if (const auto* element = DynamicTo<Element>(current)) {
+    const ComputedStyle* style = element->GetComputedStyle();
+    if (style && !style->ScrollMarkerGroupNone()) {
+      return false;
+    }
   }
-  if (!sibling) {
-    return true;
-  }
-  if (sibling->IsScrollMarkerGroupPseudoElement()) {
-    return false;
-  }
-  const ComputedStyle* sibling_style = sibling->GetComputedStyle();
-  if (sibling_style && !sibling_style->ScrollMarkerGroupNone()) {
-    return false;
+  if (Element* sibling_element = DynamicTo<Element>(sibling)) {
+    if (sibling_element->IsScrollMarkerGroupPseudoElement()) {
+      return false;
+    }
+    const ComputedStyle* sibling_style = sibling_element->GetComputedStyle();
+    if (sibling_style && !sibling_style->ScrollMarkerGroupNone()) {
+      return false;
+    }
   }
   return true;
 }
@@ -398,38 +399,45 @@ static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
     return next;
   }
   // From PS to OE with SMGB, return SMGB.
-  if (next && next->GetComputedStyle() &&
-      next->GetComputedStyle()->HasScrollMarkerGroupBefore()) {
-    if (Element* pseudo = To<Element>(next)->GetPseudoElement(
-            kPseudoIdScrollMarkerGroupBefore)) {
+  Element* next_element = DynamicTo<Element>(next);
+  if (next_element && next_element->GetComputedStyle() &&
+      next_element->GetComputedStyle()->HasScrollMarkerGroupBefore()) {
+    if (Element* pseudo =
+            next_element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
       return pseudo;
     }
   }
   // From some pseudo to any SMG, just skip SMG.
-  if (next && next->IsScrollMarkerGroupPseudoElement()) {
-    return LayoutTreeBuilderTraversal::NextSibling(*next);
+  if (next_element && next_element->IsScrollMarkerGroupPseudoElement()) {
+    return LayoutTreeBuilderTraversal::NextSibling(*next_element);
   }
   // From OE with SMGA to NS, return SMGA.
-  if (node.GetComputedStyle() &&
-      node.GetComputedStyle()->HasScrollMarkerGroupAfter()) {
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    return next;
+  }
+  if (element->GetComputedStyle() &&
+      element->GetComputedStyle()->HasScrollMarkerGroupAfter()) {
     if (Element* pseudo = To<Element>(node).GetPseudoElement(
             kPseudoIdScrollMarkerGroupAfter)) {
       return pseudo;
     }
   }
   // From SMGB, return OE.
-  if (node.IsScrollMarkerGroupBeforePseudoElement()) {
-    return To<PseudoElement>(node).OriginatingElement();
+  if (element->IsScrollMarkerGroupBeforePseudoElement()) {
+    return To<PseudoElement>(element)->OriginatingElement();
   }
   // From SMGA, return NS, but check if NS has SMGB, then return NS's SMGB.
-  if (node.IsScrollMarkerGroupAfterPseudoElement()) {
+  if (element->IsScrollMarkerGroupAfterPseudoElement()) {
     Node* originating_next = LayoutTreeBuilderTraversal::NextSibling(
-        *To<PseudoElement>(node).OriginatingElement());
-    if (originating_next && originating_next->GetComputedStyle() &&
-        originating_next->GetComputedStyle()->HasScrollMarkerGroupBefore()) {
-      if (Element* pseudo =
-              To<Element>(originating_next)
-                  ->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
+        *To<PseudoElement>(element)->OriginatingElement());
+    Element* originating_next_element = DynamicTo<Element>(originating_next);
+    if (originating_next_element &&
+        originating_next_element->GetComputedStyle() &&
+        originating_next_element->GetComputedStyle()
+            ->HasScrollMarkerGroupBefore()) {
+      if (Element* pseudo = originating_next_element->GetPseudoElement(
+              kPseudoIdScrollMarkerGroupBefore)) {
         return pseudo;
       }
     }
@@ -481,34 +489,42 @@ static Node* PreviousLayoutSiblingInBoxTreeOrder(const Node& node) {
   if (AreBoxTreeOrderSiblings(node, previous)) {
     return previous;
   }
-  if (previous && previous->GetComputedStyle() &&
-      previous->GetComputedStyle()->HasScrollMarkerGroupAfter()) {
-    if (Element* pseudo = To<Element>(previous)->GetPseudoElement(
+  Element* previous_element = DynamicTo<Element>(previous);
+  if (previous_element && previous_element->GetComputedStyle() &&
+      previous_element->GetComputedStyle()->HasScrollMarkerGroupAfter()) {
+    if (Element* pseudo = previous_element->GetPseudoElement(
             kPseudoIdScrollMarkerGroupAfter)) {
       return pseudo;
     }
   }
-  if (previous && previous->IsScrollMarkerGroupPseudoElement()) {
-    return LayoutTreeBuilderTraversal::PreviousSibling(*previous);
+  if (previous_element &&
+      previous_element->IsScrollMarkerGroupPseudoElement()) {
+    return LayoutTreeBuilderTraversal::PreviousSibling(*previous_element);
   }
-  if (node.GetComputedStyle() &&
-      node.GetComputedStyle()->HasScrollMarkerGroupBefore()) {
-    if (Element* pseudo = To<Element>(node).GetPseudoElement(
-            kPseudoIdScrollMarkerGroupBefore)) {
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    return previous;
+  }
+  if (element->GetComputedStyle() &&
+      element->GetComputedStyle()->HasScrollMarkerGroupBefore()) {
+    if (Element* pseudo =
+            element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
       return pseudo;
     }
   }
-  if (node.IsScrollMarkerGroupAfterPseudoElement()) {
-    return To<PseudoElement>(node).OriginatingElement();
+  if (element->IsScrollMarkerGroupAfterPseudoElement()) {
+    return To<PseudoElement>(element)->OriginatingElement();
   }
-  if (node.IsScrollMarkerGroupBeforePseudoElement()) {
+  if (element->IsScrollMarkerGroupBeforePseudoElement()) {
     Node* originating_prev = LayoutTreeBuilderTraversal::PreviousSibling(
-        *To<PseudoElement>(node).OriginatingElement());
-    if (originating_prev && originating_prev->GetComputedStyle() &&
-        originating_prev->GetComputedStyle()->HasScrollMarkerGroupAfter()) {
-      if (Element* pseudo =
-              To<Element>(originating_prev)
-                  ->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
+        *To<PseudoElement>(element)->OriginatingElement());
+    Element* originating_prev_element = DynamicTo<Element>(originating_prev);
+    if (originating_prev_element &&
+        originating_prev_element->GetComputedStyle() &&
+        originating_prev_element->GetComputedStyle()
+            ->HasScrollMarkerGroupAfter()) {
+      if (Element* pseudo = originating_prev_element->GetPseudoElement(
+              kPseudoIdScrollMarkerGroupAfter)) {
         return pseudo;
       }
     }
