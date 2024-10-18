@@ -209,6 +209,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="TaskType">
+  <variant name="AuxiliarySearchDonate" summary="AuxiliarySearchDonate"/>
   <variant name="BackgroundSyncOneShot" summary="BackgroundSyncOneShot"/>
   <variant name="ChromeMinidumpUploading" summary="ChromeMinidumpUploading"/>
   <variant name="ComponentUpdate" summary="ComponentUpdate"/>

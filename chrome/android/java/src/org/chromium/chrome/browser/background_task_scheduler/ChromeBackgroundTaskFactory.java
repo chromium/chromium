@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.background_task_scheduler;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchBackgroundTask;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
 import org.chromium.chrome.browser.background_sync.PeriodicBackgroundSyncChromeWakeUpTask;
 import org.chromium.chrome.browser.download.service.DownloadBackgroundTask;
@@ -87,6 +88,8 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
             case TaskIds.FEEDV2_REFRESH_JOB_ID:
             case TaskIds.WEBFEEDS_REFRESH_JOB_ID:
                 return new ProxyNativeTask();
+            case TaskIds.AUXILIARY_SEARCH_DONATE_JOB_ID:
+                return new AuxiliarySearchBackgroundTask();
                 // When adding a new job id with a BackgroundTask, remember to add a specific case
                 // for it here.
                 // If the job id corresponds to a native task, use {@link ProxyNativeTask} as the

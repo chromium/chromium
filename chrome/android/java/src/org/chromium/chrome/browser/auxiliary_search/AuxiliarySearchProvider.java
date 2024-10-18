@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.url.GURL;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -41,6 +42,8 @@ public class AuxiliarySearchProvider {
 
     /* Only donate the recent 7 days accessed tabs.*/
     @VisibleForTesting static final String TAB_AGE_HOURS_PARAM = "tabs_max_hours";
+    @VisibleForTesting static final String TASK_CREATED_TIME = "TaskCreatedTime";
+    @VisibleForTesting static final String TAB_DONATE_FILE_NAME = "tabs_donate";
     @VisibleForTesting static final int DEFAULT_TAB_AGE_HOURS = 168;
     @VisibleForTesting static final int DEFAULT_FAVICON_NUMBER = 5;
 
@@ -146,7 +149,7 @@ public class AuxiliarySearchProvider {
         callback.onResult(tabGroupBuilder.build());
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static @Nullable AuxiliarySearchEntry tabToAuxiliarySearchEntry(@Nullable Tab tab) {
         if (tab == null) {
             return null;
@@ -154,19 +157,27 @@ public class AuxiliarySearchProvider {
 
         String title = tab.getTitle();
         GURL url = tab.getUrl();
-        if (TextUtils.isEmpty(title) || url == null || !url.isValid()) return null;
+        if (url == null || !url.isValid()) return null;
 
-        var tabBuilder =
-                AuxiliarySearchEntry.newBuilder()
-                        .setTitle(title)
-                        .setUrl(url.getSpec())
-                        .setId(tab.getId());
-        final long lastAccessTime = tab.getTimestampMillis();
-        if (lastAccessTime != Tab.INVALID_TIMESTAMP) {
-            tabBuilder.setLastAccessTimestamp(lastAccessTime);
+        return createAuxiliarySearchEntry(
+                tab.getId(), title, url.getSpec(), tab.getTimestampMillis());
+    }
+
+    @VisibleForTesting
+    static @Nullable AuxiliarySearchEntry createAuxiliarySearchEntry(
+            int id, @NonNull String title, @NonNull String url, long timestamp) {
+        if (TextUtils.isEmpty(title) || url == null) return null;
+
+        var tabBuilder = AuxiliarySearchEntry.newBuilder().setTitle(title).setUrl(url).setId(id);
+        if (timestamp != Tab.INVALID_TIMESTAMP) {
+            tabBuilder.setLastAccessTimestamp(timestamp);
         }
-
         return tabBuilder.build();
+    }
+
+    /** Returns the file to save the metadata for donating tabs. */
+    static File getTabDonateFile(Context context) {
+        return new File(context.getFilesDir(), TAB_DONATE_FILE_NAME);
     }
 
     /**

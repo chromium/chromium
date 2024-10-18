@@ -1002,6 +1002,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/metrics:java",
       "//chrome/browser/autofill/android:java",
       "//chrome/browser/autofill/android:junit",
+      "//chrome/browser/auxiliary_search:java",
       "//chrome/browser/back_press/android:java",
       "//chrome/browser/back_press/android:junit",
       "//chrome/browser/bluetooth/android:junit",

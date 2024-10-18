@@ -18,7 +18,7 @@ public class AuxiliarySearchControllerFactory {
     public static @Nullable AuxiliarySearchController createAuxiliarySearchController(
             @NonNull Context context,
             @NonNull Profile profile,
-            @NonNull TabModelSelector tabModelSelector) {
+            @Nullable TabModelSelector tabModelSelector) {
         AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
         if (hooks == null || !hooks.isEnabled()) {
             return null;

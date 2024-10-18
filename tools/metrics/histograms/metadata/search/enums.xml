@@ -193,6 +193,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Not seen, from Long-press"/>
 </enum>
 
+<enum name="DonateResult">
+  <int value="0" label="No favicons available"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Succeed"/>
+</enum>
+
 <enum name="LensRegionSearchAspectRatio">
   <summary>
     Enum describing the aspect ratio of the captured region. The aspect ratios

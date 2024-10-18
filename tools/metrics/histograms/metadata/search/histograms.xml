@@ -140,6 +140,30 @@ chromium-metrics-reviews@google.com.
   <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.Schedule.DelayTime" units="ms"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the duration between a background task is created and executed for
+    tab donation. The histogram is logged when the background task is started,
+    Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.Schedule.FaviconDonateResult"
+    enum="DonateResult" expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the result of a background task for tab donation. The history is
+    logged when a donation is completed, or when all of the favicon fetches are
+    completed but there isn't any favicon available. Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
     enum="SearchEngineChoiceScrollState" expires_after="2025-04-13">
   <owner>jyammine@google.com</owner>
