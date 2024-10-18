@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/modules/shared_storage/private_aggregation.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_operation_definition.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_navigator.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_thread.h"
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
@@ -434,6 +435,7 @@ void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(shared_storage_);
   visitor->Trace(private_aggregation_);
   visitor->Trace(crypto_);
+  visitor->Trace(navigator_);
   visitor->Trace(operation_definition_map_);
   visitor->Trace(client_);
   WorkletGlobalScope::Trace(visitor);
@@ -1096,6 +1098,26 @@ SharedStorageWorkletGlobalScope::interestGroups(
           base::ElapsedTimer())));
 
   return promise;
+}
+
+SharedStorageWorkletNavigator* SharedStorageWorkletGlobalScope::Navigator(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!add_module_finished_) {
+    CHECK(!navigator_);
+
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "navigator cannot be accessed during addModule().");
+
+    return nullptr;
+  }
+
+  if (!navigator_) {
+    navigator_ = MakeGarbageCollected<SharedStorageWorkletNavigator>(
+        GetExecutionContext());
+  }
+  return navigator_.Get();
 }
 
 // Returns the unique ID for the currently running operation.

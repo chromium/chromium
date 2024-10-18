@@ -1210,6 +1210,12 @@ void SharedStorageWorkletHost::RecordUseCounters(
   }
 }
 
+void SharedStorageWorkletHost::GetLockManager(
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
+  shared_storage_worklet_host_manager_->BindLockManager(shared_storage_origin_,
+                                                        std::move(receiver));
+}
+
 void SharedStorageWorkletHost::ReportNoBinderForInterface(
     const std::string& error) {
   broker_receiver_.ReportBadMessage(error +

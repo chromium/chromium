@@ -1516,9 +1516,17 @@ SharedStorageWorkletHost* GetContextForHost(SharedStorageWorkletHost* host) {
 
 void PopulateSharedStorageWorkletBinders(SharedStorageWorkletHost* host,
                                          mojo::BinderMap* map) {
-  // Ignore requests to bind UKM recorder, since there is no current plan to
-  // support it for worklets and the renderer always tries to bind it.
+  // Ignore requests to bind UkmRecorderFactory and FeatureObserver, since there
+  // is no current plan to support them for worklets and the renderer always
+  // tries to bind them. TODO(crbug.com/366293454).
   map->Add<ukm::mojom::UkmRecorderFactory>(base::DoNothing());
+  map->Add<blink::mojom::FeatureObserver>(base::DoNothing());
+
+  // SharedStorageWorkletHost binders
+  // base::Unretained(host) is safe because the map is owned by
+  // |SharedStorageWorkletHost::broker_|.
+  map->Add<blink::mojom::LockManager>(base::BindRepeating(
+      &SharedStorageWorkletHost::GetLockManager, base::Unretained(host)));
 }
 
 void PopulateBinderMapWithContext(

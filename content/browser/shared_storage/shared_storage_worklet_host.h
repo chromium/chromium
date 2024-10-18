@@ -133,6 +133,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void RecordUseCounters(
       const std::vector<blink::mojom::WebFeature>& features) override;
 
+  void GetLockManager(
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver);
+
   void ReportNoBinderForInterface(const std::string& error);
 
   // Returns the process host associated with the worklet. Returns nullptr if

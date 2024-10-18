@@ -527,6 +527,9 @@ class SharedStorageWorkletTest : public PageTestBase {
       interest_groups_in_shared_storage_worklet_runtime_enabled_feature{
           /*enabled=*/true};
 
+  ScopedSharedStorageWebLocksForTest
+      shared_storage_web_locks_runtime_enabled_feature{/*enabled=*/true};
+
   mojo::Remote<mojom::SharedStorageWorkletService>
       shared_storage_worklet_service_;
 
@@ -853,6 +856,9 @@ TEST_F(SharedStorageWorkletTest,
     ];
 
     var expectedFunctions = [
+      "SharedStorageWorkletNavigator",
+      "LockManager",
+      "Lock",
       "SharedStorage",
       "Crypto",
       "CryptoKey",
@@ -891,6 +897,13 @@ TEST_F(SharedStorageWorkletTest,
       console.log("Expected error:", e.message);
     }
 
+    // Verify that trying to access `navigator` would throw a custom error.
+    try {
+      navigator;
+    } catch (e) {
+      console.log("Expected error:", e.message);
+    }
+
     // Verify that `interestGroups()` would reject with a custom error.
     interestGroups().then(groups => {
       console.log("Unexpected groups: ", groups);
@@ -902,12 +915,16 @@ TEST_F(SharedStorageWorkletTest,
   EXPECT_TRUE(add_module_result.success);
   EXPECT_EQ(add_module_result.error_message, "");
 
-  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 2u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 3u);
   EXPECT_EQ(test_client_->observed_console_log_messages_[0],
             "Expected error: Failed to read the 'sharedStorage' property from "
             "'SharedStorageWorkletGlobalScope': sharedStorage cannot be "
             "accessed during addModule().");
   EXPECT_EQ(test_client_->observed_console_log_messages_[1],
+            "Expected error: Failed to read the 'navigator' property from "
+            "'SharedStorageWorkletGlobalScope': navigator cannot be accessed "
+            "during addModule().");
+  EXPECT_EQ(test_client_->observed_console_log_messages_[2],
             "Expected async error: Failed to execute 'interestGroups' on "
             "'SharedStorageWorkletGlobalScope': interestGroups() cannot be "
             "called during addModule().");
@@ -1539,10 +1556,15 @@ TEST_F(SharedStorageWorkletTest,
           var expectedObjects = [
             "console",
             "sharedStorage",
-            "crypto"
+            "crypto",
+            "navigator",
+            "navigator.locks"
           ];
 
           var expectedFunctions = [
+            "SharedStorageWorkletNavigator",
+            "LockManager",
+            "Lock",
             "SharedStorage",
             "Crypto",
             "CryptoKey",
@@ -1559,7 +1581,8 @@ TEST_F(SharedStorageWorkletTest,
             "sharedStorage.keys",
             "sharedStorage.entries",
             "sharedStorage.remainingBudget",
-            "interestGroups"
+            "interestGroups",
+            "navigator.locks.request"
           ];
 
           // Those are either not implemented yet, or should stay undefined.
@@ -1610,10 +1633,15 @@ TEST_F(SharedStorageWorkletTest,
           var expectedObjects = [
             "console",
             "sharedStorage",
-            "crypto"
+            "crypto",
+            "navigator",
+            "navigator.locks"
           ];
 
           var expectedFunctions = [
+            "SharedStorageWorkletNavigator",
+            "LockManager",
+            "Lock",
             "SharedStorage",
             "Crypto",
             "CryptoKey",
@@ -1629,11 +1657,14 @@ TEST_F(SharedStorageWorkletTest,
             "sharedStorage.length",
             "sharedStorage.keys",
             "sharedStorage.entries",
-            "sharedStorage.remainingBudget"
+            "sharedStorage.remainingBudget",
+            "interestGroups",
+            "navigator.locks.request"
           ];
 
           // Those are either not implemented yet, or should stay undefined.
           var expectedUndefinedVariables = [
+            "sharedStorage.createWorklet",
             "sharedStorage.selectURL",
             "sharedStorage.run",
             "sharedStorage.worklet",
@@ -3489,6 +3520,32 @@ TEST_F(SharedStorageWorkletTest,
 
   EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
   EXPECT_EQ(test_client_->observed_console_log_messages_[0], "123abc");
+}
+
+class SharedStorageWebLocksDisabledTest : public SharedStorageWorkletTest {
+ private:
+  ScopedSharedStorageWebLocksForTest
+      shared_storage_web_locks_runtime_enabled_feature{/*enabled=*/false};
+};
+
+TEST_F(SharedStorageWebLocksDisabledTest,
+       InterfaceAndObjectExposure_DuringAddModule) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+    var expectedUndefinedVariables = [
+      "SharedStorageWorkletNavigator",
+      "LockManager",
+      "Lock",
+      "navigator",
+    ];
+
+    for (let expectedUndefined of expectedUndefinedVariables) {
+      if (eval("typeof " + expectedUndefined) !== "undefined") {
+        throw Error(expectedUndefined + " is not undefined.")
+      }
+    }
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
 }
 
 class SharedStorageInterestGroupsDisabledTest

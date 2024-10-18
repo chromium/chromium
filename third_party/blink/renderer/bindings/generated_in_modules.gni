@@ -2770,6 +2770,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_worklet.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_worklet_global_scope.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_worklet_global_scope.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_worklet_navigator.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_worklet_navigator.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_worker_global_scope.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_worker_global_scope.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_source_buffer.cc",

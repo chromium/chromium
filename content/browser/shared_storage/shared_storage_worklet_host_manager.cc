@@ -159,4 +159,11 @@ void SharedStorageWorkletHostManager::NotifyConfigPopulated(
   }
 }
 
+void SharedStorageWorkletHostManager::BindLockManager(
+    const url::Origin& shared_storage_origin,
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
+  lock_manager_.BindReceiver(OriginLockGroupId(shared_storage_origin),
+                             std::move(receiver));
+}
+
 }  // namespace content

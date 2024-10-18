@@ -12,6 +12,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
+#include "content/browser/locks/lock_manager.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -30,6 +31,22 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
  public:
   using WorkletHosts = std::map<SharedStorageWorkletHost*,
                                 std::unique_ptr<SharedStorageWorkletHost>>;
+
+  // Represents an origin for use as a lock group ID.
+  // This wraps the serialized origin and provides a trivial `is_null()` method
+  // to satisfy the requirements of the LockManager template class.
+  struct OriginLockGroupId {
+    explicit OriginLockGroupId(const url::Origin& origin)
+        : origin(origin.Serialize()) {}
+
+    bool is_null() const { return false; }
+
+    bool operator<(const OriginLockGroupId& other) const {
+      return origin < other.origin;
+    }
+
+    std::string origin;
+  };
 
   SharedStorageWorkletHostManager();
   virtual ~SharedStorageWorkletHostManager();
@@ -121,6 +138,10 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
 
   void NotifyConfigPopulated(const std::optional<FencedFrameConfig>& config);
 
+  void BindLockManager(
+      const url::Origin& shared_storage_origin,
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver);
+
  protected:
   void OnWorkletKeepAliveFinished(SharedStorageWorkletHost*);
 
@@ -148,6 +169,9 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
   // pending operations.
   std::map<SharedStorageDocumentServiceImpl*, WorkletHosts>
       attached_shared_storage_worklet_hosts_;
+
+  // Manages shared storage locks.
+  LockManager<OriginLockGroupId> lock_manager_;
 
   // The hosts that are detached from the worklet's owner document and have
   // entered keep-alive phase.

@@ -43,6 +43,7 @@ class SharedStorageOperationDefinition;
 class V8NoArgumentConstructor;
 class SharedStorage;
 class ScriptCachedMetadataHandler;
+class SharedStorageWorkletNavigator;
 class PrivateAggregation;
 class Crypto;
 class StorageInterestGroup;
@@ -129,6 +130,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   ScriptPromise<IDLSequence<StorageInterestGroup>> interestGroups(
       ScriptState*,
       ExceptionState&);
+  SharedStorageWorkletNavigator* Navigator(ScriptState*, ExceptionState&);
 
   // Returns the unique ID for the currently running operation.
   int64_t GetCurrentOperationId();
@@ -222,6 +224,10 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // The per-global-scope crypto object. Created on the first access of
   // `crypto`.
   Member<Crypto> crypto_;
+
+  // The per-global-scope navigator object. Created on the first access of
+  // `navigator`.
+  Member<SharedStorageWorkletNavigator> navigator_;
 
   // The map from the registered operation names to their definition.
   HeapHashMap<String, Member<SharedStorageOperationDefinition>>
