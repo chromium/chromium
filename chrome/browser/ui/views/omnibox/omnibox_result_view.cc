@@ -363,9 +363,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
           local_answer_header_and_suggestion_and_buttons_->AddChildViewAt(
               std::make_unique<OmniboxLocalAnswerHeaderView>(), 0);
     }
-    // TODO(crbug.com/364329824) Set correct icon & text using the autocomplete
-    //   match.
-    local_answer_header_->SetText(u"Summary:");
+    local_answer_header_->SetText(match.history_embeddings_answer_header_text);
     local_answer_header_->SetVisible(true);
   } else if (local_answer_header_) {
     local_answer_header_->SetVisible(false);

@@ -83,6 +83,10 @@ extern const base::FeatureParam<double> kMlAnswererMinScore;
 // development.
 extern const base::FeatureParam<int> kMockAnswererDelayMS;
 
+// Specifies the answer status to use for the mock answerer for local
+// development.
+extern const base::FeatureParam<int> kMockAnswererStatus;
+
 // This can be used to bypass IsAnswererUseAllowed checks. It's necessary for
 // testing and development but should remain false in real configurations.
 extern const base::FeatureParam<bool> kForceAnswererUseAllowed;

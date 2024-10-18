@@ -1483,11 +1483,12 @@ void AutocompleteResult::MergeMatchesByProvider(ACMatches* old_matches,
 
 AutocompleteResult::MatchDedupComparator
 AutocompleteResult::GetMatchComparisonFields(const AutocompleteMatch& match) {
-  return std::make_tuple(
-      match.stripped_destination_url.spec(),
-      match.type == ACMatchType::CALCULATOR,
-      match.answer_template.has_value() &&
-          OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get());
+  bool is_answer =
+      (match.answer_template.has_value() &&
+       OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) ||
+      match.type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER;
+  return std::make_tuple(match.stripped_destination_url.spec(),
+                         match.type == ACMatchType::CALCULATOR, is_answer);
 }
 
 void AutocompleteResult::LimitNumberOfURLsShown(

@@ -101,6 +101,11 @@ const base::FeatureParam<int> kMockAnswererDelayMS(&kHistoryEmbeddings,
                                                    "MockAnswererDelayMS",
                                                    0);
 
+// Default to `ComputeAnswerStatus::SUCCESS`.
+const base::FeatureParam<int> kMockAnswererStatus(&kHistoryEmbeddings,
+                                                  "MockAnswererStatus",
+                                                  2);
+
 const base::FeatureParam<bool> kForceAnswererUseAllowed(
     &kHistoryEmbeddings,
     "ForceAnswererUseAllowed",

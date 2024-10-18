@@ -856,7 +856,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       const errorEl = element.shadowRoot!.querySelector<HTMLElement>('.answer');
       assertTrue(!!errorEl);
       assertTrue(isVisible(errorEl));
-      assertEquals('Sorry, can\'t help you with that.', errorEl.innerText);
+      assertEquals('Sorry, I can\'t help you with that.', errorEl.innerText);
 
       await updateAnswerStatus(AnswerStatus.kExecutionCanceled);
       assertTrue(isVisible(errorEl));

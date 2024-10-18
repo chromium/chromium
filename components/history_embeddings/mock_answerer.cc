@@ -24,7 +24,9 @@ void MockAnswerer::ComputeAnswer(std::string query,
   optimization_guide::proto::Answer answer;
   answer.set_text(std::string("This is the answer to query '") + query +
                   std::string("'."));
-  AnswererResult result(ComputeAnswerStatus::kSuccess, query, answer);
+  AnswererResult result(
+      static_cast<ComputeAnswerStatus>(kMockAnswererStatus.Get()), query,
+      answer, {}, "url.com", {});
 
   // Set URL and passage citation if available.
   auto it = context.url_passages_map.begin();

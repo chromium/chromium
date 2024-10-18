@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -20,6 +21,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/history_embeddings/mock_history_embeddings_service.h"
@@ -29,6 +31,7 @@
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "components/search_engines/template_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -38,6 +41,11 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+using testing::AllOf;
+using testing::ElementsAre;
+using testing::Field;
+using enum history_embeddings::ComputeAnswerStatus;
 
 namespace {
 AutocompleteInput CreateAutocompleteInput(const std::u16string input) {
@@ -61,12 +69,22 @@ history_embeddings::ScoredUrlRow CreateScoredUrlRow(
 }
 
 history_embeddings::SearchResult CreateSearchResult(
+    const std::string& query,
     const std::u16string& title) {
   history_embeddings::SearchResult result;
+  result.query = query;
   result.scored_url_rows = {
       CreateScoredUrlRow(.5, "https://url.com/", title),
   };
   return result;
+}
+
+TemplateURL CreateTemplateUrl() {
+  TemplateURLData template_url_data;
+  template_url_data.SetShortName(u"shortname");
+  template_url_data.SetKeyword(u"keyword");
+  template_url_data.SetURL("https://url.com");
+  return TemplateURL{template_url_data};
 }
 }  // namespace
 
@@ -76,7 +94,7 @@ class FakeHistoryEmbeddingsProvider : public HistoryEmbeddingsProvider {
   using HistoryEmbeddingsProvider::OnReceivedSearchResult;
 
   using HistoryEmbeddingsProvider::done_;
-  using HistoryEmbeddingsProvider::last_search_input_;
+  using HistoryEmbeddingsProvider::input_;
   using HistoryEmbeddingsProvider::matches_;
   using HistoryEmbeddingsProvider::starter_pack_engine_;
 
@@ -108,21 +126,20 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
     // can be ran to simulate `Search()` responding asyncly.
     ON_CALL(*history_embeddings_service_,
             Search(testing::_, testing::_, testing::_, testing::_, testing::_))
-        .WillByDefault([&](history_embeddings::SearchResult*
-                               previous_search_result,
-                           std::string query,
-                           std::optional<base::Time> time_range_start,
-                           size_t count,
-                           history_embeddings::SearchResultCallback callback) {
-          search_callbacks_.push_back(base::BindOnce(
-              [](history_embeddings::SearchResultCallback callback,
-                 std::string response) {
-                std::move(callback).Run(
-                    CreateSearchResult(base::UTF8ToUTF16(response)));
-              },
-              std::move(callback)));
-          return history_embeddings::SearchResult();
-        });
+        .WillByDefault(
+            [&](history_embeddings::SearchResult* previous_search_result,
+                std::string query, std::optional<base::Time> time_range_start,
+                size_t count,
+                history_embeddings::SearchResultCallback callback) {
+              search_callbacks_.push_back(base::BindOnce(
+                  [](history_embeddings::SearchResultCallback callback,
+                     std::string query, std::u16string response) {
+                    std::move(callback).Run(
+                        CreateSearchResult(query, response));
+                  },
+                  std::move(callback)));
+              return history_embeddings::SearchResult();
+            });
   }
 
   // AutocompleteProviderListener:
@@ -138,9 +155,10 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
       history_embeddings_service_;
   scoped_refptr<FakeHistoryEmbeddingsProvider> history_embeddings_provider_;
   // Callbacks created when `Search()` is called. Running a callback with
-  // `string` will simulate `Search()` responding with 1 result with title
-  // `string`.
-  std::vector<base::OnceCallback<void(std::string)>> search_callbacks_;
+  // `(query, response)` will simulate `Search()` responding with a result with
+  // query `query` and 1 row  with title `response`.
+  std::vector<base::OnceCallback<void(std::string, std::u16string)>>
+      search_callbacks_;
   // The last set of matches the provider gave the autocomplete controller.
   ACMatches last_update_matches_;
 };
@@ -152,6 +170,9 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
       metrics::OmniboxEventProto_Feature_HISTORY_EMBEDDINGS_FEATURE;
 
   AutocompleteInput short_input = CreateAutocompleteInput(u"query");
+  AutocompleteInput sync_long_input =
+      CreateAutocompleteInput(u"query query query");
+  sync_long_input.set_omit_asynchronous_matches(true);
   AutocompleteInput long_input = CreateAutocompleteInput(u"query query query");
 
   // When the feature is disabled, should early exit.
@@ -185,6 +206,15 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   EXPECT_FALSE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   trigger_service->ResetSession();
 
+  // Sync queries should be blocked.
+  EXPECT_CALL(
+      *history_embeddings_service_,
+      Search(testing::_, testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  history_embeddings_provider_->Start(sync_long_input, false);
+  EXPECT_FALSE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  trigger_service->ResetSession();
+
   // Long queries should pass.
   EXPECT_CALL(*history_embeddings_service_,
               Search(testing::_, "query query query",
@@ -203,7 +233,7 @@ TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleSequentialSearches) {
   EXPECT_TRUE(last_update_matches_.empty());
 
   // Check results are populated when 1st search responds.
-  std::move(search_callbacks_[0]).Run("1");
+  std::move(search_callbacks_[0]).Run("1 1 1", u"1");
   EXPECT_THAT(last_update_matches_,
               testing::ElementsAre(
                   testing::Field(&AutocompleteMatch::description, u"1")));
@@ -215,7 +245,7 @@ TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleSequentialSearches) {
                   testing::Field(&AutocompleteMatch::description, u"1")));
 
   // Check results are populated when 2nd search responds.
-  std::move(search_callbacks_[1]).Run("2");
+  std::move(search_callbacks_[1]).Run("2 2 2", u"2");
   EXPECT_THAT(last_update_matches_,
               testing::ElementsAre(
                   testing::Field(&AutocompleteMatch::description, u"2")));
@@ -234,11 +264,11 @@ TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleParallelSearches) {
   EXPECT_TRUE(last_update_matches_.empty());
 
   // Check results are not populated when 1st search responds.
-  std::move(search_callbacks_[0]).Run("1");
+  std::move(search_callbacks_[0]).Run("1 1 1", u"1");
   EXPECT_TRUE(last_update_matches_.empty());
 
   // Check results are populated when 2nd search responds.
-  std::move(search_callbacks_[1]).Run("2");
+  std::move(search_callbacks_[1]).Run("2 2 2", u"2");
   EXPECT_THAT(last_update_matches_,
               testing::ElementsAre(
                   testing::Field(&AutocompleteMatch::description, u"2")));
@@ -260,7 +290,7 @@ TEST_F(HistoryEmbeddingsProviderTest,
   // Check results are populated when 1st search responds. Even though the
   // provider usually only cares about the most recent `Search()`, since the
   // input didn't change, it can use the 1st `Search()`.
-  std::move(search_callbacks_[0]).Run("1");
+  std::move(search_callbacks_[0]).Run("1 1 1", u"1");
   EXPECT_THAT(last_update_matches_,
               testing::ElementsAre(
                   testing::Field(&AutocompleteMatch::description, u"1")));
@@ -268,7 +298,7 @@ TEST_F(HistoryEmbeddingsProviderTest,
   // Check results aren't replaced when 2nd search responds. The provider
   // already reported `done_ = true` and it would break autocompletion to send
   // an update after doing so.
-  std::move(search_callbacks_[1]).Run("2");
+  std::move(search_callbacks_[1]).Run("1 1 1", u"2");
   EXPECT_THAT(last_update_matches_,
               testing::ElementsAre(
                   testing::Field(&AutocompleteMatch::description, u"1")));
@@ -297,7 +327,7 @@ TEST_F(HistoryEmbeddingsProviderTest,
   EXPECT_TRUE(last_update_matches_.empty());
 
   // Ensure a stale search doesn't populate matches.
-  std::move(search_callbacks_[0]).Run("1");
+  std::move(search_callbacks_[0]).Run("1 1 1", u"1");
   EXPECT_TRUE(last_update_matches_.empty());
 
   // Ensure a 2nd search wasn't made.
@@ -315,7 +345,7 @@ TEST_F(HistoryEmbeddingsProviderTest, Start_Stop_SearchCompletesAfterStop) {
   history_embeddings_provider_->Stop(false, false);
 
   // Results returned after `Stop()` should be discarded.
-  std::move(search_callbacks_[0]).Run("1");
+  std::move(search_callbacks_[0]).Run("1 1 1", u"1");
   EXPECT_TRUE(last_update_matches_.empty());
 }
 
@@ -337,14 +367,15 @@ TEST_F(HistoryEmbeddingsProviderTest, DeleteMatch) {
 TEST_F(HistoryEmbeddingsProviderTest,
        OnReceivedSearchResult_CreatesAutocompleteMatches) {
   history_embeddings::SearchResult result;
+  result.query = "query";
   result.scored_url_rows = {
       CreateScoredUrlRow(.5, "https://url.com/", u"title"),
   };
   history_embeddings_provider_->done_ = false;
-  history_embeddings_provider_->last_search_input_ = u"query";
-  history_embeddings_provider_->OnReceivedSearchResult(u"query",
-                                                       std::move(result));
+  history_embeddings_provider_->input_ = CreateAutocompleteInput(u"query");
+  history_embeddings_provider_->OnReceivedSearchResult(std::move(result));
 
+  EXPECT_TRUE(history_embeddings_provider_->done_);
   ASSERT_EQ(history_embeddings_provider_->matches_.size(), 1u);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].provider.get(),
             history_embeddings_provider_.get());
@@ -367,22 +398,19 @@ TEST_F(HistoryEmbeddingsProviderTest,
        OnReceivedSearchResult_CreatesScopedAutocompleteMatches) {
   // Verifies autocomplete match is created correctly when the user is in
   // keyword mode.
-  TemplateURLData template_url_data;
-  template_url_data.SetShortName(u"shortname");
-  template_url_data.SetKeyword(u"keyword");
-  template_url_data.SetURL("https://url.com");
-  TemplateURL template_url{template_url_data};
+  TemplateURL template_url = CreateTemplateUrl();
   history_embeddings_provider_->starter_pack_engine_ = &template_url;
 
   history_embeddings::SearchResult result;
+  result.query = "query";
   result.scored_url_rows = {
       CreateScoredUrlRow(.5, "https://url.com/", u"title"),
   };
   history_embeddings_provider_->done_ = false;
-  history_embeddings_provider_->last_search_input_ = u"query";
-  history_embeddings_provider_->OnReceivedSearchResult(u"query",
-                                                       std::move(result));
+  history_embeddings_provider_->input_ = CreateAutocompleteInput(u"query");
+  history_embeddings_provider_->OnReceivedSearchResult(std::move(result));
 
+  EXPECT_TRUE(history_embeddings_provider_->done_);
   ASSERT_EQ(history_embeddings_provider_->matches_.size(), 1u);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].provider.get(),
             history_embeddings_provider_.get());
@@ -399,4 +427,154 @@ TEST_F(HistoryEmbeddingsProviderTest,
   EXPECT_TRUE(PageTransitionCoreTypeIs(
       history_embeddings_provider_->matches_[0].transition,
       ui::PAGE_TRANSITION_KEYWORD));
+}
+
+TEST_F(HistoryEmbeddingsProviderTest,
+       OnReceivedSearchResult_CreatesScopedAutocompleteAnswerMatches) {
+  base::test::ScopedFeatureList enabled_feature;
+  enabled_feature.InitWithFeaturesAndParameters(
+      {{history_embeddings::kHistoryEmbeddings,
+        {{history_embeddings::kAnswersInOmniboxScoped.name, "true"}}},
+#if BUILDFLAG(IS_CHROMEOS)
+       {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
+      /*disabled_features=*/{});
+
+  TemplateURL template_url = CreateTemplateUrl();
+  history_embeddings_provider_->starter_pack_engine_ = &template_url;
+
+  // 1st response with status `kUnspecified`.
+  history_embeddings::SearchResult result;
+  result.query = "query";
+  result.scored_url_rows = {
+      CreateScoredUrlRow(.75, "https://url1.com/", u"title"),
+      CreateScoredUrlRow(.50, "https://url2.com/", u"title"),
+      CreateScoredUrlRow(.25, "https://url3.com/", u"title"),
+  };
+  base::Time time;
+  EXPECT_TRUE(base::Time::FromLocalExploded(
+      {.year = 2025, .month = 3, .day_of_month = 23}, &time));
+  result.scored_url_rows[1].row.set_last_visit(time);
+
+  history_embeddings_provider_->done_ = false;
+  history_embeddings_provider_->input_ = CreateAutocompleteInput(u"query");
+  history_embeddings_provider_->input_.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  history_embeddings_provider_->OnReceivedSearchResult(result.Clone());
+
+  // Set up expected matches.
+  auto expected_match_1 =
+      AllOf(Field(&AutocompleteMatch::relevance, 750),
+            Field(&AutocompleteMatch::type,
+                  AutocompleteMatchType::HISTORY_EMBEDDINGS),
+            Field(&AutocompleteMatch::destination_url, "https://url1.com/"));
+  auto expected_match_2 =
+      AllOf(Field(&AutocompleteMatch::relevance, 500),
+            Field(&AutocompleteMatch::type,
+                  AutocompleteMatchType::HISTORY_EMBEDDINGS),
+            Field(&AutocompleteMatch::destination_url, "https://url2.com/"));
+  auto expected_match_3 =
+      AllOf(Field(&AutocompleteMatch::relevance, 250),
+            Field(&AutocompleteMatch::type,
+                  AutocompleteMatchType::HISTORY_EMBEDDINGS),
+            Field(&AutocompleteMatch::destination_url, "https://url3.com/"));
+
+  // Expect only non-answer matches.
+  EXPECT_FALSE(history_embeddings_provider_->done_);
+  EXPECT_THAT(
+      history_embeddings_provider_->matches_,
+      ElementsAre(expected_match_1, expected_match_2, expected_match_3));
+
+  // 2nd response with status `kLoading`.
+  auto result_loading = result.Clone();
+  result_loading.answerer_result.status = kLoading;
+  result_loading.answerer_result.query = "query";
+  history_embeddings_provider_->OnReceivedSearchResult(
+      std::move(result_loading));
+
+  // Expect the same non-answer matches as well as a 'loading' answer match,
+  // scored 1 less than the top match.
+  EXPECT_FALSE(history_embeddings_provider_->done_);
+  EXPECT_THAT(
+      history_embeddings_provider_->matches_,
+      ElementsAre(
+          expected_match_1, expected_match_2, expected_match_3,
+          AllOf(Field(&AutocompleteMatch::relevance, 749),
+                Field(&AutocompleteMatch::type,
+                      AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER),
+                Field(&AutocompleteMatch::destination_url, ""),
+                Field(&AutocompleteMatch::history_embeddings_answer_header_text,
+                      u"Generating summary based on your browsing history"),
+                Field(&AutocompleteMatch::description, u""))));
+
+  // 3rd response with status `kSuccess`.
+  auto result_success = result.Clone();
+  result_success.answerer_result.status = kSuccess;
+  result_success.answerer_result.query = "query";
+  result_success.answerer_result.answer.set_score(1);
+  result_success.answerer_result.answer.set_text("answer text");
+  result_success.answerer_result.url = "https://url2.com/";
+  history_embeddings_provider_->OnReceivedSearchResult(
+      std::move(result_success));
+
+  // Expect the same non-answer matches as well as a flushed out answer match,
+  // scored 1 less than the corresponding match.
+  EXPECT_TRUE(history_embeddings_provider_->done_);
+  EXPECT_THAT(
+      history_embeddings_provider_->matches_,
+      ElementsAre(
+          expected_match_1, expected_match_2, expected_match_3,
+          AllOf(Field(&AutocompleteMatch::relevance, 499),
+                Field(&AutocompleteMatch::type,
+                      AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER),
+                Field(&AutocompleteMatch::destination_url,
+                      "chrome://history/?q=query"),
+                Field(&AutocompleteMatch::history_embeddings_answer_header_text,
+                      u"Summary"),
+                Field(&AutocompleteMatch::description, u"answer text"),
+                Field(&AutocompleteMatch::contents,
+                      u"https://url2.com/  •  Visited Mar 23, 2025"))));
+
+  // Test error cases.
+  std::u16string temporary_error =
+      u"Something went wrong. Please try again later.";
+  std::u16string non_temporary_error = u"Sorry, I can't help you with that.";
+  for (const auto& [status, expected_answer_text] : std::vector<
+           std::pair<history_embeddings::ComputeAnswerStatus, std::u16string>>{
+           {kUnanswerable, non_temporary_error},
+           {kModelUnavailable, temporary_error},
+           {kExecutionFailure, temporary_error},
+           {kExecutionCancelled, u""},
+           {kFiltered, non_temporary_error}}) {
+    SCOPED_TRACE("Testing status: " +
+                 base::NumberToString(static_cast<int>(status)));
+    auto result_error = result.Clone();
+    result_error.answerer_result.status = status;
+    history_embeddings_provider_->done_ = false;
+    history_embeddings_provider_->OnReceivedSearchResult(
+        std::move(result_error));
+
+    EXPECT_TRUE(history_embeddings_provider_->done_);
+    if (expected_answer_text.empty()) {
+      EXPECT_THAT(
+          history_embeddings_provider_->matches_,
+          ElementsAre(expected_match_1, expected_match_2, expected_match_3));
+    } else {
+      EXPECT_THAT(
+          history_embeddings_provider_->matches_,
+          ElementsAre(
+              expected_match_1, expected_match_2, expected_match_3,
+              AllOf(
+                  Field(&AutocompleteMatch::relevance, 749),
+                  Field(&AutocompleteMatch::type,
+                        AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER),
+                  Field(&AutocompleteMatch::destination_url, ""),
+                  Field(
+                      &AutocompleteMatch::history_embeddings_answer_header_text,
+                      u"Summary"),
+                  Field(&AutocompleteMatch::description, expected_answer_text),
+                  Field(&AutocompleteMatch::contents, u""))));
+    }
+  }
 }
