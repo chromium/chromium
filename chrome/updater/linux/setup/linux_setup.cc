@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/posix/setup.h"
-
 #include <stdio.h>
 #include <unistd.h>
 
@@ -18,6 +16,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/linux/systemd_util.h"
+#include "chrome/updater/posix/setup.h"
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 

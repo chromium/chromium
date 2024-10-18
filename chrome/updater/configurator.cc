@@ -49,7 +49,8 @@
 namespace updater {
 
 Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
-                           scoped_refptr<ExternalConstants> external_constants)
+                           scoped_refptr<ExternalConstants> external_constants,
+                           bool is_ceca_experiment_enabled)
     : prefs_(prefs),
       external_constants_(external_constants),
       persisted_data_(base::MakeRefCounted<PersistedData>(
@@ -58,7 +59,8 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
           std::make_unique<ActivityDataService>(GetUpdaterScope()))),
       policy_service_(base::MakeRefCounted<PolicyService>(
           external_constants,
-          persisted_data_->GetUsageStatsEnabled())),
+          persisted_data_->GetUsageStatsEnabled(),
+          is_ceca_experiment_enabled)),
       unzip_factory_(
           base::MakeRefCounted<update_client::InProcessUnzipperFactory>()),
       patch_factory_(

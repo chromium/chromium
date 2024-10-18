@@ -24,6 +24,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -34,6 +35,8 @@
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/policy_fetcher.h"
 #include "chrome/updater/policy/policy_manager.h"
+#include "chrome/updater/prefs.h"
+#include "chrome/updater/updater_scope.h"
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/policy/win/group_policy_manager.h"
 #elif BUILDFLAG(IS_MAC)
@@ -136,7 +139,8 @@ PolicyService::PolicyService(
     std::vector<scoped_refptr<PolicyManagerInterface>> managers,
     bool usage_stats_enabled)
     : policy_managers_(SortManagers(std::move(managers))),
-      usage_stats_enabled_(usage_stats_enabled) {}
+      usage_stats_enabled_(usage_stats_enabled),
+      is_ceca_experiment_enabled_(false) {}
 
 // The policy managers are initialized without taking the Group Policy critical
 // section here, by passing `false` for `should_take_policy_critical_section`,
@@ -144,13 +148,15 @@ PolicyService::PolicyService(
 // policies are reloaded with the critical section lock.
 PolicyService::PolicyService(
     scoped_refptr<ExternalConstants> external_constants,
-    bool usage_stats_enabled)
+    bool usage_stats_enabled,
+    bool is_ceca_experiment_enabled)
     : policy_managers_(SortManagers(CreateManagers(
           /*should_take_policy_critical_section=*/false,
           external_constants,
           CreateDMPolicyManager(external_constants->IsMachineManaged())))),
       external_constants_(external_constants),
-      usage_stats_enabled_(usage_stats_enabled) {
+      usage_stats_enabled_(usage_stats_enabled),
+      is_ceca_experiment_enabled_(is_ceca_experiment_enabled) {
   VLOG(1) << "Current effective policies:" << std::endl
           << GetAllPoliciesAsString();
 }
@@ -196,13 +202,17 @@ void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
   }
 
   fetch_policies_callback_ = std::move(callback);
-  auto fetcher = base::MakeRefCounted<FallbackPolicyFetcher>(
-      CreateOutOfProcessPolicyFetcher(
-          usage_stats_enabled_, external_constants_->IsMachineManaged(),
-          external_constants_->CecaConnectionTimeout()),
+  scoped_refptr<PolicyFetcher> fetcher =
       CreateInProcessPolicyFetcher(external_constants_->DeviceManagementURL(),
                                    PolicyServiceProxyConfiguration::Get(this),
-                                   external_constants_->IsMachineManaged()));
+                                   external_constants_->IsMachineManaged());
+  if (is_ceca_experiment_enabled_) {
+    fetcher = base::MakeRefCounted<FallbackPolicyFetcher>(
+        CreateOutOfProcessPolicyFetcher(
+            usage_stats_enabled_, external_constants_->IsMachineManaged(),
+            external_constants_->CecaConnectionTimeout()),
+        fetcher);
+  }
   fetcher->FetchPolicies(
       base::BindOnce(&PolicyService::FetchPoliciesDone, this, fetcher));
 }

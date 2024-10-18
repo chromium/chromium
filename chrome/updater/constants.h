@@ -229,6 +229,12 @@ inline constexpr char kOfflineDirSwitch[] =
 // that scenario.
 inline constexpr char kAppArgsSwitch[] = "appargs";  // backward-compatibility.
 
+// If provided alongside the update or install switch, a value is written to the
+// local preferences indicating that the Chrome Enterprise Companion App
+// experiment should be enabled.
+// TODO(crbug.com/342180612): Remove once the application has fully launched.
+inline constexpr char kEnableCecaExperimentSwitch[] = "enable-ceca-experiment";
+
 // The "expect-elevated" switch indicates that updater setup should be running
 // elevated (at high integrity). This switch is needed to avoid running into a
 // loop trying (but failing repeatedly) to elevate updater setup when attempting

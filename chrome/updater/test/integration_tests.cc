@@ -254,22 +254,26 @@ class IntegrationTest : public ::testing::Test {
 
   void PrintLog() { test_commands_->PrintLog(); }
 
-  void Install(const base::Value::List& switches = {}) {
+  void Install(const base::Value::List& switches =
+                   base::Value::List().Append(kEnableCecaExperimentSwitch)) {
     test_commands_->Install(switches);
   }
 
-  void InstallUpdaterAndApp(const std::string& app_id,
-                            const bool is_silent_install,
-                            const std::string& tag,
-                            const std::string& child_window_text_to_find = {},
-                            const bool always_launch_cmd = false,
-                            const bool verify_app_logo_loaded = false,
-                            const bool expect_success = true,
-                            const bool wait_for_the_installer = true) {
+  void InstallUpdaterAndApp(
+      const std::string& app_id,
+      const bool is_silent_install,
+      const std::string& tag,
+      const std::string& child_window_text_to_find = {},
+      const bool always_launch_cmd = false,
+      const bool verify_app_logo_loaded = false,
+      const bool expect_success = true,
+      const bool wait_for_the_installer = true,
+      const base::Value::List& additional_switches =
+          base::Value::List().Append(kEnableCecaExperimentSwitch)) {
     test_commands_->InstallUpdaterAndApp(
         app_id, is_silent_install, tag, child_window_text_to_find,
         always_launch_cmd, verify_app_logo_loaded, expect_success,
-        wait_for_the_installer);
+        wait_for_the_installer, additional_switches);
   }
 
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
@@ -2895,7 +2899,8 @@ class IntegrationTestUserInSystem : public IntegrationTest {
     user_test_commands_->InstallUpdaterAndApp(
         app_id, is_silent_install, tag, child_window_text_to_find,
         always_launch_cmd, verify_app_logo_loaded,
-        /*expect_success=*/true, /*wait_for_the_installer=*/true);
+        /*expect_success=*/true, /*wait_for_the_installer=*/true,
+        /*additional_switches=*/{});
   }
 
   scoped_refptr<IntegrationTestCommands> user_test_commands_ =

@@ -544,7 +544,8 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const bool always_launch_cmd,
                           const bool verify_app_logo_loaded,
                           const bool expect_success,
-                          const bool wait_for_the_installer) {
+                          const bool wait_for_the_installer,
+                          const base::Value::List& additional_switches) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
@@ -558,6 +559,9 @@ void InstallUpdaterAndApp(UpdaterScope scope,
   }
   if (always_launch_cmd) {
     command_line.AppendSwitch(kAlwaysLaunchCmdSwitch);
+  }
+  for (const base::Value& cmd_line_switch : additional_switches) {
+    command_line.AppendSwitch(cmd_line_switch.GetString());
   }
 
   if (child_window_text_to_find.empty()) {

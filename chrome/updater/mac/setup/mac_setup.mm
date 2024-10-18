@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/posix/setup.h"
-
 #import <ServiceManagement/ServiceManagement.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -36,6 +34,7 @@
 #include "chrome/updater/crash_reporter.h"
 #include "chrome/updater/mac/setup/keystone.h"
 #include "chrome/updater/mac/setup/wake_task.h"
+#include "chrome/updater/posix/setup.h"
 #include "chrome/updater/setup.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
