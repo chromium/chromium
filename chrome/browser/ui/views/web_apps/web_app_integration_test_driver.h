@@ -403,6 +403,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckHasSubApp(Site parent_app, Site sub_app);
   void CheckNoSubApps(Site parent_app);
   void CheckAppLoadedInTab(Site site);
+  void CheckSiteLoadedInTab(Site site);
 
  protected:
   // WebAppInstallManagerObserver:

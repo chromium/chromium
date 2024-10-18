@@ -75,6 +75,16 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   const base::UnguessableToken& GetAudioFocusGroupIdForTesting() const;
 
+  // Returns the installed web app that 'controls' the last committed url of
+  // this tab.
+  // - 'controls' means it's the web app who's scope contains the last committed
+  //    url. If there are multiple web apps that satisfy this constraint, then
+  //    it chooses the one with the longest (aka most specific) scope prefix.
+  // - 'installed' means the web app is
+  //   InstallState::INSTALLED_WITH_OS_INTEGRATION or
+  //   InstallState::INSTALLED_WITHOUT_OS_INTEGRATION (which is usually only
+  //   preinstalled apps). And thus this excludes the
+  //   InstallState::SUGGESTED_FROM_ANOTHER_DEVICE state.
   const std::optional<webapps::AppId> app_id() const { return app_id_; }
 
   bool is_pinned_home_tab() const { return is_pinned_home_tab_; }

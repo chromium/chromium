@@ -351,9 +351,12 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   iwa->SetInstallState(proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
   RegisterWebApp(std::move(iwa));
 
-  // Verify that a PWA is installed at kAppStartUrl's origin.
+  // Verify that a PWA is installed at kAppStartUrl's origin, but only
+  // suggested.
   std::optional<webapps::AppId> installed_app =
-      fake_provider().registrar_unsafe().FindAppWithUrlInScope(kDevAppStartUrl);
+      fake_provider().registrar_unsafe().FindBestAppWithUrlInScope(
+          kDevAppStartUrl,
+          {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE});
   EXPECT_THAT(installed_app.has_value(), IsTrue());
 
   CreateFactoryForFrame();

@@ -440,8 +440,6 @@ class PlatformNotificationServiceTest_WebApps
 };
 
 TEST_F(PlatformNotificationServiceTest_WebApps, IncomingCallWebApp) {
-  EXPECT_FALSE(service()->IsActivelyInstalledWebAppScope(
-      kNotInstalledNestedWebAppStartUrl));
   EXPECT_TRUE(service()->IsActivelyInstalledWebAppScope(kWebAppStartUrl));
 
   web_app::test::UninstallAllWebApps(profile_.get());

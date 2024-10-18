@@ -406,7 +406,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
     const GURL& url) const {
   return FindBestAppWithUrlInScope(
       url, {
-               proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
            });

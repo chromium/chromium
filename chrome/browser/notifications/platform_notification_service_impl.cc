@@ -686,11 +686,10 @@ bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
   if (!web_app_provider) {
     return false;
   }
-
   const std::optional<webapps::AppId> app_id =
-      web_app_provider->registrar_unsafe().FindAppWithUrlInScope(web_app_url);
-  return app_id.has_value() &&
-         web_app_provider->registrar_unsafe().IsActivelyInstalled(
-             app_id.value());
+      web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
+          web_app_url,
+          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+  return app_id.has_value();
 #endif
 }

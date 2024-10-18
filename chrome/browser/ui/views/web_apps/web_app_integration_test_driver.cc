@@ -3930,6 +3930,31 @@ void WebAppIntegrationTestDriver::CheckAppLoadedInTab(Site site) {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckSiteLoadedInTab(Site site) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+
+  GURL site_url = GetUrlForSite(site);
+  std::vector<std::string> found_urls;
+  auto* browser_list = BrowserList::GetInstance();
+  for (Browser* browser : *browser_list) {
+    // Bypass apps that open in standalone windows.
+    if (AppBrowserController::IsWebApp(browser)) {
+      continue;
+    }
+
+    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      GURL committed_url = web_contents->GetLastCommittedURL();
+      found_urls.push_back(committed_url.possibly_invalid_spec());
+    }
+  }
+  EXPECT_THAT(found_urls, testing::Contains(site_url));
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
     const webapps::AppId& app_id) {
   LOG(INFO) << "Manifest update received for " << app_id << ".";

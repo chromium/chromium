@@ -108,3 +108,4 @@ check_no_sub_apps,                                     🌑, 🌑,  🌑,   🌕
 new_app_tab,                                           🌕, 🌕,  🌕,   🌕,
 check_app_tab_is_site,                                 🌕, 🌕,  🌕,   🌕,
 check_app_tab_created,                                 🌕, 🌕,  🌕,   🌕,
+check_site_loaded_in_tab,                              🌕, 🌕,  🌕,   🌕,

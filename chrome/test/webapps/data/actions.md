@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 176) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 177) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -201,3 +201,4 @@ Actions that the user can take by going to chrome://apps and either left clickin
 | launch_from_chrome_apps | Site |  | 34 | Implemented | Launch the web app by navigating to chrome://apps, and then clicking on the app icon. |  |
 | navigate_app_home |  |  | 166 | Implemented | Navigate to chrome://apps in the current browser. |  |
 | check_browser_not_at_app_home |  |  | 167 | Implemented | Check the current browser is not at chrome://apps. |  |
+| check_site_loaded_in_tab | Site |  | 176 | Implemented | Check that the given site is loaded in a browser tab |

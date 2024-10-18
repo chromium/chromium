@@ -198,7 +198,7 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | C | install_or_shortcut_by_user_tabbed | switch_profile_clients | launch_from_chrome_apps | check_tab_created(One) | check_app_loaded_in_tab |
 | WML | install_or_shortcut_by_user_tabbed | switch_profile_clients | install_locally | launch_from_chrome_apps | check_tab_not_created | check_app_loaded_in_tab |
 | WML | install_or_shortcut_by_user_tabbed | switch_profile_clients | install_locally | launch_from_platform_shortcut | check_tab_created(One) | check_app_loaded_in_tab |
-| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | launch_from_chrome_apps | check_tab_not_created | check_app_loaded_in_tab |
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | launch_from_chrome_apps | check_tab_not_created | check_site_loaded_in_tab |
 | WMLC | install_or_shortcut_by_user | switch_profile_clients | uninstall_from_list | check_app_not_in_list |
 | WMLC | install_or_shortcut_by_user | switch_profile_clients | uninstall_from_list | switch_profile_clients(Client1) | check_app_not_in_list |
 | WML | install_or_shortcut_by_user | switch_profile_clients | check_app_in_list_not_locally_installed |
