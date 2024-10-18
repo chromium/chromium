@@ -100,6 +100,7 @@ source_set("unit_tests") {
   sources = [
     "password_settings_coordinator_unittest.mm",
     "password_settings_mediator_unittest.mm",
+    "password_settings_view_controller_unittest.mm",
   ]
   deps = [
     ":common",
@@ -110,6 +111,8 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager/objc",
+    "//components/sync/base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/passwords/model/metrics",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -117,6 +120,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/settings/password:features",
