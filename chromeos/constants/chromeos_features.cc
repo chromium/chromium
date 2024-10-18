@@ -99,6 +99,11 @@ BASE_FEATURE(kDataMigration,
              "DataMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disables blur on various system surfaces.
+BASE_FEATURE(kDisableSystemBlur,
+             "DisableSystemBlur",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the desk profiles feature.
 BASE_FEATURE(kDeskProfiles, "DeskProfiles", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -581,6 +586,10 @@ bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
 bool IsRoundedWindowsEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementRoundedWindows) &&
          base::FeatureList::IsEnabled(kRoundedWindows);
+}
+
+bool IsSystemBlurEnabled() {
+  return !base::FeatureList::IsEnabled(kDisableSystemBlur);
 }
 
 bool IsPkcs12ToChapsDualWriteEnabled() {
