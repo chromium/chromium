@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -25,19 +27,32 @@
 namespace policy {
 namespace {
 
+using optimization_guide::model_execution::prefs::
+    ModelExecutionEnterprisePolicyValue;
+
+using enum ModelExecutionEnterprisePolicyValue;
+
+// The policy's value are 0, 1, 2 and Autofill expects that the enum
+// ModelExecutionEnterprisePolicyValue matches those values.
+static_assert(base::to_underlying(kAllow) == 0);
+static_assert(base::to_underlying(kAllowWithoutLogging) == 1);
+static_assert(base::to_underlying(kDisable) == 2);
+
 class AutofillPredictionImprovementsPolicyTest
     : public PolicyTest,
-      public testing::WithParamInterface<int> {
+      public testing::WithParamInterface<ModelExecutionEnterprisePolicyValue> {
  public:
-  int policy_value() const { return GetParam(); }
-  bool policy_is_disabled() const { return policy_value() == 2; }
+  ModelExecutionEnterprisePolicyValue policy_value() const {
+    return GetParam();
+  }
+  bool disabled_by_policy() const { return policy_value() == kDisable; }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
     PolicyMap policies;
     SetPolicy(&policies, key::kAutofillPredictionSettings,
-              base::Value(policy_value()));
+              base::Value(base::to_underlying(policy_value())));
     UpdateProviderPolicy(policies);
 
     // The base test fixture creates a tab before we set the policy. We create a
@@ -57,7 +72,9 @@ class AutofillPredictionImprovementsPolicyTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          AutofillPredictionImprovementsPolicyTest,
-                         testing::Values(0, 1, 2));
+                         testing::Values(kAllow,
+                                         kAllowWithoutLogging,
+                                         kDisable));
 
 // Tests that the chrome://settings entry for Autofill Predictions Improvement
 // is reachable iff the policy is enabled.
@@ -68,9 +85,9 @@ IN_PROC_BROWSER_TEST_P(AutofillPredictionImprovementsPolicyTest,
   EXPECT_EQ(autofill_prediction_improvements::
                 IsAutofillPredictionImprovementsSupported(
                     browser()->profile()->GetPrefs()),
-            !policy_is_disabled());
+            !disabled_by_policy());
   EXPECT_EQ(GetWebContents()->GetURL().path(),
-            policy_is_disabled() ? "/" : "/autofillPredictionImprovements");
+            disabled_by_policy() ? "/" : "/autofillPredictionImprovements");
 }
 
 // Tests that AutofillPredictionsImprovementDelegate exists iff it is allowed by
@@ -84,7 +101,7 @@ IN_PROC_BROWSER_TEST_P(AutofillPredictionImprovementsPolicyTest,
       CHECK_DEREF(tabs::TabInterface::MaybeGetFromContents(GetWebContents()))
           .GetTabFeatures()
           ->chrome_autofill_prediction_improvements_client();
-  EXPECT_EQ(client == nullptr, policy_is_disabled());
+  EXPECT_EQ(client == nullptr, disabled_by_policy());
 }
 
 }  // namespace
