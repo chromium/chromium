@@ -146,14 +146,15 @@ GpuMemoryBufferImplDXGI::DoMapAsync(base::OnceCallback<void(bool)> result_cb) {
     return base::BindOnce(std::move(result_cb), true);
   }
 
-  CHECK(!shared_memory_handle_);
   CHECK(gpu_memory_buffer_manager_);
   CHECK(shared_memory_pool_);
 
-  shared_memory_handle_ = shared_memory_pool_->MaybeAllocateBuffer(
-      gfx::BufferSizeForBufferFormat(size_, format_));
   if (!shared_memory_handle_) {
-    return base::BindOnce(std::move(result_cb), false);
+    shared_memory_handle_ = shared_memory_pool_->MaybeAllocateBuffer(
+        gfx::BufferSizeForBufferFormat(size_, format_));
+    if (!shared_memory_handle_) {
+      return base::BindOnce(std::move(result_cb), false);
+    }
   }
 
   map_callbacks_.push_back(std::move(result_cb));
