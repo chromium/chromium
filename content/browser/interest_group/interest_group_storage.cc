@@ -5106,11 +5106,7 @@ bool ClearExpiredInterestGroups(sql::Database& db,
   return transaction.Commit();
 }
 
-// Removes interest groups so that per-owner limit is respected. Note that
-// we're intentionally not trying to keep this in sync with
-// `blink::InterestGroup::EstimateSize()`. There's not a compelling reason to
-// keep those exactly aligned and keeping them in sync would require a
-// significant amount of extra work.
+// Removes interest groups so that per-owner limit is respected.
 bool ClearExcessiveStorage(sql::Database& db, size_t max_owner_storage_size) {
   sql::Transaction transaction(&db);
   if (!transaction.Begin()) {
