@@ -569,7 +569,7 @@ constexpr CGFloat kSpace = 8;
 // Shows the recent activity of a shared tab group.
 - (void)showRecentActivity {
   CHECK(_shared);
-  [_handler showRecentActivity];
+  [_handler showRecentActivityForGroup:_tabGroup->GetWeakPtr()];
 }
 
 // Updates the safe area inset of the grid based on this VC safe areas and the

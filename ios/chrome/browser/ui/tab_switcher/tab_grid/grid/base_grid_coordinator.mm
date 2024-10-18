@@ -362,10 +362,11 @@
   [snackbarCommandsHandler showSnackbarMessage:message];
 }
 
-- (void)showRecentActivity {
+- (void)showRecentActivityForGroup:(base::WeakPtr<const TabGroup>)tabGroup {
   _tabGroupRecentActivityCoordinator = [[RecentActivityCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
+                         browser:self.browser
+                        tabGroup:tabGroup];
   [_tabGroupRecentActivityCoordinator start];
 }
 

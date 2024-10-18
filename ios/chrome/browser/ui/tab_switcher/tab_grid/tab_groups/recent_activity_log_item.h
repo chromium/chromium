@@ -15,6 +15,7 @@ enum class ActivityLogType : NSUInteger {
   kUserLeft,
   kGroupColorChanged,
   kGroupNameChanged,
+  kUndefined,
 };
 
 // Represents a log item in a diffable data source. It contains the data of
