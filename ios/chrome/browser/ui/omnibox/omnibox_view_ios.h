@@ -13,20 +13,20 @@
 #import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/location_bar_model.h"
 #import "components/omnibox/browser/omnibox_view.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
 
+struct AutocompleteMatch;
 class GURL;
 class OmniboxClient;
-struct AutocompleteMatch;
-@class OmniboxTextFieldIOS;
 @protocol OmniboxCommands;
-@protocol ToolbarCommands;
 @protocol OmniboxFocusDelegate;
+@class OmniboxTextFieldIOS;
 @protocol OmniboxViewConsumer;
+class ProfileIOS;
+@protocol ToolbarCommands;
 
 // iOS implementation of OmniBoxView.  Wraps a UITextField and
 // interfaces with the rest of the autocomplete system.

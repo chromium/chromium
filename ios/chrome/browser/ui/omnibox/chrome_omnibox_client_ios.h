@@ -14,13 +14,15 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/web/public/web_state_observer.h"
+
+class ProfileIOS;
 
 class WebLocationBar;
 namespace feature_engagement {
 class Tracker;
 }
+
 namespace web {
 class NavigationContext;
 class WebState;
