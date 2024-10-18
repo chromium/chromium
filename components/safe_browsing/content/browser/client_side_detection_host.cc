@@ -283,7 +283,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
 
   void Cancel() {
     DontClassifyForPhishing(PreClassificationCheckResult::NO_CLASSIFY_CANCEL);
-    // Just to make sure we don't do anything stupid we reset all these
+    // Just to make sure we don't do anything bad we reset all these
     // pointers except for the safebrowsing service class which may be
     // accessed by CheckSafeBrowsingDatabase().
     web_contents_ = nullptr;
