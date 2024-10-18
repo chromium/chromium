@@ -35,21 +35,21 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 // Legacy grid expands out auto-repeaters, so it has a lower cap than GridNG.
-// Note that this actually allows a [-999,999] range.
-const int kLegacyGridMaxTracks = 1000;
-const int kGridMaxTracks = 10000000;
+// Note that this actually allows a [-999, 999] range.
+constexpr int kLegacyGridMaxTracks = 1000;
+constexpr int kGridMaxTracks = 10000000;
 
-// A span in a single direction (either rows or columns). Note that |start_line|
-// and |end_line| are grid lines' indexes.
-// Despite line numbers in the spec start in "1", the indexes here start in "0".
+// A span of grid tracks in a single direction (either rows or columns).
+// Note that `start_line` and `end_line` are grid lines' indexes; despite line
+// numbers in the spec start at 1, the indexes here start at 0.
 struct GridSpan {
   USING_FAST_MALLOC(GridSpan);
 
@@ -64,7 +64,7 @@ struct GridSpan {
   }
 
   static GridSpan IndefiniteGridSpan(wtf_size_t span_size = 1) {
-    return GridSpan(wtf_size_t{0}, span_size, kIndefinite);
+    return GridSpan(0, span_size, kIndefinite);
   }
 
   bool operator==(const GridSpan& o) const {
@@ -89,6 +89,13 @@ struct GridSpan {
     DCHECK_LT(start_line_, end_line_);
     return line >= static_cast<wtf_size_t>(start_line_) &&
            line <= static_cast<wtf_size_t>(end_line_);
+  }
+
+  unsigned GetHash() const {
+    // In general, a negative `end_line_` will reduce collisions of indefinite
+    // spans since it represents the range `[-end_line_, 0]`, which can never
+    // occur in definite spans that ensure `start_line_ < end_line_`.
+    return WTF::HashInts(start_line_, IsIndefinite() ? -end_line_ : end_line_);
   }
 
   bool Intersects(GridSpan span) const {
@@ -137,28 +144,6 @@ struct GridSpan {
     return end_line_;
   }
 
-  struct GridSpanIterator {
-    GridSpanIterator(wtf_size_t v) : value(v) {}
-
-    wtf_size_t operator*() const { return value; }
-    wtf_size_t operator++() { return value++; }
-    bool operator!=(GridSpanIterator other) const {
-      return value != other.value;
-    }
-
-    wtf_size_t value;
-  };
-
-  GridSpanIterator begin() const {
-    DCHECK(IsTranslatedDefinite());
-    return start_line_;
-  }
-
-  GridSpanIterator end() const {
-    DCHECK(IsTranslatedDefinite());
-    return end_line_;
-  }
-
   bool IsUntranslatedDefinite() const { return type_ == kUntranslatedDefinite; }
   bool IsTranslatedDefinite() const { return type_ == kTranslatedDefinite; }
   bool IsIndefinite() const { return type_ == kIndefinite; }
@@ -186,26 +171,26 @@ struct GridSpan {
   }
 
  private:
-  enum GridSpanType { kUntranslatedDefinite, kTranslatedDefinite, kIndefinite };
+  enum GridSpanType { kIndefinite, kTranslatedDefinite, kUntranslatedDefinite };
 
-  template <typename T>
-  GridSpan(T start_line, T end_line, GridSpanType type) : type_(type) {
-    const int grid_max_tracks = kGridMaxTracks;
-    start_line_ =
-        ClampTo<int>(start_line, -grid_max_tracks, grid_max_tracks - 1);
-    end_line_ = ClampTo<int>(end_line, start_line_ + 1, grid_max_tracks);
-
+  GridSpan(int start_line, int end_line, GridSpanType type) : type_(type) {
+    if (type_ == kIndefinite) {
+      DCHECK_EQ(start_line, 0);
+      end_line_ = ClampTo(end_line, 1, kGridMaxTracks);
+    } else {
+      start_line_ = ClampTo(start_line, -kGridMaxTracks, kGridMaxTracks - 1);
+      end_line_ = ClampTo(end_line, start_line_ + 1, kGridMaxTracks);
 #if DCHECK_IS_ON()
-    DCHECK_LT(start_line_, end_line_);
-    if (type == kTranslatedDefinite) {
-      DCHECK_GE(start_line_, 0);
-    }
+      if (type == kTranslatedDefinite) {
+        DCHECK_GE(start_line_, 0);
+      }
 #endif
+    }
   }
 
-  int start_line_;
-  int end_line_;
-  GridSpanType type_;
+  int start_line_{0};
+  int end_line_{0};
+  GridSpanType type_{kIndefinite};
 };
 
 // This represents a grid area that spans in both rows' and columns' direction.
