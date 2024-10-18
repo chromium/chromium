@@ -483,6 +483,7 @@ void Widget::Init(InitParams params) {
   // send accessible event notifications. From that point on, any view that is
   // connected to the RootView will be able to send accessible events.
   root_view_->GetViewAccessibility().SetRootViewIsReadyToNotifyEvents();
+
   // We need to add the RootView's ViewAccessibility as an observer of the
   // widget, so that when the widget is closed, the accessible data is set
   // accordingly.

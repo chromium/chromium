@@ -1214,6 +1214,22 @@ void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
     data_.RemoveState(state);
   }
 }
+
+void ViewAccessibility::SetBlockNotifyEvents(bool block) {
+  // Warning: This method should ONLY be used for special cases by the
+  // ScopedAccessibilityEventBlocker. Generally, we want to prevent
+  // notifications from being sent until the view is added to a Widget's Views
+  // tree, and we should only update `ready_to_notify_events_` when the view is
+  // added to the tree. However, there are special cases where we might need to
+  // set this variable to true or false at other times. For example, the
+  // RootView should always be ready to notify events, and the AnnounceTextView
+  // should NOT fire certain types of events due to its nature of being a hidden
+  // special view just for making announcements. As of right now, the only
+  // special cases are the root view and the announce text view, which is a
+  // child of the root view.
+  ready_to_notify_events_ = !block;
+}
+
 void ViewAccessibility::SetIsHovered(bool is_hovered) {
   if (is_hovered == GetIsHovered()) {
     return;
@@ -1313,6 +1329,35 @@ void ViewAccessibility::SetTextSelStart(int32_t text_sel_start) {
 
 void ViewAccessibility::SetTextSelEnd(int32_t text_sel_end) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, text_sel_end);
+}
+
+void ViewAccessibility::SetLiveAtomic(bool live_atomic) {
+  data_.AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic, live_atomic);
+}
+
+void ViewAccessibility::SetLiveStatus(const std::string& live_status) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
+                           live_status);
+}
+
+void ViewAccessibility::SetLiveRelevant(const std::string& live_relevant) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kLiveRelevant,
+                           live_relevant);
+}
+
+void ViewAccessibility::RemoveLiveRelevant() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kLiveRelevant);
+}
+
+void ViewAccessibility::SetContainerLiveRelevant(
+    const std::string& live_relevant) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveRelevant,
+                           live_relevant);
+}
+
+void ViewAccessibility::RemoveContainerLiveRelevant() {
+  data_.RemoveStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveRelevant);
 }
 
 }  // namespace views

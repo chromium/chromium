@@ -77,36 +77,90 @@ class AnnounceTextView : public View {
   METADATA_HEADER(AnnounceTextView, View)
 
  public:
-  AnnounceTextView() { UpdateAccessibleRole(); }
+  AnnounceTextView() {
+    // When constructed the view will have no name, but will change as soon as
+    // text needs to be announced.
+    UpdateAccessibleAttributes(std::u16string());
+  }
 
   ~AnnounceTextView() override = default;
 
   void AnnounceTextAs(const std::u16string& text,
                       ui::AXPlatformNode::AnnouncementType announcement_type) {
-    announce_text_ = text;
+    UpdateAccessibleAttributes(text, announcement_type);
+    CHECK(HasValidRole());
+
+    NotifyAccessibilityEvent(AnnounceEventType(announcement_type),
+                             /*send_native_event=*/true);
+  }
+
+  ax::mojom::Event AnnounceEventType(
+      ui::AXPlatformNode::AnnouncementType announcement_type) const {
+    CHECK(HasValidRole());
+
+    ax::mojom::Event event_type = ax::mojom::Event::kNone;
     switch (announcement_type) {
       case ui::AXPlatformNode::AnnouncementType::kAlert:
-        announce_event_type_ = ax::mojom::Event::kAlert;
-        announce_role_ = ax::mojom::Role::kAlert;
+        event_type = ax::mojom::Event::kAlert;
         break;
       case ui::AXPlatformNode::AnnouncementType::kPolite:
-        announce_event_type_ = ax::mojom::Event::kLiveRegionChanged;
-        announce_role_ = ax::mojom::Role::kStatus;
+        event_type = ax::mojom::Event::kLiveRegionChanged;
         break;
     }
+
+    CHECK(IsValidEvent(event_type));
+    return event_type;
+  }
+
+  void UpdateAccessibleAttributes(
+      const std::u16string& announce_text,
+      std::optional<ui::AXPlatformNode::AnnouncementType> announcement_type =
+          std::nullopt) {
+    // Since this view is a unique view that is hidden and only to provide a
+    // mechanism for Views to make their own announcements, we should not fire
+    // events that are not `announce_event_type_` which may otherwise be
+    // generated when we, for example, update the name of the view.
+    ScopedAccessibilityEventBlocker scoped_event_blocker(
+        GetViewAccessibility());
+
+    // View should have a initial accessible role, and it will later change
+    // depending on the `announce_role` accordingly.
+    ax::mojom::Role announce_role = ax::mojom::Role::kStatus;
+    if (announcement_type.has_value()) {
+      switch (announcement_type.value()) {
+        case ui::AXPlatformNode::AnnouncementType::kAlert:
+          announce_role = ax::mojom::Role::kAlert;
+          break;
+        case ui::AXPlatformNode::AnnouncementType::kPolite:
+          announce_role = ax::mojom::Role::kStatus;
+          break;
+      }
+    }
+
+    UpdateAccessibleRole(announce_role);
+    GetViewAccessibility().SetLiveAtomic(true);
+    GetViewAccessibility().SetLiveStatus("polite");
+
+    if (announce_text.empty()) {
+      GetViewAccessibility().SetName(
+          announce_text, ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    } else {
+      GetViewAccessibility().SetName(announce_text);
+    }
+
     if (base::FeatureList::IsEnabled(
             features::kAnnounceTextAdditionalAttributes)) {
       GetViewAccessibility().SetContainerLiveStatus("polite");
+      GetViewAccessibility().SetLiveRelevant("additions text");
+      GetViewAccessibility().SetContainerLiveRelevant("additions text");
     } else {
       GetViewAccessibility().RemoveContainerLiveStatus();
+      GetViewAccessibility().RemoveLiveRelevant();
+      GetViewAccessibility().RemoveContainerLiveRelevant();
     }
-
-    UpdateAccessibleRole();
-
-    NotifyAccessibilityEvent(announce_event_type_, /*send_native_event=*/true);
   }
 
-  void UpdateAccessibleRole() {
+  void UpdateAccessibleRole(ax::mojom::Role announce_role) {
 #if BUILDFLAG(IS_CHROMEOS)
     // On ChromeOS, kAlert role can invoke an unnecessary event on reparenting.
     GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
@@ -115,34 +169,21 @@ class AnnounceTextView : public View {
     // May require setting kLiveStatus, kContainerLiveStatus to "polite".
     GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 #else
-    GetViewAccessibility().SetRole(announce_role_);
+    GetViewAccessibility().SetRole(announce_role);
 #endif
   }
 
-  // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic, true);
-    node_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
-                                  "polite");
-    if (base::FeatureList::IsEnabled(
-            features::kAnnounceTextAdditionalAttributes)) {
-      node_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveRelevant,
-                                    "additions text");
-      node_data->AddStringAttribute(
-          ax::mojom::StringAttribute::kContainerLiveRelevant, "additions text");
-    }
-
-    !announce_text_.empty() ? node_data->SetNameChecked(announce_text_)
-                            : node_data->SetNameExplicitlyEmpty();
-    node_data->AddState(ax::mojom::State::kInvisible);
+  bool HasValidRole() const {
+    return GetViewAccessibility().GetCachedRole() ==
+               ax::mojom::Role::kStaticText ||
+           GetViewAccessibility().GetCachedRole() == ax::mojom::Role::kAlert ||
+           GetViewAccessibility().GetCachedRole() == ax::mojom::Role::kStatus;
   }
 
- private:
-  std::u16string announce_text_;
-  ax::mojom::Event announce_event_type_ = ax::mojom::Event::kNone;
-  // View should have a initial accessible role, and it will later change
-  // depending on the announce_role_ accordingly.
-  ax::mojom::Role announce_role_ = ax::mojom::Role::kStatus;
+  bool IsValidEvent(ax::mojom::Event announce_event_type) const {
+    return announce_event_type == ax::mojom::Event::kAlert ||
+           announce_event_type == ax::mojom::Event::kLiveRegionChanged;
+  }
 };
 
 BEGIN_METADATA(AnnounceTextView)
