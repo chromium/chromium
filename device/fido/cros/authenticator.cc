@@ -449,18 +449,6 @@ void ChromeOSAuthenticator::IsPowerButtonModeEnabled(
           std::move(callback)));
 }
 
-void ChromeOSAuthenticator::IsLacrosSupported(
-    base::OnceCallback<void(bool supported)> callback) {
-  chromeos::U2FClient::Get()->GetSupportedFeatures(
-      u2f::GetSupportedFeaturesRequest(),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool is_enabled)> callback,
-             std::optional<u2f::GetSupportedFeaturesResponse> response) {
-            std::move(callback).Run(response && response->support_lacros());
-          },
-          std::move(callback)));
-}
-
 base::WeakPtr<FidoAuthenticator> ChromeOSAuthenticator::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
