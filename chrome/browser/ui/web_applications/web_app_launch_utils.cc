@@ -1245,7 +1245,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
         NavigationHandlingInitialResult::kAppWindowNavigationCaptured;
 
     blink::mojom::DisplayMode app_display_mode =
-        registrar.GetEffectiveDisplayModeFromManifest(app_id);
+        registrar.GetAppEffectiveDisplayMode(app_id);
     // Opening in non-browser-tab requires OS integration. Since os integration
     // cannot be triggered synchronously, treat this as opening in browser.
     if (registrar.GetInstallState(app_id) ==

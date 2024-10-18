@@ -1,7 +1,7 @@
 {
    "tests": {
       "kFocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
+         "_params": "kFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -47,7 +47,7 @@
          }
       },
       "kFocusExisting_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
+         "_params": "kFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -84,7 +84,7 @@
          }
       },
       "kNavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
+         "_params": "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
          "disabled": true,
          "expected_state": {
             "browsers": [ {
@@ -131,7 +131,7 @@
          }
       },
       "kNavigateExisting_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
+         "_params": "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
          "disabled": true,
          "expected_state": {
             "browsers": [ {

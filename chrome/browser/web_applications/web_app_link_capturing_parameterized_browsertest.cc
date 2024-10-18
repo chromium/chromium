@@ -112,6 +112,24 @@ std::string_view ToParamString(LinkCapturing capturing) {
   }
 }
 
+// The user display mode configuration for the apps.
+enum class AppUserDisplayMode {
+  // Both apps are UserDisplayMode::kBrowser.
+  kBrowser,
+  // Both apps are UserDisplayMode::kStandalone.
+  kStandalone,
+  kMaxValue = kStandalone,
+};
+
+std::string_view ToParamString(AppUserDisplayMode mode) {
+  switch (mode) {
+    case AppUserDisplayMode::kBrowser:
+      return "BothBrowser";
+    case AppUserDisplayMode::kStandalone:
+      return "BothStandalone";
+  }
+}
+
 // The starting point for the test:
 enum class StartingPoint {
   kAppWindow,
@@ -256,13 +274,6 @@ std::string ToIdString(OpenerMode opener) {
   }
 }
 
-std::string ToParamString(mojom::UserDisplayMode display_mode) {
-  if (display_mode == mojom::UserDisplayMode::kStandalone) {
-    return "";
-  }
-  return base::ToString(display_mode);
-}
-
 std::string ToParamString(
     blink::mojom::ManifestLaunchHandler_ClientMode client_mode) {
   if (client_mode == blink::mojom::ManifestLaunchHandler_ClientMode::kAuto) {
@@ -326,17 +337,17 @@ std::string_view ToParamString(NavigationTarget target) {
 // be used to construct the values.
 //
 // Since this configuration is rather long (and can make the test expectations
-// less readable), This tuple is split into the ExpectationsFileConfiguration
-// and ReadableTestConfiguration tuples. The former is used to split & add a
-// suffix to test expecation files, and the latter are the 'remaining'
-// configuration items that can constitute a more 'readable' name (as they don't
-// need to include the file configuration params).
+// less readable), this tuple is split into the ExpectationsFileConfig
+// and ShortenedTestConfig tuples. The former is used to split & add a
+// suffix to test expectation file names, and the latter are the 'remaining'
+// configuration items that can constitute a more 'shortened' name (as they
+// don't need to include the file configuration params).
 //
 // Note: Adding a value here needs to be accompanied with adding that value to
-// either ExpectationsFileConfiguration or ReadableTestConfiguration.
+// either ExpectationsFileConfig or ShortenedTestConfig.
 using LinkCaptureTestParam =
     std::tuple<blink::mojom::ManifestLaunchHandler_ClientMode,
-               mojom::UserDisplayMode,
+               AppUserDisplayMode,
                LinkCapturing,
                StartingPoint,
                Destination,
@@ -355,13 +366,12 @@ using LinkCaptureTestParam =
 // - The 'link capturing' user setting being on or off. This appends
 //   "_capture_on" or "_capture_off" to the test fixture's test expectation file
 //   base name.
-using ExpectationsFileConfiguration = std::tuple<LinkCapturing>;
+using ExpectationsFileConfig = std::tuple<AppUserDisplayMode, LinkCapturing>;
 
 // This is the 'rest' of the LinkCaptureTestParam configuration after the file
 // configuration is removed.
-using ReadableTestConfiguration =
+using ShortenedTestConfig =
     std::tuple<blink::mojom::ManifestLaunchHandler_ClientMode,
-               mojom::UserDisplayMode,
                StartingPoint,
                Destination,
                RedirectType,
@@ -370,16 +380,16 @@ using ReadableTestConfiguration =
                OpenerMode,
                NavigationTarget>;
 
-ExpectationsFileConfiguration GetExpectationsFileConfigFromTestConfig(
+ExpectationsFileConfig GetExpectationsFileConfigFromTestConfig(
     const LinkCaptureTestParam& test_config) {
-  return {std::get<LinkCapturing>(test_config)};
+  return {std::get<AppUserDisplayMode>(test_config),
+          std::get<LinkCapturing>(test_config)};
 }
 
-ReadableTestConfiguration GetReadableConfigFromTestConfig(
+ShortenedTestConfig GetShortenedConfigFromTestConfig(
     const LinkCaptureTestParam& test_config) {
   return {
       std::get<blink::mojom::ManifestLaunchHandler_ClientMode>(test_config),
-      std::get<mojom::UserDisplayMode>(test_config),
       std::get<StartingPoint>(test_config),
       std::get<Destination>(test_config),
       std::get<RedirectType>(test_config),
@@ -398,44 +408,49 @@ std::string TupleToParamString(const Tuple& params) {
       [](auto&... p) { return base::JoinString({ToParamString(p)...}, "_"); },
       params);
   base::TrimString(name, "_", &name);
-  // Two test params use an empty string for their default values, which can
-  // create a double underscore in the test names, so remove the redundant
-  // underscore.
-  base::ReplaceSubstringsAfterOffset(&name, 0, "__", "_");
   return name;
+}
+
+template <typename TupleItemType, typename Tuple>
+std::string TupleItemToParamString(const Tuple& tuple) {
+  return std::string(ToParamString(std::get<TupleItemType>(tuple)));
 }
 
 // Returns the suffix to be appended to the base file name given the
 // `file_config`. This must be unique for each possible value of the
-// `ExpectationsFileConfiguration` type.
+// `ExpectationsFileConfig` type.
 std::string GetExpectationsFileSuffix(
-    const ExpectationsFileConfiguration& file_config) {
-  return (std::get<LinkCapturing>(file_config) == LinkCapturing::kEnabled
-              ? "_capture_on"
-              : "_capture_off");
+    const ExpectationsFileConfig& file_config) {
+  return "_" + TupleToParamString(file_config);
 }
 
 // Returns whether the `file_config` configuration will contain the given
 // `full_test_params` from the gtest name.
 bool DoesTestMatchFileConfig(std::string_view full_test_params,
-                             const ExpectationsFileConfiguration& file_config) {
-  std::string_view link_capturing_name =
-      ToParamString(std::get<LinkCapturing>(file_config));
-  return base::Contains(full_test_params, link_capturing_name);
+                             const ExpectationsFileConfig& file_config) {
+  std::string link_capturing_name =
+      TupleItemToParamString<LinkCapturing>(file_config);
+  std::string display_mode_name =
+      TupleItemToParamString<AppUserDisplayMode>(file_config);
+  return base::Contains(full_test_params, link_capturing_name) ||
+         base::Contains(full_test_params, display_mode_name);
 }
 
 // Removes all of the parameters from the `full_test_params` that are handled by
 // the `file_config`. This is equivalent to
-// TupleToParamString(GetReadableConfigFromTestConfig(GetParams())), but when
+// TupleToParamString(GetShortenedConfigFromTestConfig(GetParams())), but when
 // analyzing the testing::TestInfo object we only have access to the string
 // version of the params, so this method is needed.
 std::string RemoveExpectationsFileConfigFromFullTestParams(
     std::string_view full_test_params,
-    const ExpectationsFileConfiguration& file_config) {
+    const ExpectationsFileConfig& file_config) {
   std::string link_capturing_name =
-      base::StrCat({ToParamString(std::get<LinkCapturing>(file_config)), "_"});
+      TupleItemToParamString<LinkCapturing>(file_config);
+  std::string display_mode_name =
+      TupleItemToParamString<AppUserDisplayMode>(file_config);
   std::string output(full_test_params);
-  base::ReplaceSubstringsAfterOffset(&output, 0, link_capturing_name, "");
+  base::ReplaceSubstringsAfterOffset(&output, 0, link_capturing_name + "_", "");
+  base::ReplaceSubstringsAfterOffset(&output, 0, display_mode_name + "_", "");
   return output;
 }
 
@@ -702,8 +717,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
   // The expectations file can depend on whether link capturing is enabled or
   // not (and likely more things in the future).
-  base::FilePath GetExpectationsFile(
-      ExpectationsFileConfiguration file_config) const {
+  base::FilePath GetExpectationsFile(ExpectationsFileConfig file_config) const {
     std::string filename =
         GetExpectationsFileBaseName() + GetExpectationsFileSuffix(file_config);
     return base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
@@ -817,7 +831,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   // The json file is of the following format:
   // { 'tests': {
-  //   'Readable_Test_Name': {
+  //   'Shortened_Test_Name': {
   //      "_params": "Full_Test_Params",
   //      "disabled": <false if bots should fail when Expectations don't match>,
   //      "expected_state": {<expected state of all browsers/apps>}
@@ -829,28 +843,28 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // created.
   base::Value::Dict& GetTestCaseDataFromParam() {
     std::string full_test_params = TupleToParamString(GetParam());
-    std::string readable_name =
-        TupleToParamString(GetReadableConfigFromTestConfig(GetParam()));
+    std::string shortened_name =
+        TupleToParamString(GetShortenedConfigFromTestConfig(GetParam()));
     base::Value::Dict* result =
-        test_expectations().EnsureDict("tests")->EnsureDict(readable_name);
+        test_expectations().EnsureDict("tests")->EnsureDict(shortened_name);
     result->Set("_params", full_test_params);
     // Temporarily check expectations for the test name before redirect mode was
     // a separate parameter as well to make it easier to migrate expectations.
     // TODO(mek): Remove this migration code.
     if (!result->contains("expected_state") &&
         GetRedirectType() == RedirectType::kNone) {
-      base::ReplaceFirstSubstringAfterOffset(&readable_name, 0, "_Direct", "");
+      base::ReplaceFirstSubstringAfterOffset(&shortened_name, 0, "_Direct", "");
       *result = test_expectations()
                     .EnsureDict("tests")
-                    ->EnsureDict(readable_name)
+                    ->EnsureDict(shortened_name)
                     ->Clone();
-      test_expectations().EnsureDict("tests")->Remove(readable_name);
+      test_expectations().EnsureDict("tests")->Remove(shortened_name);
     }
     return *result;
   }
 
   base::ScopedClosureRunner LockExpectationsFile(
-      ExpectationsFileConfiguration file_config) {
+      ExpectationsFileConfig file_config) {
     CHECK(ShouldRebaseline());
 
     base::FilePath lock_file_path =
@@ -923,7 +937,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // from an actual run of a single test case, used by developers to update the
   // expectations. Constructs a json dictionary and saves it to the test results
   // json file. Returns true if writing was successful.
-  void RecordActualResults(ExpectationsFileConfiguration file_config) {
+  void RecordActualResults(ExpectationsFileConfig file_config) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     // Lock the results file to support using `--test-launcher-jobs=X` when
     // doing a rebaseline.
@@ -939,7 +953,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     SaveExpectations(file_config);
   }
 
-  void SaveExpectations(ExpectationsFileConfiguration file_config) {
+  void SaveExpectations(ExpectationsFileConfig file_config) {
     CHECK(ShouldRebaseline());
     // Write formatted JSON back to disk.
     std::optional<std::string> json_string = base::WriteJsonWithOptions(
@@ -953,19 +967,16 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return std::get<LinkCapturing>(GetParam());
   }
 
-  mojom::UserDisplayMode GetUserDisplayMode() const {
-    return std::get<mojom::UserDisplayMode>(GetParam());
+  AppUserDisplayMode GetAppUserDisplayMode() const {
+    return std::get<AppUserDisplayMode>(GetParam());
   }
 
-  blink::mojom::DisplayMode GetDisplayMode() const {
-    mojom::UserDisplayMode user_display_mode = GetUserDisplayMode();
-    switch (user_display_mode) {
-      case mojom::UserDisplayMode::kBrowser:
-        return blink::mojom::DisplayMode::kBrowser;
-      case mojom::UserDisplayMode::kStandalone:
-        return blink::mojom::DisplayMode::kStandalone;
-      case mojom::UserDisplayMode::kTabbed:
-        NOTREACHED_NORETURN();  // kTabbed is not supported.
+  mojom::UserDisplayMode GetUserDisplayMode() const {
+    switch (GetAppUserDisplayMode()) {
+      case AppUserDisplayMode::kBrowser:
+        return mojom::UserDisplayMode::kBrowser;
+      case AppUserDisplayMode::kStandalone:
+        return mojom::UserDisplayMode::kStandalone;
     }
   }
 
@@ -1049,7 +1060,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     web_app_info->launch_handler =
         blink::Manifest::LaunchHandler(GetClientMode());
     web_app_info->scope = start_url.GetWithoutFilename();
-    web_app_info->display_mode = GetDisplayMode();
+    web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_info->user_display_mode = GetUserDisplayMode();
     const webapps::AppId app_id =
         test::InstallWebApp(profile(), std::move(web_app_info));
@@ -1104,13 +1115,12 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // no longer exist in code but still exist in the expectations json file.
   // Additionally if this test is run with the --rebaseline-link-capturing-test
   // flag any left-over expectations will be cleaned up.
-  void PerformTestCleanupIfNeeded(
-      const ExpectationsFileConfiguration& file_config) {
+  void PerformTestCleanupIfNeeded(const ExpectationsFileConfig& file_config) {
     InitializeTestExpectations(file_config);
 
     // Iterate over all the tests in all the test suites (even unrelated ones)
     // to obtain a list of the test cases that belong to our test class.
-    std::set<std::string> readable_test_cases;
+    std::set<std::string> shortened_test_cases;
     const testing::UnitTest* unit_test = testing::UnitTest::GetInstance();
     for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
       const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
@@ -1132,10 +1142,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
         if (!DoesTestMatchFileConfig(full_test_params, file_config)) {
           continue;
         }
-        std::string readable_name =
+        std::string shortened_name =
             RemoveExpectationsFileConfigFromFullTestParams(full_test_params,
                                                            file_config);
-        readable_test_cases.emplace(std::move(readable_name));
+        shortened_test_cases.emplace(std::move(shortened_name));
       }
     }
 
@@ -1147,15 +1157,15 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
     base::Value::Dict& expectations = *test_expectations().EnsureDict("tests");
     std::vector<std::string> tests_to_remove;
-    for (const auto [readable_name, _] : expectations) {
-      if (!readable_test_cases.contains(readable_name)) {
-        tests_to_remove.push_back(readable_name);
+    for (const auto [shortened_name, _] : expectations) {
+      if (!shortened_test_cases.contains(shortened_name)) {
+        tests_to_remove.push_back(shortened_name);
       }
     }
     if (ShouldRebaseline()) {
-      for (const auto& readable_name : tests_to_remove) {
-        LOG(INFO) << "Removing " << readable_name;
-        expectations.Remove(readable_name);
+      for (const auto& shortened_name : tests_to_remove) {
+        LOG(INFO) << "Removing " << shortened_name;
+        expectations.Remove(shortened_name);
       }
       SaveExpectations(file_config);
     } else {
@@ -1337,7 +1347,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   // Returns the path to the test expectation file (or an error).
   base::expected<base::FilePath, std::string> GetPathForLinkCaptureInputJson(
-      ExpectationsFileConfiguration file_config) {
+      ExpectationsFileConfig file_config) {
     base::FilePath chrome_src_dir;
     if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
                                 &chrome_src_dir)) {
@@ -1376,7 +1386,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   // Parses the json test expectation file. Note that if the expectations file
   // doesn't exist during rebaselining, a dummy json file is used.
-  void InitializeTestExpectations(ExpectationsFileConfiguration file_config) {
+  void InitializeTestExpectations(ExpectationsFileConfig file_config) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     std::string json_data;
@@ -1435,8 +1445,14 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedBrowserTest,
                        MAYBE_CleanupExpectations) {
-  PerformTestCleanupIfNeeded({LinkCapturing::kEnabled});
-  PerformTestCleanupIfNeeded({LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBrowser, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kStandalone, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBrowser, LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kStandalone, LinkCapturing::kDisabled});
 }
 
 std::string LinkCaptureTestParamToString(
@@ -1454,7 +1470,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
                         LinkCapturing::kDisabled  // LinkCapturing turned off.
                         ),
@@ -1493,7 +1509,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         // ClientMode::kAuto defaults to NavigateNew on all platforms.
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
@@ -1525,7 +1541,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         // TODO(https://crbug.com/371513459): Test more client modes.
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         // There is really only one combination that makes sense for the rest of
         // the values, since the IntentPicker is not affected by LinkCapturing,
         // it only shows in a Tab (not an App), it always stays within the same
@@ -1546,7 +1562,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(mojom::UserDisplayMode::kBrowser),
+        testing::Values(AppUserDisplayMode::kBrowser),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kTab),
         testing::Values(Destination::kScopeA2A),
@@ -1562,7 +1578,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
                         LinkCapturing::kDisabled  // LinkCapturing turned off.
                         ),
@@ -1586,7 +1602,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
             blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
                         LinkCapturing::kDisabled  // LinkCapturing turned off.
                         ),
@@ -1610,7 +1626,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2X),
@@ -1630,7 +1646,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2A, Destination::kScopeA2B),
@@ -1648,7 +1664,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2A),
@@ -1667,7 +1683,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2B),
@@ -1687,7 +1703,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
         testing::Values(Destination::kScopeA2B),
@@ -1753,8 +1769,14 @@ IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithAppBLaunched,
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithAppBLaunched,
                        MAYBE_CleanupExpectations) {
-  PerformTestCleanupIfNeeded({LinkCapturing::kEnabled});
-  PerformTestCleanupIfNeeded({LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBrowser, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kStandalone, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBrowser, LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kStandalone, LinkCapturing::kDisabled});
 }
 
 // TODO(crbug.com/373495871): Fix flaky tests for kNavigateExisting and enable
@@ -1766,7 +1788,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
             blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
-        testing::Values(mojom::UserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.

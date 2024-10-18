@@ -1,0 +1,36 @@
+{
+   "tests": {
+      "Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+         "_params": "BothBrowser_CaptureOn_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": true,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_a/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      }
+   }
+}
