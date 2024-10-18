@@ -12,7 +12,6 @@
 #include "components/viz/test/test_context_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
@@ -45,17 +44,6 @@ class CanvasHibernationHandlerTest
                                               {});
         break;
     }
-  }
-
-  std::unique_ptr<Canvas2DLayerBridge> MakeBridge(const gfx::Size& size,
-                                                  RasterModeHint raster_mode,
-                                                  OpacityMode opacity_mode) {
-    host_ = std::make_unique<FakeCanvasResourceHost>(size);
-    host_->SetPreferred2DRasterMode(raster_mode);
-    host_->SetOpacityMode(opacity_mode);
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>(host_.get());
-    return bridge;
   }
 
   void SetUp() override {
@@ -357,13 +345,12 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->immediate()));
   // But the encoded version is dropped (epoch mismatch).
   EXPECT_FALSE(handler.is_encoded());
-  // Yet we are hibernating (since the bridge is in background).
+  // Yet we are hibernating (since the page is in the background).
   EXPECT_TRUE(handler.IsHibernating());
 
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
   EXPECT_EQ(2u, TestSingleThreadTaskRunner::RunAll(task_runner->immediate()));
   EXPECT_TRUE(handler.is_encoded());
-  // Yet we are hibernating (since the bridge is in background).
   EXPECT_TRUE(handler.IsHibernating());
 }
 
@@ -395,7 +382,7 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
 
   // But the encoded version is dropped (epoch mismatch).
   EXPECT_FALSE(handler.is_encoded());
-  // Yet we are hibernating (since the bridge is in background).
+  // Yet we are hibernating (since the page is in the background).
   EXPECT_TRUE(handler.IsHibernating());
 }
 
