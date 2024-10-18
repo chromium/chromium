@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -59,7 +60,8 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
 
   void OpenPageInfo() {
     ShowPageInfoDialog(browser()->tab_strip_model()->GetActiveWebContents(),
-                       base::DoNothing());
+                       base::DoNothing(),
+                       bubble_anchor_util::Anchor::kLocationBar);
   }
 
   void ClosePageInfo() {

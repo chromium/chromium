@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/grit/generated_resources.h"
@@ -204,7 +205,8 @@ class TabSharingInfoBarDelegate::CscIndicatorButton
     if (!web_contents_) {
       return;
     }
-    ShowPageInfoDialog(web_contents_.get(), base::DoNothing());
+    ShowPageInfoDialog(web_contents_.get(), base::DoNothing(),
+                       bubble_anchor_util::Anchor::kLocationBar);
   }
 
   std::u16string GetLabel() const override {

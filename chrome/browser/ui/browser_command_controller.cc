@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -1024,7 +1025,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
             base::BindOnce(&AppInfoDialogClosedCallback,
                            sessions::SessionTabHelper::IdForWindowContainingTab(
                                web_contents)),
-            bubble_anchor_util::kAppMenuButton);
+            bubble_anchor_util::Anchor::kAppMenuButton);
       }
       break;
     }
