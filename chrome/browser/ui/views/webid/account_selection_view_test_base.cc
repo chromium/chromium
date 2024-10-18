@@ -6,11 +6,9 @@
 
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/test/test_event.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 
 const std::vector<content::IdentityRequestDialogDisclosureField>
@@ -212,18 +210,11 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRows(
                                           kDesiredAvatarSize + kIdpBadgeOffset)
                            : gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
 
+    // Check for arrow icon in secondary view.
     if (is_modal_dialog) {
-      // Check for arrow icon in secondary view.
-      AccountHoverButtonSecondaryView* secondary_view =
-          static_cast<AccountHoverButtonSecondaryView*>(
-              GetHoverButtonSecondaryView(account_row));
-      EXPECT_TRUE(secondary_view);
-
-      // Check that arrow icon can be replaced with a spinner.
-      secondary_view->ReplaceWithSpinner();
-      views::Throbber* spinner_view =
-          static_cast<views::Throbber*>(secondary_view->children()[0]);
-      EXPECT_TRUE(spinner_view);
+      views::ImageView* arrow_icon_view = static_cast<views::ImageView*>(
+          GetHoverButtonSecondaryView(account_row));
+      EXPECT_TRUE(arrow_icon_view);
     } else {
       EXPECT_FALSE(GetHoverButtonSecondaryView(account_row));
     }

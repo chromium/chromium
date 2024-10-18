@@ -77,8 +77,7 @@ gfx::Size Throbber::CalculatePreferredSize(
 }
 
 void Throbber::OnPaint(gfx::Canvas* canvas) {
-  SkColor color =
-      GetColorProvider()->GetColor(color_id_.value_or(ui::kColorThrobber));
+  SkColor color = GetColorProvider()->GetColor(ui::kColorThrobber);
 
   if (!IsRunning()) {
     if (checked_) {

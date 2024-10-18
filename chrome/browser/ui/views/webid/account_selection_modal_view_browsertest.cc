@@ -21,8 +21,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
@@ -271,7 +269,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       EXPECT_EQ(leftmost_button->GetText(), expect_add_account_button
                                                 ? u"Use a different account"
                                                 : u"Back");
-      CheckReplaceButtonWithSpinner(leftmost_button);
     }
 
     views::MdTextButton* cancel_button =
@@ -288,23 +285,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       ASSERT_TRUE(continue_button);
       EXPECT_EQ(continue_button->GetText(), u"Continue");
       EXPECT_EQ(dialog()->GetInitiallyFocusedView(), continue_button);
-      CheckReplaceButtonWithSpinner(continue_button);
     }
-  }
-
-  void CheckReplaceButtonWithSpinner(views::MdTextButton* button) {
-    dialog()->ReplaceButtonWithSpinner(button);
-    bool has_spinner = false;
-    for (const auto& child : button->children()) {
-      // Spinner is placed in a BoxLayoutView.
-      if (std::string(child->GetClassName()) == "BoxLayoutView") {
-        views::Throbber* spinner =
-            static_cast<views::Throbber*>(child->children()[0]);
-        EXPECT_TRUE(spinner);
-        has_spinner = true;
-      }
-    }
-    ASSERT_TRUE(has_spinner);
   }
 
   void CheckDisabledButtonRow(views::View* button_row,
@@ -451,7 +432,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     CreateAndShowVerifyingSheet();
     // Order: Progress bar, header, account chooser, button row
     std::vector<std::string> expected_class_names = {
-        "View", has_multiple_accounts ? "ScrollView" : "View", "View"};
+        "ProgressBar", "View", has_multiple_accounts ? "ScrollView" : "View",
+        "View"};
     EXPECT_THAT(GetChildClassNames(dialog()),
                 testing::ElementsAreArray(expected_class_names));
 
@@ -463,11 +445,11 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
               l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
 #endif
 
-    PerformHeaderChecks(dialog()->children()[0], expect_visible_idp_icon,
+    PerformHeaderChecks(dialog()->children()[1], expect_visible_idp_icon,
                         expect_visible_combined_icons);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> account_chooser =
-        dialog()->children()[1]->children();
+        dialog()->children()[2]->children();
     // Based on the modal type, there could be different items from the
     // account_chooser section. e.g. accounts, disclosure text, scroll view etc.
     // and all of them should be disabled.
@@ -475,7 +457,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       ASSERT_FALSE(item->GetEnabled());
     }
 
-    CheckDisabledButtonRow(dialog()->children()[2],
+    CheckDisabledButtonRow(dialog()->children()[3],
                            /*should_focus_cancel=*/true);
   }
 
