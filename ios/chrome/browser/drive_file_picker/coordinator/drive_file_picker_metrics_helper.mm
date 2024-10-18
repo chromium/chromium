@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 
 namespace {
 // The outcome of the Drive File Picker flow.
@@ -30,7 +32,14 @@ enum class FilePickerDriveOutcome {
 
 @implementation DriveFilePickerMetricsHelper
 
-- (void)reportMetrics {
+- (void)reportActivationMetricsForEvent:(const ChooseFileEvent&)event {
+  base::UmaHistogramEnumeration(
+      "IOS.Web.FileInput.ContentState.Drive",
+      ContentStateFromAttributes(event.allow_multiple_files,
+                                 event.has_selected_file));
+}
+
+- (void)reportOutcomeMetrics {
   if (_submitted) {
     base::UmaHistogramMemoryMB("IOS.FilePicker.Drive.SubmittedFileSize",
                                _fileSize / 1024 / 1024);
@@ -38,6 +47,9 @@ enum class FilePickerDriveOutcome {
   base::UmaHistogramEnumeration("IOS.FilePicker.Drive.Outcome", [self outcome]);
 }
 
+#pragma mark - Private
+
+// Computes the outcome bucket from the internal state variables.
 - (FilePickerDriveOutcome)outcome {
   if (_userInterrupted) {
     return FilePickerDriveOutcome::kInterruptedByUser;

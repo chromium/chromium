@@ -150,7 +150,8 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
 
   std::optional<double> accept_type = body_dict.FindDouble("acceptType");
   std::optional<bool> has_multiple = body_dict.FindBool("hasMultiple");
-  if (!accept_type || !has_multiple) {
+  std::optional<bool> has_selected_file = body_dict.FindBool("hasSelectedFile");
+  if (!accept_type || !has_multiple || !has_selected_file) {
     return;
   }
   int accept_type_int = static_cast<int>(*accept_type);
@@ -160,7 +161,7 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  LogChooseFileEvent(accept_type_int, *has_multiple);
+  LogChooseFileEvent(accept_type_int, *has_multiple, *has_selected_file);
 
   if (base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
     std::vector<std::string> accept_file_extensions = ParseAttributeFromValue(
@@ -170,17 +171,20 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
     base::UmaHistogramBoolean("IOS.Web.FileInput.EventDropped",
                               last_choose_file_event_.has_value());
     last_choose_file_event_ = std::make_optional<ChooseFileEvent>(
-        *has_multiple, std::move(accept_file_extensions),
+        *has_multiple, *has_selected_file, std::move(accept_file_extensions),
         std::move(accept_mime_types), web_state);
   }
 }
 
-void ChooseFileJavaScriptFeature::LogChooseFileEvent(
-    int accept_type,
-    bool allow_multiple_files) {
+void ChooseFileJavaScriptFeature::LogChooseFileEvent(int accept_type,
+                                                     bool allow_multiple_files,
+                                                     bool has_selected_file) {
   base::UmaHistogramEnumeration(
       "IOS.Web.FileInput.Clicked",
       BucketForChooseFileEvent(accept_type, allow_multiple_files));
+  base::UmaHistogramEnumeration(
+      "IOS.Web.FileInput.ContentState",
+      ContentStateFromAttributes(allow_multiple_files, has_selected_file));
 }
 
 std::optional<ChooseFileEvent>

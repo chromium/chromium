@@ -167,12 +167,16 @@ constexpr int kThumbnailResizeDimension = 64;
     ChooseFileTabHelper* tab_helper =
         ChooseFileTabHelper::GetOrCreateForWebState(webState);
     CHECK(tab_helper->IsChoosingFiles());
-    _acceptedTypes = UTTypesAcceptedForEvent(tab_helper->GetChooseFileEvent());
+    const ChooseFileEvent& event = tab_helper->GetChooseFileEvent();
+    _acceptedTypes = UTTypesAcceptedForEvent(event);
     _driveList = _driveService->CreateList(_identity);
     _driveDownloader = _driveService->CreateFileDownloader(_identity);
     _imageTranscoder = std::make_unique<web::JavaScriptImageTranscoder>();
     _imagesPending = imagesPending;
     _imageCache = imageCache;
+    if (collectionType == DriveFilePickerCollectionType::kRoot) {
+      [_metricsHelper reportActivationMetricsForEvent:event];
+    }
   }
   return self;
 }

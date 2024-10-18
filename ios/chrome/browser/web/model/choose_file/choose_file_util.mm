@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 
+#import "base/notreached.h"
 #import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 
@@ -95,6 +96,23 @@ std::vector<std::string> ParseAcceptAttribute(
 }
 
 }  // namespace
+
+ChooseFileContentState ContentStateFromAttributes(bool has_multiple,
+                                                  bool has_selected_file) {
+  if (!has_multiple && !has_selected_file) {
+    return ChooseFileContentState::kSingleEmpty;
+  }
+  if (!has_multiple && has_selected_file) {
+    return ChooseFileContentState::kSingleSelected;
+  }
+  if (has_multiple && !has_selected_file) {
+    return ChooseFileContentState::kMultipleEmpty;
+  }
+  if (has_multiple && has_selected_file) {
+    return ChooseFileContentState::kMultipleSelected;
+  }
+  NOTREACHED();
+}
 
 std::vector<std::string> ParseAcceptAttributeMimeTypes(
     std::string_view accept_attribute) {

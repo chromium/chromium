@@ -979,6 +979,13 @@ the generic promo launch. -->
   <int value="19" label="Apple, Multiple files"/>
 </enum>
 
+<enum name="IOSWebFileInputContentState">
+  <int value="0" label="Single file, empty"/>
+  <int value="1" label="Single file, already selected"/>
+  <int value="2" label="Multiple files, empty"/>
+  <int value="3" label="Multiple files, already selected"/>
+</enum>
+
 <enum name="IOSWidgetKitAction">
   <int value="0" label="Dino Widget - Game"/>
   <int value="1" label="Search Widget - Search"/>

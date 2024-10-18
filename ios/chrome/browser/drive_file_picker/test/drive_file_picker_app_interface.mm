@@ -22,7 +22,8 @@
   ChooseFileTabHelper* tab_helper = ChooseFileTabHelper::GetOrCreateForWebState(
       webStateList->GetActiveWebState());
   auto controller = std::make_unique<FakeChooseFileController>(ChooseFileEvent(
-      false, std::vector<std::string>{}, std::vector<std::string>{},
+      false /*allow_multiple_files*/, false /*has_selected_file*/,
+      std::vector<std::string>{}, std::vector<std::string>{},
       webStateList->GetActiveWebState()));
   tab_helper->StartChoosingFiles(std::move(controller));
 }
