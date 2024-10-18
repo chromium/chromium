@@ -307,8 +307,9 @@ void UntrustedSource::ServeBackgroundImage(
 }
 
 bool UntrustedSource::IsURLAllowed(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme) ||
-      !url.SchemeIs(content::kChromeUIUntrustedScheme) ||
+  if (!url.is_valid() ||
+      !(url.SchemeIs(url::kHttpsScheme) ||
+        url.SchemeIs(content::kChromeUIUntrustedScheme)) ||
       IsURLBlockedByPolicy(url)) {
     LOG(WARNING) << "URL is not allowed.";
     return false;
