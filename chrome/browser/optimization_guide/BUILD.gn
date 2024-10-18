@@ -86,6 +86,7 @@ source_set("test_support") {
     ":optimization_guide",
     "//base",
     "//chrome/browser",
+    "//chrome/browser/prefs",
     "//chrome/test:test_support",
     "//components/metrics:content",
     "//components/optimization_guide/core",

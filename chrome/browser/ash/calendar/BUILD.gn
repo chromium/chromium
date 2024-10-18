@@ -59,6 +59,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/prefs",
     "//chrome/browser/web_applications",
     "//chrome/test:test_support",
     "//components/account_id",

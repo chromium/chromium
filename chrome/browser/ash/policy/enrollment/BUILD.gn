@@ -134,6 +134,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/enrollment/psm:test_support",
     "//chrome/browser/ash/policy/server_backed_state",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui/ash/login:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",

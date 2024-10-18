@@ -587,6 +587,7 @@ source_set("unit_tests") {
     "//chrome/browser/keyboard_accessory/test_utils/android",
     "//chrome/browser/password_manager/android/access_loss:test_support",
     "//chrome/browser/password_manager/android/add_username_dialog:android",
+    "//chrome/browser/prefs",
     "//chrome/browser/sync",
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android:test_support",

@@ -269,6 +269,7 @@ static_library("screens") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
+    "//chrome/browser/prefs:util",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/ash/login",

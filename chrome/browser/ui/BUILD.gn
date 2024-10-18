@@ -359,6 +359,8 @@ static_library("ui") {
     "//chrome/browser/permissions",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:impl",
+    "//chrome/browser/prefs",
+    "//chrome/browser/prefs:impl",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
@@ -728,6 +730,7 @@ static_library("ui") {
     "//chrome/browser/content_settings:impl",
     "//chrome/browser/content_settings:content_settings_util_impl",
     "//chrome/browser/updates/announcement_notification:impl",
+    "//chrome/browser/prefs:impl",
   ]
 
   if (enable_vr && is_win) {
@@ -4964,7 +4967,10 @@ static_library("ui") {
           [ "views/user_education/browser_help_bubble_event_relay_mac.mm" ]
     }
 
-    public_deps += [ "//ui/base/mojom:ui_base_types" ]
+    public_deps += [
+      "//chrome/browser/prefs:util",
+      "//ui/base/mojom:ui_base_types",
+    ]
 
     deps += [
       "side_search:side_search_tab_data_proto",

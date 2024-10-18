@@ -64,6 +64,7 @@ source_set("app_service") {
     "//chrome/browser/apps/app_service/app_icon:util",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/prefs",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:app_icon_resources",

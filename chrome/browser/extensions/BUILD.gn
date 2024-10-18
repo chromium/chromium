@@ -750,6 +750,8 @@ source_set("extensions") {
     "//chrome/browser/feedback",
     "//chrome/browser/importer",
     "//chrome/browser/picture_in_picture",
+    "//chrome/browser/prefs",
+    "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/reading_list",
     "//chrome/browser/search",

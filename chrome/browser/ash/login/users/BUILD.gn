@@ -181,6 +181,7 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/policy:onc",
+    "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/test:test_support",

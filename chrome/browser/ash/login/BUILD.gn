@@ -569,6 +569,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/ash/keyboard:ash_test_support",
