@@ -625,6 +625,18 @@ suite('<facegaze-actions-add-dialog>', () => {
         navigateToThresholdPage();
       });
 
+  test('threshold page video preview is mirrored', async () => {
+    await initPage();
+    navigateToThresholdPage();
+
+    const video =
+        faceGazeAddActionDialog.shadowRoot!.querySelector<HTMLVideoElement>(
+            '#cameraStream');
+    assertTrue(!!video);
+    const style = getComputedStyle(video);
+    assertTrue(!!style.transform);
+  });
+
   test(
       'threshold page previous button changes dialog to gesture page',
       async () => {
