@@ -2524,6 +2524,9 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupPermissions(
 #endif
     for (int i = 0; i < tab_count; ++i) {
       content::WebContents* web_contents = tabs->GetWebContentsAt(i);
+      if (!web_contents) {
+        continue;
+      }
       url::Origin tab_origin = url::Origin::Create(
           permissions::PermissionUtil::GetLastCommittedOriginAsURL(
               web_contents->GetPrimaryMainFrame()));
