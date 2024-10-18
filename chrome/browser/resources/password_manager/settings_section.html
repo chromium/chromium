@@ -1,4 +1,4 @@
-<style include="shared-style cr-shared-style">
+<style include="shared-style cr-shared-style cr-spinner-style">
   #blockedSitesTitle {
     margin-top: 28px;
   }
@@ -132,11 +132,8 @@
           $i18n{disconnectCloudAuthenticatorButton}
         </cr-button>
       </template>
-      <template is="dom-if"
-          if="[[isDisconnectCloudAuthenticatorInProgress_]]" restamp>
-        <paper-spinner-lite active id="progressSpinner">
-        </paper-spinner-lite>
-      </template>
+      <div class="spinner"
+          hidden$="[[!isDisconnectCloudAuthenticatorInProgress_]]"></div>
     </cr-link-row>
   </template>
   <template is="dom-if" if="[[isPasswordManagerPinAvailable_]]" restamp>
