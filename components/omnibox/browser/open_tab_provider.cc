@@ -11,7 +11,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
-#include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/match_compare.h"
@@ -90,15 +89,9 @@ int Score(const AutocompleteInput& input,
   return normalized_factors * kMaxScore;
 }
 
-bool ShouldRunProvider(AutocompleteProviderClient* client,
-                       const AutocompleteInput& input,
+bool ShouldRunProvider(const AutocompleteInput& input,
                        const AutocompleteInput& adjusted_input) {
-  bool zps_or_empty = input.IsZeroSuggest() || input.text().empty();
-  if (is_android) {
-    return !zps_or_empty || !client->IsIncognitoProfile();
-  } else {
-    return !zps_or_empty;
-  }
+  return is_android || !(input.IsZeroSuggest() || input.text().empty());
 }
 
 }  // namespace
@@ -118,7 +111,7 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
   const auto [adjusted_input, template_url] =
       KeywordProvider::AdjustInputForStarterPackEngines(
           input, client_->GetTemplateURLService());
-  if (!ShouldRunProvider(client_, input, adjusted_input)) {
+  if (!ShouldRunProvider(input, adjusted_input)) {
     return;
   }
 

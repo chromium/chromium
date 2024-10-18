@@ -4,20 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.Matchers.allOf;
-import static org.junit.Assert.assertEquals;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
-
-import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -40,11 +31,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.ViewUtils;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /** Tests for search in the tab switcher. */
@@ -52,21 +39,13 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
 public class TabSwitcherSearchTest {
-    private static final int SERVER_PORT = 13245;
-    private static final String URL_PREFIX = "127.0.0.1:" + SERVER_PORT;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private EmbeddedTestServer mTestServer;
-
     @Before
     public void setUp() throws ExecutionException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mTestServer =
-                TabSwitcherSearchTestUtils.setServerPortAndGetTestServer(
-                        mActivityTestRule, SERVER_PORT);
-
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
     }
@@ -86,76 +65,5 @@ public class TabSwitcherSearchTest {
                 InstrumentationRegistry.getInstrumentation(),
                 SearchActivity.class,
                 () -> onView(withId(R.id.search_box_text)).perform(click()));
-    }
-
-    @Test
-    @MediumTest
-    public void testZeroPrefixSuggestions() {
-        List<String> urlsToOpen =
-                Arrays.asList(
-                        "/chrome/test/data/android/test.html",
-                        "/chrome/test/data/android/navigate/one.html",
-                        "/chrome/test/data/android/navigate/two.html",
-                        "/chrome/test/data/android/navigate/three.html",
-                        "/chrome/test/data/android/about.html");
-        TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
-
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        enterTabSwitcher(cta);
-
-        SearchActivity searchActivity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SearchActivity.class,
-                        () -> onView(withId(R.id.search_box_text)).perform(click()));
-        ViewUtils.waitForView(
-                searchActivity.findViewById(R.id.control_container), withText("Last open tabs"));
-        closeSoftKeyboard();
-
-        // ZPS for open tabs only shows the most recent 4 tabs, so the first tab (about:blank) that
-        // was loaded should be excluded.
-        ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
-        verifySuggestions(suggestions, urlsToOpen, "Last open tabs");
-    }
-
-    @Test
-    @MediumTest
-    public void testZeroPrefixSuggestions_duplicateUrls() {
-        mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/test.html"));
-        List<String> urlsToOpen =
-                Arrays.asList(
-                        "/chrome/test/data/android/test.html",
-                        "/chrome/test/data/android/test.html");
-        TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
-
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        enterTabSwitcher(cta);
-
-        SearchActivity searchActivity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SearchActivity.class,
-                        () -> onView(withId(R.id.search_box_text)).perform(click()));
-        ViewUtils.waitForView(
-                searchActivity.findViewById(R.id.control_container), withText("Last open tabs"));
-        closeSoftKeyboard();
-
-        // Tab URLs will be de-duped.
-        ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
-        verifySuggestions(
-                suggestions,
-                Arrays.asList("/chrome/test/data/android/test.html"),
-                "Last open tabs");
-    }
-
-    private void verifySuggestions(
-            ViewGroup suggestions, List<String> suggestionUrls, String header) {
-        int startIndex = header == null ? 0 : 1;
-        assertEquals(startIndex + suggestionUrls.size(), suggestions.getChildCount());
-        for (int i = 0; i < suggestionUrls.size(); i++) {
-            // Line 2 is the URL, the titles vary.
-            onView(allOf(withId(R.id.line_2), withText(URL_PREFIX + suggestionUrls.get(i))))
-                    .check(matches(isDisplayed()));
-        }
     }
 }
