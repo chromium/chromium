@@ -285,6 +285,7 @@ source_set("profiles_extra_parts_impl") {
   if (is_android) {
     deps += [
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
+      "//chrome/browser/fast_checkout",
       "//components/commerce/core:merchant_signal_db_proto",
     ]
   } else {

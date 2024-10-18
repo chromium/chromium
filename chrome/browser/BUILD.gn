@@ -2919,26 +2919,6 @@ static_library("browser") {
       "enterprise/reporting/reporting_delegate_factory_android.h",
       "enterprise/util/android_enterprise_info.cc",
       "enterprise/util/android_enterprise_info.h",
-      "fast_checkout/fast_checkout_accessibility_service.h",
-      "fast_checkout/fast_checkout_accessibility_service_impl.cc",
-      "fast_checkout/fast_checkout_accessibility_service_impl.h",
-      "fast_checkout/fast_checkout_capabilities_fetcher.h",
-      "fast_checkout/fast_checkout_capabilities_fetcher_factory.cc",
-      "fast_checkout/fast_checkout_capabilities_fetcher_factory.h",
-      "fast_checkout/fast_checkout_capabilities_fetcher_impl.cc",
-      "fast_checkout/fast_checkout_capabilities_fetcher_impl.h",
-      "fast_checkout/fast_checkout_client_impl.cc",
-      "fast_checkout/fast_checkout_client_impl.h",
-      "fast_checkout/fast_checkout_delegate_impl.cc",
-      "fast_checkout/fast_checkout_delegate_impl.h",
-      "fast_checkout/fast_checkout_personal_data_helper.h",
-      "fast_checkout/fast_checkout_personal_data_helper_impl.cc",
-      "fast_checkout/fast_checkout_personal_data_helper_impl.h",
-      "fast_checkout/fast_checkout_tab_helper.cc",
-      "fast_checkout/fast_checkout_tab_helper.h",
-      "fast_checkout/fast_checkout_trigger_validator.h",
-      "fast_checkout/fast_checkout_trigger_validator_impl.cc",
-      "fast_checkout/fast_checkout_trigger_validator_impl.h",
       "feed/android/background_refresh_task.cc",
       "feed/android/background_refresh_task.h",
       "feed/android/feed_image_fetch_client.cc",
@@ -3231,7 +3211,6 @@ static_library("browser") {
 
     deps += [
       ":delta_file_proto",
-      ":fast_checkout_funnels_proto",
       ":profile_token",
       ":sensitivity_data_proto",
       ":usage_stats_proto",
@@ -3260,6 +3239,7 @@ static_library("browser") {
       "//chrome/browser/download/internal/android",
       "//chrome/browser/facilitated_payments",
       "//chrome/browser/facilitated_payments/ui/android",
+      "//chrome/browser/fast_checkout:impl",
       "//chrome/browser/feed/android:jni_headers",
       "//chrome/browser/feedback/android",
       "//chrome/browser/feedback/android:jni_headers",
@@ -3315,12 +3295,7 @@ static_library("browser") {
       "//chrome/browser/ui/android/layouts:android",
       "//chrome/browser/ui/android/pdf:pdf_jni_headers",
       "//chrome/browser/ui/digital_credentials",
-      "//chrome/browser/ui/fast_checkout",
       "//chrome/browser/ui/fast_checkout:impl",
-
-      # TODO(crbug.com/372647115): When c/b/android/oom_intervention gets modularized, consider
-      # moving the whole directory to it, since it is its only user.
-      "//chrome/browser/ui/interventions",
       "//chrome/browser/usb/android:jni_headers",
       "//chrome/browser/wallet/android:jni_headers",
       "//chrome/common:non_code_constants",
@@ -3447,6 +3422,11 @@ static_library("browser") {
       "//third_party/libphonenumber",
       "//ui/accessibility",
       "//url",
+    ]
+    deps += [
+      # TODO(crbug.com/372647115): When c/b/android/oom_intervention gets modularized, consider
+      # moving the whole directory to it, since it is its only user.
+      "//chrome/browser/ui/interventions",
     ]
 
     # Any circular includes must depend on the target
@@ -8866,10 +8846,6 @@ if (is_android) {
     sources = [ "android/proto/delta_file.proto" ]
   }
 
-  proto_library("fast_checkout_funnels_proto") {
-    sources = [ "fast_checkout/fast_checkout_funnels.proto" ]
-  }
-
   proto_library("sensitivity_data_proto") {
     sources = [ "android/persisted_tab_data/sensitivity_data.proto" ]
   }
@@ -9202,9 +9178,8 @@ static_library("test_support") {
       "android/webapk/test/fake_webapk_specifics_fetcher.h",
       "download/android/mock_download_controller.cc",
       "download/android/mock_download_controller.h",
-      "fast_checkout/mock_fast_checkout_capabilities_fetcher.cc",
-      "fast_checkout/mock_fast_checkout_capabilities_fetcher.h",
     ]
+    deps += [ "//chrome/browser/fast_checkout:test_support" ]
   } else {
     sources += [
       "apps/intent_helper/preferred_apps_test_util.cc",

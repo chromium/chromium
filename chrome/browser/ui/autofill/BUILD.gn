@@ -171,6 +171,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/autofill/android:jni_headers",
+      "//chrome/browser/fast_checkout",
       "//chrome/browser/keyboard_accessory/android:public",
       "//chrome/browser/password_manager/android/access_loss:public",
       "//components/android_autofill/browser:android",
@@ -295,6 +296,7 @@ source_set("unit_tests") {
       "autofill_keyboard_accessory_controller_impl_unittest.cc",
       "autofill_snackbar_controller_impl_unittest.cc",
     ]
+    deps += [ "//chrome/browser/fast_checkout" ]
   } else {
     sources += [
       "add_new_address_bubble_controller_unittest.cc",
