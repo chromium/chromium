@@ -268,6 +268,13 @@ function initSourceTable(panel: HTMLElement):
             'Cookie-Based Debug Allowed', 'cookieBasedDebugAllowed',
             asStringOrBool),
         valueColumn('Attribution Scopes Data', 'attributionScopesData', asCode),
+        valueColumn(
+            'Remaining Aggregatable Debug Budget',
+            'remainingAggregatableDebugBudget',
+            asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
+        valueColumn(
+            'Aggregatable Debug Key Piece', 'aggregatableDebugKeyPiece',
+            asStringOrBool),
         'Event-Level Fields',
         valueColumn(
             'Epsilon', 'eventLevelEpsilon',
@@ -285,13 +292,6 @@ function initSourceTable(panel: HTMLElement):
             asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
         valueColumn('Aggregation Keys', 'aggregationKeys', asCode),
         valueColumn('Dedup Keys', 'aggregatableDedupKeys', asList(asNumber)),
-        valueColumn(
-            'Remaining Aggregatable Debug Budget',
-            'remainingAggregatableDebugBudget',
-            asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
-        valueColumn(
-            'Aggregatable Debug Key Piece', 'aggregatableDebugKeyPiece',
-            asStringOrBool),
       ]);
 }
 

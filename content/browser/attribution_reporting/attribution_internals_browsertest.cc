@@ -458,24 +458,24 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         tds[11]?.innerText === 'true' &&
         // Attribution Scopes Data
         tds[12]?.innerText === '{\n   "limit": 3,\n   "max_event_states": 3,\n   "values": [ "a" ]\n}\n' &&
-        // Epsilon
-        tds[13]?.innerText === '14.000' &&
-        // Trigger Data Matching
-        tds[14]?.innerText === 'modulus' &&
-        // Event-Level Dedup Keys
-        tds[16]?.children[0]?.children[0]?.innerText === '13' &&
-        tds[16]?.children[0]?.children[1]?.innerText === '17' &&
-        // Remaining Aggregatable Attribution Budget
-        tds[18]?.innerText === '1300 / 65536' &&
-        // Aggregation Keys
-        tds[19]?.innerText === '{\n "a": "0x1"\n}' &&
-        // Aggregatable Dedup Keys
-        tds[20]?.children[0]?.children[0]?.innerText === '14' &&
-        tds[20]?.children[0]?.children[1]?.innerText === '18' &&
         // Remaining Aggregatable Debug Budget
-        tds[21]?.innerText === '100 / 65536' &&
+        tds[13]?.innerText === '100 / 65536' &&
         // Aggregatable Debug Key Piece
-        tds[22]?.innerText === '0xf'
+        tds[14]?.innerText === '0xf' &&
+        // Epsilon
+        tds[15]?.innerText === '14.000' &&
+        // Trigger Data Matching
+        tds[16]?.innerText === 'modulus' &&
+        // Event-Level Dedup Keys
+        tds[18]?.children[0]?.children[0]?.innerText === '13' &&
+        tds[18]?.children[0]?.children[1]?.innerText === '17' &&
+        // Remaining Aggregatable Attribution Budget
+        tds[20]?.innerText === '1300 / 65536' &&
+        // Aggregation Keys
+        tds[21]?.innerText === '{\n "a": "0x1"\n}' &&
+        // Aggregatable Dedup Keys
+        tds[22]?.children[0]?.children[0]?.innerText === '14' &&
+        tds[22]?.children[0]?.children[1]?.innerText === '18'
       ) {
         if (obs) {
           obs.disconnect();
