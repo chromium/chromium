@@ -272,12 +272,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   Browser* browser = self.browser;
   CHECK(browser, kLensOverlayNotFatalUntil);
 
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(lowMemoryWarningReceived)
-             name:UIApplicationDidReceiveMemoryWarningNotification
-           object:nil];
-
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(LensOverlayCommands)];
@@ -287,11 +281,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   if (Browser* browser = self.browser) {
     [browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   }
-
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:UIApplicationDidReceiveMemoryWarningNotification
-              object:nil];
 
   [super stop];
 }
@@ -307,6 +296,13 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
     [self destroyLensUI:NO
                  reason:lens::LensOverlayDismissalSource::kNewLensInvocation];
   }
+
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(lowMemoryWarningReceived)
+             name:UIApplicationDidReceiveMemoryWarningNotification
+           object:nil];
+
   _currentEntrypoint = entrypoint;
   _invocationTime = base::ElapsedTimer();
   _foregroundTime = base::TimeTicks();
@@ -433,6 +429,11 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   }
 
   _isExiting = YES;
+
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:UIApplicationDidReceiveMemoryWarningNotification
+              object:nil];
 
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Closed"));
   [self recordDismissalMetrics:dismissalSource];
