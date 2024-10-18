@@ -691,6 +691,12 @@ void RTCDataChannel::OnStateChange(
       if (!error.ok()) {
         LOG(ERROR) << "DataChannel error: \"" << error.message() << "\""
                    << ", code: " << error.sctp_cause_code().value_or(-1);
+
+        if (error.error_detail() == webrtc::RTCErrorDetailType::NONE) {
+          error.set_error_detail(
+              webrtc::RTCErrorDetailType::DATA_CHANNEL_FAILURE);
+        }
+
         IncrementErrorCounter(error);
         DispatchEvent(*MakeGarbageCollected<RTCErrorEvent>(
             event_type_names::kError, error));
