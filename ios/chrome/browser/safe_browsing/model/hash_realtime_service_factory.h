@@ -7,10 +7,10 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "services/network/public/mojom/network_context.mojom.h"
 
 class KeyedService;
+class ProfileIOS;
 
 namespace safe_browsing {
 class HashRealTimeService;
