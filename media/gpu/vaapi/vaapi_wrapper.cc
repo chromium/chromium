@@ -2122,6 +2122,17 @@ uint32_t VaapiWrapper::BufferFormatToVARTFormat(gfx::BufferFormat fmt) {
   }
 }
 
+// static
+bool VaapiWrapper::IsSWBitrateControllerSupported() {
+  auto va_display_state_handle = VADisplayStateSingleton::GetHandle();
+  // Software bitrate controller is not supported on grunt, crbug.com/365106092.
+  if (va_display_state_handle &&
+      base::Contains(va_display_state_handle->vendor_string(), "stoney")) {
+    return false;
+  }
+  return true;
+}
+
 bool VaapiWrapper::CreateContextAndSurfaces(
     unsigned int va_format,
     const gfx::Size& size,

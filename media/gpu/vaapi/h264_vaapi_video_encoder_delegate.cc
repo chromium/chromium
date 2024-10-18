@@ -496,7 +496,8 @@ bool H264VaapiVideoEncoderDelegate::UseSoftwareRateController(
 #else
       false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return num_temporal_layers <= kMaxSupportedH264TemporalLayersBySWBRC &&
+  return VaapiWrapper::IsSWBitrateControllerSupported() &&
+         num_temporal_layers <= kMaxSupportedH264TemporalLayersBySWBRC &&
          is_sw_bitrate_controller_enabled;
 }
 
