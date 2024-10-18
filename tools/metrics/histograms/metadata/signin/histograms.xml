@@ -2500,6 +2500,7 @@ kept as long as profile signout is possible -->
     expires_after="2025-03-09">
   <owner>tju@chromium.org</owner>
   <owner>chrome-kids-team@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the flavor of the button clicked on sync or history sync opt in
     screens, including buttons function (accept or decline) and appearance
@@ -2520,6 +2521,7 @@ kept as long as profile signout is possible -->
     expires_after="2025-03-09">
   <owner>tju@chromium.org</owner>
   <owner>chrome-kids-team@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the appearance of the button set on sync or history sync opt in
     screens. Recorded when the buttons are displayed to the user.
