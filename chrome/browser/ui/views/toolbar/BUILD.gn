@@ -108,7 +108,6 @@ source_set("toolbar") {
     "//chrome/browser/companion/core",
     "//chrome/browser/feedback",
     "//chrome/browser/media/router:media_router_feature",
-    "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search",

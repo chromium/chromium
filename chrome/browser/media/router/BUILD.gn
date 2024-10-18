@@ -388,7 +388,6 @@ source_set("unittests") {
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
-      "//chrome/browser/prefs",
       "//chrome/test:test_support",
       "//components/sync_preferences:test_support",
       "//content/test:test_support",

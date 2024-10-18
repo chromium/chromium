@@ -91,7 +91,6 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/ownership",
-    "//chrome/browser/prefs",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/growth",

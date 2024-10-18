@@ -236,7 +236,6 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/extensions/external_loader",
     "//chrome/browser/extensions",
     "//chrome/browser/policy:test_support",
-    "//chrome/browser/prefs",
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/ash/wallpaper:test_support",
     "//chrome/common:chrome_features",

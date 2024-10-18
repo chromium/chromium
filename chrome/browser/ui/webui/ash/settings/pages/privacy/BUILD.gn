@@ -105,7 +105,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/settings",
-    "//chrome/browser/prefs",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
     "//chrome/browser/web_applications",
     "//chrome/common",

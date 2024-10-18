@@ -415,8 +415,6 @@ static_library("test_support") {
     "//chrome/browser/permissions",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/policy/messaging_layer/storage_selector",
-    "//chrome/browser/prefs",
-    "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profiles_extra_parts",
     "//chrome/browser/reading_list",
     "//chrome/browser/search_engines",
@@ -1692,10 +1690,7 @@ if (is_android) {
         "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":android_browsertests_manifest"
 
-    deps = android_sync_integration_tests_deps + [
-             "//chrome/browser/prefs",
-             "//chrome/browser/sync",
-           ]
+    deps = android_sync_integration_tests_deps + [ "//chrome/browser/sync" ]
     sources = sync_integration_tests_sources
     data = android_sync_integration_tests_data
   }
@@ -1919,9 +1914,6 @@ if (!is_android) {
       "//chrome/browser/plus_addresses:browser_tests",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",
-      "//chrome/browser/prefs",
-      "//chrome/browser/prefs:browser_tests",
-      "//chrome/browser/prefs:util",
       "//chrome/browser/preloading/prefetch:browser_tests",
       "//chrome/browser/preloading/prerender:browser_tests",
       "//chrome/browser/preloading/preview:browser_tests",
@@ -2899,6 +2891,8 @@ if (!is_android) {
       "../browser/policy/test/v8_optimizer_policy_browsertest.cc",
       "../browser/predictors/loading_predictor_browsertest.cc",
       "../browser/prefetch/prefetch_browsertest.cc",
+      "../browser/prefs/pref_functional_browsertest.cc",
+      "../browser/prefs/pref_service_browsertest.cc",
       "../browser/prefs/tracked/pref_hash_browsertest.cc",
       "../browser/preloading/latency_ablation_browsertest.cc",
       "../browser/preloading/prefetch/no_state_prefetch/prerender_nostate_prefetch_browsertest.cc",
@@ -5822,6 +5816,15 @@ test("unit_tests") {
     "../browser/predictors/prefetch_manager_unittest.cc",
     "../browser/predictors/resource_prefetch_predictor_tables_unittest.cc",
     "../browser/predictors/resource_prefetch_predictor_unittest.cc",
+    "../browser/prefs/browser_prefs_unittest.cc",
+    "../browser/prefs/chrome_command_line_pref_store_proxy_unittest.cc",
+    "../browser/prefs/chrome_command_line_pref_store_ssl_manager_unittest.cc",
+    "../browser/prefs/chrome_command_line_pref_store_unittest.cc",
+    "../browser/prefs/chrome_pref_service_unittest.cc",
+    "../browser/prefs/incognito_mode_prefs_unittest.cc",
+    "../browser/prefs/profile_pref_store_manager_unittest.cc",
+    "../browser/prefs/proxy_policy_unittest.cc",
+    "../browser/prefs/session_startup_pref_unittest.cc",
     "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_unit_test_utils.cc",
     "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_unit_test_utils.h",
     "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_unittest.cc",
@@ -6004,6 +6007,7 @@ test("unit_tests") {
       "../browser/metrics/structured/ash_structured_metrics_recorder_unittest.cc",
       "../browser/metrics/structured/storage_manager_unittest.cc",
       "../browser/policy/messaging_layer/upload/file_upload_impl_unittest.cc",
+      "../browser/prefs/chrome_pref_service_factory_ash_unittest.cc",
       "../browser/webauthn/unexportable_key_utils_chromeos_unittest.cc",
       "../renderer/ash_merge_session_loader_throttle_unittest.cc",
       "../test/base/ash/v8_unit_test.cc",
@@ -6210,9 +6214,6 @@ test("unit_tests") {
     "//chrome/browser/policy:test_support",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/policy/messaging_layer/storage_selector",
-    "//chrome/browser/prefs",
-    "//chrome/browser/prefs:unit_tests",
-    "//chrome/browser/prefs:util",
     "//chrome/browser/preloading/prerender:unit_tests",
     "//chrome/browser/privacy_budget:unit_tests",
     "//chrome/browser/profile_resetter:profile_reset_report_proto",
@@ -8871,7 +8872,6 @@ test("unit_tests") {
       ]
 
       deps += [
-        "//chrome/browser/prefs:util",
         "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
         "//chrome/common/chromeos/extensions",
         "//chromeos/ash/components/dbus/image_burner",
@@ -10477,8 +10477,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/permissions:interactive_ui_tests",
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/policy:test_support",
-      "//chrome/browser/prefs",
-      "//chrome/browser/prefs:util",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
@@ -11527,7 +11525,6 @@ if (!is_android) {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/browsing_data:constants",
-      "//chrome/browser/prefs",
       "//chrome/browser/reading_list",
       "//chrome/browser/search_engines",
       "//chrome/browser/sync",

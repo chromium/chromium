@@ -78,7 +78,6 @@ source_set("sync") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser/favicon",
-    "//chrome/browser/prefs:util",
     "//chrome/browser/promos:utils",
     "//chrome/browser/reading_list",
     "//chrome/browser/search_engines",
