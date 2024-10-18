@@ -156,16 +156,12 @@ class StringHasher {
         rapidhash<Reader>(reinterpret_cast<const uint8_t*>(data), length));
   }
 
-  static unsigned HashMemory(const void* data, unsigned length) {
-    // NOTE: We lose the upper 32 bits of the hash value due to the
-    // return API here. Moving all callers to support 64-bit hashing
-    // would probably be possible, but a bit of work.
-    return static_cast<unsigned>(
-        rapidhash(reinterpret_cast<const uint8_t*>(data), length));
+  static uint64_t HashMemory(const void* data, unsigned length) {
+    return rapidhash(reinterpret_cast<const uint8_t*>(data), length);
   }
 
   template <size_t length>
-  static unsigned HashMemory(const void* data) {
+  static uint64_t HashMemory(const void* data) {
     return HashMemory(data, length);
   }
 

@@ -40,15 +40,15 @@ namespace {
 const char kNullLChars[2] = {0, 0};
 const UChar kNullUChars[2] = {0, 0};
 
-const unsigned kEmptyStringHash = 0x74EBC84B;
-const unsigned kSingleNullCharacterHash = 0x8249B3F8;
+const uint64_t kEmptyStringHash = 0x5A6EF77074EBC84B;
+const uint64_t kSingleNullCharacterHash = 0x48DFCE108249B3F8;
 
 const LChar kTestALChars[6] = {0x41, 0x95, 0xFF, 0x50, 0x01, 0};
 const UChar kTestAUChars[6] = {0x41, 0x95, 0xFF, 0x50, 0x01, 0};
 const UChar kTestBUChars[6] = {0x41, 0x95, 0xFFFF, 0x1080, 0x01, 0};
 
-const unsigned kTestAHash = 0xE0A5DDE6;
-const unsigned kTestBHash = 0xEEA75C1E;
+const uint64_t kTestAHash = 0xE9422771E0A5DDE6;
+const uint64_t kTestBHash = 0x4A2DA770EEA75C1E;
 
 }  // anonymous namespace
 
