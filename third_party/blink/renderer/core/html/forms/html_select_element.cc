@@ -102,6 +102,12 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
  public:
   explicit SelectDescendantsObserver(HTMLSelectElement& select)
       : select_(select), observer_(MutationObserver::Create(this)) {
+    // TODO(crbug.com/370735374) The addition of this mutation observer causes
+    // significant perf regressions for adding and removing options to a
+    // select. It's important to fix those regressions before shipping this
+    // feature.
+    CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+
     MutationObserverInit* init = MutationObserverInit::Create();
     init->setChildList(true);
     init->setSubtree(true);
