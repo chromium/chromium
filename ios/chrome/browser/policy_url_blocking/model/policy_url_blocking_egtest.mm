@@ -28,8 +28,10 @@ namespace {
 // Waits until `url` has the expected blocked state.
 void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   NSString* nsurl = base::SysUTF8ToNSString(url.spec());
+  // TODO(crbug.com/361151875): Fix this long delay and revert this timeout back
+  // to base::test::ios::kWaitForActionTimeout
   GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
-                     base::test::ios::kWaitForActionTimeout,
+                    base::Seconds(25),
                      ^{
                        return
                            [PolicyAppInterface isURLBlocked:nsurl] == blocked;
