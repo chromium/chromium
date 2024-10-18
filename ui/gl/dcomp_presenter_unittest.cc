@@ -248,8 +248,8 @@ class DCompPresenterTestBase : public testing::Test {
 
     presenter_ = CreateDCompPresenter();
 
-    SetDirectCompositionScaledOverlaysSupportedForTesting(false);
     SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_NV12);
+    SetDirectCompositionScaledOverlaysSupportedForTesting(false);
   }
 
   void TearDown() override {
@@ -1415,6 +1415,40 @@ TEST_P(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
       kMaxColorChannelDeviation);
 }
 
+TEST_P(DCompPresenterPixelTest, BGRASwapChain) {
+  // By default NV12 is used, so set it to BGRA explicitly.
+  SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_B8G8R8A8_UNORM);
+  // Swap chain size is overridden to onscreen rect size only if scaled overlays
+  // are supported.
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
+
+  gfx::Size window_size(100, 100);
+  gfx::Size texture_size(50, 50);
+  // Pass content rect with odd with and height.  Surface should round up
+  // width and height when creating swap chain.
+  gfx::Rect content_rect(0, 0, 49, 49);
+  gfx::Rect quad_rect(window_size);
+  InitializeForPixelTest(window_size, texture_size, content_rect, quad_rect,
+                         false);
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      presenter_->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain);
+
+  DXGI_SWAP_CHAIN_DESC1 desc;
+  EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
+  // Onscreen window_size is (100, 100).
+  EXPECT_EQ(DXGI_FORMAT_B8G8R8A8_UNORM, desc.Format);
+  EXPECT_EQ(100u, desc.Width);
+  EXPECT_EQ(100u, desc.Height);
+
+  SkColor expected_color = SkColorSetRGB(0xe1, 0x90, 0xeb);
+  EXPECT_SKCOLOR_CLOSE(
+      expected_color,
+      GLTestHelper::ReadBackWindowPixel(window_.hwnd(), gfx::Point(75, 75)),
+      kMaxColorChannelDeviation);
+}
+
 TEST_P(DCompPresenterPixelTest, NV12SwapChain) {
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
@@ -1456,11 +1490,11 @@ TEST_P(DCompPresenterPixelTest, YUY2SwapChain) {
            "on Win10/AMD bot (Radeon RX550). See https://crbug.com/967860.";
   }
 
+  // By default NV12 is used, so set it to YUY2 explicitly.
+  SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_YUY2);
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
-  // By default NV12 is used, so set it to YUY2 explicitly.
-  SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_YUY2);
 
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
