@@ -927,10 +927,14 @@ bool MediaCodecVideoDecoder::QueueInput() {
   if (pending_decodes_.empty())
     return false;
 
-  PendingDecode& pending_decode = pending_decodes_.front();
-  if (!use_block_model_ && !pending_decode.buffer->end_of_stream() &&
-      pending_decode.buffer->is_key_frame() &&
-      pending_decode.buffer->size() > max_input_size_) {
+  // TODO(crbug.com/373986013): We take a full ref on the buffer here since
+  // crash data seems to show access violations potentially involving this
+  // buffer.
+  auto pending_buffer = pending_decodes_.front().buffer;
+
+  if (!use_block_model_ && !pending_buffer->end_of_stream() &&
+      pending_buffer->is_key_frame() &&
+      pending_buffer->size() > max_input_size_) {
     // If we we're already using the provided resolution, try to guess something
     // larger based on the actual input size.
     if (decoder_config_.coded_size().width() == last_width_) {
@@ -941,7 +945,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
               ? 2
               : 4;
       const size_t max_pixels =
-          (pending_decode.buffer->size() * compression_ratio * 2) / 3;
+          (pending_buffer->size() * compression_ratio * 2) / 3;
       if (max_pixels > 8294400)  // 4K
         decoder_config_.set_coded_size(gfx::Size(7680, 4320));
       else if (max_pixels > 2088960)  // 1080p
@@ -970,10 +974,9 @@ bool MediaCodecVideoDecoder::QueueInput() {
   // If this ever changes, the code below runs the risk of dropping all frames
   // which haven't been received and rendered from the MediaCodec instance.
   if (base::FeatureList::IsEnabled(kMediaCodecElideEOS) &&
-      pending_decode.buffer->end_of_stream() &&
-      pending_decode.buffer->next_config()) {
+      pending_buffer->end_of_stream() && pending_buffer->next_config()) {
     const auto new_config =
-        absl::get<VideoDecoderConfig>(*pending_decode.buffer->next_config());
+        absl::get<VideoDecoderConfig>(*pending_buffer->next_config());
 
     // The underlying MediaCodec must remain the same in order for us to elide
     // the end of stream flush.
@@ -989,18 +992,19 @@ bool MediaCodecVideoDecoder::QueueInput() {
           << "Eliding EOS buffer and flush for resolution change from "
           << decoder_config_.coded_size().ToString() << " to "
           << new_config.coded_size().ToString();
-      std::move(pending_decode.decode_cb).Run(DecoderStatus::Codes::kOk);
+      std::move(pending_decodes_.front().decode_cb)
+          .Run(DecoderStatus::Codes::kOk);
       pending_decodes_.pop_front();
       return true;
     }
   }
 
-  auto status = codec_->QueueInputBuffer(*pending_decode.buffer);
+  auto status = codec_->QueueInputBuffer(*pending_buffer);
   DVLOG((status.code() == CodecWrapper::QueueStatus::Codes::kTryAgainLater ||
                  status.is_ok()
              ? 3
              : 2))
-      << "QueueInput(" << pending_decode.buffer->AsHumanReadableString()
+      << "QueueInput(" << pending_buffer->AsHumanReadableString()
       << ") status=" << MediaSerialize(status);
 
   switch (status.code()) {
@@ -1020,14 +1024,15 @@ bool MediaCodecVideoDecoder::QueueInput() {
       return false;
   }
 
-  if (pending_decode.buffer->end_of_stream()) {
+  if (pending_buffer->end_of_stream()) {
     // The VideoDecoder interface requires that the EOS DecodeCB is called after
     // all decodes before it are delivered, so we have to save it and call it
     // when the EOS is dequeued.
     DCHECK(!eos_decode_cb_);
-    eos_decode_cb_ = std::move(pending_decode.decode_cb);
+    eos_decode_cb_ = std::move(pending_decodes_.front().decode_cb);
   } else {
-    std::move(pending_decode.decode_cb).Run(DecoderStatus::Codes::kOk);
+    std::move(pending_decodes_.front().decode_cb)
+        .Run(DecoderStatus::Codes::kOk);
   }
   pending_decodes_.pop_front();
   return true;
