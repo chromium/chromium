@@ -3148,30 +3148,35 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     SetOrthogonalFallbackInlineSize(Style(), child, &builder);
   }
 
-  const bool has_auto_margins =
-      child_style.MarginInlineStartUsing(Style()).IsAuto() ||
-      child_style.MarginInlineEndUsing(Style()).IsAuto();
+  if (child.IsInline()) {
+    if (is_in_parallel_flow) {
+      builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
+    }
+  } else {
+    const bool has_auto_margins =
+        child_style.MarginInlineStartUsing(Style()).IsAuto() ||
+        child_style.MarginInlineEndUsing(Style()).IsAuto();
 
-  const bool justify_self_affects_sizing =
-      RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() &&
-      !has_auto_margins;
+    const bool justify_self_affects_sizing =
+        RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() &&
+        !has_auto_margins;
 
-  const ItemPosition justify_self =
-      child_style
-          .ResolvedJustifySelf(
-              {ItemPosition::kNormal, OverflowAlignment::kDefault}, &Style())
-          .GetPosition();
+    const ItemPosition justify_self =
+        child_style
+            .ResolvedJustifySelf(
+                {ItemPosition::kNormal, OverflowAlignment::kDefault}, &Style())
+            .GetPosition();
 
-  if (justify_self_affects_sizing && justify_self == ItemPosition::kStretch) {
-    builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-  } else if (justify_self_affects_sizing &&
-             justify_self != ItemPosition::kNormal) {
-    builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
-  } else if (is_in_parallel_flow &&
-             (child.IsInline() ||
-              ShouldBlockContainerChildStretchAutoInlineSize(
-                  To<BlockNode>(child)))) {
-    builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
+    if (justify_self_affects_sizing && justify_self == ItemPosition::kStretch) {
+      builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+    } else if (justify_self_affects_sizing &&
+               justify_self != ItemPosition::kNormal) {
+      builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
+    } else if (is_in_parallel_flow &&
+               ShouldBlockContainerChildStretchAutoInlineSize(
+                   To<BlockNode>(child))) {
+      builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
+    }
   }
 
   if (line_clamp_data_.ShouldHideForPaint()) [[unlikely]] {
