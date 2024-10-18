@@ -120,9 +120,6 @@ void FixScriptsByEastAsianWidth(UChar32 ch,
 
 typedef ScriptData::PairedBracketType PairedBracketType;
 
-constexpr int ScriptRunIterator::kMaxScriptCount;
-constexpr int ScriptData::kMaxScriptCount;
-
 ScriptData::~ScriptData() = default;
 
 void ICUScriptData::GetScripts(UChar32 ch, UScriptCodeList& dst) const {

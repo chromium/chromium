@@ -33,7 +33,8 @@ class PLATFORM_EXPORT ScriptRunIterator {
 
   bool Consume(unsigned* limit, UScriptCode*);
 
-  static constexpr int kMaxScriptCount = 32;
+  static constexpr int kMaxUnicodeScriptExtensions = 21;
+  static constexpr int kMaxScriptCount = kMaxUnicodeScriptExtensions + 1;
   using UScriptCodeList = Vector<UScriptCode, kMaxScriptCount>;
 
  private:
@@ -97,6 +98,8 @@ class PLATFORM_EXPORT ScriptData {
     kBracketTypeCount
   };
 
+  static constexpr int kMaxUnicodeScriptExtensions =
+      ScriptRunIterator::kMaxUnicodeScriptExtensions;
   static constexpr int kMaxScriptCount = ScriptRunIterator::kMaxScriptCount;
   using UScriptCodeList = ScriptRunIterator::UScriptCodeList;
 
