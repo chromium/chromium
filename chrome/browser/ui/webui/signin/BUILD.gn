@@ -269,7 +269,6 @@ source_set("login_impl") {
     sources += [ "inline_login_ui.cc" ]
     deps += [
       "//chrome/browser/extensions",
-      "//chrome/browser/prefs",
       "//chrome/browser/resources/gaia_auth_host:resources",
       "//chrome/browser/ui/webui:webui_util",
     ]

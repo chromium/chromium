@@ -96,7 +96,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/policy/remote_commands/crd:test_support",
     "//chrome/browser/ash/settings:test_support",
-    "//chrome/browser/prefs",
     "//chrome/browser/ui/ash/login:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
