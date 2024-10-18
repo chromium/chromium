@@ -869,6 +869,21 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kTopChromeTouchUi,
      switches::kTopChromeTouchUiEnabled}};
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kCctSignInPromptRateLimited[] = {
+    {"cadence_day", "14"},
+    {"show_limit", "2"}};
+const FeatureEntry::FeatureParam kCctSignInPromptAlways[] = {
+    {"cadence_day", "0"},
+    {"show_limit", "10000"}};
+
+const FeatureEntry::FeatureVariation kCctSignInPromptVariations[] = {
+    {"rate-limited", kCctSignInPromptRateLimited,
+     std::size(kCctSignInPromptRateLimited), nullptr},
+    {"always show", kCctSignInPromptAlways, std::size(kCctSignInPromptAlways),
+     nullptr}};
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kToastWith6Seconds[] = {
     {"toast_timeout", "6s"},
@@ -11792,7 +11807,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"cct-sign-in-prompt", flag_descriptions::kCCTSignInPromptName,
      flag_descriptions::kCCTSignInPromptDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kCctSignInPrompt)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kCctSignInPrompt,
+                                    kCctSignInPromptVariations,
+                                    "CctSignInPrompt")},
 #endif
 
     {"enable-bookmarks-selected-type-on-signin-for-testing",
