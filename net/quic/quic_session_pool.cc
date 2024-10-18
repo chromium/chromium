@@ -1501,7 +1501,7 @@ int QuicSessionPool::CreateSessionSync(
   return OK;
 }
 
-void QuicSessionPool::CreateSessionAsync(
+int QuicSessionPool::CreateSessionAsync(
     CreateSessionCallback callback,
     QuicSessionAliasKey key,
     quic::ParsedQuicVersion quic_version,
@@ -1527,13 +1527,12 @@ void QuicSessionPool::CreateSessionAsync(
 
   // If migrate_sessions_on_network_change_v2 is on, passing in
   // handles::kInvalidNetworkHandle will bind the socket to the default network.
-  int rv = ConnectAndConfigureSocket(std::move(connect_and_configure_callback),
-                                     socket_ptr, std::move(peer_address),
-                                     network, key.session_key().socket_tag());
-  CHECK_EQ(rv, ERR_IO_PENDING);
+  return ConnectAndConfigureSocket(std::move(connect_and_configure_callback),
+                                   socket_ptr, std::move(peer_address), network,
+                                   key.session_key().socket_tag());
 }
 
-void QuicSessionPool::CreateSessionOnProxyStream(
+int QuicSessionPool::CreateSessionOnProxyStream(
     CreateSessionCallback callback,
     QuicSessionAliasKey key,
     quic::ParsedQuicVersion quic_version,
@@ -1595,10 +1594,9 @@ void QuicSessionPool::CreateSessionOnProxyStream(
       dns_resolution_time, dns_resolution_time, session_max_packet_length,
       net_log, network, std::move(socket));
 
-  int rv = socket_ptr->ConnectViaStream(
+  return socket_ptr->ConnectViaStream(
       std::move(local_address), std::move(proxy_peer_address),
       std::move(proxy_stream), std::move(on_connected_via_stream));
-  CHECK_EQ(rv, ERR_IO_PENDING);
 }
 
 void QuicSessionPool::FinishCreateSession(

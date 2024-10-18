@@ -592,18 +592,18 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // the commit description of crrev.com/c/5858326.
   using CreateSessionCallback = base::OnceCallback<void(
       base::expected<QuicSessionAttempt::CreateSessionResult, int>)>;
-  void CreateSessionAsync(CreateSessionCallback callback,
-                          QuicSessionAliasKey key,
-                          quic::ParsedQuicVersion quic_version,
-                          int cert_verify_flags,
-                          bool require_confirmation,
-                          IPEndPoint peer_address,
-                          ConnectionEndpointMetadata metadata,
-                          base::TimeTicks dns_resolution_start_time,
-                          base::TimeTicks dns_resolution_end_time,
-                          const NetLogWithSource& net_log,
-                          handles::NetworkHandle network);
-  void CreateSessionOnProxyStream(
+  int CreateSessionAsync(CreateSessionCallback callback,
+                         QuicSessionAliasKey key,
+                         quic::ParsedQuicVersion quic_version,
+                         int cert_verify_flags,
+                         bool require_confirmation,
+                         IPEndPoint peer_address,
+                         ConnectionEndpointMetadata metadata,
+                         base::TimeTicks dns_resolution_start_time,
+                         base::TimeTicks dns_resolution_end_time,
+                         const NetLogWithSource& net_log,
+                         handles::NetworkHandle network);
+  int CreateSessionOnProxyStream(
       CreateSessionCallback callback,
       QuicSessionAliasKey key,
       quic::ParsedQuicVersion quic_version,
