@@ -123,6 +123,7 @@ component("wtf") {
     "text/character_names.h",
     "text/character_visitor.h",
     "text/code_point_iterator.h",
+    "text/convert_to_8bit_hash_reader.h",
     "text/copy_lchars_from_uchar_source.h",
     "text/encoding_tables.cc",
     "text/encoding_tables.h",
