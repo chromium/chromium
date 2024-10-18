@@ -49,9 +49,12 @@ class PdfInkBrush {
 
   const ink::Brush& ink_brush() const { return ink_brush_; }
 
+  void SetColor(SkColor color);
+
+  void SetSize(float size);
+
  private:
-  // The Ink brush initialized based on the PdfInkBrush ctor parameters.
-  const ink::Brush ink_brush_;
+  ink::Brush ink_brush_;
 };
 
 }  // namespace chrome_pdf

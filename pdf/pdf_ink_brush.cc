@@ -43,6 +43,17 @@ float GetOpacity(PdfInkBrush::Type type) {
   NOTREACHED();
 }
 
+// ink::Brush actually uses ink::Color, but pdf/ uses SkColor. To avoid having
+// multiple color representations, do not expose ink::Color and just convert
+// `color`.
+ink::Color GetInkColorFromSkColor(SkColor color) {
+  return ink::Color::FromUint8(
+      /*red=*/SkColorGetR(color),
+      /*green=*/SkColorGetG(color),
+      /*blue=*/SkColorGetB(color),
+      /*alpha=*/SkColorGetA(color));
+}
+
 ink::Brush CreateInkBrush(PdfInkBrush::Type type, SkColor color, float size) {
   CHECK(PdfInkBrush::IsToolSizeInRange(size));
 
@@ -56,16 +67,9 @@ ink::Brush CreateInkBrush(PdfInkBrush::Type type, SkColor color, float size) {
                                          /*uri_string=*/"");
   CHECK(family.ok());
 
-  // ink::Brush actually uses ink::Color, but pdf/ uses SkColor. To avoid having
-  // multiple color representations, do not expose ink::Color and just convert
-  // `color`.
   auto brush = ink::Brush::Create(*family,
                                   /*color=*/
-                                  ink::Color::FromUint8(
-                                      /*red=*/SkColorGetR(color),
-                                      /*green=*/SkColorGetG(color),
-                                      /*blue=*/SkColorGetB(color),
-                                      /*alpha=*/SkColorGetA(color)),
+                                  GetInkColorFromSkColor(color),
                                   /*size=*/size,
                                   /*epsilon=*/0.1f);
   CHECK(brush.ok());
@@ -116,6 +120,15 @@ gfx::Rect PdfInkBrush::GetInvalidateArea(const gfx::PointF& center1,
   gfx::Rect area2 = GetPointInvalidateArea(brush_diameter, center2);
   area2.Union(area1);
   return area2;
+}
+
+void PdfInkBrush::SetColor(SkColor color) {
+  ink_brush_.SetColor(GetInkColorFromSkColor(color));
+}
+
+void PdfInkBrush::SetSize(float size) {
+  auto size_result = ink_brush_.SetSize(std::move(size));
+  CHECK(size_result.ok());
 }
 
 }  // namespace chrome_pdf

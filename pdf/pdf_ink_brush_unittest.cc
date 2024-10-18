@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "pdf/pdf_ink_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -43,6 +44,22 @@ TEST(PdfInkBrushTest, InvalidateDifferentPoints) {
   EXPECT_EQ(gfx::Rect(10, 11, 35, 26),
             brush->GetInvalidateArea(gfx::PointF(40.0f, 16.0f),
                                      gfx::PointF(15.0f, 32.0f)));
+}
+
+TEST(PdfInkBrushTest, SetColor) {
+  auto brush = CreatePdfInkBrush(/*size=*/10.0f);
+  EXPECT_EQ(SK_ColorBLACK, GetSkColorFromInkBrush(brush->ink_brush()));
+
+  brush->SetColor(SK_ColorCYAN);
+  EXPECT_EQ(SK_ColorCYAN, GetSkColorFromInkBrush(brush->ink_brush()));
+}
+
+TEST(PdfInkBrushTest, SetSize) {
+  auto brush = CreatePdfInkBrush(/*size=*/10.0f);
+  EXPECT_EQ(10.0f, brush->ink_brush().GetSize());
+
+  brush->SetSize(4.0f);
+  EXPECT_EQ(4.0f, brush->ink_brush().GetSize());
 }
 
 }  // namespace chrome_pdf
