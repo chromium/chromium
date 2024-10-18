@@ -48,10 +48,8 @@ void OnGetInnerTextForModelPrototyping(
   AiDataKeyedService::AiData data;
   if (result) {
     data = std::make_optional<AiDataKeyedService::BrowserData>();
-    data->set_inner_text(result->inner_text);
     data->mutable_page_context()->set_inner_text(result->inner_text);
     if (result->node_offset) {
-      data->set_inner_text_offset(result->node_offset.value());
       data->mutable_page_context()->set_inner_text_offset(
           result->node_offset.value());
     }
