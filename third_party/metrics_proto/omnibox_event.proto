@@ -217,6 +217,19 @@ message OmniboxEventProto {
     // The searchbox in the Android Hub.
     ANDROID_HUB = 29;
 
+    // The user was recently visiting a search result page and is returning to
+    // Chrome (Android) after a longer period of inactivity, triggering the
+    // Jump-Start Omnibox feature and opens up the SearchActivity.
+    // Equivalent of SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT for the
+    // SearchActivity.
+    SEARCH_RESULT_PAGE_ON_SA = 30;
+
+    // The user was recently visiting a webpage and is returning to Chrome
+    // (Android) after a longer period of inactivity, triggering the
+    // Jump-Start Omnibox feature and opens up the SearchActivity.
+    // Equivalent of OTHER for the SearchActivity.
+    OTHER_ON_SA = 31;
+
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
     // so that these new options are displayed on about:omnibox.

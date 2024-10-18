@@ -1,8 +1,8 @@
 Name: Metrics Protos
 Short Name: metrics_proto
 URL: This is the canonical public repository
-Version: 684977005
-Date: 2024-10-11
+Version: 686937841
+Date: 2024-10-17
 License: BSD
 License File: LICENSE
 Shipped: yes
@@ -19,9 +19,4 @@ blaze run //analysis/uma/proto_export:proto_export -- \
 
 
 Local Modifications:
-
-Reverted changes to deidentified_web_analytics.proto & layer.proto because their
-upstream versions use  new proto features that chromium doesn't support
-(crbug.com/366475906).
-
-Also removed 'UTC' from Date field above because presubmit checks were unhappy.
+Unchanged from the output of the export script.
