@@ -37,10 +37,6 @@ class FadeTransitionHandler {
         mCallbackController = callbackController;
     }
 
-    void setTabStripSize(int width) {
-        mTabStripWidth = width;
-    }
-
     void updateTabStripTransitionThreshold(DisplayMetrics displayMetrics) {
         mTabStripTransitionThreshold = ViewUtils.dpToPx(displayMetrics, getStripWidthThresholdDp());
 
@@ -51,7 +47,13 @@ class FadeTransitionHandler {
         }
     }
 
-    void requestTransition() {
+    void onTabStripSizeChanged(int width) {
+        if (width == mTabStripWidth) return;
+        mTabStripWidth = width;
+        requestTransition();
+    }
+
+    private void requestTransition() {
         if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)) {
             return;

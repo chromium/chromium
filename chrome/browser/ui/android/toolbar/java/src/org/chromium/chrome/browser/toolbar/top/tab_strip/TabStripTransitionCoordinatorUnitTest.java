@@ -230,7 +230,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void hideTabStripWhileUrlBarFocused() {
+    public void hideTabStripWhileUrlBarFocused_Fullscreen() {
         mCoordinator.onUrlFocusChange(true);
         setDeviceWidthDp(NARROW_NORMAL_WINDOW_WIDTH);
         Assert.assertEquals(
@@ -248,7 +248,23 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void hideTabStripWhileTabObscured() {
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)
+    public void hideTabStripWhileUrlBarFocused_DesktopWindow() {
+        mAppHeaderState = new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
+        mCoordinator.onUrlFocusChange(true);
+        setDeviceWidthDp(NARROW_DESKTOP_WINDOW_WIDTH);
+        Assert.assertEquals(
+                "Height request should not be made in desktop windowing mode.",
+                NOTHING_OBSERVED,
+                mObserver.heightRequested);
+        Assert.assertTrue(
+                "Height transition should be blocked.",
+                mCoordinator.getHeightTransitionHandlerForTesting().isHeightTransitionBlocked());
+        verifyFadeTransitionState(/* hideStrip= */ true);
+    }
+
+    @Test
+    public void hideTabStripWhileTabObscured_Fullscreen() {
         TabObscuringHandler.Token token = mTabObscuringHandler.obscure(Target.TAB_CONTENT);
         setDeviceWidthDp(NARROW_NORMAL_WINDOW_WIDTH);
         Assert.assertEquals(
@@ -256,13 +272,29 @@ public class TabStripTransitionCoordinatorUnitTest {
                 NOTHING_OBSERVED,
                 mObserver.heightRequested);
 
-        // Url focus animation finished to unblock the transition
+        // Tab is unobscured to unblock the transition.
         mTabObscuringHandler.unobscure(token);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertEquals(
                 "Height request should go through after tab unobscured.",
                 0,
                 mObserver.heightRequested);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)
+    public void hideTabStripWhileTabObscured_DesktopWindow() {
+        mAppHeaderState = new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
+        mTabObscuringHandler.obscure(Target.TAB_CONTENT);
+        setDeviceWidthDp(NARROW_DESKTOP_WINDOW_WIDTH);
+        Assert.assertEquals(
+                "Height request should not be made in desktop windowing mode.",
+                NOTHING_OBSERVED,
+                mObserver.heightRequested);
+        verifyFadeTransitionState(/* hideStrip= */ true);
+        Assert.assertTrue(
+                "Height transition should be blocked.",
+                mCoordinator.getHeightTransitionHandlerForTesting().isHeightTransitionBlocked());
     }
 
     @Test
@@ -363,7 +395,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     @Config(qualifiers = "w320dp")
-    public void showTabStripWhileUrlBarFocused() {
+    public void showTabStripWhileUrlBarFocused_Fullscreen() {
         settleTransitionDuringInitForNarrowWindow();
         mCoordinator.onUrlFocusChange(true);
         setDeviceWidthDp(600);
@@ -382,8 +414,30 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)
+    public void showTabStripWhileUrlBarFocused_DesktopWindow() {
+        mAppHeaderState = new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
+        // Initially simulate hiding the tab strip by a fade transition.
+        setDeviceWidthDp(NARROW_DESKTOP_WINDOW_WIDTH);
+        verifyFadeTransitionState(/* hideStrip= */ true);
+
+        // Simulate url bar focus.
+        mCoordinator.onUrlFocusChange(true);
+        // Increase the width of the strip for it to show.
+        setDeviceWidthDp(NARROW_DESKTOP_WINDOW_WIDTH + 100);
+        verifyFadeTransitionState(/* hideStrip= */ false);
+        Assert.assertTrue(
+                "Height transition should be blocked.",
+                mCoordinator.getHeightTransitionHandlerForTesting().isHeightTransitionBlocked());
+        Assert.assertEquals(
+                "Height request should not be made in desktop windowing mode.",
+                NOTHING_OBSERVED,
+                mObserver.heightRequested);
+    }
+
+    @Test
     @Config(qualifiers = "w320dp")
-    public void showTabStripWhileTabObscured() {
+    public void showTabStripWhileTabObscured_Fullscreen() {
         settleTransitionDuringInitForNarrowWindow();
         TabObscuringHandler.Token token = mTabObscuringHandler.obscure(Target.TAB_CONTENT);
         setDeviceWidthDp(600);
@@ -392,12 +446,35 @@ public class TabStripTransitionCoordinatorUnitTest {
                 NOTHING_OBSERVED,
                 mObserver.heightRequested);
 
-        // Url focus animation finished to unblock the transition
+        // Tab is unobscured to unblock the transition.
         mTabObscuringHandler.unobscure(token);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertEquals(
                 "Height request should go through after the tab unobscured.",
                 TEST_TAB_STRIP_HEIGHT,
+                mObserver.heightRequested);
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp")
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)
+    public void showTabStripWhileTabObscured_DesktopWindow() {
+        mAppHeaderState = new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
+        // Initially simulate hiding the tab strip by a fade transition.
+        setDeviceWidthDp(NARROW_DESKTOP_WINDOW_WIDTH);
+        verifyFadeTransitionState(/* hideStrip= */ true);
+
+        // Simulate obscuring the tab.
+        mTabObscuringHandler.obscure(Target.TAB_CONTENT);
+        // Increase the width of the strip for it to show.
+        setDeviceWidthDp(NARROW_DESKTOP_WINDOW_WIDTH + 100);
+        verifyFadeTransitionState(/* hideStrip= */ false);
+        Assert.assertTrue(
+                "Height transition should be blocked.",
+                mCoordinator.getHeightTransitionHandlerForTesting().isHeightTransitionBlocked());
+        Assert.assertEquals(
+                "Height request should not be made in desktop windowing mode.",
+                NOTHING_OBSERVED,
                 mObserver.heightRequested);
     }
 
@@ -657,16 +734,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 "Narrow width does not trigger tab strip height transition.",
                 newHeight,
                 mObserver.heightRequested);
-        Assert.assertEquals(
-                "Fade transition start opacity is incorrect.",
-                0f,
-                mDelegate.fadeTransitionStartOpacity,
-                0f);
-        Assert.assertEquals(
-                "Fade transition end opacity is incorrect.",
-                1f,
-                mDelegate.fadeTransitionEndOpacity,
-                0f);
+        verifyFadeTransitionState(/* hideStrip= */ true);
     }
 
     @Test
@@ -686,16 +754,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 "Narrow width does not trigger tab strip height transition.",
                 newHeight,
                 mObserver.heightRequested);
-        Assert.assertEquals(
-                "Fade transition start opacity is incorrect.",
-                0f,
-                mDelegate.fadeTransitionStartOpacity,
-                0f);
-        Assert.assertEquals(
-                "Fade transition end opacity is incorrect.",
-                1f,
-                mDelegate.fadeTransitionEndOpacity,
-                0f);
+        verifyFadeTransitionState(/* hideStrip= */ true);
     }
 
     @Test
@@ -720,7 +779,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)
-    public void enterDesktopWindow_WithouControlContainerLayout() {
+    public void enterDesktopWindow_WithoutControlContainerLayout() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         // Simulate a rect update that has a smaller width.
         int newHeight = TEST_TAB_STRIP_HEIGHT + 10;
@@ -742,6 +801,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)
     public void recordHistogramWindowResize_LayoutChangeInDesktopWindow() {
         // Simulate desktop windowing mode.
         mAppHeaderState = new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
@@ -919,6 +979,21 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     private void simulateConfigurationChanged(Configuration newConfig) {
         mCoordinator.onConfigurationChanged(newConfig != null ? newConfig : new Configuration());
+    }
+
+    private void verifyFadeTransitionState(boolean hideStrip) {
+        float expectedStartScrimOpacity = hideStrip ? 0f : 1f;
+        float expectedEndScrimOpacity = hideStrip ? 1f : 0f;
+        Assert.assertEquals(
+                "Fade transition start opacity is incorrect.",
+                expectedStartScrimOpacity,
+                mDelegate.fadeTransitionStartOpacity,
+                0f);
+        Assert.assertEquals(
+                "Fade transition end opacity is incorrect.",
+                expectedEndScrimOpacity,
+                mDelegate.fadeTransitionEndOpacity,
+                0f);
     }
 
     // Due to the complexity to use the real views for top toolbar in robolectric tests, use view
