@@ -120,6 +120,12 @@ class MockAutofillPredictionImprovementsClient
               GetCachedFormStructure,
               (const autofill::FormData& form_data),
               (override));
+  MOCK_METHOD(std::u16string,
+              GetAutofillFillingValue,
+              (const std::string& autofill_profile_guid,
+               autofill::FieldType field_type,
+               const autofill::FormFieldData& field),
+              (override));
 };
 
 class MockOptimizationGuideDecider
@@ -661,10 +667,18 @@ TEST_F(
       Suggestion(SuggestionType::kAddressEntry),
       Suggestion(SuggestionType::kSeparator),
       Suggestion(SuggestionType::kManageAddress)};
+  autofill_suggestions[0].payload =
+      autofill::Suggestion::AutofillProfilePayload(
+          autofill::Suggestion::Guid("guid"));
+  EXPECT_CALL(client_, GetAutofillFillingValue).WillOnce(Return(u""));
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
+  autofill::FormStructure form_structure = autofill::FormStructure(form);
+  test_api(form_structure).SetFieldTypes({autofill::FieldType::NAME_FIRST});
+  EXPECT_CALL(client_, GetCachedFormStructure)
+      .WillRepeatedly(Return(&form_structure));
   test_api(*manager_).SetAutofillSuggestions(autofill_suggestions);
   test_api(*manager_).SetCache(PredictionsByGlobalId{
       {form.fields().front().global_id(), {u"value", u"label"}}});
@@ -1094,6 +1108,35 @@ TEST_F(
   ASSERT_FALSE(suggestions.empty());
   EXPECT_THAT(suggestions[0],
               HasType(SuggestionType::kRetrievePredictionImprovements));
+}
+
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       ShouldSkipAutofillSuggestion) {
+  autofill::Suggestion autofill_suggestion =
+      Suggestion(SuggestionType::kAddressEntry);
+  autofill_suggestion.payload = autofill::Suggestion::AutofillProfilePayload(
+      autofill::Suggestion::Guid("guid"));
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::FieldType::NAME_FIRST},
+                 {.role = autofill::FieldType::NAME_LAST}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  autofill::FormStructure form_structure{form};
+  test_api(form_structure)
+      .SetFieldTypes(
+          {autofill::FieldType::NAME_FIRST, autofill::FieldType::NAME_LAST});
+  test_api(*manager_).SetCache(PredictionsByGlobalId{
+      {form.fields()[0].global_id(), {u"Jane", u"First Name"}},
+      {form.fields()[1].global_id(), {u"Doe", u"Last Name"}}});
+  EXPECT_CALL(client_, GetCachedFormStructure)
+      .WillRepeatedly(Return(&form_structure));
+  EXPECT_CALL(client_,
+              GetAutofillFillingValue(_, autofill::FieldType::NAME_FIRST, _))
+      .WillOnce(Return(u"j ǎ Ņ ë"));
+  EXPECT_CALL(client_,
+              GetAutofillFillingValue(_, autofill::FieldType::NAME_LAST, _))
+      .WillOnce(Return(u"  d o Ê"));
+  EXPECT_TRUE(test_api(*manager_).ShouldSkipAutofillSuggestion(
+      form, autofill_suggestion));
 }
 
 class AutofillPredictionImprovementsManagerTriggerAutomaticallyTest

@@ -162,6 +162,7 @@ class AutofillPredictionImprovementsManager
   // Method for showing filling or error suggestions, depending on the outcome
   // of the retrieval attempts.
   void UpdateSuggestionsAfterReceivedPredictions(
+      const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field);
 
   // Resets the state of this class.
@@ -195,6 +196,7 @@ class AutofillPredictionImprovementsManager
   // Creates filling suggestions listing the ones for prediction improvements
   // first and `address_suggestions` afterwards.
   std::vector<autofill::Suggestion> CreateFillingSuggestions(
+      const autofill::FormData& form,
       const autofill::FormFieldData& field,
       const std::vector<autofill::Suggestion>& address_suggestions);
 
@@ -207,6 +209,21 @@ class AutofillPredictionImprovementsManager
 
   // Logger that records various prediction improvements metrics.
   AutofillPredictionImprovementsLogger logger_;
+
+  // Checks if the cached predictions for a given `form` and Autofill profile
+  // have at least one matching autofill suggestion for the specified
+  // `field_type`.
+  bool CacheHasMatchingAutofillSuggestion(
+      const autofill::FormData& form,
+      const std::string& autofill_profile_guid,
+      autofill::FieldType field_type);
+
+  // Returns true if the type of `autofill_suggestion` should not be added to
+  // prediction improvements or if `autofill_suggestion` likely matches the
+  // cached prediction improvements.
+  bool ShouldSkipAutofillSuggestion(
+      const autofill::FormData& form,
+      const autofill::Suggestion& autofill_suggestion);
 
   // Current state for retrieving predictions.
   PredictionRetrievalState prediction_retrieval_state_ =

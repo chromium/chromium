@@ -5,6 +5,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 
 #include "base/check_deref.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -13,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -261,8 +263,71 @@ AutofillPredictionImprovementsManager::GetFieldValueSensitivityMap(
 AutofillPredictionImprovementsManager::
     ~AutofillPredictionImprovementsManager() = default;
 
+bool AutofillPredictionImprovementsManager::CacheHasMatchingAutofillSuggestion(
+    const autofill::FormData& form,
+    const std::string& autofill_profile_guid,
+    autofill::FieldType field_type) {
+  autofill::FormStructure* form_structure =
+      client_->GetCachedFormStructure(form);
+  if (!form_structure) {
+    return false;
+  }
+  for (const std::unique_ptr<autofill::AutofillField>& autofill_field :
+       form_structure->fields()) {
+    // Skip fields that aren't focusable because they wouldn't be filled
+    // anyways.
+    if (!autofill_field->IsFocusable()) {
+      continue;
+    }
+    if (autofill_field->Type().GetStorableType() == field_type) {
+      const std::u16string normalized_autofill_filling_value =
+          autofill::NormalizeValue(
+              client_->GetAutofillFillingValue(autofill_profile_guid,
+                                               field_type, *autofill_field),
+              /*keep_white_space=*/false);
+      if (normalized_autofill_filling_value.empty() ||
+          !cache_->contains(autofill_field->global_id())) {
+        continue;
+      }
+      const std::u16string normalized_improved_prediction =
+          autofill::NormalizeValue(
+              cache_->at(autofill_field->global_id()).value,
+              /*keep_white_space=*/false);
+      if (normalized_improved_prediction == normalized_autofill_filling_value) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+bool AutofillPredictionImprovementsManager::ShouldSkipAutofillSuggestion(
+    const autofill::FormData& form,
+    const autofill::Suggestion& autofill_suggestion) {
+  CHECK(cache_);
+  if (autofill_suggestion.type != autofill::SuggestionType::kAddressEntry &&
+      autofill_suggestion.type !=
+          autofill::SuggestionType::kAddressFieldByFieldFilling) {
+    return true;
+  }
+  const std::string autofill_profile_guid =
+      autofill_suggestion
+          .GetPayload<autofill::Suggestion::AutofillProfilePayload>()
+          .guid.value();
+  if (autofill_profile_guid.empty()) {
+    return true;
+  }
+
+  return CacheHasMatchingAutofillSuggestion(form, autofill_profile_guid,
+                                            autofill::FieldType::NAME_FIRST) &&
+         CacheHasMatchingAutofillSuggestion(form, autofill_profile_guid,
+                                            autofill::FieldType::NAME_LAST);
+}
+
 std::vector<autofill::Suggestion>
 AutofillPredictionImprovementsManager::CreateFillingSuggestions(
+    const autofill::FormData& form,
     const autofill::FormFieldData& field,
     const std::vector<autofill::Suggestion>& autofill_suggestions) {
   if (!cache_) {
@@ -301,8 +366,8 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_TEXT) +
       u" " + prediction.label;
   for (const auto& [child_field_global_id, child_prediction] : *cache_) {
-    // Only add a child suggestion if the field is not the triggering field and
-    // the value to fill is not empty.
+    // Only add a child suggestion if the field is not the triggering field
+    // and the value to fill is not empty.
     if (child_field_global_id == field.global_id() ||
         child_prediction.value.empty()) {
       continue;
@@ -322,8 +387,8 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
       CreateEditPredictionImprovementsInformation());
 
   if (n_fields_to_fill > kNumberFieldsToShowInSuggestionLabel) {
-    // When more than `kNumberFieldsToShowInSuggestionLabel` are filled, include
-    // the "& More".
+    // When more than `kNumberFieldsToShowInSuggestionLabel` are filled,
+    // include the "& More".
     size_t number_of_more_fields_to_fill =
         n_fields_to_fill - kNumberFieldsToShowInSuggestionLabel;
     const std::u16string more_fields_label_substr =
@@ -341,11 +406,10 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
   // TODO(crbug.com/365512352): Figure out how to handle Undo suggestion.
   std::vector<autofill::Suggestion> filling_suggestions = {suggestion};
   for (const autofill::Suggestion& autofill_suggestion : autofill_suggestions) {
-    if (autofill_suggestion.type == autofill::SuggestionType::kAddressEntry ||
-        autofill_suggestion.type ==
-            autofill::SuggestionType::kAddressFieldByFieldFilling) {
-      filling_suggestions.push_back(autofill_suggestion);
+    if (ShouldSkipAutofillSuggestion(form, autofill_suggestion)) {
+      continue;
     }
+    filling_suggestions.push_back(autofill_suggestion);
   }
   filling_suggestions.emplace_back(autofill::SuggestionType::kSeparator);
   filling_suggestions.emplace_back(CreateFeedbackSuggestion());
@@ -438,7 +502,7 @@ AutofillPredictionImprovementsManager::GetSuggestions(
       // it exists. This may contain additional `autofill_suggestions`, appended
       // to the prediction improvements.
       if (HasImprovedPredictionsForField(field)) {
-        return CreateFillingSuggestions(field, autofill_suggestions);
+        return CreateFillingSuggestions(form, field, autofill_suggestions);
       }
       // If there are no cached predictions for the `field`, continue the
       // regular Autofill flow if it has data to show.
@@ -538,11 +602,12 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
       FROM_HERE, kMinTimeToShowLoading,
       base::BindRepeating(&AutofillPredictionImprovementsManager::
                               UpdateSuggestionsAfterReceivedPredictions,
-                          weak_ptr_factory_.GetWeakPtr(), trigger_field));
+                          weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
 }
 
 void AutofillPredictionImprovementsManager::
     UpdateSuggestionsAfterReceivedPredictions(
+        const autofill::FormData& form,
         const autofill::FormFieldData& trigger_field) {
   switch (prediction_retrieval_state_) {
     case PredictionRetrievalState::kDoneSuccess:
@@ -550,8 +615,8 @@ void AutofillPredictionImprovementsManager::
       if (cache_ && !cache_->contains(trigger_field.global_id())) {
         OnFailedToGenerateSuggestions();
       } else {
-        UpdateSuggestions(
-            CreateFillingSuggestions(trigger_field, autofill_suggestions_));
+        UpdateSuggestions(CreateFillingSuggestions(form, trigger_field,
+                                                   autofill_suggestions_));
       }
       break;
     case PredictionRetrievalState::kDoneError:

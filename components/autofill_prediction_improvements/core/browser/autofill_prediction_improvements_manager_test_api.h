@@ -57,6 +57,12 @@ class AutofillPredictionImprovementsManagerTestApi {
 
   AutofillPredictionImprovementsLogger& logger() { return manager_->logger_; }
 
+  bool ShouldSkipAutofillSuggestion(
+      const autofill::FormData& form,
+      const autofill::Suggestion& autofill_suggestion) {
+    return manager_->ShouldSkipAutofillSuggestion(form, autofill_suggestion);
+  }
+
  private:
   raw_ref<AutofillPredictionImprovementsManager> manager_;
 };
