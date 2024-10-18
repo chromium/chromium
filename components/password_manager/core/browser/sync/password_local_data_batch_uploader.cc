@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <ranges>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/service/local_data_description.h"
+#include "url/gurl.h"
 
 namespace password_manager {
 
@@ -41,6 +43,15 @@ base::Time GetLatestOfTimeLastUsedOrModifiedOrCreated(
 // (omitting the const& since the key outlives the data).
 using PasswordFormKey = std::
     tuple<std::string, GURL, std::u16string, std::u16string, std::u16string>;
+
+std::set<PasswordFormKey> ToPasswordFormUniqueKeySet(
+    const std::vector<syncer::LocalDataItemModel::DataId>& item_id_list) {
+  std::set<PasswordFormKey> key_set;
+  for (const syncer::LocalDataItemModel::DataId& data_id : item_id_list) {
+    key_set.insert(std::get<PasswordFormKey>(data_id));
+  }
+  return key_set;
+}
 
 }  // namespace
 
@@ -110,7 +121,8 @@ void PasswordLocalDataBatchUploader::GetLocalDataDescription(
           base::Unretained(this), std::move(callback), std::move(request)));
 }
 
-void PasswordLocalDataBatchUploader::TriggerLocalDataMigration() {
+void PasswordLocalDataBatchUploader::TriggerLocalDataMigrationInternal(
+    std::optional<std::vector<syncer::LocalDataItemModel::DataId>> items) {
   if (!CanUpload()) {
     return;
   }
@@ -124,10 +136,19 @@ void PasswordLocalDataBatchUploader::TriggerLocalDataMigration() {
       2, base::BindOnce(
              &PasswordLocalDataBatchUploader::OnGotAllPasswordsForMigration,
              base::Unretained(this), std::move(profile_store_request),
-             std::move(account_store_request)));
+             std::move(account_store_request), std::move(items)));
   trigger_local_data_migration_ongoing_ = true;
   profile_store_request_ptr->Run(profile_store_.get(), barrier_closure);
   account_store_request_ptr->Run(account_store_.get(), barrier_closure);
+}
+
+void PasswordLocalDataBatchUploader::TriggerLocalDataMigration() {
+  TriggerLocalDataMigrationInternal(std::nullopt);
+}
+
+void PasswordLocalDataBatchUploader::TriggerLocalDataMigration(
+    std::vector<syncer::LocalDataItemModel::DataId> items) {
+  TriggerLocalDataMigrationInternal(std::move(items));
 }
 
 void PasswordLocalDataBatchUploader::OnGotLocalPasswordsForDescription(
@@ -159,8 +180,14 @@ void PasswordLocalDataBatchUploader::OnGotLocalPasswordsForDescription(
 
 void PasswordLocalDataBatchUploader::OnGotAllPasswordsForMigration(
     std::unique_ptr<PasswordFetchRequest> profile_store_request,
-    std::unique_ptr<PasswordFetchRequest> account_store_request) {
+    std::unique_ptr<PasswordFetchRequest> account_store_request,
+    std::optional<std::vector<syncer::LocalDataItemModel::DataId>> items) {
   trigger_local_data_migration_ongoing_ = false;
+
+  std::optional<std::set<PasswordFormKey>> items_to_upload;
+  if (items.has_value()) {
+    items_to_upload = ToPasswordFormUniqueKeySet(*items);
+  }
 
   std::vector<std::unique_ptr<PasswordForm>> local_passwords =
       profile_store_request->TakeResults();
@@ -175,8 +202,17 @@ void PasswordLocalDataBatchUploader::OnGotAllPasswordsForMigration(
 
   int moved_passwords_counter = 0;
   for (const std::unique_ptr<PasswordForm>& local_password : local_passwords) {
+    // Check if `local_password` should be filtered out or not.
+    if (items_to_upload.has_value() &&
+        !items_to_upload.value().contains(
+            PasswordFormUniqueKey(*local_password))) {
+      // Filter out passwords not selected for upload by the user.
+      continue;
+    }
+
     // Check for conflicts in the account store. If there are none, add
-    // `local_password`. Otherwise, only add if it's newer than the account one.
+    // `local_password`. Otherwise, only add if it's newer than the account
+    // one.
     auto it =
         std::ranges::lower_bound(account_passwords, local_password, comparator);
     if (it == account_passwords.end() ||

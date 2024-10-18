@@ -32,6 +32,8 @@ class PasswordLocalDataBatchUploader
   void GetLocalDataDescription(
       base::OnceCallback<void(syncer::LocalDataDescription)> callback) override;
   void TriggerLocalDataMigration() override;
+  void TriggerLocalDataMigration(
+      std::vector<syncer::LocalDataItemModel::DataId> items) override;
 
   // Test-only APIs.
   bool trigger_local_data_migration_ongoing_for_test() const {
@@ -50,7 +52,14 @@ class PasswordLocalDataBatchUploader
 
   void OnGotAllPasswordsForMigration(
       std::unique_ptr<PasswordFetchRequest> profile_store_request,
-      std::unique_ptr<PasswordFetchRequest> account_store_request);
+      std::unique_ptr<PasswordFetchRequest> account_store_request,
+      std::optional<std::vector<syncer::LocalDataItemModel::DataId>> items);
+
+  // If `items` is std::nullopt then all items should be moved.
+  // If `items` has a value, then only the items in that have an Id in
+  // that list should migrated to the account storage.
+  void TriggerLocalDataMigrationInternal(
+      std::optional<std::vector<syncer::LocalDataItemModel::DataId>> items);
 
   const scoped_refptr<PasswordStoreInterface> profile_store_;
   const scoped_refptr<PasswordStoreInterface> account_store_;

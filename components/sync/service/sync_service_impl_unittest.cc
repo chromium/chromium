@@ -2210,7 +2210,7 @@ TEST_F(SyncServiceImplTest,
   // disabled by policy. So data should not be uploaded.
   auto device_info_uploader =
       std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
+  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration()).Times(0);
 
   std::vector<FakeControllerInitParams> params;
   params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
@@ -2237,7 +2237,7 @@ TEST_F(SyncServiceImplTest,
   // syncing. So data should not be uploaded.
   auto device_info_uploader =
       std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
+  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration()).Times(0);
 
   std::vector<FakeControllerInitParams> params;
   params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
@@ -2250,6 +2250,69 @@ TEST_F(SyncServiceImplTest,
   service()->TriggerLocalDataMigration({DEVICE_INFO});
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class SyncServiceImplWithBatchUploadDesktopTest : public SyncServiceImplTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kBatchUploadDesktop};
+};
+
+TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
+       ShouldNotForwardUponTriggerLocalDataMigrationWithItemsIfSyncDisabled) {
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
+  SignInWithoutSyncConsent();
+
+  // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but sync is
+  // disabled by policy. So data should not be uploaded.
+  auto device_info_uploader =
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration(testing::_))
+      .Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  // Sync was disabled due to the policy.
+  EXPECT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
+            service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::TransportState::DISABLED,
+            service()->GetTransportState());
+
+  std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items{
+      {DEVICE_INFO, {"d1", "d2"}}};
+  service()->TriggerLocalDataMigration(items);
+}
+
+TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
+       ShouldDoNothingUponTriggerLocalDataMigrationWithItemsForSyncingUsers) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+
+  // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but the user is
+  // syncing. So data should not be uploaded.
+  auto device_info_uploader =
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration(testing::_))
+      .Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
+
+  std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items{
+      {DEVICE_INFO, {"d1", "d2"}}};
+  service()->TriggerLocalDataMigration(items);
+}
+#endif
+
 TEST_F(SyncServiceImplTest, ShouldRecordLocalDataMigrationRequests) {
   base::HistogramTester histogram_tester;
   SignInWithoutSyncConsent();
@@ -2258,7 +2321,8 @@ TEST_F(SyncServiceImplTest, ShouldRecordLocalDataMigrationRequests) {
   InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
-  service()->TriggerLocalDataMigration({DEVICE_INFO, AUTOFILL_WALLET_DATA});
+  service()->TriggerLocalDataMigration(
+      DataTypeSet{DEVICE_INFO, AUTOFILL_WALLET_DATA});
 
   // The metric records what was requested, regardless of what types are active.
   EXPECT_THAT(histogram_tester.GetAllSamples("Sync.BatchUpload.Requests3"),

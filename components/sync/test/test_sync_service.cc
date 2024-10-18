@@ -429,6 +429,10 @@ void TestSyncService::GetLocalDataDescriptions(
 
 void TestSyncService::TriggerLocalDataMigration(DataTypeSet types) {}
 
+void TestSyncService::TriggerLocalDataMigration(
+    std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items) {
+}
+
 void TestSyncService::SetTriggerRefreshCallback(
     const base::RepeatingCallback<void(syncer::DataTypeSet)>&
         trigger_refresh_cb) {

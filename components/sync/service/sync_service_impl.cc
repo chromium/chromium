@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -2302,6 +2303,24 @@ void SyncServiceImpl::TriggerLocalDataMigration(DataTypeSet types) {
   }
 
   return data_type_manager_->TriggerLocalDataMigration(types);
+}
+
+void SyncServiceImpl::TriggerLocalDataMigration(
+    std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items) {
+  CHECK(switches::IsBatchUploadDesktopEnabled());
+
+  for (const auto& [type, _] : items) {
+    base::UmaHistogramEnumeration("Sync.BatchUpload.Requests3",
+                                  syncer::DataTypeHistogramValue(type));
+  }
+
+  // Syncing users do not use separate local and account storages. Thus, there's
+  // no local-only data to migrate.
+  if (HasSyncConsent()) {
+    return;
+  }
+
+  return data_type_manager_->TriggerLocalDataMigration(std::move(items));
 }
 
 }  // namespace syncer

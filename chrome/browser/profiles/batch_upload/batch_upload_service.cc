@@ -201,13 +201,7 @@ void BatchUploadService::OnBatchUplaodDialogResult(
     return;
   }
 
-  // TODO(crbug.com/372701325): Process `item_ids_to_move` with SyncService.
-  for (const auto& [type, item_id_list] : item_ids_to_move) {
-    LOG(ERROR) << "XXX: Moving items: " << static_cast<int>(type);
-    for (auto& id : item_id_list) {
-      LOG(ERROR) << "XXX: id: " << std::get<std::string>(id);
-    }
-  }
+  sync_service_->TriggerLocalDataMigration(item_ids_to_move);
 
   TriggerAvatarButtonSavingDataText(browser);
 }

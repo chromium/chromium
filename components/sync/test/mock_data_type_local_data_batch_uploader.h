@@ -31,6 +31,10 @@ class MockDataTypeLocalDataBatchUploader
               (base::OnceCallback<void(syncer::LocalDataDescription)>),
               (override));
   MOCK_METHOD(void, TriggerLocalDataMigration, (), (override));
+  MOCK_METHOD(void,
+              TriggerLocalDataMigration,
+              ((std::vector<syncer::LocalDataItemModel::DataId> items)),
+              (override));
 };
 
 }  // namespace syncer

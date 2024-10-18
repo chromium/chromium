@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/service/type_status_map_for_debugging.h"
 
@@ -30,7 +31,6 @@ class GURL;
 
 namespace syncer {
 
-struct LocalDataDescription;
 class ProtocolEventObserver;
 class SyncCycleSnapshot;
 struct TypeEntitiesCount;
@@ -438,6 +438,17 @@ class SyncService : public KeyedService {
   // Note: Only data types that are enabled and support this functionality are
   // triggered for upload.
   virtual void TriggerLocalDataMigration(DataTypeSet types) = 0;
+
+  // Requests sync service to move the local data, that matches with their
+  // `syncer::LocalDataItemModel::DataId`, to account for all data
+  // types and data items in `items` and for data items. This is an asynchronous
+  // method which moves the local data for all `types` to the account store
+  // locally. Upload to the server will happen as part of the regular commit
+  // process, and is NOT part of this method. Note: Only data types that are
+  // enabled and support this functionality are triggered for upload.
+  virtual void TriggerLocalDataMigration(
+      std::map<syncer::DataType,
+               std::vector<syncer::LocalDataItemModel::DataId>> items) = 0;
 
   // Returns current download status for the given |type|. The caller can use
   // SyncServiceObserver::OnStateChanged() to track status changes. Must be

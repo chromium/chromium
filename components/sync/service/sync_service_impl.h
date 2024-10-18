@@ -159,6 +159,9 @@ class SyncServiceImpl : public SyncService,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
   void TriggerLocalDataMigration(DataTypeSet types) override;
+  void TriggerLocalDataMigration(
+      std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items)
+      override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,

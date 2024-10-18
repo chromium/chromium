@@ -61,6 +61,12 @@ class DataTypeManagerMock : public DataTypeManager {
        base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>),
       (override));
   MOCK_METHOD(void, TriggerLocalDataMigration, (DataTypeSet), (override));
+  MOCK_METHOD(
+      void,
+      TriggerLocalDataMigration,
+      ((std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>>
+            items)),
+      (override));
   MOCK_METHOD(State, state, (), (const override));
   MOCK_METHOD(TypeStatusMapForDebugging,
               GetTypeStatusMapForDebugging,
