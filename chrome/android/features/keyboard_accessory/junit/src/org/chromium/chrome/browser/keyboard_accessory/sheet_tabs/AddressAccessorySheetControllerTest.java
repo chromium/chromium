@@ -156,19 +156,28 @@ public class AddressAccessorySheetControllerTest {
                 .add(
                         new PlusAddressInfo(
                                 "google.com",
-                                new UserInfoField(
-                                        "example@gmail.com",
-                                        "example@gmail.com",
-                                        "",
-                                        false,
-                                        field -> {})));
+                                new UserInfoField.Builder()
+                                        .setDisplayText("example@gmail.com")
+                                        .setA11yDescription("example@gmail.com")
+                                        .setCallback(field -> {})
+                                        .build()));
         testData.getUserInfoList().add(new UserInfo("", false));
         testData.getUserInfoList()
                 .get(0)
-                .addField(new UserInfoField("Name", "Name", "", false, null));
+                .addField(
+                        new UserInfoField.Builder()
+                                .setDisplayText("Name")
+                                .setA11yDescription("Name")
+                                .build());
         testData.getUserInfoList()
                 .get(0)
-                .addField(new UserInfoField("Street", "Street", "", true, field -> {}));
+                .addField(
+                        new UserInfoField.Builder()
+                                .setDisplayText("Street")
+                                .setA11yDescription("Street")
+                                .setIsObfuscated(true)
+                                .setCallback(field -> {})
+                                .build());
 
         mCoordinator.registerDataProvider(testProvider);
         testProvider.notifyObservers(testData);

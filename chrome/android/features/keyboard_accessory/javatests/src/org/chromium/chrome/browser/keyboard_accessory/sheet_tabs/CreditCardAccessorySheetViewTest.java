@@ -317,16 +317,27 @@ public class CreditCardAccessorySheetViewTest {
                 () -> {
                     UserInfo infoWithUnclickableField = new UserInfo("", false);
                     infoWithUnclickableField.addField(
-                            new UserInfoField(
-                                    "4111111111111111", "4111111111111111", "", false, null));
+                            new UserInfoField.Builder()
+                                    .setDisplayText("4111111111111111")
+                                    .setA11yDescription("4111111111111111")
+                                    .build());
                     infoWithUnclickableField.addField(
-                            new UserInfoField("", "", "month", false, null));
+                            new UserInfoField.Builder()
+                                    .setDisplayText("month")
+                                    .setId("month")
+                                    .build());
                     infoWithUnclickableField.addField(
-                            new UserInfoField("", "", "year", false, null));
+                            new UserInfoField.Builder()
+                                    .setDisplayText("year")
+                                    .setId("year")
+                                    .build());
                     infoWithUnclickableField.addField(
-                            new UserInfoField("", "", "name", false, null));
+                            new UserInfoField.Builder()
+                                    .setDisplayText("name")
+                                    .setId("name")
+                                    .build());
                     infoWithUnclickableField.addField(
-                            new UserInfoField("", "", "cvc", false, null));
+                            new UserInfoField.Builder().setDisplayText("cvc").setId("cvc").build());
                     mModel.add(
                             new AccessorySheetDataPiece(
                                     infoWithUnclickableField,
@@ -418,12 +429,11 @@ public class CreditCardAccessorySheetViewTest {
                 () -> {
                     PromoCodeInfo info = new PromoCodeInfo();
                     info.setPromoCode(
-                            new UserInfoField(
-                                    kPromoCode,
-                                    "Promo code for test store",
-                                    "",
-                                    false,
-                                    item -> clicked.set(true)));
+                            new UserInfoField.Builder()
+                                    .setDisplayText(kPromoCode)
+                                    .setA11yDescription("Promo code for test store")
+                                    .setCallback(item -> clicked.set(true))
+                                    .build());
                     info.setDetailsText(kDetailsText);
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -474,11 +484,35 @@ public class CreditCardAccessorySheetViewTest {
             AtomicBoolean clickRecorder) {
         UserInfo info = new UserInfo(origin, true, iconUrl);
         info.addField(
-                new UserInfoField(number, number, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(month, month, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(year, year, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(name, name, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(cvc, cvc, "", false, item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(number)
+                        .setA11yDescription(number)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
+        info.addField(
+                new UserInfoField.Builder()
+                        .setDisplayText(month)
+                        .setA11yDescription(month)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
+        info.addField(
+                new UserInfoField.Builder()
+                        .setDisplayText(year)
+                        .setA11yDescription(year)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
+        info.addField(
+                new UserInfoField.Builder()
+                        .setDisplayText(name)
+                        .setA11yDescription(name)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
+        info.addField(
+                new UserInfoField.Builder()
+                        .setDisplayText(cvc)
+                        .setA11yDescription(cvc)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         return info;
     }
 

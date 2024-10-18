@@ -161,19 +161,18 @@ public class PasswordAccessorySheetViewTest {
 
         UserInfo testInfo = new UserInfo("", false);
         testInfo.addField(
-                new UserInfoField(
-                        "Name Suggestion",
-                        "Name Suggestion",
-                        "",
-                        false,
-                        item -> clicked.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText("Name Suggestion")
+                        .setA11yDescription("Name Suggestion")
+                        .setCallback(item -> clicked.set(true))
+                        .build());
         testInfo.addField(
-                new UserInfoField(
-                        "Password Suggestion",
-                        "Password Suggestion",
-                        "",
-                        true,
-                        item -> clicked.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText("Password Suggestion")
+                        .setA11yDescription("Password Suggestion")
+                        .setIsObfuscated(true)
+                        .setCallback(item -> clicked.set(true))
+                        .build());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
@@ -267,9 +266,17 @@ public class PasswordAccessorySheetViewTest {
 
         UserInfo usernameEnabled = new UserInfo("", false);
         usernameEnabled.addField(
-                new UserInfoField("username1", "username1", "", false, item -> clicked.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText("username1")
+                        .setA11yDescription("username1")
+                        .setCallback(item -> clicked.set(true))
+                        .build());
         usernameEnabled.addField(
-                new UserInfoField("pa55w0rd", "Password for username1", "", true, null));
+                new UserInfoField.Builder()
+                        .setDisplayText("pa55w0rd")
+                        .setA11yDescription("Password for username1")
+                        .setIsObfuscated(true)
+                        .build());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -297,7 +304,11 @@ public class PasswordAccessorySheetViewTest {
     public void testAddingUserInfoTitlesAreRenderedIfNotEmpty() {
         assertThat(mView.get().getChildCount(), is(0));
         final UserInfoField kUnusedInfoField =
-                new UserInfoField("Unused Name", "Unused Password", "", false, cb -> {});
+                new UserInfoField.Builder()
+                        .setDisplayText("Unused Name")
+                        .setA11yDescription("Unused Password")
+                        .setCallback(cb -> {})
+                        .build();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

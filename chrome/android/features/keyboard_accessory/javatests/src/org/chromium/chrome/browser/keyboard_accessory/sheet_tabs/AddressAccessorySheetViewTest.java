@@ -238,62 +238,65 @@ public class AddressAccessorySheetViewTest {
             AtomicBoolean clickRecorder) {
         UserInfo info = new UserInfo("", false);
         info.addField(
-                new UserInfoField(nameFull, nameFull, "", false, item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(nameFull)
+                        .setA11yDescription(nameFull)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        companyName, companyName, "", false, item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(companyName)
+                        .setA11yDescription(companyName)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeLine1,
-                        addressHomeLine1,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(addressHomeLine1)
+                        .setA11yDescription(addressHomeLine1)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeLine2,
-                        addressHomeLine2,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(addressHomeLine2)
+                        .setA11yDescription(addressHomeLine2)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeZip,
-                        addressHomeZip,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(addressHomeZip)
+                        .setA11yDescription(addressHomeZip)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeCity,
-                        addressHomeCity,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(addressHomeCity)
+                        .setA11yDescription(addressHomeCity)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeState,
-                        addressHomeState,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(addressHomeState)
+                        .setA11yDescription(addressHomeState)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeCountry,
-                        addressHomeCountry,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(addressHomeCountry)
+                        .setA11yDescription(addressHomeCountry)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        phoneHomeWholeNumber,
-                        phoneHomeWholeNumber,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(phoneHomeWholeNumber)
+                        .setA11yDescription(phoneHomeWholeNumber)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        emailAddress, emailAddress, "", false, item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setDisplayText(emailAddress)
+                        .setA11yDescription(emailAddress)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         return info;
     }
 

@@ -156,16 +156,30 @@ public class CreditCardAccessorySheetControllerTest {
         testData.getUserInfoList().add(new UserInfo("", false));
         testData.getUserInfoList()
                 .get(0)
-                .addField(new UserInfoField("Todd", "Todd", "", false, field -> {}));
+                .addField(
+                        new UserInfoField.Builder()
+                                .setDisplayText("Todd")
+                                .setA11yDescription("Todd")
+                                .setCallback(field -> {})
+                                .build());
         testData.getUserInfoList()
                 .get(0)
-                .addField(new UserInfoField("**** 9219", "**** 9219", "", true, field -> {}));
+                .addField(
+                        new UserInfoField.Builder()
+                                .setDisplayText("**** 9219")
+                                .setA11yDescription("**** 9219")
+                                .setIsObfuscated(true)
+                                .setCallback(field -> {})
+                                .build());
         testData.getPromoCodeInfoList().add(new PromoCodeInfo());
         testData.getPromoCodeInfoList()
                 .get(0)
                 .setPromoCode(
-                        new UserInfoField(
-                                "50$OFF", "Promo Code for Todd Tester", "", false, field -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("50$OFF")
+                                .setA11yDescription("Promo Code for Todd Tester")
+                                .setCallback(field -> {})
+                                .build());
         testData.getPromoCodeInfoList()
                 .get(0)
                 .setDetailsText("Get $50 off when you use this code at checkout.");
@@ -214,8 +228,11 @@ public class CreditCardAccessorySheetControllerTest {
         testData.getPromoCodeInfoList()
                 .get(0)
                 .setPromoCode(
-                        new UserInfoField(
-                                "50$OFF", "Promo Code for Todd Tester", "", false, field -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("50$OFF")
+                                .setA11yDescription("Promo Code for Todd Tester")
+                                .setCallback(field -> {})
+                                .build());
         testData.getPromoCodeInfoList()
                 .get(0)
                 .setDetailsText("Get $50 off when you use this code at checkout.");

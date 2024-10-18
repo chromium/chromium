@@ -236,9 +236,16 @@ public class ManualFillingControllerTest {
                             /* warning= */ "");
             UserInfo userInfo = new UserInfo("", false);
             userInfo.addField(
-                    new UserInfoField("(No username)", "No username", /* id= */ "", false, null));
+                    new UserInfoField.Builder()
+                            .setDisplayText("(No username)")
+                            .setA11yDescription("No username")
+                            .build());
             userInfo.addField(
-                    new UserInfoField(passwordString, "Password", /* id= */ "", true, null));
+                    new UserInfoField.Builder()
+                            .setDisplayText(passwordString)
+                            .setA11yDescription("Password")
+                            .setIsObfuscated(true)
+                            .build());
             sheetData.getUserInfoList().add(userInfo);
             mAccessorySheetDataProvider.notifyObservers(sheetData);
         }

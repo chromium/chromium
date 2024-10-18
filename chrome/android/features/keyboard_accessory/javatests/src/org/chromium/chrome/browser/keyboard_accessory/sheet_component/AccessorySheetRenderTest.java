@@ -194,12 +194,20 @@ public class AccessorySheetRenderTest {
                 .add(new KeyboardAccessoryData.UserInfo("http://psl.origin.com/", true));
         sheet.getUserInfoList()
                 .get(0)
-                .addField(new UserInfoField("No username", "No username", "", false, null));
+                .addField(
+                        new UserInfoField.Builder()
+                                .setDisplayText("No username")
+                                .setA11yDescription("No username")
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
                 .addField(
-                        new UserInfoField(
-                                "Password", "Password for No username", "", true, cb -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("Password")
+                                .setA11yDescription("Password for No username")
+                                .setIsObfuscated(true)
+                                .setCallback(cb -> {})
+                                .build());
         sheet.getFooterCommands()
                 .add(new KeyboardAccessoryData.FooterCommand("Suggest strong password", cb -> {}));
         sheet.getFooterCommands()
@@ -229,12 +237,11 @@ public class AccessorySheetRenderTest {
                 .add(
                         new KeyboardAccessoryData.PlusAddressInfo(
                                 /* origin= */ "google.com",
-                                new UserInfoField(
-                                        "example@gmail.com",
-                                        "example@gmail.com",
-                                        "",
-                                        false,
-                                        unused -> {})));
+                                new UserInfoField.Builder()
+                                        .setDisplayText("example@gmail.com")
+                                        .setA11yDescription("example@gmail.com")
+                                        .setCallback(unused -> {})
+                                        .build()));
         sheet.getFooterCommands()
                 .add(new KeyboardAccessoryData.FooterCommand("Suggest strong password", cb -> {}));
         sheet.getFooterCommands()
@@ -266,27 +273,58 @@ public class AccessorySheetRenderTest {
         sheet.getUserInfoList()
                 .get(0)
                 .addField(
-                        new UserInfoField(
-                                "**** 9219", "Card for Todd Tester", "1", false, result -> {}));
-        sheet.getUserInfoList()
-                .get(0)
-                .addField(new UserInfoField("10", "10", "-1", false, result -> {}));
-        sheet.getUserInfoList()
-                .get(0)
-                .addField(new UserInfoField("2021", "2021", "-1", false, result -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("**** 9219")
+                                .setA11yDescription("Card for Todd Tester")
+                                .setId("1")
+                                .setCallback(result -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
                 .addField(
-                        new UserInfoField("Todd Tester", "Todd Tester", "0", false, result -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("10")
+                                .setA11yDescription("10")
+                                .setId("-1")
+                                .setCallback(result -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
-                .addField(new UserInfoField("123", "123", "-1", false, result -> {}));
+                .addField(
+                        new UserInfoField.Builder()
+                                .setDisplayText("2021")
+                                .setA11yDescription("2021")
+                                .setId("-1")
+                                .setCallback(result -> {})
+                                .build());
+        sheet.getUserInfoList()
+                .get(0)
+                .addField(
+                        new UserInfoField.Builder()
+                                .setDisplayText("Todd Tester")
+                                .setA11yDescription("Todd Tester")
+                                .setId("0")
+                                .setCallback(result -> {})
+                                .build());
+        sheet.getUserInfoList()
+                .get(0)
+                .addField(
+                        new UserInfoField.Builder()
+                                .setDisplayText("123")
+                                .setA11yDescription("123")
+                                .setId("-1")
+                                .setCallback(result -> {})
+                                .build());
         sheet.getPromoCodeInfoList().add(new KeyboardAccessoryData.PromoCodeInfo());
         sheet.getPromoCodeInfoList()
                 .get(0)
                 .setPromoCode(
-                        new UserInfoField(
-                                "50$OFF", "Promo Code for Todd Tester", "1", false, result -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("50$OFF")
+                                .setA11yDescription("Promo Code for Todd Tester")
+                                .setId("1")
+                                .setCallback(result -> {})
+                                .build());
         sheet.getPromoCodeInfoList()
                 .get(0)
                 .setDetailsText("Get $50 off when you use this code at checkout.");
@@ -319,12 +357,11 @@ public class AccessorySheetRenderTest {
         sheet.getIbanInfoList()
                 .get(0)
                 .setValue(
-                        new UserInfoField(
-                                /* displayText= */ "CH56 •••• •••• •••• •800 9",
-                                /* a11yDescription= */ "",
-                                /* id= */ "123456",
-                                /* isObfuscated= */ false,
-                                result -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("CH56 •••• •••• •••• •800 9")
+                                .setId("123456")
+                                .setCallback(result -> {})
+                                .build());
         sheet.getFooterCommands()
                 .add(new KeyboardAccessoryData.FooterCommand("Manage payment methods", cb -> {}));
 
@@ -353,48 +390,79 @@ public class AccessorySheetRenderTest {
         sheet.getUserInfoList().add(new KeyboardAccessoryData.UserInfo("", true));
         sheet.getUserInfoList()
                 .get(0)
-                .addField(new UserInfoField("Todd Tester", "Todd Tester", "", false, item -> {}));
+                .addField(
+                        new UserInfoField.Builder()
+                                .setDisplayText("Todd Tester")
+                                .setA11yDescription("Todd Tester")
+                                .setCallback(item -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
                 .addField( // Unused company name field.
-                        new UserInfoField("", "", "", false, item -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("")
+                                .setCallback(item -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
                 .addField(
-                        new UserInfoField(
-                                "112 Second Str", "112 Second Str", "", false, item -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("112 Second Str")
+                                .setA11yDescription("112 Second Str")
+                                .setCallback(item -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
                 .addField( // Unused address line 2 field.
-                        new UserInfoField("", "", "", false, item -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("")
+                                .setCallback(item -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
                 .addField( // Unused ZIP code field.
-                        new UserInfoField("", "", "", false, item -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("")
+                                .setCallback(item -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
-                .addField(new UserInfoField("Budatest", "Budatest", "", false, item -> {}));
+                .addField(
+                        new UserInfoField.Builder()
+                                .setDisplayText("Budatest")
+                                .setA11yDescription("Budatest")
+                                .setCallback(item -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
                 .addField( // Unused state field.
-                        new UserInfoField("", "", "", false, item -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("")
+                                .setCallback(item -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
                 .addField( // Unused country field.
-                        new UserInfoField("", "", "", false, item -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("")
+                                .setCallback(item -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
                 .addField(
-                        new UserInfoField("+088343188321", "+088343188321", "", false, item -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("+088343188321")
+                                .setA11yDescription("+088343188321")
+                                .setCallback(item -> {})
+                                .build());
         sheet.getUserInfoList()
                 .get(0)
                 .addField(
-                        new UserInfoField(
-                                "todd.tester@gmail.com",
-                                "todd.tester@gmail.com",
-                                "",
-                                false,
-                                item -> {}));
+                        new UserInfoField.Builder()
+                                .setDisplayText("todd.tester@gmail.com")
+                                .setA11yDescription("todd.tester@gmail.com")
+                                .setCallback(item -> {})
+                                .build());
         sheet.getFooterCommands()
                 .add(new KeyboardAccessoryData.FooterCommand("Manage addresses", cb -> {}));
 
@@ -422,12 +490,11 @@ public class AccessorySheetRenderTest {
                 .add(
                         new KeyboardAccessoryData.PlusAddressInfo(
                                 /* origin= */ "google.com",
-                                new UserInfoField(
-                                        "example@gmail.com",
-                                        "example@gmail.com",
-                                        "",
-                                        false,
-                                        unused -> {})));
+                                new UserInfoField.Builder()
+                                        .setDisplayText("example@gmail.com")
+                                        .setA11yDescription("example@gmail.com")
+                                        .setCallback(unused -> {})
+                                        .build()));
         sheet.getFooterCommands()
                 .add(new KeyboardAccessoryData.FooterCommand("Manage addresses", cb -> {}));
 

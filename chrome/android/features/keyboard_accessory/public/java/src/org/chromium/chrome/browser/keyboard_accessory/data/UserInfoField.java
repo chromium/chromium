@@ -23,30 +23,6 @@ public final class UserInfoField {
 
     /**
      * @param displayText The text to display. Plain text if |isObfuscated| is false.
-     * @param a11yDescription The description used for accessibility.
-     * @param id An ID representing this object for filling purposes. May be empty.
-     * @param isObfuscated If true, the displayed caption is transformed into stars.
-     * @param callback Called when the user taps the suggestions.
-     */
-    @Deprecated
-    public UserInfoField(
-            String displayText,
-            String a11yDescription,
-            String id,
-            boolean isObfuscated,
-            Callback<UserInfoField> callback) {
-        this(
-                displayText,
-                displayText,
-                a11yDescription,
-                id,
-                /* iconId= */ 0,
-                isObfuscated,
-                callback);
-    }
-
-    /**
-     * @param displayText The text to display. Plain text if |isObfuscated| is false.
      * @param textToFill The text that would be filled in the form field when clicked.
      * @param a11yDescription The description used for accessibility.
      * @param id An ID representing this object for filling purposes. May be empty.
