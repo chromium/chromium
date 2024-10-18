@@ -686,13 +686,13 @@ TEST_F(PdfInkModuleStrokeTest, InvalidationsFromStroke) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  // The default brush param size is 1.0.
-  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(9.0f, 14.0f),
-                                             gfx::Size(2.0f, 2.0f));
-  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(9.0f, 14.0f),
-                                             gfx::Size(12.0f, 12.0f));
-  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(19.0f, 16.0f),
-                                           gfx::Size(12.0f, 10.0f));
+  // The default brush param size is 3.0.
+  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(4.0f, 4.0f));
+  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(14.0f, 14.0f));
+  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
+                                           gfx::Size(14.0f, 12.0f));
   EXPECT_THAT(client().invalidations(), ElementsAre(kInvalidationAreaMouseDown,
                                                     kInvalidationAreaMouseMove,
                                                     kInvalidationAreaMouseUp));

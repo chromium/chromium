@@ -75,10 +75,7 @@ PdfInkBrush CreateDefaultHighlighterBrush() {
 }
 
 PdfInkBrush CreateDefaultPenBrush() {
-  // TODO(crbug.com/369653190): Change the size to the actual default value.
-  // The expectation for the PdfInkModuleStrokeTest.DrawRenderTransform test
-  // needs to be modified first.
-  return PdfInkBrush(PdfInkBrush::Type::kPen, SK_ColorBLACK, /*size=*/1.0f);
+  return PdfInkBrush(PdfInkBrush::Type::kPen, SK_ColorBLACK, /*size=*/3.0f);
 }
 
 // Check if `color` is a valid color value within range.
