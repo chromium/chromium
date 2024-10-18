@@ -119,7 +119,6 @@ class FrameNodeImpl
   // Getters for const properties.
   FrameNodeImpl* parent_frame_node() const;
   FrameNodeImpl* parent_or_outer_document_or_embedder() const;
-  FrameNodeImpl* outer_document_for_fenced_frame() const;
   PageNodeImpl* page_node() const;
   ProcessNodeImpl* process_node() const;
   int render_frame_id() const;
