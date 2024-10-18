@@ -230,6 +230,11 @@ class OpenXrGraphicsBinding {
                                  const gfx::RectF& left,
                                  const gfx::RectF& right) = 0;
 
+  // Called to indicate which graphics API produced the textures submitted to
+  // OpenXR. Does not affect the API used for compositing.
+  void SetWebGPUSession(bool is_webgpu) { webgpu_session_ = is_webgpu; }
+  bool IsWebGPUSession() { return webgpu_session_; }
+
  protected:
   // Internal helper to clear the list of images allocated during
   // `EnumerateSwapchainImages`, since the child classes own the actual list.
@@ -268,6 +273,7 @@ class OpenXrGraphicsBinding {
   gfx::Size transfer_size_{0, 0};
   uint32_t active_swapchain_index_;
   bool has_active_swapchain_image_ = false;
+  bool webgpu_session_ = false;
 };
 
 }  // namespace device

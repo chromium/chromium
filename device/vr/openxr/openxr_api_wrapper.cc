@@ -523,7 +523,8 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         break;
 
       case mojom::XRSessionFeature::SECONDARY_VIEWS:
-        // SECONDARY_VIEWS support can't be checked beyond just the
+      case mojom::XRSessionFeature::WEBGPU:
+        // SECONDARY_VIEWS and WEBGPU support can't be checked beyond just the
         // mode/extension check. If we passed that, then it's enabled.
         is_enabled = true;
         break;
@@ -536,7 +537,6 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
 
       case mojom::XRSessionFeature::PLANE_DETECTION:
       case mojom::XRSessionFeature::LAYERS:
-      case mojom::XRSessionFeature::WEBGPU:
       case mojom::XRSessionFeature::FRONT_FACING:
       case mojom::XRSessionFeature::IMAGE_TRACKING:
       case mojom::XRSessionFeature::CAMERA_ACCESS:
@@ -608,6 +608,16 @@ XrResult OpenXrApiWrapper::InitSession(
   RETURN_IF_XR_FAILED(OpenXRInputHelper::CreateOpenXRInputHelper(
       instance_, system_, extension_helper, session_, local_space_,
       enable_hand_tracking, &input_helper_));
+
+  // We need to mark whether or not the graphics binding is backing a WebGPU
+  // session prior to any swap chain images being activated because the
+  // associated shared images need to be created with WebGPU-specific flags.
+  const bool webgpu_session =
+      base::Contains(session_options_->required_features,
+                     device::mojom::XRSessionFeature::WEBGPU) ||
+      base::Contains(session_options_->optional_features,
+                     device::mojom::XRSessionFeature::WEBGPU);
+  graphics_binding_->SetWebGPUSession(webgpu_session);
 
   // Make sure all of the objects we initialized are there.
   DCHECK(HasSession());
