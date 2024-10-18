@@ -4,10 +4,13 @@
 
 #include "sandbox/policy/linux/bpf_screen_ai_policy_linux.h"
 
+#include <sys/prctl.h>
+
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
 #include "sandbox/linux/system_headers/linux_futex.h"
+#include "sandbox/linux/system_headers/linux_prctl.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 
@@ -52,6 +55,14 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
       const Arg<unsigned long> which(4);
       return If(which == 0, Allow()).Else(Error(EPERM));
     }
+
+#if defined(__arm__) || defined(__aarch64__)
+    case __NR_prctl: {
+      const Arg<int> option(0);
+      return If(option == PR_SVE_GET_VL, Allow())
+          .Else(BPFBasePolicy::EvaluateSyscall(system_call_number));
+    }
+#endif
 
     case __NR_prlimit64:
       return RestrictPrlimitToGetrlimit(GetPolicyPid());
