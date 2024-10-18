@@ -14,7 +14,6 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -298,6 +297,7 @@ void TabbedPaneTab::UpdateAccessibleName() {
     GetViewAccessibility().SetName(title_->GetText(),
                                    ax::mojom::NameFrom::kContents);
   }
+  tabbed_pane_->UpdateAccessibleName();
 }
 
 void TabbedPaneTab::UpdateAccessibleSelection() {
@@ -538,6 +538,7 @@ TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
       ui::Accelerator(ui::VKEY_TAB, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
   AddAccelerator(ui::Accelerator(ui::VKEY_TAB, ui::EF_CONTROL_DOWN));
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
+  UpdateAccessibleName();
 }
 
 TabbedPane::~TabbedPane() = default;
@@ -589,6 +590,8 @@ void TabbedPane::SelectTab(TabbedPaneTab* new_selected_tab, bool animate) {
 
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
   }
+
+  UpdateAccessibleName();
   tab_strip_->SchedulePaint();
 
   FocusManager* focus_manager = new_selected_tab->contents()->GetFocusManager();
@@ -666,10 +669,13 @@ bool TabbedPane::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return MoveSelectionBy(accelerator.IsShiftDown() ? -1 : 1);
 }
 
-void TabbedPane::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void TabbedPane::UpdateAccessibleName() {
   const TabbedPaneTab* const selected_tab = GetSelectedTab();
+
   if (selected_tab) {
-    node_data->SetName(selected_tab->GetTitleText());
+    GetViewAccessibility().SetName(selected_tab->GetTitleText());
+  } else {
+    GetViewAccessibility().RemoveName();
   }
 }
 

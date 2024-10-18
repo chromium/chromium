@@ -137,7 +137,8 @@ class VIEWS_EXPORT TabbedPane : public FlexLayoutView {
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+  void UpdateAccessibleName();
 
   // A listener notified when tab selection changes. Weak, not owned.
   raw_ptr<TabbedPaneListener> listener_ = nullptr;
