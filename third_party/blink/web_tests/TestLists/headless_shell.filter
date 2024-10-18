@@ -10,6 +10,7 @@ external/wpt/css/css-animations/*
 external/wpt/css/css-easing/*
 external/wpt/css/css-grid/*
 external/wpt/css/css-transitions/*
+external/wpt/digital-credentials/*
 external/wpt/longtask-timing/*
 external/wpt/picture-in-picture/*
 external/wpt/preload/*
