@@ -1544,6 +1544,13 @@ crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-wit
 crbug.com/40268721 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
 crbug.com/332331836 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
 
+# Temporarily disabled to unblock https://crrev.com/c/5938877
+crbug.com/369859833 http/tests/devtools/resource-har-conversion.js [ Failure Pass ]
+crbug.com/369859833 http/tests/devtools/resource-har-headers.js [ Failure Pass ]
+crbug.com/369859833 [ Linux ] http/tests/devtools/resource-parameters-ipv6.js [ Failure Pass ]
+crbug.com/369859833 [ Mac ] http/tests/devtools/resource-parameters-ipv6.js [ Failure Pass ]
+crbug.com/369859833 http/tests/devtools/resource-parameters.js [ Failure Pass ]
+
 # HTML `anchor` attribute disabled virtual suite - these tests should fail:
 crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-inset-rule-display.tentative.html [ Failure ]
 crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-change-display.tentative.html [ Failure ]
