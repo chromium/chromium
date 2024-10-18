@@ -146,6 +146,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser:browser_process",
       "//chrome/browser/policy:test_support",
+      "//chrome/browser/ui/page_info",
       "//chrome/common",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",

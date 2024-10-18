@@ -1803,6 +1803,7 @@ static_library("browser") {
     "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/profiles:profiles_extra_parts_impl",
+    "//chrome/browser/ui/page_info:impl",
 
     # TODO(crbug.com/): This is needed because tab_contents code
     # includes c/b/enterprise/connectors/analyzis/content_analysis_delegate.h
@@ -1977,6 +1978,8 @@ static_library("browser") {
     "//chrome/browser/ui/login:impl",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:impl",
+    "//chrome/browser/ui/page_info",
+    "//chrome/browser/ui/page_info:impl",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/safety_hub",

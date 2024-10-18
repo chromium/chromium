@@ -1,0 +1,130 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("page_info") {
+  sources = [
+    "chrome_page_info_delegate.h",
+    "chrome_page_info_ui_delegate.h",
+  ]
+  public_deps = []
+
+  if (is_android) {
+    sources += [ "chrome_page_info_client.h" ]
+    public_deps += [ "//components/page_info/android" ]
+  } else {
+    sources += [
+      "about_this_site_side_panel.h",
+      "page_info_dialog.h",
+      "page_info_infobar_delegate.h",
+    ]
+    public_deps += [ "//ui/views" ]
+  }
+  public_deps += [
+    "//base",
+    "//components/infobars/core",
+    "//components/page_info",
+    "//components/page_info/core:proto",
+    "//components/security_state/core",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_page_info_delegate.cc",
+    "chrome_page_info_ui_delegate.cc",
+  ]
+  deps = []
+
+  if (is_android) {
+    sources += [ "chrome_page_info_client.cc" ]
+  } else {
+    sources += [
+      "page_info_dialog.cc",
+      "page_info_infobar_delegate.cc",
+    ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/hid",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/web_applications",
+    ]
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ui/webui/ash/settings/app_management:app_management",
+      ]
+    }
+  }
+  deps += [
+    ":page_info",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/app:branded_strings",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/permissions",
+    "//chrome/browser/permissions/system",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:url_identity",
+    "//chrome/browser/ui/hats",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/common",
+    "//components/content_settings/core/common:features",
+    "//components/infobars/content",
+    "//components/page_info/core",
+    "//components/permissions",
+    "//components/prefs",
+    "//components/privacy_sandbox:tracking_protection_settings",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_state/content",
+    "//components/strings:components_strings",
+    "//components/subresource_filter/content/browser",
+    "//components/vector_icons",
+    "//components/webapps/common",
+    "//content/public/common",
+    "//net",
+    "//services/network/public/cpp",
+    "//ui/base",
+    "//ui/events",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "page_info_unittest.cc" ]
+  deps = [
+    ":page_info",
+    "//base/test:test_support",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/file_system_access",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/infobars/content",
+    "//components/page_info/core",
+    "//components/permissions",
+    "//components/permissions:permissions_common",
+    "//components/prefs",
+    "//components/safe_browsing:buildflags",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/strings:components_strings",
+    "//components/subresource_filter/content/browser",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//services/device/public/cpp:test_support",
+  ]
+}
