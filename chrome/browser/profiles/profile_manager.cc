@@ -1783,7 +1783,7 @@ void ProfileManager::OnProfileCreationFinished(Profile* profile,
     // If this was the guest or system profile, finish setting its special
     // status.
     if (profile->IsGuestSession() || profile->IsSystemProfile())
-      SetNonPersonalProfilePrefs(profile);
+      SetNonPersonalProfilePrefs(profile->GetOriginalProfile());
 
     // Invoke CREATED callback for incognito profiles.
     if (go_off_the_record)
