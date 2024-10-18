@@ -1611,7 +1611,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
                               /*ranking_context=*/std::nullopt);
       return;
     }
-  } else if (delegate &&
+  } else if (delegate && form_structure && autofill_field &&
              delegate->ShouldDisplayIph(*form_structure, *autofill_field)) {
     client().ShowAutofillFieldIphForFeature(
         field, AutofillClient::IphFeature::kPredictionImprovements);
