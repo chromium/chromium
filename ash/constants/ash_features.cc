@@ -3075,7 +3075,7 @@ BASE_FEATURE(kUseLegacyDHCPCD,
 // having a pin-only config.
 BASE_FEATURE(kAllowPasswordlessSetup,
              "AllowPasswordlessSetup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This features controls whether or not pin will be setup as timeout based
 // lockout or attempt based lockout.
