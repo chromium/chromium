@@ -242,7 +242,7 @@ suite('shortcutCustomizationAppTest', function() {
     const keyIterator = expectedLayouts!.keys();
     // Assert subsection title matches expected value from fake lookup.
     const expectedFirstSubcat: AcceleratorSubcategory =
-        keyIterator.next().value;
+        keyIterator.next().value!;
     assertEquals(
         page.i18n(getSubcategoryNameStringId(expectedFirstSubcat)),
         actualSubsections[0]!.title);
@@ -253,7 +253,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Assert subsection title matches expected value from fake lookup.
     const expectedSecondSubcat: AcceleratorSubcategory =
-        keyIterator.next().value;
+        keyIterator.next().value!;
     assertEquals(
         page.i18n(getSubcategoryNameStringId(expectedSecondSubcat)),
         actualSubsections[1]!.title);
@@ -301,7 +301,7 @@ suite('shortcutCustomizationAppTest', function() {
     const keyIterator = expectedLayouts!.keys().next();
     // Assert subsection names match name lookup.
     assertEquals(
-        page.i18n(getSubcategoryNameStringId(keyIterator.value)),
+        page.i18n(getSubcategoryNameStringId(keyIterator.value!)),
         actualSubsections[0]!.title);
     // Assert lock icon displayed next to every subcategories under Browser
     // category.
@@ -312,7 +312,7 @@ suite('shortcutCustomizationAppTest', function() {
     }
     // Assert only 1 accelerator is within this subsection.
     assertEquals(
-        (expectedLayouts!.get(keyIterator.value) as LayoutInfo[]).length,
+        (expectedLayouts!.get(keyIterator.value!) as LayoutInfo[]).length,
         actualSubsections[0]!.accelRowDataArray.length);
   });
 

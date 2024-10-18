@@ -50,23 +50,3 @@ declare namespace chrome.crashReportPrivate {
   }
   export const reportError: (info: ErrorInfo, callback: () => void) => void;
 }
-
-/*
- * View Transition API.
- *
- * See https://developer.chrome.com/docs/web-platform/view-transitions or
- * https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API for
- * detail.
- */
-interface ViewTransition {
-  updateCallbackDone: Promise<void>;
-  ready: Promise<void>;
-  finished: Promise<void>;
-  skipTransition(): void;
-}
-
-interface Document {
-  startViewTransition?(
-    updateCallback: () => Promise<void>| void,
-  ): ViewTransition;
-}

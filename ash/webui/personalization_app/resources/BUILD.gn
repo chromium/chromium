@@ -167,7 +167,6 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
-  ts_tsconfig_base = "tsconfig_base.json"
 
   webui_context_type = "trusted"
   optimize = optimize_webui

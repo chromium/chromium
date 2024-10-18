@@ -565,7 +565,7 @@ export class PowerBookmarksService {
 
     if (this.inactiveImageServiceRequests_.size > 0) {
       this.findBookmarkImageUrl_(
-          this.inactiveImageServiceRequests_.values().next().value);
+          this.inactiveImageServiceRequests_.values().next().value!);
     }
   }
 }
