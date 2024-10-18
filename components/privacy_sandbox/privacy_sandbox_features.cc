@@ -249,4 +249,8 @@ BASE_FEATURE(kPrivacySandboxSentimentSurvey,
 const base::FeatureParam<std::string> kPrivacySandboxSentimentSurveyTriggerId{
     &kPrivacySandboxSentimentSurvey, "sentiment-survey-trigger-id", ""};
 
+BASE_FEATURE(kPrivacySandboxAdsApiUxEnhancements,
+             "PrivacySandboxAdsApiUxEnhancements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace privacy_sandbox

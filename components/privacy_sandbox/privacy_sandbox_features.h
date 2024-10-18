@@ -278,6 +278,10 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<std::string>
     kPrivacySandboxSentimentSurveyTriggerId;
 
+// If true, displays the Ads APIs UX Enancements.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxAdsApiUxEnhancements);
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_
