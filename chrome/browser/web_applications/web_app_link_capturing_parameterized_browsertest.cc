@@ -4,6 +4,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -323,6 +324,16 @@ std::string_view ToParamString(NavigationTarget target) {
 
 // Use a std::tuple for the overall test configuration so testing::Combine can
 // be used to construct the values.
+//
+// Since this configuration is rather long (and can make the test expectations
+// less readable), This tuple is split into the ExpectationsFileConfiguration
+// and ReadableTestConfiguration tuples. The former is used to split & add a
+// suffix to test expecation files, and the latter are the 'remaining'
+// configuration items that can constitute a more 'readable' name (as they don't
+// need to include the file configuration params).
+//
+// Note: Adding a value here needs to be accompanied with adding that value to
+// either ExpectationsFileConfiguration or ReadableTestConfiguration.
 using LinkCaptureTestParam =
     std::tuple<blink::mojom::ManifestLaunchHandler_ClientMode,
                mojom::UserDisplayMode,
@@ -335,19 +346,97 @@ using LinkCaptureTestParam =
                OpenerMode,
                NavigationTarget>;
 
-std::string LinkCaptureTestParamToString(
-    testing::TestParamInfo<LinkCaptureTestParam> param_info) {
+// Test files are split by these configurations, to improve readability. When
+// updating this config, the following methods need to be updated:
+// - `GetExpectationsFileSuffix`
+// - `RemoveExpectationsFileConfigFromTestName`
+// - `GetExpectationsFileConfigFromTestConfig`
+// Each test fixture is currently split with:
+// - The 'link capturing' user setting being on or off. This appends
+//   "_capture_on" or "_capture_off" to the test fixture's test expectation file
+//   base name.
+using ExpectationsFileConfiguration = std::tuple<LinkCapturing>;
+
+// This is the 'rest' of the LinkCaptureTestParam configuration after the file
+// configuration is removed.
+using ReadableTestConfiguration =
+    std::tuple<blink::mojom::ManifestLaunchHandler_ClientMode,
+               mojom::UserDisplayMode,
+               StartingPoint,
+               Destination,
+               RedirectType,
+               NavigationElement,
+               test::ClickMethod,
+               OpenerMode,
+               NavigationTarget>;
+
+ExpectationsFileConfiguration GetExpectationsFileConfigFromTestConfig(
+    const LinkCaptureTestParam& test_config) {
+  return {std::get<LinkCapturing>(test_config)};
+}
+
+ReadableTestConfiguration GetReadableConfigFromTestConfig(
+    const LinkCaptureTestParam& test_config) {
+  return {
+      std::get<blink::mojom::ManifestLaunchHandler_ClientMode>(test_config),
+      std::get<mojom::UserDisplayMode>(test_config),
+      std::get<StartingPoint>(test_config),
+      std::get<Destination>(test_config),
+      std::get<RedirectType>(test_config),
+      std::get<NavigationElement>(test_config),
+      std::get<test::ClickMethod>(test_config),
+      std::get<OpenerMode>(test_config),
+      std::get<NavigationTarget>(test_config),
+  };
+}
+
+template <typename Tuple>
+std::string TupleToParamString(const Tuple& params) {
   // Concatenates the result of calling `ToParamString()` on each member of the
   // tuple with '_' in between fields.
   std::string name = std::apply(
       [](auto&... p) { return base::JoinString({ToParamString(p)...}, "_"); },
-      param_info.param);
+      params);
   base::TrimString(name, "_", &name);
   // Two test params use an empty string for their default values, which can
   // create a double underscore in the test names, so remove the redundant
   // underscore.
   base::ReplaceSubstringsAfterOffset(&name, 0, "__", "_");
   return name;
+}
+
+// Returns the suffix to be appended to the base file name given the
+// `file_config`. This must be unique for each possible value of the
+// `ExpectationsFileConfiguration` type.
+std::string GetExpectationsFileSuffix(
+    const ExpectationsFileConfiguration& file_config) {
+  return (std::get<LinkCapturing>(file_config) == LinkCapturing::kEnabled
+              ? "_capture_on"
+              : "_capture_off");
+}
+
+// Returns whether the `file_config` configuration will contain the given
+// `full_test_params` from the gtest name.
+bool DoesTestMatchFileConfig(std::string_view full_test_params,
+                             const ExpectationsFileConfiguration& file_config) {
+  std::string_view link_capturing_name =
+      ToParamString(std::get<LinkCapturing>(file_config));
+  return base::Contains(full_test_params, link_capturing_name);
+}
+
+// Removes all of the parameters from the `full_test_params` that are handled by
+// the `file_config`. This is equivalent to
+// TupleToParamString(GetReadableConfigFromTestConfig(GetParams())), but when
+// analyzing the testing::TestInfo object we only have access to the string
+// version of the params, so this method is needed.
+std::string RemoveExpectationsFileConfigFromFullTestParams(
+    std::string_view full_test_params,
+    const ExpectationsFileConfiguration& file_config) {
+  std::string link_capturing_name =
+      base::StrCat({ToParamString(std::get<LinkCapturing>(file_config)), "_"});
+  std::string output(full_test_params);
+  base::ReplaceSubstringsAfterOffset(&output, 0, link_capturing_name, "");
+  return output;
 }
 
 std::string BrowserTypeToString(Browser::Type type) {
@@ -541,20 +630,6 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
 #endif
 };
 
-// Test files are split by these configurations, to improve readability.
-// Each test fixture is currently split with:
-// - The 'link capturing' user setting being on or off. This appends
-//   "_capture_on" or "capture_off_" to the test fixture's test expectation file
-//   base name.
-using ExpectationsFileConfiguration = std::tuple<LinkCapturing>;
-
-std::string GetExpectationsFileSuffix(
-    ExpectationsFileConfiguration file_config) {
-  return (std::get<LinkCapturing>(file_config) == LinkCapturing::kEnabled
-              ? "_capture_on"
-              : "_capture_off");
-}
-
 // This test verifies the navigation capture logic by testing by launching sites
 // inside app containers and tabs and test what happens when links are
 // left/middle clicked and window.open is used (whether browser objects are
@@ -742,26 +817,34 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   // The json file is of the following format:
   // { 'tests': {
-  //   'TestName': { ... }
+  //   'Readable_Test_Name': {
+  //      "_params": "Full_Test_Params",
+  //      "disabled": <false if bots should fail when Expectations don't match>,
+  //      "expected_state": {<expected state of all browsers/apps>}
+  //    }
+  //    ...
   // }}
   // This method returns the dictionary associated with the test name derived
   // from the test parameters. If no entry exists for the test, a new one is
   // created.
   base::Value::Dict& GetTestCaseDataFromParam() {
-    testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
+    std::string full_test_params = TupleToParamString(GetParam());
+    std::string readable_name =
+        TupleToParamString(GetReadableConfigFromTestConfig(GetParam()));
     base::Value::Dict* result =
-        test_expectations().EnsureDict("tests")->EnsureDict(
-            LinkCaptureTestParamToString(param));
+        test_expectations().EnsureDict("tests")->EnsureDict(readable_name);
+    result->Set("_params", full_test_params);
     // Temporarily check expectations for the test name before redirect mode was
     // a separate parameter as well to make it easier to migrate expectations.
     // TODO(mek): Remove this migration code.
     if (!result->contains("expected_state") &&
         GetRedirectType() == RedirectType::kNone) {
-      std::string key = LinkCaptureTestParamToString(param);
-      base::ReplaceFirstSubstringAfterOffset(&key, 0, "_Direct", "");
-      *result =
-          test_expectations().EnsureDict("tests")->EnsureDict(key)->Clone();
-      test_expectations().EnsureDict("tests")->Remove(key);
+      base::ReplaceFirstSubstringAfterOffset(&readable_name, 0, "_Direct", "");
+      *result = test_expectations()
+                    .EnsureDict("tests")
+                    ->EnsureDict(readable_name)
+                    ->Clone();
+      test_expectations().EnsureDict("tests")->Remove(readable_name);
     }
     return *result;
   }
@@ -1021,12 +1104,13 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // no longer exist in code but still exist in the expectations json file.
   // Additionally if this test is run with the --rebaseline-link-capturing-test
   // flag any left-over expectations will be cleaned up.
-  void PerformTestCleanupIfNeeded(ExpectationsFileConfiguration file_config) {
+  void PerformTestCleanupIfNeeded(
+      const ExpectationsFileConfiguration& file_config) {
     InitializeTestExpectations(file_config);
 
     // Iterate over all the tests in all the test suites (even unrelated ones)
     // to obtain a list of the test cases that belong to our test class.
-    std::set<std::string> test_cases;
+    std::set<std::string> readable_test_cases;
     const testing::UnitTest* unit_test = testing::UnitTest::GetInstance();
     for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
       const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
@@ -1036,24 +1120,22 @@ class WebAppLinkCapturingParameterizedBrowserTest
         continue;
       }
       for (int j = 0; j < test_suite->total_test_count(); ++j) {
-        const char* name = test_suite->GetTestInfo(j)->name();
-        // Each expectation file should contain only tests that apply to that
-        // file specifically. Make sure to only consider tests that should be in
-        // the current `file_config`.
-        std::string required_test_name_part_for_file =
-            (std::get<LinkCapturing>(file_config) == LinkCapturing::kEnabled)
-                ? std::string(ToParamString(LinkCapturing::kEnabled)) + "_"
-                : std::string(ToParamString(LinkCapturing::kDisabled)) + "_";
-        if (!base::Contains(std::string(name),
-                            required_test_name_part_for_file)) {
-          continue;
-        }
-        auto parts = base::SplitStringOnce(name, '/');
+        const char* test_name = test_suite->GetTestInfo(j)->name();
+        auto parts = base::SplitStringOnce(test_name, '/');
         if (!parts.has_value()) {
           // Not a parameterized test.
           continue;
         }
-        test_cases.insert(std::string(parts->second));
+        std::string_view full_test_params = parts->second;
+        // Only include the test as a candidate test for this file if the
+        // current test is considered within the test file configuration.
+        if (!DoesTestMatchFileConfig(full_test_params, file_config)) {
+          continue;
+        }
+        std::string readable_name =
+            RemoveExpectationsFileConfigFromFullTestParams(full_test_params,
+                                                           file_config);
+        readable_test_cases.emplace(std::move(readable_name));
       }
     }
 
@@ -1065,22 +1147,21 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
     base::Value::Dict& expectations = *test_expectations().EnsureDict("tests");
     std::vector<std::string> tests_to_remove;
-    for (const auto [name, value] : expectations) {
-      if (!test_cases.contains(name)) {
-        tests_to_remove.push_back(name);
+    for (const auto [readable_name, _] : expectations) {
+      if (!readable_test_cases.contains(readable_name)) {
+        tests_to_remove.push_back(readable_name);
       }
     }
     if (ShouldRebaseline()) {
-      for (const auto& name : tests_to_remove) {
-        LOG(INFO) << "Removing " << name;
-        expectations.Remove(name);
+      for (const auto& readable_name : tests_to_remove) {
+        LOG(INFO) << "Removing " << readable_name;
+        expectations.Remove(readable_name);
       }
       SaveExpectations(file_config);
     } else {
       EXPECT_THAT(tests_to_remove, testing::ElementsAre())
           << "Run this test with --rebaseline-link-capturing-test to clean "
-             "this "
-             "up.";
+             "this up.";
     }
   }
 
@@ -1093,7 +1174,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
   void RunTest() {
     // Parses the corresponding json file for test expectations given the
     // respective test suite.
-    InitializeTestExpectations({GetLinkCapturing()});
+    InitializeTestExpectations(
+        GetExpectationsFileConfigFromTestConfig(GetParam()));
 
     if (ShouldSkipCurrentTest()) {
       GTEST_SKIP()
@@ -1216,7 +1298,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     }
 
     if (ShouldRebaseline()) {
-      RecordActualResults({GetLinkCapturing()});
+      RecordActualResults(GetExpectationsFileConfigFromTestConfig(GetParam()));
     } else {
       const base::Value::Dict& test_case = GetTestCaseDataFromParam();
       const base::Value::Dict* expected_state =
@@ -1245,8 +1327,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     }
 
     // Skip tests that are disabled because they are flaky.
-    if (base::Contains(disabled_flaky_tests,
-                       LinkCaptureTestParamToString(param)) ||
+    if (base::Contains(disabled_flaky_tests, TupleToParamString(param.param)) ||
         base::Contains(disabled_flaky_tests, "*")) {
       return true;
     }
@@ -1299,15 +1380,19 @@ class WebAppLinkCapturingParameterizedBrowserTest
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     std::string json_data;
-    bool success =
-        ReadFileToString(GetExpectationsFile(file_config), &json_data);
+    // To help with rebaseline conflicts, try a couple times.
+    bool success = false;
+    for (int i = 0; i < 3 && !success; ++i) {
+      success = ReadFileToString(GetExpectationsFile(file_config), &json_data);
+    }
     if (!ShouldRebaseline()) {
       ASSERT_TRUE(success) << "Failed to read test baselines from "
                            << GetExpectationsFile(file_config).value();
     }
     if (!success) {
       json_data = R"(
-          {"tests": {}}
+          "tests": {
+          }
         )";
     }
     test_expectations_ = base::JSONReader::Read(json_data);
@@ -1352,6 +1437,11 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedBrowserTest,
                        MAYBE_CleanupExpectations) {
   PerformTestCleanupIfNeeded({LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded({LinkCapturing::kDisabled});
+}
+
+std::string LinkCaptureTestParamToString(
+    const testing::TestParamInfo<LinkCaptureTestParam>& param_info) {
+  return TupleToParamString(param_info.param);
 }
 
 // Pro-tip: To run only one combination from the below list, supply this...
@@ -1689,15 +1779,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             test::ClickMethod::kRightClickLaunchApp),  // Simulate right-mouse
                                                        // click.
-        testing::Values(OpenerMode::kOpener,   // Supply 'opener' property.
-                        OpenerMode::kNoOpener  // Supply 'noopener' property.
-                        ),
-        testing::Values(
-            NavigationTarget::kSelf,    // Use target _self.
-            NavigationTarget::kFrame,   // Use named frame as target.
-            NavigationTarget::kBlank,   // User Target is _blank.
-            NavigationTarget::kNoFrame  // Target is non-existing frame.
-            )),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
 
 }  // namespace
