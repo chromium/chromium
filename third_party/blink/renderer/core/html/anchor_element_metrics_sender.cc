@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -194,9 +195,12 @@ void AnchorElementMetricsSender::DocumentDetached(Document& document) {
       main_frame->Loader().IsCommittingNavigation()) {
     return;
   }
-  for (Element* element : *(document.links())) {
-    HTMLAnchorElementBase* anchor = To<HTMLAnchorElementBase>(element);
-    RemoveAnchorElement(*anchor);
+  for (Node& node :
+       ShadowIncludingTreeOrderTraversal::DescendantsOf(document)) {
+    if (HTMLAnchorElementBase* anchor =
+            DynamicTo<HTMLAnchorElementBase>(node)) {
+      RemoveAnchorElement(*anchor);
+    }
   }
 }
 
