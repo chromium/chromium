@@ -5,7 +5,11 @@
 #include "components/viz/service/display/occlusion_culler.h"
 
 #include <algorithm>
+#include <cstdlib>
+#include <limits>
+#include <vector>
 
+#include "base/logging.h"
 #include "cc/base/math_util.h"
 #include "cc/base/region.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -15,6 +19,54 @@
 
 namespace viz {
 namespace {
+
+constexpr float kEpsilon = std::numeric_limits<float>::epsilon();
+
+bool IsRightAngledRotationOrPositiveScaleOrTranslation(
+    const gfx::Transform& transform) {
+  if (transform.IsPositiveScaleOrTranslation()) {
+    return true;
+  }
+
+  const bool is_2d_and_has_no_perspective =
+      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 0), 0.0) &&
+      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 1), 0.0) &&
+      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 2), 0.0) &&
+      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 3), 1.0) &&  // 4th row
+      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 0), 0.0) &&
+      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 1), 0.0) &&
+      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 2), 1.0) &&
+      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 3), 0.0) &&  // 3rd row
+      cc::MathUtil::IsWithinEpsilon(transform.rc(0, 2), 0.0) &&
+      cc::MathUtil::IsWithinEpsilon(transform.rc(1, 2), 0.0);
+
+  if (!is_2d_and_has_no_perspective ||
+      !transform.NonDegeneratePreserves2dAxisAlignment()) {
+    return false;
+  }
+
+  // Only scale, translation, mirroring and right angled rotations (90, 180,
+  // 270) preserve axis alignment.
+  const bool has_translation = std::abs(transform.rc(0, 3)) > kEpsilon ||
+                               std::abs(transform.rc(1, 3)) > kEpsilon;
+
+  // Inspect inner 2x2 matrix to check if the `transform` has rotation or
+  // positive scale.
+  const bool has_0_rotation_with_positive_scaling =
+      transform.rc(0, 0) > kEpsilon && transform.rc(1, 1) > kEpsilon;
+  const bool has_90_rotation_with_positive_scaling =
+      transform.rc(0, 1) < kEpsilon && transform.rc(1, 0) > kEpsilon;
+  const bool has_180_rotation_with_positive_scaling =
+      transform.rc(0, 0) < kEpsilon && transform.rc(1, 1) < kEpsilon;
+  const bool has_270_rotation_with_positive_scaling =
+      transform.rc(0, 1) > kEpsilon && transform.rc(1, 0) < kEpsilon;
+
+  return is_2d_and_has_no_perspective &&
+         (has_translation || has_0_rotation_with_positive_scaling ||
+          has_90_rotation_with_positive_scaling ||
+          has_180_rotation_with_positive_scaling ||
+          has_270_rotation_with_positive_scaling);
+}
 
 // SkRegion uses INT_MAX as a sentinel. Reduce gfx::Rect values when they are
 // equal to INT_MAX to prevent conversion to an empty region.
@@ -281,23 +333,27 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame,
         current_sqs_intersects_occlusion =
             occlusion_in_target_space.Intersects(current_sqs_in_target_space);
 
-        // Compute the occlusion region in the quad content space for scale and
-        // translation transforms. Note that 0 scale transform will fail the
-        // positive scale check.
+        // Compute the occlusion region in the quad content space for scale,
+        // rotation(90, 180, 270) and translation transforms. Note that 0 scale
+        // transform will fail the positive scale check.
         if (current_sqs_intersects_occlusion &&
-            transform.IsPositiveScaleOrTranslation()) {
-          // Scale transform can be inverted by multiplying 1/scale (given
-          // scale > 0) and translation transform can be inverted by applying
-          // the reversed directional translation. Therefore, |transform| is
-          // always invertible.
+            IsRightAngledRotationOrPositiveScaleOrTranslation(transform)) {
+          // Given:
+          // * Scale transform can be inverted by multiplying 1/scale.
+          //  (given scale > 0)
+          // * Translation transform can be inverted by applying reversed
+          //   directional translation.
+          // * Rotation transform can be inverted by applying rotation
+          //   in opposite direction.
+          // Therefore, `transform` is always invertible.
           gfx::Transform reverse_transform = transform.GetCheckedInverse();
           DCHECK_LE(occlusion_in_target_space.GetRegionComplexity(),
                     settings_.maximum_occluder_complexity);
 
-          // Since transform can only be a scale or a translation matrix, it is
-          // safe to use function MapEnclosedRectWith2dAxisAlignedTransform to
-          // define occluded region in the quad content space with inverted
-          // transform.
+          // Since transform can only be a scale, translation or right-angled
+          // matrix, it is safe to use function
+          // MapEnclosedRectWith2dAxisAlignedTransform to define occluded region
+          // in the quad content space with inverted transform.
           for (gfx::Rect rect_in_target_space : occlusion_in_target_space) {
             if (current_sqs_in_target_space.Intersects(rect_in_target_space)) {
               auto rect_in_content =

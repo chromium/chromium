@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "cc/base/math_util.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -1289,12 +1290,147 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithNegativeScaleTransform) {
   }
 }
 
+// Ensures that quad splitting is done for quads with right-angled rotations.
+TEST_F(OcclusionCullerTest, CompositorFrameWithAxisAlignmentRotation) {
+  RendererSettings::OcclusionCullerSettings settings;
+  settings.minimum_fragments_reduced = 0;
+
+  InitOcclusionCuller(settings);
+
+  AggregatedFrame frame = MakeDefaultAggregatedFrame();
+  gfx::Rect rect1(0, 0, 100, 50);
+  gfx::Rect rect2(0, 0, 120, 60);
+
+  bool are_contents_opaque = true;
+  float opacity = 1.f;
+
+  {
+    // In target space
+    //
+    // +---------------+                 +----+----------+
+    // |rect2          |                 |    | rect2_a  |
+    // |    +----------|                 |    +----------|
+    // |    |          |                 | r  |          |
+    // |    |          |        --->     | e  |          |
+    // |    |          |                 | c  |          |
+    // |    |          |                 | t  |          |
+    // |    |   rect1  |                 | 2  |   rect1  |
+    // |    |          |                 | |  |          |
+    // |    |          |                 | b  |          |
+    // +----+----------+                 +----+----------+
+    gfx::Transform rotate;
+    rotate.Rotate(90);
+
+    SharedQuadState* shared_quad_state =
+        frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+    auto* quad = frame.render_pass_list.front()
+                     ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+
+    SharedQuadState* shared_quad_state2 =
+        frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+    auto* quad2 = frame.render_pass_list.front()
+                      ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+
+    shared_quad_state->SetAll(rotate, rect1, rect1, gfx::MaskFilterInfo(),
+                              /*clip=*/std::nullopt, are_contents_opaque,
+                              opacity, SkBlendMode::kSrcOver,
+                              /*sorting_context=*/0, /*layer_id=*/0u,
+                              /*fast_rounded_corner=*/false);
+
+    shared_quad_state2->SetAll(rotate, rect2, rect2, gfx::MaskFilterInfo(),
+                               /*clip=*/std::nullopt, are_contents_opaque,
+                               opacity, SkBlendMode::kSrcOver,
+                               /*sorting_context=*/0,
+                               /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+    quad->SetNew(shared_quad_state, rect1, rect1, SkColors::kBlack, false);
+    quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
+    EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+
+    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+
+    // In target space, `quad` becomes (-50, 0, 50x100) and `quad2` becomes
+    // (-60, 0 60x120). Quads partially intersect.
+    EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+
+    gfx::Rect rect2_a(100, 0, 20, 50);
+    gfx::Rect rect2_b(0, 50, 120, 10);
+
+    // quad2 visible region is split into two quads.
+    EXPECT_EQ(
+        rect2_a,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        rect2_b,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
+    frame.render_pass_list.front()->quad_list.clear();
+  }
+
+  {
+    // Ensure that scale+rotation works fine. (Similar quads geometry as above)
+    gfx::Transform rotate_and_scale;
+    rotate_and_scale.Rotate(90);
+    rotate_and_scale.Scale(2);
+
+    SharedQuadState* shared_quad_state =
+        frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+    auto* quad = frame.render_pass_list.front()
+                     ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+
+    SharedQuadState* shared_quad_state2 =
+        frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+    auto* quad2 = frame.render_pass_list.front()
+                      ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+
+    shared_quad_state->SetAll(rotate_and_scale, rect1, rect1,
+                              gfx::MaskFilterInfo(),
+                              /*clip=*/std::nullopt, are_contents_opaque,
+                              opacity, SkBlendMode::kSrcOver,
+                              /*sorting_context=*/0, /*layer_id=*/0u,
+                              /*fast_rounded_corner=*/false);
+
+    shared_quad_state2->SetAll(rotate_and_scale, rect2, rect2,
+                               gfx::MaskFilterInfo(),
+                               /*clip=*/std::nullopt, are_contents_opaque,
+                               opacity, SkBlendMode::kSrcOver,
+                               /*sorting_context=*/0,
+                               /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+    quad->SetNew(shared_quad_state, rect1, rect1, SkColors::kBlack, false);
+    quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
+    EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+
+    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+
+    // In target space, `quad` becomes (-100, 0, 100x200) and `quad2` becomes
+    // (-120, 0 120x240). Quads partially intersect.
+    EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+
+    gfx::Rect rect2_a(100, 0, 20, 50);
+    gfx::Rect rect2_b(0, 50, 120, 10);
+
+    // quad2 visible region is split into two quads.
+    EXPECT_EQ(
+        rect2_a,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        rect2_b,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
+  }
+}
+
 // Check if occlusion culling works well with rotation transform.
 //
 //  +-----+                                  +----+
 //  |     |   rotation (by 45 on y-axis) ->  |    |     same height
 //  +-----+                                  +----+     reduced weight
-TEST_F(OcclusionCullerTest, CompositorFrameWithRotation) {
+TEST_F(OcclusionCullerTest, CompositorFrameWithNonAxisAlignmentRotation) {
   InitOcclusionCuller();
 
   // rect 2 is inside rect 1 initially.
@@ -1412,9 +1548,10 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithRotation) {
   }
 
   {
-    // Since we only support updating |visible_rect| of DrawQuad with scale
-    // or translation transform and rotation transform applies to quads,
-    // |visible_rect| of |quad2| should not be changed.
+    // Since we only support updating |visible_rect| of DrawQuad with scale,
+    // translation and right-angled(90, 180, 270) rotation transforms, given the
+    // rotation of 45 degree is applied to quads, |visible_rect| of |quad2|
+    // should not be changed.
     shared_quad_state->SetAll(rotate, rect1, rect1, gfx::MaskFilterInfo(),
                               std::nullopt, are_contents_opaque, opacity,
                               SkBlendMode::kSrcOver, /*sorting_context=*/0,
