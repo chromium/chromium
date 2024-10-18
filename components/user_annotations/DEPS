@@ -1,7 +1,6 @@
 include_rules = [
   "+components/autofill/core/browser",
   "+components/autofill/core/common",
-  "+components/autofill_prediction_improvements/core/browser",
   "+components/keyed_service/core",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",

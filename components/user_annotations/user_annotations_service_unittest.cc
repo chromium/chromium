@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
@@ -31,6 +30,7 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_switches.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -84,9 +84,8 @@ class UserAnnotationsServiceTest : public testing::Test,
     if (ShouldPersistAnnotations()) {
       feature_parameters["persist_annotations"] = "true";
     }
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        autofill_prediction_improvements::kAutofillPredictionImprovements,
-        feature_parameters);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(kUserAnnotations,
+                                                            feature_parameters);
   }
 
   bool ShouldPersistAnnotations() const { return GetParam(); }
