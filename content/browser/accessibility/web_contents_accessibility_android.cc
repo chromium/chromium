@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/rand_util.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -1471,12 +1472,36 @@ void WebContentsAccessibilityAndroid::MoveAccessibilityFocus(
     ui::AXMode::BundleHistogramValue bundle;
     if (mode == ui::kAXModeBasic) {
       bundle = ui::AXMode::BundleHistogramValue::kBasic;
+
+      // TODO(mschillaci): Remove once inline textboxes is fixed.
+      // This will be too noisy if recorded each time.
+      static bool previously_logged_basic = false;
+      if (!previously_logged_basic && base::RandDouble() < 0.0005) {
+        previously_logged_basic = true;
+        DUMP_WILL_BE_NOTREACHED()
+            << "Inline text boxes will not be loaded in basic state, so this "
+               "request will not be fulfilled. Current services are: "
+            << base::JoinString(
+                   ui::AccessibilityState::GetAccessibilityServiceIds(), ", ");
+      }
     } else if (mode == ui::kAXModeWebContentsOnly) {
       bundle = ui::AXMode::BundleHistogramValue::kWebContentsOnly;
     } else if (mode == ui::kAXModeComplete) {
       bundle = ui::AXMode::BundleHistogramValue::kComplete;
     } else if (mode == ui::kAXModeFormControls) {
       bundle = ui::AXMode::BundleHistogramValue::kFormControls;
+
+      // TODO(mschillaci): Remove once inline textboxes is fixed.
+      // This will be too noisy if recorded each time.
+      static bool previously_logged_forms = false;
+      if (!previously_logged_forms && base::RandDouble() < 0.003) {
+        previously_logged_forms = true;
+        DUMP_WILL_BE_NOTREACHED()
+            << "Should not be loading inline text boxes while in form controls "
+               "state. Current services are: "
+            << base::JoinString(
+                   ui::AccessibilityState::GetAccessibilityServiceIds(), ", ");
+      }
     } else {
       bundle = ui::AXMode::BundleHistogramValue::kUnnamed;
     }
