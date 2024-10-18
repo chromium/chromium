@@ -69,12 +69,12 @@ TextStream& TextStream::operator<<(uint64_t i) {
 }
 
 TextStream& TextStream::operator<<(float f) {
-  text_.Append(String::NumberToStringFixedWidth(f, 2));
+  text_.AppendNumber(f);
   return *this;
 }
 
 TextStream& TextStream::operator<<(double d) {
-  text_.Append(String::NumberToStringFixedWidth(d, 2));
+  text_.AppendNumber(d);
   return *this;
 }
 
