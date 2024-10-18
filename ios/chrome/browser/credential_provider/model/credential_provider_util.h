@@ -8,9 +8,9 @@
 #import <Foundation/Foundation.h>
 
 #import "components/password_manager/core/browser/password_form.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class FaviconLoader;
+class ProfileIOS;
 
 extern const char kSyncStoreHistogramName[];
 
