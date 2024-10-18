@@ -675,6 +675,10 @@ void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
     return;
   }
 
+  // Cache the feature status to avoid frequent calculation.
+  const bool are_self_links_enabled = base::FeatureList::IsEnabled(
+      blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
+
   // Notify reader instances that hashtable state has changed.
   listener_->Reset(false);
 
@@ -698,8 +702,7 @@ void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
       // a result, we must construct the self-link counterpart to each of these
       // VisitedLinks deleted from the VisitedLinkDatabase, so that both the
       // link and self-link are removed from the partitioned hashtable.
-      if (base::FeatureList::IsEnabled(
-              blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
+      if (are_self_links_enabled) {
         std::optional<VisitedLink> self_link = link.MaybeCreateSelfLink();
         if (self_link.has_value()) {
           deleted_during_build_.insert(self_link.value());
@@ -729,8 +732,7 @@ void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
     // a result, we must construct the self-link counterpart to each of these
     // VisitedLinks deleted from the VisitedLinkDatabase, so that both the
     // link and self-link are removed from the partitioned hashtable.
-    if (base::FeatureList::IsEnabled(
-            blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
+    if (are_self_links_enabled) {
       std::optional<VisitedLink> self_link = link.MaybeCreateSelfLink();
       if (self_link.has_value()) {
         const std::optional<uint64_t> self_salt =
