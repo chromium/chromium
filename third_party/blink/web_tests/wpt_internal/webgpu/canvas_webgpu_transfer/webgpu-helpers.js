@@ -1,11 +1,20 @@
 /**
- * Returns a promise resolving to a GPUDevice.
+ * Returns a promise resolving to a GPUAdapter.
  */
-async function getWebGPUDevice() {
+async function getWebGPUAdapter() {
   const adapter = await navigator.gpu.requestAdapter();
   if (!(adapter instanceof GPUAdapter)) {
     throw new Error('Failed to request WebGPU adapter.');
   }
+  return adapter;
+}
+
+/**
+ * Returns a promise resolving to a GPUDevice. Requests the GPUDevice from
+ * `adapter` if specified, else, requests from a new adapter.
+ */
+async function getWebGPUDevice(adapter) {
+  adapter = adapter || await getWebGPUAdapter();
 
   const device = await adapter.requestDevice();
   if (!(device instanceof GPUDevice)) {
@@ -442,31 +451,6 @@ async function test_transferBackFromGPUTexture_destroys_texture(
   ctx.transferBackFromGPUTexture();
 
   // `tex` should be in a destroyed state.
-  assert_true(await isTextureDestroyed(device, tex));
-}
-
-/** Resizing a canvas during WebGPU access should destroy the texture. */
-async function test_canvas_reset_destroys_texture(adapterInfo, device, canvas,
-                                                  resetType) {
-  // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
-  if (isMacSwiftShader(adapterInfo)) {
-    return;
-  }
-
-  // Begin a WebGPU access session.
-  const ctx = canvas.getContext('2d');
-  const tex = ctx.transferToGPUTexture({device: device,
-                                     usage: GPUTextureUsage.COPY_SRC});
-
-  // Reset the canvas. This should abort the WebGPU access session.
-  if (resetType == 'resize') {
-    canvas.width = canvas.width;
-  } else {
-    assert_equals(resetType, 'api');
-    ctx.reset();
-  }
-
-  // The canvas' GPUTexture should appear to be destroyed.
   assert_true(await isTextureDestroyed(device, tex));
 }
 
