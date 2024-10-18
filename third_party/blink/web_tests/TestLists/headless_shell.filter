@@ -6,9 +6,16 @@
 # Further documentation:
 # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
 
+external/wpt/css/css-align/*
 external/wpt/css/css-animations/*
+external/wpt/css/css-box/*
+external/wpt/css/css-break/*
 external/wpt/css/css-easing/*
+external/wpt/css/css-logical/*
 external/wpt/css/css-grid/*
+external/wpt/css/css-rhythm/*
+external/wpt/css/css-scrollbars/*
+external/wpt/css/css-sizing/*
 external/wpt/css/css-transitions/*
 external/wpt/digital-credentials/*
 external/wpt/longtask-timing/*
