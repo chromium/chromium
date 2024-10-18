@@ -94,6 +94,10 @@ WEB_UI_CONTROLLER_TYPE_IMPL(HistoryClustersSidePanelUI)
 void HistoryClustersSidePanelUI::SetBrowserWindowInterface(
     BrowserWindowInterface* browser_window_interface) {
   browser_window_interface_ = browser_window_interface;
+  // The page handler may already exist if preloaded.
+  if (history_clusters_handler_) {
+    history_clusters_handler_->SetContextInterface(browser_window_interface);
+  }
 }
 
 void HistoryClustersSidePanelUI::BindInterface(

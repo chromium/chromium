@@ -250,6 +250,10 @@ void HistoryClustersHandler::SetSidePanelUIEmbedder(
   history_clusters_side_panel_embedder_ = side_panel_embedder;
 }
 
+void HistoryClustersHandler::SetContextInterface(ContextInterface interface) {
+  interface_ = interface;
+}
+
 void HistoryClustersHandler::SetQuery(const std::string& query) {
   if (page_) {
     page_->OnQueryChangedByUser(query);

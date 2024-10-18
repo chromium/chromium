@@ -85,6 +85,11 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
   void SetSidePanelUIEmbedder(
       base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder);
+
+  using ContextInterface =
+      absl::variant<BrowserWindowInterface*, tabs::TabInterface*>;
+  void SetContextInterface(ContextInterface interface);
+
   // Used to set the in-page query from the browser.
   void SetQuery(const std::string& query);
 
@@ -149,7 +154,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
 
-  absl::variant<BrowserWindowInterface*, tabs::TabInterface*> interface_;
+  ContextInterface interface_;
 
   // Used to observe the service.
   base::ScopedObservation<HistoryClustersService,
