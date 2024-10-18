@@ -80,19 +80,17 @@
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-bool IsNonTabWebUI(content::WebContents* web_contents) {
-  return !!TopChromeWebUIConfig::From(web_contents->GetBrowserContext(),
-                                      web_contents->GetVisibleURL());
+bool IsNonTabWebUI(content::BrowserContext* browser_context, const GURL& url) {
+  return TopChromeWebUIConfig::From(browser_context, url) != nullptr;
 }
 
-std::string GetNonTabWebUIName(content::WebContents* web_contents) {
-  CHECK(IsNonTabWebUI(web_contents));
-  return TopChromeWebUIConfig::From(web_contents->GetBrowserContext(),
-                                    web_contents->GetVisibleURL())
-      ->GetWebUIName();
+std::string GetNonTabWebUIName(content::BrowserContext* browser_context,
+                               const GURL& url) {
+  CHECK(IsNonTabWebUI(browser_context, url));
+  return TopChromeWebUIConfig::From(browser_context, url)->GetWebUIName();
 }
 #else
-bool IsNonTabWebUI(content::WebContents* web_contents) {
+bool IsNonTabWebUI(content::BrowserContext* browser_context, const GURL& url) {
   return false;
 }
 #endif
@@ -121,7 +119,7 @@ class PageLoadMetricsEmbedder
   bool IsNewTabPageUrl(const GURL& url) override;
   bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
-  bool IsNonTabWebUI() override;
+  bool IsNonTabWebUI(const GURL& url) override;
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;
@@ -150,10 +148,11 @@ void PageLoadMetricsEmbedder::RegisterObservers(
   // (namely `TabHelper`s).
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (IsNonTabWebUI()) {
+  if (IsNonTabWebUI(navigation_handle->GetURL())) {
     // This embedder is for a non-tab chrome:// page.
-    tracker->AddObserver(std::make_unique<NonTabPageLoadMetricsObserver>(
-        GetNonTabWebUIName(web_contents())));
+    tracker->AddObserver(
+        std::make_unique<NonTabPageLoadMetricsObserver>(GetNonTabWebUIName(
+            web_contents()->GetBrowserContext(), navigation_handle->GetURL())));
     return;
   }
 #endif
@@ -280,8 +279,8 @@ bool PageLoadMetricsEmbedder::IsExtensionUrl(const GURL& url) {
 #endif
 }
 
-bool PageLoadMetricsEmbedder::IsNonTabWebUI() {
-  return ::IsNonTabWebUI(web_contents());
+bool PageLoadMetricsEmbedder::IsNonTabWebUI(const GURL& url) {
+  return ::IsNonTabWebUI(web_contents()->GetBrowserContext(), url);
 }
 
 page_load_metrics::PageLoadMetricsMemoryTracker*

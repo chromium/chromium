@@ -73,7 +73,9 @@ class TestPageLoadMetricsEmbedderInterface
 
   bool IsExtensionUrl(const GURL& url) override { return false; }
 
-  bool IsNonTabWebUI() override { return test_->is_non_tab_webui(); }
+  bool IsNonTabWebUI(const GURL& url) override {
+    return test_->is_non_tab_webui();
+  }
 
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(

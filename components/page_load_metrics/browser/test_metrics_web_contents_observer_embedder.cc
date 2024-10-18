@@ -230,7 +230,7 @@ bool TestMetricsWebContentsObserverEmbedder::IsExtensionUrl(const GURL& url) {
   return false;
 }
 
-bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI() {
+bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI(const GURL& url) {
   return false;
 }
 

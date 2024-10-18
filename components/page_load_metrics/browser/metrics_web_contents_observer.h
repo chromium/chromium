@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -310,12 +311,12 @@ class MetricsWebContentsObserver
   bool ShouldTrackMainFrameNavigation(
       content::NavigationHandle* navigation_handle) const;
 
-  // Determines if metrics should be collected for a given URL.
+  // Determines if metrics should be collected for a given URL scheme.
   // This is used for both navigation and resource timing updates.
   // If this returns false, the navigation to the URL will not be tracked, and
   // timing updates for resources loaded from the URL will not be propagated to
   // metrics observers.
-  bool ShouldTrackURL(const GURL& url) const;
+  bool ShouldTrackScheme(std::string_view scheme) const;
 
   void OnBrowserFeatureUsage(
       content::RenderFrameHost* render_frame_host,
@@ -395,6 +396,9 @@ class MetricsWebContentsObserver
 
   // Has the MWCO observed at least one navigation?
   bool has_navigated_;
+
+  // Is the main frame a WebUI page?
+  bool main_frame_is_webui_ = false;
 
   base::ObserverList<MetricsLifecycleObserver> lifecycle_observers_;
   content::RenderFrameHostReceiverSet<mojom::PageLoadMetrics>

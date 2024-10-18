@@ -49,7 +49,7 @@ class TestPageLoadMetricsEmbedder
     return false;
   }
   bool IsExtensionUrl(const GURL& url) override { return false; }
-  bool IsNonTabWebUI() override { return false; }
+  bool IsNonTabWebUI(const GURL& url) override { return false; }
 
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(

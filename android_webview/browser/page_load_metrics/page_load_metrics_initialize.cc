@@ -39,7 +39,7 @@ class PageLoadMetricsEmbedder
   bool IsNewTabPageUrl(const GURL& url) override;
   bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
-  bool IsNonTabWebUI() override;
+  bool IsNonTabWebUI(const GURL& url) override;
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;
@@ -78,7 +78,7 @@ bool PageLoadMetricsEmbedder::IsExtensionUrl(const GURL& url) {
   return false;
 }
 
-bool PageLoadMetricsEmbedder::IsNonTabWebUI() {
+bool PageLoadMetricsEmbedder::IsNonTabWebUI(const GURL& url) {
   // Android web view doesn't have non-tab webUI surfaces (such as desktop tab
   // search, side panel, etc).
   return false;
