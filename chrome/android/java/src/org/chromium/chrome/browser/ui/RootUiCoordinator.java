@@ -24,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.automotivetoolbar.AutomotiveBackButtonToolbarCoordinator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -347,6 +349,7 @@ public class RootUiCoordinator
     private final @Nullable View mBaseChromeLayout;
     private final @NonNull EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private CommerceBottomSheetContentCoordinator mCommerceBottomSheetContentCoordinator;
+    private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -771,6 +774,11 @@ public class RootUiCoordinator
             mBoardingPassController.destroy();
             mBoardingPassController = null;
         }
+
+        if (mAutomotiveBackButtonToolbarCoordinator != null) {
+            mAutomotiveBackButtonToolbarCoordinator.destroy();
+            mAutomotiveBackButtonToolbarCoordinator = null;
+        }
         mBottomControlsStacker.destroy();
         mActivity = null;
     }
@@ -950,6 +958,16 @@ public class RootUiCoordinator
             if (contextualSearchManager != null) {
                 contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
             }
+        }
+        if (BuildInfo.getInstance().isAutomotive
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOMOTIVE_FULLSCREEN_TOOLBAR_IMPROVEMENTS)) {
+            mAutomotiveBackButtonToolbarCoordinator =
+                    new AutomotiveBackButtonToolbarCoordinator(
+                            mActivity,
+                            mActivity.findViewById(R.id.back_button_toolbar),
+                            mFullscreenManager,
+                            mCompositorViewHolderSupplier.get());
         }
     }
 

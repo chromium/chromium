@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 
@@ -19,21 +20,42 @@ import org.chromium.components.browser_ui.widget.TouchEventObserver;
  */
 @SuppressWarnings("UnusedVariable") // Remove once implementation is complete.
 public class EdgeSwipeGestureDetector implements TouchEventObserver {
+    // Width of a rectangular area in dp on the left/right edge used for navigation.
+    // Swipe beginning from a point within these rects triggers the operation.
+    @VisibleForTesting static final int EDGE_WIDTH_DP = 48;
+
+    // Minimum horizontal width of a scroll to be considered a swipe.
+    static final int SWIPE_THRESHOLD_DP = 48;
+
+    // Weighted value to determine when to trigger an edge swipe. Initial scroll
+    // vector should form 30 deg or below to initiate swipe action.
+    private static final float WEIGHTED_TRIGGER_THRESHOLD = 1.73f;
+
+    // |EDGE_WIDTH_DP| in physical pixel.
+    private final float mEdgeWidthPx;
+    private final float mSwipeThreshold;
+
     private AutomotiveBackButtonToolbarCoordinator.OnSwipeCallback mOnSwipeCallback;
     private GestureDetector mDetector;
+    private boolean mIsActive;
 
     private final GestureDetector.SimpleOnGestureListener mSwipeGestureListener =
             new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onScroll(
-                        @Nullable MotionEvent e1,
-                        @NonNull MotionEvent e2,
+                        @Nullable MotionEvent startMotion,
+                        @NonNull MotionEvent currentMotion,
                         float distanceX,
                         float distanceY) {
-                    if (shouldHandleSwipe()) {
+                    // TODO(jtanaristy): Coordinate with NavigationHandler#onScroll
+                    if (!mIsActive
+                            && startMotion != null
+                            && isValidSwipe(startMotion, currentMotion, distanceX, distanceY)) {
                         mOnSwipeCallback.handleSwipe();
+                        mIsActive = true;
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
             };
 
@@ -47,6 +69,8 @@ public class EdgeSwipeGestureDetector implements TouchEventObserver {
             Context context,
             AutomotiveBackButtonToolbarCoordinator.OnSwipeCallback onSwipeCallback) {
         mOnSwipeCallback = onSwipeCallback;
+        mEdgeWidthPx = EDGE_WIDTH_DP * context.getResources().getDisplayMetrics().density;
+        mSwipeThreshold = SWIPE_THRESHOLD_DP * context.getResources().getDisplayMetrics().density;
         mDetector = new GestureDetector(context, mSwipeGestureListener);
     }
 
@@ -57,11 +81,34 @@ public class EdgeSwipeGestureDetector implements TouchEventObserver {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent e) {
+        mDetector.onTouchEvent(e);
         return false;
     }
 
-    private boolean shouldHandleSwipe() {
-        // TODO(jtanaristy): implement shouldHandleSwipe.
-        return false;
+    /**
+     * @param isActive Whether the swipe is ongoing
+     */
+    public void setIsActive(boolean isActive) {
+        mIsActive = isActive;
+    }
+
+    /**
+     * Processes whether the scroll is a horizontal swipe from the left edge.
+     *
+     * @param startMotion event for the start of the swipe.
+     * @param currentMotion event for where the swipe currently is.
+     * @param distanceX X delta between previous and current motion event.
+     * @param distanceY Y delta between previous and current motion event.
+     * @return Whether the swipe is valid or not.
+     */
+    private boolean isValidSwipe(
+            MotionEvent startMotion, MotionEvent currentMotion, float distanceX, float distanceY) {
+        return Math.abs(startMotion.getX() - currentMotion.getX()) > mSwipeThreshold
+                && Math.abs(distanceX) > Math.abs(distanceY) * WEIGHTED_TRIGGER_THRESHOLD
+                && startMotion.getX() < mEdgeWidthPx;
+    }
+
+    GestureDetector.SimpleOnGestureListener getSwipeGestureListenerForTesting() {
+        return mSwipeGestureListener;
     }
 }
