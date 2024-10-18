@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -15,8 +16,8 @@ namespace chrome_pdf {
 namespace {
 
 std::unique_ptr<PdfInkBrush> CreatePdfInkBrush(float size) {
-  return std::make_unique<PdfInkBrush>(
-      PdfInkBrush::Type::kPen, PdfInkBrush::Params{SK_ColorBLACK, size});
+  return std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, SK_ColorBLACK,
+                                       size);
 }
 
 }  // namespace

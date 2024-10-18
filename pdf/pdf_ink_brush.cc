@@ -12,6 +12,8 @@
 #include "third_party/ink/src/ink/brush/brush_family.h"
 #include "third_party/ink/src/ink/brush/brush_paint.h"
 #include "third_party/ink/src/ink/brush/brush_tip.h"
+#include "third_party/ink/src/ink/color/color.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -41,8 +43,8 @@ float GetOpacity(PdfInkBrush::Type type) {
   NOTREACHED();
 }
 
-ink::Brush CreateInkBrush(PdfInkBrush::Type type, PdfInkBrush::Params params) {
-  CHECK_GT(params.size, 0);
+ink::Brush CreateInkBrush(PdfInkBrush::Type type, SkColor color, float size) {
+  CHECK(PdfInkBrush::IsToolSizeInRange(size));
 
   // TODO(crbug.com/353942923): Use real values here.
   ink::BrushTip tip;
@@ -54,14 +56,17 @@ ink::Brush CreateInkBrush(PdfInkBrush::Type type, PdfInkBrush::Params params) {
                                          /*uri_string=*/"");
   CHECK(family.ok());
 
+  // ink::Brush actually uses ink::Color, but pdf/ uses SkColor. To avoid having
+  // multiple color representations, do not expose ink::Color and just convert
+  // `color`.
   auto brush = ink::Brush::Create(*family,
                                   /*color=*/
                                   ink::Color::FromUint8(
-                                      /*red=*/SkColorGetR(params.color),
-                                      /*green=*/SkColorGetG(params.color),
-                                      /*blue=*/SkColorGetB(params.color),
-                                      /*alpha=*/SkColorGetA(params.color)),
-                                  /*size=*/params.size,
+                                      /*red=*/SkColorGetR(color),
+                                      /*green=*/SkColorGetG(color),
+                                      /*blue=*/SkColorGetB(color),
+                                      /*alpha=*/SkColorGetA(color)),
+                                  /*size=*/size,
                                   /*epsilon=*/0.1f);
   CHECK(brush.ok());
   return *brush;
@@ -97,9 +102,8 @@ bool PdfInkBrush::IsToolSizeInRange(float size) {
   return size >= 1 && size <= 16;
 }
 
-PdfInkBrush::PdfInkBrush(Type brush_type, Params brush_params)
-    : ink_brush_(CreateInkBrush(brush_type, brush_params)) {
-}
+PdfInkBrush::PdfInkBrush(Type brush_type, SkColor color, float size)
+    : ink_brush_(CreateInkBrush(brush_type, color, size)) {}
 
 PdfInkBrush::~PdfInkBrush() = default;
 

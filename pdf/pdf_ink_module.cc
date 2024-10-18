@@ -70,9 +70,8 @@ PdfInkModule::StrokeInputPoints GetStrokePointsForTesting(  // IN-TEST
 
 // Default to a black pen brush.
 std::unique_ptr<PdfInkBrush> CreateDefaultBrush() {
-  const PdfInkBrush::Params kDefaultBrushParams = {SK_ColorBLACK, 1.0f};
-  return std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
-                                       kDefaultBrushParams);
+  return std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, SK_ColorBLACK,
+                                       /*size=*/1.0f);
 }
 
 // Check if `color` is a valid color value within range.
@@ -622,17 +621,12 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   CheckColorIsWithinRange(color_g);
   CheckColorIsWithinRange(color_b);
 
-  PdfInkBrush::Params params = {
-      .color = SkColorSetRGB(color_r, color_g, color_b),
-      .size = size,
-  };
-
   std::optional<PdfInkBrush::Type> brush_type =
       PdfInkBrush::StringToType(brush_type_string);
   CHECK(brush_type.has_value());
   current_tool_state_.emplace<DrawingStrokeState>();
-  drawing_stroke_state().brush =
-      std::make_unique<PdfInkBrush>(brush_type.value(), params);
+  drawing_stroke_state().brush = std::make_unique<PdfInkBrush>(
+      brush_type.value(), SkColorSetRGB(color_r, color_g, color_b), size);
   MaybeSetCursor();
 }
 

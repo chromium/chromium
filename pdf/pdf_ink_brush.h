@@ -28,13 +28,7 @@ class PdfInkBrush {
     kPen,
   };
 
-  // Parameters for the brush.
-  struct Params {
-    SkColor color;
-    float size;
-  };
-
-  PdfInkBrush(Type brush_type, Params brush_params);
+  PdfInkBrush(Type brush_type, SkColor color, float size);
   PdfInkBrush(const PdfInkBrush&) = delete;
   PdfInkBrush& operator=(const PdfInkBrush&) = delete;
   ~PdfInkBrush();

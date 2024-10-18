@@ -27,7 +27,9 @@
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
 #include "third_party/pdfium/public/fpdfview.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -37,8 +39,6 @@
 namespace chrome_pdf {
 
 namespace {
-
-constexpr PdfInkBrush::Params kBasicBrushParams = {SK_ColorRED, 4.0f};
 
 constexpr auto kBasicInputs = std::to_array<PdfInkInputData>({
     {{126.122f, 52.852f}, base::Seconds(0.0f)},
@@ -76,6 +76,11 @@ constexpr auto kBasicInputs = std::to_array<PdfInkInputData>({
     {{125.633f, 53.2194f}, base::Seconds(0.951174f)},
     {{125.878f, 53.2194f}, base::Seconds(0.985401f)},
 });
+
+std::unique_ptr<PdfInkBrush> CreateTestBrush() {
+  return std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, SK_ColorRED,
+                                       /*size=*/4.0f);
+}
 
 base::FilePath GetReferenceFilePath(std::string_view test_filename) {
   return base::FilePath(FILE_PATH_LITERAL("pdfium_ink"))
@@ -124,8 +129,7 @@ TEST_P(PDFiumInkWriterTest, Basic) {
   FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
-  auto brush =
-      std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, kBasicBrushParams);
+  auto brush = CreateTestBrush();
 
   std::optional<ink::StrokeInputBatch> inputs =
       CreateInkInputBatch(kBasicInputs);
@@ -153,8 +157,7 @@ TEST_P(PDFiumInkWriterTest, EmptyStroke) {
   FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
-  auto brush =
-      std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, kBasicBrushParams);
+  auto brush = CreateTestBrush();
   ink::Stroke unused_stroke(brush->ink_brush());
   ASSERT_FALSE(WriteStrokeToPage(engine->doc(), page, unused_stroke));
 }
@@ -169,8 +172,7 @@ TEST_P(PDFiumInkWriterTest, NoDocumentNoPage) {
   FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
-  auto brush =
-      std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, kBasicBrushParams);
+  auto brush = CreateTestBrush();
   ink::Stroke unused_stroke(brush->ink_brush());
   ASSERT_FALSE(
       WriteStrokeToPage(/*document=*/nullptr, /*page=*/nullptr, unused_stroke));
