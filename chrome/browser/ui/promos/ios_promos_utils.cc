@@ -53,13 +53,6 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
   }
 }
 
-// Runs a callback if it isn't null.
-void RunCallback(std::optional<base::OnceClosure> callback) {
-  if (callback) {
-    (*std::exchange(callback, std::nullopt)).Run();
-  }
-}
-
 // OnIOSPromoClassificationResult takes the result of the segmentation platform
 // and computes, along with other criteria like impressions, whether the user
 // should be shown the promo. If yes, attempts to show the promo.
@@ -67,12 +60,9 @@ void OnIOSPromoClassificationResult(
     IOSPromoType promo_type,
     base::WeakPtr<Profile> profile,
     ToolbarButtonProvider* toolbar_button_provider,
-    std::optional<base::OnceClosure> promo_will_be_shown_callback,
-    std::optional<base::OnceClosure> promo_not_shown_callback,
     const segmentation_platform::ClassificationResult& result) {
   Profile* profile_ptr = profile.get();
   if (!profile_ptr) {
-    RunCallback(std::move(promo_not_shown_callback));
     return;
   }
 
@@ -82,22 +72,18 @@ void OnIOSPromoClassificationResult(
   if (promos_utils::UserNotClassifiedAsMobileDeviceSwitcher(result) &&
       tracker->ShouldTriggerHelpUI(
           promos_utils::GetIOSDesktopPromoFeatureEngagement(promo_type))) {
-    RunCallback(std::move(promo_will_be_shown_callback));
     promos_utils::IOSDesktopPromoShown(profile_ptr, promo_type);
     ShowIOSDesktopPromoBubble(promo_type, profile_ptr, toolbar_button_provider);
-    return;
   }
-
-  RunCallback(std::move(promo_not_shown_callback));
 }
 
-void VerifyIOSPromoEligibilityCriteriaAsync(
-    const IOSPromoType& promo_type,
-    Profile*& profile,
-    ToolbarButtonProvider*& toolbar_button_provider,
-    std::optional<base::OnceClosure> promo_will_be_shown_callback =
-        std::nullopt,
-    std::optional<base::OnceClosure> promo_not_shown_callback = std::nullopt) {
+}  // namespace
+
+namespace ios_promos_utils {
+
+void VerifyIOSPromoEligibility(IOSPromoType promo_type,
+                               Profile* profile,
+                               ToolbarButtonProvider* toolbar_button_provider) {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
 
@@ -124,35 +110,8 @@ void VerifyIOSPromoEligibilityCriteriaAsync(
         ->GetClassificationResult(
             segmentation_platform::kDeviceSwitcherKey, options, input_context,
             base::BindOnce(&OnIOSPromoClassificationResult, promo_type,
-                           profile->GetWeakPtr(), toolbar_button_provider,
-                           std::move(promo_will_be_shown_callback),
-                           std::move(promo_not_shown_callback)));
-    return;
+                           profile->GetWeakPtr(), toolbar_button_provider));
   }
-
-  RunCallback(std::move(promo_not_shown_callback));
-}
-
-}  // namespace
-
-namespace ios_promos_utils {
-
-void VerifyIOSPromoEligibility(IOSPromoType promo_type,
-                               Profile* profile,
-                               ToolbarButtonProvider* toolbar_button_provider) {
-  VerifyIOSPromoEligibilityCriteriaAsync(promo_type, profile,
-                                         toolbar_button_provider);
-}
-
-void MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
-    Profile* profile,
-    ToolbarButtonProvider* toolbar_button_provider,
-    base::OnceClosure promo_will_be_shown_callback,
-    base::OnceClosure promo_not_shown_callback) {
-  VerifyIOSPromoEligibilityCriteriaAsync(
-      IOSPromoType::kPayment, profile, toolbar_button_provider,
-      std::move(promo_will_be_shown_callback),
-      std::move(promo_not_shown_callback));
 }
 
 }  // namespace ios_promos_utils

@@ -90,10 +90,6 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/promos/ios_promos_utils.h"
-#include "chrome/browser/ui/ui_features.h"  // nogncheck
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
@@ -389,39 +385,6 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
   }
   if (SaveCardBubbleControllerImpl* controller =
           SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
-// TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING buildflag.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    // Only attempt to show the iOS payment promo if the card was successfully
-    // uploaded and there is no VCN enroll flow callback, and still fallback to
-    // normal confirmation bubble if showing the promo fails.
-    if (card_saved && !on_confirmation_closed_callback &&
-        base::FeatureList::IsEnabled(::features::kIOSPromoPaymentBubble)) {
-      base::OnceClosure promo_will_show_callback =
-          controller->GetEndSaveCardPromptFlowCallback();
-      base::OnceClosure promo_not_shown_callback =
-          controller->GetShowConfirmationForCardSuccessfullySavedCallback();
-
-      Profile* profile =
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-      Browser* browser = chrome::FindBrowserWithTab(web_contents());
-
-      if (!browser) {
-        std::move(promo_not_shown_callback).Run();
-        return;
-      }
-
-      BrowserView* browser_view =
-          BrowserView::GetBrowserViewForBrowser(browser);
-
-      ios_promos_utils::MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
-          profile, browser_view->toolbar_button_provider(),
-          std::move(promo_will_show_callback),
-          std::move(promo_not_shown_callback));
-
-      return;
-    }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
     controller->ShowConfirmationBubbleView(
         card_saved, std::move(on_confirmation_closed_callback));
   }

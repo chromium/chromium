@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PROMOS_IOS_PROMOS_UTILS_H_
 #define CHROME_BROWSER_UI_PROMOS_IOS_PROMOS_UTILS_H_
 
-#include "base/functional/callback_forward.h"
-
 class Profile;
 class ToolbarButtonProvider;
 
@@ -21,16 +19,6 @@ namespace ios_promos_utils {
 void VerifyIOSPromoEligibility(IOSPromoType promo_type,
                                Profile* profile,
                                ToolbarButtonProvider* toolbar_button_provider);
-
-// Checks if the user should be shown the iOS Payment promo and attempts to show
-// it. This should only be called if a card was successfully uploaded and
-// the VCN flow callback is null. Calls the correct callback depending on
-// whether the promo will be shown or not.
-void MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
-    Profile* profile,
-    ToolbarButtonProvider* toolbar_button_provider,
-    base::OnceClosure promo_shown_callback,
-    base::OnceClosure promo_not_shown_callback);
 
 }  // namespace ios_promos_utils
 

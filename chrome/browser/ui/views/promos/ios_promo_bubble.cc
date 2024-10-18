@@ -26,7 +26,6 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/qr_code_generator/bitmap_generator.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -274,9 +273,9 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
     case IOSPromoType::kPayment:
       // Set up iOS Payment Promo Bubble.
       ios_promo_config.bubble_title_id =
-          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT;
+          IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE;
       ios_promo_config.bubble_subtitle_id =
-          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT;
+          IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_SUBTITLE;
       ios_promo_config.promo_title_id =
           IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE;
       ios_promo_config.promo_description_id =
