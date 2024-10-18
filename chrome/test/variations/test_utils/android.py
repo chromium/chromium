@@ -99,8 +99,7 @@ def launch_emulator(avd_config: str,
 
   instance = avd_config.CreateInstance()
   instance.Start(writable_system=True,
-                 window=emulator_window,
-                 require_fast_start=True)
+                 window=emulator_window)
 
   _forward_port(instance.device, ports)
 

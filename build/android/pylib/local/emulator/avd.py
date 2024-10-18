@@ -562,8 +562,6 @@ class AvdConfig:
           writable_system=writable_system,
           gpu_mode=gpu_mode,
           debug_tags=debug_tags,
-          # Set this flag to True to align with swarming AVD run.
-          require_fast_start=True,
       )
 
       assert instance.device is not None, '`instance.device` not initialized.'
@@ -1043,14 +1041,15 @@ class _AvdInstance:
             debug_tags=None,
             disk_size=None,
             enable_network=False,
-            require_fast_start=False,
+            # TODO(crbug.com/364943269): Remove after clean all the references.
+            require_fast_start=False,  # pylint: disable=unused-argument
             retries=0):
     """Starts the emulator running an instance of the given AVD.
 
     Note when ensure_system_settings is True, the program will wait until the
     emulator is fully booted, and then update system settings.
     """
-    is_slow_start = not require_fast_start
+    is_slow_start = False
     # Force to load system snapshot if detected.
     if self.HasSystemSnapshot():
       if not writable_system:
@@ -1096,9 +1095,6 @@ class _AvdInstance:
         emulator_cmd.append('-wipe-data')
       if disk_size:
         emulator_cmd.extend(['-partition-size', str(disk_size)])
-      elif not require_fast_start:
-        # This emulator is being run locally, ensure it has a large enough disk.
-        emulator_cmd.extend(['-partition-size', '12000'])
 
       if read_only:
         emulator_cmd.append('-read-only')

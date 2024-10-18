@@ -192,9 +192,8 @@ def main(raw_args):
   subparser.add_argument(
       '--require-fast-start',
       action='store_true',
-      help='Shortens the start-up timeout and turns off the customization for '
-      'local AVD run, e.g. larger disk space. Should be set when used by bots '
-      'for AVD create or start.')
+      help='Deprecated and will be removed soon. Please use '
+      '"proto/*_local.textpb" avd config files for local development.')
 
   def start_cmd(args):
     avd_config = avd.AvdConfig(args.avd_config)
@@ -215,8 +214,7 @@ def main(raw_args):
                wipe_data=args.wipe_data,
                debug_tags=debug_tags,
                disk_size=args.disk_size,
-               enable_network=args.enable_network,
-               require_fast_start=args.require_fast_start)
+               enable_network=args.enable_network)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0
 

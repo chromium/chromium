@@ -208,8 +208,7 @@ class ChromeAndroidBase(Product):
 
                 SyncParallelizer(instances).Start(  # pylint: disable=undefined-variable;
                     writable_system=True,
-                    window=self._options.emulator_window,
-                    require_fast_start=True)
+                    window=self._options.emulator_window)
 
             #TODO(weizhong): when choose device, make sure abi matches with target
             yield device_utils.DeviceUtils.HealthyDevices()  # pylint: disable=undefined-variable;
