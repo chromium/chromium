@@ -311,7 +311,7 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
   } else {
     CHECK(navigation_handle->IsInMainFrame() ||
               EnsureFrameAdEvidence(navigation_handle).is_complete(),
-          base::NotFatalUntil::M129);
+          base::NotFatalUntil::M134);
   }
 
   bool did_inherit_opener_activation;
