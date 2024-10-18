@@ -21,23 +21,23 @@ namespace password_manager::features_util {
 // histogram_suffixes in histograms.xml!
 enum class PasswordAccountStorageUserState {
   // Signed-out user (and no account storage opt-in exists).
-  kSignedOutUser = 0,
+  kSignedOutUser,
   // Signed-out user, but an account storage opt-in exists.
-  kSignedOutAccountStoreUser = 1,
+  kSignedOutAccountStoreUser,
   // Signed-in non-syncing user, not opted in to the account storage (but may
   // save passwords to the account storage by default).
-  kSignedInUser = 2,
+  kSignedInUser,
   // Signed-in non-syncing user, not opted in to the account storage, and has
   // explicitly chosen to save passwords only on the device.
-  kSignedInUserSavingLocally = 3,
+  kSignedInUserSavingLocally,
   // Signed-in non-syncing user, opted in to the account storage, and saving
   // passwords to the account storage.
-  kSignedInAccountStoreUser = 4,
+  kSignedInAccountStoreUser,
   // Signed-in non-syncing user and opted in to the account storage, but has
   // chosen to save passwords only on the device.
-  kSignedInAccountStoreUserSavingLocally = 5,
+  kSignedInAccountStoreUserSavingLocally,
   // Syncing user.
-  kSyncUser = 6,
+  kSyncUser,
 };
 
 // The usage level of the account-scoped password storage. This is essentially
