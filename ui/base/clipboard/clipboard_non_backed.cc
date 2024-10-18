@@ -29,7 +29,6 @@
 #include "base/task/thread_pool.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -657,7 +656,7 @@ void ClipboardNonBacked::ReadText(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kText);
   clipboard_internal.ReadText(result);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
@@ -681,7 +680,7 @@ void ClipboardNonBacked::ReadAsciiText(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kText);
   clipboard_internal.ReadAsciiText(result);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
@@ -708,7 +707,7 @@ void ClipboardNonBacked::ReadHTML(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kHtml);
   clipboard_internal.ReadHTML(markup, src_url, fragment_start, fragment_end);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
@@ -732,7 +731,7 @@ void ClipboardNonBacked::ReadSvg(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kSvg);
   clipboard_internal.ReadSvg(result);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
@@ -756,7 +755,7 @@ void ClipboardNonBacked::ReadRTF(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kRtf);
   clipboard_internal.ReadRTF(result);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
@@ -781,7 +780,7 @@ void ClipboardNonBacked::ReadPng(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kPng);
   clipboard_internal.ReadPng(std::move(callback));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
@@ -808,7 +807,7 @@ void ClipboardNonBacked::ReadDataTransferCustomData(
   RecordRead(ClipboardFormatMetric::kCustomData);
   clipboard_internal.ReadDataTransferCustomData(type, result);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
@@ -833,7 +832,7 @@ void ClipboardNonBacked::ReadFilenames(
   RecordRead(ClipboardFormatMetric::kFilenames);
   *result = clipboard_internal.ReadFilenames();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
@@ -858,7 +857,7 @@ void ClipboardNonBacked::ReadBookmark(const DataTransferEndpoint* data_dst,
   RecordRead(ClipboardFormatMetric::kBookmark);
   clipboard_internal.ReadBookmark(title, url);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
@@ -883,14 +882,14 @@ void ClipboardNonBacked::ReadData(const ClipboardFormatType& format,
   RecordRead(ClipboardFormatMetric::kData);
   clipboard_internal.ReadData(format, result);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
 
 #if BUILDFLAG(IS_OZONE)
 bool ClipboardNonBacked::IsSelectionBufferAvailable() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
   return true;

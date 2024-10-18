@@ -10,14 +10,13 @@
 #include <string_view>
 #include <vector>
 
-#include "build/chromeos_buildflags.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace ui {
 
 // Clipboard implementation for Ozone-based ports. It delegates the platform
 // specifics to the PlatformClipboard instance provided by the Ozone platform.
-// Currently, used on Linux Desktop, i.e: X11 and Wayland, and Lacros platforms.
+// Currently, used on Linux Desktop, i.e: X11 and Wayland platforms.
 class ClipboardOzone : public Clipboard {
  public:
   ClipboardOzone(const ClipboardOzone&) = delete;
@@ -103,8 +102,7 @@ class ClipboardOzone : public Clipboard {
   void WriteUploadCloudClipboard() override;
   void WriteConfidentialDataForPassword() override;
 
-  // Used for syncing clipboard sources between Lacros and Ash in ChromeOS, or
-  // to put a source URL in the clipboard on other Ozone platforms.
+  // Used to put a source URL in the clipboard on other Ozone platforms.
   void AddSourceToClipboard(const ClipboardBuffer buffer,
                             std::unique_ptr<DataTransferEndpoint> data_src);
 

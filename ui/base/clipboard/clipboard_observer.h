@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace ui {
 
@@ -17,7 +16,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardObserver {
   // Override notified when clipboard data is changed.
   virtual void OnClipboardDataChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Override notified when clipboard data is read.
   virtual void OnClipboardDataRead();
 #endif

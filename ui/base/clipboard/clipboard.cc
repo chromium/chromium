@@ -296,16 +296,6 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
             WriteData(ClipboardFormatType::WebCustomFormatMap(),
                       base::as_bytes(base::make_span(data.data)));
           },
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          [&](const EncodedDataTransferEndpointData& data) {
-            if (data.data.empty()) {
-              return;
-            }
-
-            WriteData(ClipboardFormatType::DataTransferEndpointDataType(),
-                      base::as_bytes(base::make_span(data.data)));
-          },
-#endif
       },
       params.data);
 }

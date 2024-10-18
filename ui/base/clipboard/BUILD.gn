@@ -148,7 +148,6 @@ component("clipboard") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//mojo/public/cpp/base",
     "//net",
     "//ui/base:features",
@@ -216,7 +215,6 @@ source_set("clipboard_test_support") {
   deps = [
     "//base/test:test_support",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//ui/base:features",
     "//ui/gfx",
   ]
@@ -277,7 +275,7 @@ source_set("clipboard_test") {
     deps += [ ":url_file_parser" ]
   }
 
-  if ((use_aura && !is_chromeos_lacros) || is_mac) {
+  if (use_aura || is_mac) {
     sources += [
       "clipboard_data_unittest.cc",
       "clipboard_non_backed_unittest.cc",

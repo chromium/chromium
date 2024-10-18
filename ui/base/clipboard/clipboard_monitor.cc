@@ -6,7 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 
 namespace ui {
@@ -28,7 +27,7 @@ void ClipboardMonitor::NotifyClipboardDataChanged() {
   observers_.Notify(&ClipboardObserver::OnClipboardDataChanged);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ClipboardMonitor::NotifyClipboardDataRead() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   observers_.Notify(&ClipboardObserver::OnClipboardDataRead);

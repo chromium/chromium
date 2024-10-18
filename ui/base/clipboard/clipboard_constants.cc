@@ -20,7 +20,7 @@ const char kMimeTypeHTMLUtf8[] = "text/html;charset=utf-8";
 const char kMimeTypeSvg[] = "image/svg+xml";
 const char kMimeTypeRTF[] = "text/rtf";
 const char kMimeTypePNG[] = "image/png";
-// Used for image drag & drop from LaCrOS.
+// Used for image drag & drop on X11 and Wayland.
 const char kMimeTypeOctetStream[] = "application/octet-stream";
 // Used for window dragging on some platforms.
 const char kMimeTypeWindowDrag[] = "chromium/x-window-drag";
