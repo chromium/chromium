@@ -3289,11 +3289,21 @@
       "cr_bugs": [
         341327464
       ],
-      "description": "Block all NPU drivers until newer versions work with WebNN",
+      "description": "Block all NPU drivers except Intel driver versions >= 32.0.100.3053 for WebNN",
       "os": {
         "type": "win"
       },
       "multi_gpu_category": "npu",
+      "exceptions": [
+        {
+          "multi_gpu_category": "npu",
+          "vendor_id": "0x8086",
+          "driver_version": {
+            "op": ">=",
+            "value": "32.0.100.3053"
+          }
+        }
+      ],
       "features": [
         "disable_webnn_for_npu"
       ]
