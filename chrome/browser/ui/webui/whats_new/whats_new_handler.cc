@@ -63,9 +63,6 @@ void WhatsNewHandler::RecordEditionPageLoaded(const std::string& page_uid,
   if (user_education::features::IsWhatsNewV2()) {
     // Store that this edition has been used for this milestone.
     whats_new_registry_->SetEditionUsed(page_uid);
-
-    // Look for a survey override associated with this edition.
-    survey_override_ = whats_new_registry_->GetEditionSurvey(page_uid);
   }
 
   base::RecordAction(base::UserMetricsAction("UserEducation.WhatsNew.Shown"));
@@ -206,8 +203,11 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
     return;
   }
 
-  auto trigger_id = survey_override_.has_value() ? survey_override_.value()
-                                                 : kHatsSurveyTriggerWhatsNew;
+  // Look for a survey override associated with any editions that we
+  // requested from the server.
+  const auto survey_override = whats_new_registry_->GetActiveEditionSurvey();
+  auto trigger_id = survey_override.has_value() ? survey_override.value()
+                                                : kHatsSurveyTriggerWhatsNew;
 
   hats_service->LaunchDelayedSurveyForWebContents(
       trigger_id, web_contents_,

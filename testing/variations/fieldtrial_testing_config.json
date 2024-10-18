@@ -26872,7 +26872,8 @@
                 {
                     "name": "Enabled_benefits",
                     "params": {
-                        "whats_new_customization": "BENEFITS"
+                        "whats_new_customization": "BENEFITS",
+                        "whats_new_survey_id": "PsSZ5E6nP0ugnJ3q1cK0WcE1Zf8H"
                     },
                     "enable_features": [
                         "Spark"
@@ -26881,7 +26882,8 @@
                 {
                     "name": "Enabled_original",
                     "params": {
-                        "whats_new_customization": "ORIGINAL"
+                        "whats_new_customization": "ORIGINAL",
+                        "whats_new_survey_id": "nGcgtQoLx0ugnJ3q1cK0SbfqkdQd"
                     },
                     "enable_features": [
                         "Spark"

@@ -97,6 +97,7 @@ class WhatsNewHandlerTest : public testing::Test {
     // Setup mock storage service for tests that use the registry.
     auto mock_storage_service =
         std::make_unique<testing::NiceMock<MockWhatsNewStorageService>>();
+    mock_storage_service_ = mock_storage_service.get();
     EXPECT_CALL(*mock_storage_service, ReadModuleData)
         .WillRepeatedly(testing::ReturnRef(mock_module_data_));
 
@@ -111,6 +112,11 @@ class WhatsNewHandlerTest : public testing::Test {
     testing::Mock::VerifyAndClearExpectations(&mock_page_);
   }
 
+  void TearDown() override {
+    mock_storage_service_ = nullptr;
+    testing::Test::TearDown();
+  }
+
  protected:
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
 
@@ -119,6 +125,7 @@ class WhatsNewHandlerTest : public testing::Test {
   base::UserActionTester user_action_tester_;
   base::test::ScopedFeatureList feature_list_;
   base::Value::List mock_module_data_;
+  raw_ptr<MockWhatsNewStorageService> mock_storage_service_;
 
   // NOTE: The initialization order of these members matters.
   std::unique_ptr<TestingProfile> profile_;
@@ -274,8 +281,35 @@ TEST_F(WhatsNewHandlerTest, SurveyIsTriggeredWithOverride) {
                                                 _, _, _, _, _))
       .Times(1);
 
-  // Recording the edition loaded will enable the survey override.
-  handler_->RecordEditionPageLoaded(kTestEdition.name, true);
+  handler_->GetServerUrl(false, callback.Get());
+  mock_page_.FlushForTesting();
+}
+
+TEST_F(WhatsNewHandlerTest, SurveyIsNotTriggeredForPreviouslyUsedEdition) {
+  const std::string survey_override_id = "my-survey-id";
+  whats_new_registry_->RegisterEdition(
+      whats_new::WhatsNewEdition(kTestEdition, ""));
+
+  // Mark the registered edition as previously used.
+  EXPECT_CALL(*mock_storage_service_, IsUsedEdition)
+      .WillRepeatedly(testing::Return(true));
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{user_education::features::kWhatsNewVersion2, {{}}},
+       {kTestEdition, {{whats_new::kSurveyParam, survey_override_id}}},
+       base::test::FeatureRefAndParams(
+           features::kHappinessTrackingSurveysForDesktopWhatsNew,
+           {{"whats-new-time", "20s"}})},
+      {});
+
+  base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerWhatsNew, _,
+                                                _, _, _, _, _, _, _, _))
+      .Times(1);
+
   handler_->GetServerUrl(false, callback.Get());
   mock_page_.FlushForTesting();
 }

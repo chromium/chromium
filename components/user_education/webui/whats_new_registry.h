@@ -24,7 +24,10 @@ const char kCustomizationParam[] = "whats_new_customization";
 // ID to override the default survey.
 //
 // This should be used sparingly. Typically, this is only used when the
-// server-side team is performing an experiment.
+// server-side team is performing an experiment. Be aware that if
+// multiple survey parameters are defined in this manner, the first
+// survey found for an active edition will be used. This situation should
+// be avoided.
 const char kSurveyParam[] = "whats_new_survey_id";
 
 // What's New modules represent sections of content on the What's New
@@ -186,8 +189,7 @@ class WhatsNewRegistry {
   const std::vector<std::string> GetCustomizations() const;
 
   // Used to override the default survey.
-  const std::optional<std::string> GetEditionSurvey(
-      std::string_view edition_name) const;
+  const std::optional<std::string> GetActiveEditionSurvey() const;
 
   // Set a "used version" for an edition.
   void SetEditionUsed(std::string_view edition) const;
