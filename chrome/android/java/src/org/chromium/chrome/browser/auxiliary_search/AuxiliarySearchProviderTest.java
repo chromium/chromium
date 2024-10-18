@@ -52,6 +52,9 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
+import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -82,6 +85,7 @@ public class AuxiliarySearchProviderTest {
     private @Mock FaviconHelper mFaviconHelper;
     private @Mock Context mContext;
     private @Mock Resources mResources;
+    private @Mock BackgroundTaskScheduler mBackgroundTaskScheduler;
 
     private AuxiliarySearchProvider mAuxiliarySearchProvider;
     private MockTabModel mMockNormalTabModel;
@@ -98,6 +102,8 @@ public class AuxiliarySearchProviderTest {
                 new AuxiliarySearchProvider(mContext, mProfile, mTabModelSelector);
         mMockNormalTabModel = new MockTabModel(mProfile, null);
         doReturn(mMockNormalTabModel).when(mTabModelSelector).getModel(false);
+
+        BackgroundTaskSchedulerFactory.setSchedulerForTesting(mBackgroundTaskScheduler);
     }
 
     private Tab createTab(int index, long timestamp) {
@@ -314,9 +320,12 @@ public class AuxiliarySearchProviderTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
     public void testOnNonSensitiveTabsAvailable() {
-        int maxFaviconNumber = 5;
+        int maxFaviconNumber = 10;
         AuxiliarySearchProvider.MAX_FAVICON_NUMBER.setForTesting(maxFaviconNumber);
         assertEquals(maxFaviconNumber, AuxiliarySearchProvider.MAX_FAVICON_NUMBER.getValue());
+
+        mAuxiliarySearchProvider =
+                new AuxiliarySearchProvider(mContext, mProfile, mTabModelSelector);
 
         ArrayList<Tab> tabList = new ArrayList<>();
         int count = 100;
@@ -332,7 +341,7 @@ public class AuxiliarySearchProviderTest {
         }
 
         mAuxiliarySearchProvider.onNonSensitiveTabsAvailable(
-                mFaviconHelper, mCallback, mFaviconImageFetchedCallback, tabList);
+                mFaviconHelper, mCallback, mFaviconImageFetchedCallback, tabList, now);
 
         // Verifies that the tabs are sorted with timestamp descending, i.e., the most recent tab as
         // as the first.
@@ -347,5 +356,23 @@ public class AuxiliarySearchProviderTest {
                         any(GURL.class),
                         anyInt(),
                         any(FaviconImageCallback.class));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
+    public void testScheduleBackgroundTask() {
+        long expectedWindowStartTimeMs = 10;
+        long expectedStartTimeMs = 1000;
+
+        TaskInfo taskInfo =
+                mAuxiliarySearchProvider.scheduleBackgroundTask(
+                        expectedWindowStartTimeMs, expectedStartTimeMs);
+        var bundle = taskInfo.getExtras();
+        assertEquals(
+                expectedStartTimeMs, bundle.getLong(AuxiliarySearchProvider.TASK_CREATED_TIME));
+        assertFalse(taskInfo.isUserInitiated());
+        assertTrue(taskInfo.shouldUpdateCurrent());
+        assertTrue(taskInfo.isPersisted());
     }
 }

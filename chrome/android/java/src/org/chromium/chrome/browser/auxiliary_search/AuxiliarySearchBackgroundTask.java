@@ -155,8 +155,13 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
 
             @Override
             protected void onPostExecute(Object o) {
-                // TODO(crbug.com/370478696): Reads data from the stream.
-                callback.onResult(null);
+                DataInputStream stream = (DataInputStream) o;
+                try {
+                    callback.onResult(AuxiliarySearchProvider.readSavedMetadataFile(stream));
+                    // TODO(crbug.com/370478696): Delete the metadata file after reading.
+                } catch (IOException e) {
+                    callback.onResult(null);
+                }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
