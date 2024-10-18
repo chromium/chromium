@@ -179,7 +179,7 @@ BASE_FEATURE(kNonBatchedCopySharedImage,
 
 BASE_FEATURE(kDontAlwaysPushPictureLayerImpls,
              "DontAlwaysPushPictureLayerImpls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWarmUpCompositor,
              "WarmUpCompositor",
