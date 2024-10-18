@@ -10,6 +10,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 
+@protocol ApplicationCommands;
 class TabGroup;
 
 // Service for ShareKit, allowing to manage tab groups sharing.
@@ -24,10 +25,18 @@ class ShareKitService : public KeyedService {
   // execution of the application.
   virtual bool IsSupported() const = 0;
 
+  // TODO(crbug.com/373825718): Remove this API.
   // Initiates the share of `group`, presenting a view controller on top of
   // `base_view_controller`.
   virtual void ShareGroup(const TabGroup* group,
-                          UIViewController* base_view_controller) = 0;
+                          UIViewController* base_view_controller);
+
+  // TODO(crbug.com/373825718): Make the API pure virtual.
+  // Initiates the share of `group`, presenting a view controller on top of
+  // `base_view_controller`. `commandsHandler` is used to open new tabs.
+  virtual void ShareGroup(const TabGroup* group,
+                          UIViewController* base_view_controller,
+                          id<ApplicationCommands> commandsHandler);
 
   // Returns a new FacePile view controller for `collab_id`. It will be a
   // "share" button if `collab_id` is nil.

@@ -19,6 +19,9 @@ class TestShareKitService : public ShareKitService {
   bool IsSupported() const override;
   void ShareGroup(const TabGroup* group,
                   UIViewController* base_view_controller) override;
+  void ShareGroup(const TabGroup* group,
+                  UIViewController* base_view_controller,
+                  id<ApplicationCommands> commandsHandler) override;
   UIViewController* FacePile(NSString* collab_id) override;
 };
 

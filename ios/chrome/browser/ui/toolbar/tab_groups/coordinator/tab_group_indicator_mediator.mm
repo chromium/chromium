@@ -104,8 +104,8 @@
   if (!tabGroup || !_shareKitService) {
     return;
   }
-
-  _shareKitService->ShareGroup(tabGroup, self.baseViewController);
+  _shareKitService->ShareGroup(tabGroup, self.baseViewController,
+                               self.commandsHandler);
 }
 
 - (void)showTabGroupEdition {

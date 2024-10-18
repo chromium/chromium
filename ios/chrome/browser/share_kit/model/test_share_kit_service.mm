@@ -13,6 +13,12 @@ bool TestShareKitService::IsSupported() const {
 
 void TestShareKitService::ShareGroup(const TabGroup* group,
                                      UIViewController* base_view_controller) {
+  ShareGroup(group, base_view_controller, nil);
+}
+
+void TestShareKitService::ShareGroup(const TabGroup* group,
+                                     UIViewController* base_view_controller,
+                                     id<ApplicationCommands> commandsHandler) {
   // TODO(crbug.com/358373145): add fake implementation.
 }
 

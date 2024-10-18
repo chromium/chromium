@@ -7,3 +7,12 @@
 ShareKitService::ShareKitService() = default;
 
 ShareKitService::~ShareKitService() = default;
+
+void ShareKitService::ShareGroup(const TabGroup* group,
+                                 UIViewController* base_view_controller) {}
+
+void ShareKitService::ShareGroup(const TabGroup* group,
+                                 UIViewController* base_view_controller,
+                                 id<ApplicationCommands> commandsHandler) {
+  ShareGroup(group, base_view_controller);
+}

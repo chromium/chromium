@@ -13,6 +13,7 @@ namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
 
+@protocol ApplicationCommands;
 class ShareKitService;
 @protocol TabGroupIndicatorConsumer;
 @protocol TabGroupIndicatorMediatorDelegate;
@@ -27,6 +28,9 @@ class WebStateList;
 
 // The view controller on which to present the share view.
 @property(nonatomic, strong) UIViewController* baseViewController;
+
+// Application commands handler.
+@property(nonatomic, weak) id<ApplicationCommands> commandsHandler;
 
 // Creates an instance of the mediator.
 - (instancetype)initWithTabGroupSyncService:
