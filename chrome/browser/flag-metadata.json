@@ -6870,6 +6870,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "password-form-clientside-classifier",
+    "owners": ["kazinova@google.com", "vasilii@chromium.org", "chrome-password-manager-team@google.com"],
+    "expiry_milestone": 137
+  },
+  {
     "name": "password-form-grouped-affiliations",
     "owners": ["atsvirchkova@google.com", "shaikhitdin@google.com", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 135

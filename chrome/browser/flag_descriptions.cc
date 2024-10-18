@@ -2938,6 +2938,11 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
+const char kPasswordFormClientsideClassifierName[] =
+    "Clientside password form classifier.";
+const char kPasswordFormClientsideClassifierDescription[] =
+    "Enable usage of new password form classifier on the client.";
+
 const char kPasswordFormGroupedAffiliationsName[] =
     "Grouped affiliation password suggestions";
 const char kPasswordFormGroupedAffiliationsDescription[] =

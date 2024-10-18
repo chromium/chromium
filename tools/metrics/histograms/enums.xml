@@ -15131,6 +15131,7 @@ from previous Chrome versions.
   <int value="-2025330968" label="Journeys:disabled"/>
   <int value="-2025258576" label="ShowReadyToPayDebugInfo:disabled"/>
   <int value="-2024825071" label="LanguageDetectionAPI:enabled"/>
+  <int value="-2024801673" label="PasswordFormClientsideClassifier:enabled"/>
   <int value="-2024330288" label="RawDraw:enabled"/>
   <int value="-2024065510"
       label="OptimizationPersonalizedHintsFetching:enabled"/>
@@ -17654,6 +17655,7 @@ from previous Chrome versions.
   <int value="-1005164075" label="ContextualSearchTranslations:enabled"/>
   <int value="-1004904621"
       label="ExperimentalAccessibilityColorEnhancementSettings:disabled"/>
+  <int value="-1003860246" label="PasswordFormClientsideClassifier:disabled"/>
   <int value="-1002537430" label="HudDisplayForPerformanceMetrics:disabled"/>
   <int value="-1002494650" label="WebviewTagMPArchBehavior:disabled"/>
   <int value="-1002421482"
