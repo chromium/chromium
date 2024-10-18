@@ -4116,34 +4116,6 @@
       },
     },
 
-    'ondevice_quality_tests_suite': {
-      'ondevice_quality_tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'linux_args': [
-          '--chromedriver',
-          'chromedriver',
-          '--binary',
-          'chrome',
-          '--no-xvfb',
-        ],
-        'mac_args': [
-          '--chromedriver',
-          'chromedriver',
-          '--binary',
-          'Google Chrome.app/Contents/MacOS/Google Chrome',
-        ],
-        'win_args': [
-          '--chromedriver',
-          'chromedriver.exe',
-          '--binary',
-          'Chrome.exe',
-        ],
-        'experiment_percentage': 100,
-      },
-    },
-
     'ondevice_stability_tests_suite': {
       'ondevice_stability_tests': {
         'mixins': [
@@ -6540,11 +6512,6 @@
           'gce',
         ],
       },
-      'ondevice_quality_tests_suite': {
-        'variants': [
-          'NVIDIA_GEFORCE_GTX_1660',
-        ],
-      },
       'ondevice_stability_tests_suite': {
         'variants': [
           'NVIDIA_GEFORCE_GTX_1660',
@@ -6556,14 +6523,12 @@
       'chrome_ai_wpt_tests_suite': {},
       'model_validation_tests_light_suite': {},
       'model_validation_tests_suite': {},
-      'ondevice_quality_tests_suite': {},
       'ondevice_stability_tests_suite': {},
     },
 
     'optimization_guide_win_arm64_script_tests': {
       'model_validation_tests_light_suite': {},
       'model_validation_tests_suite': {},
-      'ondevice_quality_tests_suite': {},
       'ondevice_stability_tests_suite': {},
     },
 
@@ -6591,13 +6556,6 @@
       'model_validation_tests_suite': {
         'mixins': [
           'gce',
-        ],
-      },
-      'ondevice_quality_tests_suite': {
-        'variants': [
-          'AMD_RADEON_RX_5500_XT',
-          'INTEL_UHD_630_OR_770',
-          'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
       'ondevice_stability_tests_suite': {

@@ -1420,11 +1420,6 @@ targets.binaries.windowed_test_launcher(
 )
 
 targets.binaries.generated_script(
-    name = "ondevice_quality_tests",
-    label = "//components/optimization_guide/internal/testing:ondevice_quality_tests",
-)
-
-targets.binaries.generated_script(
     name = "ondevice_stability_tests",
     label = "//components/optimization_guide/internal/testing:ondevice_stability_tests",
 )
