@@ -1155,18 +1155,22 @@ HTMLElement* CreateDefaultParagraphElement(Document& document) {
 }
 
 bool IsTabHTMLSpanElement(const Node* node) {
-  if (!IsA<HTMLSpanElement>(node))
+  const auto* span = DynamicTo<HTMLSpanElement>(node);
+  if (!span) {
     return false;
-  const Node* const first_child = NodeTraversal::FirstChild(*node);
+  }
+  const Node* const first_child = NodeTraversal::FirstChild(*span);
   auto* first_child_text_node = DynamicTo<Text>(first_child);
-  if (!first_child_text_node)
+  if (!first_child_text_node) {
     return false;
-  if (!first_child_text_node->data().Contains('\t'))
+  }
+  if (!first_child_text_node->data().Contains('\t')) {
     return false;
+  }
   // TODO(editing-dev): Hoist the call of UpdateStyleAndLayoutTree to callers.
   // See crbug.com/590369 for details.
-  node->GetDocument().UpdateStyleAndLayoutTree();
-  const ComputedStyle* style = node->GetComputedStyle();
+  span->GetDocument().UpdateStyleAndLayoutTree();
+  const ComputedStyle* style = span->GetComputedStyle();
   return style && style->WhiteSpace() == EWhiteSpace::kPre;
 }
 

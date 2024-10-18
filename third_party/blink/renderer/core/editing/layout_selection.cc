@@ -339,9 +339,11 @@ static void SetShouldInvalidateSelection(
 }
 
 static bool IsDisplayContentElement(const Node& node) {
-  if (!node.IsElementNode())
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
     return false;
-  const ComputedStyle* const style = node.GetComputedStyle();
+  }
+  const ComputedStyle* style = element->GetComputedStyle();
   return style && style->Display() == EDisplay::kContents;
 }
 
@@ -1014,7 +1016,7 @@ void LayoutSelection::InvalidateStyleAndPaintForSelection() {
       // elements so that ::selection::inactive-window style is applied
       // (or removed).
       if (auto* this_element = DynamicTo<Element>(node)) {
-        const ComputedStyle* element_style = node.GetComputedStyle();
+        const ComputedStyle* element_style = this_element->GetComputedStyle();
         if (element_style &&
             element_style->HasPseudoElementStyle(kPseudoIdSelection)) {
           node.SetNeedsStyleRecalc(

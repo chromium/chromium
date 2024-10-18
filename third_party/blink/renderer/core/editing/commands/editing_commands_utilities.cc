@@ -102,10 +102,11 @@ bool IsNodeRendered(const Node& node) {
 }
 
 bool IsInlineElement(const Node* node) {
-  if (!node)
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
     return false;
-
-  const ComputedStyle* style = node->GetComputedStyle();
+  }
+  const ComputedStyle* style = element->GetComputedStyle();
   // Should we apply IsDisplayInlineType()?
   return style && (style->Display() == EDisplay::kInline ||
                    style->Display() == EDisplay::kRuby);

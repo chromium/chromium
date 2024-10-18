@@ -19,14 +19,19 @@ constexpr LChar kAnyLevel[] = "*";
 constexpr LChar kBaseLevel[] = "0";
 constexpr UChar kLevelDelimiter = kComma;
 
-const Node* FindOuterMostRubyContainerInBlockContaienr(const Node& node,
+const Node* FindOuterMostRubyContainerInBlockContainer(const Node& node,
                                                        const Node& block) {
-  const Node* ruby_container = nullptr;
+  const Element* ruby_container = nullptr;
   for (const auto& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
-    if (const auto* style = ancestor.GetComputedStyle()) {
+    const Element* element = DynamicTo<Element>(ancestor);
+    if (!element) {
+      CHECK(ancestor.IsDocumentNode());
+      break;
+    }
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (style->Display() == EDisplay::kRuby ||
           style->Display() == EDisplay::kBlockRuby) {
-        ruby_container = &ancestor;
+        ruby_container = element;
       }
       if (&ancestor == &block) {
         break;
@@ -37,13 +42,12 @@ const Node* FindOuterMostRubyContainerInBlockContaienr(const Node& node,
 }
 
 bool IsParentRubyContainer(const Node& node) {
-  const Node* parent = &node;
-  while ((parent = FlatTreeTraversal::ParentElement(*parent))) {
-    const auto* style = parent->GetComputedStyle();
-    if (!style) {
-      break;
-    }
-    EDisplay display = style->Display();
+  const Element* parent = FlatTreeTraversal::ParentElement(node);
+  if (!parent->GetComputedStyle()) {
+    return false;
+  }
+  for (; parent; parent = FlatTreeTraversal::ParentElement(*parent)) {
+    EDisplay display = parent->ComputedStyleRef().Display();
     if (display == EDisplay::kContents) {
       continue;
     }
@@ -75,7 +79,7 @@ class ChunkGraphBuilder {
     bool did_see_range_start_node = false;
     bool did_see_range_end_node = false;
     const Node* node = &first_visible_text_node;
-    if (const Node* ruby_container = FindOuterMostRubyContainerInBlockContaienr(
+    if (const Node* ruby_container = FindOuterMostRubyContainerInBlockContainer(
             first_visible_text_node, block_ancestor)) {
       // If the range starts inside a <ruby>, we need to start analyzing the
       // <ruby>. We don't record Text nodes until first_visible_text_node.
