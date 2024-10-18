@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -25,8 +26,10 @@
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -47,6 +50,14 @@ Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
                                         std::vector<Suggestion> children) {
   Suggestion suggestion(main_text, SuggestionType::kAddressEntry);
   suggestion.children = std::move(children);
+  return suggestion;
+}
+
+Suggestion CreatePredictionImprovementsFeedback() {
+  Suggestion suggestion(SuggestionType::kPredictionImprovementsFeedback);
+  suggestion.icon = Suggestion::Icon::kAutofillPredictionImprovements;
+  suggestion.highlight_on_select = false;
+  suggestion.voice_over = u"Required feedback screen reader text.";
   return suggestion;
 }
 
@@ -83,6 +94,7 @@ const Suggestion kSuggestions[] = {
                "label",
                Suggestion::Icon::kGlobe,
                SuggestionType::kSeePromoCodeDetails),
+    CreatePredictionImprovementsFeedback(),
 };
 const Suggestion kExpandableSuggestions[] = {CreateSuggestionWithChildren(
     u"Address_entry",
@@ -157,6 +169,11 @@ class BaseCreatePopupRowViewTest
                                    std::move(filter_match), &favicon_loader());
     view->SetSelectedCell(selected_cell);
 
+    // Row view size depends on the parent view it's embedded into, 220px width
+    // is close to the actually used row size so that the screenshot is also
+    // close to what is rendered in the popup.
+    widget_->SetSize(view->GetPreferredSize(views::SizeBounds(420, 1024)));
+
     widget_->SetContentsView(std::move(view));
   }
 
@@ -178,14 +195,9 @@ class BaseCreatePopupRowViewTest
  private:
   std::unique_ptr<views::Widget> CreateWidget() {
     auto widget = std::make_unique<views::Widget>();
-    views::Widget::InitParams params(
+    widget->Init(views::Widget::InitParams(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    // Row view size depends on the parent view it's embedded into, 220x52 is
-    // close to the actually used row size so that the screenshot is also close
-    // to what is rendered in the popup.
-    params.bounds = gfx::Rect(220, 52);
-    widget->Init(std::move(params));
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS));
     return widget;
   }
 

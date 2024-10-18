@@ -23,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -35,6 +36,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
@@ -46,18 +48,20 @@ constexpr int kIconSize = 16;
 // The button radius used to paint the background.
 constexpr int kButtonRadius = 12;
 
+constexpr int kContentHorizontalPadding = 12;
+constexpr int kContentVerticalPadding = 8;
+
 // Creates the suggestion container view.
 std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
     base::RepeatingClosure manage_prediction_improvements_clicked) {
   // First create the outer container, which contains text details about the
   // feature and then the feedback section.
   auto feedback_outer_container = std::make_unique<PopupRowContentView>();
-  feedback_outer_container->SetInsideBorderInsets(
-      gfx::Insets(autofill::PopupBaseView::ArrowHorizontalMargin()));
+  // Reset the default `PopupRowContentView` padding, here it's managed by
+  // the inner views, to make proper background highlighting possible.
+  feedback_outer_container->SetInsideBorderInsets(gfx::Insets(0));
   feedback_outer_container->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
-  feedback_outer_container->SetBetweenChildSpacing(
-      autofill::PopupBaseView::ArrowHorizontalMargin());
   feedback_outer_container->SetMainAxisAlignment(
       views::LayoutAlignment::kStart);
   feedback_outer_container->AddChildView(
@@ -65,6 +69,8 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
           .SetText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS))
           .SetTextStyle(views::style::STYLE_BODY_5)
+          .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+              kContentVerticalPadding, kContentHorizontalPadding)))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetMultiLine(true)
           .Build());
@@ -97,13 +103,14 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
               .SetText(formatted_text)
               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
               .SetDefaultTextStyle(views::style::STYLE_BODY_5)
+              .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+                  kContentVerticalPadding, kContentHorizontalPadding)))
               .AddStyleRange(
                   gfx::Range(
                       replacement_offsets[0],
                       replacement_offsets[0] +
                           manage_prediction_improvements_link_text.length()),
                   style_info)
-              // This is used in tests only.
               .SetID(PopupRowPredictionImprovementsFeedbackView::
                          kLearnMoreStyledLabelViewID)
               .Build()),
@@ -189,13 +196,22 @@ PopupRowPredictionImprovementsFeedbackView::
               controller,
               line_number,
               PredictionImprovementsButtonActions::kLearnMoreClicked))) {
+  CHECK(line_number < controller->GetLineCount() &&
+        !controller->GetSuggestionAt(line_number).voice_over->empty());
+
+  manage_prediction_improvements_link_ = GetContentView().GetViewByID(
+      PopupRowPredictionImprovementsFeedbackView::kLearnMoreStyledLabelViewID);
+  CHECK(manage_prediction_improvements_link_);
+
   // Create the feedback buttons.
   auto* feedback_text_and_buttons_container =
       GetContentView().GetViewByID(PopupRowPredictionImprovementsFeedbackView::
                                        kFeedbackTextAndButtonsContainerViewID);
   CHECK(feedback_text_and_buttons_container);
   auto* buttons_wrapper = feedback_text_and_buttons_container->AddChildView(
-      std::make_unique<views::BoxLayoutView>());
+      views::Builder<views::BoxLayoutView>()
+          .SetInsideBorderInsets(gfx::Insets::VH(0, kContentHorizontalPadding))
+          .Build());
   buttons_wrapper->SetBetweenChildSpacing(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
@@ -304,6 +320,14 @@ void PopupRowPredictionImprovementsFeedbackView::UpdateFocusedControl(
     view.GetViewAccessibility().SetIsSelected(true);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
   }
+
+  manage_prediction_improvements_link_->SetBackground(
+      new_focused_control == FocusableControl::kManagePredictionImprovementsLink
+          ? views::CreateThemedRoundedRectBackground(
+                ui::kColorDropdownBackgroundSelected,
+                ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+                    views::Emphasis::kMedium))
+          : nullptr);
 
   SetHoverStyleImageButton(thumbs_up_button_, /*hover=*/new_focused_control ==
                                                   FocusableControl::kThumbsUp);
