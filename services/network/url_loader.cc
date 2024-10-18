@@ -505,13 +505,13 @@ bool IncludesValidLoadField(const net::HttpResponseHeaders* headers) {
     return false;
   }
 
-  std::string header_value;
-  if (!headers->GetNormalizedHeader(kActivateStorageAccessHeader,
-                                    &header_value)) {
+  std::optional<std::string> header_value =
+      headers->GetNormalizedHeader(kActivateStorageAccessHeader);
+  if (!header_value) {
     return false;
   }
   const std::optional<net::structured_headers::ParameterizedItem> item =
-      net::structured_headers::ParseItem(header_value);
+      net::structured_headers::ParseItem(*header_value);
   if (!item.has_value()) {
     return false;
   }
@@ -1950,19 +1950,22 @@ void URLLoader::ContinueOnResponseStarted() {
   // to read auction-only signals for ad auctions; only the browser process
   // is allowed to read those, and only the browser process can issue trusted
   // requests.
-  std::string auction_only;
   // TODO(crbug.com/40269364): Remove old names once API users have migrated to
   // new names.
-  if (!factory_params_->is_trusted && response_->headers &&
-      (response_->headers->GetNormalizedHeader("Ad-Auction-Only",
-                                               &auction_only) ||
-       response_->headers->GetNormalizedHeader("X-FLEDGE-Auction-Only",
-                                               &auction_only)) &&
-      base::EqualsCaseInsensitiveASCII(auction_only, "true")) {
-    CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false);
-    url_request_->AbortAndCloseConnection();
-    DeleteSelf();
-    return;
+  if (!factory_params_->is_trusted && response_->headers) {
+    std::optional<std::string> auction_only =
+        response_->headers->GetNormalizedHeader("Ad-Auction-Only");
+    if (!auction_only) {
+      auction_only =
+          response_->headers->GetNormalizedHeader("X-FLEDGE-Auction-Only");
+    }
+    if (auction_only &&
+        base::EqualsCaseInsensitiveASCII(*auction_only, "true")) {
+      CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false);
+      url_request_->AbortAndCloseConnection();
+      DeleteSelf();
+      return;
+    }
   }
 
   // Figure out if we need to sniff (for MIME type detection or for Opaque

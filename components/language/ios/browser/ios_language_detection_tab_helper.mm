@@ -274,7 +274,8 @@ void IOSLanguageDetectionTabHelper::ExtractContentLanguageHeader(
     return;
   }
 
-  headers->GetNormalizedHeader("content-language", &content_language_header_);
+  content_language_header_ =
+      headers->GetNormalizedHeader("content-language").value_or(std::string());
   // Remove everything after the comma ',' if any.
   size_t comma_index = content_language_header_.find_first_of(',');
   if (comma_index != std::string::npos)

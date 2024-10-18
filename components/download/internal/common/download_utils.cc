@@ -836,9 +836,9 @@ bool IsContentDispositionAttachmentInHead(
   if (!response_head.headers) {
     return false;
   }
-  std::string disposition;
-  response_head.headers->GetNormalizedHeader("content-disposition",
-                                             &disposition);
+  std::string disposition =
+      response_head.headers->GetNormalizedHeader("content-disposition")
+          .value_or(std::string());
   return !disposition.empty() &&
          net::HttpContentDisposition(disposition, std::string())
              .is_attachment();

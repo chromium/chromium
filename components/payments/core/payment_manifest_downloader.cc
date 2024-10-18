@@ -302,8 +302,8 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
     return;
   }
 
-  std::string link_header;
-  headers->GetNormalizedHeader("link", &link_header);
+  std::string link_header =
+      headers->GetNormalizedHeader("link").value_or(std::string());
   if (link_header.empty()) {
     // HTTP HEAD response has no Link header; possibly fallback to HTTP GET.
     TryFallbackToDownloadingResponseBody(final_url, std::move(download));

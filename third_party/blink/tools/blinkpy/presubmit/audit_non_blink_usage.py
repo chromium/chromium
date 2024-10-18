@@ -387,6 +387,10 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/common/loader/mime_sniffing_throttle.cc'],
+        'allowed': ['base::EqualsCaseInsensitiveASCII'],
+    },
+    {
         'paths': [
             'third_party/blink/common/page_state/page_state_serialization.cc',
         ],

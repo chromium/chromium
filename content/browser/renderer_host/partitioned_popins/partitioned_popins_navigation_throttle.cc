@@ -96,9 +96,9 @@ bool PartitionedPopinsNavigationThrottle::DoesPopinPolicyBlockResponse() {
       !response_headers->HasHeader("Popin-Policy")) {
     return true;
   }
-  std::string untrusted_popin_policy;
-  response_headers->GetNormalizedHeader("Popin-Policy",
-                                        &untrusted_popin_policy);
+  std::string untrusted_popin_policy =
+      response_headers->GetNormalizedHeader("Popin-Policy")
+          .value_or(std::string());
   PartitionedPopinsPolicy policy(untrusted_popin_policy);
   if (policy.wildcard) {
     return false;

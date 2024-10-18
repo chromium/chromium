@@ -58,8 +58,7 @@ constexpr net::NetworkTrafficAnnotationTag kReportUploadTrafficAnnotation =
 bool HasHeaderValues(URLRequest* request,
                      const std::string& header,
                      const std::set<std::string>& allowed_values) {
-  std::string response_headers;
-  request->GetResponseHeaderByName(header, &response_headers);
+  std::string response_headers = request->GetResponseHeaderByName(header);
   const std::vector<std::string> response_values =
       base::SplitString(base::ToLowerASCII(response_headers), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);

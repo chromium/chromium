@@ -223,18 +223,8 @@ class NET_EXPORT HttpResponseHeaders
   // NOTE: Do not make any assumptions about the encoding of this output
   // string.  It may be non-ASCII, and the encoding used by the server is not
   // necessarily known to us.  Do not assume that this output is UTF-8!
-  std::optional<std::string> GetNormalizedHeader(std::string_view name) const;
-
-  // Deprecated version of the above. `value` must not be nullptr. Returns false
-  // if this header wasn't found.
-  //
-  // Example:
-  //   Foo: a, b,c
-  //   Foo: d
-  //
-  //   string value;
-  //   GetNormalizedHeader("Foo", &value);  // Now, |value| is "a, b, c, d".
-  bool GetNormalizedHeader(std::string_view name, std::string* value) const;
+  [[nodiscard]] std::optional<std::string> GetNormalizedHeader(
+      std::string_view name) const;
 
   // Returns the normalized status line.
   std::string GetStatusLine() const;

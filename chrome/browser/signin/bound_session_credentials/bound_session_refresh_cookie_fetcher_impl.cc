@@ -280,9 +280,8 @@ BoundSessionRefreshCookieFetcherImpl::GetChallengeIfBindingKeyAssertionRequired(
     return std::nullopt;
   }
 
-  std::string challenge;
-  headers->GetNormalizedHeader(kRotationChallengeHeader, &challenge);
-  return challenge;
+  return headers->GetNormalizedHeader(kRotationChallengeHeader)
+      .value_or(std::string());
 }
 
 void BoundSessionRefreshCookieFetcherImpl::HandleBindingKeyAssertionRequired(

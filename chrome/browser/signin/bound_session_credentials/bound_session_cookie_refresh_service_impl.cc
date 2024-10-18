@@ -236,15 +236,15 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
     return;
   }
 
-  std::string session_id;
-  if (!headers->GetNormalizedHeader(kGoogleSessionTerminationHeader,
-                                    &session_id)) {
+  std::optional<std::string> session_id =
+      headers->GetNormalizedHeader(kGoogleSessionTerminationHeader);
+  if (!session_id) {
     return;
   }
 
   BoundSessionKey key = {
       .site = net::SchemefulSite(response_url).GetURL(),
-      .session_id = session_id,
+      .session_id = *session_id,
   };
   auto it = cookie_controllers_.find(key);
   if (it != cookie_controllers_.end()) {

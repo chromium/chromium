@@ -73,10 +73,12 @@ mojom::SupportsLoadingModePtr ParseSupportsLoadingMode(
 
 mojom::SupportsLoadingModePtr ParseSupportsLoadingMode(
     const net::HttpResponseHeaders& headers) {
-  std::string header_value;
-  if (!headers.GetNormalizedHeader(kSupportsLoadingMode, &header_value))
+  std::optional<std::string> header_value =
+      headers.GetNormalizedHeader(kSupportsLoadingMode);
+  if (!header_value) {
     return nullptr;
-  return ParseSupportsLoadingMode(header_value);
+  }
+  return ParseSupportsLoadingMode(*header_value);
 }
 
 }  // namespace network

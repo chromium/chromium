@@ -132,8 +132,9 @@ int SharedDictionaryNetworkTransaction::Start(const HttpRequestInfo* request,
 SharedDictionaryNetworkTransaction::SharedDictionaryEncodingType
 SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
     const HttpResponseHeaders& headers) {
-  std::string content_encoding;
-  if (!headers.GetNormalizedHeader("Content-Encoding", &content_encoding)) {
+  std::optional<std::string> content_encoding =
+      headers.GetNormalizedHeader("Content-Encoding");
+  if (!content_encoding) {
     return SharedDictionaryEncodingType::kNotUsed;
   } else if (content_encoding ==
              shared_dictionary::kSharedBrotliContentEncodingName) {

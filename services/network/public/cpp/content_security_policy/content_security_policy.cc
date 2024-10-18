@@ -1284,12 +1284,14 @@ std::vector<mojom::ContentSecurityPolicyPtr> ParseContentSecurityPolicies(
 
 mojom::AllowCSPFromHeaderValuePtr ParseAllowCSPFromHeader(
     const net::HttpResponseHeaders& headers) {
-  std::string allow_csp_from;
-  if (!headers.GetNormalizedHeader("Allow-CSP-From", &allow_csp_from))
+  std::optional<std::string> allow_csp_from =
+      headers.GetNormalizedHeader("Allow-CSP-From");
+  if (!allow_csp_from) {
     return nullptr;
+  }
 
   std::string_view trimmed =
-      base::TrimWhitespaceASCII(allow_csp_from, base::TRIM_ALL);
+      base::TrimWhitespaceASCII(*allow_csp_from, base::TRIM_ALL);
 
   if (trimmed == "*")
     return mojom::AllowCSPFromHeaderValue::NewAllowStar(true);

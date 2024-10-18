@@ -389,14 +389,12 @@ UploadProgress URLRequest::GetUploadProgress() const {
   return UploadProgress();
 }
 
-void URLRequest::GetResponseHeaderByName(std::string_view name,
-                                         std::string* value) const {
-  DCHECK(value);
-  if (response_info_.headers.get()) {
-    response_info_.headers->GetNormalizedHeader(name, value);
-  } else {
-    value->clear();
+std::string URLRequest::GetResponseHeaderByName(std::string_view name) const {
+  if (!response_info_.headers.get()) {
+    return std::string();
   }
+  return response_info_.headers->GetNormalizedHeader(name).value_or(
+      std::string());
 }
 
 IPEndPoint URLRequest::GetResponseRemoteEndpoint() const {

@@ -78,9 +78,7 @@ void NavigationHandleObserver::DidFinishNavigation(
 
 std::string NavigationHandleObserver::GetNormalizedResponseHeader(
     const std::string& key) const {
-  std::string value;
-  response_headers_->GetNormalizedHeader(key, &value);
-  return value;
+  return response_headers_->GetNormalizedHeader(key).value_or(std::string());
 }
 
 }  // namespace content

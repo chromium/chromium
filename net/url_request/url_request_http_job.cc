@@ -1003,8 +1003,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   // If we're clearing the cookies as part of a clear-site-data header we must
   // not also write new ones in the same response.
   bool clear_site_data_prevents_cookies_from_being_stored = false;
-  std::string clear_site_data_header;
-  headers->GetNormalizedHeader(kClearSiteDataHeader, &clear_site_data_header);
+  std::string clear_site_data_header =
+      headers->GetNormalizedHeader(kClearSiteDataHeader)
+          .value_or(std::string());
   std::vector<std::string> clear_site_data_types =
       ClearSiteDataHeaderContents(clear_site_data_header);
   std::set<std::string> clear_site_data_set(clear_site_data_types.begin(),

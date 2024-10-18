@@ -4052,9 +4052,9 @@ bool HttpCache::Transaction::UpdateAndReportCacheability(
 void HttpCache::Transaction::UpdateSecurityHeadersBeforeForwarding() {
   // Because of COEP, we need to add CORP to the 304 of resources that set it
   // previously. It will be blocked in the network service otherwise.
-  std::string stored_corp_header;
-  response_.headers->GetNormalizedHeader("Cross-Origin-Resource-Policy",
-                                         &stored_corp_header);
+  std::string stored_corp_header =
+      response_.headers->GetNormalizedHeader("Cross-Origin-Resource-Policy")
+          .value_or(std::string());
   if (!stored_corp_header.empty()) {
     new_response_->headers->SetHeader("Cross-Origin-Resource-Policy",
                                       stored_corp_header);

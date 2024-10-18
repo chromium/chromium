@@ -116,16 +116,17 @@ bool MimeTypeIsConsistent(
       // ResponseInfo's `mime_type` is always lowercase.
       return blink::IsJSONMimeType(response_info.mime_type);
     case AuctionDownloader::MimeType::kWebAssembly: {
-      std::string raw_content_type;
       // Here we use the headers directly, not the parsed mimetype, since we
       // much check there are no parameters whatsoever. Ref.
       // https://webassembly.github.io/spec/web-api/#streaming-modules
-      if (!response_info.headers->GetNormalizedHeader(
-              net::HttpRequestHeaders::kContentType, &raw_content_type)) {
+      std::optional<std::string> raw_content_type =
+          response_info.headers->GetNormalizedHeader(
+              net::HttpRequestHeaders::kContentType);
+      if (!raw_content_type) {
         return false;
       }
 
-      return base::ToLowerASCII(raw_content_type) == kWebAssemblyMime;
+      return base::ToLowerASCII(*raw_content_type) == kWebAssemblyMime;
     }
   }
 }
@@ -427,15 +428,17 @@ void AuctionDownloader::OnResponseStarted(
     return;
   }
 
-  std::string allow_fledge;
-  std::string auction_allowed;
-  if (!response_head.headers ||
-      ((!response_head.headers->GetNormalizedHeader("X-Allow-FLEDGE",
-                                                    &allow_fledge) ||
-        !base::EqualsCaseInsensitiveASCII(allow_fledge, "true")) &&
-       (!response_head.headers->GetNormalizedHeader("Ad-Auction-Allowed",
-                                                    &auction_allowed) ||
-        !base::EqualsCaseInsensitiveASCII(auction_allowed, "true")))) {
+  std::optional<std::string> allow_fledge;
+  std::optional<std::string> auction_allowed;
+  if (response_head.headers) {
+    allow_fledge = response_head.headers->GetNormalizedHeader("X-Allow-FLEDGE");
+    auction_allowed =
+        response_head.headers->GetNormalizedHeader("Ad-Auction-Allowed");
+  }
+  if ((!allow_fledge ||
+       !base::EqualsCaseInsensitiveASCII(*allow_fledge, "true")) &&
+      (!auction_allowed ||
+       !base::EqualsCaseInsensitiveASCII(*auction_allowed, "true"))) {
     FailRequest(
         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
         base::StringPrintf(

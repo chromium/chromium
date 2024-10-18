@@ -22,13 +22,14 @@ constexpr std::string_view kCookieIndicesHeader = "Cookie-Indices";
 
 std::optional<std::vector<std::string>> ParseCookieIndices(
     const HttpResponseHeaders& headers) {
-  std::string normalized_header;
-  if (!headers.GetNormalizedHeader(kCookieIndicesHeader, &normalized_header)) {
+  std::optional<std::string> normalized_header =
+      headers.GetNormalizedHeader(kCookieIndicesHeader);
+  if (!normalized_header) {
     return std::nullopt;
   }
 
   std::optional<structured_headers::List> list =
-      structured_headers::ParseList(normalized_header);
+      structured_headers::ParseList(*normalized_header);
   if (!list.has_value()) {
     return std::nullopt;
   }

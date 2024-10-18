@@ -334,12 +334,16 @@ bool ResumableUploadRequest::CanUploadContent(
   if (headers->response_code() != net::HTTP_OK) {
     return false;
   }
-  std::string upload_status;
-  if (!headers->GetNormalizedHeader(kUploadStatusHeader, &upload_status) ||
-      !headers->GetNormalizedHeader(kUploadUrlHeader, &upload_url_)) {
+  std::optional<std::string> upload_status =
+      headers->GetNormalizedHeader(kUploadStatusHeader);
+  std::optional<std::string> upload_url =
+      headers->GetNormalizedHeader(kUploadUrlHeader);
+  if (!upload_status || !upload_url) {
     return false;
   }
-  return base::EqualsCaseInsensitiveASCII(upload_status, "active");
+  upload_url_ = std::move(upload_url).value();
+  return base::EqualsCaseInsensitiveASCII(upload_status.value_or(std::string()),
+                                          "active");
 }
 
 void ResumableUploadRequest::Finish(int net_error,

@@ -211,10 +211,11 @@ class GetResult {
   ~GetResult() = default;
 
   std::string GetResponseHeaderByName(const std::string& name) const {
-    std::string value;
-    if (response_ && response_->headers)
-      response_->headers->GetNormalizedHeader(name, &value);
-    return value;
+    if (!response_ || !response_->headers) {
+      return std::string();
+    }
+    return response_->headers->GetNormalizedHeader(name).value_or(
+        std::string());
   }
 
   bool HasContentLengthHeader() {

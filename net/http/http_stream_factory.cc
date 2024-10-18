@@ -135,9 +135,9 @@ void HttpStreamFactory::ProcessAlternativeServices(
   if (!headers->HasHeader(kAlternativeServiceHeader))
     return;
 
-  std::string alternative_service_str;
-  headers->GetNormalizedHeader(kAlternativeServiceHeader,
-                               &alternative_service_str);
+  std::string alternative_service_str =
+      headers->GetNormalizedHeader(kAlternativeServiceHeader)
+          .value_or(std::string());
   spdy::SpdyAltSvcWireFormat::AlternativeServiceVector
       alternative_service_vector;
   if (!spdy::SpdyAltSvcWireFormat::ParseHeaderFieldValue(

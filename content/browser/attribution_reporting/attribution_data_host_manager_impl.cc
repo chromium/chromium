@@ -870,8 +870,9 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
         break;
     }
 
-    std::string info_header;
-    headers->GetNormalizedHeader(kAttributionReportingInfoHeader, &info_header);
+    std::string info_header =
+        headers->GetNormalizedHeader(kAttributionReportingInfoHeader)
+            .value_or(std::string());
 
     return RegistrationDataHeaders(std::move(info_header),
                                    std::move(web_header), std::move(os_header),

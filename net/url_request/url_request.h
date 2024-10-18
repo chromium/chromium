@@ -503,7 +503,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // that appear more than once in the response are coalesced, with values
   // separated by commas (per RFC 2616). This will not work with cookies since
   // comma can be used in cookie values.
-  void GetResponseHeaderByName(std::string_view name, std::string* value) const;
+  std::string GetResponseHeaderByName(std::string_view name) const;
 
   // The time when |this| was constructed.
   base::TimeTicks creation_time() const { return creation_time_; }

@@ -76,14 +76,17 @@ std::vector<SessionChallengeParam> SessionChallengeParam::CreateIfValid(
     return params;
   }
 
-  std::string header_value;
-  if (!headers || !headers->GetNormalizedHeader(kSessionChallengeHeaderName,
-                                                &header_value)) {
+  if (!headers) {
+    return params;
+  }
+  std::optional<std::string> header_value =
+      headers->GetNormalizedHeader(kSessionChallengeHeaderName);
+  if (!header_value) {
     return params;
   }
 
   std::optional<structured_headers::List> list =
-      structured_headers::ParseList(header_value);
+      structured_headers::ParseList(*header_value);
 
   if (!list) {
     return params;

@@ -382,9 +382,9 @@ void ProcessMirrorResponseHeaderIfExists(ResponseAdapter* response,
   if (!response_headers)
     return;
 
-  std::string header_value;
-  if (!response_headers->GetNormalizedHeader(kChromeManageAccountsHeader,
-                                             &header_value)) {
+  std::optional<std::string> header_value =
+      response_headers->GetNormalizedHeader(kChromeManageAccountsHeader);
+  if (!header_value) {
     return;
   }
 
@@ -395,7 +395,7 @@ void ProcessMirrorResponseHeaderIfExists(ResponseAdapter* response,
     return;
   }
 
-  ManageAccountsParams params = BuildManageAccountsParams(header_value);
+  ManageAccountsParams params = BuildManageAccountsParams(*header_value);
   // If the request does not have a response header or if the header contains
   // garbage, then |service_type| is set to |GAIA_SERVICE_TYPE_NONE|.
   if (params.service_type == GAIA_SERVICE_TYPE_NONE)
@@ -434,17 +434,20 @@ void ProcessDiceResponseHeaderIfExists(ResponseAdapter* response,
   if (!response_headers)
     return;
 
-  std::string header_value;
   DiceResponseParams params;
-  if (response_headers->GetNormalizedHeader(kDiceResponseHeader,
-                                            &header_value)) {
-    params = BuildDiceSigninResponseParams(header_value);
+  std::optional<std::string> header_value =
+      response_headers->GetNormalizedHeader(kDiceResponseHeader);
+  if (header_value) {
+    params = BuildDiceSigninResponseParams(*header_value);
     // The header must be removed for privacy reasons, so that renderers never
     // have access to the authorization code.
     response->RemoveHeader(kDiceResponseHeader);
-  } else if (response_headers->GetNormalizedHeader(kGoogleSignoutResponseHeader,
-                                                   &header_value)) {
-    params = BuildDiceSignoutResponseParams(header_value);
+  } else {
+    header_value =
+        response_headers->GetNormalizedHeader(kGoogleSignoutResponseHeader);
+    if (header_value) {
+      params = BuildDiceSignoutResponseParams(*header_value);
+    }
   }
 
   // If the request does not have a response header or if the header contains
@@ -465,14 +468,15 @@ std::string ParseGaiaIdFromRemoveLocalAccountResponseHeader(
   if (!response_headers)
     return std::string();
 
-  std::string header_value;
-  if (!response_headers->GetNormalizedHeader(
-          kGoogleRemoveLocalAccountResponseHeader, &header_value)) {
+  std::optional<std::string> header_value =
+      response_headers->GetNormalizedHeader(
+          kGoogleRemoveLocalAccountResponseHeader);
+  if (!header_value) {
     return std::string();
   }
 
   const SigninHeaderHelper::ResponseHeaderDictionary header_dictionary =
-      SigninHeaderHelper::ParseAccountConsistencyResponseHeader(header_value);
+      SigninHeaderHelper::ParseAccountConsistencyResponseHeader(*header_value);
 
   std::string gaia_id;
   const auto it =

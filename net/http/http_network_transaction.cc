@@ -1629,9 +1629,11 @@ int HttpNetworkTransaction::DoDrainBodyForAuthRestartComplete(int result) {
 
 #if BUILDFLAG(ENABLE_REPORTING)
 void HttpNetworkTransaction::ProcessReportToHeader() {
-  std::string value;
-  if (!response_.headers->GetNormalizedHeader("Report-To", &value))
+  std::optional<std::string> value =
+      response_.headers->GetNormalizedHeader("Report-To");
+  if (!value) {
     return;
+  }
 
   ReportingService* reporting_service = session_->reporting_service();
   if (!reporting_service)
@@ -1645,13 +1647,13 @@ void HttpNetworkTransaction::ProcessReportToHeader() {
     return;
 
   reporting_service->ProcessReportToHeader(url::Origin::Create(url_),
-                                           network_anonymization_key_, value);
+                                           network_anonymization_key_, *value);
 }
 
 void HttpNetworkTransaction::ProcessNetworkErrorLoggingHeader() {
-  std::string value;
-  if (!response_.headers->GetNormalizedHeader(
-          NetworkErrorLoggingService::kHeaderName, &value)) {
+  std::optional<std::string> value = response_.headers->GetNormalizedHeader(
+      NetworkErrorLoggingService::kHeaderName);
+  if (!value) {
     return;
   }
 
@@ -1678,7 +1680,7 @@ void HttpNetworkTransaction::ProcessNetworkErrorLoggingHeader() {
 
   network_error_logging_service->OnHeader(network_anonymization_key_,
                                           url::Origin::Create(url_),
-                                          remote_endpoint_.address(), value);
+                                          remote_endpoint_.address(), *value);
 }
 
 void HttpNetworkTransaction::GenerateNetworkErrorLoggingReportIfError(int rv) {
@@ -2168,8 +2170,8 @@ bool HttpNetworkTransaction::ContentEncodingsValid() const {
     return false;
   }
 
-  std::string content_encoding;
-  headers->GetNormalizedHeader("Content-Encoding", &content_encoding);
+  std::string content_encoding =
+      headers->GetNormalizedHeader("Content-Encoding").value_or(std::string());
   std::set<std::string> used_encodings;
   if (!HttpUtil::ParseContentEncoding(content_encoding, &used_encodings))
     return false;

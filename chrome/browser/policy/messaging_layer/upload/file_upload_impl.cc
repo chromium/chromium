@@ -85,17 +85,17 @@ StatusOr<std::string> CheckResponseAndGetStatus(
 
   if (headers->response_code() == net::HTTP_OK) {
     // Successful upload, retrieve and return upload status.
-    std::string upload_status;
-    if (!headers->GetNormalizedHeader(kUploadStatusHeader, &upload_status)) {
+    std::optional<std::string> upload_status =
+        headers->GetNormalizedHeader(kUploadStatusHeader);
+    if (!upload_status) {
       base::UmaHistogramEnumeration(
           reporting::kUmaDataLossErrorReason,
           DataLossErrorReason::UNEXPECTED_UPLOAD_STATUS,
           DataLossErrorReason::MAX_VALUE);
       return base::unexpected(
-          Status(error::DATA_LOSS,
-                 base::StrCat({"Unexpected upload status=", upload_status})));
+          Status(error::DATA_LOSS, "Unexpected upload status="));
     }
-    return upload_status;
+    return *upload_status;
   } else if (headers->response_code() == net::HTTP_UNAUTHORIZED) {
     return base::unexpected(
         Status(error::UNAUTHENTICATED, "Authentication error"));
@@ -114,23 +114,23 @@ StatusOr<std::string> CheckResponseAndGetStatus(
 StatusOr<int64_t> GetChunkGranularity(
     const scoped_refptr<::net::HttpResponseHeaders> headers) {
   int64_t upload_granularity = -1;
-  std::string upload_granularity_string;
-  if (!headers->GetNormalizedHeader(kUploadChunkGranularityHeader,
-                                    &upload_granularity_string)) {
+  std::optional<std::string> upload_granularity_string =
+      headers->GetNormalizedHeader(kUploadChunkGranularityHeader);
+  if (!upload_granularity_string) {
     base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                   DataLossErrorReason::NO_GRANULARITTY_RETURNED,
                                   DataLossErrorReason::MAX_VALUE);
     return base::unexpected(
         Status(error::DATA_LOSS, "No granularity returned"));
   }
-  if (!base::StringToInt64(upload_granularity_string, &upload_granularity) ||
+  if (!base::StringToInt64(*upload_granularity_string, &upload_granularity) ||
       upload_granularity <= 0L) {
     base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                   DataLossErrorReason::UNEXPECTED_GRANULARITY,
                                   DataLossErrorReason::MAX_VALUE);
     return base::unexpected(Status(
         error::DATA_LOSS,
-        base::StrCat({"Unexpected granularity=", upload_granularity_string})));
+        base::StrCat({"Unexpected granularity=", *upload_granularity_string})));
   }
   return upload_granularity;
 }
@@ -368,8 +368,9 @@ class FileUploadDelegate::InitContext
       return;
     }
 
-    std::string upload_url;
-    if (!headers->GetNormalizedHeader(kUploadUrlHeader, &upload_url)) {
+    std::optional<std::string> upload_url =
+        headers->GetNormalizedHeader(kUploadUrlHeader);
+    if (!upload_url) {
       base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                     DataLossErrorReason::NO_UPLOAD_URL_RETURNED,
                                     DataLossErrorReason::MAX_VALUE);
@@ -378,8 +379,8 @@ class FileUploadDelegate::InitContext
       return;
     }
 
-    Complete(
-        std::make_pair(total_, base::StrCat({origin_path_, "\n", upload_url})));
+    Complete(std::make_pair(total_,
+                            base::StrCat({origin_path_, "\n", *upload_url})));
   }
 
   static StatusOr<int64_t> InitFile(const std::string origin_path) {
@@ -514,18 +515,18 @@ class FileUploadDelegate::NextStepContext
 
     int64_t upload_received = -1;
     {
-      std::string upload_received_string;
-      if (!headers->GetNormalizedHeader(kUploadSizeReceivedHeader,
-                                        &upload_received_string)) {
+      std::optional<std::string> upload_received_string =
+          headers->GetNormalizedHeader(kUploadSizeReceivedHeader);
+      if (!upload_received_string) {
         Complete(base::unexpected(
             Status(error::DATA_LOSS, "No upload size returned")));
         return;
       }
-      if (!base::StringToInt64(upload_received_string, &upload_received) ||
+      if (!base::StringToInt64(*upload_received_string, &upload_received) ||
           upload_received < 0 || uploaded_ > upload_received) {
         Complete(base::unexpected(Status(
             error::DATA_LOSS,
-            base::StrCat({"Unexpected received=", upload_received_string,
+            base::StrCat({"Unexpected received=", *upload_received_string,
                           ", expected=", base::NumberToString(uploaded_)}))));
         return;
       }
@@ -836,9 +837,9 @@ class FileUploadDelegate::FinalContext
 
     int64_t upload_received = -1;
     {
-      std::string upload_received_string;
-      if (!headers->GetNormalizedHeader(kUploadSizeReceivedHeader,
-                                        &upload_received_string)) {
+      std::optional<std::string> upload_received_string =
+          headers->GetNormalizedHeader(kUploadSizeReceivedHeader);
+      if (!upload_received_string) {
         Complete(base::unexpected(
             Status(error::DATA_LOSS, "No upload size returned")));
         base::UmaHistogramEnumeration(
@@ -847,11 +848,11 @@ class FileUploadDelegate::FinalContext
             DataLossErrorReason::MAX_VALUE);
         return;
       }
-      if (!base::StringToInt64(upload_received_string, &upload_received) ||
+      if (!base::StringToInt64(*upload_received_string, &upload_received) ||
           upload_received < 0) {
         Complete(base::unexpected(Status(
             error::DATA_LOSS,
-            base::StrCat({"Unexpected received=", upload_received_string}))));
+            base::StrCat({"Unexpected received=", *upload_received_string}))));
         base::UmaHistogramEnumeration(
             reporting::kUmaDataLossErrorReason,
             DataLossErrorReason::UNEXPECTED_UPLOAD_RECEIVED_CODE,
@@ -905,9 +906,9 @@ class FileUploadDelegate::FinalContext
   void RespondOnFinal(scoped_refptr<::net::HttpResponseHeaders> headers) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    std::string upload_id;
-    if (!headers->GetNormalizedHeader(kUploadIdHeader, &upload_id) ||
-        upload_id.empty()) {
+    std::string upload_id =
+        headers->GetNormalizedHeader(kUploadIdHeader).value_or(std::string());
+    if (upload_id.empty()) {
       Complete(
           base::unexpected(Status(error::DATA_LOSS, "No upload ID returned")));
       base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,

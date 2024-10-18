@@ -125,14 +125,17 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
     return params;
   }
 
-  std::string header_value;
-  if (!headers ||
-      !headers->GetNormalizedHeader(kRegistrationHeaderName, &header_value)) {
+  if (!headers) {
+    return params;
+  }
+  std::optional<std::string> header_value =
+      headers->GetNormalizedHeader(kRegistrationHeaderName);
+  if (!header_value) {
     return params;
   }
 
   std::optional<structured_headers::List> list =
-      structured_headers::ParseList(header_value);
+      structured_headers::ParseList(*header_value);
   if (!list || list->empty()) {
     return params;
   }

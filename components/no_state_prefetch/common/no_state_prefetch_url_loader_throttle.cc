@@ -125,9 +125,10 @@ void NoStatePrefetchURLLoaderThrottle::WillRedirectRequest(
 
   std::string follow_only_when_prerender_shown_header;
   if (response_head.headers) {
-    response_head.headers->GetNormalizedHeader(
-        kFollowOnlyWhenPrerenderShown,
-        &follow_only_when_prerender_shown_header);
+    follow_only_when_prerender_shown_header =
+        response_head.headers
+            ->GetNormalizedHeader(kFollowOnlyWhenPrerenderShown)
+            .value_or(std::string());
   }
   // Abort any prerenders with requests which redirect to invalid schemes.
   if (!DoesURLHaveValidScheme(redirect_info->new_url)) {

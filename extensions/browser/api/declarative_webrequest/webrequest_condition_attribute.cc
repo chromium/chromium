@@ -237,9 +237,10 @@ bool WebRequestConditionAttributeContentType::IsFulfilled(
   if (!(request_data.stage & GetStages()))
     return false;
 
-  std::string content_type;
-  request_data.original_response_headers->GetNormalizedHeader(
-      net::HttpRequestHeaders::kContentType, &content_type);
+  std::string content_type =
+      request_data.original_response_headers
+          ->GetNormalizedHeader(net::HttpRequestHeaders::kContentType)
+          .value_or(std::string());
   std::string mime_type;
   std::string charset;
   bool had_charset = false;

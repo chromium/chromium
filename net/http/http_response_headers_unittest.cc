@@ -1916,24 +1916,13 @@ TEST(HttpResponseHeadersTest, GetNormalizedHeaderWithEmptyValues) {
       "a:\n");
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  std::string value;
-  auto verify = [&](std::string_view name,
-                    std::optional<std::string_view> expected,
-                    const base::Location& location = FROM_HERE) {
-    EXPECT_EQ(parsed->GetNormalizedHeader(name, &value), expected.has_value())
-        << location.ToString();
-    EXPECT_EQ(value, expected.has_value() ? expected : "")
-        << location.ToString();
-    EXPECT_EQ(parsed->GetNormalizedHeader(name), expected)
-        << location.ToString();
-  };
 
-  verify("a", ", , ");
-  verify("b", ", *");
-  verify("c", "*, ");
-  verify("d", "*, *");
-  verify("e", "");
-  verify("f", std::nullopt);
+  EXPECT_EQ(parsed->GetNormalizedHeader("a"), ", , ");
+  EXPECT_EQ(parsed->GetNormalizedHeader("b"), ", *");
+  EXPECT_EQ(parsed->GetNormalizedHeader("c"), "*, ");
+  EXPECT_EQ(parsed->GetNormalizedHeader("d"), "*, *");
+  EXPECT_EQ(parsed->GetNormalizedHeader("e"), "");
+  EXPECT_EQ(parsed->GetNormalizedHeader("f"), std::nullopt);
 }
 
 TEST(HttpResponseHeadersTest, GetNormalizedHeaderWithCommas) {
@@ -1947,26 +1936,15 @@ TEST(HttpResponseHeadersTest, GetNormalizedHeaderWithCommas) {
       "a: ,");
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  std::string value;
-  auto verify = [&](std::string_view name,
-                    std::optional<std::string_view> expected,
-                    const base::Location& location = FROM_HERE) {
-    EXPECT_EQ(parsed->GetNormalizedHeader(name, &value), expected.has_value())
-        << location.ToString();
-    EXPECT_EQ(value, expected.has_value() ? expected : "")
-        << location.ToString();
-    EXPECT_EQ(parsed->GetNormalizedHeader(name), expected)
-        << location.ToString();
-  };
 
   // TODO(mmenke): "Normalized" headers probably should preserve the
   // leading/trailing whitespace from the original headers.
-  verify("a", "foo, bar, ,");
-  verify("b", ", foo, bar,");
-  verify("c", ",,,");
-  verify("d", ",  ,  ,");
-  verify("e", ",\t,\t,");
-  verify("f", std::nullopt);
+  EXPECT_EQ(parsed->GetNormalizedHeader("a"), "foo, bar, ,");
+  EXPECT_EQ(parsed->GetNormalizedHeader("b"), ", foo, bar,");
+  EXPECT_EQ(parsed->GetNormalizedHeader("c"), ",,,");
+  EXPECT_EQ(parsed->GetNormalizedHeader("d"), ",  ,  ,");
+  EXPECT_EQ(parsed->GetNormalizedHeader("e"), ",\t,\t,");
+  EXPECT_EQ(parsed->GetNormalizedHeader("f"), std::nullopt);
 }
 
 TEST(HttpResponseHeadersTest, AddHeader) {

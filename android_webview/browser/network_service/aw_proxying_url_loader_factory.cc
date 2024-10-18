@@ -821,10 +821,11 @@ void InterceptedRequest::OnReceiveResponse(
   if (request_.destination == network::mojom::RequestDestination::kDocument) {
     // Check for x-auto-login-header
     HeaderData header_data;
-    std::string header_string;
-    if (head->headers && head->headers->GetNormalizedHeader(
-                             kAutoLoginHeaderName, &header_string)) {
-      if (ParseHeader(header_string, ALLOW_ANY_REALM, &header_data)) {
+    if (head->headers) {
+      std::optional<std::string> header_string =
+          head->headers->GetNormalizedHeader(kAutoLoginHeaderName);
+      if (header_string &&
+          ParseHeader(*header_string, ALLOW_ANY_REALM, &header_data)) {
         // TODO(timvolodine): consider simplifying this and above callback
         // code, crbug.com/897149.
         content::GetUIThreadTaskRunner({})->PostTask(

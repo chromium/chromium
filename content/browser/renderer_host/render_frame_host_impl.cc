@@ -9652,13 +9652,14 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   // when they are served using the `Allow-Fenced-Frame-Automatic-Beacons=true`
   // HTTP response header. A cross-origin document can only opt in through the
   // header.
-  std::string allow;
   const bool initiator_allows_fenced_frame_automatic_beacons =
       initiator_rfh->GetLastResponseHead() &&
-      initiator_rfh->GetLastResponseHead()->headers &&
-      initiator_rfh->GetLastResponseHead()->headers->GetNormalizedHeader(
-          "Allow-Fenced-Frame-Automatic-Beacons", &allow) &&
-      base::EqualsCaseInsensitiveASCII(allow, "true");
+      initiator_rfh->GetLastResponseHead()->headers && [&]() -> bool {
+    std::optional<std::string> allow =
+        initiator_rfh->GetLastResponseHead()->headers->GetNormalizedHeader(
+            "Allow-Fenced-Frame-Automatic-Beacons");
+    return allow && base::EqualsCaseInsensitiveASCII(*allow, "true");
+  }();
 
   // If there is no automatic beacon declared and no opt-in through a header,
   // don't send an automatic beacon.
@@ -11975,10 +11976,9 @@ void RenderFrameHostImpl::AddResourceTimingEntryForFailedSubframeNavigation(
     const network::URLLoaderCompletionStatus& completion_status) {
   uint32_t status_code = 0;
   std::string mime_type;
-  std::string normalized_server_timing;
-
-  response_head->headers->GetNormalizedHeader("Server-Timing",
-                                              &normalized_server_timing);
+  std::string normalized_server_timing =
+      response_head->headers->GetNormalizedHeader("Server-Timing")
+          .value_or(std::string());
 
   if (allow_response_details) {
     status_code = response_head->headers->response_code();

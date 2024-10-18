@@ -226,7 +226,8 @@ network::mojom::URLResponseHeadPtr CreateRedirectResponseHead(
   std::string link_header;
   if (!is_fallback_redirect &&
       outer_response.headers) {
-    outer_response.headers->GetNormalizedHeader("link", &link_header);
+    link_header = outer_response.headers->GetNormalizedHeader("link").value_or(
+        std::string());
   }
   if (link_header.empty()) {
     buf = base::StringPrintf("HTTP/1.1 %d %s\r\n", 303, "See Other");

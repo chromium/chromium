@@ -1190,7 +1190,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     headers = net::CreateHeadersFromNSHTTPURLResponse(
         static_cast<NSHTTPURLResponse*>(bridge.response));
     if (headers) {
-      headers->GetNormalizedHeader("content-disposition", &contentDisposition);
+      contentDisposition = headers->GetNormalizedHeader("content-disposition")
+                               .value_or(std::string());
     }
   }
 
@@ -1463,8 +1464,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 - (BOOL)shouldRenderResponse:(WKNavigationResponse*)WKResponse
                  HTTPHeaders:(net::HttpResponseHeaders*)headers {
   if (headers) {
-    std::string contentDisposition;
-    headers->GetNormalizedHeader("content-disposition", &contentDisposition);
+    std::string contentDisposition =
+        headers->GetNormalizedHeader("content-disposition")
+            .value_or(std::string());
     net::HttpContentDisposition parsedContentDisposition(contentDisposition,
                                                          std::string());
     if (parsedContentDisposition.is_attachment()) {

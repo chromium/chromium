@@ -2003,12 +2003,19 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       // Check that the extension cannot add a Dice header.
       const net::HttpResponseHeaders* headers =
           navigation_handle->GetResponseHeaders();
-      EXPECT_TRUE(headers->GetNormalizedHeader(
-          "X-Chrome-ID-Consistency-Response", &dice_header_value_));
-      EXPECT_TRUE(
-          headers->GetNormalizedHeader("X-New-Header", &new_header_value_));
-      EXPECT_TRUE(
-          headers->GetNormalizedHeader("X-Control", &control_header_value_));
+      std::optional<std::string> dice_header_value =
+          headers->GetNormalizedHeader("X-Chrome-ID-Consistency-Response");
+      EXPECT_TRUE(dice_header_value);
+      dice_header_value_ = dice_header_value.value_or(std::string());
+      std::optional<std::string> new_header_value =
+          headers->GetNormalizedHeader("X-New-Header");
+      EXPECT_TRUE(new_header_value);
+      new_header_value_ = new_header_value.value_or(std::string());
+      std::optional<std::string> control_header_value =
+          headers->GetNormalizedHeader("X-Control");
+      EXPECT_TRUE(control_header_value);
+      control_header_value_ = control_header_value.value_or(std::string());
+
       did_finish_navigation_called_ = true;
     }
 

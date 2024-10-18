@@ -119,11 +119,7 @@ SignedExchangeInnerResponseURLLoader::GetHeaderString(
     const network::mojom::URLResponseHead& response,
     const std::string& header_name) {
   DCHECK(response.headers);
-  std::string header_value;
-  if (!response.headers->GetNormalizedHeader(header_name, &header_value)) {
-    return std::nullopt;
-  }
-  return header_value;
+  return response.headers->GetNormalizedHeader(header_name);
 }
 
 void SignedExchangeInnerResponseURLLoader::

@@ -351,9 +351,9 @@ bool ExtractSHA256HashValueFromString(std::string_view value,
 std::map<GURL, net::SHA256HashValue> GetAllowedAltSXG(
     const PrefetchedSignedExchangeCacheEntry& main_exchange) {
   std::map<GURL, net::SHA256HashValue> result;
-  std::string link_header;
-  main_exchange.inner_response()->headers->GetNormalizedHeader("link",
-                                                               &link_header);
+  std::string link_header = main_exchange.inner_response()
+                                ->headers->GetNormalizedHeader("link")
+                                .value_or(std::string());
   if (link_header.empty())
     return result;
 

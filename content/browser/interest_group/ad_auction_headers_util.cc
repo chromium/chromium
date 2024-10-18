@@ -222,11 +222,10 @@ void ProcessAdAuctionResponseHeaders(
 
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeBiddingAndAuctionServer)) {
-    std::string ad_auction_results;
-    if (headers->GetNormalizedHeader(kAdAuctionResultResponseHeaderKey,
-                                     &ad_auction_results)) {
+    if (std::optional<std::string> ad_auction_results =
+            headers->GetNormalizedHeader(kAdAuctionResultResponseHeaderKey)) {
       for (const std::string& parsed_result :
-           ParseAdAuctionResultResponseHeader(ad_auction_results)) {
+           ParseAdAuctionResultResponseHeader(*ad_auction_results)) {
         ad_auction_page_data->AddAuctionResultWitnessForOrigin(request_origin,
                                                                parsed_result);
       }
@@ -235,14 +234,13 @@ void ProcessAdAuctionResponseHeaders(
   // We intentionally leave the `Ad-Auction-Result` response header in place.
 
   if (base::FeatureList::IsEnabled(blink::features::kAdAuctionSignals)) {
-    std::string ad_auction_signals;
-    if (headers->GetNormalizedHeader(kAdAuctionSignalsResponseHeaderKey,
-                                     &ad_auction_signals)) {
-      if (ad_auction_signals.size() <=
+    if (std::optional<std::string> ad_auction_signals =
+            headers->GetNormalizedHeader(kAdAuctionSignalsResponseHeaderKey)) {
+      if (ad_auction_signals->size() <=
           static_cast<size_t>(
               blink::features::kAdAuctionSignalsMaxSizeBytes.Get())) {
         ad_auction_page_data->AddAuctionSignalsWitnessForOrigin(
-            request_origin, ad_auction_signals);
+            request_origin, *ad_auction_signals);
       }
     }
   }
