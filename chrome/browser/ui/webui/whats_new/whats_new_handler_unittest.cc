@@ -153,4 +153,39 @@ TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {
                    "UserEducation.WhatsNew.ModuleLinkClicked.AnotherFeature"));
   histogram_tester_.ExpectTotalCount(
       "UserEducation.WhatsNew.ModuleLinkClicked.AnotherFeature", 1);
+
+  handler_->RecordBrowserCommandExecuted();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.BrowserCommandExecuted"));
+
+  handler_->RecordModuleVideoStarted(
+      "AnotherFeature", whats_new::mojom::ModulePosition::kExploreMore1);
+  histogram_tester_.ExpectTotalCount(
+      "UserEducation.WhatsNew.VideoStarted.AnotherFeature", 1);
+
+  handler_->RecordModuleVideoEnded(
+      "AnotherFeature", whats_new::mojom::ModulePosition::kExploreMore1);
+  histogram_tester_.ExpectTotalCount(
+      "UserEducation.WhatsNew.VideoEnded.AnotherFeature", 1);
+
+  handler_->RecordModulePlayClicked(
+      "AnotherFeature", whats_new::mojom::ModulePosition::kExploreMore1);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.PlayClicked"));
+  histogram_tester_.ExpectTotalCount(
+      "UserEducation.WhatsNew.PlayClicked.AnotherFeature", 1);
+
+  handler_->RecordModulePauseClicked(
+      "AnotherFeature", whats_new::mojom::ModulePosition::kExploreMore1);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.PauseClicked"));
+  histogram_tester_.ExpectTotalCount(
+      "UserEducation.WhatsNew.PauseClicked.AnotherFeature", 1);
+
+  handler_->RecordModuleRestartClicked(
+      "AnotherFeature", whats_new::mojom::ModulePosition::kExploreMore1);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.RestartClicked"));
+  histogram_tester_.ExpectTotalCount(
+      "UserEducation.WhatsNew.RestartClicked.AnotherFeature", 1);
 }

@@ -20,6 +20,7 @@ build_webui_tests("build") {
     "test_with_metrics_scroll_depth.ts",
     "test_with_metrics_time_on_page.ts",
     "test_with_metrics_module_click.ts",
+    "test_with_metrics_module_video_events.ts",
   ]
 
   static_files = [
@@ -33,6 +34,7 @@ build_webui_tests("build") {
     "test_with_metrics_scroll_depth.html",
     "test_with_metrics_time_on_page.html",
     "test_with_metrics_module_click.html",
+    "test_with_metrics_module_video_events.html",
   ]
 
   ts_path_mappings =

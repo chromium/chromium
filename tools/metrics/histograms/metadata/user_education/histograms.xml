@@ -383,6 +383,42 @@ chromium-metrics-reviews@google.com.
   <token key="ModuleName" variants="WhatsNewModule"/>
 </histogram>
 
+<histogram name="UserEducation.WhatsNew.PauseClicked.{ModuleName}"
+    enum="WhatsNewModulePosition" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that the user clicked pause on a video in the {ModuleName} module on
+    the What's New page. The value indicates the module's position in its
+    section.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.PlayClicked.{ModuleName}"
+    enum="WhatsNewModulePosition" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that the user clicked play on a video in the {ModuleName} module on
+    the What's New page. The value indicates the module's position in its
+    section.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.RestartClicked.{ModuleName}"
+    enum="WhatsNewModulePosition" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that the user clicked restart on a video in the {ModuleName} module
+    on the What's New page. The value indicates the module's position in its
+    section.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
+</histogram>
+
 <histogram name="UserEducation.WhatsNew.ScrollDepth" enum="ScrollDepthQuartile"
     expires_after="2025-04-06">
   <owner>mickeyburks@chromium.org</owner>
@@ -411,6 +447,28 @@ chromium-metrics-reviews@google.com.
     Records the time it took in milliseconds for the embedded What's New page to
     load after the WebUI was created.
   </summary>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.VideoEnded.{ModuleName}"
+    enum="WhatsNewModulePosition" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that a video in the {ModuleName} module on the What's New page
+    ended. The value indicates the module's position in its section.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.VideoStarted.{ModuleName}"
+    enum="WhatsNewModulePosition" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that a video in the {ModuleName} module on the What's New page
+    started. The value indicates the module's position in its section.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
 </histogram>
 
 <histogram name="WhatsNew.LoadEvent" enum="WhatsNewLoadEvent"

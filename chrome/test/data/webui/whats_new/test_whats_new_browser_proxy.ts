@@ -28,6 +28,11 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
       'recordScrollDepth',
       'recordTimeOnPage',
       'recordModuleLinkClicked',
+      'recordModuleVideoStarted',
+      'recordModuleVideoEnded',
+      'recordModulePlayClicked',
+      'recordModulePauseClicked',
+      'recordModuleRestartClicked',
       'recordBrowserCommandExecuted',
     ]);
 
@@ -69,6 +74,26 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
 
   recordModuleLinkClicked(moduleName: string, position: ModulePosition) {
     this.methodCalled('recordModuleLinkClicked', moduleName, position);
+  }
+
+  recordModuleVideoStarted(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModuleVideoStarted', moduleName, position);
+  }
+
+  recordModuleVideoEnded(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModuleVideoEnded', moduleName, position);
+  }
+
+  recordModulePlayClicked(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModulePlayClicked', moduleName, position);
+  }
+
+  recordModulePauseClicked(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModulePauseClicked', moduleName, position);
+  }
+
+  recordModuleRestartClicked(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModuleRestartClicked', moduleName, position);
   }
 
   recordBrowserCommandExecuted() {
