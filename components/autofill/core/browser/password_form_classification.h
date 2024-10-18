@@ -40,7 +40,10 @@ struct PasswordFormClassification {
     // i.e. there is only a username field.
     kSingleUsernameForm = 5
   } type = Type::kNoPasswordForm;
+
+  // The IDs of fields of the `PasswordForm`, if they exist.
   std::optional<FieldGlobalId> username_field;
+  std::optional<FieldGlobalId> password_field;
 };
 
 }  // namespace autofill

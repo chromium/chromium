@@ -309,6 +309,37 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
       ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress)));
 }
 
+// Tests that creation is offered on forms classified by PWM as login forms if
+// the password field is hidden.
+TEST_F(PlusAddressSuggestionGeneratorTest,
+       SuggestionsOnLoginFormWithHiddenPasswordField) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressOfferCreationIfPasswordFieldIsNotVisible};
+
+  PlusAddressSuggestionGenerator generator(
+      &setting_service(), &allocator(),
+      url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
+  FormData form = autofill::test::CreateTestPasswordFormData();
+  {
+    std::vector<autofill::FormFieldData> fields = form.ExtractFields();
+    fields[1].set_is_visible(false);
+    form.set_fields(std::move(fields));
+  }
+  form = SetGeneratedFrameTokenAndHostFormId(std::move(form));
+  const FieldGlobalId focused_field_id = form.fields()[0].global_id();
+  PasswordFormClassification classification;
+  classification.type = PasswordFormClassification::Type::kLoginForm;
+  classification.username_field = focused_field_id;
+  classification.password_field = form.fields()[1].global_id();
+  EXPECT_THAT(
+      generator.GetSuggestions(
+          /*affiliated_plus_addresses=*/{},
+          /*is_creation_enabled=*/true, form, /*form_field_type_groups=*/{},
+          classification, focused_field_id,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked),
+      ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress)));
+}
+
 // Tests properties of the label for suggestions for 2nd (and subsequent)
 // create.
 // - On Android, there should be no label.

@@ -272,7 +272,8 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnMainFrame) {
 
   const auto expected = PasswordFormClassification{
       .type = PasswordFormClassification::Type::kLoginForm,
-      .username_field = form.fields()[0].global_id()};
+      .username_field = form.fields()[0].global_id(),
+      .password_field = form.fields()[1].global_id()};
   EXPECT_EQ(client()->ClassifyAsPasswordForm(
                 autofill_driver->GetAutofillManager(), form.global_id(),
                 form.fields()[0].global_id()),
@@ -334,7 +335,8 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnChildFrame) {
   // The form fields in the child frame form a login form.
   const auto expected = PasswordFormClassification{
       .type = PasswordFormClassification::Type::kLoginForm,
-      .username_field = child_form.fields()[0].global_id()};
+      .username_field = child_form.fields()[0].global_id(),
+      .password_field = child_form.fields()[1].global_id()};
   EXPECT_EQ(client()->ClassifyAsPasswordForm(
                 main_driver->GetAutofillManager(), main_form.global_id(),
                 child_form.fields()[0].global_id()),

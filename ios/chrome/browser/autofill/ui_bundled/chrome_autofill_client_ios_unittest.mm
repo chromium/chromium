@@ -138,7 +138,8 @@ TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm) {
   FormData form_data = form.ToFormData();
   const auto expected = PasswordFormClassification{
       .type = PasswordFormClassification::Type::kLoginForm,
-      .username_field = form_data.fields()[0].global_id()};
+      .username_field = form_data.fields()[0].global_id(),
+      .password_field = form_data.fields()[1].global_id()};
   EXPECT_EQ(client().ClassifyAsPasswordForm(*main_frame_manager(),
                                             form_data.global_id(),
                                             form_data.fields()[0].global_id()),
@@ -179,7 +180,8 @@ TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm_AcrossFrames) {
   // Verify that the password renderer form is classified as a password form.
   const auto expected = PasswordFormClassification{
       .type = PasswordFormClassification::Type::kLoginForm,
-      .username_field = browser_form.fields()[0].global_id()};
+      .username_field = browser_form.fields()[0].global_id(),
+      .password_field = browser_form.fields()[1].global_id()};
   EXPECT_EQ(client().ClassifyAsPasswordForm(
                 *main_frame_manager(), browser_form.global_id(),
                 browser_form.fields()[0].global_id()),

@@ -1340,10 +1340,15 @@ autofill::PasswordFormClassification ClassifyAsPasswordForm(
   }
   autofill::PasswordFormClassification result{
       .type = pw_form->GetPasswordFormType()};
-  if (!pw_form->username_element_renderer_id.is_null()) {
-    result.username_field = autofill::FieldGlobalId(
-        renderer_form.host_frame(), pw_form->username_element_renderer_id);
-  }
+  auto maybe_assign = [frame = renderer_form.host_frame()](
+                          std::optional<autofill::FieldGlobalId>& member,
+                          autofill::FieldRendererId id) {
+    if (!id.is_null()) {
+      member = autofill::FieldGlobalId(frame, id);
+    }
+  };
+  maybe_assign(result.username_field, pw_form->username_element_renderer_id);
+  maybe_assign(result.password_field, pw_form->password_element_renderer_id);
   return result;
 }
 

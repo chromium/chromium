@@ -36,6 +36,19 @@ using autofill::PasswordFormClassification;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 
+bool IsPasswordFieldVisible(
+    const autofill::FormData& focused_form,
+    const PasswordFormClassification& form_classification) {
+  if (!form_classification.password_field) {
+    return false;
+  }
+  // This visibility check is far from perfect - for example, fields may still
+  // be transparent, have tiny sizes, etc., and this will not pick up on it.
+  const FormFieldData* const pw_field =
+      focused_form.FindFieldByGlobalId(*form_classification.password_field);
+  return pw_field && pw_field->is_visible();
+}
+
 // Returns `true` when we wish to offer plus address creation on a form with
 // password manager classification `form_classification` and a focused field
 // with id `focused_field_id`.
@@ -97,6 +110,11 @@ bool ShouldOfferPlusAddressCreationOnForm(
     case PasswordFormClassification::Type::kSignupForm:
       return true;
     case PasswordFormClassification::Type::kLoginForm:
+      if (base::FeatureList::IsEnabled(
+              features::kPlusAddressOfferCreationIfPasswordFieldIsNotVisible) &&
+          !IsPasswordFieldVisible(focused_form, form_classification)) {
+        return true;
+      }
       return base::FeatureList::IsEnabled(
                  features::kPlusAddressRefinedPasswordFormClassification) &&
              form_has_unexpected_field_types_for_login_form();
