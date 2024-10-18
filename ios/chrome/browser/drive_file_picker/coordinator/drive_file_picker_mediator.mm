@@ -48,6 +48,9 @@ NSString* kMyDriveFolderIdentifier = @"root";
 constexpr int kBackgroundImageResizeDimension = 64;
 // Dimension to resize thumbnails.
 constexpr int kThumbnailResizeDimension = 64;
+// Prefix of links to icons in the Drive third-party icon repository.
+NSString* kDriveIconRepositoryPrefix =
+    @"https://drive-thirdparty.googleusercontent.com/";
 
 }  // namespace
 
@@ -403,6 +406,7 @@ constexpr int kThumbnailResizeDimension = 64;
   CHECK(driveItem);
   NSString* imageLink = GetImageLinkForDriveItem(*driveItem);
   CHECK(imageLink);
+  BOOL isIcon = [imageLink isEqualToString:driveItem->icon_link];
   BOOL isThumbnail = [imageLink isEqualToString:driveItem->thumbnail_link];
   BOOL isBackgroundImage =
       [imageLink isEqualToString:driveItem->background_image_link];
@@ -436,9 +440,27 @@ constexpr int kThumbnailResizeDimension = 64;
   }
   [_imagesPending addObject:imageLink];
   // Otherwise fetch the image.
-  GURL imageURL = GURL(base::SysNSStringToUTF16(imageLink));
+  NSString* processedImageLink;
+  if (!isIcon) {
+    // If the image link is not coming from `item.icon_link` then no
+    // post-processing step is required.
+    processedImageLink = imageLink;
+  } else {
+    // By default drive api provides a 16 resolution icons, replacing 16 by 64
+    // in the icon URLs provide better sized icons e.g. the URL
+    // https://drive-thirdparty.googleusercontent.com/16/type/video/mp4 becomes
+    // https://drive-thirdparty.googleusercontent.com/64/type/video/mp4
+    NSString* target =
+        [kDriveIconRepositoryPrefix stringByAppendingString:@"16"];
+    NSString* replacement =
+        [kDriveIconRepositoryPrefix stringByAppendingString:@"64"];
+    processedImageLink =
+        [imageLink stringByReplacingOccurrencesOfString:target
+                                             withString:replacement];
+  }
+  GURL processedImageURL = GURL(base::SysNSStringToUTF16(processedImageLink));
   _imageFetcher->FetchImageData(
-      imageURL,
+      processedImageURL,
       base::BindOnce(
           [](DriveFilePickerMediator* mediator, NSString* imageLink,
              NSString* itemIdentifier, BOOL isThumbnail, BOOL isBackgroundImage,
