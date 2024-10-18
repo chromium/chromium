@@ -73,8 +73,8 @@ RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
     ScriptState* script_state,
     DedicatedWorker* worker,
     ExceptionState& exception_state) {
-  HeapVector<ScriptValue> transfer;
-  return Create(script_state, worker, ScriptValue(), transfer, exception_state);
+  return Create(script_state, worker, ScriptValue(), /* transfer= */ {},
+                exception_state);
 }
 
 RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
@@ -82,15 +82,15 @@ RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
     DedicatedWorker* worker,
     const ScriptValue& message,
     ExceptionState& exception_state) {
-  HeapVector<ScriptValue> transfer;
-  return Create(script_state, worker, message, transfer, exception_state);
+  return Create(script_state, worker, message, /* transfer= */ {},
+                exception_state);
 }
 
 RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
     ScriptState* script_state,
     DedicatedWorker* worker,
     const ScriptValue& message,
-    HeapVector<ScriptValue>& transfer,
+    HeapVector<ScriptValue> transfer,
     ExceptionState& exception_state) {
   auto* transform = MakeGarbageCollected<RTCRtpScriptTransform>();
   worker->PostCustomEvent(

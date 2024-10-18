@@ -693,6 +693,13 @@ def _make_reflect_process_keyword_state(cg_context):
     return SequenceNode(nodes)
 
 
+def _wrap_passed_argument(name, idl_type):
+    assert isinstance(idl_type, web_idl.IdlType)
+    if not idl_type.unwrap().is_sequence:
+        return name
+    return _format("std::move({})", name)
+
+
 def _make_blink_api_call(code_node,
                          cg_context,
                          num_of_args=None,
@@ -761,13 +768,17 @@ def _make_blink_api_call(code_node,
     elif cg_context.attribute_get:
         pass
     elif cg_context.attribute_set:
-        arguments.append("${arg1_value}")
+        arguments.append(
+            _wrap_passed_argument("${arg1_value}",
+                                  cg_context.attribute.idl_type))
     else:
         for index, argument in enumerate(cg_context.function_like.arguments):
             if num_of_args is not None and index == num_of_args:
                 break
             name = name_style.arg_f("arg{}_{}", index + 1, argument.identifier)
-            arguments.append(_format("${{{}}}", name))
+            arguments.append(
+                _wrap_passed_argument(_format("${{{}}}", name),
+                                      argument.idl_type))
 
     if cg_context.may_throw_exception:
         arguments.append("${exception_state}")

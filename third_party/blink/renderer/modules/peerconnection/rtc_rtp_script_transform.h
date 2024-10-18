@@ -48,7 +48,7 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
   static RTCRtpScriptTransform* Create(ScriptState*,
                                        DedicatedWorker* worker,
                                        const ScriptValue& message,
-                                       HeapVector<ScriptValue>& transfer,
+                                       HeapVector<ScriptValue> transfer,
                                        ExceptionState&);
 
   RTCRtpScriptTransform() = default;

@@ -127,10 +127,10 @@ void PagePopupController::Trace(Visitor* visitor) const {
 }
 
 void PagePopupController::setMenuListOptionsBoundsInAXTree(
-    HeapVector<Member<DOMRect>>& options_bounds,
+    const HeapVector<Member<DOMRect>>& options_bounds,
     bool children_updated) {
   options_bounds_.clear();
-  for (auto option_bounds : options_bounds) {
+  for (const auto& option_bounds : options_bounds) {
     options_bounds_.emplace_back(
         gfx::Rect(option_bounds->x(), option_bounds->y(),
                   option_bounds->width(), option_bounds->height()));

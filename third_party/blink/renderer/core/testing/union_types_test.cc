@@ -83,7 +83,7 @@ String UnionTypesTest::doubleOrInternalEnumArg(
 }
 
 String UnionTypesTest::doubleOrStringSequenceArg(
-    HeapVector<Member<V8UnionDoubleOrString>>& sequence) {
+    const HeapVector<Member<V8UnionDoubleOrString>>& sequence) {
   StringBuilder builder;
   for (auto& double_or_string : sequence) {
     DCHECK(double_or_string);

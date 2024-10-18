@@ -68,14 +68,14 @@ void RTCRtpTransport::createProcessor(ScriptState* script_state,
                                       DedicatedWorker* worker,
                                       const ScriptValue& options,
                                       ExceptionState& exception_state) {
-  HeapVector<ScriptValue> transfer;
-  createProcessor(script_state, worker, options, transfer, exception_state);
+  createProcessor(script_state, worker, options, /* transfer=*/{},
+                  exception_state);
 }
 
 void RTCRtpTransport::createProcessor(ScriptState* script_state,
                                       DedicatedWorker* worker,
                                       const ScriptValue& options,
-                                      HeapVector<ScriptValue>& transfer,
+                                      HeapVector<ScriptValue> transfer,
                                       ExceptionState& exception_state) {
   worker->PostCustomEvent(
       TaskType::kInternalMediaRealTime, script_state,
@@ -83,7 +83,7 @@ void RTCRtpTransport::createProcessor(ScriptState* script_state,
           &CreateEvent, MakeCrossThreadWeakHandle(this),
           ExecutionContext::From(script_state)
               ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
-      CrossThreadFunction<Event*(ScriptState*)>(), options, transfer,
+      CrossThreadFunction<Event*(ScriptState*)>(), options, std::move(transfer),
       exception_state);
 }
 

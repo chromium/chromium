@@ -80,11 +80,11 @@ V8ClientLifecycleState ServiceWorkerClient::lifecycleState() const {
 
 void ServiceWorkerClient::postMessage(ScriptState* script_state,
                                       const ScriptValue& message,
-                                      HeapVector<ScriptValue>& transfer,
+                                      HeapVector<ScriptValue> transfer,
                                       ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
   if (!transfer.empty())
-    options->setTransfer(transfer);
+    options->setTransfer(std::move(transfer));
   postMessage(script_state, message, options, exception_state);
 }
 

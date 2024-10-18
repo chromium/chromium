@@ -472,9 +472,10 @@ XRJointPose* XRFrame::getJointPose(XRJointSpace* joint,
                                            radius);
 }
 
-bool XRFrame::fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
-                             NotShared<DOMFloat32Array> radii,
-                             ExceptionState& exception_state) const {
+bool XRFrame::fillJointRadii(
+    const HeapVector<Member<XRJointSpace>>& jointSpaces,
+    NotShared<DOMFloat32Array> radii,
+    ExceptionState& exception_state) const {
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveFrame);
@@ -507,7 +508,7 @@ bool XRFrame::fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
   return all_valid;
 }
 
-bool XRFrame::fillPoses(HeapVector<Member<XRSpace>>& spaces,
+bool XRFrame::fillPoses(const HeapVector<Member<XRSpace>>& spaces,
                         XRSpace* baseSpace,
                         NotShared<DOMFloat32Array> transforms,
                         ExceptionState& exception_state) const {

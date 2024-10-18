@@ -186,7 +186,7 @@ const String& NavigatorUAData::platform() const {
 
 ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
     ScriptState* script_state,
-    Vector<String>& hints) const {
+    const Vector<String>& hints) const {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<UADataValues>>(script_state);
   auto promise = resolver->Promise();
