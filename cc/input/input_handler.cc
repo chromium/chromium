@@ -1816,12 +1816,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
   did_scroll_x_for_scroll_gesture_ |= scroll_state.caused_scroll_x();
   did_scroll_y_for_scroll_gesture_ |= scroll_state.caused_scroll_y();
 
-  if (scroll_state.is_in_inertial_phase()) {
-    // We cannot know what position a fling will settle at. So, reset the snap
-    // strategy so that we snap from the correct position at the end of the
-    // fling.
-    snap_strategy_.reset();
-  } else if (snap_strategy_offset) {
+  if (snap_strategy_offset && !scroll_state.is_in_inertial_phase()) {
     // We use |last_scroll_update_state_| instead of |scroll_state| as that more
     // closely matches what InputHandler::SnapAtScrollend would use.
     //
@@ -1989,7 +1984,7 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
   SnapContainerData& data = scroll_node->snap_container_data.value();
   gfx::PointF current_position = GetVisualScrollOffset(*scroll_node);
 
-  if (!snap_strategy_ || snap_fling_state_ == kConstrainedNativeFling) {
+  if (!snap_strategy_ || last_scroll_update_state_->is_in_inertial_phase()) {
     // If this was a constrained native fling, SnapFlingController would not
     // have had the correct final scroll position with which to create the snap
     // strategy.
