@@ -107,12 +107,13 @@ bool HMAC::VerifyTruncated(base::span<const uint8_t> data,
   if (digest.size() > digest_length)
     return false;
 
-  uint8_t computed_digest[EVP_MAX_MD_SIZE];
-  CHECK_LE(digest.size(), size_t{EVP_MAX_MD_SIZE});
-  if (!Sign(data, base::make_span(computed_digest, digest.size())))
+  std::array<uint8_t, EVP_MAX_MD_SIZE> computed_buffer;
+  auto computed_digest = base::span(computed_buffer).subspan(0, digest.size());
+  if (!Sign(data, computed_digest)) {
     return false;
+  }
 
-  return SecureMemEqual(digest.data(), computed_digest, digest.size());
+  return SecureMemEqual(digest, computed_digest);
 }
 
 }  // namespace crypto

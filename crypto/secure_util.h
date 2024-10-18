@@ -7,12 +7,16 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {
 
 // Performs a constant-time comparison of two strings, returning true if the
-// strings are equal.
+// strings are equal. Note that while the contents of the strings are not
+// leaked, their *lengths* may be leaked - there is no way to do a comparison
+// whose timing does not depend, at least coarsely, on the length of the data
+// being compared.
 //
 // For cryptographic operations, comparison functions such as memcmp() may
 // expose side-channel information about input, allowing an attacker to
@@ -21,7 +25,8 @@ namespace crypto {
 // so as to not to reveal to the attacker where the difference(s) are.
 // For an example attack, see
 // http://groups.google.com/group/keyczar-discuss/browse_thread/thread/5571eca0948b2a13
-CRYPTO_EXPORT bool SecureMemEqual(const void* s1, const void* s2, size_t n);
+CRYPTO_EXPORT bool SecureMemEqual(base::span<const uint8_t> s1,
+                                  base::span<const uint8_t> s2);
 
 }  // namespace crypto
 

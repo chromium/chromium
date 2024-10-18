@@ -280,10 +280,7 @@ class HmacImplementation : public AlgorithmImplementation {
     if (status.IsError())
       return status;
 
-    // Do not allow verification of truncated MACs.
-    *signature_match = result.size() == signature.size() &&
-                       crypto::SecureMemEqual(result.data(), signature.data(),
-                                              signature.size());
+    *signature_match = crypto::SecureMemEqual(result, signature);
 
     return Status::Success();
   }
