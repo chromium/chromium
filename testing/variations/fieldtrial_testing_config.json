@@ -19650,26 +19650,6 @@
             ]
         }
     ],
-    "ReportCertificateErrors": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ShowAndPossiblySend",
-                    "params": {
-                        "sendingThreshold": "1.0"
-                    }
-                }
-            ]
-        }
-    ],
     "ReportEventTimingAtVisibilityChange": [
         {
             "platforms": [
