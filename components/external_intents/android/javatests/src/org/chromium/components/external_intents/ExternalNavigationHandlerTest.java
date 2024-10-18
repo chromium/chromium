@@ -942,7 +942,7 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testCCTIntentUriDoesNotFireCCTAndLoadInChrome_InIncognito() throws Exception {
+    public void testCctIntentUriDoesNotFireCctAndLoadInChrome_InIncognito() throws Exception {
         mUrlHandler.mResolveInfoContainsSelf = true;
         mDelegate.setCanLoadUrlInTab(false);
         checkUrl(INTENT_URL_FOR_SELF_CUSTOM_TABS, redirectHandlerForLinkClick())
@@ -954,7 +954,7 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testCCTIntentUriFiresCCT_InRegular() throws Exception {
+    public void testCctIntentUriFiresCct_InRegular() throws Exception {
         checkUrl(INTENT_URL_FOR_SELF_CUSTOM_TABS, redirectHandlerForLinkClick())
                 .withIsIncognito(false)
                 .expecting(

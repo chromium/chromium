@@ -126,7 +126,7 @@ public final class ReadAloudFeatures {
     }
 
     /** Returns true if Read Aloud entrypoint can be added to overflow menu in CCT. */
-    public static boolean isEnabledForOverflowMenuInCCT() {
+    public static boolean isEnabledForOverflowMenuInCct() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT);
     }
 
@@ -143,7 +143,7 @@ public final class ReadAloudFeatures {
     }
 
     /** Returns true if the ReadAloud CCT IPH should highlight the menu button. */
-    public static boolean isIPHMenuButtonHighlightCCTEnabled() {
+    public static boolean isIPHMenuButtonHighlightCctEnabled() {
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT);
     }

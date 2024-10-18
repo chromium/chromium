@@ -93,7 +93,7 @@ public class SigninHeaderTest {
 
     @Test
     @MediumTest
-    public void testXChromeConnectedHeader_In_CCT_ReturnsModeValueWithIncognitoOff()
+    public void testXChromeConnectedHeader_In_Cct_ReturnsModeValueWithIncognitoOff()
             throws TimeoutException {
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
@@ -108,7 +108,7 @@ public class SigninHeaderTest {
 
     @Test
     @MediumTest
-    public void testXChromeConnectedHeader_InNonCCT_ReturnsModeWithIncognitoOn()
+    public void testXChromeConnectedHeader_InNonCct_ReturnsModeWithIncognitoOn()
             throws TimeoutException {
         mChromeActivityTestRule.loadUrl(mGAIAUrl);
         Tab tab = mChromeActivityTestRule.getActivity().getActivityTab();

@@ -71,7 +71,7 @@ public class IncognitoCustomTabActivityRenderTest {
     public void setUp() throws TimeoutException {
         mEmbeddedTestServerRule.setServerUsesHttps(mRunWithHttps);
         mEmbeddedTestServerRule.setServerPort(PORT_NO);
-        prepareCCTIntent();
+        prepareCctIntent();
 
         IncognitoDataTestUtils.fireAndWaitForCctWarmup();
     }
@@ -80,7 +80,7 @@ public class IncognitoCustomTabActivityRenderTest {
         mRunWithHttps = runWithHttps;
     }
 
-    private void prepareCCTIntent() {
+    private void prepareCctIntent() {
         String url = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
         mIntent =
                 CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
@@ -106,14 +106,14 @@ public class IncognitoCustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testCCTToolbar() throws IOException {
+    public void testCctToolbar() throws IOException {
         startActivity("default_incognito_cct_toolbar_with_https" + testIdSuffix());
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testCCTToolbarInLandscapeMode() throws IOException {
+    public void testCctToolbarInLandscapeMode() throws IOException {
         startActivity(
                 "default_incognito_cct_toolbar_in_landscape_with_https" + testIdSuffix(),
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

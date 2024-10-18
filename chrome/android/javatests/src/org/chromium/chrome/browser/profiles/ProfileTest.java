@@ -216,46 +216,46 @@ public class ProfileTest {
     public void testCreatingUniqueIncognitoCCTOtrProfileIds() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OtrProfileId incognitoCCTId1 = OtrProfileId.createUniqueIncognitoCCTId();
-                    OtrProfileId incognitoCCTId2 = OtrProfileId.createUniqueIncognitoCCTId();
+                    OtrProfileId incognitoCctId1 = OtrProfileId.createUniqueIncognitoCctId();
+                    OtrProfileId incognitoCctId2 = OtrProfileId.createUniqueIncognitoCctId();
 
                     Assert.assertNotSame(
-                            "Two calls to OtrProfileId.createUniqueIncognitoCCTId"
+                            "Two calls to OtrProfileId.createUniqueIncognitoCctId"
                                     + "should return different objects.",
-                            incognitoCCTId1,
-                            incognitoCCTId2);
-                    Assert.assertTrue(incognitoCCTId1.isIncognitoCCId());
-                    Assert.assertTrue(incognitoCCTId2.isIncognitoCCId());
+                            incognitoCctId1,
+                            incognitoCctId2);
+                    Assert.assertTrue(incognitoCctId1.isIncognitoCCId());
+                    Assert.assertTrue(incognitoCctId2.isIncognitoCCId());
                 });
     }
 
     /** Tests creating iCCT profile. */
     @Test
     @LargeTest
-    public void testIncognitoCCTProfileCreation() throws Exception {
-        OtrProfileId incognitoCCTId = OtrProfileId.createUniqueIncognitoCCTId();
-        Profile incognitoCCTProfile =
+    public void testIncognitoCctProfileCreation() throws Exception {
+        OtrProfileId incognitoCctId = OtrProfileId.createUniqueIncognitoCctId();
+        Profile incognitoCctProfile =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
-                                        incognitoCCTId, /* createIfNeeded= */ true));
+                                        incognitoCctId, /* createIfNeeded= */ true));
 
         Assert.assertTrue(
                 "isOffTheRecord should be true for Incognito CCT profiles",
-                incognitoCCTProfile.isOffTheRecord());
+                incognitoCctProfile.isOffTheRecord());
         Assert.assertTrue(
                 "isIncognitoBranded should be true for Incognito CCT profiles",
-                incognitoCCTProfile.isIncognitoBranded());
+                incognitoCctProfile.isIncognitoBranded());
         Assert.assertFalse(
                 "isPrimaryOtrProfile should be false for Incognito CCT profiles",
-                incognitoCCTProfile.isPrimaryOtrProfile());
+                incognitoCctProfile.isPrimaryOtrProfile());
         Assert.assertTrue(
                 "isNativeInitialized should be true for Incognito CCT profiles",
-                incognitoCCTProfile.isNativeInitialized());
+                incognitoCctProfile.isNativeInitialized());
         Assert.assertTrue(
                 "The regular profile should return the Incognito CCT profile from the OTR profile"
                         + " id",
-                mRegularProfile.hasOffTheRecordProfile(incognitoCCTId));
+                mRegularProfile.hasOffTheRecordProfile(incognitoCctId));
     }
 
     @Test

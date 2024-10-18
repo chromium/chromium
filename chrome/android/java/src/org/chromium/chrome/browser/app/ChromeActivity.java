@@ -1697,7 +1697,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         WarmupManager warmupManager = WarmupManager.getInstance();
-        if (!warmupManager.isCCTPrewarmTabFeatureEnabled(false)) {
+        if (!warmupManager.isCctPrewarmTabFeatureEnabled(false)) {
             // Destroy spare tab on activity destruction.
             warmupManager.destroySpareTab();
         }

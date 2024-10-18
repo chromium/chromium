@@ -701,7 +701,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // Use Incognito CCT if the source page is in Incognito mode.
         if (mTab.isIncognito()) {
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                    customTabsIntent.intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
+                    customTabsIntent.intent, IntentHandler.IncognitoCctCallerId.READER_MODE);
         }
 
         customTabsIntent.launchUrl(activity, Uri.parse(distillerUrl));

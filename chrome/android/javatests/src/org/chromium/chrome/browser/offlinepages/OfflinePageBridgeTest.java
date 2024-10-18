@@ -253,7 +253,7 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
-    public void testOfflinePageBridgeDisabled_InIncognitoCCT() throws Exception {
+    public void testOfflinePageBridgeDisabled_InIncognitoCct() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
@@ -270,7 +270,7 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
-    public void testOfflinePageBridgeForProfileKeyDisabled_InIncognitoCCT() throws Exception {
+    public void testOfflinePageBridgeForProfileKeyDisabled_InIncognitoCct() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");

@@ -72,24 +72,24 @@ public class CustomTabActivityLifecycleUmaTracker
 
     private void recordIncognitoLaunchReason() {
         // TODO(crbug.com/352525607): Separate Ephemeral and Incognito CCT metrics.
-        @IntentHandler.IncognitoCCTCallerId int incognitoCCTCallerId;
+        @IntentHandler.IncognitoCctCallerId int incognitoCctCallerId;
         if (mIntentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO) {
-            incognitoCCTCallerId =
+            incognitoCctCallerId =
                     ((IncognitoCustomTabIntentDataProvider) mIntentDataProvider)
                             .getFeatureIdForMetricsCollection();
         } else {
-            incognitoCCTCallerId =
+            incognitoCctCallerId =
                     ((EphemeralCustomTabIntentDataProvider) mIntentDataProvider)
                             .getFeatureIdForMetricsCollection();
         }
 
         RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.IncognitoCCTCallerId",
-                incognitoCCTCallerId,
-                IntentHandler.IncognitoCCTCallerId.NUM_ENTRIES);
+                "CustomTabs.IncognitoCctCallerId",
+                incognitoCctCallerId,
+                IntentHandler.IncognitoCctCallerId.NUM_ENTRIES);
 
         // Record which 1P app launched Incognito CCT.
-        if (incognitoCCTCallerId == IntentHandler.IncognitoCCTCallerId.GOOGLE_APPS) {
+        if (incognitoCctCallerId == IntentHandler.IncognitoCctCallerId.GOOGLE_APPS) {
             String sendersPackageName = mIntentDataProvider.getClientPackageName();
             @IntentHandler.ExternalAppId
             int externalId = IntentHandler.mapPackageToExternalAppId(sendersPackageName);

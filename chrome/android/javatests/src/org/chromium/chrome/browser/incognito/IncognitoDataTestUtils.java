@@ -62,7 +62,7 @@ public class IncognitoDataTestUtils {
                 CustomTabActivityTestRule customTabActivityTestRule,
                 String url) {
             if (cct) {
-                return launchUrlInCCT(customTabActivityTestRule, url, incognito);
+                return launchUrlInCct(customTabActivityTestRule, url, incognito);
             } else {
                 return launchUrlInTab(chromeTabbedActivityRule, url, incognito);
             }
@@ -189,7 +189,7 @@ public class IncognitoDataTestUtils {
         return tab;
     }
 
-    private static Tab launchUrlInCCT(
+    private static Tab launchUrlInCct(
             CustomTabActivityTestRule testRule, String url, boolean incognito) {
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =

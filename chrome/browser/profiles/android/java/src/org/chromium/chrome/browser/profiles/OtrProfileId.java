@@ -39,7 +39,7 @@ public class OtrProfileId {
      * Creates a new unique Incognito CCT profile id by appending a unique serial number to the iCCT
      * OTR profile id prefix {@link #INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX}.
      */
-    public static OtrProfileId createUniqueIncognitoCCTId() {
+    public static OtrProfileId createUniqueIncognitoCctId() {
         return OtrProfileIdJni.get().createUniqueOtrProfileId(INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX);
     }
 

@@ -2801,7 +2801,7 @@ public class CustomTabActivityTest {
 
     @Test
     @MediumTest
-    public void omniboxInCCT_testInteractiveOmniboxOnEligibleCCTs() throws Exception {
+    public void omniboxInCct_testInteractiveOmniboxOnEligibleCcts() throws Exception {
         // Permit Omnibox for any upcoming intent(s).
         var connection = Mockito.spy(CustomTabsConnection.getInstance());
         doReturn(true).when(connection).shouldEnableOmniboxForIntent(any());
@@ -2827,7 +2827,7 @@ public class CustomTabActivityTest {
 
     @Test
     @MediumTest
-    public void omniboxInCCT_testInteractiveOmniboxOnEligibleCCTsWithAlternateHandler()
+    public void omniboxInCct_testInteractiveOmniboxOnEligibleCctsWithAlternateHandler()
             throws Exception {
         var connection = Mockito.spy(CustomTabsConnection.getInstance());
         // Permit Omnibox for any upcoming intent(s).
@@ -2858,7 +2858,7 @@ public class CustomTabActivityTest {
 
     @Test
     @MediumTest
-    public void omniboxInCCT_testNonInteractiveOmniboxWhenIntentNotEligible() {
+    public void omniboxInCct_testNonInteractiveOmniboxWhenIntentNotEligible() {
         // By default, omnibox in CCT is not permitted and no stubbing is necessary.
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);

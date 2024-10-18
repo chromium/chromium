@@ -195,7 +195,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    public void testUI_notTriggered_contextualPageActionUiEnabled_exceptOnCCT() {
+    public void testUI_notTriggered_contextualPageActionUiEnabled_exceptOnCct() {
         when(mTab.isCustomTab()).thenReturn(true);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(

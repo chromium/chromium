@@ -267,7 +267,7 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    public void toolbarHasRegularProfile_ForRegularCCT() {
+    public void toolbarHasRegularProfile_ForRegularCct() {
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ApplicationProvider.getApplicationContext(), "about:blank");
@@ -399,7 +399,7 @@ public class CustomTabActivityIncognitoTest {
         Intent intent = createTestCustomTabIntent();
         CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
         IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
+                intent, IntentHandler.IncognitoCctCallerId.READER_MODE);
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);
 

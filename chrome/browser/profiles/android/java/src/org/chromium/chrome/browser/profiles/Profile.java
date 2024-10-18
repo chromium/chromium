@@ -129,8 +129,8 @@ public class Profile implements BrowserContextHandle {
      * usage, reach out to incognito/OWNERS.
      */
     public boolean isIncognitoBranded() {
-        boolean isIncognitoCCT = mOtrProfileId != null && mOtrProfileId.isIncognitoCCId();
-        return isPrimaryOtrProfile() || isIncognitoCCT;
+        boolean isIncognitoCct = mOtrProfileId != null && mOtrProfileId.isIncognitoCCId();
+        return isPrimaryOtrProfile() || isIncognitoCct;
     }
 
     /**

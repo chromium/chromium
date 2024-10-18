@@ -661,10 +661,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             mItemDelegate.onOpenInChrome(mParams.getUrl(), mParams.getPageUrl());
         } else if (itemId == R.id.contextmenu_open_in_new_chrome_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_CHROME_TAB);
-            mItemDelegate.onOpenInNewChromeTabFromCCT(mParams.getUrl(), false);
+            mItemDelegate.onOpenInNewChromeTabFromCct(mParams.getUrl(), false);
         } else if (itemId == R.id.contextmenu_open_in_chrome_incognito_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_CHROME_INCOGNITO_TAB);
-            mItemDelegate.onOpenInNewChromeTabFromCCT(mParams.getUrl(), true);
+            mItemDelegate.onOpenInNewChromeTabFromCct(mParams.getUrl(), true);
         } else if (itemId == R.id.contextmenu_open_in_browser_id) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_BROWSER);
             mItemDelegate.onOpenInDefaultBrowser(mParams.getUrl());

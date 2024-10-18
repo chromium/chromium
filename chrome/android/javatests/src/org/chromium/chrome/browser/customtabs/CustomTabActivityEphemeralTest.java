@@ -84,7 +84,7 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
 @Batch(Batch.PER_CLASS)
 public class CustomTabActivityEphemeralTest {
-    private static final String HISTOGRAM_NAME = "CustomTabs.IncognitoCCTCallerId";
+    private static final String HISTOGRAM_NAME = "CustomTabs.IncognitoCctCallerId";
 
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private String mTestPage;
@@ -397,7 +397,7 @@ public class CustomTabActivityEphemeralTest {
     public void recordsHistogramEphemeral() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM_NAME, IntentHandler.IncognitoCCTCallerId.EPHEMERAL_TAB);
+                        HISTOGRAM_NAME, IntentHandler.IncognitoCctCallerId.EPHEMERAL_TAB);
         launchEphemeralCustomTabActivity();
         histogramWatcher.assertExpected();
     }

@@ -159,7 +159,7 @@ public class WarmupManager {
     private ViewGroup mMainView;
     @VisibleForTesting WebContents mSpareWebContents;
     private RenderProcessGoneObserver mObserver;
-    private boolean mIsCCTPrewarmTabEnabled;
+    private boolean mIsCctPrewarmTabEnabled;
 
     // Stores a prebuilt tab. To load a URL, this can be used if available instead of creating one
     // from scratch.
@@ -634,9 +634,9 @@ public class WarmupManager {
      * @param verifiedSourceOrigin The origin that prefetch is requested from. Currently, this is
      *     always null.
      */
-    public void startPrefetchFromCCT(
+    public void startPrefetchFromCct(
             String url, boolean usePrefetchProxy, @Nullable String verifiedSourceOrigin) {
-        try (TraceEvent e = TraceEvent.scoped("WarmupManager.startPrefetchFromCCT")) {
+        try (TraceEvent e = TraceEvent.scoped("WarmupManager.startPrefetchFromCct")) {
             ThreadUtils.assertOnUiThread();
             if (!ChromeFeatureList.sPrefetchBrowserInitiatedTriggers.isEnabled()
                     || !ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
@@ -668,7 +668,7 @@ public class WarmupManager {
                 origin = Origin.create(new GURL(verifiedSourceOrigin));
             }
             WarmupManagerJni.get()
-                    .startPrefetchFromCCT(webContents, gurl, usePrefetchProxy, origin);
+                    .startPrefetchFromCct(webContents, gurl, usePrefetchProxy, origin);
         }
     }
 
@@ -742,12 +742,12 @@ public class WarmupManager {
     // regardless of whether they actually interact with the feature, cache the flag here.
     // This only works if no non-test code calls
     // ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB) directly.
-    public boolean isCCTPrewarmTabFeatureEnabled(boolean activateExperiment) {
+    public boolean isCctPrewarmTabFeatureEnabled(boolean activateExperiment) {
         if (activateExperiment) {
-            mIsCCTPrewarmTabEnabled =
+            mIsCctPrewarmTabEnabled =
                     ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB);
         }
-        return mIsCCTPrewarmTabEnabled;
+        return mIsCctPrewarmTabEnabled;
     }
 
     @NativeMethods
@@ -757,7 +757,7 @@ public class WarmupManager {
         void preconnectUrlAndSubresources(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String url);
 
-        void startPrefetchFromCCT(
+        void startPrefetchFromCct(
                 @JniType("content::WebContents*") WebContents webContents,
                 @JniType("GURL") GURL url,
                 boolean usePrefetchProxy,

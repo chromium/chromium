@@ -441,7 +441,7 @@ public class CustomTabActivityTabController
                 ProfileProvider.getOrCreateProfile(
                         mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());
         Tab tab = null;
-        if (WarmupManager.getInstance().isCCTPrewarmTabFeatureEnabled(true)
+        if (WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(true)
                 && warmupManager.hasSpareTab(profile)) {
             tab = warmupManager.takeSpareTab(profile, TabLaunchType.FROM_EXTERNAL_APP);
             TabAssociatedApp.from(tab)

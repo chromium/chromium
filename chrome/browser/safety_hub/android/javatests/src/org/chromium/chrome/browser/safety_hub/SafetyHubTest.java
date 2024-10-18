@@ -931,7 +931,7 @@ public final class SafetyHubTest {
     @Test
     @MediumTest
     @Feature({"SafetyHubTips"})
-    public void testSafetyToolsLearnMoreLink_OpensInCCT() {
+    public void testSafetyToolsLearnMoreLink_OpensInCct() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
         var histogramWatcher =
@@ -967,7 +967,7 @@ public final class SafetyHubTest {
     @Test
     @MediumTest
     @Feature({"SafetyHubTips"})
-    public void testIncognitoLearnMoreLink_OpensInCCT() {
+    public void testIncognitoLearnMoreLink_OpensInCct() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
         var histogramWatcher =
@@ -1003,7 +1003,7 @@ public final class SafetyHubTest {
     @Test
     @MediumTest
     @Feature({"SafetyHubTips"})
-    public void testSafeBrowsingLearnMoreLink_OpensInCCT() {
+    public void testSafeBrowsingLearnMoreLink_OpensInCct() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
         var histogramWatcher =

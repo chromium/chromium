@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mSideSheetMaxButtonCheckbox;
     private CheckBox mSideSheetRoundedCornerCheckbox;
     private CheckBox mContentScrollCheckbox;
-    private CheckBox mSearchInCCTCheckbox;
+    private CheckBox mSearchInCctCheckbox;
     private CheckBox mSendToExternalAppCheckbox;
     private CheckBox mShareIdentityCheckbox;
     private TextView mPcctBreakpointLabel;
@@ -703,8 +703,8 @@ public class MainActivity extends AppCompatActivity
         mContentScrollCheckbox = findViewById(R.id.content_scroll_checkbox);
         mContentScrollCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_CONTENT_SCROLL, UNCHECKED) == CHECKED);
-        mSearchInCCTCheckbox = findViewById(R.id.search_in_cct_checkbox);
-        mSearchInCCTCheckbox.setChecked(mSharedPref.getBoolean(SHARED_PREF_SEARCH_IN_CCT, false));
+        mSearchInCctCheckbox = findViewById(R.id.search_in_cct_checkbox);
+        mSearchInCctCheckbox.setChecked(mSharedPref.getBoolean(SHARED_PREF_SEARCH_IN_CCT, false));
         mShareIdentityCheckbox = findViewById(R.id.share_identity_checkbox);
         mShareIdentityCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SHARE_IDENTITY, UNCHECKED) == CHECKED);
@@ -897,7 +897,7 @@ public class MainActivity extends AppCompatActivity
             editor.putBoolean(SHARED_PREF_MAY_LAUNCH_BUTTON, mMayLaunchButton.isEnabled());
             editor.putBoolean(
                     SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON, mEngagementSignalsButton.isEnabled());
-            editor.putBoolean(SHARED_PREF_SEARCH_IN_CCT, mSearchInCCTCheckbox.isChecked());
+            editor.putBoolean(SHARED_PREF_SEARCH_IN_CCT, mSearchInCctCheckbox.isChecked());
             editor.apply();
         }
         super.onDestroy();
@@ -990,8 +990,8 @@ public class MainActivity extends AppCompatActivity
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
         prepareMenuItems(builder);
         prepareActionButton(builder);
-        boolean isPCCT = mCctType.equals(CCT_OPTION_PARTIAL);
-        prepareAesthetics(builder, isPCCT);
+        boolean isPcct = mCctType.equals(CCT_OPTION_PARTIAL);
+        prepareAesthetics(builder, isPcct);
 
         // @CloseButtonPosition
         int closeButtonPosition =
@@ -1017,7 +1017,7 @@ public class MainActivity extends AppCompatActivity
         CustomTabsIntent customTabsIntent;
         editor.putString(SHARED_PREF_CCT, mCctType);
 
-        if (isPCCT) {
+        if (isPcct) {
             int pcctInitialWidthPx = mPcctInitialWidthSlider.getProgress();
             if (pcctInitialWidthPx != 0) {
                 builder.setInitialActivityWidthPx(pcctInitialWidthPx);
@@ -1087,7 +1087,7 @@ public class MainActivity extends AppCompatActivity
             customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
         }
 
-        customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCCTCheckbox.isChecked());
+        customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCctCheckbox.isChecked());
 
         if (mCctType.equals(CCT_OPTION_AUTHTAB)) {
             launchAuthTab(url);

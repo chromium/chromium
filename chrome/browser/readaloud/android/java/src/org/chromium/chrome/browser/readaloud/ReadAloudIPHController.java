@@ -94,7 +94,7 @@ public class ReadAloudIPHController {
             boolean isHighlightEnabled =
                     mShowAppMenuTextBubble
                             ? true
-                            : ReadAloudFeatures.isIPHMenuButtonHighlightCCTEnabled();
+                            : ReadAloudFeatures.isIPHMenuButtonHighlightCctEnabled();
             mUserEducationHelper.requestShowIPH(
                     new IPHCommandBuilder(
                                     mToolbarMenuButton.getContext().getResources(),

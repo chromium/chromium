@@ -225,7 +225,7 @@ public class SiteChannelsManagerTest {
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
-    public void testBlockingPermissionInIncognitoCCTCreatesNoChannels() {
+    public void testBlockingPermissionInIncognitoCctCreatesNoChannels() {
         PermissionInfo info =
                 new PermissionInfo(
                         ContentSettingsType.NOTIFICATIONS,

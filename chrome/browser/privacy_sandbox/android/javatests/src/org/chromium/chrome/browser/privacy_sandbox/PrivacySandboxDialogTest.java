@@ -390,7 +390,7 @@ public final class PrivacySandboxDialogTest {
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
     @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
-    public void testCCTLaunchDialogUpdatesDialogClass() throws IOException {
+    public void testCctLaunchDialogUpdatesDialogClass() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
         // Launch a CCT activity and click a button
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(

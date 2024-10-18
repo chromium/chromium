@@ -1190,7 +1190,7 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void searchInCCT_originValidation() {
+    public void searchInCct_originValidation() {
         CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting(
                 "com.a.b.c|org.d.e.f");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -1211,7 +1211,7 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @DisableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void searchInCCT_allowedPackagesRejectedWithFeatureDisabled() {
+    public void searchInCct_allowedPackagesRejectedWithFeatureDisabled() {
         CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting(
                 "com.a.b.c|org.d.e.f");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -1232,7 +1232,7 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void searchInCCT_notAllowedInOffTheRecordMode() {
+    public void searchInCct_notAllowedInOffTheRecordMode() {
         CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
@@ -1248,7 +1248,7 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void searchInCCT_notAllowedOnPartialCCTs() {
+    public void searchInCct_notAllowedOnPartialCcts() {
         CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
@@ -1264,7 +1264,7 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void searchInCCT_notAllowedOnAutomotive() {
+    public void searchInCct_notAllowedOnAutomotive() {
         var shadowPkgMgr = Shadows.shadowOf(mContext.getPackageManager());
         shadowPkgMgr.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
         assertTrue(BuildInfo.getInstance().isAutomotive);

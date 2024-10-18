@@ -42,7 +42,7 @@ static void JNI_WarmupManager_PreconnectUrlAndSubresources(
   }
 }
 
-static void JNI_WarmupManager_StartPrefetchFromCCT(
+static void JNI_WarmupManager_StartPrefetchFromCct(
     JNIEnv* env,
     content::WebContents* web_contents,
     GURL& url,

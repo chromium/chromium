@@ -696,7 +696,7 @@ public class CustomTabsConnection {
         // (1) warmupInternal to initialize browser and prepare spare WebContents for (2), (3)
         // (2) validateSourceOriginOfPrefetch to register source origin of prefetch to
         //     OriginVerifier
-        // (3) startPrefetchFromCCT
+        // (3) startPrefetchFromCct
         // sequentially.
 
         // (3)
@@ -713,7 +713,7 @@ public class CustomTabsConnection {
                                 TaskTraits.UI_DEFAULT,
                                 () -> {
                                     WarmupManager.getInstance()
-                                            .startPrefetchFromCCT(
+                                            .startPrefetchFromCct(
                                                     urlString,
                                                     usePrefetchProxy,
                                                     verifiedSourceOrigin);
@@ -2075,7 +2075,7 @@ public class CustomTabsConnection {
     public static void createSpareWebContents(Profile profile) {
         if (sSkipTabPrewarmingForTesting) return;
         if (SysUtils.isLowEndDevice()) return;
-        if (WarmupManager.getInstance().isCCTPrewarmTabFeatureEnabled(true)) {
+        if (WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(true)) {
             WarmupManager.getInstance().createRegularSpareTab(profile);
         } else {
             WarmupManager.getInstance().createSpareWebContents(profile);

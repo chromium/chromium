@@ -278,7 +278,7 @@ public class IncognitoReauthCoordinatorFactoryTest {
     @Test
     @SmallTest
     public void
-            testCreateIncognitoReauthCoordinator_ForTabSwitcher_ReturnsTabSwitcherCoordinator_ExceptForCCT() {
+            testCreateIncognitoReauthCoordinator_ForTabSwitcher_ReturnsTabSwitcherCoordinator_ExceptForCct() {
         if (mIsTabbedActivity) {
             IncognitoReauthCoordinator coordinator =
                     mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(

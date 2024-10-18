@@ -256,7 +256,7 @@ public class FontPreloaderUnitTest {
     }
 
     @Test
-    public void testHistogramRecordedForOnlyFirstActivity_BeforeCCTInflation() {
+    public void testHistogramRecordedForOnlyFirstActivity_BeforeCctInflation() {
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 1);
         fakeLoadAllFonts();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 11);
@@ -269,7 +269,7 @@ public class FontPreloaderUnitTest {
     }
 
     @Test
-    public void testHistogramRecordedForOnlyFirstActivity_AfterCCTInflation() {
+    public void testHistogramRecordedForOnlyFirstActivity_AfterCctInflation() {
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 32);
         mFontPreloader.onPostInflationStartupCustomTabActivity();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 64);
@@ -420,7 +420,7 @@ public class FontPreloaderUnitTest {
     }
 
     @Test
-    public void testHistogramRecordedForOnlyFirstActivity_BeforeCCTDraw() {
+    public void testHistogramRecordedForOnlyFirstActivity_BeforeCctDraw() {
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 100);
         fakeLoadAllFonts();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 200);
@@ -433,7 +433,7 @@ public class FontPreloaderUnitTest {
     }
 
     @Test
-    public void testHistogramRecordedForOnlyFirstActivity_AfterCCTDraw() {
+    public void testHistogramRecordedForOnlyFirstActivity_AfterCctDraw() {
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 111);
         mFontPreloader.onFirstDrawCustomTabActivity();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 222);

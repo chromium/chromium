@@ -205,14 +205,14 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
     protected final boolean sendFirstRunCompletePendingIntent() {
         PendingIntent pendingIntent =
                 IntentUtils.safeGetParcelableExtra(getIntent(), EXTRA_FRE_COMPLETE_LAUNCH_INTENT);
-        boolean pendingIntentIsCCT =
+        boolean pendingIntentIsCct =
                 IntentUtils.safeGetBooleanExtra(
                         getIntent(), EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false);
         if (pendingIntent == null) return false;
 
         try {
             PendingIntent.OnFinished onFinished = null;
-            if (pendingIntentIsCCT) {
+            if (pendingIntentIsCct) {
                 // After the PendingIntent has been sent, send a first run callback to custom tabs
                 // if necessary.
                 onFinished =
@@ -265,17 +265,18 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
     }
 
     /**
-     * If the first run activity was triggered by a custom tab, notify app associated with
-     * custom tab whether first run was completed.
+     * If the first run activity was triggered by a custom tab, notify app associated with custom
+     * tab whether first run was completed.
+     *
      * @param freIntent First run activity intent.
-     * @param complete  Whether first run completed successfully.
+     * @param complete Whether first run completed successfully.
      */
     public static void notifyCustomTabCallbackFirstRunIfNecessary(
             Intent freIntent, boolean complete) {
-        boolean launchedByCCT =
+        boolean launchedByCct =
                 IntentUtils.safeGetBooleanExtra(
                         freIntent, EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false);
-        if (!launchedByCCT) return;
+        if (!launchedByCct) return;
 
         Bundle launchIntentExtras =
                 IntentUtils.safeGetBundleExtra(freIntent, EXTRA_CHROME_LAUNCH_INTENT_EXTRAS);

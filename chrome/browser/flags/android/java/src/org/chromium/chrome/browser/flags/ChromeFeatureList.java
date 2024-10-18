@@ -260,7 +260,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS =
             "CCTGoogleBottomBarVariantLayouts";
     // NOTE: Do not query this feature directly, use
-    // WarmupManager#isCCTPrewarmTabFeatureEnabled.
+    // WarmupManager#isCctPrewarmTabFeatureEnabled.
     public static final String CCT_OPEN_IN_BROWSER_BUTTON_IF_ALLOWED_BY_EMBEDDER =
             "CCTOpenInBrowserButtonIfAllowedByEmbedder";
     public static final String CCT_OPEN_IN_BROWSER_BUTTON_IF_ENABLED_BY_EMBEDDER =

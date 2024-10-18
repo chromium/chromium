@@ -807,17 +807,17 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /* fromCCT= */ false);
+                bookmarkMenuItemShortcut, mTab, /* fromCct= */ false);
         verify(bookmarkMenuItemShortcut).setEnabled(true);
     }
 
     @Test
-    public void updateBookmarkMenuItemShortcut_fromCCT() {
+    public void updateBookmarkMenuItemShortcut_fromCct() {
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /* fromCCT= */ true);
+                bookmarkMenuItemShortcut, mTab, /* fromCct= */ true);
         verify(bookmarkMenuItemShortcut).setEnabled(true);
     }
 
@@ -825,7 +825,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void updateBookmarkMenuItemShortcut_NullTab() {
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, null, /* fromCCT= */ false);
+                bookmarkMenuItemShortcut, null, /* fromCct= */ false);
         verify(bookmarkMenuItemShortcut).setEnabled(false);
     }
 
@@ -835,7 +835,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /* fromCCT= */ false);
+                bookmarkMenuItemShortcut, mTab, /* fromCct= */ false);
         verify(bookmarkMenuItemShortcut).setEnabled(false);
     }
 
