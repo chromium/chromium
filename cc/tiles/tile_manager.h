@@ -432,6 +432,10 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   void DidFinishRunningTileTasksRequiredForActivation();
   void DidFinishRunningTileTasksRequiredForDraw();
   void DidFinishRunningAllTileTasks(bool has_pending_queries);
+  void ExternalDependencyCompletedForRasterTask(
+      scoped_refptr<TileTask> dependent);
+  void ExternalDependencyCompletedForNonRasterTask(
+      scoped_refptr<TileTask> dependent);
 
   scoped_refptr<TileTask> CreateTaskSetFinishedTask(
       void (TileManager::*callback)());

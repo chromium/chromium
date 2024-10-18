@@ -20,9 +20,12 @@ class CC_EXPORT SynchronousTaskGraphRunner : public TaskGraphRunner {
   // Overridden from TaskGraphRunner:
   NamespaceToken GenerateNamespaceToken() override;
   void ScheduleTasks(NamespaceToken token, TaskGraph* graph) override;
+  void ExternalDependencyCompletedForTask(NamespaceToken token,
+                                          scoped_refptr<Task> task) override;
   void WaitForTasksToFinishRunning(NamespaceToken token) override;
   void CollectCompletedTasks(NamespaceToken token,
                              Task::Vector* completed_tasks) override;
+  void RunTasksUntilIdleForTest() override;
 
   // Runs all pending tasks from all namespaces.
   void RunUntilIdle();

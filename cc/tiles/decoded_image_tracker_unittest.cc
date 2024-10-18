@@ -21,7 +21,8 @@ namespace cc {
 
 class TestImageController : public ImageController {
  public:
-  TestImageController() : ImageController(nullptr, nullptr) {}
+  TestImageController()
+      : ImageController(nullptr, nullptr, base::DoNothing()) {}
 
   void UnlockImageDecode(ImageDecodeRequestId id) override {
     auto it =

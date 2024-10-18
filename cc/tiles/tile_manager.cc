@@ -242,9 +242,11 @@ void InsertNodeForTask(TaskGraph* graph,
                        TileTask* task,
                        uint16_t category,
                        uint16_t priority,
-                       size_t dependencies) {
+                       size_t dependencies,
+                       bool has_external_dependency = false) {
   DCHECK(!base::Contains(graph->nodes, task, &TaskGraph::Node::task));
-  graph->nodes.emplace_back(task, category, priority, dependencies);
+  graph->nodes.emplace_back(task, category, priority, dependencies,
+                            has_external_dependency);
 }
 
 class TaskSetFinishedTaskImpl : public TileTask {
@@ -359,8 +361,12 @@ TileManager::TileManager(
       all_tiles_that_need_to_be_rasterized_are_scheduled_(true),
       did_check_for_completed_tasks_since_last_schedule_tasks_(true),
       did_oom_on_last_assign_(false),
-      image_controller_(origin_task_runner,
-                        std::move(image_worker_task_runner)),
+      image_controller_(
+          origin_task_runner,
+          std::move(image_worker_task_runner),
+          base::BindRepeating(
+              &TileManager::ExternalDependencyCompletedForRasterTask,
+              base::Unretained(this))),
       decoded_image_tracker_(&image_controller_, origin_task_runner),
       checker_image_tracker_(&image_controller_,
                              this,
@@ -560,7 +566,11 @@ void TileManager::SetResources(ResourcePool* resource_pool,
   pending_raster_queries_ = pending_raster_queries;
   resource_pool_ = resource_pool;
   image_controller_.SetImageDecodeCache(image_decode_cache);
-  tile_task_manager_ = TileTaskManagerImpl::Create(task_graph_runner);
+  tile_task_manager_ = TileTaskManagerImpl::Create(
+      task_graph_runner,
+      base::BindRepeating(
+          &TileManager::ExternalDependencyCompletedForNonRasterTask,
+          base::Unretained(this)));
   raster_buffer_provider_ = raster_buffer_provider;
 
   raster_buffer_provider_->SetShutdownEvent(&shutdown_event_);
@@ -620,6 +630,16 @@ void TileManager::DidFinishRunningAllTileTasks(bool has_pending_queries) {
   }
 
   more_tiles_need_prepare_check_notifier_.Schedule();
+}
+
+void TileManager::ExternalDependencyCompletedForNonRasterTask(
+    scoped_refptr<TileTask> dependent) {
+  image_controller_.ExternalDependencyCompletedForTask(std::move(dependent));
+}
+
+void TileManager::ExternalDependencyCompletedForRasterTask(
+    scoped_refptr<TileTask> dependent) {
+  tile_task_manager_->ExternalDependencyCompletedForTask(std::move(dependent));
 }
 
 bool TileManager::PrepareTiles(
@@ -1249,7 +1269,7 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
     if (decode_it != graph_.nodes.end())
       continue;
 
-    InsertNodeForDecodeTask(task.get(), false, priority++);
+    InsertNodeForDecodeTask(task.get(), priority++, false);
     all_count++;
     graph_.edges.emplace_back(task.get(), all_done_task.get());
   }
@@ -1480,18 +1500,23 @@ void TileManager::InsertNodeForDecodeTask(TileTask* task,
                                           uint16_t priority,
                                           bool use_foreground_category) {
   uint32_t dependency_count = 0u;
+  bool has_external_dependency = false;
   if (task->dependencies().size()) {
     DCHECK_EQ(task->dependencies().size(), 1u);
     auto* dependency = task->dependencies()[0].get();
     if (!dependency->HasCompleted()) {
-      InsertNodeForDecodeTask(dependency, priority, use_foreground_category);
-      graph_.edges.emplace_back(dependency, task);
+      if (dependency->IsRasterTask()) {
+        InsertNodeForDecodeTask(dependency, priority, use_foreground_category);
+        graph_.edges.emplace_back(dependency, task);
+      } else {
+        has_external_dependency = true;
+      }
       dependency_count = 1u;
     }
   }
   InsertNodeForTask(&graph_, task,
                     TaskCategoryForTileTask(task, use_foreground_category),
-                    priority, dependency_count);
+                    priority, dependency_count, has_external_dependency);
 }
 
 void TileManager::InsertNodesForRasterTask(TileTask* raster_task,

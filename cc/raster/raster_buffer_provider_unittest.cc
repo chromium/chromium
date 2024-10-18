@@ -212,7 +212,8 @@ class RasterBufferProviderTest
         resource_provider_.get(), context_provider_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), base::TimeDelta(),
         true);
-    tile_task_manager_ = TileTaskManagerImpl::Create(&task_graph_runner_);
+    tile_task_manager_ =
+        TileTaskManagerImpl::Create(&task_graph_runner_, base::DoNothing());
   }
 
   void TearDown() override {

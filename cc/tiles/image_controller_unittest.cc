@@ -22,6 +22,7 @@
 #include "cc/test/skia_common.h"
 #include "cc/test/stub_decode_cache.h"
 #include "cc/test/test_paint_worklet_input.h"
+#include "cc/test/test_tile_task_runner.h"
 #include "cc/tiles/image_decode_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -98,9 +99,10 @@ class DecodeClient {
 // A dummy task that does nothing.
 class SimpleTask : public TileTask {
  public:
-  SimpleTask()
+  explicit SimpleTask(bool is_raster_task = true)
       : TileTask(TileTask::SupportsConcurrentExecution::kYes,
-                 TileTask::SupportsBackgroundThreadPriority::kYes) {
+                 TileTask::SupportsBackgroundThreadPriority::kYes),
+        is_raster_task_(is_raster_task) {
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
   }
   SimpleTask(const SimpleTask&) = delete;
@@ -114,7 +116,7 @@ class SimpleTask : public TileTask {
   void OnTaskCompleted() override {
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
   }
-
+  bool IsRasterTask() const override { return is_raster_task_; }
   bool has_run() { return has_run_; }
 
  private:
@@ -122,6 +124,7 @@ class SimpleTask : public TileTask {
 
   base::ThreadChecker thread_checker_;
   bool has_run_ = false;
+  bool is_raster_task_;
 };
 
 // A task that blocks until instructed otherwise.
@@ -199,7 +202,8 @@ class ImageControllerTest : public testing::Test {
   void SetUp() override {
     controller_ = std::make_unique<ImageController>(
         task_runner_,
-        base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits()));
+        base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits()),
+        base::DoNothing());
     controller_->SetImageDecodeCache(&cache_);
   }
 
@@ -653,6 +657,40 @@ TEST_F(ImageControllerTest, QueueImageDecodeNonLazyCancelImmediately) {
   // Explicitly reset the controller so that orphaned task callbacks run
   // while the decode clients still exist.
   ResetController();
+}
+
+TEST_F(ImageControllerTest, ExternalDependency) {
+  // Set up a stand-alone image decode task in a dependency sandwich with two
+  // external (i.e. raster) tasks.
+  scoped_refptr<SimpleTask> dependency(new SimpleTask);
+  scoped_refptr<SimpleTask> task(new SimpleTask(false /*is_raster_task*/));
+  scoped_refptr<SimpleTask> dependent(new SimpleTask);
+  dependency->SetExternalDependent(task);
+  task->SetExternalDependent(dependent);
+  EXPECT_FALSE(task->dependencies().empty());
+  EXPECT_FALSE(dependent->dependencies().empty());
+
+  base::RunLoop run_loop;
+  DecodeClient decode_client;
+  cache()->SetTaskToUse(task);
+  ImageController::ImageDecodeRequestId expected_id =
+      controller()->QueueImageDecode(
+          image(), base::BindOnce(&DecodeClient::Callback,
+                                  base::Unretained(&decode_client),
+                                  run_loop.QuitClosure()));
+
+  EXPECT_FALSE(controller()->HasReadyToRunTaskForTesting());
+  EXPECT_FALSE(task->has_run());
+  EXPECT_FALSE(task->HasCompleted());
+
+  TestTileTaskRunner::ProcessTask(dependency.get());
+  controller()->ExternalDependencyCompletedForTask(task);
+  RunOrTimeout(&run_loop);
+  EXPECT_EQ(expected_id, decode_client.id());
+  EXPECT_TRUE(task->has_run());
+  EXPECT_TRUE(task->HasCompleted());
+  EXPECT_TRUE(dependent->dependencies().empty());
+  TestTileTaskRunner::ProcessTask(dependent.get());
 }
 
 }  // namespace

@@ -99,6 +99,10 @@ class CC_EXPORT TaskGraphWorkQueue {
   // Returns the next task to run for the given category.
   PrioritizedTask GetNextTaskToRun(uint16_t category);
 
+  // Returns `true` if the task became ready to run.
+  bool ExternalDependencyCompletedForTask(NamespaceToken token,
+                                          scoped_refptr<Task> task);
+
   // Marks a task as completed, adding it to its namespace's list of completed
   // tasks and updating the list of |ready_to_run_namespaces|.
   void CompleteTask(PrioritizedTask completed_task);
@@ -125,10 +129,17 @@ class CC_EXPORT TaskGraphWorkQueue {
         &TaskNamespace::ReadyTasks::value_type::second);
   }
 
+  static bool HasTasksBlockedOnExternalDependencyInNamespace(
+      const TaskNamespace* task_namespace) {
+    return base::ranges::any_of(task_namespace->graph.nodes,
+                                &TaskGraph::Node::has_external_dependency);
+  }
+
   static bool HasFinishedRunningTasksInNamespace(
       const TaskNamespace* task_namespace) {
     return task_namespace->running_tasks.empty() &&
-           !HasReadyToRunTasksInNamespace(task_namespace);
+           !HasReadyToRunTasksInNamespace(task_namespace) &&
+           !HasTasksBlockedOnExternalDependencyInNamespace(task_namespace);
   }
 
   bool HasReadyToRunTasks() const {
@@ -153,6 +164,14 @@ class CC_EXPORT TaskGraphWorkQueue {
 
   const ReadyNamespaces& ready_to_run_namespaces() const {
     return ready_to_run_namespaces_;
+  }
+
+  size_t NumRunningTasks() const {
+    size_t count = 0;
+    for (const auto& task_namespace_entry : namespaces_) {
+      count += task_namespace_entry.second.running_tasks.size();
+    }
+    return count;
   }
 
   size_t NumRunningTasksForCategory(uint16_t category) const {
@@ -188,7 +207,8 @@ class CC_EXPORT TaskGraphWorkQueue {
 
  private:
   bool DecrementNodeDependencies(TaskGraph::Node& node,
-                                 TaskNamespace* task_namespace);
+                                 TaskNamespace* task_namespace,
+                                 bool rebuild_heap);
 
   // Helper class used to provide NamespaceToken comparison to TaskNamespaceMap.
   class CompareToken {

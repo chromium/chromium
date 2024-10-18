@@ -110,6 +110,9 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
   }
 
   // Overridden from TileTask:
+  bool IsRasterTask() const override {
+    return task_type_ == ImageDecodeCache::TaskType::kInRaster;
+  }
   void OnTaskCompleted() override {
     cache_->OnImageDecodeTaskCompleted(image_key_, task_type_);
   }

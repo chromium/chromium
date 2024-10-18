@@ -301,9 +301,25 @@ TaskGraphWorkQueue::PrioritizedTask TaskGraphWorkQueue::GetNextTaskToRun(
   return task;
 }
 
+bool TaskGraphWorkQueue::ExternalDependencyCompletedForTask(
+    NamespaceToken token,
+    scoped_refptr<Task> task) {
+  TaskNamespace* task_namespace = GetNamespaceForToken(token);
+  CHECK(task_namespace);
+  auto iter = base::ranges::find(task_namespace->graph.nodes, task.get(),
+                                 &TaskGraph::Node::task);
+  if (iter == task_namespace->graph.nodes.end()) {
+    return false;
+  }
+  iter->has_external_dependency = false;
+  return DecrementNodeDependencies(*iter, task_namespace,
+                                   /*rebuild_heap*/ true);
+}
+
 bool TaskGraphWorkQueue::DecrementNodeDependencies(
     TaskGraph::Node& node,
-    TaskNamespace* task_namespace) {
+    TaskNamespace* task_namespace,
+    bool rebuild_heap) {
   DCHECK_LT(0u, node.dependencies);
   node.dependencies--;
   // Task is ready if it has no dependencies and is in the new state, Add it
@@ -326,7 +342,23 @@ bool TaskGraphWorkQueue::DecrementNodeDependencies(
           ready_to_run_namespaces_[node.category];
 
       DCHECK(!base::Contains(ready_to_run_namespaces, task_namespace));
+      // TODO(paint-dev): The following line could be:
+      //   if (rebuild_heap) {
+      //     ready_to_run_namspaces.push_heap();
+      //     rebuild_heap = false;
+      //   } else {
+      //     ready_to_run_namespaces.push_back();
+      //   }
       ready_to_run_namespaces.push_back(task_namespace);
+    }
+    if (rebuild_heap) {
+      // TODO(paint-dev): it's only necessary to rebuild the namespace heap if
+      // the sorting value for `task_namespace` changed (i.e., if the
+      // newly-ready-to-run task has a higher priority than any other
+      // ready-to-run task in the namespace. We should check for that.
+      auto& category_namespaces = ready_to_run_namespaces_[node.category];
+      std::make_heap(category_namespaces.begin(), category_namespaces.end(),
+                     CompareTaskNamespacePriority(node.category));
     }
     return true;
   }
@@ -349,8 +381,10 @@ void TaskGraphWorkQueue::CompleteTask(PrioritizedTask completed_task) {
   bool ready_to_run_namespaces_has_heap_properties = true;
   for (DependentIterator dependent_it(&task_namespace->graph, task.get());
        dependent_it; ++dependent_it) {
-    ready_to_run_namespaces_has_heap_properties &=
-        !DecrementNodeDependencies(*dependent_it, task_namespace);
+    // rebuild_heap=false to avoid rebuilding the heap on every iteration; just
+    // do it once at the end if necessary.
+    ready_to_run_namespaces_has_heap_properties &= !DecrementNodeDependencies(
+        *dependent_it, task_namespace, false /*rebuild_heap*/);
   }
 
   // Rearrange the task namespaces in |ready_to_run_namespaces_| in such a way
@@ -386,13 +420,18 @@ void TaskGraphWorkQueue::CollectCompletedTasks(NamespaceToken token,
 
 bool TaskGraphWorkQueue::DependencyMismatch(const TaskGraph* graph) {
   // Value storage will be 0-initialized.
-  std::unordered_map<const Task*, size_t> dependents;
+  std::unordered_map<const Task*, size_t> dependencies;
   for (const TaskGraph::Edge& edge : graph->edges)
-    dependents[edge.dependent]++;
+    dependencies[edge.dependent]++;
 
   for (const TaskGraph::Node& node : graph->nodes) {
-    if (dependents[node.task.get()] != node.dependencies)
+    size_t graph_dependency_count = dependencies[node.task.get()];
+    if (node.has_external_dependency) {
+      graph_dependency_count++;
+    }
+    if (graph_dependency_count != node.dependencies) {
       return true;
+    }
   }
 
   return false;

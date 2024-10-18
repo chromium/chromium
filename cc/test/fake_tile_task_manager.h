@@ -20,6 +20,7 @@ class FakeTileTaskManagerImpl : public TileTaskManager {
   // Overridden from TileTaskManager:
   void ScheduleTasks(TaskGraph* graph) override;
   void CheckForCompletedTasks() override;
+  void ExternalDependencyCompletedForTask(scoped_refptr<TileTask>) override;
   void Shutdown() override;
 
  protected:

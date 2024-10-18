@@ -57,6 +57,7 @@ class CC_EXPORT CategorizedWorkerPool : public base::TaskRunner,
   void WaitForTasksToFinishRunning(NamespaceToken token) override;
   void CollectCompletedTasks(NamespaceToken token,
                              Task::Vector* completed_tasks) override;
+  void RunTasksUntilIdleForTest() override;
 
   virtual void FlushForTesting() = 0;
 
@@ -126,6 +127,8 @@ class CC_EXPORT CategorizedWorkerPool : public base::TaskRunner,
   // Condition variable that is waited on by origin threads until a namespace
   // has finished running all associated tasks.
   base::ConditionVariable has_namespaces_with_finished_running_tasks_cv_;
+  // Condition variable signalled when there are no more tasks ready to run.
+  base::ConditionVariable workers_are_idle_cv_;
 };
 
 class CC_EXPORT CategorizedWorkerPoolImpl : public CategorizedWorkerPool {
@@ -141,6 +144,8 @@ class CC_EXPORT CategorizedWorkerPoolImpl : public CategorizedWorkerPool {
 
   // Overridden from TaskGraphRunner:
   void ScheduleTasks(NamespaceToken token, TaskGraph* graph) override;
+  void ExternalDependencyCompletedForTask(NamespaceToken token,
+                                          scoped_refptr<Task> task) override;
 
   // Runs a task from one of the provided categories. Categories listed first
   // have higher priority.
@@ -195,6 +200,8 @@ class CC_EXPORT CategorizedWorkerPoolJob : public CategorizedWorkerPool {
 
   // Overridden from TaskGraphRunner:
   void ScheduleTasks(NamespaceToken token, TaskGraph* graph) override;
+  void ExternalDependencyCompletedForTask(NamespaceToken token,
+                                          scoped_refptr<Task> task) override;
 
   // Runs a task from one of the provided categories. Categories listed first
   // have higher priority.

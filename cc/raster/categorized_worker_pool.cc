@@ -259,6 +259,7 @@ void CategorizedWorkerPoolImpl::Shutdown() {
     threads_.back()->Join();
     threads_.pop_back();
   }
+  workers_are_idle_cv_.Broadcast();
 }
 
 void CategorizedWorkerPoolImpl::ThreadWillRun(base::PlatformThreadId tid) {
@@ -339,6 +340,15 @@ void CategorizedWorkerPoolImpl::ScheduleTasks(NamespaceToken token,
   }
 }
 
+void CategorizedWorkerPoolImpl::ExternalDependencyCompletedForTask(
+    NamespaceToken token,
+    scoped_refptr<Task> task) {
+  base::AutoLock lock(lock_);
+  if (work_queue_.ExternalDependencyCompletedForTask(token, std::move(task))) {
+    SignalHasReadyToRunTasksWithLockAcquired();
+  }
+}
+
 void CategorizedWorkerPoolImpl::ScheduleTasksWithLockAcquired(
     NamespaceToken token,
     TaskGraph* graph) {
@@ -413,6 +423,8 @@ void CategorizedWorkerPoolImpl::SignalHasReadyToRunTasksWithLockAcquired() {
       return;
     }
   }
+
+  workers_are_idle_cv_.Signal();
 }
 
 CategorizedWorkerPoolJob::CategorizedWorkerPoolJob() = default;
@@ -468,6 +480,7 @@ void CategorizedWorkerPoolJob::Shutdown() {
   if (background_job_handle_) {
     background_job_handle_.Cancel();
   }
+  workers_are_idle_cv_.Broadcast();
 }
 
 // Overridden from base::TaskRunner:
@@ -531,6 +544,11 @@ void CategorizedWorkerPoolJob::Run(base::span<const TaskCategory> categories,
 
     // There's no pending task to run, quit the worker until notified again.
     if (!prioritized_task) {
+      if (!job_handle_to_notify) {
+        // No pending task to run and no other category or job handle with tasks
+        // to run, so the workers are going idle.
+        workers_are_idle_cv_.Signal();
+      }
       return;
     }
     TRACE_EVENT(
@@ -584,6 +602,24 @@ void CategorizedWorkerPoolJob::ScheduleTasks(NamespaceToken token,
   {
     base::AutoLock lock(lock_);
     job_handle_to_notify = ScheduleTasksWithLockAcquired(token, graph);
+  }
+  if (job_handle_to_notify) {
+    job_handle_to_notify->NotifyConcurrencyIncrease();
+  }
+}
+
+void CategorizedWorkerPoolJob::ExternalDependencyCompletedForTask(
+    NamespaceToken token,
+    scoped_refptr<Task> task) {
+  base::JobHandle* job_handle_to_notify = nullptr;
+  {
+    base::AutoLock lock(lock_);
+    if (work_queue_.ExternalDependencyCompletedForTask(token,
+                                                       std::move(task))) {
+      // If the task became ready to run, we may need to tell its JobHandle to
+      // start a worker.
+      job_handle_to_notify = GetJobHandleToNotifyWithLockAcquired();
+    }
   }
   if (job_handle_to_notify) {
     job_handle_to_notify->NotifyConcurrencyIncrease();
@@ -695,7 +731,8 @@ CategorizedWorkerPool* CategorizedWorkerPool::GetOrCreate(Delegate* delegate) {
 
 CategorizedWorkerPool::CategorizedWorkerPool()
     : namespace_token_(GenerateNamespaceToken()),
-      has_namespaces_with_finished_running_tasks_cv_(&lock_) {}
+      has_namespaces_with_finished_running_tasks_cv_(&lock_),
+      workers_are_idle_cv_(&lock_) {}
 
 scoped_refptr<base::SequencedTaskRunner>
 CategorizedWorkerPool::CreateSequencedTaskRunner() {
@@ -743,6 +780,14 @@ void CategorizedWorkerPool::CollectCompletedTasks(
   {
     base::AutoLock lock(lock_);
     CollectCompletedTasksWithLockAcquired(token, completed_tasks);
+  }
+}
+
+void CategorizedWorkerPool::RunTasksUntilIdleForTest() {
+  base::AutoLock lock(lock_);
+  while (work_queue_.HasReadyToRunTasks() ||
+         work_queue_.NumRunningTasks() > 0) {
+    workers_are_idle_cv_.Wait();
   }
 }
 
