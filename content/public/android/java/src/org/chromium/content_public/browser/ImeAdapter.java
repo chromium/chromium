@@ -48,9 +48,13 @@ public interface ImeAdapter {
 
     /**
      * Add {@link ImeEventObserver} object to {@link ImeAdapter}.
+     *
      * @param observer imeEventObserver instance to add.
      */
     void addEventObserver(ImeEventObserver observer);
+
+    /** Remove the given event observer. */
+    void removeEventObserver(ImeEventObserver imeEventObserver);
 
     /**
      * @see View#onCreateInputConnection(EditorInfo)

@@ -332,6 +332,7 @@ public class ToolbarManager
     // toolbar. This value is only meaningful when the current ControlsPosition is BOTTOM.
     private final ObservableSupplierImpl<Integer> mBottomToolbarControlsOffsetSupplier =
             new ObservableSupplierImpl<>(0);
+    private FormFieldFocusedSupplier mFormFieldFocusedSupplier = new FormFieldFocusedSupplier();
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -1016,6 +1017,7 @@ public class ToolbarManager
 
                     @Override
                     public void onContentChanged(Tab tab) {
+                        mFormFieldFocusedSupplier.onWebContentsChanged(tab.getWebContents());
                         mLocationBarModel.notifyContentChanged();
                         checkIfNtpLoaded();
                         mToolbar.onTabContentViewChanged();
@@ -1335,6 +1337,7 @@ public class ToolbarManager
                 ContextUtils.getAppSharedPreferences(),
                 mIsNtpShowingSupplier,
                 mOmniboxFocusStateSupplier,
+                mFormFieldFocusedSupplier,
                 mControlContainer,
                 mBottomControlsStacker,
                 mBottomToolbarControlsOffsetSupplier);
@@ -2376,6 +2379,7 @@ public class ToolbarManager
 
         updateButtonStatus();
         mConstraintsProxy.onTabSwitched(tab);
+        mFormFieldFocusedSupplier.onWebContentsChanged(tab == null ? null : tab.getWebContents());
     }
 
     private void onTabOrModelChanged() {

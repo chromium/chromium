@@ -381,6 +381,11 @@ public class ImeAdapterImpl
         mEventObservers.add(eventObserver);
     }
 
+    @Override
+    public void removeEventObserver(ImeEventObserver imeEventObserver) {
+        mEventObservers.remove(imeEventObserver);
+    }
+
     private void createInputConnectionFactory() {
         if (mInputConnectionFactory != null) return;
         mInputConnectionFactory = new ThreadedInputConnectionFactory(mInputMethodManagerWrapper);

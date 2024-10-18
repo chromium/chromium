@@ -204,6 +204,7 @@ public class ToolbarPositionControllerTest {
     private Context mContext;
     private ObservableSupplierImpl<Boolean> mIsNtpShowing = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mIsOmniboxFocused = new ObservableSupplierImpl<>();
+    private FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
     private BottomControlsStacker mBottomControlsStacker;
 
     private ToolbarPositionController mController;
@@ -227,6 +228,7 @@ public class ToolbarPositionControllerTest {
                         ContextUtils.getAppSharedPreferences(),
                         mIsNtpShowing,
                         mIsOmniboxFocused,
+                        mIsFormFieldFocused,
                         mControlContainer,
                         mBottomControlsStacker,
                         mBottomToolbarOffsetSupplier);
@@ -324,6 +326,23 @@ public class ToolbarPositionControllerTest {
         assertControlsAtTop();
 
         mIsOmniboxFocused.set(false);
+        assertControlsAtBottom();
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testUpdatePositionChangesWithFormFieldFocusState() {
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
+                .commit();
+        assertControlsAtBottom();
+
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        assertControlsAtTop();
+
+        mIsFormFieldFocused.onNodeAttributeUpdated(false, false);
         assertControlsAtBottom();
     }
 

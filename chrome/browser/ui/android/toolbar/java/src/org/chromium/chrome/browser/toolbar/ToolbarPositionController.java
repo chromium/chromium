@@ -34,6 +34,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final SharedPreferences mSharedPreferences;
     private final ObservableSupplier<Boolean> mIsNtpShowingSupplier;
     private final ObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
+    private final ObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
     private final ControlContainer mControlContainer;
     private final BottomControlsStacker mBottomControlsStacker;
     private final ObservableSupplierImpl<Integer> mBrowserControlsOffsetSupplier;
@@ -50,6 +51,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      *     value immediately available.
      * @param isOmniboxFocusedSupplier Supplier of the current omnibox focus state. Must have a
      *     non-null value immediately available.
+     * @param isFormFieldFocusedSupplier Supplier of the current form field focus state for the
+     *     active WebContents. Must have a non-null value immediately available.
      * @param controlContainer The control container for the current context.
      * @param bottomControlsStacker {@link BottomControlsStacker} used to harmonize the position of
      *     the bottom toolbar with other bottom-anchored UI.
@@ -59,6 +62,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             @NonNull SharedPreferences sharedPreferences,
             @NonNull ObservableSupplier<Boolean> isNtpShowingSupplier,
             @NonNull ObservableSupplier<Boolean> isOmniboxFocusedSupplier,
+            @NonNull ObservableSupplier<Boolean> isFormFieldFocusedSupplier,
             @NonNull ControlContainer controlContainer,
             @NonNull BottomControlsStacker bottomControlsStacker,
             @NonNull ObservableSupplierImpl<Integer> browserControlsOffsetSupplier) {
@@ -66,6 +70,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mSharedPreferences = sharedPreferences;
         mIsNtpShowingSupplier = isNtpShowingSupplier;
         mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
+        mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
         mControlContainer = controlContainer;
         mBottomControlsStacker = bottomControlsStacker;
         mBrowserControlsOffsetSupplier = browserControlsOffsetSupplier;
@@ -73,6 +78,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         mIsNtpShowingSupplier.addObserver((showing) -> updateCurrentPosition());
         mIsOmniboxFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
+        mIsFormFieldFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         mLayerVisibility = LayerVisibility.HIDDEN;
@@ -153,11 +159,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private void updateCurrentPosition() {
         boolean ntpShowing = mIsNtpShowingSupplier.get();
         boolean isOmniboxFocused = mIsOmniboxFocusedSupplier.get();
+        boolean isFormFieldFocused = mIsFormFieldFocusedSupplier.get();
         boolean doesUserPreferTopToolbar =
                 mSharedPreferences.getBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
 
         @ControlsPosition int newControlsPosition;
-        if (ntpShowing || isOmniboxFocused || doesUserPreferTopToolbar) {
+        if (ntpShowing || isOmniboxFocused || isFormFieldFocused || doesUserPreferTopToolbar) {
             newControlsPosition = ControlsPosition.TOP;
         } else {
             newControlsPosition = ControlsPosition.BOTTOM;
