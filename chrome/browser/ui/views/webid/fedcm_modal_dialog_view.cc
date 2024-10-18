@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"
@@ -95,7 +96,7 @@ void FedCmModalDialogView::ClosePopupWindow() {
           ? PopupInteraction::kLosesFocusAndIdpInitiatedClose
           : PopupInteraction::kNeverLosesFocusAndIdpInitiatedClose;
   if (!popup_interaction_metric_recorded_) {
-    UMA_HISTOGRAM_ENUMERATION(histogram_name, metric);
+    base::UmaHistogramEnumeration(histogram_name, metric);
     popup_interaction_metric_recorded_ = true;
   }
 
@@ -135,7 +136,7 @@ void FedCmModalDialogView::WebContentsDestroyed() {
           ? PopupInteraction::kLosesFocusAndPopupWindowDestroyed
           : PopupInteraction::kNeverLosesFocusAndPopupWindowDestroyed;
   if (!popup_interaction_metric_recorded_) {
-    UMA_HISTOGRAM_ENUMERATION(histogram_name, metric);
+    base::UmaHistogramEnumeration(histogram_name, metric);
     popup_interaction_metric_recorded_ = true;
   }
 
