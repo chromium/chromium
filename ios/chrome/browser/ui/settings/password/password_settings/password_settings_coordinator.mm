@@ -28,7 +28,12 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
+#import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_bulk_move_handler.h"
@@ -172,6 +177,9 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           IOSPasskeyModelFactory::GetForProfile(profile));
 
+  id<SystemIdentity> identity =
+      AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
   _mediator = [[PasswordSettingsMediator alloc]
          initWithReauthenticationModule:_reauthModule
                 savedPasswordsPresenter:_savedPasswordsPresenter.get()
@@ -181,7 +189,10 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
                         identityManager:IdentityManagerFactory::GetForProfile(
                                             profile)
                             syncService:SyncServiceFactory::GetForProfile(
-                                            profile)];
+                                            profile)
+              trustedVaultClientBackend:TrustedVaultClientBackendFactory::
+                                            GetForProfile(profile)
+                               identity:identity];
 
   _dispatcher = static_cast<id<ApplicationCommands>>(
       self.browser->GetCommandDispatcher());

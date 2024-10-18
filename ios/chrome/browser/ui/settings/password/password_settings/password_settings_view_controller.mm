@@ -255,14 +255,6 @@ bool SyncingWebauthnCredentialsEnabled() {
     [model addItem:[self automaticPasskeyUpgradesSwitchItem]
         toSectionWithIdentifier:
             SectionIdentifierAutomaticPasskeyUpgradesSwitch];
-
-    // TODO(crbug.com/358342483): Add this section only if the device is
-    // bootstrapped for using passkeys.
-    [model addSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
-    [model addItem:[self changeGooglePasswordManagerPinDescriptionItem]
-        toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
-    [model addItem:[self changeGooglePasswordManagerPinItem]
-        toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
   }
 
   if (self.onDeviceEncryptionState !=
@@ -607,14 +599,14 @@ bool SyncingWebauthnCredentialsEnabled() {
     return;
   }
 
-  TableViewModel* tableViewModel = self.tableViewModel;
-  [tableViewModel deleteAllItemsFromSectionWithIdentifier:
-                      SectionIdentifierSavePasswordsSwitch];
+  [self.tableViewModel deleteAllItemsFromSectionWithIdentifier:
+                           SectionIdentifierSavePasswordsSwitch];
   [self addSavePasswordsSwitchOrManagedInfo];
 
   NSIndexSet* indexSet = [[NSIndexSet alloc]
-      initWithIndex:[tableViewModel sectionForSectionIdentifier:
-                                        SectionIdentifierSavePasswordsSwitch]];
+      initWithIndex:[self.tableViewModel
+                        sectionForSectionIdentifier:
+                            SectionIdentifierSavePasswordsSwitch]];
 
   [self.tableView reloadSections:indexSet
                 withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -698,6 +690,26 @@ bool SyncingWebauthnCredentialsEnabled() {
     _exportPasswordsItem.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }
   [self reconfigureCellsForItems:@[ _exportPasswordsItem ]];
+}
+
+- (void)setupChangeGPMPinButton {
+  TableViewModel* model = self.tableViewModel;
+  if ([model hasSectionForSectionIdentifier:
+                 SectionIdentifierGooglePasswordManagerPin]) {
+    return;
+  }
+
+  [model insertSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin
+                             atIndex:[self computeGPMPinSectionIndex]];
+  [model addItem:[self changeGooglePasswordManagerPinDescriptionItem]
+      toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
+  [model addItem:[self changeGooglePasswordManagerPinItem]
+      toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
+  NSIndexSet* indexSet = [NSIndexSet
+      indexSetWithIndex:[model sectionForSectionIdentifier:
+                                   SectionIdentifierGooglePasswordManagerPin]];
+  [self.tableView insertSections:indexSet
+                withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - Actions
@@ -857,7 +869,7 @@ bool SyncingWebauthnCredentialsEnabled() {
           PasswordSettingsOnDeviceEncryptionStateNotShown &&
       [tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption]) {
-    NSInteger section = [tableViewModel
+    NSInteger section = [self.tableViewModel
         sectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption];
     [tableViewModel
         removeSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
@@ -876,15 +888,10 @@ bool SyncingWebauthnCredentialsEnabled() {
   } else {
     // Find the section that's supposed to be before On-Device Encryption, and
     // insert after that.
-    NSInteger priorSectionIndex =
-        [tableViewModel sectionForSectionIdentifier:
-                            SyncingWebauthnCredentialsEnabled()
-                                ? SectionIdentifierGooglePasswordManagerPin
-                                : SectionIdentifierPasswordsInOtherApps];
-    NSInteger onDeviceEncryptionSectionIndex = priorSectionIndex + 1;
     [tableViewModel
         insertSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
-                            atIndex:onDeviceEncryptionSectionIndex];
+                            atIndex:[self
+                                        computeOnDeviceEncryptionSectionIndex]];
   }
 
   // Actually populate the section.
@@ -930,6 +937,35 @@ bool SyncingWebauthnCredentialsEnabled() {
     [tableView reloadSections:indexSet
              withRowAnimation:UITableViewRowAnimationAutomatic];
   }
+}
+
+// Returns section index for the change GPM Pin button.
+- (NSInteger)computeGPMPinSectionIndex {
+  NSInteger previousSection =
+      SyncingWebauthnCredentialsEnabled()
+          ? SectionIdentifierAutomaticPasskeyUpgradesSwitch
+          : SectionIdentifierPasswordsInOtherApps;
+  return [self.tableViewModel sectionForSectionIdentifier:previousSection] + 1;
+}
+
+// Returns section index for the on device encryption. With syncing webauthn
+// credentials enabled, it should be after GPM Pin section if it exists
+// (otherwise after automatic passkey upgrades switch). Without the feature
+// enabled, it should be after passwords in other apps section.
+- (NSInteger)computeOnDeviceEncryptionSectionIndex {
+  TableViewModel* tableViewModel = self.tableViewModel;
+  NSInteger previousSection = SectionIdentifierPasswordsInOtherApps;
+
+  if (SyncingWebauthnCredentialsEnabled()) {
+    BOOL hasGPMPinSection =
+        [tableViewModel hasSectionForSectionIdentifier:
+                            SectionIdentifierGooglePasswordManagerPin];
+    previousSection = hasGPMPinSection
+                          ? SectionIdentifierGooglePasswordManagerPin
+                          : SectionIdentifierAutomaticPasskeyUpgradesSwitch;
+  }
+
+  return [tableViewModel sectionForSectionIdentifier:previousSection] + 1;
 }
 
 @end

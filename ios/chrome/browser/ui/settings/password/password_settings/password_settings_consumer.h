@@ -49,6 +49,9 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 // Enables/disables the "Export Passwords..." button based on the current state.
 - (void)updateExportPasswordsButton;
 
+// Sets up button for changing GPM Pin.
+- (void)setupChangeGPMPinButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSUMER_H_

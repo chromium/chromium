@@ -22,8 +22,10 @@ class SyncService;
 }
 
 class PrefService;
+class TrustedVaultClientBackend;
 
 @protocol ReauthenticationProtocol;
+@protocol SystemIdentity;
 
 // Mediator for the Password Settings screen.
 @interface PasswordSettingsMediator : NSObject <PasswordSettingsDelegate>
@@ -47,6 +49,9 @@ class PrefService;
                           prefService:(PrefService*)prefService
                       identityManager:(signin::IdentityManager*)identityManager
                           syncService:(syncer::SyncService*)syncService
+            trustedVaultClientBackend:
+                (TrustedVaultClientBackend*)trustedVaultClientBackend
+                             identity:(id<SystemIdentity>)identity
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

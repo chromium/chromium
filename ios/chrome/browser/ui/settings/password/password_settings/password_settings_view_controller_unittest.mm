@@ -131,16 +131,14 @@ TEST_F(PasswordSettingsViewControllerTest,
 }
 
 TEST_F(PasswordSettingsViewControllerTest,
-       DisplaysChangeGPMPinButtonWithFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
-
-  // Re-create the controller so that the enabled flag is picked up.
-  CreateController();
+       DisplaysChangeGPMPinButtonForEligibleUser) {
+  id<PasswordSettingsConsumer> consumer =
+      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
+  [consumer setupChangeGPMPinButton];
 
   TableViewImageItem* changeGPMPinDescription =
       static_cast<TableViewImageItem*>(
-          GetTableViewItem(/*section=*/3, /*item=*/0));
+          GetTableViewItem(/*section=*/2, /*item=*/0));
   EXPECT_NSEQ(changeGPMPinDescription.title,
               l10n_util::GetNSString(
                   IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_TITLE));
@@ -150,7 +148,7 @@ TEST_F(PasswordSettingsViewControllerTest,
           IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_DESCRIPTION));
 
   TableViewTextItem* changeGPMPinButton = static_cast<TableViewTextItem*>(
-      GetTableViewItem(/*section=*/3, /*item=*/1));
+      GetTableViewItem(/*section=*/2, /*item=*/1));
   EXPECT_NSEQ(changeGPMPinButton.text,
               l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN));
 }
