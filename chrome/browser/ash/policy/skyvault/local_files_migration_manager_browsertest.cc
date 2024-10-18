@@ -157,7 +157,7 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
   ash::system::FakeStatisticsProvider statistics_provider_;
   std::unique_ptr<MockMigrationNotificationManager> notification_manager_ =
       nullptr;
-  MockMigrationObserver observer_;
+  testing::StrictMock<MockMigrationObserver> observer_;
   testing::StrictMock<ash::MockUserDataAuthClient> userdataauth_;
 };
 
@@ -225,15 +225,18 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
         std::move(migration_callback).Run();
       });
 
+  base::RunLoop run_loop;
   // Write access will be disallowed.
   EXPECT_CALL(userdataauth_,
               SetUserDataStorageWriteEnabled(WithEnabled(false), _))
-      .Times(1)
-      .WillRepeatedly(
-          ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply()));
+      .WillOnce(testing::DoAll(
+          base::test::RunClosure(run_loop.QuitClosure()),
+          ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply())));
+
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/MigrationDestination());
   task_runner->FastForwardBy(base::TimeDelta(base::Hours(5)));
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
@@ -259,13 +262,10 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        NoMigrationIfLocalFilesAllowed) {
-  EXPECT_CALL(observer_, OnMigrationSucceeded).Times(0);
-
   // Write access will be explicitly allowed.
   EXPECT_CALL(userdataauth_,
               SetUserDataStorageWriteEnabled(WithEnabled(true), _))
-      .Times(1)
-      .WillRepeatedly(
+      .WillOnce(
           ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply()));
   SetMigrationPolicies(/*local_user_files_allowed=*/true,
                        /*destination=*/MigrationDestination());
@@ -273,9 +273,6 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        NoMigrationIfDisabled) {
-  EXPECT_CALL(observer_, OnMigrationSucceeded).Times(0);
-  LocalFilesMigrationManager manager(browser()->profile());
-
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/MigrationDestination());
 }
@@ -284,8 +281,6 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 // by other policies, a notification is shown and no migration happens.
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        NoMigrationIfMisconfigured) {
-  EXPECT_CALL(observer_, OnMigrationSucceeded).Times(0);
-
   const std::string destination = MigrationDestination();
   CloudProvider provider;
   // Disable the cloud storage before setting SkyVault policies.
@@ -317,17 +312,16 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                        NoMigrationIfNoDefaultLocation) {
-  EXPECT_CALL(observer_, OnMigrationSucceeded).Times(0);
-  LocalFilesMigrationManager manager(browser()->profile());
-
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/kReadOnly);
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.LocalStorage.Enabled", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                        EnableLocalFilesStopsMigration) {
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
-  EXPECT_CALL(observer_, OnMigrationSucceeded).Times(0);
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
       std::make_unique<MockMigrationCoordinator>(browser()->profile());
@@ -350,8 +344,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   // Allow local storage: stops the migration and enables write to ensure.
   EXPECT_CALL(userdataauth_,
               SetUserDataStorageWriteEnabled(WithEnabled(true), _))
-      .Times(1)
-      .WillRepeatedly(
+      .WillOnce(
           ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply()));
   SetMigrationPolicies(/*local_user_files_allowed=*/true,
                        /*destination=*/download_dir_util::kLocationOneDrive);
@@ -394,24 +387,25 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
       base::TimeDelta(kTotalMigrationTimeout - kFinalMigrationTimeout));
   task_runner->FastForwardBy(base::TimeDelta(kTotalMigrationTimeout));
 
+  base::RunLoop run_loop;
   // Write access will be disallowed.
   EXPECT_CALL(userdataauth_,
               SetUserDataStorageWriteEnabled(WithEnabled(false), _))
-      .Times(1)
-      .WillRepeatedly(
-          ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply()));
+      .WillOnce(testing::DoAll(
+          base::test::RunClosure(run_loop.QuitClosure()),
+          ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply())));
   // Enable migration to Google Drive: first upload stops, a new one starts.
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/download_dir_util::kLocationGoogleDrive);
   task_runner->FastForwardBy(
       base::TimeDelta(kTotalMigrationTimeout - kFinalMigrationTimeout));
   task_runner->FastForwardBy(base::TimeDelta(kTotalMigrationTimeout));
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                        NoDestinationStopsMigration) {
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
-  EXPECT_CALL(observer_, OnMigrationSucceeded).Times(0);
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
       std::make_unique<MockMigrationCoordinator>(browser()->profile());
