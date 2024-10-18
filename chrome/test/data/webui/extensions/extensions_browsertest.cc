@@ -253,8 +253,15 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, LayoutSource) {
   RunTestCase("LayoutSource");
 }
 
+// TODO(crbug.com/374318854): Accessibility bug causing flakes on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ElementVisibilityReloadButton \
+  DISABLED_ElementVisibilityReloadButton
+#else
+#define MAYBE_ElementVisibilityReloadButton ElementVisibilityReloadButton
+#endif
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
-                       ElementVisibilityReloadButton) {
+                       MAYBE_ElementVisibilityReloadButton) {
   RunTestCase("ElementVisibilityReloadButton");
 }
 
