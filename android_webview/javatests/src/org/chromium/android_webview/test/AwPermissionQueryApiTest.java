@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AwPermissionQueryApiTest extends AwParameterizedTest {
 
     // Script template to query a permission and report the result back using the injected listener.
+    @SuppressWarnings("InlineFormatString")
     private static final String QUERY_API_PERMISSION =
             """
           <html>

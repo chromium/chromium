@@ -180,6 +180,7 @@ public class VariationsSeedHolderTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("Finally")
     public void testConcurrentUpdatesAndWrites()
             throws IOException, FileNotFoundException, TimeoutException {
         ArrayList<File> files = new ArrayList<>();

@@ -66,10 +66,10 @@ public class CachedFlagsSafeMode {
         int NUM_ENTRIES = 5;
     }
 
-    private AtomicInteger mBehavior = new AtomicInteger(Behavior.UNKNOWN);
+    private final AtomicInteger mBehavior = new AtomicInteger(Behavior.UNKNOWN);
 
-    private AtomicBoolean mStartCheckpointWritten = new AtomicBoolean(false);
-    private AtomicBoolean mEndCheckpointWritten = new AtomicBoolean(false);
+    private final AtomicBoolean mStartCheckpointWritten = new AtomicBoolean(false);
+    private final AtomicBoolean mEndCheckpointWritten = new AtomicBoolean(false);
 
     private static final CachedFlagsSafeMode sInstance = new CachedFlagsSafeMode();
 

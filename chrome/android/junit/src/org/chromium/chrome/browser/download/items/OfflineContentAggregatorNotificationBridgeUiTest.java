@@ -62,7 +62,7 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
 
         @Override
         public String toString() {
-            return mExpectedId == null ? null : mExpectedId.toString();
+            return mExpectedId == null ? "null" : mExpectedId.toString();
         }
     }
 

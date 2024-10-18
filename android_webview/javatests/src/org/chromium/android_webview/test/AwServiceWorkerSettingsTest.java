@@ -54,6 +54,8 @@ public class AwServiceWorkerSettingsTest extends AwParameterizedTest {
     public static final String INDEX_URL = "/index.html";
     public static final String SW_URL = "/sw.js";
     public static final String FETCH_URL = "/content.txt";
+
+    @SuppressWarnings("InlineFormatString")
     private static final String INDEX_HTML_TEMPLATE =
             """
         <!DOCTYPE html>

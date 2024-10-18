@@ -119,7 +119,7 @@ public class BuildInfo {
     /** The versionCode of Play Services. Can be overridden in tests. */
     private String mGmsVersionCode;
 
-    private Object mCertLock = new Object();
+    private final Object mCertLock = new Object();
 
     private static class Holder {
         private static final BuildInfo INSTANCE = new BuildInfo();

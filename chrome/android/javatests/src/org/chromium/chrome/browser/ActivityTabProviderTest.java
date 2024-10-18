@@ -72,6 +72,7 @@ public class ActivityTabProviderTest {
         }
 
         @Override
+        @SuppressWarnings("MissingSuperCall")
         public void destroy() {
             ThreadUtils.runOnUiThreadBlocking(super::destroy);
         }

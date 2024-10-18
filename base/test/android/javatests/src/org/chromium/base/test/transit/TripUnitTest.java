@@ -154,11 +154,11 @@ public class TripUnitTest {
         } finally {
             // Wait for transition to finish to ensure it succeeds.
             transitionThread.join();
-            // Rethrow exceptions inside the transition thread.
-            Throwable exception = maybeException.get();
-            if (exception != null) {
-                throw exception;
-            }
+        }
+        // Rethrow exceptions inside the transition thread.
+        Throwable exception = maybeException.get();
+        if (exception != null) {
+            throw exception;
         }
 
         // All elements from nested factories added to the destination elements.

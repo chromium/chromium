@@ -60,8 +60,6 @@ public class ShareImageFileUtils {
      */
     private static final String SHARE_IMAGES_DIRECTORY_NAME = "screenshot";
 
-    private static final String FILE_NUMBER_FORMAT = " (%d)";
-
     private static final String JPEG_EXTENSION = ".jpg";
     private static final String PNG_EXTENSION = ".png";
 
@@ -419,7 +417,7 @@ public class ShareImageFileUtils {
                     new File(
                             filePath,
                             fileName
-                                    + String.format(Locale.getDefault(), FILE_NUMBER_FORMAT, ++num)
+                                    + String.format(Locale.getDefault(), " (%d)", ++num)
                                     + extension);
         }
         destFile.createNewFile();

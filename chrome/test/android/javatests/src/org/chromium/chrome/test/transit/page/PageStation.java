@@ -399,6 +399,7 @@ public class PageStation extends Station {
 
         @Override
         public void onStopMonitoring() {
+            super.onStopMonitoring();
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTabModel.removeObserver(this);

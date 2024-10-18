@@ -375,6 +375,7 @@ public class TabPersistentStoreTest {
                                 // This is intended to pretend we've started the activity, so we can
                                 // attach a base context to the activity.
                                 @Override
+                                @SuppressWarnings("MissingSuperCall")
                                 public void onStart() {
                                     if (getBaseContext() == null) {
                                         attachBaseContext(mAppContext);

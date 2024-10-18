@@ -155,7 +155,6 @@ public class StripLayoutHelperTest {
     private static final String EXPECTED_TAB = "The view should be a tab.";
     private static final String EXPECTED_TITLE = "The view should be a title.";
     private static final String EXPECTED_NON_TITLE = "The view should not be a title.";
-    private static final String CLOSE_TAB = "Close %1$s tab";
     private static final String IDENTIFIER = "Tab";
     private static final String IDENTIFIER_SELECTED = "Selected Tab";
     private static final String INCOGNITO_IDENTIFIER = "Incognito Tab";
@@ -3551,7 +3550,7 @@ public class StripLayoutHelperTest {
             final String expectedDescription =
                     i % 2 == 0
                             ? expectedAccessibilityDescriptions[i / 2]
-                            : String.format(CLOSE_TAB, TEST_TAB_TITLES[i / 2]);
+                            : String.format("Close %1$s tab", TEST_TAB_TITLES[i / 2]);
             assertEquals(expectedDescription, views.get(i).getAccessibilityDescription());
         }
 

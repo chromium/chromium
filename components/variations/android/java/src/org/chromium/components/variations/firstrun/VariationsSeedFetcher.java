@@ -551,6 +551,7 @@ public class VariationsSeedFetcher {
      * @param currInfo optional currently saved seed info to set the `If-None-Match` header.
      * @return the object holds the request result and seed data with its related header fields.
      */
+    @SuppressWarnings("Finally")
     public SeedFetchInfo downloadContent(SeedFetchParameters params, SeedInfo currInfo) {
         SeedFetchInfo fetchInfo = new SeedFetchInfo();
         HttpURLConnection connection = null;
@@ -643,6 +644,7 @@ public class VariationsSeedFetcher {
                 connection.disconnect();
             }
             recordFetchResultOrCode(fetchInfo.seedFetchResult);
+            // TODO(374177044): Remove SuppressWarnings("Finally").
             return fetchInfo;
         }
     }

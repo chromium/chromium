@@ -41,28 +41,26 @@ import java.util.List;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * This is the base class for child services.
- * Pre-Q, and for privileged services, the embedding application should contain ProcessService0,
- * 1, etc subclasses that provide the concrete service entry points, so it can connect to more than
- * one distinct process (i.e. one process per service number, up to limit of N).
- * The embedding application must declare these service instances in the application section
- * of its AndroidManifest.xml, first with some meta-data describing the services:
- *     <meta-data android:name="org.chromium.test_app.SERVICES_NAME"
- *           android:value="org.chromium.test_app.ProcessService"/>
- * and then N entries of the form:
- *     <service android:name="org.chromium.test_app.ProcessServiceX"
- *              android:process=":processX" />
+ * This is the base class for child services. Pre-Q, and for privileged services, the embedding
+ * application should contain ProcessService0, 1, etc subclasses that provide the concrete service
+ * entry points, so it can connect to more than one distinct process (i.e. one process per service
+ * number, up to limit of N). The embedding application must declare these service instances in the
+ * application section of its AndroidManifest.xml, first with some meta-data describing the
+ * services: <meta-data android:name="org.chromium.test_app.SERVICES_NAME"
+ * android:value="org.chromium.test_app.ProcessService"/> and then N entries of the form: <service
+ * android:name="org.chromium.test_app.ProcessServiceX" android:process=":processX" />
  *
- * Q added bindIsolatedService which supports creating multiple instances from a single manifest
+ * <p>Q added bindIsolatedService which supports creating multiple instances from a single manifest
  * declaration for isolated services. In this case, only need to declare instance 0 in the manifest.
  *
- * Subclasses must also provide a delegate in this class constructor. That delegate is responsible
- * for loading native libraries and running the main entry point of the service.
+ * <p>Subclasses must also provide a delegate in this class constructor. That delegate is
+ * responsible for loading native libraries and running the main entry point of the service.
  *
- * This class does not directly inherit from Service because the logic may be used by a Service
+ * <p>This class does not directly inherit from Service because the logic may be used by a Service
  * implementation which cannot directly inherit from this class (e.g. for WebLayer child services).
  */
 @JNINamespace("base::android")
+@SuppressWarnings("SynchronizeOnNonFinalField") // mMainThread assigned in onCreate().
 public class ChildProcessService {
     private static final String MAIN_THREAD_NAME = "ChildProcessMain";
     private static final String TAG = "ChildProcessService";

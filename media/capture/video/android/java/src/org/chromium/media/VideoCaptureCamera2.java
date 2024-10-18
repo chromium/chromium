@@ -322,9 +322,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 final ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                 capturedData = new byte[buffer.remaining()];
                 buffer.get(capturedData);
-            } finally {
-                return capturedData;
             }
+            return capturedData;
         }
 
         @Override

@@ -87,6 +87,7 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
 
     @Override
     public void recreate() {
+        super.recreate();
         throw new AssertionError(
                 "Unexpected call of recreate() in "
                         + TAG

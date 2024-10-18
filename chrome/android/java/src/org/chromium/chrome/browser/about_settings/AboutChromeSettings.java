@@ -34,8 +34,10 @@ public class AboutChromeSettings extends PreferenceFragmentCompat
     private static final String PREF_LEGAL_INFORMATION = "legal_information";
 
     // Non-translated strings:
+    @SuppressWarnings("InlineFormatString")
     private static final String MSG_DEVELOPER_ENABLE_COUNTDOWN =
             "%s more taps to enable Developer options.";
+
     private static final String MSG_DEVELOPER_ENABLE_COUNTDOWN_LAST_TAP =
             "1 more tap to enable Developer options.";
     private static final String MSG_DEVELOPER_ENABLED = "Developer options are now enabled.";
