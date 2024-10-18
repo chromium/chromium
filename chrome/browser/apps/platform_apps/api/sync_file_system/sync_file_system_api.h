@@ -23,21 +23,6 @@ class FileSystemContext;
 namespace chrome_apps {
 namespace api {
 
-class SyncFileSystemDeleteFileSystemFunction : public ExtensionFunction {
- public:
-  // TODO(kinuko,calvinlo): Uncomment this or delete this class when
-  // we decide if we want to revive this function.
-  // DECLARE_EXTENSION_FUNCTION("syncFileSystem.deleteFileSystem",
-  //                            SYNCFILESYSTEM_DELETEFILESYSTEM)
-
- protected:
-  ~SyncFileSystemDeleteFileSystemFunction() override {}
-  ResponseAction Run() override;
-
- private:
-  void DidDeleteFileSystem(base::File::Error error);
-};
-
 class SyncFileSystemGetFileStatusFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("syncFileSystem.getFileStatus",

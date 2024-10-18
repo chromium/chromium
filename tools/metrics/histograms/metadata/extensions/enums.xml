@@ -869,7 +869,7 @@ Called by update_extension_histograms.py.-->
   <int value="84" label="TTSENGINE_SENDTTSEVENT"/>
   <int value="85" label="ACCESSIBILITY_PRIVATE_GETALERTSFORTAB"/>
   <int value="86" label="DELETED_BOOKMARKS_IMPORT"/>
-  <int value="87" label="SYNCFILESYSTEM_DELETEFILESYSTEM"/>
+  <int value="87" label="DELETED_SYNCFILESYSTEM_DELETEFILESYSTEM"/>
   <int value="88" label="DEBUGGER_SENDCOMMAND"/>
   <int value="89" label="DEBUGGER_DETACH"/>
   <int value="90" label="METRICSPRIVATE_RECORDSMALLCOUNT"/>

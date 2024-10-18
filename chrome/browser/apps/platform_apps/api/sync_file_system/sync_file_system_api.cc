@@ -96,56 +96,6 @@ const char* QuotaStatusCodeToString(blink::mojom::QuotaStatusCode status) {
 }  // namespace
 
 ExtensionFunction::ResponseAction
-SyncFileSystemDeleteFileSystemFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
-  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
-  const std::string& url = args()[0].GetString();
-
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      browser_context()
-          ->GetStoragePartition(render_frame_host()->GetSiteInstance())
-          ->GetFileSystemContext();
-  storage::FileSystemURL file_system_url(
-      file_system_context->CrackURLInFirstPartyContext(GURL(url)));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      BindOnce(
-          &storage::FileSystemContext::DeleteFileSystem, file_system_context,
-          blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(source_url())),
-          file_system_url.type(),
-          BindOnce(&SyncFileSystemDeleteFileSystemFunction::DidDeleteFileSystem,
-                   this)));
-  return RespondLater();
-}
-
-void SyncFileSystemDeleteFileSystemFunction::DidDeleteFileSystem(
-    base::File::Error error) {
-  // Repost to switch from IO thread to UI thread for SendResponse().
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        BindOnce(&SyncFileSystemDeleteFileSystemFunction::DidDeleteFileSystem,
-                 this, error));
-    return;
-  }
-
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (error != base::File::FILE_OK) {
-    base::Value::List error_result;
-    error_result.Append(false);
-    Respond(ErrorWithArguments(
-        std::move(error_result),
-        ErrorToString(::sync_file_system::FileErrorToSyncStatusCode(error))));
-    return;
-  }
-
-  Respond(WithArguments(true));
-}
-
-ExtensionFunction::ResponseAction
 SyncFileSystemRequestFileSystemFunction::Run() {
   // SyncFileSystem initialization is done in OpenFileSystem below, but we call
   // GetSyncFileSystemService here too to initialize sync event observer for
