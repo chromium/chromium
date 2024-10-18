@@ -22,6 +22,11 @@
 // The image view with the incognito logo.
 @property(nonatomic, strong, readonly) UIView* logoView;
 
+// Method to set the label text and accessibility label of the authentication
+// button (primary button).
+- (void)setAuthenticateButtonText:(NSString*)text
+               accessibilityLabel:(NSString*)accessibilityLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_VIEW_H_

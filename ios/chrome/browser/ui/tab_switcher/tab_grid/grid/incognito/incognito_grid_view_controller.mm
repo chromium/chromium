@@ -87,8 +87,8 @@
                    accessibilityLabel:(NSString*)accessibilityLabel {
   [self setItemsRequireAuthentication:require];
   if (require) {
-    // TODO(crbug.com/370804664): Change the primary button text and
-    // accessibility label.
+    [_blockingView setAuthenticateButtonText:text
+                          accessibilityLabel:accessibilityLabel];
   } else {
     // No primary button text or accessibility label should be set when
     // authentication is not required.
