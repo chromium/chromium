@@ -70,7 +70,9 @@ void PtrToConstPtrConversionDisallowed() {
 // A const container should not be convertible to a mutable span.
 void ConstContainerToMutableConversionDisallowed() {
   const std::vector<int> v = {1, 2, 3};
-  span<int> span(v);  // expected-error {{no matching constructor for initialization of 'span<int>'}}
+  span<int> span1(v);             // expected-error {{no matching constructor for initialization of 'span<int>'}}
+  span<int, 2u> span2({1, 2});    // expected-error {{no matching constructor for initialization of 'span<int, 2U>'}}
+  span<int> span3(make_span(v));  // expected-error {{no matching constructor for initialization of 'span<int>'}}
 }
 
 // A dynamic const container should not be implicitly convertible to a static span.
@@ -146,8 +148,45 @@ void ExtentNoDynamicExtent() {
 }
 
 void Dangling() {
-  span<const int, 3u> s1{std::array<int, 3>()};     // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
-  span<const int> s2{std::vector<int>({1, 2, 3})};  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  // `std::array` destroyed at the end of the full expression.
+  [[maybe_unused]] auto a = span<const int>(std::to_array({1, 2, 3}));     // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto b = span<const int, 3>(std::to_array({1, 2, 3}));  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+
+  // Range destroyed at the end of the full expression.
+  [[maybe_unused]] auto c = span<const int>(std::vector<int>({1, 2, 3}));     // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto d = span<const int, 3>(std::vector<int>({1, 2, 3}));  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+
+  // Here the `std::string` is an lvalue, but the `std::vector`s that copy its
+  // data aren't.
+  std::string str = "123";
+  [[maybe_unused]] auto e =
+      span<const char>(std::vector<char>(str.begin(), str.end()));  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto f =
+      span<const char, 3>(std::vector<char>(str.begin(), str.end()));  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+
+  // `std::string_view`'s safety depends on the life of the referred-to buffer.
+  // Here the underlying data is destroyed before the end of the full
+  // expression.
+  [[maybe_unused]] auto g =
+      span<const char>(std::string_view(std::string("123")));  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto h =
+      span<const char, 3>(std::string_view(std::string("123")));  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  // TODO(https://github.com/llvm/llvm-project/issues/111768) Detect dangling
+  // usage sufficient to enable this testcase.
+#if 0
+  [[maybe_unused]] auto i = as_byte_span(std::string_view(std::string("123")));  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+#endif
+
+  // span's `std::array` constructor takes lvalue refs, so to test the non-const
+  // `element_type` case, use the same technique as above.
+  [] {
+    std::array arr{1, 2, 3};
+    return span<int>(arr);  // expected-error-re + {{address of stack memory associated with local variable {{.*}}returned}}
+  }();
+  [] {
+    std::array arr{1, 2, 3};
+    return span<int, 3>(arr);  // expected-error-re + {{address of stack memory associated with local variable {{.*}}returned}}
+  }();
 }
 
 void NotSizeTSize() {
@@ -209,27 +248,24 @@ void FromRefNoSuchFunctionForIntLiteral() {
 
 void FromRefLifetimeBoundErrorForIntLiteral() {
   // Testing that `LIFETIME_BOUND` works as intended.
-  [[maybe_unused]] auto wont_work =
-      span_from_ref<const int>(123);  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work = span_from_ref<const int>(123);        // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work2 = byte_span_from_ref<const int>(123);  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
 }
 
 void FromRefLifetimeBoundErrorForTemporaryStringObject() {
   // Testing that `LIFETIME_BOUND` works as intended.
   [[maybe_unused]] auto wont_work =
-      span_from_ref<const std::string>("temporary string");  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+      span_from_ref<const std::string>("temporary string");  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
 }
 
-void RvalueArrayLifetime() {
-  [[maybe_unused]] auto wont_work =
-      as_byte_span({1, 2});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+void InitializerListLifetime() {
+  // `std::initializer_list` destroyed at the end of the full expression.
+  [[maybe_unused]] auto wont_work = as_byte_span({1, 2});  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
 }
 
 void FromCStringThatIsntStaticLifetime() {
-  [[maybe_unused]] auto wont_work =
-      span_from_cstring({'a', 'b', '\0'});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
-
-  [[maybe_unused]] auto wont_work2 =
-      byte_span_from_cstring({'a', 'b', '\0'});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work2' will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work = span_from_cstring({'a', 'b', '\0'});        // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work2 = byte_span_from_cstring({'a', 'b', '\0'});  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
 }
 
 void CompareFixedSizeMismatch() {

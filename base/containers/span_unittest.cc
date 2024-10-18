@@ -868,6 +868,42 @@ TEST(SpanTest, FromCStringEmbeddedNul) {
   }
 }
 
+// The sorts of constructions-from-short-lifetime-objects that trigger lifetime
+// warnings with dangling refs should not warn when there is no dangling.
+TEST(SpanTest, NoLifetimeWarnings) {
+  // Test each of dynamic- and fixed-extent spans.
+  static constexpr auto l1 = [](span<const int> s) { return s[0] == 1; };
+  static constexpr auto l2 = [](span<const int, 3> s) { return s[0] == 1; };
+
+  // C-style array, `std::array`, and `std::initializer_list` usage is safe when
+  // the produced span is consumed before the full expression ends.
+  [] {
+    int arr[3] = {1, 2, 3};
+    return l1(arr);
+  }();
+  [] {
+    int arr[3] = {1, 2, 3};
+    return l2(arr);
+  }();
+  [[maybe_unused]] auto a = l1(std::to_array({1, 2, 3}));
+  [[maybe_unused]] auto b = l2(std::to_array({1, 2, 3}));
+  [[maybe_unused]] auto c =
+      l2(span<const int, 3>({1, 2, 3}));  // Constructor is explicit.
+
+  // `std::string_view` is safe with a compile-time string constant, because it
+  // refers directly to the character array in the binary.
+  [[maybe_unused]] auto d = span<const char>(std::string_view("123"));
+  [[maybe_unused]] auto e = span<const char, 3>(std::string_view("123"));
+
+  // It's also safe with an lvalue `std::string`.
+  std::string s = "123";
+  [[maybe_unused]] auto f = span<const char>(std::string_view(s));
+  [[maybe_unused]] auto g = span<const char>(std::string_view(s));
+
+  // Non-std:: helpers should also allow safe usage.
+  [[maybe_unused]] auto h = as_byte_span(std::string_view(s));
+}
+
 TEST(SpanTest, FromCStringOtherTypes) {
   {
     auto s = base::span_from_cstring("hello");
