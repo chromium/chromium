@@ -28,6 +28,15 @@ function createEmptyContainer(): DataContainer {
   };
 }
 
+/**
+ * Ensures the URL has a scheme (assumes http if omitted).
+ * @param url The URL with or without a scheme.
+ * @return The URL with a scheme, or an empty string.
+ */
+function ensureUrlHasScheme(url: string): string {
+  return url.includes('://') ? url : 'http://' + url;
+}
+
 // Update request count, to be used along the transition duration to compute the
 // interval time requests.
 const UPDATE_REQUEST_COUNT: number = 10;
@@ -226,6 +235,14 @@ export class DataSectionElement extends CrLitElement {
 
   protected isStrEmpty_(str: string) {
     return (!str || str.length === 0);
+  }
+
+  protected getFaviconUrl_(iconUrl: string) {
+    const faviconUrl = new URL('chrome://favicon2/');
+    faviconUrl.searchParams.set('size', '24');
+    faviconUrl.searchParams.set('scaleFactor', '1x');
+    faviconUrl.searchParams.set('pageUrl', ensureUrlHasScheme(iconUrl));
+    return faviconUrl.href;
   }
 }
 

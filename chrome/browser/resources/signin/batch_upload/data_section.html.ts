@@ -35,7 +35,7 @@ export function getHtml(this: DataSectionElement) {
             <div class="data-item-content">
               <img class="item-icon"
                   ?hidden="${this.isStrEmpty_(item.iconUrl)}"
-                  alt="Item icon" src="${item.iconUrl}">
+                  alt="Item icon" src="${this.getFaviconUrl_(item.iconUrl)}">
               <div class="item-title">${item.title}</div>
               <div class="item-subtitle">${item.subtitle}</div>
             </div>
