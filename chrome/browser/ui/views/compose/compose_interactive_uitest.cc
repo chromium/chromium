@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -262,13 +263,8 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
   optimization_guide::StreamingResponse OptimizationGuideResponse(
       const optimization_guide::proto::ComposeResponse compose_response,
       bool is_complete = true) {
-    constexpr char kTypeURL[] =
-        "type.googleapis.com/optimization_guide.proto.ComposeResponse";
-    optimization_guide::proto::Any any;
-    any.set_type_url(kTypeURL);
-    compose_response.SerializeToString(any.mutable_value());
     return optimization_guide::StreamingResponse{
-        .response = any,
+        .response = optimization_guide::AnyWrapProto(compose_response),
         .is_complete = is_complete,
     };
   }
