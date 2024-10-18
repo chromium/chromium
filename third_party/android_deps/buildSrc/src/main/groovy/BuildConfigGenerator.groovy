@@ -125,6 +125,7 @@ class BuildConfigGenerator extends DefaultTask {
     static final Set<String> ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES = [
       'androidx_compose_material_material_icons_core_android',
       'androidx_constraintlayout',
+      'androidx_credentials_credentials',
       'androidx_documentfile',
       'androidx_legacy',
       'androidx_localbroadcastmanager_localbroadcastmanager',
