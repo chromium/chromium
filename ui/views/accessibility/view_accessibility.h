@@ -408,6 +408,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Override the child tree id.
   void SetChildTreeID(ui::AXTreeID tree_id);
   ui::AXTreeID GetChildTreeID() const;
+  void RemoveChildTreeID();
 
   void SetChildTreeScaleFactor(float scale_factor);
 

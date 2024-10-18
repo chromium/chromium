@@ -43,6 +43,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/test_event.h"
@@ -50,6 +51,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/padded_button.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
@@ -811,17 +813,34 @@ TEST_F(ArcNotificationContentViewTest, AccessibleProperties) {
   content_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(surface->GetAXTreeId(), ui::AXTreeIDUnknown());
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription),
+      l10n_util::GetStringUTF16(
+          IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
+  EXPECT_EQ(content_view->GetViewAccessibility().GetChildTreeID(),
+            surface->GetAXTreeId());
 
   surface->SetAXTreeId(ui::AXTreeID::CreateNewAXTreeID());
   data = ui::AXNodeData();
   content_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(surface->GetAXTreeId(), ui::AXTreeIDUnknown());
   EXPECT_EQ(data.role, ax::mojom::Role::kClient);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription),
+      u"");
+  EXPECT_EQ(content_view->GetViewAccessibility().GetChildTreeID(),
+            surface->GetAXTreeId());
 
   content_view->SetSurface(nullptr);
   data = ui::AXNodeData();
   content_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription),
+      l10n_util::GetStringUTF16(
+          IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
+  EXPECT_EQ(content_view->GetViewAccessibility().GetChildTreeID(),
+            ui::AXTreeIDUnknown());
 
   auto notification_message = std::make_unique<Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE,

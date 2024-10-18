@@ -949,6 +949,10 @@ ui::AXTreeID ViewAccessibility::GetChildTreeID() const {
   return child_tree_id ? child_tree_id.value() : ui::AXTreeIDUnknown();
 }
 
+void ViewAccessibility::RemoveChildTreeID() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+}
+
 void ViewAccessibility::SetChildTreeScaleFactor(float scale_factor) {
   if (data_.HasChildTreeID()) {
     data_.AddFloatAttribute(ax::mojom::FloatAttribute::kChildTreeScale,

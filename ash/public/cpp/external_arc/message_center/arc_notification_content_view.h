@@ -113,7 +113,6 @@ class ArcNotificationContentView
   void OnBlur() override;
   void OnThemeChanged() override;
   views::FocusTraversable* GetFocusTraversable() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnAccessibilityEvent(ax::mojom::Event event) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
@@ -143,6 +142,8 @@ class ArcNotificationContentView
       ArcNotificationSurface* surface) override;
 
   void UpdateAccessibleRole();
+  void UpdateAccessibleRoleDescription();
+  void UpdateAccessibleChildTreeId();
 
   // If |item_| is null, we may be about to be destroyed. In this case,
   // we have to be careful about what we do.
