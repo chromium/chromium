@@ -1560,6 +1560,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.InterestGroups.InBrowserRetrievalTime"
+    units="ms" expires_after="2025-04-17">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Time taken to retrieve interest groups from the browser's cache or database
+    for interestGroups(). Only measures when interestGroups() passes early
+    permission checks.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.InterestGroups.ResultStatus"
+    enum="SharedStorageInterestGroupsResultStatus" expires_after="2025-04-17">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>The success or the failure reason for interestGroups().</summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.InterestGroups.TimeToResolve" units="ms"
+    expires_after="2025-04-17">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>Resolving time for successful interestGroups() calls.</summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.OnShutdown.NumSqlErrors" units="Errors"
     expires_after="2025-04-06">
   <owner>cammie@chromium.org</owner>

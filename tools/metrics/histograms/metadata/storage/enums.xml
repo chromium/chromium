@@ -373,6 +373,13 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="SharedStorageInterestGroupsResultStatus">
+  <int value="0" label="FailureDuringAddModule"/>
+  <int value="1" label="FailurePermissionsPolicyDenied"/>
+  <int value="2" label="FailureBrowserDenied"/>
+  <int value="3" label="Success"/>
+</enum>
+
 <enum name="SharedStorageSelectUrlBudgetStatus">
   <int value="0" label="SufficientBudget"/>
   <int value="1" label="InsufficientSiteNavigationBudget"/>

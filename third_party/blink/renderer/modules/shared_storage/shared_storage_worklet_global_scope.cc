@@ -67,6 +67,22 @@ namespace blink {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class InterestGroupsResultStatus {
+  kFailureDuringAddModule = 0,
+  kFailurePermissionsPolicyDenied = 1,
+  kFailureBrowserDenied = 2,
+  kSuccess = 3,
+
+  kMaxValue = kSuccess,
+};
+
+void RecordInterestGroupsResultStatusUma(InterestGroupsResultStatus status) {
+  base::UmaHistogramEnumeration(
+      "Storage.SharedStorage.InterestGroups.ResultStatus", status);
+}
+
 void ScriptValueToObject(ScriptState* script_state,
                          ScriptValue value,
                          v8::Local<v8::Object>* object,
@@ -694,6 +710,8 @@ SharedStorageWorkletGlobalScope::interestGroups(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!add_module_finished_) {
+    RecordInterestGroupsResultStatusUma(
+        InterestGroupsResultStatus::kFailureDuringAddModule);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "interestGroups() cannot be called during addModule().");
@@ -701,6 +719,8 @@ SharedStorageWorkletGlobalScope::interestGroups(
   }
 
   if (!permissions_policy_state_->join_ad_interest_group_allowed) {
+    RecordInterestGroupsResultStatusUma(
+        InterestGroupsResultStatus::kFailurePermissionsPolicyDenied);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         "The \"join-ad-interest-group\" Permissions Policy denied the "
@@ -709,6 +729,8 @@ SharedStorageWorkletGlobalScope::interestGroups(
   }
 
   if (!permissions_policy_state_->run_ad_auction_allowed) {
+    RecordInterestGroupsResultStatusUma(
+        InterestGroupsResultStatus::kFailurePermissionsPolicyDenied);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         "The \"run-ad-auction\" Permissions Policy denied the interestGroups() "
@@ -723,12 +745,15 @@ SharedStorageWorkletGlobalScope::interestGroups(
 
   GetSharedStorageWorkletServiceClient()->GetInterestGroups(
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          [](ScriptPromiseResolver<IDLSequence<StorageInterestGroup>>* resolver,
+          [](base::ElapsedTimer timer,
+             ScriptPromiseResolver<IDLSequence<StorageInterestGroup>>* resolver,
              mojom::blink::GetInterestGroupsResultPtr result) {
             ScriptState* script_state = resolver->GetScriptState();
             DCHECK(script_state->ContextIsValid());
 
             if (result->is_error_message()) {
+              RecordInterestGroupsResultStatusUma(
+                  InterestGroupsResultStatus::kFailureBrowserDenied);
               ScriptState::Scope scope(script_state);
               resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                   script_state->GetIsolate(), DOMExceptionCode::kOperationError,
@@ -1060,8 +1085,15 @@ SharedStorageWorkletGlobalScope::interestGroups(
               groups.push_back(group);
             }
 
+            base::UmaHistogramTimes(
+                "Storage.SharedStorage.InterestGroups.TimeToResolve",
+                timer.Elapsed());
+
+            RecordInterestGroupsResultStatusUma(
+                InterestGroupsResultStatus::kSuccess);
             resolver->Resolve(groups);
-          })));
+          },
+          base::ElapsedTimer())));
 
   return promise;
 }

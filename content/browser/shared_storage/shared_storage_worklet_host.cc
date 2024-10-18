@@ -1153,7 +1153,7 @@ void SharedStorageWorkletHost::GetInterestGroups(
       /*devtools_auction_id=*/{},
       /*owner=*/shared_storage_origin_,
       base::BindOnce(
-          [](GetInterestGroupsCallback callback,
+          [](base::ElapsedTimer timer, GetInterestGroupsCallback callback,
              scoped_refptr<StorageInterestGroups> groups) {
             std::vector<blink::mojom::StorageInterestGroupPtr> mojom_groups;
 
@@ -1170,11 +1170,15 @@ void SharedStorageWorkletHost::GetInterestGroups(
               mojom_groups.push_back(std::move(mojom_group));
             }
 
+            base::UmaHistogramTimes(
+                "Storage.SharedStorage.InterestGroups.InBrowserRetrievalTime",
+                timer.Elapsed());
+
             std::move(callback).Run(
                 blink::mojom::GetInterestGroupsResult::NewGroups(
                     std::move(mojom_groups)));
           },
-          std::move(callback)));
+          base::ElapsedTimer(), std::move(callback)));
 }
 
 void SharedStorageWorkletHost::DidAddMessageToConsole(
