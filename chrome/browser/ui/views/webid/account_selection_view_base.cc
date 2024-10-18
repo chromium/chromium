@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -20,8 +23,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
@@ -251,100 +257,31 @@ class AccountImageView : public views::ImageView {
 BEGIN_METADATA(AccountImageView)
 END_METADATA
 
-class AccountHoverButton : public HoverButton {
- public:
-  AccountHoverButton(PressedCallback callback,
-                     std::unique_ptr<views::View> icon_view,
-                     const std::u16string& title,
-                     const std::u16string& subtitle,
-                     std::unique_ptr<views::View> secondary_view,
-                     bool add_vertical_label_spacing,
-                     const std::u16string& footer,
-                     BrandIconImageView* brand_icon_image_view,
-                     int button_position)
-      : HoverButton(base::BindRepeating(&AccountHoverButton::OnPressed,
-                                        base::Unretained(this)),
-                    std::move(icon_view),
-                    title,
-                    subtitle,
-                    std::move(secondary_view),
-                    add_vertical_label_spacing,
-                    footer),
-        callback_(std::move(callback)),
-        brand_icon_image_view_(brand_icon_image_view),
-        button_position_(button_position) {}
-
-  AccountHoverButton(const AccountHoverButton&) = delete;
-  AccountHoverButton& operator=(const AccountHoverButton&) = delete;
-  ~AccountHoverButton() override = default;
-
-  void StateChanged(ButtonState old_state) override {
-    // If there is an IDP icon within the account button, the IDP icon was
-    // created using a background circle with the color of the background. When
-    // the button state changes, the color of the background may change, so we
-    // recreate the background circle.
-    HoverButton::StateChanged(old_state);
-    if (brand_icon_image_view_) {
-      ui::ColorProvider* provider =
-          brand_icon_image_view_->parent()->GetColorProvider();
-      if (provider) {
-        ui::ColorId color_id;
-        switch (GetState()) {
-          case ButtonState::STATE_NORMAL: {
-            color_id = ui::kColorDialogBackground;
-            break;
-          }
-          case ButtonState::STATE_HOVERED:
-          case ButtonState::STATE_PRESSED: {
-            color_id = ui::kColorMenuButtonBackgroundSelected;
-            break;
-          }
-          case ButtonState::STATE_DISABLED:
-          default: {
-            return;
-          }
-        }
-        brand_icon_image_view_->OnBackgroundColorUpdated(
-            provider->GetColor(color_id));
-      }
-    }
-  }
-
-  void OnThemeChanged() override {
-    HoverButton::OnThemeChanged();
-    if (brand_icon_image_view_) {
-      ui::ColorProvider* provider =
-          brand_icon_image_view_->parent()->GetColorProvider();
-      if (provider) {
-        brand_icon_image_view_->OnBackgroundColorUpdated(
-            provider->GetColor(ui::kColorDialogBackground));
-      }
-    }
-  }
-
-  void OnPressed(const ui::Event& event) {
-    // Log the metric before invoking the callback since the callback may
-    // destroy this object.
-    base::UmaHistogramCustomCounts("Blink.FedCm.AccountChosenPosition.Desktop",
-                                   button_position_,
-                                   /*min=*/0,
-                                   /*exclusive_max=*/10, /*buckets=*/11);
-    if (callback_) {
-      callback_.Run(event);
-    }
-  }
-
- private:
-  PressedCallback callback_;
-  // Owned by its views::BoxLayoutView container.
-  raw_ptr<BrandIconImageView> brand_icon_image_view_;
-  // The order of this account button relative to other account buttons in
-  // the dialog (e.g. 0 is the topmost account, 1 the one below it, etc.). Used
-  // to record a metric when the button is clicked.
-  int button_position_;
-};
-
 }  // namespace
+
+AccountHoverButtonSecondaryView::AccountHoverButtonSecondaryView() {
+  constexpr int kSecondaryViewRightPadding = 8;
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/0,
+                        /*right=*/kSecondaryViewRightPadding)));
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  std::unique_ptr<views::ImageView> arrow_image_view =
+      std::make_unique<views::ImageView>();
+  arrow_image_view->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kSubmenuArrowIcon, ui::kColorIcon, kArrowIconSize));
+  AddChildView(std::move(arrow_image_view));
+}
+
+void AccountHoverButtonSecondaryView::ReplaceWithSpinner() {
+  std::unique_ptr<views::Throbber> spinner =
+      std::make_unique<views::Throbber>();
+  constexpr int kSpinnerSize = 24;
+  spinner->SetPreferredSize(gfx::Size(kSpinnerSize, kSpinnerSize));
+  spinner->Start();
+  RemoveAllChildViews();
+  AddChildView(std::move(spinner));
+}
 
 BrandIconImageView::BrandIconImageView(
     base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
@@ -423,6 +360,93 @@ void BrandIconImageView::OnBackgroundColorUpdated(
 
 BEGIN_METADATA(BrandIconImageView)
 END_METADATA
+
+AccountHoverButton::AccountHoverButton(
+    PressedCallback callback,
+    std::unique_ptr<views::View> icon_view,
+    const std::u16string& title,
+    const std::u16string& subtitle,
+    std::unique_ptr<views::View> secondary_view,
+    bool add_vertical_label_spacing,
+    const std::u16string& footer,
+    BrandIconImageView* brand_icon_image_view,
+    int button_position)
+    : HoverButton(base::BindRepeating(&AccountHoverButton::OnPressed,
+                                      base::Unretained(this)),
+                  std::move(icon_view),
+                  title,
+                  subtitle,
+                  std::move(secondary_view),
+                  add_vertical_label_spacing,
+                  footer),
+      callback_(std::move(callback)),
+      brand_icon_image_view_(brand_icon_image_view),
+      button_position_(button_position) {}
+
+void AccountHoverButton::StateChanged(ButtonState old_state) {
+  // If there is an IDP icon within the account button, the IDP icon was
+  // created using a background circle with the color of the background. When
+  // the button state changes, the color of the background may change, so we
+  // recreate the background circle.
+  HoverButton::StateChanged(old_state);
+  if (brand_icon_image_view_) {
+    ui::ColorProvider* provider =
+        brand_icon_image_view_->parent()->GetColorProvider();
+    if (provider) {
+      ui::ColorId color_id;
+      switch (GetState()) {
+        case ButtonState::STATE_NORMAL: {
+          color_id = ui::kColorDialogBackground;
+          break;
+        }
+        case ButtonState::STATE_HOVERED:
+        case ButtonState::STATE_PRESSED: {
+          color_id = ui::kColorMenuButtonBackgroundSelected;
+          break;
+        }
+        case ButtonState::STATE_DISABLED:
+        default: {
+          return;
+        }
+      }
+      brand_icon_image_view_->OnBackgroundColorUpdated(
+          provider->GetColor(color_id));
+    }
+  }
+}
+
+void AccountHoverButton::OnThemeChanged() {
+  HoverButton::OnThemeChanged();
+  if (brand_icon_image_view_) {
+    ui::ColorProvider* provider =
+        brand_icon_image_view_->parent()->GetColorProvider();
+    if (provider) {
+      brand_icon_image_view_->OnBackgroundColorUpdated(
+          provider->GetColor(ui::kColorDialogBackground));
+    }
+  }
+}
+
+void AccountHoverButton::OnPressed(const ui::Event& event) {
+  // Log the metric before invoking the callback since the callback may
+  // destroy this object.
+  base::UmaHistogramCustomCounts("Blink.FedCm.AccountChosenPosition.Desktop",
+                                 button_position_,
+                                 /*min=*/0,
+                                 /*exclusive_max=*/10, /*buckets=*/11);
+  if (secondary_view()) {
+    has_spinner_ = true;
+    static_cast<AccountHoverButtonSecondaryView*>(secondary_view())
+        ->ReplaceWithSpinner();
+  }
+  if (callback_) {
+    callback_.Run(event);
+  }
+}
+
+bool AccountHoverButton::HasSpinner() {
+  return has_spinner_;
+}
 
 AccountSelectionViewBase::AccountSelectionViewBase(
     content::WebContents* web_contents,
@@ -531,16 +555,6 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
                                           avatar_size);
       avatar_view = std::move(account_image_view);
     }
-    std::unique_ptr<views::ImageView> arrow_icon_view = nullptr;
-    if (is_modal_dialog) {
-      constexpr int kArrowIconRightPadding = 8;
-      arrow_icon_view = std::make_unique<views::ImageView>();
-      arrow_icon_view->SetBorder(views::CreateEmptyBorder(
-          gfx::Insets::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/0,
-                            /*right=*/kArrowIconRightPadding)));
-      arrow_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-          vector_icons::kSubmenuArrowIcon, ui::kColorIcon, kArrowIconSize));
-    }
 
     std::u16string footer = u"";
     if (should_include_idp) {
@@ -562,7 +576,9 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         std::move(avatar_view),
         /*title=*/base::UTF8ToUTF16(account.name),
         /*subtitle=*/base::UTF8ToUTF16(account.email),
-        /*secondary_view=*/std::move(arrow_icon_view),
+        /*secondary_view=*/
+        is_modal_dialog ? std::make_unique<AccountHoverButtonSecondaryView>()
+                        : nullptr,
         /*add_vertical_label_spacing=*/true, footer, brand_icon_image_view_ptr,
         *clickable_position);
     row->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(

@@ -37,6 +37,9 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -161,33 +164,6 @@ AccountSelectionModalView::AccountSelectionModalView(
 }
 
 AccountSelectionModalView::~AccountSelectionModalView() = default;
-
-void AccountSelectionModalView::AddProgressBar() {
-  // Change top margin of header to accommodate progress bar.
-  CHECK(header_view_);
-  constexpr int kVerifyingTopMargin = 13;
-  static_cast<views::BoxLayout*>(header_view_->GetLayoutManager())
-      ->set_inside_border_insets(gfx::Insets::TLBR(
-          /*top=*/kVerifyingTopMargin, /*left=*/kDialogMargin,
-          /*bottom=*/kVerticalPadding,
-          /*right=*/kDialogMargin));
-
-  // Add progress bar.
-  constexpr int kModalProgressBarHeight = 3;
-  views::ProgressBar* progress_bar =
-      AddChildViewAt(std::make_unique<views::ProgressBar>(), 0);
-  progress_bar->SetPreferredHeight(kModalProgressBarHeight);
-  progress_bar->SetPreferredCornerRadii(std::nullopt);
-
-  // Use an infinite animation: SetValue(-1).
-  progress_bar->SetValue(-1);
-  progress_bar->SetBackgroundColor(SK_ColorLTGRAY);
-  progress_bar->SetPreferredSize(
-      gfx::Size(kDialogWidth, kModalProgressBarHeight));
-  progress_bar->SizeToPreferredSize();
-
-  has_progress_bar_ = true;
-}
 
 void AccountSelectionModalView::UpdateDialogPosition() {
   constrained_window::UpdateWebContentsModalDialogPosition(
@@ -481,21 +457,51 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   // When a user signs in to the IdP with a returning account while the loading
   // modal is shown, we can exit without updating the UI.
   if (account.browser_trusted_login_state != Account::LoginState::kSignUp &&
-      has_progress_bar_) {
+      !account_chooser_) {
     InitDialogWidget();
     return;
   }
 
-  AddProgressBar();
-
   // Disable account chooser.
   CHECK(account_chooser_);
-  for (const auto& account_row : account_chooser_->children()) {
-    account_row->SetEnabled(false);
+  bool is_single_account_chooser = false;
+  for (const auto& child : account_chooser_->children()) {
+    // If one of the immediate children is HoverButton, this is a single account
+    // chooser.
+    if (std::string(child->GetClassName()) == "HoverButton") {
+      is_single_account_chooser = true;
+      has_spinner_ |= static_cast<AccountHoverButton*>(child)->HasSpinner();
+    }
+    child->SetEnabled(false);
   }
 
-  // Disable text buttons.
+  // If no immediate HoverButton child was found, it means that this is a
+  // multiple account chooser and the HoverButtons are embedded within a
+  // ScrollView.
+  if (!is_single_account_chooser) {
+    views::ScrollView* scroller =
+        static_cast<views::ScrollView*>(account_chooser_);
+    views::View* wrapper = scroller->children()[0];
+    views::View* contents = wrapper->children()[0];
+    for (const auto& child : contents->children()) {
+      if (std::string(child->GetClassName()) == "HoverButton") {
+        has_spinner_ |= static_cast<AccountHoverButton*>(child)->HasSpinner();
+      }
+      child->SetEnabled(false);
+    }
+  }
+
+  if (continue_button_) {
+    continue_button_->SetEnabled(false);
+  }
+
   if (use_other_account_button_) {
+    // If there is no spinner, either on any of the account rows or the continue
+    // button, this verifying sheet must have been triggered as a result of use
+    // other account so we show the spinner on this button.
+    if (!has_spinner_) {
+      ReplaceButtonWithSpinner(use_other_account_button_);
+    }
     use_other_account_button_->SetEnabled(false);
   }
 
@@ -503,10 +509,7 @@ void AccountSelectionModalView::ShowVerifyingSheet(
     back_button_->SetEnabled(false);
   }
 
-  if (continue_button_) {
-    continue_button_->SetEnabled(false);
-  }
-
+  has_spinner_ = true;
   InitDialogWidget();
 }
 
@@ -709,15 +712,27 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
       /*show_separator=*/false,
       /*additional_row_vertical_padding=*/0));
   AddChildView(CreateButtonRow(
-      base::BindRepeating(
-          &AccountSelectionViewBase::Observer::OnAccountSelected,
-          base::Unretained(observer_), std::cref(account), std::cref(idp_data)),
+      base::BindRepeating(&AccountSelectionModalView::OnContinueButtonClicked,
+                          base::Unretained(this), std::cref(account),
+                          std::cref(idp_data)),
       /*use_other_account_callback=*/std::nullopt,
       base::BindRepeating(
           &AccountSelectionViewBase::Observer::OnBackButtonClicked,
           base::Unretained(observer_))));
 
   InitDialogWidget();
+}
+
+void AccountSelectionModalView::OnContinueButtonClicked(
+    const content::IdentityRequestAccount& account,
+    const content::IdentityProviderData& idp_data,
+    const ui::Event& event) {
+  observer_->OnAccountSelected(account, idp_data, event);
+  has_spinner_ = true;
+
+  ReplaceButtonWithSpinner(continue_button_,
+                           ui::kColorButtonForegroundProminent,
+                           ui::kColorButtonBackgroundProminent);
 }
 
 void AccountSelectionModalView::ShowSingleReturningAccountDialog(
@@ -851,6 +866,34 @@ AccountSelectionModalView::CreateCombinedIconsView() {
   return icon_container;
 }
 
+void AccountSelectionModalView::ReplaceButtonWithSpinner(
+    views::MdTextButton* button,
+    ui::ColorId spinner_color,
+    ui::ColorId button_color) {
+  std::unique_ptr<views::Throbber> button_spinner =
+      std::make_unique<views::Throbber>();
+  button_spinner->SetPreferredSize(
+      gfx::Size(kModalButtonSpinnerSize, kModalButtonSpinnerSize));
+  button_spinner->SetColorId(spinner_color);
+  button_spinner->Start();
+
+  // Spinner is put into a BoxLayoutView so that it can be shown on top of the
+  // button.
+  std::unique_ptr<views::BoxLayoutView> spinner_container =
+      std::make_unique<views::BoxLayoutView>();
+  spinner_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  spinner_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  spinner_container->AddChildView(std::move(button_spinner));
+
+  // Set button text color to be the same as its background color so that the
+  // text is not visible and the size of the button doesn't change.
+  button->SetUseDefaultFillLayout(true);
+  button->AddChildView(std::move(spinner_container));
+  button->SetTextColor(HoverButton::ButtonState::STATE_DISABLED, button_color);
+  button->SetEnabledTextColors(button_color);
+  button->SetBgColorIdOverride(button_color);
+}
+
 void AccountSelectionModalView::CloseDialog() {
   if (!dialog_widget_) {
     return;
@@ -886,9 +929,9 @@ views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
     queued_announcement_ = u"";
   }
 
-  // If there is a progress bar and an account chooser, we are on the verifying
-  // sheet so focus on the cancel button.
-  if (has_progress_bar_ && account_chooser_) {
+  // If there is a spinner and an account chooser, we are on the verifying sheet
+  // so focus on the cancel button.
+  if (has_spinner_ && account_chooser_) {
     return cancel_button_;
   }
 
@@ -903,17 +946,6 @@ views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
 
 void AccountSelectionModalView::
     RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded() {
-  // If removing progress bar, adjust the header margins so the rest of the
-  // dialog doesn't get shifted when the progress bar is removed.
-  if (has_progress_bar_) {
-    CHECK(header_view_);
-    static_cast<views::BoxLayout*>(header_view_->GetLayoutManager())
-        ->set_inside_border_insets(gfx::Insets::TLBR(
-            /*top=*/kDialogMargin, /*left=*/kDialogMargin,
-            /*bottom=*/kVerticalPadding, /*right=*/kDialogMargin));
-    has_progress_bar_ = false;
-  }
-
   // body_label_ does not apply to the loading modal so it's added to header
   // here.
   if (!body_label_) {

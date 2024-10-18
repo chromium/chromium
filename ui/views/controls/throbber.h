@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -39,6 +40,7 @@ class VIEWS_EXPORT Throbber : public View {
   void OnPaint(gfx::Canvas* canvas) override;
 
   int GetDiameter() const { return diameter_; }
+  void SetColorId(ui::ColorId color) { color_id_ = color; }
 
  protected:
   // Specifies whether the throbber is currently animating or not
@@ -55,6 +57,9 @@ class VIEWS_EXPORT Throbber : public View {
   bool checked_ = false;
 
   const int diameter_;
+
+  // Overrides the default color, ui::kColorThrobber, if set.
+  std::optional<ui::ColorId> color_id_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Throbber, View)
