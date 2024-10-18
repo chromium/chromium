@@ -157,9 +157,6 @@ gfx::BufferFormat GbmPixmapWayland::GetBufferFormat() const {
   return gbm_bo_->GetBufferFormat();
 }
 
-uint32_t GbmPixmapWayland::GetFourCCBufferFormat() const {
-  return ui::GetFourCCFormatFromBufferFormat(gbm_bo_->GetBufferFormat());
-}
 gfx::Size GbmPixmapWayland::GetBufferSize() const {
   return gbm_bo_->GetSize();
 }
