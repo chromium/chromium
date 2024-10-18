@@ -9,7 +9,6 @@
 
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
 
-#include "base/containers/flat_set.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -51,24 +50,26 @@ WEB_UI_CONTROLLER_TYPE_IMPL(BatchUploadUI)
 
 void BatchUploadUI::Initialize(
     const AccountInfo& account_info,
-    std::vector<BatchUploadDataContainer> data_containers_list,
+    std::vector<syncer::LocalDataDescription> local_data_description_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
-    SelectedDataTypeItemsCallback completion_callback) {
+    BatchUploadSelectedDataTypeItemsCallback completion_callback) {
   std::unique_ptr<PluralStringHandler> plural_string_handler =
       std::make_unique<PluralStringHandler>();
   // Add the section titles variables. These will be updated based on the number
   // of selected items in each sections.
-  base::flat_set<std::string> section_title_ids;
-  for (const BatchUploadDataContainer& data_container : data_containers_list) {
-    plural_string_handler->AddLocalizedString(
-        base::ToString(data_container.section_title_id),
-        data_container.section_title_id);
+  std::set<std::string> section_title_ids;
+  for (const syncer::LocalDataDescription& local_data_description :
+       local_data_description_list) {
+    int section_title_id =
+        BatchUploadHandler::GetTypeSectionTitleId(local_data_description.type);
+    plural_string_handler->AddLocalizedString(base::ToString(section_title_id),
+                                              section_title_id);
   }
   web_ui()->AddMessageHandler(std::move(plural_string_handler));
 
   initialize_handler_callback_ = base::BindOnce(
       &BatchUploadUI::OnMojoHandlersReady, base::Unretained(this), account_info,
-      std::move(data_containers_list), update_view_height_callback,
+      std::move(local_data_description_list), update_view_height_callback,
       std::move(completion_callback));
 }
 
@@ -92,14 +93,14 @@ void BatchUploadUI::CreateBatchUploadHandler(
 
 void BatchUploadUI::OnMojoHandlersReady(
     const AccountInfo& account_info,
-    std::vector<BatchUploadDataContainer> data_containers_list,
+    std::vector<syncer::LocalDataDescription> local_data_description_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
-    SelectedDataTypeItemsCallback completion_callback,
+    BatchUploadSelectedDataTypeItemsCallback completion_callback,
     mojo::PendingRemote<batch_upload::mojom::Page> page,
     mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver) {
   CHECK(!handler_);
   handler_ = std::make_unique<BatchUploadHandler>(
       std::move(receiver), std::move(page), account_info,
-      std::move(data_containers_list), update_view_height_callback,
+      std::move(local_data_description_list), update_view_height_callback,
       std::move(completion_callback));
 }

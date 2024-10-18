@@ -9,16 +9,71 @@
 #include <vector>
 
 #include "components/sync/base/data_type.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
-class GURL;
-
 namespace syncer {
 
+// Representation of a single item to be displayed in the Batch Upload dialog.
+struct LocalDataItemModel {
+  // This id corresponds to the data item being represented in the model. It
+  // is used to link back to the data accurately when needing to process the
+  // result of the dialog.
+  // The variant allow for different data types to add their Id types. Multiple
+  // data types may have the same Id type.
+  // The `DataId` is also used as key of map.
+  using DataId = std::variant<
+      // CONTACT_INFO
+      std::string,
+      // PASSWORDS
+      std::tuple<std::string,
+                 GURL,
+                 std::u16string,
+                 std::u16string,
+                 std::u16string>>;
+
+  // Reprensents the id of the underlying data.
+  DataId id;
+
+  // Icon url for the icon of the item model. If empty the the icon will be
+  // hidden.
+  GURL icon_url;
+
+  // Used as the primary text of the item model.
+  std::string title;
+
+  // Used as the secondary text of the item model.
+  std::string subtitle;
+
+  LocalDataItemModel();
+  ~LocalDataItemModel();
+  // Copyable.
+  LocalDataItemModel(const LocalDataItemModel&);
+  LocalDataItemModel& operator=(const LocalDataItemModel&);
+  // Movable.
+  LocalDataItemModel(LocalDataItemModel&& other);
+  LocalDataItemModel& operator=(LocalDataItemModel&& other);
+
+  friend bool operator==(const LocalDataItemModel&,
+                         const LocalDataItemModel&) = default;
+};
+
+// TODO(crbug.com/373568992): Merge Desktop and Mobile data under common struct.
 struct LocalDataDescription {
+  // The following data is currently only used on Desktop platforms in the Batch
+  // Upload Dialog.
+  //
+  // Type that the model list represent.
+  syncer::DataType type = syncer::DataType::UNSPECIFIED;
+  // List of local data model representations.
+  std::vector<LocalDataItemModel> local_data_models;
+
+  // The following data is currently only used on Mobile platforms in the Batch
+  // Upload view.
+  //
   // Actual count of local items.
   size_t item_count = 0;
   // Contains up to 3 distinct domains corresponding to some of the local items,

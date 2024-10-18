@@ -181,15 +181,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Account is uknown with an invalid token"/>
 </enum>
 
-<enum name="BatchUploadDialogCloseReason">
-  <int value="0" label="Save in account clicked"/>
-  <int value="1" label="Cancel clicked"/>
-  <int value="2" label="Dialog dismissed"/>
-  <int value="3" label="Window/Browser closing"/>
-  <int value="4" label="Signin Pending"/>
-  <int value="5" label="Signout"/>
-</enum>
-
 <enum name="BatchUploadTypes">
   <int value="0" label="Passwords"/>
   <int value="1" label="Addresses"/>

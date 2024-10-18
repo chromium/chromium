@@ -7,11 +7,11 @@
 
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/ui/webui/signin/batch_upload/batch_upload.mojom.h"
+#include "components/sync/service/local_data_description.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -26,9 +26,9 @@ class BatchUploadHandler : public batch_upload::mojom::PageHandler {
       mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver,
       mojo::PendingRemote<batch_upload::mojom::Page> page,
       const AccountInfo& account_info,
-      std::vector<BatchUploadDataContainer> data_containers_list,
+      std::vector<syncer::LocalDataDescription> local_data_description_list,
       base::RepeatingCallback<void(int)> update_view_height_callback,
-      SelectedDataTypeItemsCallback completion_callback);
+      BatchUploadSelectedDataTypeItemsCallback completion_callback);
   ~BatchUploadHandler() override;
 
   BatchUploadHandler(const BatchUploadHandler&) = delete;
@@ -37,10 +37,12 @@ class BatchUploadHandler : public batch_upload::mojom::PageHandler {
   // batch_upload::mojom::PageHandler:
   void UpdateViewHeight(uint32_t height) override;
   // The order of the input vector `ids_to_move` matches with the order of
-  // `data_containers_list_`.
+  // `local_data_description_list_`.
   void SaveToAccount(
       const std::vector<std::vector<int32_t>>& ids_to_move) override;
   void Close() override;
+
+  static int GetTypeSectionTitleId(syncer::DataType type);
 
  private:
   // Strong Alias ID which is reprenseted as an int.
@@ -50,24 +52,24 @@ class BatchUploadHandler : public batch_upload::mojom::PageHandler {
   // the account info, dialog subtitle and a list of data containers.
   // The Data contaiers are a list items to be shown on the batch upload ui.
   // Sending the information using the Mojo equivalent structures:
-  // `BatchUploadDataContainer` -> `batch_upload::mojom::DataContainer`
+  // `syncer::LocalDataDescription` -> `batch_upload::mojom::DataContainer`
   // `BatchUploadDataItem` -> `batch_upload::mojom::DataItem`
   // Also populates the `internal_data_item_id_mapping_list_` for each data
   // item per section.
   batch_upload::mojom::BatchUploadDataPtr ConstructMojoBatchUploadData(
       const AccountInfo& account_info);
 
-  std::vector<BatchUploadDataContainer> data_containers_list_;
+  std::vector<syncer::LocalDataDescription> local_data_description_list_;
   base::RepeatingCallback<void(int)> update_view_height_callback_;
-  SelectedDataTypeItemsCallback completion_callback_;
+  BatchUploadSelectedDataTypeItemsCallback completion_callback_;
 
   // Internal Id mapping used to map items from their real
   // `BatchUploadDataItemModel::DataId` (which can be of different types) to the
   // id given to the Ui through Mojo (which is a fixed type). The vector size
-  // matches the `data_containers_list_` size and positions.
+  // matches the `local_data_description_list_` size and positions.
   // The mapping is needed for getting back the real ids when receiving the
   // result from Mojo in `SaveToAccount()`.
-  std::vector<base::flat_map<InternalId, BatchUploadDataItemModel::DataId>>
+  std::vector<std::map<InternalId, syncer::LocalDataItemModel::DataId>>
       internal_data_item_id_mapping_list_;
 
   // Allows handling received messages from the web ui page.

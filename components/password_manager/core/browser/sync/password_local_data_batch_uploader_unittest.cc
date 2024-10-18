@@ -10,10 +10,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/service/local_data_description.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,6 +111,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest, DescriptionEmptyIfAccountStoreNull) {
   EXPECT_EQ(description.Get().item_count, 0u);
   EXPECT_EQ(description.Get().domain_count, 0u);
   EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
+  EXPECT_EQ(description.Get().local_data_models,
+            std::vector<syncer::LocalDataItemModel>{});
 }
 
 // This should not happen outside of tests, it's just tested for symmetry with
@@ -126,6 +130,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest, DescriptionEmptyIfProfileStoreNull) {
   EXPECT_EQ(description.Get().item_count, 0u);
   EXPECT_EQ(description.Get().domain_count, 0u);
   EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
+  EXPECT_EQ(description.Get().local_data_models,
+            std::vector<syncer::LocalDataItemModel>{});
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -146,6 +152,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_EQ(description.Get().item_count, 0u);
   EXPECT_EQ(description.Get().domain_count, 0u);
   EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
+  EXPECT_EQ(description.Get().local_data_models,
+            std::vector<syncer::LocalDataItemModel>{});
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -165,6 +173,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_EQ(description.Get().item_count, 1u);
   EXPECT_EQ(description.Get().domain_count, 1u);
   EXPECT_EQ(description.Get().domains, std::vector<std::string>{"local.com"});
+  EXPECT_EQ(description.Get().local_data_models.size(), 0u);
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -188,6 +197,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_EQ(first_description.Get().domain_count, 1u);
   EXPECT_EQ(first_description.Get().domains,
             std::vector<std::string>{"local.com"});
+  EXPECT_EQ(first_description.Get().local_data_models.size(), 0u);
   EXPECT_EQ(second_description.Get(), first_description.Get());
 }
 
@@ -473,6 +483,65 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_THAT(account_store()->stored_passwords(), SizeIs(3));
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 3, 1);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest
+    : public PasswordLocalDataBatchUploaderTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kBatchUploadDesktop};
+};
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       DescriptionContainsOnlyLocalPasswords) {
+  base::test::TestFuture<void> wait_add;
+  profile_store()->AddLogin(CreatePasswordForm("http://local.com"),
+                            wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  account_store()->AddLogin(CreatePasswordForm("http://account.com"),
+                            wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+
+  uploader.GetLocalDataDescription(description.GetCallback());
+
+  EXPECT_EQ(description.Get().item_count, 1u);
+  EXPECT_EQ(description.Get().domain_count, 1u);
+  EXPECT_EQ(description.Get().domains, std::vector<std::string>{"local.com"});
+  ASSERT_EQ(description.Get().local_data_models.size(), 1u);
+  EXPECT_EQ(description.Get().local_data_models[0].title, "local.com");
+  EXPECT_EQ(description.Get().local_data_models[0].subtitle, "username");
+}
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       DescriptionCanBeQueriedBySimultaneousRequests) {
+  // Add one local password and one account password.
+  base::test::TestFuture<void> wait_add;
+  PasswordForm local_password = CreatePasswordForm("http://local.com");
+  profile_store()->AddLogin(local_password, wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  PasswordForm account_password = CreatePasswordForm("http://account.com");
+  account_store()->AddLogin(account_password, wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+  base::test::TestFuture<syncer::LocalDataDescription> first_description;
+  base::test::TestFuture<syncer::LocalDataDescription> second_description;
+
+  uploader.GetLocalDataDescription(first_description.GetCallback());
+  uploader.GetLocalDataDescription(second_description.GetCallback());
+
+  EXPECT_EQ(first_description.Get().item_count, 1u);
+  EXPECT_EQ(first_description.Get().domain_count, 1u);
+  EXPECT_EQ(first_description.Get().domains,
+            std::vector<std::string>{"local.com"});
+  ASSERT_EQ(first_description.Get().local_data_models.size(), 1u);
+  EXPECT_EQ(first_description.Get().local_data_models[0].title, "local.com");
+  EXPECT_EQ(first_description.Get().local_data_models[0].subtitle, "username");
+  EXPECT_EQ(second_description.Get(), first_description.Get());
+}
+
+#endif
 
 }  // namespace
 }  // namespace password_manager

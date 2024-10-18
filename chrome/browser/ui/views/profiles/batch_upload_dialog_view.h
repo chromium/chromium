@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/service/local_data_description.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -53,8 +54,8 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   // The created dialog view is owned by the views system.
   static BatchUploadDialogView* CreateBatchUploadDialogView(
       Browser& browser,
-      std::vector<BatchUploadDataContainer> data_containers_list,
-      SelectedDataTypeItemsCallback complete_callback);
+      std::vector<syncer::LocalDataDescription> local_data_description_list,
+      BatchUploadSelectedDataTypeItemsCallback complete_callback);
 
   views::WebView* GetWebViewForTesting();
 
@@ -72,8 +73,8 @@ class BatchUploadDialogView : public views::DialogDelegateView,
 
   explicit BatchUploadDialogView(
       Profile* profile,
-      std::vector<BatchUploadDataContainer> data_containers_list,
-      SelectedDataTypeItemsCallback complete_callback);
+      std::vector<syncer::LocalDataDescription> local_data_description_list,
+      BatchUploadSelectedDataTypeItemsCallback complete_callback);
 
   // Callback to properly resize the view based on the loaded web ui content.
   // Also shows the widget.
@@ -82,8 +83,8 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   // Callback to receive the selected items from the web ui view.
   // Empty list means the dialog was closed without a move item request.
   void OnDialogSelectionMade(
-      const base::flat_map<BatchUploadDataType,
-                           std::vector<BatchUploadDataItemModel::DataId>>&
+      const std::map<syncer::DataType,
+                     std::vector<syncer::LocalDataItemModel::DataId>>&
           selected_map);
 
   // Callback used as a clearing method whenever the view is being closed. Used
@@ -110,12 +111,12 @@ class BatchUploadDialogView : public views::DialogDelegateView,
 
   // Account info for which the data is showing.
   AccountInfo primary_account_info_;
-  SelectedDataTypeItemsCallback complete_callback_;
+  BatchUploadSelectedDataTypeItemsCallback complete_callback_;
 
   raw_ptr<views::WebView> web_view_;
 
   // Count of items per data type. To be used for metrics purposes.
-  base::flat_map<BatchUploadDataType, int> data_item_count_map_;
+  std::map<syncer::DataType, int> data_item_count_map_;
 
   // Reason for closing the dialog. This value used to record a histogram when
   // the dialog is closed. Expected to be filled in `CloseWithReason()`.

@@ -31,7 +31,7 @@ constexpr int kBatchUploadDialogFixedWidth = 512;
 constexpr int kBatchUploadDialogMaxHeight = 628;
 
 constexpr char kDataTypeInformationHistogramBase[] =
-    "Signin.BatchUpload.DataType";
+    "Sync.BatchUpload.DataType";
 
 BatchUploadUI* GetBatchUploadUI(views::WebView* web_view) {
   return web_view->GetWebContents()
@@ -53,11 +53,12 @@ AccountInfo GetBatchUploadPrimaryAccountInfo(
 
 // Records the availability of all data types.
 void RecordAvailableDataTypes(
-    const base::flat_map<BatchUploadDataType, int>& data_item_count) {
+    const std::map<syncer::DataType, int>& data_item_count) {
   for (const auto& [type, count] : data_item_count) {
     CHECK_NE(count, 0);
     base::UmaHistogramEnumeration(
-        base::StrCat({kDataTypeInformationHistogramBase, "Available"}), type);
+        base::StrCat({kDataTypeInformationHistogramBase, "Available"}),
+        DataTypeHistogramValue(type));
   }
 }
 
@@ -66,17 +67,18 @@ void RecordAvailableDataTypes(
 // selected. Also records the percentage of selected items vs available items.
 // Returns whether any data was selected.
 bool RecordSelectedDataTypes(
-    const base::flat_map<BatchUploadDataType,
-                         std::vector<BatchUploadDataItemModel::DataId>>&
+    const std::map<syncer::DataType,
+                   std::vector<syncer::LocalDataItemModel::DataId>>&
         selected_types,
-    const base::flat_map<BatchUploadDataType, int>& data_item_count_map) {
+    const std::map<syncer::DataType, int>& data_item_count_map) {
   bool has_selected_data = false;
   for (const auto& [type, selected_items] : selected_types) {
     int selected_count = selected_items.size();
     if (selected_count != 0) {
       has_selected_data = true;
       base::UmaHistogramEnumeration(
-          base::StrCat({kDataTypeInformationHistogramBase, "Selected"}), type);
+          base::StrCat({kDataTypeInformationHistogramBase, "Selected"}),
+          DataTypeHistogramValue(type));
 
       int available_count = data_item_count_map.at(type);
       CHECK_LE(selected_count, available_count);
@@ -97,18 +99,18 @@ BatchUploadDialogView::~BatchUploadDialogView() {
 
   // Records at view destruction to make sure it is recorded once only per
   // dialog.
-  base::UmaHistogramEnumeration("Signin.BatchUpload.DialogCloseReason",
+  base::UmaHistogramEnumeration("Sync.BatchUpload.DialogCloseReason",
                                 close_reason_);
 }
 
 // static
 BatchUploadDialogView* BatchUploadDialogView::CreateBatchUploadDialogView(
     Browser& browser,
-    std::vector<BatchUploadDataContainer> data_containers_list,
-    SelectedDataTypeItemsCallback complete_callback) {
+    std::vector<syncer::LocalDataDescription> local_data_description_list,
+    BatchUploadSelectedDataTypeItemsCallback complete_callback) {
   std::unique_ptr<BatchUploadDialogView> dialog_view =
       base::WrapUnique(new BatchUploadDialogView(
-          browser.profile(), std::move(data_containers_list),
+          browser.profile(), std::move(local_data_description_list),
           std::move(complete_callback)));
   BatchUploadDialogView* dialog_view_ptr = dialog_view.get();
 
@@ -123,8 +125,8 @@ BatchUploadDialogView* BatchUploadDialogView::CreateBatchUploadDialogView(
 
 BatchUploadDialogView::BatchUploadDialogView(
     Profile* profile,
-    std::vector<BatchUploadDataContainer> data_containers_list,
-    SelectedDataTypeItemsCallback complete_callback)
+    std::vector<syncer::LocalDataDescription> local_data_description_list,
+    BatchUploadSelectedDataTypeItemsCallback complete_callback)
     : complete_callback_(std::move(complete_callback)) {
   SetModalType(ui::mojom::ModalType::kWindow);
   // No native buttons.
@@ -155,17 +157,19 @@ BatchUploadDialogView::BatchUploadDialogView(
   CHECK(identity_manager);
   primary_account_info_ = GetBatchUploadPrimaryAccountInfo(*identity_manager);
 
-  for (const BatchUploadDataContainer& container : data_containers_list) {
-    const int item_count = container.items.size();
+  for (const syncer::LocalDataDescription& local_data_description :
+       local_data_description_list) {
+    const int item_count = local_data_description.local_data_models.size();
     CHECK_NE(item_count, 0);
-    data_item_count_map_.insert_or_assign(container.type, item_count);
+    data_item_count_map_.insert_or_assign(local_data_description.type,
+                                          item_count);
   }
 
   BatchUploadUI* web_ui = GetBatchUploadUI(web_view_);
   CHECK(web_ui);
   // Initializes the UI that will initialize the handler when ready.
   web_ui->Initialize(
-      primary_account_info_, std::move(data_containers_list),
+      primary_account_info_, std::move(local_data_description_list),
       base::BindRepeating(&BatchUploadDialogView::SetHeightAndShowWidget,
                           base::Unretained(this)),
       base::BindOnce(&BatchUploadDialogView::OnDialogSelectionMade,
@@ -196,8 +200,8 @@ void BatchUploadDialogView::OnClose() {
 }
 
 void BatchUploadDialogView::OnDialogSelectionMade(
-    const base::flat_map<BatchUploadDataType,
-                         std::vector<BatchUploadDataItemModel::DataId>>&
+    const std::map<syncer::DataType,
+                   std::vector<syncer::LocalDataItemModel::DataId>>&
         selected_map) {
   bool has_selected_data =
       RecordSelectedDataTypes(selected_map, data_item_count_map_);
@@ -236,7 +240,7 @@ void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
     widget->Show();
 
     RecordAvailableDataTypes(data_item_count_map_);
-    base::UmaHistogramBoolean("Signin.BatchUpload.Opened", true);
+    base::UmaHistogramBoolean("Sync.BatchUpload.Opened", true);
   }
 }
 
@@ -289,10 +293,11 @@ views::WebView* BatchUploadDialogView::GetWebViewForTesting() {
 
 void BatchUploadUIDelegate::ShowBatchUploadDialogInternal(
     Browser& browser,
-    std::vector<BatchUploadDataContainer> data_containers_list,
-    SelectedDataTypeItemsCallback complete_callback) {
+    std::vector<syncer::LocalDataDescription> local_data_description_list,
+    BatchUploadSelectedDataTypeItemsCallback complete_callback) {
   BatchUploadDialogView::CreateBatchUploadDialogView(
-      browser, std::move(data_containers_list), std::move(complete_callback));
+      browser, std::move(local_data_description_list),
+      std::move(complete_callback));
 }
 
 BEGIN_METADATA(BatchUploadDialogView)

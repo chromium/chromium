@@ -7,26 +7,12 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
+#include "components/sync/service/local_data_description.h"
 
 class Browser;
-
-// Data types that integrates with the Batch Upload and can be displayed in the
-// dialog.
-// Ordered by priority as the enum will be used in a map. The priority order
-// controls the order in which the data type section is displayed in the dialog.
-// This enum will be iterated over to get the `BatchUploadDataContainers`.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class BatchUploadDataType {
-  kPasswords = 0,
-  kAddresses = 1,
-
-  kMaxValue = kAddresses,
-};
 
 // Controller that manages the information displayed in the Batch Upload dialog.
 // Receoves the different data types models to display, and triggers the Ui
@@ -48,21 +34,22 @@ class BatchUploadController {
   // resulting map of the callback indicates which data were requested to move
   // to the account storage. `browser` must not be null, but may be null in some
   // tests.
-  bool ShowDialog(BatchUploadDelegate& delegate,
-                  Browser* browser,
-                  base::flat_map<BatchUploadDataType, BatchUploadDataContainer>
-                      data_containers,
-                  SelectedDataTypeItemsCallback selected_items_callback);
+  bool ShowDialog(
+      BatchUploadDelegate& delegate,
+      Browser* browser,
+      std::map<syncer::DataType, syncer::LocalDataDescription>
+          local_data_description_map,
+      BatchUploadSelectedDataTypeItemsCallback selected_items_callback);
 
  private:
   // Success callback of the dialog view, allows proceeding with the move of the
   // selected data items per data type to the account storages.
   void MoveItemsToAccountStorage(
-      const base::flat_map<BatchUploadDataType,
-                           std::vector<BatchUploadDataItemModel::DataId>>&
+      const std::map<syncer::DataType,
+                     std::vector<syncer::LocalDataItemModel::DataId>>&
           items_to_move);
 
-  SelectedDataTypeItemsCallback selected_items_callback_;
+  BatchUploadSelectedDataTypeItemsCallback selected_items_callback_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_CONTROLLER_H_
