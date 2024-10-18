@@ -77,24 +77,6 @@ struct HomogeneousCoordinate {
                                   float{kInfiniteCoordinate}));
   }
 
-  gfx::Point3F CartesianPoint3d() const {
-    if (w() == SK_Scalar1)
-      return gfx::Point3F(x(), y(), z());
-
-    // For now, because this code is used privately only by MathUtil, it should
-    // never be called when w == 0, and we do not yet need to handle that case.
-    DCHECK(w());
-    SkScalar inv_w = SK_Scalar1 / w();
-    // However, w may be close to 0 and we lose precision on our geometry
-    // calculations if we allow scaling to extremely large values.
-    return gfx::Point3F(std::clamp(x() * inv_w, -kInfiniteCoordinate,
-                                   float{kInfiniteCoordinate}),
-                        std::clamp(y() * inv_w, -kInfiniteCoordinate,
-                                   float{kInfiniteCoordinate}),
-                        std::clamp(z() * inv_w, -kInfiniteCoordinate,
-                                   float{kInfiniteCoordinate}));
-  }
-
   gfx::Point3F CartesianPoint3dUnclamped() const {
     if (w() == SK_Scalar1)
       return gfx::Point3F(x(), y(), z());
@@ -240,11 +222,6 @@ class CC_BASE_EXPORT MathUtil {
   static gfx::PointF ProjectPoint(const gfx::Transform& transform,
                                   const gfx::PointF& point,
                                   bool* clipped);
-  // Identical to the above function, but coerces the homogeneous coordinate to
-  // a 3d rather than a 2d point.
-  static gfx::Point3F ProjectPoint3D(const gfx::Transform& transform,
-                                     const gfx::PointF& point,
-                                     bool* clipped);
 
   // Makes a rect that has the same relationship to input_outer_rect as
   // scale_inner_rect has to scale_outer_rect. scale_inner_rect should be

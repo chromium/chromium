@@ -800,10 +800,8 @@ InputHandler::EventListenerTypeForTouchStartOrMoveAt(
     gfx::Transform inverse_layer_screen_space =
         layer_screen_space_transform.GetCheckedInverse();
     bool clipped = false;
-    gfx::Point3F planar_point = MathUtil::ProjectPoint3D(
+    gfx::PointF hit_test_point_in_layer_space = MathUtil::ProjectPoint(
         inverse_layer_screen_space, device_viewport_point, &clipped);
-    gfx::PointF hit_test_point_in_layer_space =
-        gfx::PointF(planar_point.x(), planar_point.y());
     const auto& region = layer_impl_with_touch_handler->touch_action_region();
     gfx::Point point = gfx::ToRoundedPoint(hit_test_point_in_layer_space);
     *out_touch_action = region.GetAllowedTouchAction(point);

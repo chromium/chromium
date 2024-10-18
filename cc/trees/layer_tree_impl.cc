@@ -2378,10 +2378,8 @@ static bool PointHitsRect(
   // Transform the hit test point from screen space to the local space of the
   // given rect.
   bool clipped = false;
-  gfx::Point3F planar_point = MathUtil::ProjectPoint3D(
+  gfx::PointF hit_test_point_in_local_space = MathUtil::ProjectPoint(
       inverse_local_space_to_screen_space, screen_space_point, &clipped);
-  gfx::PointF hit_test_point_in_local_space =
-      gfx::PointF(planar_point.x(), planar_point.y());
 
   // If ProjectPoint could not project to a valid value, then we assume that
   // this point doesn't hit this rect.
@@ -2396,7 +2394,8 @@ static bool PointHitsRect(
     // and pull it back to world space and compute the displacement along the
     // z-axis.
     gfx::Point3F planar_point_in_screen_space =
-        local_space_to_screen_space_transform.MapPoint(planar_point);
+        local_space_to_screen_space_transform.MapPoint(
+            gfx::Point3F(hit_test_point_in_local_space));
     *distance_to_camera = planar_point_in_screen_space.z();
   }
 

@@ -733,15 +733,6 @@ gfx::PointF MathUtil::ProjectPoint(const gfx::Transform& transform,
   return h.CartesianPoint2d();
 }
 
-gfx::Point3F MathUtil::ProjectPoint3D(const gfx::Transform& transform,
-                                      const gfx::PointF& p,
-                                      bool* clipped) {
-  HomogeneousCoordinate h = ProjectHomogeneousPoint(transform, p, clipped);
-  if (!h.w())
-    return gfx::Point3F();
-  return h.CartesianPoint3d();
-}
-
 gfx::RectF MathUtil::ScaleRectProportional(const gfx::RectF& input_outer_rect,
                                            const gfx::RectF& scale_outer_rect,
                                            const gfx::RectF& scale_inner_rect) {
