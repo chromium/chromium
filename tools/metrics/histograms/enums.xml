@@ -10774,6 +10774,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5121" label="V8RTCEncodedAudioFrame_Timestamp_AttributeGetter"/>
   <int value="5122" label="V8AIAssistantCapabilities_LanguageAvailable_Method"/>
   <int value="5123" label="WebGLRenderingContextReadPixels"/>
+  <int value="5124" label="SelectAudioOutput"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

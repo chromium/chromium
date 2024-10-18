@@ -31,6 +31,7 @@
 
 namespace blink {
 
+class AudioOutputOptions;
 class CaptureHandleConfig;
 class CropTarget;
 class DisplayMediaStreamOptions;
@@ -51,6 +52,16 @@ enum class EnumerateDevicesResult {
   kErrorCaptureServiceCrash = 2,
   kErrorMediaDevicesDispatcherHostDisconnected = 3,
   kTimedOut = 4,
+  kMaxValue = kTimedOut
+};
+
+enum class AudioOutputSelectionResult {
+  kSuccess = 0,
+  kPermissionDenied = 1,
+  kNoDevices = 2,
+  kInvalidStateError = 3,
+  kOtherError = 4,
+  kTimedOut = 5,
   kMaxValue = kTimedOut
 };
 
@@ -82,6 +93,11 @@ class MODULES_EXPORT MediaDevices final
   ScriptPromise<MediaStream> getDisplayMedia(ScriptState*,
                                              const DisplayMediaStreamOptions*,
                                              ExceptionState&);
+
+  ScriptPromise<MediaDeviceInfo> selectAudioOutput(
+      ScriptState*,
+      const AudioOutputOptions* options,
+      ExceptionState&);
 
   void setCaptureHandleConfig(ScriptState*,
                               const CaptureHandleConfig*,
@@ -158,6 +174,11 @@ class MODULES_EXPORT MediaDevices final
                          Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>);
   void OnDispatcherHostConnectionError();
   mojom::blink::MediaDevicesDispatcherHost& GetDispatcherHost(LocalFrame*);
+
+  void OnSelectAudioOutputResult(
+      ScriptPromiseResolverWithTracker<AudioOutputSelectionResult,
+                                       MediaDeviceInfo>* resolver,
+      mojom::blink::SelectAudioOutputResultPtr result);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Manage the window of opportunity that occurs immediately after

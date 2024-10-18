@@ -792,6 +792,33 @@ TEST_P(MediaDevicesDispatcherHostTest,
             0u);
 }
 
+TEST_P(MediaDevicesDispatcherHostTest, SelectAudioOutputNoUserActivation) {
+  base::test::TestFuture<blink::mojom::SelectAudioOutputResultPtr> future;
+  host_->SelectAudioOutput(kDefaultAudioDeviceID, future.GetCallback());
+
+  blink::mojom::SelectAudioOutputResultPtr result = future.Take();
+  EXPECT_EQ(result->status, blink::mojom::AudioOutputStatus::kNoUserActivation);
+  EXPECT_TRUE(result->device_info.device_id.empty());
+  EXPECT_TRUE(result->device_info.group_id.empty());
+  EXPECT_TRUE(result->device_info.label.empty());
+}
+
+TEST_P(MediaDevicesDispatcherHostTest, SelectAudioOutputNoPermission) {
+  render_frame_host_->SimulateUserActivation();
+
+  media_stream_manager_->media_devices_manager()->SetPermissionChecker(
+      std::make_unique<MediaDevicesPermissionChecker>(false));
+
+  base::test::TestFuture<blink::mojom::SelectAudioOutputResultPtr> future;
+  host_->SelectAudioOutput(kDefaultAudioDeviceID, future.GetCallback());
+
+  blink::mojom::SelectAudioOutputResultPtr result = future.Take();
+  EXPECT_EQ(result->status, blink::mojom::AudioOutputStatus::kNoPermission);
+  EXPECT_TRUE(result->device_info.device_id.empty());
+  EXPECT_TRUE(result->device_info.group_id.empty());
+  EXPECT_TRUE(result->device_info.label.empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          MediaDevicesDispatcherHostTest,
                          testing::Values(std::string(), "https://test.com"));

@@ -197,6 +197,12 @@ class MockMediaDevicesDispatcherHost final
                             std::move(audio_input_capabilities));
   }
 
+  void SelectAudioOutput(
+      const String& device_id,
+      SelectAudioOutputCallback select_audio_output_callback) override {
+    NOTREACHED_IN_MIGRATION();
+  }
+
   void GetVideoInputCapabilities(GetVideoInputCapabilitiesCallback) override {
     NOTREACHED_IN_MIGRATION();
   }

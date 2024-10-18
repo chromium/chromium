@@ -442,6 +442,99 @@ void MediaDevicesDispatcherHost::OnAudioGotSaltAndOrigin(
                      weak_factory_.GetWeakPtr()));
 }
 
+void MediaDevicesDispatcherHost::SelectAudioOutput(
+    const std::string& device_id,
+    SelectAudioOutputCallback select_audio_output_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // Check for user activation on the UI thread.
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](GlobalRenderFrameHostId render_frame_host_id) {
+            RenderFrameHostImpl* render_frame_host =
+                RenderFrameHostImpl::FromID(render_frame_host_id);
+            return render_frame_host &&
+                   render_frame_host->HasTransientUserActivation();
+          },
+          render_frame_host_id_),
+      base::BindOnce(
+          &MediaDevicesDispatcherHost::OnGotTransientUserActivationResult,
+          weak_factory_.GetWeakPtr(), device_id,
+          std::move(select_audio_output_callback)));
+}
+
+void MediaDevicesDispatcherHost::OnGotTransientUserActivationResult(
+    const std::string& device_id,
+    SelectAudioOutputCallback select_audio_output_callback,
+    bool has_user_activation) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!has_user_activation) {
+    auto result = blink::mojom::SelectAudioOutputResult::New();
+    result->status = blink::mojom::AudioOutputStatus::kNoUserActivation;
+    std::move(select_audio_output_callback).Run(std::move(result));
+    return;
+  }
+
+  media_stream_manager_->media_devices_manager()
+      ->IsSpeakerSelectionPermissionDenied(
+          render_frame_host_id_,
+          base::BindOnce(
+              &MediaDevicesDispatcherHost::OnAudioOutputPermissionResult,
+              weak_factory_.GetWeakPtr(), device_id,
+              std::move(select_audio_output_callback)));
+}
+
+void MediaDevicesDispatcherHost::OnAudioOutputPermissionResult(
+    const std::string& device_id,
+    SelectAudioOutputCallback select_audio_output_callback,
+    MediaDevicesManager::PermissionDeniedState permission_state) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (permission_state == MediaDevicesManager::PermissionDeniedState::kDenied) {
+    auto result = blink::mojom::SelectAudioOutputResult::New();
+    result->status = blink::mojom::AudioOutputStatus::kNoPermission;
+    std::move(select_audio_output_callback).Run(std::move(result));
+    return;
+  }
+
+  MediaDevicesManager::BoolDeviceTypes requested_types;
+  requested_types[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
+      true;
+
+  media_stream_manager_->media_devices_manager()->EnumerateDevices(
+      requested_types,
+      base::BindOnce(&MediaDevicesDispatcherHost::OnAvailableAudioOutputDevices,
+                     weak_factory_.GetWeakPtr(), device_id,
+                     std::move(select_audio_output_callback)));
+}
+
+void MediaDevicesDispatcherHost::OnAvailableAudioOutputDevices(
+    const std::string& device_id,
+    SelectAudioOutputCallback select_audio_output_callback,
+    const MediaDeviceEnumeration& enumeration) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (enumeration.empty()) {
+    auto result = blink::mojom::SelectAudioOutputResult::New();
+    result->status = blink::mojom::AudioOutputStatus::kNoDevices;
+    std::move(select_audio_output_callback).Run(std::move(result));
+    return;
+  }
+  // TODO(crbug.com/372214870): Handle the case when a non-empty device_id
+  // is provided.
+  if (!device_id.empty()) {
+    auto result = blink::mojom::SelectAudioOutputResult::New();
+    result->status = blink::mojom::AudioOutputStatus::kUnknown;
+    std::move(select_audio_output_callback).Run(std::move(result));
+  }
+
+  // TODO(crbug.com/372214870): Pass the request to ui/views to prompt the user.
+  auto result = blink::mojom::SelectAudioOutputResult::New();
+  result->status = blink::mojom::AudioOutputStatus::kNoPermission;
+  std::move(select_audio_output_callback).Run(std::move(result));
+}
+
 void MediaDevicesDispatcherHost::GotAudioInputEnumeration(
     const MediaDeviceEnumeration& enumeration) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

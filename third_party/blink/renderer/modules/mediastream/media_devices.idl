@@ -35,6 +35,13 @@
     ] Promise<sequence<MediaStream>>
     getAllScreensMedia();
 
+    [
+      RuntimeEnabled = SelectAudioOutput,
+      CallWith = ScriptState, RaisesException,
+      MeasureAs = SelectAudioOutput
+    ] Promise<MediaDeviceInfo>
+    selectAudioOutput(optional AudioOutputOptions options = {});
+
     // https://w3c.github.io/mediacapture-handle/identity/
     // Allows an application APP to opt-in to exposing certain information to
     // applications which end up capturing APP.

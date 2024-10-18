@@ -62,6 +62,10 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       GetAvailableVideoInputDeviceFormatsCallback client_callback) override;
   void GetAudioInputCapabilities(
       GetAudioInputCapabilitiesCallback client_callback) override;
+
+  void SelectAudioOutput(const std::string& device_id,
+                         SelectAudioOutputCallback callback) override;
+
   void AddMediaDevicesListener(
       bool subscribe_audio_input,
       bool subscribe_video_input,
@@ -78,6 +82,21 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
 #endif
 
  private:
+  void OnGotTransientUserActivationResult(
+      const std::string& device_id,
+      SelectAudioOutputCallback select_audio_output_callback,
+      bool has_user_activation);
+
+  void OnAudioOutputPermissionResult(
+      const std::string& device_id,
+      SelectAudioOutputCallback select_audio_output_callback,
+      MediaDevicesManager::PermissionDeniedState permission_state);
+
+  void OnAvailableAudioOutputDevices(
+      const std::string& device_id,
+      SelectAudioOutputCallback select_audio_output_callback,
+      const MediaDeviceEnumeration& enumeration);
+
   friend class MediaDevicesDispatcherHostTest;
 
   using GetVideoInputDeviceFormatsCallback =

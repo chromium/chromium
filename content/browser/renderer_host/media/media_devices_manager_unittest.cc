@@ -278,6 +278,10 @@ class MockMediaDevicesDispatcherHost
   MOCK_METHOD(void,
               GetAudioInputCapabilities,
               (GetAudioInputCapabilitiesCallback callback));
+  MOCK_METHOD(void,
+              SelectAudioOutput,
+              (const std::string& device_id,
+               SelectAudioOutputCallback callback));
   MOCK_METHOD(
       void,
       AddMediaDevicesListener,

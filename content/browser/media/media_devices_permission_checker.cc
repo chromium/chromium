@@ -88,6 +88,36 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
   return result;
 }
 
+MediaDevicesManager::PermissionDeniedState IsSpeakerSelectionPermissionDenied(
+    int render_process_id,
+    int render_frame_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderFrameHostImpl* frame_host =
+      RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+
+  // If there is no |frame_host|, return PermissionDeniedState::kDenied.
+  if (!frame_host) {
+    return MediaDevicesManager::PermissionDeniedState::kDenied;
+  }
+
+  blink::mojom::PermissionStatus speaker_selection_permission_status =
+      frame_host->GetBrowserContext()
+          ->GetPermissionController()
+          ->GetPermissionStatusForCurrentDocument(
+              blink::PermissionType::SPEAKER_SELECTION, frame_host);
+
+  bool speaker_selection_permissions_policy = frame_host->IsFeatureEnabled(
+      blink::mojom::PermissionsPolicyFeature::kSpeakerSelection);
+
+  // Check if permission is DENIED or permissions policy is not enabled.
+  if (!speaker_selection_permissions_policy ||
+      speaker_selection_permission_status ==
+          blink::mojom::PermissionStatus::DENIED) {
+    return MediaDevicesManager::PermissionDeniedState::kDenied;
+  }
+  return MediaDevicesManager::PermissionDeniedState::kNotDenied;
+}
+
 bool CheckSinglePermissionOnUIThread(MediaDeviceType device_type,
                                      int render_process_id,
                                      int render_frame_id) {
@@ -121,6 +151,29 @@ bool MediaDevicesPermissionChecker::CheckPermissionOnUIThread(
 
   return CheckSinglePermissionOnUIThread(device_type, render_process_id,
                                          render_frame_id);
+}
+
+void MediaDevicesPermissionChecker::IsSpeakerSelectionDenied(
+    int render_process_id,
+    int render_frame_id,
+    base::OnceCallback<void(MediaDevicesManager::PermissionDeniedState)>
+        callback) const {
+  if (use_override_) {
+    if (override_value_) {
+      std::move(callback).Run(
+          MediaDevicesManager::PermissionDeniedState::kNotDenied);
+    } else {
+      std::move(callback).Run(
+          MediaDevicesManager::PermissionDeniedState::kDenied);
+    }
+    return;
+  }
+
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&IsSpeakerSelectionPermissionDenied, render_process_id,
+                     render_frame_id),
+      std::move(callback));
 }
 
 void MediaDevicesPermissionChecker::CheckPermission(

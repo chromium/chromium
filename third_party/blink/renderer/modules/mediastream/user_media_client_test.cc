@@ -227,6 +227,11 @@ class MediaDevicesDispatcherHostMock
     NOTREACHED_IN_MIGRATION();
   }
 
+  void SelectAudioOutput(const String& device_id,
+                         SelectAudioOutputCallback callback) override {
+    NOTREACHED_IN_MIGRATION();
+  }
+
   void AddMediaDevicesListener(
       bool subscribe_audio_input,
       bool subscribe_video_input,
@@ -367,6 +372,11 @@ class MockMediaDevicesDispatcherHost
       bool subscribe_audio_output,
       mojo::PendingRemote<blink::mojom::blink::MediaDevicesListener> listener)
       override {
+    NOTREACHED_IN_MIGRATION();
+  }
+
+  void SelectAudioOutput(const String& device_id,
+                         SelectAudioOutputCallback callback) override {
     NOTREACHED_IN_MIGRATION();
   }
 

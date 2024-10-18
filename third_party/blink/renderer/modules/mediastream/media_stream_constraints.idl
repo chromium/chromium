@@ -54,3 +54,7 @@ dictionary MediaStreamConstraints {
     SurfaceSwitchingPreferenceEnum surfaceSwitching;
     MonitorTypeSurfacesEnum monitorTypeSurfaces;
 };
+
+dictionary AudioOutputOptions {
+  DOMString deviceId = "";
+};

@@ -68,6 +68,8 @@ class CONTENT_EXPORT MediaDevicesManager
     BoolDeviceTypes() { fill(false); }
   };
 
+  enum class PermissionDeniedState { kDenied, kNotDenied };
+
   using EnumerationCallback =
       base::OnceCallback<void(const MediaDeviceEnumeration&)>;
   using EnumerateDevicesCallback = base::OnceCallback<void(
@@ -127,6 +129,10 @@ class CONTENT_EXPORT MediaDevicesManager
                                bool request_video_input_capabilities,
                                bool request_audio_input_capabilities,
                                EnumerateDevicesCallback callback);
+
+  void IsSpeakerSelectionPermissionDenied(
+      GlobalRenderFrameHostId render_frame_host_id,
+      base::OnceCallback<void(PermissionDeniedState)> callback);
 
   uint32_t SubscribeDeviceChangeNotifications(
       GlobalRenderFrameHostId render_frame_host_id,

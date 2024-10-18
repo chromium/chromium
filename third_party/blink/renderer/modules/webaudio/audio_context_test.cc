@@ -106,6 +106,8 @@ class MockMediaDevicesDispatcherHost final
                             std::move(video_input_capabilities),
                             std::move(audio_input_capabilities));
   }
+  void SelectAudioOutput(const String& device_id,
+                         SelectAudioOutputCallback callback) override {}
 
   void GetVideoInputCapabilities(GetVideoInputCapabilitiesCallback) override {}
 
