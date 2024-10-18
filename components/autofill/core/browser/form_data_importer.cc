@@ -549,13 +549,6 @@ FormDataImporter::GetAddressObservedFieldValues(
       }
     }
     observed_field_values.insert_or_assign(field_type, value);
-    // The `autofill_source_profile_guid()` is not reset when a field is
-    // manually edited or filled with non-address information later.
-    import_metadata.filled_types_to_autofill_guid.insert_or_assign(
-        field_type, field->is_autofilled() &&
-                            field->filling_product() == FillingProduct::kAddress
-                        ? field->autofill_source_profile_guid()
-                        : std::nullopt);
 
     if (field->parsed_autocomplete()) {
       import_metadata.did_import_from_unrecognized_autocomplete_field |=

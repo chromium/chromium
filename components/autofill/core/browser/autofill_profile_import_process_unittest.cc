@@ -11,8 +11,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/profile_token_quality.h"
-#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -1018,90 +1016,6 @@ TEST_F(AutofillProfileImportProcessTest,
       /*allow_only_silent_updates=*/false);
   EXPECT_EQ(import_data.import_type(),
             AutofillProfileImportType::kDuplicateImport);
-}
-
-// Tests around the behavior of new/update profile prompts when a profile is
-// autofilled and some autofilled values are manually edited by the user.
-class QuasiDuplicateUpdateTest : public AutofillProfileImportProcessTest {
- public:
-  // Adds observations for `type` in `profile`, such that it qualifies as
-  // `AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes()`.
-  void MakeTokenLowQuality(FieldType type, AutofillProfile& profile) {
-    for (int i = 0; i < 5; ++i) {
-      test_api(profile.token_quality())
-          .AddObservation(
-              type, ProfileTokenQuality::ObservationType::kEditedFallback);
-    }
-  }
-
-  // Constructs a profile and import metadata as if `FormDataImporter` observed
-  // a form with `types`, that was autofilled with `existing_profile`.
-  std::pair<AutofillProfile, ProfileImportMetadata>
-  ConstructFilledObservedProfile(const AutofillProfile& existing_profile,
-                                 std::vector<FieldType> types) {
-    AutofillProfile observed_profile(existing_profile.GetAddressCountryCode());
-    ProfileImportMetadata metadata;
-    for (FieldType type : types) {
-      observed_profile.SetRawInfo(type, existing_profile.GetRawInfo(type));
-      metadata.filled_types_to_autofill_guid.insert_or_assign(
-          type, existing_profile.guid());
-    }
-    observed_profile.FinalizeAfterImport();
-    return {observed_profile, metadata};
-  }
-
-  // Modifies the result of `ConstructFilledObservedProfile()`, as if the
-  // field for `type` was manually edited by the user.
-  void SimulateManuallyEditingValue(FieldType type,
-                                    AutofillProfile& observed_profile,
-                                    ProfileImportMetadata& metadata) {
-    observed_profile.SetRawInfo(
-        type, u"corrected-" + observed_profile.GetRawInfo(type));
-    metadata.filled_types_to_autofill_guid.insert_or_assign(type, std::nullopt);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillUpdateLowQualityTokenOnImport};
-};
-
-TEST_F(QuasiDuplicateUpdateTest, NonLowQualityTokenEdited) {
-  AutofillProfile profile = test::GetFullProfile();
-  address_data_manager().AddProfile(profile);
-  auto [observed_profile, metadata] = ConstructFilledObservedProfile(
-      profile, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS});
-  SimulateManuallyEditingValue(EMAIL_ADDRESS, observed_profile, metadata);
-  // The `observed_profile` is a subset of the existing `profile`, except for
-  // the email address. Since EMAIL_ADDRESS is not considered a low quality
-  // token, expect that the creation of a new profile is offered.
-  ProfileImportProcess import_process(
-      observed_profile, "en_US", url_, &address_data_manager(),
-      /*allow_only_silent_updates=*/false, metadata);
-  EXPECT_EQ(import_process.import_type(),
-            AutofillProfileImportType::kNewProfile);
-  EXPECT_EQ(import_process.import_candidate(), observed_profile);
-}
-
-TEST_F(QuasiDuplicateUpdateTest, LowQualityTokenEdited) {
-  AutofillProfile profile = test::GetFullProfile();
-  MakeTokenLowQuality(EMAIL_ADDRESS, profile);
-  address_data_manager().AddProfile(profile);
-  auto [observed_profile, metadata] = ConstructFilledObservedProfile(
-      profile, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS});
-  SimulateManuallyEditingValue(EMAIL_ADDRESS, observed_profile, metadata);
-  // The `observed_profile` is a subset of the existing `profile`, except for
-  // the email address. Since EMAIL_ADDRESS is a low quality token, expect that
-  // updating the existing profile with the observed email address is offered.
-  ProfileImportProcess import_process(
-      observed_profile, "en_US", url_, &address_data_manager(),
-      /*allow_only_silent_updates=*/false, metadata);
-  EXPECT_EQ(import_process.import_type(),
-            AutofillProfileImportType::kConfirmableMerge);
-  EXPECT_EQ(import_process.merge_candidate(), profile);
-  AutofillProfile import_candidate = profile;
-  import_candidate.SetRawInfo(EMAIL_ADDRESS,
-                              observed_profile.GetRawInfo(EMAIL_ADDRESS));
-  EXPECT_EQ(import_process.import_candidate(), import_candidate);
 }
 
 }  // namespace

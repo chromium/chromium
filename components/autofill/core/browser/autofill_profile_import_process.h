@@ -9,11 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -98,12 +96,6 @@ struct ProfileImportMetadata {
   bool did_import_from_unrecognized_autocomplete_field = false;
   // The origin that the form was submitted on.
   url::Origin origin;
-  // Contains an entry for every type observed in the form, which was used to
-  // construct the candidate profile. The value indicates GUID of the profile
-  // that was used to autofill the corresponding field - or nullopt, if the
-  // field was not autofilled with address data at submission.
-  base::flat_map<FieldType, std::optional<std::string>>
-      filled_types_to_autofill_guid;
 };
 
 // This class holds the state associated with the import of an AutofillProfile
@@ -245,15 +237,6 @@ class ProfileImportProcess {
   // For new profile imports, sets the source of the `import_candidate_`
   // correctly, depending on the user's account storage eligiblity.
   void DetermineSourceOfImportCandidate();
-
-  // Determines whether the values of the `observed_profile_` were autofilled
-  // with exactly one profile, except for an edit in a low-quality token. In
-  // this case, the autofilled profile qualifies for an update (rather than a
-  // new profile import).
-  // If the above situation applies, returns true and sets the import and merge
-  // candidates to offer updating the low quality token.
-  bool IsObservedProfileAutofilledQuasiDuplicate(
-      const AutofillProfileComparator& comparator);
 
   // If the observed profile is a duplicate (modulo silent updates) of an
   // existing `kLocalOrSyncable` profile, eligible users are prompted to change

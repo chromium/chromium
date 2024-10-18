@@ -694,17 +694,6 @@ const base::FeatureParam<size_t>
         &kAutofillLogDeduplicationMetrics, "max_field_value_length_for_merging",
         100};
 
-// Currently, the importing logic offers new profile creation if the observed
-// profile is non-mergeable with any existing profile. With this feature, low-
-// quality tokens receive special treatment and can bypass this requirement.
-// In particular, if the observed profile was autofilled, except for an edit in
-// a single type, this qualifies for an update of the autofilled profile, in
-// case the edited type has low-quality.
-// TODO(crbug.com/325451601): Remove when launched.
-BASE_FEATURE(kAutofillUpdateLowQualityTokenOnImport,
-             "AutofillUpdateLowQualityTokenOnImport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAutofillUKMExperimentalFields,
              "AutofillUKMExperimentalFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
