@@ -154,6 +154,9 @@ void HTMLDialogElement::close(const String& return_value,
   HTMLDialogElement* old_modal_dialog = document.ActiveModalDialog();
 
   DispatchToggleEvents(/*opening=*/false);
+  if (!ignore_open_attribute && !FastHasAttribute(html_names::kOpenAttr)) {
+    return;
+  }
   SetBooleanAttribute(html_names::kOpenAttr, false);
   bool was_modal = is_modal_;
   SetIsModal(false);
@@ -352,7 +355,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
         "The dialog is already open as a Popover, and therefore cannot be "
         "opened as a modal dialog.");
   }
-  if (!DispatchToggleEvents(/*opening=*/true)) {
+  if (!DispatchToggleEvents(/*opening=*/true, /*asModal=*/true)) {
     return;
   }
 
@@ -476,7 +479,7 @@ void HTMLDialogElement::SetFocusForDialog() {
 
 // Returns false if beforetoggle was canceled, otherwise true. Queues a toggle
 // event if beforetoggle was not canceled.
-bool HTMLDialogElement::DispatchToggleEvents(bool opening) {
+bool HTMLDialogElement::DispatchToggleEvents(bool opening, bool asModal) {
   if (!RuntimeEnabledFeatures::DialogElementToggleEventsEnabled()) {
     return true;
   }
@@ -489,6 +492,15 @@ bool HTMLDialogElement::DispatchToggleEvents(bool opening) {
           opening ? Event::Cancelable::kYes : Event::Cancelable::kNo, old_state,
           new_state)) != DispatchEventResult::kNotCanceled) {
     return false;
+  }
+  if (opening) {
+    if (FastHasAttribute(html_names::kOpenAttr)) {
+      return false;
+    }
+    if (asModal &&
+        (!isConnected() || (HasPopoverAttribute() && popoverOpen()))) {
+      return false;
+    }
   }
 
   if (pending_toggle_event_) {

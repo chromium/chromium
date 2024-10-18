@@ -93,7 +93,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   void SetIsModal(bool is_modal);
   void ScheduleCloseEvent();
 
-  bool DispatchToggleEvents(bool opening);
+  bool DispatchToggleEvents(bool opening, bool asModal = false);
   void DispatchPendingToggleEvent();
 
   bool is_modal_;
