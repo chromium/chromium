@@ -389,7 +389,7 @@ public class SyncPromoControllerUITest {
                         R.layout.sync_promo_view_content_suggestions);
         mRenderTestRule.render(
                 view,
-                "ntp_content_suggestions_sync_promo_view_signed_out_and_no_account_available_replace_sync_by_signin_enabled");
+                "ntp_content_suggestions_sync_promo_view_signed_out_and_no_account_available");
     }
 
     @Test
