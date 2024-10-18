@@ -32,6 +32,17 @@
 
 namespace media {
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+// Some architectures have separate image processor hardware that
+// can be used by Chromium's ImageProcessor to color convert/crop/etc.
+// video buffers. In many cases it is more efficient/performant/correct
+// to use libYUV instead of the hardware to do this processing which is thus
+// preferred, see crrev.com/c/4111326.
+BASE_FEATURE(kLibyuvImageProcessor,
+             "LibYuvImageProcessor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 namespace {
 
 using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
@@ -326,14 +337,16 @@ ImageProcessorFactory::CreateWithInputCandidates(
   }
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 
-  auto processor = CreateLibYUVImageProcessorWithInputCandidates(
-      input_candidates, input_visible_rect, output_size, output_storage_type,
-      client_task_runner, out_format_picker, error_cb);
-  if (processor) {
-    return processor;
+  if (base::FeatureList::IsEnabled(kLibyuvImageProcessor)) {
+    auto processor = CreateLibYUVImageProcessorWithInputCandidates(
+        input_candidates, input_visible_rect, output_size, output_storage_type,
+        client_task_runner, out_format_picker, error_cb);
+    if (processor) {
+      return processor;
+    }
   }
 
-  processor = CreateV4L2ImageProcessorWithInputCandidates(
+  auto processor = CreateV4L2ImageProcessorWithInputCandidates(
       input_candidates, input_visible_rect, output_storage_type, num_buffers,
       client_task_runner, out_format_picker, error_cb);
   if (processor) {
