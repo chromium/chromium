@@ -255,7 +255,7 @@ const PdfInkBrush* PdfInkModule::GetPdfInkBrushForTesting() const {
 
 std::optional<float> PdfInkModule::GetEraserSizeForTesting() const {
   if (is_erasing_stroke()) {
-    return erasing_stroke_state().eraser_size;
+    return eraser_size_;
   }
   return std::nullopt;
 }
@@ -557,8 +557,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
   gfx::PointF canonical_position =
       ConvertEventPositionToCanonicalPosition(position, page_index);
-  const ink::Rect eraser_rect =
-      GetEraserRect(canonical_position, erasing_stroke_state().eraser_size);
+  const ink::Rect eraser_rect = GetEraserRect(canonical_position, eraser_size_);
   ink::Envelope invalidate_envelope;
   for (auto& stroke : it->second) {
     if (!stroke.should_draw) {
@@ -615,8 +614,8 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
 
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
-    auto& eraser_state = current_tool_state_.emplace<EraserState>();
-    eraser_state.eraser_size = size;
+    current_tool_state_.emplace<EraserState>();
+    eraser_size_ = size;
     MaybeSetCursor();
     return;
   }
@@ -860,7 +859,7 @@ void PdfInkModule::MaybeSetCursor() {
     CHECK(is_erasing_stroke());
     constexpr SkColor kEraserColor = SK_ColorWHITE;
     color = kEraserColor;
-    brush_size = erasing_stroke_state().eraser_size;
+    brush_size = eraser_size_;
   }
 
   client_->UpdateInkCursorImage(GenerateToolCursor(

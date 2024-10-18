@@ -220,7 +220,6 @@ class PdfInkModule {
 
     bool erasing = false;
     base::flat_set<int> page_indices_with_erased_strokes;
-    float eraser_size = 0;
   };
 
   // Returns whether the event was handled or not.
@@ -308,6 +307,7 @@ class PdfInkModule {
   // saved when swapping between brushes.
   PdfInkBrush highlighter_brush_;
   PdfInkBrush pen_brush_;
+  float eraser_size_ = 3.0f;
 
   // The state of the current tool that is in use.
   absl::variant<DrawingStrokeState, EraserState> current_tool_state_;
