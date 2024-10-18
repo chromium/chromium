@@ -8,7 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 // Implementation of PrerenderService.
 class PrerenderServiceImpl : public PrerenderService {

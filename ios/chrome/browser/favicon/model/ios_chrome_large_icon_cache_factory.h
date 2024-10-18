@@ -9,10 +9,10 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class KeyedService;
 class LargeIconCache;
+class ProfileIOS;
 
 // Singleton that owns all LargeIconCaches and associates them with
 // ProfileIOS.

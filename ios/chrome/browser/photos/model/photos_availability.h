@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_AVAILABILITY_H_
 #define IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_AVAILABILITY_H_
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+class ProfileIOS;
 
 // Returns whether the Save to Photos entry point can be presented for a given
 // profile.

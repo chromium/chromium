@@ -10,9 +10,9 @@
 #import <vector>
 
 #import "base/functional/callback.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class Browser;
+class ProfileIOS;
 
 namespace sessions {
 class SerializedNavigationEntry;

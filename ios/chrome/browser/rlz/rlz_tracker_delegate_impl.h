@@ -10,7 +10,7 @@
 #import "base/callback_list.h"
 #import "base/functional/callback.h"
 #import "components/rlz/rlz_tracker_delegate.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+class ProfileIOS;
 
 struct OmniboxLog;
 

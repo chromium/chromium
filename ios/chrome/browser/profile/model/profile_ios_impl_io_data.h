@@ -11,9 +11,9 @@
 #import "components/prefs/pref_store.h"
 #import "ios/chrome/browser/net/model/net_types.h"
 #import "ios/chrome/browser/profile/model/profile_ios_io_data.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class JsonPrefStore;
+class ProfileIOS;
 
 namespace net {
 class CookieStore;

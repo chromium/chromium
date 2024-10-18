@@ -19,7 +19,6 @@
 #import "components/prefs/pref_member.h"
 #import "ios/chrome/browser/net/model/net_types.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "net/cookies/cookie_monster.h"
 #import "net/http/http_cache.h"
 #import "net/http/http_network_session.h"
@@ -32,6 +31,7 @@ enum class ProfileIOSType;
 class HostContentSettingsMap;
 class IOSChromeHttpUserAgentSettings;
 class IOSChromeURLRequestContextGetter;
+class ProfileIOS;
 
 namespace content_settings {
 class CookieSettings;

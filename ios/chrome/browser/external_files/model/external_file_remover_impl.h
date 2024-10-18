@@ -14,7 +14,8 @@
 #import "base/time/time.h"
 #import "components/sessions/core/tab_restore_service_observer.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace sessions {
 class TabRestoreService;

@@ -8,9 +8,8 @@
 #include <memory>
 #import <optional>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
-
 class PrefService;
+class ProfileIOS;
 class ProfileOAuth2TokenServiceDelegate;
 class ProfileOAuth2TokenService;
 class SystemIdentityManager;

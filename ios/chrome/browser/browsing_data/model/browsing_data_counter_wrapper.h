@@ -10,9 +10,9 @@
 
 #import "base/functional/callback_forward.h"
 #import "components/browsing_data/core/counters/browsing_data_counter.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class PrefService;
+class ProfileIOS;
 
 // Wrapper around a browsing data volume counter that bridges the update counter
 // UI callback to the UI.
