@@ -231,31 +231,6 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testMakeCredential_credManDisabled_stillUsedForHybrid() {
-
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, false);
-        FeatureList.setTestValues(testValues);
-        Mockito.when(mAuthenticationContextProviderMock.getRenderFrameHost()).thenReturn(null);
-
-        final byte[] clientDataHash = new byte[] {1, 2, 3};
-        mRequest.setIsHybridRequest(true);
-        mRequest.handleMakeCredentialRequest(
-                mCreationOptions,
-                clientDataHash,
-                mBrowserOptions,
-                mOrigin,
-                mOrigin,
-                mCallback::onRegisterResponse,
-                mCallback::onError,
-                mCallback::onRequestOutcome);
-
-        verify(mCredManHelperMock, times(1))
-                .startMakeRequest(any(), any(), any(), any(), any(), any());
-    }
-
-    @Test
-    @SmallTest
     public void testMakeCredential_rkDisabledWithExplicitHash_success() {
 
         mCreationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.DISCOURAGED;
@@ -477,36 +452,6 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCallback::onRequestOutcome);
 
         verifyNoInteractions(mCredManHelperMock);
-    }
-
-    @Test
-    @SmallTest
-    public void testGetAssertion_credManDisabled_stillUsedForHybrid() {
-
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, false);
-        FeatureList.setTestValues(testValues);
-
-        mRequest.setIsHybridRequest(true);
-        mRequest.handleGetAssertionRequest(
-                mRequestOptions,
-                /* maybeClientDataHash= */ null,
-                mOrigin,
-                mOrigin,
-                /* payment= */ null,
-                mCallback::onSignResponse,
-                mCallback::onError,
-                mCallback::onRequestOutcome);
-
-        verify(mCredManHelperMock)
-                .startGetRequest(
-                        eq(mRequestOptions),
-                        /* originString= */ any(),
-                        eq(TEST_CLIENT_DATA_JSON.getBytes()),
-                        /* clientDataHash= */ notNull(),
-                        /* getCallback= */ any(),
-                        /* errorCallback= */ any(),
-                        /* ignoreGpm= */ eq(false));
     }
 
     @Test

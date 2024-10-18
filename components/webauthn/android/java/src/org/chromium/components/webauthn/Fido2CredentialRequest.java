@@ -89,10 +89,6 @@ public class Fido2CredentialRequest
     private boolean mAppIdExtensionUsed;
     private boolean mEchoCredProps;
     private WebauthnBrowserBridge mBrowserBridge;
-    // mIsHybridRequest is true if this request comes from a hybrid (i.e. cross-device) flow rather
-    // than a WebContents. Handling the hybrid protocol can be delegated to Chrome (by Play
-    // Services).
-    private boolean mIsHybridRequest;
     // Values set when errors occur, for metrics recording.
     private @GetAssertionOutcome int mGetAssertionErrorOutcome = GetAssertionOutcome.OTHER_FAILURE;
     private @MakeCredentialOutcome int mMakeCredentialErrorOutcome =
@@ -172,16 +168,10 @@ public class Fido2CredentialRequest
 
     private Barrier.Mode getBarrierMode() {
         @CredManSupport int support = CredManSupportProvider.getCredManSupport();
-        if (support != CredManSupport.DISABLED && mIsHybridRequest) {
-            return Barrier.Mode.ONLY_CRED_MAN;
-        }
         switch (support) {
             case CredManSupport.DISABLED:
                 return Barrier.Mode.ONLY_FIDO_2_API;
             case CredManSupport.IF_REQUIRED:
-                if (mIsHybridRequest) {
-                    return Barrier.Mode.ONLY_CRED_MAN;
-                }
                 return Barrier.Mode.ONLY_FIDO_2_API;
             case CredManSupport.FULL_UNLESS_INAPPLICABLE:
                 return Barrier.Mode.ONLY_CRED_MAN;
@@ -777,10 +767,6 @@ public class Fido2CredentialRequest
             }
         }
         callback.onResponse(matchingCredentialIds);
-    }
-
-    public void setIsHybridRequest(boolean isHybridRequest) {
-        mIsHybridRequest = isHybridRequest;
     }
 
     public void overrideBrowserBridgeForTesting(WebauthnBrowserBridge bridge) {
