@@ -302,5 +302,13 @@ public class TopToolbarOverlayMediatorTest {
                 height + mBottomControlsOffset,
                 mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET),
                 MathUtils.EPSILON);
+
+        float newHeight = 1700.0f;
+        mMediator.setViewport(new RectF(0.0f, 0.0f, 100.0f, newHeight));
+
+        Assert.assertEquals(
+                newHeight + mBottomControlsOffset,
+                mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET),
+                MathUtils.EPSILON);
     }
 }

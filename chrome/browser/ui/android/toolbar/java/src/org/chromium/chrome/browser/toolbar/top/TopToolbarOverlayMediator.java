@@ -163,30 +163,10 @@ public class TopToolbarOverlayMediator {
                             int bottomControlsMinHeightOffset,
                             boolean needsAnimate,
                             boolean isVisibilityForced) {
-                        // When top-anchored, the content offset is used to position the toolbar
-                        // layer instead of the top controls offset because the top controls can
-                        // have a different height than that of just the toolbar, (e.g. when status
-                        // indicator is visible or tab strip is hidden), and the toolbar should be
-                        // positioned at the bottom of the top controls regardless of the overall
-                        // height.
-                        // When the toolbar is bottom-anchored, the situation is even more ambiguous
-                        // because the bottom-anchored toolbar can't be assumed to sit at the top or
-                        // bottom of the bottom controls stack. Instead, we rely on an offset
-                        // provided to us indirectly via BottomControlsStacker, which controls the
-                        // position of bottom controls layers.
                         if (!ToolbarFeatures.isBrowserControlsInVizEnabled(isTablet())
                                 || needsAnimate
                                 || isVisibilityForced) {
-                            int contentOffset = mBrowserControlsStateProvider.getContentOffset();
-                            if (mBrowserControlsStateProvider.getControlsPosition()
-                                    == ControlsPosition.BOTTOM) {
-                                contentOffset =
-                                        (int)
-                                                (mBottomToolbarControlsOffsetSupplier.get()
-                                                        + mViewport.height());
-                            }
-
-                            mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);
+                            updateContentOffset();
                         }
                         if (!ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
                             updateShadowState();
@@ -379,7 +359,29 @@ public class TopToolbarOverlayMediator {
     }
 
     void setViewport(RectF viewport) {
+        if (viewport.equals(mViewport)) return;
         mViewport = viewport;
+        updateContentOffset();
+    }
+
+    private void updateContentOffset() {
+        // When top-anchored, the content offset is used to position the toolbar
+        // layer instead of the top controls offset because the top controls can
+        // have a different height than that of just the toolbar, (e.g. when status
+        // indicator is visible or tab strip is hidden), and the toolbar should be
+        // positioned at the bottom of the top controls regardless of the overall
+        // height.
+        // When the toolbar is bottom-anchored, the situation is even more ambiguous
+        // because the bottom-anchored toolbar can't be assumed to sit at the top or
+        // bottom of the bottom controls stack. Instead, we rely on an offset
+        // provided to us indirectly via BottomControlsStacker, which controls the
+        // position of bottom controls layers.
+        int contentOffset = mBrowserControlsStateProvider.getContentOffset();
+        if (mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM) {
+            contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewport.height());
+        }
+
+        mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);
     }
 
     static void setIsTabletForTesting(Boolean isTablet) {
