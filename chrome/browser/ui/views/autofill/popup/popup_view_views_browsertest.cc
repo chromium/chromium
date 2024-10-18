@@ -276,13 +276,7 @@ class PopupViewViewsBrowsertestBase
   std::unique_ptr<PopupViewViews> popup_parent_;
 };
 
-class PopupViewViewsBrowsertest : public PopupViewViewsBrowsertestBase {
- public:
-  ~PopupViewViewsBrowsertest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using PopupViewViewsBrowsertest = PopupViewViewsBrowsertestBase;
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
   PrepareSuggestions(CreateAutocompleteSuggestions());
@@ -505,17 +499,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          Combine(Bool(), Bool()),
                          PopupViewViewsBrowsertestBase::GetTestSuffix);
 
-class PopupViewViewsBrowsertestShowAutocompleteDeleteButton
-    : public PopupViewViewsBrowsertestBase {
- public:
-  PopupViewViewsBrowsertestShowAutocompleteDeleteButton() {
-    feature_list_.InitAndDisableFeature(features::kAutofillMoreProminentPopup);
-  }
-  ~PopupViewViewsBrowsertestShowAutocompleteDeleteButton() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using PopupViewViewsBrowsertestShowAutocompleteDeleteButton =
+    PopupViewViewsBrowsertestBase;
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
                        InvokeUi_Autocomplete) {
