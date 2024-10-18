@@ -135,7 +135,7 @@ TEST_F(AcceleratorTestMac, ModifierFlagsShortFormRepresentation) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(AcceleratorTest, ConversionFromKeyEvent_Ash) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -155,6 +155,6 @@ TEST(AcceleratorTest, ConversionFromKeyEvent_Ash) {
   accelerator.reset_code();
   EXPECT_EQ(accelerator.code(), DomCode::NONE);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui
