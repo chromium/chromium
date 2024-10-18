@@ -70,18 +70,6 @@ int32_t GetSampleSize() {
   return media::SampleFormatToBitsPerChannel(media::kSampleFormatS16);
 }
 
-bool IsProcessingAllowedForSampleRatesNotDivisibleBy100(
-    mojom::blink::MediaStreamType stream_type) {
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (media::IsChromeWideEchoCancellationEnabled() &&
-      stream_type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    // When audio processing is performed in the audio process, an experiment
-    // parameter determines which sample rates are supported.
-    return media::kChromeWideEchoCancellationAllowAllSampleRates.Get();
-  }
-#endif
-  return true;
-}
 // This class encapsulates two values that together build up the score of each
 // processed candidate.
 // - Fitness, similarly defined by the W3C specification
@@ -1213,21 +1201,11 @@ class DeviceContainer {
         ProcessingBasedContainer::CreateNoApmProcessedContainer(
             source_info, is_device_capture, device_parameters_,
             is_reconfiguration_allowed));
-    // TODO(https://crbug.com/1332484): Sample rates not divisible by 100 are
-    // not reliably supported due to the common assumption that sample_rate/100
-    // corresponds to 10 ms of audio. When that is addressed, this
-    // ApmProcessedContainer can be added to |processing_based_containers_|
-    // unconditionally.
-    if ((device_parameters_.sample_rate() % 100 == 0) ||
-        IsProcessingAllowedForSampleRatesNotDivisibleBy100(stream_type)) {
       processing_based_containers_.push_back(
           ProcessingBasedContainer::CreateApmProcessedContainer(
               source_info, stream_type, is_device_capture, device_parameters_,
               is_reconfiguration_allowed));
       DCHECK_EQ(processing_based_containers_.size(), 3u);
-    } else {
-      DCHECK_EQ(processing_based_containers_.size(), 2u);
-    }
 
     if (source_info.type() == SourceType::kNone)
       return;

@@ -508,13 +508,7 @@ void MediaInternals::SendGeneralAudioInformation() {
       GetContentClient()->browser()->ShouldSandboxAudioService());
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   std::string chrome_wide_echo_cancellation_value_string =
-      media::IsChromeWideEchoCancellationEnabled()
-          ? base::StrCat(
-                {"Enabled, allow_all_sample_rates = ",
-                 media::kChromeWideEchoCancellationAllowAllSampleRates.Get()
-                     ? "true"
-                     : "false"})
-          : "Disabled";
+      media::IsChromeWideEchoCancellationEnabled() ? "Enabled" : "Disabled";
   audio_info_data.Set(media::kChromeWideEchoCancellation.name,
                       base::Value(chrome_wide_echo_cancellation_value_string));
 #endif

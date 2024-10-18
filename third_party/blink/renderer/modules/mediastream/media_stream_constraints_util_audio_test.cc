@@ -2100,53 +2100,6 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest,
   EXPECT_TRUE(result.HasValue());
 }
 
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-class MediaStreamConstraintsRemoteAPMSampleRateRestrictionTest
-    : public MediaStreamConstraintsUtilAudioTestBase,
-      public testing::WithParamInterface<bool> {
- protected:
-  bool AllowAllSampleRates() { return GetParam(); }
-
- private:
-  void SetUp() override {
-    MediaStreamConstraintsUtilAudioTestBase::SetUp();
-
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        media::kChromeWideEchoCancellation,
-        {{"allow_all_sample_rates", AllowAllSampleRates() ? "true" : "false"}});
-
-    // Setup the capabilities with a prohibited sample rate.
-    ResetFactory();
-    constexpr int kNondivisibleSampleRateHz = 22050;
-    const std::string k22050HzDeviceId = "22050hz_device";
-    capabilities_.emplace_back(
-        k22050HzDeviceId.c_str(), "22050hz_fake_group",
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::ChannelLayoutConfig::Stereo(),
-                               kNondivisibleSampleRateHz, 1000));
-    default_device_ = &capabilities_[0];
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(MediaStreamConstraintsRemoteAPMSampleRateRestrictionTest,
-       ToggleNondivisibleSampleRatesParameter) {
-  SCOPED_TRACE(testing::Message()
-               << "allow_all_sample_rates=" << AllowAllSampleRates());
-
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
-  AudioCaptureSettings result = SelectSettings();
-
-  EXPECT_EQ(result.HasValue(), AllowAllSampleRates());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MediaStreamConstraintsRemoteAPMSampleRateRestrictionTest,
-    testing::Bool());
-#endif
-
 TEST_P(MediaStreamConstraintsUtilAudioTest, LatencyConstraint) {
   if (!IsDeviceCapture())
     return;

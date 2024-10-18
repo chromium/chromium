@@ -483,14 +483,6 @@ BASE_FEATURE(kChromeWideEchoCancellation,
 const base::FeatureParam<double>
     kChromeWideEchoCancellationDynamicMixingTimeout{
         &kChromeWideEchoCancellation, "mixing_buffer_duration_percent", -1.0};
-
-// Allows all sample rates to be used for audio processing. If disabled, only
-// sample rates divisible by 100 are allowed; a request for a media stream with
-// enabled audio processing will fail otherwise. For context see
-// https://crbug.com/1332484.
-const base::FeatureParam<bool> kChromeWideEchoCancellationAllowAllSampleRates{
-    &kChromeWideEchoCancellation, "allow_all_sample_rates", true};
-
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -213,8 +213,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSearchForVideoFrame);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeWideEchoCancellation);
 MEDIA_EXPORT extern const base::FeatureParam<double>
     kChromeWideEchoCancellationDynamicMixingTimeout;
-MEDIA_EXPORT extern const base::FeatureParam<bool>
-    kChromeWideEchoCancellationAllowAllSampleRates;
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSSystemAEC);
