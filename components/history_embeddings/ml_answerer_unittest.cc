@@ -8,22 +8,21 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_embeddings {
 
+namespace {
+
 using base::test::TestFuture;
+using optimization_guide::AnyWrapProto;
 using optimization_guide::OptimizationGuideModelExecutionError;
 using optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using optimization_guide::proto::HistoryAnswerResponse;
 using testing::_;
-
-namespace {
-
-constexpr char kAnswerResponseTypeURL[] =
-    "type.googleapis.com/optimization_guide.proto.HistoryAnswerResponse";
 
 }  // namespace
 
@@ -52,11 +51,8 @@ class HistoryEmbeddingsMlAnswererTest : public testing::Test {
       bool is_complete = true) {
     HistoryAnswerResponse answer_response;
     answer_response.mutable_answer()->set_text(answer_text);
-    optimization_guide::proto::Any any;
-    any.set_type_url(kAnswerResponseTypeURL);
-    answer_response.SerializeToString(any.mutable_value());
     return optimization_guide::StreamingResponse{
-        .response = any,
+        .response = AnyWrapProto(answer_response),
         .is_complete = is_complete,
     };
   }

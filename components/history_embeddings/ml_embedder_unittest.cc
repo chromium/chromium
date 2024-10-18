@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "components/history_embeddings/passage_embeddings_service_controller.h"
 #include "components/history_embeddings/vector_database.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,18 +47,13 @@ optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo() {
   proto::PassageEmbeddingsModelMetadata model_metadata;
   model_metadata.set_input_window_size(kEmbeddingsModelInputWindowSize);
   model_metadata.set_output_size(kEmbeddingsModelOutputSize);
-  std::string model_metadata_string;
-  model_metadata.SerializeToString(&model_metadata_string);
-  optimization_guide::proto::Any metadata_any;
-  metadata_any.set_type_url("PassageEmbeddingsModelMetadata");
-  metadata_any.set_value(model_metadata_string);
 
   // Load a model info builder.
   optimization_guide::TestModelInfoBuilder builder;
   builder.SetModelFilePath(embeddings_path);
   builder.SetAdditionalFiles({sp_path});
   builder.SetVersion(kEmbeddingsModelVersion);
-  builder.SetModelMetadata(metadata_any);
+  builder.SetModelMetadata(optimization_guide::AnyWrapProto(model_metadata));
 
   return builder;
 }
