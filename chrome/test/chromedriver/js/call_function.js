@@ -10,7 +10,7 @@ const StatusCode = {
   STALE_ELEMENT_REFERENCE: 10,
   JAVA_SCRIPT_ERROR: 17,
   NO_SUCH_SHADOW_ROOT: 65,
-  DETACHED_SHADOW_ROOT: 66
+  DETACHED_SHADOW_ROOT: 66,
 };
 
 /**
@@ -374,17 +374,6 @@ function callFunction(func, args, w3c, nodes) {
     return [JSON.stringify(errorResponse)];
   }
 
-  function wrapErrorAsJavascriptError(error) {
-    originalResponse = buildError(error);
-    originalStatus = error.code || StatusCode.JAVA_SCRIPT_ERROR;
-    if (originalStatus === StatusCode.JAVA_SCRIPT_ERROR) {
-      return originalResponse;
-    }
-    return buildError({
-      code: StatusCode.JAVA_SCRIPT_ERROR,
-      message: originalResponse[0]});
-  }
-
   const Promise = window.cdc_adoQpoasnfa76pfcZLmcfl_Promise || window.Promise;
   let unwrappedArgs = null;
   try {
@@ -403,8 +392,8 @@ function callFunction(func, args, w3c, nodes) {
       };
       const JSON = window.cdc_adoQpoasnfa76pfcZLmcfl_JSON || window.JSON;
       return [JSON.stringify(response), ...ret_nodes];
-    }).catch(wrapErrorAsJavascriptError);
+    }).catch(buildError);
   } catch (error) {
-    return Promise.resolve(wrapErrorAsJavascriptError(error));
+    return Promise.resolve(buildError(error));
   }
 }

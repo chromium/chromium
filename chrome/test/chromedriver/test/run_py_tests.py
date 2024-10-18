@@ -1312,14 +1312,16 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
       self._driver.SwitchToFrame(element)
 
   def testReturnFrameElement(self):
-    # According to https://w3c.github.io/webdriver/#execute-script
-    # Upon rejection of promise the error code must be javascript error.
-    # The error message must mention that the element is stale.
+    # The promise will be fulfilled, however the JSON.clone step of the
+    # ExecuteScript function (https://w3c.github.io/webdriver/#execute-script)
+    # must fail with "stale element reference" error as the returned element
+    # belongs to a different frame.
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/nested.html'))
     frame = self._driver.FindElement('tag name', 'iframe')
     self._driver.SwitchToFrame(frame)
-    with self.assertRaisesRegex(chromedriver.JavaScriptError, 'stale element'):
+    with self.assertRaisesRegex(
+            chromedriver.StaleElementReference, 'stale element'):
       self._driver.ExecuteScript('return window.frameElement')
 
   def testGetTitle(self):

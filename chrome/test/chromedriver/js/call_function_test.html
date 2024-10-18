@@ -372,10 +372,11 @@ function testCallFunctionThrows(runner) {
       throw e;
   }, [], true, []).then((result) => {
     const unwrapped = unwrapResult(result);
-    assertEquals(StatusCode.JAVA_SCRIPT_ERROR, unwrapped.status);
-    const nestedError = JSON.parse(unwrapped.value);
-    assertEquals(77, nestedError.status);
-    assertEquals("CUSTOM", nestedError.value);
+    // Scripts used by ChromeDriver can also return valid codes.
+    // Example: Script CLEAR in Selenium Atoms.
+    // Therefore all codes are propagated intact.
+    assertEquals(77, unwrapped.status);
+    assertEquals("CUSTOM", unwrapped.value);
     if (allComplete)
       runner.continueTesting();
     allComplete += 1;
