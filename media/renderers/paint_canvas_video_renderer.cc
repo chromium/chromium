@@ -1428,8 +1428,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   DCHECK(video_frame);
   CHECK(video_frame->HasSharedImage());
 
-  if (video_frame->shared_image_format_type() ==
-          SharedImageFormatType::kSharedImageFormat ||
+  auto si_format = video_frame->shared_image()->format();
+  if (!si_format.PrefersExternalSampler() ||
       video_frame->metadata().read_lock_fences_enabled) {
     DCHECK(video_frame->metadata().texture_origin_is_top_left);
     if (!raster_context_provider)
@@ -1449,9 +1449,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // TODO(crbug.com/40075313): Enable on Android.
 #if !BUILDFLAG(IS_ANDROID)
     if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
-        level == 0 &&
-        (video_frame->shared_image_format_type() ==
-         SharedImageFormatType::kSharedImageFormat)) {
+        level == 0 && !si_format.PrefersExternalSampler()) {
       if (base::FeatureList::IsEnabled(kOneCopyUploadOfVideoFrameToGLTexture)) {
         if (UploadVideoFrameToGLTexture(
                 raster_context_provider, destination_gl, video_frame.get(),
@@ -1504,8 +1502,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     if (!video_frame->metadata().texture_origin_is_top_left)
       flip_y = !flip_y;
 
-    DCHECK_EQ(video_frame->shared_image_format_type(),
-              SharedImageFormatType::kSharedImageFormatExternalSampler);
+    DCHECK(si_format.PrefersExternalSampler());
     auto shared_image = GetVideoFrameSharedImage(video_frame.get());
     auto si_target = shared_image->GetTextureTarget();
     DCHECK(si_target == GL_TEXTURE_2D ||
@@ -1840,8 +1837,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     //   via checking `texture_target`, which will be set only if this is the
     //   case)
     bool can_wrap_texture =
-        video_frame->shared_image_format_type() ==
-            SharedImageFormatType::kSharedImageFormatExternalSampler &&
+        video_frame->shared_image()->format().PrefersExternalSampler() &&
         video_frame->shared_image()->GetTextureTarget() != 0;
 
     if (allow_wrap_texture && can_wrap_texture) {

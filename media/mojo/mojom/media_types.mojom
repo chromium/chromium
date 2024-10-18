@@ -250,13 +250,6 @@ enum CdmSessionClosedReason {
   kResourceEvicted,
 };
 
-// This defines a mojo transport format for media::SharedImageFormatType.
-// See media/base/video_frame.h for descriptions.
-enum SharedImageFormatType {
-  kSharedImageFormat,
-  kSharedImageFormatExternalSampler,
-};
-
 // This defines a mojo transport format for media::DecryptConfig.
 // See media/base/decrypt_config.h for descriptions.
 struct DecryptConfig {
@@ -459,8 +452,6 @@ struct VideoFrame {
 
   gfx.mojom.ColorSpace color_space;
   gfx.mojom.HDRMetadata? hdr_metadata;
-
-  media.mojom.SharedImageFormatType shared_image_format_type;
 };
 
 // Possible choices for storing VideoFrame data.

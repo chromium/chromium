@@ -171,9 +171,6 @@ class FuchsiaVideoDecoder::OutputMailbox {
         coded_size, visible_rect, natural_size, timestamp);
     create_sync_token_.Clear();
 
-    frame->set_shared_image_format_type(
-        media::SharedImageFormatType::kSharedImageFormatExternalSampler);
-
     // Request a fence we'll wait on before reusing the buffer.
     frame->metadata().read_lock_fences_enabled = true;
 

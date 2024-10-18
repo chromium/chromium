@@ -1088,13 +1088,6 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     frame->set_ycbcr_info(ycbcr_info);
   }
 
-  frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
-  if (frame_resource->shared_image->format().PrefersExternalSampler()) {
-    frame->set_shared_image_format_type(
-        SharedImageFormatType::kSharedImageFormatExternalSampler);
-  }
-
   bool allow_overlay = false;
   if (frame_resource->shared_image->usage().Has(
           gpu::SHARED_IMAGE_USAGE_SCANOUT)) {

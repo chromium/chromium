@@ -448,8 +448,6 @@ void MojoStableVideoDecoder::OnFrameResourceDecoded(
   mailbox_frame->set_color_space(frame_resource->ColorSpace());
   mailbox_frame->set_hdr_metadata(frame_resource->hdr_metadata());
   mailbox_frame->set_metadata(frame_resource->metadata());
-  mailbox_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormatExternalSampler);
   mailbox_frame->metadata().read_lock_fences_enabled = true;
   mailbox_frame->metadata().is_webgpu_compatible =
       frame_resource->metadata().is_webgpu_compatible;

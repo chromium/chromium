@@ -268,13 +268,6 @@ scoped_refptr<VideoFrame> FrameResources::CreateVideoFrame() {
   // format.
   video_frame->metadata().allow_overlay = true;
 
-  // Tag this frame as having used a single SharedImage for multiplanar
-  // formats (by default it sets this field to `kLegacy`, which causes the
-  // rest of the system to assume that this frame has been created with one
-  // SharedImage per plane for multiplanar formats).
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
-
   // Only native (non shared memory) GMBs require waiting on GPU fences.
   const bool has_native_gmb = video_frame->HasNativeGpuMemoryBuffer();
   video_frame->metadata().read_lock_fences_enabled = has_native_gmb;

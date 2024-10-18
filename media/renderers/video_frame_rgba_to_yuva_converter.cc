@@ -29,8 +29,6 @@ bool CopyRGBATextureToVideoFrame(
     const gpu::SyncToken& acquire_sync_token,
     VideoFrame* dst_video_frame) {
   DCHECK_EQ(dst_video_frame->format(), PIXEL_FORMAT_NV12);
-  CHECK_EQ(dst_video_frame->shared_image_format_type(),
-           SharedImageFormatType::kSharedImageFormat);
   CHECK(dst_video_frame->HasSharedImage());
   auto* ri = provider->RasterInterface();
   DCHECK(ri);

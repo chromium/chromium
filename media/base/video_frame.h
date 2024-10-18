@@ -61,21 +61,6 @@ struct GpuMemoryBufferHandle;
 
 namespace media {
 
-// Specifies the type of shared image format used by media video
-// encoder/decoder. Currently, we have (1) one shared image (and texture)
-// created for single planar and multi planar formats and (2) one shared image
-// created for multiplanar formats that are used with external sampler. This
-// enum helps with differentiating between 2 cases: (1)
-// SinglePlaneFormat/MultiPlaneFormat without external sampler, and (2)
-// MultiPlaneFormat with external sampler. NOTE: This enum will be removed soon
-// once ClientSharedImage is always present.
-enum class SharedImageFormatType : uint8_t {
-  // SinglePlaneFormat, MultiPlaneFormat without external sampler
-  kSharedImageFormat,
-  // MultiPlaneFormat with external sampler
-  kSharedImageFormatExternalSampler,
-};
-
 class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
  public:
   static constexpr size_t kFrameSizeAlignment = 16;
@@ -635,14 +620,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     hdr_metadata_ = hdr_metadata;
   }
 
-  SharedImageFormatType shared_image_format_type() const {
-    return wrapped_frame_ ? wrapped_frame_->shared_image_format_type()
-                          : shared_image_format_type_;
-  }
-  void set_shared_image_format_type(SharedImageFormatType type) {
-    shared_image_format_type_ = type;
-  }
-
   const VideoFrameLayout& layout() const { return layout_; }
 
   VideoPixelFormat format() const { return layout_.format(); }
@@ -1019,12 +996,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   gfx::ColorSpace color_space_;
   std::optional<gfx::HDRMetadata> hdr_metadata_;
-
-  // The format type used to create shared images. When set to SharedImageFormat
-  // with/without external sampler, creates shared image taking in
-  // SharedImageFormat with/without prefers_external_sampler set.
-  SharedImageFormatType shared_image_format_type_ =
-      SharedImageFormatType::kSharedImageFormatExternalSampler;
 
   // Sampler conversion information which is used in vulkan context for android.
   std::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;

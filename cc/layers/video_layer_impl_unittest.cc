@@ -394,8 +394,6 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
                                          gfx::Size(10, 10), base::TimeDelta());
   ASSERT_TRUE(video_frame);
   video_frame->metadata().allow_overlay = true;
-  video_frame->set_shared_image_format_type(
-      media::SharedImageFormatType::kSharedImageFormat);
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 

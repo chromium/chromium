@@ -361,10 +361,6 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     auto format = shared_image_->format();
     // If format is not multiplanar it must be used for testing.
     CHECK(format.is_multi_plane() || g_force_use_gpu_memory_buffer_for_test);
-    frame->set_shared_image_format_type(
-        format.PrefersExternalSampler()
-            ? media::SharedImageFormatType::kSharedImageFormatExternalSampler
-            : media::SharedImageFormatType::kSharedImageFormat);
 
     if (frame_info->color_space.IsValid()) {
       frame->set_color_space(frame_info->color_space);

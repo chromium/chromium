@@ -634,14 +634,6 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
     return false;
   }
 
-  // For a single multiplanar image, inform the VideoFrame that it
-  // should go down the normal SharedImageFormat codepath or the one with
-  // ExternalSampler.
-  frame->set_shared_image_format_type(
-      shared_image->format().PrefersExternalSampler()
-          ? media::SharedImageFormatType::kSharedImageFormatExternalSampler
-          : media::SharedImageFormatType::kSharedImageFormat);
-
   frame->metadata().allow_overlay = true;
   frame->metadata().read_lock_fences_enabled = true;
   frame->metadata().is_webgpu_compatible =

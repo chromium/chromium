@@ -917,9 +917,6 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
                                                     : config_.hdr_metadata());
   }
 
-  frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
-
   frame->metadata().is_webgpu_compatible = use_shared_handle_;
 
   output_cb_.Run(frame);

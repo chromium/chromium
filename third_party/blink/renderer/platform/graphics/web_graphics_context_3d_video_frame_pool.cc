@@ -198,8 +198,6 @@ void CopyToGpuMemoryBuffer(
     base::OnceClosure callback) {
   CHECK(dst_frame->HasMappableGpuBuffer());
   CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
-  CHECK_EQ(dst_frame->shared_image_format_type(),
-           media::SharedImageFormatType::kSharedImageFormat);
   CHECK(dst_frame->HasSharedImage());
 
   DCHECK(ctx_wrapper);

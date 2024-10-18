@@ -396,14 +396,6 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   mailbox_frame->set_color_space(frame->ColorSpace());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
   mailbox_frame->set_metadata(frame->metadata());
-
-  auto si_format = GetSharedImageFormat(*buffer_format);
-  mailbox_frame->set_shared_image_format_type(
-      media::SharedImageFormatType::kSharedImageFormat);
-  if (si_format.PrefersExternalSampler()) {
-    mailbox_frame->set_shared_image_format_type(
-        media::SharedImageFormatType::kSharedImageFormatExternalSampler);
-  }
   mailbox_frame->metadata().read_lock_fences_enabled = true;
   mailbox_frame->metadata().is_webgpu_compatible =
       frame->metadata().is_webgpu_compatible;
