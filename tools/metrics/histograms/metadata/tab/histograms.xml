@@ -380,6 +380,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Organization.Declutter.TotalUsageCount" units="units"
+    expires_after="2025-02-10">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    On Desktop, logs the total number of times a user has ever decluttered the
+    tabstrip. This is logged from the controller on each declutter.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Organization.Declutter.Trigger.BucketedCTR"
     enum="TabOrganizationDeclutterTriggerCTRBucket" expires_after="2025-02-10">
   <owner>emshack@chromium.org</owner>

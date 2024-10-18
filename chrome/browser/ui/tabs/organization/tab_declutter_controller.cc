@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace tabs {
@@ -143,6 +145,16 @@ void TabDeclutterController::DeclutterTabs(
                             tab_strip_model_->count());
   UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.ExcludedTabCount",
                             excluded_tabs_.size());
+
+  PrefService* prefs =
+      Profile::FromBrowserContext(tab_strip_model_->profile())->GetPrefs();
+
+  int usage_count =
+      prefs->GetInteger(tab_search_prefs::kTabDeclutterUsageCount);
+  prefs->SetInteger(tab_search_prefs::kTabDeclutterUsageCount, ++usage_count);
+
+  base::UmaHistogramCounts1000("Tab.Organization.Declutter.TotalUsageCount",
+                               usage_count);
 
   for (tabs::TabModel* tab_model : tab_models) {
     if (tab_strip_model_->GetIndexOfTab(tab_model->GetHandle()) ==
