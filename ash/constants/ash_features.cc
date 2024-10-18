@@ -1913,6 +1913,11 @@ BASE_FEATURE(kMediaAppPdfMahi,
              "MediaAppPdfMahi",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Mantis on image contents in the Media App
+BASE_FEATURE(kMediaAppImageMantis,
+             "MediaAppImageMantis",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable the requirement of a minimum chrome version on the
 // device through the policy DeviceMinimumVersion. If the requirement is
 // not met and the warning time in the policy has expired, the user is

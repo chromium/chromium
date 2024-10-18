@@ -5869,6 +5869,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "media-app-image-mantis",
+    "owners": ["cros-mantis@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "media-app-pdf-a11y-ocr",
     "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
     "expiry_milestone": 130

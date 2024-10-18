@@ -17169,6 +17169,7 @@ from previous Chrome versions.
   <int value="-1282488703" label="LocationBarModelOptimizations:enabled"/>
   <int value="-1282433319" label="WebRtcAllowInputVolumeAdjustment:enabled"/>
   <int value="-1281491005" label="DisableDnsProxy:disabled"/>
+  <int value="-1281490354" label="MediaAppImageMantis:disabled"/>
   <int value="-1281465357" label="MacV2GPUSandbox:disabled"/>
   <int value="-1280802236" label="MemorySaverAggressiveness:enabled"/>
   <int value="-1280673966" label="PluginVmFullscreen:disabled"/>
@@ -23719,6 +23720,7 @@ from previous Chrome versions.
   <int value="1404592684"
       label="LegacyTechReportEnableCookieIssueReports:enabled"/>
   <int value="1404726271" label="ReduceHorizontalFlingVelocity:enabled"/>
+  <int value="1404805189" label="MediaAppImageMantis:enabled"/>
   <int value="1405459667" label="enable-fast-text-autosizing"/>
   <int value="1406046556" label="enable-slimming-paint-v175"/>
   <int value="1406354320" label="MacViewsWebUIDialogs:enabled"/>

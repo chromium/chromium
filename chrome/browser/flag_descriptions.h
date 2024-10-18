@@ -4149,6 +4149,9 @@ extern const char kMahiDebuggingDescription[];
 extern const char kMediaAppPdfMahiName[];
 extern const char kMediaAppPdfMahiDescription[];
 
+extern const char kMediaAppImageMantisName[];
+extern const char kMediaAppImageMantisDescription[];
+
 extern const char kMeteredShowToggleName[];
 extern const char kMeteredShowToggleDescription[];
 

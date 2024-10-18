@@ -7202,6 +7202,10 @@ const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";
 
+const char kMediaAppImageMantisName[] = "Mantis feature on Media App image";
+const char kMediaAppImageMantisDescription[] =
+    "Enable Mantis feature on image files in Gallery app.";
+
 const char kMeteredShowToggleName[] = "Show Metered Toggle";
 const char kMeteredShowToggleDescription[] =
     "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "
