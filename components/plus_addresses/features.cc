@@ -17,6 +17,7 @@ constexpr char kPlusAddressManagementUrlName[] = "manage-url";
 constexpr char kPlusAddressLearnMoreUrlName[] = "learn-more";
 constexpr char kPlusAddressExcludedSitesName[] = "excluded-sites";
 constexpr char kPlusAddressErrorReportUrlName[] = "error-report-url";
+constexpr char kPlusAddressRequestTimeoutName[] = "request-timeout";
 constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
 constexpr char kShowForwardingEmailInSuggestionName[] = "show-forwarding-email";
 
@@ -78,6 +79,8 @@ const base::FeatureParam<std::string> kPlusAddressExcludedSites{
     &kPlusAddressesEnabled, kPlusAddressExcludedSitesName, ""};
 const base::FeatureParam<std::string> kPlusAddressErrorReportUrl{
     &kPlusAddressesEnabled, kPlusAddressErrorReportUrlName, ""};
+const base::FeatureParam<base::TimeDelta> kPlusAddressRequestTimeout{
+    &kPlusAddressesEnabled, kPlusAddressRequestTimeoutName, base::Seconds(5)};
 const base::FeatureParam<bool> kDisableForForbiddenUsers{
     &kPlusAddressesEnabled, kDisableForForbiddenUsersName, false};
 

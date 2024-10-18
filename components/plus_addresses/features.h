@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace plus_addresses::features {
 
@@ -58,6 +59,11 @@ extern const base::FeatureParam<std::string> kPlusAddressExcludedSites;
 // Url for user to report issues with plus addresses.
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kPlusAddressErrorReportUrl;
+
+// The amount of time before the client aborts a request to the plus address
+// server.
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<base::TimeDelta> kPlusAddressRequestTimeout;
 
 // Used to disable this feature when requests to the server repeatedly fail with
 // a 403.

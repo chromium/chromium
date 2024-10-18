@@ -89,7 +89,9 @@ enum class PlusAddressRequestErrorType {
   // network request was cancelled.
   kUserSignedOut = 5,
   // The plus address was requested for an invalid, e.g. opaque, origin.
-  kInvalidOrigin = 6
+  kInvalidOrigin = 6,
+  // The client aborted the network request because it took too long.
+  kClientTimeout = 7
 };
 
 class PlusAddressRequestError {
