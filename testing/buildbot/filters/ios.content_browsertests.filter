@@ -784,3 +784,7 @@
 # TODO(crbug.com/374127248): This test has been failing since
 # https://crrev.com/c/5645306.
 -DeferSpeculativeRFHCreationTest.NavigationFromCrashedFrameNotDeferred
+
+# TODO(crbug.com/374094212): This test has been failing since
+# https://crrev.com/c/5773370.
+-RenderFrameHostImplWithTokensBrowserTest.ReloadedCrashedFrameWithHeaderOriginTrialShouldHaveValidRuntimeFeatureStateDocumentData
