@@ -342,7 +342,6 @@ namespace subtle {
 // callers.
 class BASE_EXPORT BindWeakPtrFactoryPassKey {
  private:
-  // Avoid =default to disallow creation by uniform initialization.
   BindWeakPtrFactoryPassKey() = default;
 
   friend class BindWeakPtrFactoryForTesting;
