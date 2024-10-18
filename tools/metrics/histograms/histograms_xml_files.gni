@@ -253,6 +253,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/system/histograms.xml",
   "//tools/metrics/histograms/metadata/tab/enums.xml",
   "//tools/metrics/histograms/metadata/tab/histograms.xml",
+  "//tools/metrics/histograms/metadata/task_manager/enums.xml",
+  "//tools/metrics/histograms/metadata/task_manager/histograms.xml",
   "//tools/metrics/histograms/metadata/toasts/enums.xml",
   "//tools/metrics/histograms/metadata/toasts/histograms.xml",
   "//tools/metrics/histograms/metadata/translate/enums.xml",

@@ -55,6 +55,7 @@ source_set("task_manager") {
     "sampling/task_group_sampler.h",
     "sampling/task_manager_impl.h",
     "task_manager_interface.h",
+    "task_manager_metrics_recorder.h",
     "task_manager_observer.h",
     "web_contents_tags.h",
   ]
@@ -158,6 +159,7 @@ source_set("impl") {
     "sampling/task_group_sampler.cc",
     "sampling/task_manager_impl.cc",
     "task_manager_interface.cc",
+    "task_manager_metrics_recorder.cc",
     "task_manager_observer.cc",
     "web_contents_tags.cc",
   ]

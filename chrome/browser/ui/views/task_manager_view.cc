@@ -83,6 +83,9 @@ TaskManagerView* g_task_manager_view = nullptr;
 TaskManagerView::~TaskManagerView() {
   // Delete child views now, while our table model still exists.
   RemoveAllChildViews();
+
+  // When the view is destroyed, the lifecycle of the Task Manager is complete.
+  task_manager::RecordCloseEvent(start_time_, base::TimeTicks::Now());
 }
 
 // static
@@ -329,6 +332,7 @@ TaskManagerView::TaskManagerView()
     : tab_table_(nullptr),
       tab_table_parent_(nullptr),
       is_always_on_top_(false) {
+  task_manager::RecordNewOpenEvent(StartAction::kAnyDebug);
   set_use_custom_frame(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   SetButtonLabel(ui::mojom::DialogButton::kOk,

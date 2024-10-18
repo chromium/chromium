@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -143,8 +144,11 @@ class TaskManagerView : public TableViewDelegate,
   raw_ptr<views::TableView, DanglingUntriaged> tab_table_;
   raw_ptr<views::View, DanglingUntriaged> tab_table_parent_;
 
-  // all possible columns, not necessarily visible
+  // all possible columns, not necessarily visible.
   std::vector<ui::TableColumn> columns_;
+
+  // The first time this instance of the task manager was initialized.
+  const base::TimeTicks start_time_ = base::TimeTicks::Now();
 
   // True when the Task Manager window should be shown on top of other windows.
   bool is_always_on_top_;
