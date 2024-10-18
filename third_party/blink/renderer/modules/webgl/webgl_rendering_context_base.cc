@@ -5015,6 +5015,15 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
       return;
     }
     ContextGL()->ReadPixels(x, y, width, height, format, type, data);
+
+    if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
+            IdentifiableSurface::Type::kWebFeature)) {
+      const auto& ukm_params = GetUkmParameters();
+      IdentifiabilityMetricBuilder(ukm_params.source_id)
+          .AddWebFeature(WebFeature::kWebGLRenderingContextReadPixels,
+                         IdentifiableToken())
+          .Record(ukm_params.ukm_recorder);
+    }
   }
 }
 

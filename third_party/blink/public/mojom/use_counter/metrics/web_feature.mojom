@@ -4494,6 +4494,7 @@ enum WebFeature {
   kV8RTCEncodedVideoFrame_Timestamp_AttributeGetter = 5120,
   kV8RTCEncodedAudioFrame_Timestamp_AttributeGetter = 5121,
   kV8AIAssistantCapabilities_LanguageAvailable_Method = 5122,
+  kWebGLRenderingContextReadPixels = 5123,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
