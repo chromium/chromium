@@ -265,7 +265,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
         std::unique_ptr<Surface::PresentationHelper> helper);
     void OnDraw(base::TimeTicks frame_time,
                 base::TimeTicks draw_start_timestamp,
-                base::flat_set<base::PlatformThreadId> thread_ids,
+                base::flat_set<base::PlatformThreadId> animation_thread_ids,
+                base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
                 HintSession::BoostType boost_type);
     void OnSwap(gfx::SwapTimings timings, DisplaySchedulerBase* scheduler);
     bool HasSwapped() const { return !swap_timings_.is_null(); }
@@ -278,7 +279,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
    private:
     base::TimeTicks frame_time_;
     base::TimeTicks draw_start_timestamp_;
-    base::flat_set<base::PlatformThreadId> thread_ids_;
+    base::flat_set<base::PlatformThreadId> animation_thread_ids_;
+    base::flat_set<base::PlatformThreadId> renderer_main_thread_ids_;
     gfx::SwapTimings swap_timings_;
     std::vector<std::unique_ptr<Surface::PresentationHelper>>
         presentation_helpers_;

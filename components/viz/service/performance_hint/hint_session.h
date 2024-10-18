@@ -26,6 +26,11 @@ class VIZ_SERVICE_EXPORT HintSession {
     kWakeUpBoost,
   };
 
+  enum class SessionType {
+    kAnimation = 0,
+    kRendererMain = 1,
+  };
+
   virtual ~HintSession() = default;
 
   virtual void UpdateTargetDuration(base::TimeDelta target_duration) = 0;
@@ -49,14 +54,19 @@ class VIZ_SERVICE_EXPORT HintSessionFactory {
 
   virtual ~HintSessionFactory() = default;
 
-  // `transient_thread_ids` are added to `permanent_thread_ids` to create this
-  // session. Chanting `transient_thread_ids` still requires deleting and
-  // recreating the session.
+  // For animation (SessionType::kAnimation) sessions, `transient_thread_ids`
+  // are added to `permanent_thread_ids` to create this session. Chanting
+  // `transient_thread_ids` still requires deleting and recreating the session.
   // `target_duration` is compared to `actual_duration` in
   // `ReportCpuCompletionTime` to determine the performance of a frame.
+  //
+  // For renderer main (SessionType::kRendererMain) sessions, the session
+  // includes only `transient_thread_ids`. These sessions never send any timing
+  // hints, i.e. `ReportCpuCompletionTime` calls are no-op.
   virtual std::unique_ptr<HintSession> CreateSession(
       base::flat_set<base::PlatformThreadId> transient_thread_ids,
-      base::TimeDelta target_duration) = 0;
+      base::TimeDelta target_duration,
+      HintSession::SessionType type) = 0;
 
   // Issue an early hint to wake up some session.
   virtual void WakeUp() = 0;

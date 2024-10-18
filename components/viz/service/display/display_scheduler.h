@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
@@ -51,10 +52,12 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override;
   void OutputSurfaceLost() override;
-  void ReportFrameTime(base::TimeDelta frame_time,
-                       base::flat_set<base::PlatformThreadId> thread_ids,
-                       base::TimeTicks draw_start,
-                       HintSession::BoostType boost_type) override;
+  void ReportFrameTime(
+      base::TimeDelta frame_time,
+      base::flat_set<base::PlatformThreadId> animation_thread_ids,
+      base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
+      base::TimeTicks draw_start,
+      HintSession::BoostType boost_type) override;
 
   // DisplayDamageTracker::Delegate implementation.
   void OnDisplayDamaged(SurfaceId surface_id) override;
@@ -119,8 +122,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void DidFinishFrame(bool did_draw);
   // Updates |has_pending_surfaces_| and returns whether its value changed.
   bool UpdateHasPendingSurfaces();
-  void MaybeCreateHintSession(
-      base::flat_set<base::PlatformThreadId> thread_ids);
+  void MaybeCreateHintSessions(
+      base::flat_set<base::PlatformThreadId> animation_thread_ids,
+      base::flat_set<base::PlatformThreadId> renderer_main_thread_ids);
 
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
   raw_ptr<BeginFrameSource> begin_frame_source_;
@@ -149,9 +153,18 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   bool observing_begin_frame_source_;
 
   const raw_ptr<HintSessionFactory> hint_session_factory_;
-  base::flat_set<base::PlatformThreadId> current_thread_ids_;
-  std::unique_ptr<HintSession> hint_session_;
-  bool create_session_for_current_thread_ids_failed_ = false;
+
+  struct AdpfSessionState {
+    base::flat_set<base::PlatformThreadId> thread_ids;
+    std::unique_ptr<HintSession> hint_session;
+    bool create_session_for_current_thread_ids_failed = false;
+    HintSession::SessionType type;
+
+    explicit AdpfSessionState(HintSession::SessionType type);
+    AdpfSessionState(AdpfSessionState&&);
+    ~AdpfSessionState();
+  };
+  std::vector<AdpfSessionState> session_states_;
 
   base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
 };

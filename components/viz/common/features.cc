@@ -339,6 +339,13 @@ BASE_FEATURE(kEnableADPFGpuCompositorThread,
              "EnableADPFGpuCompositorThread",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Chrome puts Renderer Main threads into a separate
+// ADPF(Android Dynamic Performance Framework) hint session, and does not
+// report any timing hints from this session.
+BASE_FEATURE(kEnableADPFSeparateRendererMainSession,
+             "EnableADPFSeparateRendererMainSession",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, surface activation and draw do not block on dependencies.
 BASE_FEATURE(kDrawImmediatelyWhenInteractive,
              "DrawImmediatelyWhenInteractive",
