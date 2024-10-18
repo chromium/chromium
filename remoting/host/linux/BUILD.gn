@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
+import("//build/toolchain/toolchain.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/build/config/remoting_build.gni")
 
@@ -183,6 +184,12 @@ source_set("unit_tests") {
     "x11_character_injector_unittest.cc",
     "x_server_clipboard_unittest.cc",
   ]
+
+  # This file causes clang to crash when clang is built with asserts.
+  # TODO(https://crbug.com/373478542): remove workaround once clang is fixed upstream.
+  if (llvm_force_head_revision) {
+    sources -= [ "gvariant_ref_unittest.cc" ]
+  }
 
   if (!remoting_use_x11) {
     sources -= [
