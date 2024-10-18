@@ -3901,6 +3901,11 @@ void WebMediaPlayerImpl::WriteSplitHistogram(
   if constexpr (Flags & kEncrypted) {
     if (is_encrypted_)
       UmaFunction(strkey + ".EME", values...);
+#if BUILDFLAG(IS_WIN)
+    if (renderer_type_ == media::RendererType::kMediaFoundation) {
+      UmaFunction(strkey + ".MediaFoundationRenderer", values...);
+    }
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   if constexpr (Flags & kTotal)
