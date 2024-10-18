@@ -87,7 +87,7 @@ void TachyonRegistrar::Register(const std::string& client_uuid,
       std::move(signin_request));
 }
 
-std::optional<std::string> TachyonRegistrar::GetTachyonToken() {
+std::optional<std::string> TachyonRegistrar::GetTachyonToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tachyon_token_;
 }

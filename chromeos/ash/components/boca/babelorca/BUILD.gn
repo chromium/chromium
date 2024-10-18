@@ -115,6 +115,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/boca/babelorca/proto",
     "//chromeos/ash/components/boca/babelorca/proto:test_support",
+    "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/services/boca/babelorca/mojom",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",

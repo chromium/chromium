@@ -37,7 +37,7 @@ class TachyonRegistrar {
 
   // Tachyon token fetched from registration response. `nullopt` if registration
   // did not start or still in progress, of if registration request failed.
-  std::optional<std::string> GetTachyonToken();
+  std::optional<std::string> GetTachyonToken() const;
 
   void ResetToken();
 

@@ -16,7 +16,7 @@
 #include "chromeos/ash/components/boca/babelorca/tachyon_registrar.h"
 #include "chromeos/ash/components/boca/babelorca/token_manager_impl.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
-#include "chromeos/ash/components/boca/proto/bundle.pb.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -38,9 +38,17 @@ BabelOrcaManager::BabelOrcaManager(
 BabelOrcaManager::~BabelOrcaManager() = default;
 
 void BabelOrcaManager::OnSessionStarted(const std::string& session_id,
-                                        const ::boca::UserIdentity& producer) {}
+                                        const ::boca::UserIdentity& producer) {
+  session_id_ = session_id;
+  sender_email_ = producer.email();
+}
 
-void BabelOrcaManager::OnSessionEnded(const std::string& session_id) {}
+void BabelOrcaManager::OnSessionEnded(const std::string& session_id) {
+  session_id_.reset();
+  sender_email_.reset();
+  group_id_.reset();
+  registrar_.ResetToken();
+}
 
 bool BabelOrcaManager::IsCaptioningAvailable() {
   // TODO(b/361086008): Implement IsCaptioningAvailable();
@@ -50,6 +58,22 @@ bool BabelOrcaManager::IsCaptioningAvailable() {
 void BabelOrcaManager::SigninToTachyonAndRespond(
     base::OnceCallback<void(bool)> on_response_cb) {
   registrar_.Register(client_uuid_, base::BindOnce(std::move(on_response_cb)));
+}
+
+std::optional<std::string> BabelOrcaManager::session_id() const {
+  return session_id_;
+}
+
+std::optional<std::string> BabelOrcaManager::tachyon_token() const {
+  return registrar_.GetTachyonToken();
+}
+
+std::optional<std::string> BabelOrcaManager::group_id() const {
+  return group_id_;
+}
+
+std::optional<std::string> BabelOrcaManager::sender_email() const {
+  return sender_email_;
 }
 
 }  // namespace ash::boca

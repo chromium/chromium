@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client_impl.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_registrar.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
 #include "chromeos/ash/components/boca/babelorca/token_manager_impl.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "components/live_caption/translation_dispatcher.h"
@@ -32,7 +33,8 @@ namespace ash::boca {
 
 // Manager for BabelOrca observing BOCA session events and doing captions
 // related actions accordingly.
-class BabelOrcaManager : public boca::BocaSessionManager::Observer {
+class BabelOrcaManager : public BocaSessionManager::Observer,
+                         public babelorca::TachyonRequestDataProvider {
  public:
   BabelOrcaManager(
       std::unique_ptr<captions::TranslationDispatcher> translation_dispatcher,
@@ -53,12 +55,22 @@ class BabelOrcaManager : public boca::BocaSessionManager::Observer {
   // `false` otherwise.
   void SigninToTachyonAndRespond(base::OnceCallback<void(bool)> on_response_cb);
 
+  // babelorca::TachyonRequestDataProvider
+  std::optional<std::string> session_id() const override;
+  std::optional<std::string> tachyon_token() const override;
+  std::optional<std::string> group_id() const override;
+  std::optional<std::string> sender_email() const override;
+
  private:
   std::unique_ptr<captions::TranslationDispatcher> translation_dispatcher_;
   const std::string client_uuid_;
   babelorca::TokenManagerImpl token_manager_;
   babelorca::TachyonAuthedClientImpl authed_client_;
   babelorca::TachyonRegistrar registrar_;
+
+  std::optional<std::string> session_id_;
+  std::optional<std::string> group_id_;
+  std::optional<std::string> sender_email_;
 };
 
 }  // namespace ash::boca

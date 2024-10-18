@@ -8,6 +8,7 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/net_errors.h"
@@ -21,6 +22,10 @@
 namespace ash::boca {
 namespace {
 
+const std::string kTachyonToken = "tachyon-token";
+const std::string kSessionId = "session-id";
+const std::string kSenderEmail = "user@email.com";
+
 class BabelOrcaManagerTest : public testing::Test {
  protected:
   // testing::Test:
@@ -32,7 +37,7 @@ class BabelOrcaManagerTest : public testing::Test {
 
   void AddSuccessfulSigninGaiaResponse() {
     babelorca::SignInGaiaResponse response;
-    response.mutable_auth_token()->set_payload("tachyon-token");
+    response.mutable_auth_token()->set_payload(kTachyonToken);
     url_loader_factory_.AddResponse(babelorca::kSigninGaiaUrl,
                                     response.SerializeAsString());
   }
@@ -61,7 +66,12 @@ TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithSuccess) {
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "oauth_token", base::Time::Max());
 
-  EXPECT_TRUE(test_future.Get());
+  ASSERT_TRUE(test_future.Get());
+  ASSERT_TRUE(manager.tachyon_token().has_value());
+  EXPECT_EQ(manager.tachyon_token().value(), kTachyonToken);
+
+  manager.OnSessionEnded(kSessionId);
+  EXPECT_FALSE(manager.tachyon_token().has_value());
 }
 
 TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithFailure) {
@@ -76,6 +86,26 @@ TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithFailure) {
       "oauth_token", base::Time::Max());
 
   EXPECT_FALSE(test_future.Get());
+  EXPECT_FALSE(manager.tachyon_token().has_value());
+}
+
+TEST_F(BabelOrcaManagerTest, DataSetAtSessionStart) {
+  base::test::TestFuture<bool> test_future;
+  BabelOrcaManager manager(/*translation_dispatcher=*/nullptr,
+                           identity_test_env_.identity_manager(),
+                           url_loader_factory_.GetSafeWeakWrapper());
+  ::boca::UserIdentity producer;
+  producer.set_email(kSenderEmail);
+  manager.OnSessionStarted(kSessionId, producer);
+
+  ASSERT_TRUE(manager.session_id().has_value());
+  EXPECT_EQ(manager.session_id().value(), kSessionId);
+  ASSERT_TRUE(manager.sender_email().has_value());
+  EXPECT_EQ(manager.sender_email().value(), kSenderEmail);
+
+  manager.OnSessionEnded(kSessionId);
+  EXPECT_FALSE(manager.session_id().has_value());
+  EXPECT_FALSE(manager.sender_email().has_value());
 }
 
 }  // namespace
