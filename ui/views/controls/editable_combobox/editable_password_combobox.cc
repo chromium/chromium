@@ -46,6 +46,9 @@ std::unique_ptr<ToggleImageButton> CreateEye(
                     .SetCallback(std::move(callback))
                     .SetBorder(CreateEmptyBorder(kEyePaddingWidth))
                     .Build();
+  // Add the outset for the focus ring to match the behavior of the `Arrow`
+  // element in `EditableCombobox`.
+  views::FocusRing::Get(button.get())->SetOutsetFocusRingDisabled(false);
   SetImageFromVectorIconWithColorId(button.get(), kEyeIcon, ui::kColorIcon,
                                     ui::kColorIconDisabled);
   SetToggledImageFromVectorIconWithColorId(
