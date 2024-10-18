@@ -682,6 +682,7 @@ source_set("platform_api_types") {
     "src/internal/platform/implementation/settable_future.h",
     "src/internal/platform/implementation/submittable_executor.h",
     "src/internal/platform/implementation/system_clock.h",
+    "src/internal/platform/implementation/timer.h",
   ]
   public_deps = [
     ":platform_base",
@@ -908,6 +909,7 @@ source_set("platform_public_types") {
     "src/internal/platform/monitored_runnable.cc",
     "src/internal/platform/pending_job_registry.cc",
     "src/internal/platform/pipe.cc",
+    "src/internal/platform/timer_impl.cc",
   ]
   public = [
     "src/internal/platform/atomic_boolean.h",
@@ -936,6 +938,8 @@ source_set("platform_public_types") {
     "src/internal/platform/system_clock.h",
     "src/internal/platform/thread_check_callable.h",
     "src/internal/platform/thread_check_runnable.h",
+    "src/internal/platform/timer.h",
+    "src/internal/platform/timer_impl.h",
   ]
   public_deps = [
     ":flags",
