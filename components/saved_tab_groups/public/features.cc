@@ -28,10 +28,6 @@ BASE_FEATURE(kTabGroupSyncDisableNetworkLayer,
              "TabGroupSyncDisableNetworkLayer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGroupSyncForceOff,
-             "TabGroupSyncForceOff",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Builds off of the original TabGroupsSave feature by making some UI tweaks and
 // adjustments. This flag controls the v2 update of sync, restore, dialog
 // triggering, extension support etc. b/325123353

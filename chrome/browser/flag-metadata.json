@@ -8541,7 +8541,7 @@
       "shaktisahu@chromium.org",
       "clank-tab-dev@google.com"
     ],
-    "expiry_milestone": 132
+    "expiry_milestone": 140
   },
   {
     "name": "tab-group-sync-disable-network-layer",
@@ -8549,20 +8549,12 @@
       "shaktisahu@chromium.org",
       "clank-tab-dev@google.com"
     ],
-    "expiry_milestone": 132
-  },
-  {
-    "name": "tab-group-sync-force-off",
-    "owners": [
-      "qinmin@chromium.org",
-      "clank-tab-dev@google.com"
-    ],
-    "expiry_milestone": 132
+    "expiry_milestone": 140
   },
   {
     "name": "tab-group-sync-service-desktop-migration",
     "owners": [ "chrome-desktop-ui-sea@google.com", "dljames@chromium.org", "dpenning@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "tab-groups-on-ipad",
@@ -8647,7 +8639,7 @@
   {
     "name": "tab-strip-group-collapse-android",
     "owners": [ "nemco@google.com", "zheliooo@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "tab-strip-group-context-menu-android",

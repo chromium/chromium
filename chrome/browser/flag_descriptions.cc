@@ -4886,11 +4886,6 @@ const char kTabGroupSyncDisableNetworkLayerName[] =
 const char kTabGroupSyncDisableNetworkLayerDescription[] =
     "Disables network layer of tab group sync.";
 
-const char kTabGroupSyncForceOffName[] = "Tab Group Sync Force Off";
-const char kTabGroupSyncForceOffDescription[] =
-    "Disables syncing of tab groups on the device even if user has enabled "
-    "it on other devices.";
-
 const char kTabResumptionModuleAndroidName[] = "Tab Resumption Module";
 const char kTabResumptionModuleAndroidDescription[] =
     "Enable showing tab suggestions on Android";

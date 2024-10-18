@@ -15,8 +15,6 @@ BASE_DECLARE_FEATURE(kTabGroupPaneAndroid);
 
 BASE_DECLARE_FEATURE(kTabGroupSyncDisableNetworkLayer);
 
-BASE_DECLARE_FEATURE(kTabGroupSyncForceOff);
-
 BASE_DECLARE_FEATURE(kTabGroupsSaveV2);
 
 BASE_DECLARE_FEATURE(kTabGroupsSaveUIUpdate);
