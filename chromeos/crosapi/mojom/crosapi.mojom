@@ -1547,7 +1547,7 @@ struct BrowserInitParams {
 
   // Tells if PDF OCR feature is enabled.
   [MinVersion=64]
-  bool is_pdf_ocr_enabled@64;
+  bool REMOVED_64@64;
 
   // If true, the DriveFsBulkPinning flag and it's accompanying feature
   // management flag has been enabled.
