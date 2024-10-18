@@ -265,6 +265,13 @@ class NET_EXPORT_PRIVATE QuicContext {
     return params_.supported_versions;
   }
 
+  // Returns the first quic::ParsedQuicVersion that has been advertised in
+  // `advertised_versions` and is supported, following the order of
+  // `advertised_versions`.  If no mutually supported version is found,
+  // quic::ParsedQuicVersion::Unsupported() will be returned.
+  quic::ParsedQuicVersion SelectQuicVersion(
+      const quic::ParsedQuicVersionVector& advertised_versions);
+
   void SetHelperForTesting(
       std::unique_ptr<quic::QuicConnectionHelperInterface> helper) {
     helper_ = std::move(helper);

@@ -256,10 +256,7 @@ class HttpStreamFactory::JobController
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
 
-  // Returns the first quic::ParsedQuicVersion that has been advertised in
-  // |advertised_versions| and is supported, following the order of
-  // |advertised_versions|.  If no mutually supported version is found,
-  // quic::ParsedQuicVersion::Unsupported() will be returned.
+  // Just calls QuicContext::SelectQuicVersion().
   quic::ParsedQuicVersion SelectQuicVersion(
       const quic::ParsedQuicVersionVector& advertised_versions);
 

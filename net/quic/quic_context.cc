@@ -43,6 +43,26 @@ QuicContext::QuicContext(
 
 QuicContext::~QuicContext() = default;
 
+quic::ParsedQuicVersion QuicContext::SelectQuicVersion(
+    const quic::ParsedQuicVersionVector& advertised_versions) {
+  const quic::ParsedQuicVersionVector& supported_versions =
+      params()->supported_versions;
+  if (advertised_versions.empty()) {
+    return supported_versions[0];
+  }
+
+  for (const quic::ParsedQuicVersion& advertised : advertised_versions) {
+    for (const quic::ParsedQuicVersion& supported : supported_versions) {
+      if (supported == advertised) {
+        DCHECK_NE(quic::ParsedQuicVersion::Unsupported(), supported);
+        return supported;
+      }
+    }
+  }
+
+  return quic::ParsedQuicVersion::Unsupported();
+}
+
 quic::QuicConfig InitializeQuicConfig(const QuicParams& params) {
   DCHECK_GT(params.idle_connection_timeout, base::TimeDelta());
   quic::QuicConfig config;

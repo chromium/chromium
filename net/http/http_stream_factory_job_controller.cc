@@ -1387,22 +1387,8 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
 
 quic::ParsedQuicVersion HttpStreamFactory::JobController::SelectQuicVersion(
     const quic::ParsedQuicVersionVector& advertised_versions) {
-  const quic::ParsedQuicVersionVector& supported_versions =
-      session_->context().quic_context->params()->supported_versions;
-  if (advertised_versions.empty()) {
-    return supported_versions[0];
-  }
-
-  for (const quic::ParsedQuicVersion& advertised : advertised_versions) {
-    for (const quic::ParsedQuicVersion& supported : supported_versions) {
-      if (supported == advertised) {
-        DCHECK_NE(quic::ParsedQuicVersion::Unsupported(), supported);
-        return supported;
-      }
-    }
-  }
-
-  return quic::ParsedQuicVersion::Unsupported();
+  return session_->context().quic_context->SelectQuicVersion(
+      advertised_versions);
 }
 
 void HttpStreamFactory::JobController::ReportAlternateProtocolUsage(
