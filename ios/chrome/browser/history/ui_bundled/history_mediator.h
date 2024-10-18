@@ -7,8 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
+
+class ProfileIOS;
 
 @interface HistoryMediator : NSObject<TableViewFaviconDataSource>
 
