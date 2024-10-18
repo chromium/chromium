@@ -37,6 +37,8 @@
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
+#include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
@@ -416,20 +418,6 @@
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/apps/digital_goods/digital_goods_factory_stub.h"
-#include "chrome/browser/apps/digital_goods/digital_goods_lacros.h"
-#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_frame_context.h"
-#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_registry.h"
-#include "chrome/browser/lacros/cros_apps/api/diagnostics/cros_diagnostics_impl.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "third_party/blink/public/mojom/chromeos/diagnostics/cros_diagnostics.mojom.h"
-#else
-#include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"  // nogncheck
-#include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
@@ -454,10 +442,6 @@
 #include "chrome/browser/speech/speech_recognition_service.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"  // nogncheck
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/accessibility/live_caption/live_caption_surface.h"
-#include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
 #if BUILDFLAG(IS_WIN)
@@ -742,15 +726,7 @@ void BindSpeechRecognitionContextHandler(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On LaCrOS, forward to Ash.
-  auto* service = chromeos::LacrosService::Get();
-  if (service && service->IsAvailable<crosapi::mojom::SpeechRecognition>()) {
-    service->GetRemote<crosapi::mojom::SpeechRecognition>()
-        ->BindSpeechRecognitionContext(std::move(receiver));
-  }
-#else
-  // On other platforms (Ash, desktop), bind via the appropriate factory.
+  // Bind via the appropriate factory.
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
@@ -761,7 +737,6 @@ void BindSpeechRecognitionContextHandler(
 #error "No speech recognition service factory on this platform."
 #endif
   factory->BindSpeechRecognitionContext(std::move(receiver));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void BindSpeechRecognitionClientBrowserInterfaceHandler(
@@ -769,20 +744,11 @@ void BindSpeechRecognitionClientBrowserInterfaceHandler(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionClientBrowserInterface>
         receiver) {
   if (captions::IsLiveCaptionFeatureSupported()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // On LaCrOS, forward to Ash.
-    auto* service = chromeos::LacrosService::Get();
-    if (service && service->IsAvailable<crosapi::mojom::SpeechRecognition>()) {
-      service->GetRemote<crosapi::mojom::SpeechRecognition>()
-          ->BindSpeechRecognitionClientBrowserInterface(std::move(receiver));
-    }
-#else
-    // On other platforms (Ash, desktop), bind in this process.
+    // Bind in this process.
     Profile* profile = Profile::FromBrowserContext(
         frame_host->GetProcess()->GetBrowserContext());
     SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile)
         ->BindReceiver(std::move(receiver));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 }
 
@@ -790,40 +756,6 @@ void BindSpeechRecognitionRecognizerClientHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
         client_receiver) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On LaCrOS, forward to Ash.
-
-  // Hold a client-browser interface just long enough to bootstrap a remote
-  // recognizer client.
-  mojo::Remote<media::mojom::SpeechRecognitionClientBrowserInterface>
-      interface_remote;
-  auto* service = chromeos::LacrosService::Get();
-  if (!service || !service->IsAvailable<crosapi::mojom::SpeechRecognition>()) {
-    return;
-  }
-  service->GetRemote<crosapi::mojom::SpeechRecognition>()
-      ->BindSpeechRecognitionClientBrowserInterface(
-          interface_remote.BindNewPipeAndPassReceiver());
-
-  // Grab the per-web-contents logic on our end to drive the remote client.
-  auto* surface = captions::LiveCaptionSurface::GetOrCreateForWebContents(
-      content::WebContents::FromRenderFrameHost(frame_host));
-  mojo::PendingRemote<media::mojom::SpeechRecognitionSurface> surface_remote;
-  mojo::PendingReceiver<media::mojom::SpeechRecognitionSurfaceClient>
-      surface_client_receiver;
-  surface->BindToSurfaceClient(
-      surface_remote.InitWithNewPipeAndPassReceiver(),
-      surface_client_receiver.InitWithNewPipeAndPassRemote());
-
-  // Populate static info to send to the client.
-  auto metadata = media::mojom::SpeechRecognitionSurfaceMetadata::New();
-  metadata->session_id = surface->session_id();
-
-  // Bootstrap the recognizer client.
-  interface_remote->BindRecognizerToRemoteClient(
-      std::move(client_receiver), std::move(surface_client_receiver),
-      std::move(surface_remote), std::move(metadata));
-#else
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
   PrefService* profile_prefs = profile->GetPrefs();
@@ -832,7 +764,6 @@ void BindSpeechRecognitionRecognizerClientHandler(
     captions::LiveCaptionSpeechRecognitionHost::Create(
         frame_host, std::move(client_receiver));
   }
-#endif
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -888,60 +819,6 @@ void BindScreen2xMainContentExtractor(
       frame_host->GetProcess()->GetBrowserContext())
       ->BindMainContentExtractor(std::move(receiver));
 }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// A helper class to register ChromeOS Apps API binders. This includes the logic
-// that checks that the feature is allowed on Profile before registering a
-// binder, and wraps the binder with per-frame feature enablement checks before
-// binding the Mojo pipe.
-class CrosAppsApiFrameBinderMap {
-  STACK_ALLOCATED();
-
- public:
-  CrosAppsApiFrameBinderMap(
-      content::RenderFrameHost* rfh,
-      mojo::BinderMapWithContext<content::RenderFrameHost*>& map)
-      : api_registry_(CrosAppsApiRegistry::GetInstance(
-            Profile::FromBrowserContext(rfh->GetBrowserContext()))),
-        map_(map) {}
-  ~CrosAppsApiFrameBinderMap() = default;
-
-  // If `api_feature` is enabled (e.g. base::Feature is enabled), and it can be
-  // enabled on the profile, registers a binder that performs context dependent
-  // checks (e.g. whether the frame's last committed URL is in the allowlist)
-  // before calling `binder_func`.
-  template <typename Interface,
-            auto binder_func,
-            blink::mojom::RuntimeFeature api_feature>
-  void MaybeAdd() {
-    if (!api_registry_->CanEnableApi(api_feature)) {
-      return;
-    }
-
-    map_->template Add<Interface>(
-        base::BindRepeating([](content::RenderFrameHost* rfh,
-                               mojo::PendingReceiver<Interface> receiver) {
-          auto* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
-          const auto& api_registry = CrosAppsApiRegistry::GetInstance(profile);
-
-          if (!api_registry.IsApiEnabledForFrame(
-                  api_feature, CrosAppsApiFrameContext(*rfh))) {
-            mojo::ReportBadMessage(base::StringPrintf(
-                "The requesting context isn't allowed to access interface %s "
-                "because it isn't allowed to access the corresponding API: %s",
-                Interface::Name_, base::ToString(api_feature).c_str()));
-            return;
-          }
-
-          binder_func(rfh, std::move(receiver));
-        }));
-  }
-
- private:
-  const raw_ref<const CrosAppsApiRegistry> api_registry_;
-  raw_ref<mojo::BinderMapWithContext<content::RenderFrameHost*>> map_;
-};
 #endif
 
 void PopulateChromeFrameBinders(
@@ -1031,24 +908,6 @@ void PopulateChromeFrameBinders(
       &apps::DigitalGoodsFactoryImpl::BindDigitalGoodsFactory));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    map->Add<payments::mojom::DigitalGoodsFactory>(
-        base::BindRepeating(&apps::DigitalGoodsFactoryLacros::Bind));
-  } else {
-    map->Add<payments::mojom::DigitalGoodsFactory>(
-        base::BindRepeating(&apps::DigitalGoodsFactoryStub::Bind));
-  }
-
-  if (chromeos::features::IsBlinkExtensionEnabled()) {
-    // Add frame binders for ChromeOS Apps APIs here using `binder_map_wrapper`.
-    CrosAppsApiFrameBinderMap binder_map_wrapper(render_frame_host, *map);
-    binder_map_wrapper
-        .MaybeAdd<blink::mojom::CrosDiagnostics, &CrosDiagnosticsImpl::Create,
-                  blink::mojom::RuntimeFeature::kBlinkExtensionDiagnostics>();
-  }
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kWebShare)) {
     map->Add<blink::mojom::ShareService>(
@@ -1131,10 +990,8 @@ void PopulateChromeFrameBinders(
 void PopulateChromeWebUIFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   RegisterWebUIControllerInterfaceBinder<::mojom::BluetoothInternalsHandler,
                                          BluetoothInternalsUI>(map);
-#endif
 
   RegisterWebUIControllerInterfaceBinder<
       media::mojom::MediaEngagementScoreDetailsProvider, MediaEngagementUI>(
