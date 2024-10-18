@@ -605,14 +605,12 @@ void ProfileMenuView::BuildGuestIdentity() {
         IDS_GUEST_WINDOW_COUNT_MESSAGE, guest_window_count);
   }
 
-  ui::ThemedVectorIcon header_art_icon(&kGuestMenuArtIcon,
-                                       ui::kColorAvatarHeaderArt);
   SetProfileIdentityInfo(
       /*profile_name=*/std::u16string(),
       /*background_color=*/SK_ColorTRANSPARENT,
       /*edit_button=*/std::nullopt, profiles::GetGuestAvatar(),
       ui::ImageModel(), menu_title_, menu_subtitle_, management_label,
-      header_art_icon);
+      &kGuestMenuArtIcon);
 }
 
 void ProfileMenuView::BuildAutofillButtons() {

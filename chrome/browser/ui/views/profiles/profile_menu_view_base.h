@@ -124,7 +124,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const std::u16string& title,
       const std::u16string& subtitle = std::u16string(),
       const std::u16string& management_label = std::u16string(),
-      const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
+      const gfx::VectorIcon* header_art_icon = nullptr);
 
   // `profile_image`, `title` and `subtitle` may not be empty.
   // If `button_text` is empty, no button will be shown.

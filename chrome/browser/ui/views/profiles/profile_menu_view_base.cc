@@ -101,7 +101,7 @@ constexpr float kShortcutIconToImageRefreshRatio = 20.0f / 32.0f;
 constexpr float kShortcutIconToImageTransparentRefreshRatio = 16.0f / 24.0f;
 // TODO(crbug.com/40148993): Remove this constant by extracting art height from
 // |avatar_header_art|.
-constexpr int kHeaderArtHeight = 80;
+constexpr int kHeaderArtHeight = 91;
 constexpr int kIdentityImageBorder = 2;
 constexpr int kIdentityImageSizeInclBorder =
     ProfileMenuViewBase::kIdentityImageSize + 2 * kIdentityImageBorder;
@@ -667,7 +667,13 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
     const std::u16string& title,
     const std::u16string& subtitle,
     const std::u16string& management_label,
-    const ui::ThemedVectorIcon& avatar_header_art) {
+    const gfx::VectorIcon* header_art_icon) {
+  ui::ThemedVectorIcon avatar_header_art;
+  if (header_art_icon != nullptr) {
+    avatar_header_art = ui::ThemedVectorIcon(
+        header_art_icon, ui::kColorAvatarHeaderArt, kMenuWidth);
+  }
+
   if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
     // TODO(crbug.com/370473765): Cleanup this function after
     // `switches::IsImprovedSigninUIOnDesktopEnabled()` is launched.
