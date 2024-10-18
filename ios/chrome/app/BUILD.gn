@@ -314,12 +314,13 @@ source_set("enterprise_app_agent") {
 
 source_set("identity_confirmation_app_agent") {
   sources = [
-    "identity_confirmation_app_agent.h",
-    "identity_confirmation_app_agent.mm",
+    "identity_confirmation_profile_agent.h",
+    "identity_confirmation_profile_agent.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
@@ -396,7 +397,6 @@ source_set("app_internal") {
     ":blocking_scene_commands",
     ":enterprise_app_agent",
     ":fast_app_terminate_buildflags",
-    ":identity_confirmation_app_agent",
     ":launch_screen_ui",
     ":mode",
     ":safe_mode_app_state_agent",

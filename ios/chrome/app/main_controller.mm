@@ -48,7 +48,6 @@
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/fast_app_terminate_buildflags.h"
 #import "ios/chrome/app/features.h"
-#import "ios/chrome/app/identity_confirmation_app_agent.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/profile/profile_controller.h"
@@ -868,7 +867,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];
   [appState addAgent:[[SafeModeAppAgent alloc] init]];
   [appState addAgent:[[VariationsAppStateAgent alloc] init]];
-  [appState addAgent:[[IdentityConfirmationAppAgent alloc] init]];
 
   BackgroundRefreshAppAgent* refreshAgent =
       [[BackgroundRefreshAppAgent alloc] init];

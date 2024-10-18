@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/identity_confirmation_profile_agent.h"
 #import "ios/chrome/app/profile/docking_promo_profile_agent.h"
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
 #import "ios/chrome/app/profile/post_restore_profile_agent.h"
@@ -83,6 +84,7 @@
   [_state addAgent:[[DiscoverFeedProfileAgent alloc] init]];
 
   [_state addAgent:[[FirstRunProfileAgent alloc] init]];
+  [_state addAgent:[[IdentityConfirmationProfileAgent alloc] init]];
   [_state addAgent:[[ProfileActivityProfileAgent alloc] init]];
   [_state addAgent:[[PostRestoreProfileAgent alloc] init]];
   [_state addAgent:[[SearchEngineChoiceProfileAgent alloc] init]];

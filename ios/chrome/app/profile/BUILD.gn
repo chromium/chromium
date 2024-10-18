@@ -38,6 +38,7 @@ source_set("profile_controller") {
     ":profile",
     ":search_engine_choice_profile_agent",
     "//base",
+    "//ios/chrome/app:identity_confirmation_app_agent",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/discover_feed/model:discover_feed_profile_agent",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/identity_confirmation_app_agent.h"
+#import "ios/chrome/app/identity_confirmation_profile_agent.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
@@ -11,7 +11,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
@@ -38,7 +39,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@implementation IdentityConfirmationAppAgent {
+@implementation IdentityConfirmationProfileAgent {
   // This code ensures only one snackbar appears at a time on an iPad in
   // split-screen mode (where two scenes are foreground active simultaneously).
   // It does this by resetting this boolean only when any of the scenes become
@@ -46,24 +47,21 @@
   BOOL _foregroundActiveEventAlreadyHandled;
 }
 
-#pragma mark - SceneObservingAppAgent
+#pragma mark - SceneObservingProfileAgent
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.appState.initStage != AppInitStage::kFinal) {
+  if (self.profileState.initStage != ProfileInitStage::kFinal) {
     return;
   }
+  id<BrowserProviderInterface> providerInterface =
+      self.profileState.foregroundActiveScene.browserProviderInterface;
   id<BrowserProvider> presentingInterface =
-      self.appState.foregroundActiveScene.browserProviderInterface
-          .currentBrowserProvider;
-  if (presentingInterface !=
-      self.appState.foregroundActiveScene.browserProviderInterface
-          .mainBrowserProvider) {
+      providerInterface.currentBrowserProvider;
+  if (presentingInterface != providerInterface.mainBrowserProvider) {
     return;
   }
-  Browser* browser = presentingInterface.browser;
 
-  [super sceneState:sceneState transitionedToActivationLevel:level];
   switch (level) {
     case SceneActivationLevelBackground:
     case SceneActivationLevelForegroundInactive:
@@ -74,37 +72,38 @@
 
     case SceneActivationLevelForegroundActive:
       if (!_foregroundActiveEventAlreadyHandled) {
-        [self maybeShowIdentityConfirmationSnackbarWithBrowser:browser];
+        [self
+            maybeShowIdentityConfirmationSnackbarWithBrowser:presentingInterface
+                                                                 .browser];
         _foregroundActiveEventAlreadyHandled = YES;
       }
       break;
   }
 }
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(AppInitStage)previousInitStage {
-  if (!appState.foregroundActiveScene) {
-    return;
-  }
-  if (self.appState.initStage != AppInitStage::kFinal) {
+#pragma mark - ProfileStateObserver
+
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if ((!profileState.foregroundActiveScene) ||
+      (profileState.initStage < ProfileInitStage::kFinal)) {
     return;
   }
 
+  id<BrowserProviderInterface> providerInterface =
+      profileState.foregroundActiveScene.browserProviderInterface;
   id<BrowserProvider> presentingInterface =
-      self.appState.foregroundActiveScene.browserProviderInterface
-          .currentBrowserProvider;
-  if (presentingInterface !=
-      self.appState.foregroundActiveScene.browserProviderInterface
-          .mainBrowserProvider) {
+      providerInterface.currentBrowserProvider;
+  if (presentingInterface != providerInterface.mainBrowserProvider) {
     return;
   }
-  Browser* browser = presentingInterface.browser;
 
-  [super appState:appState didTransitionFromInitStage:previousInitStage];
   if (!_foregroundActiveEventAlreadyHandled) {
     // In case of having a foregroundActiveScene before reaching an
-    // AppInitStage::kFinal, this will be the fallback to show the snackbar.
-    [self maybeShowIdentityConfirmationSnackbarWithBrowser:browser];
+    // ProfileInitStage::kFinal, this will be the fallback to show the snackbar.
+    [self maybeShowIdentityConfirmationSnackbarWithBrowser:presentingInterface
+                                                               .browser];
     _foregroundActiveEventAlreadyHandled = YES;
   }
 }
