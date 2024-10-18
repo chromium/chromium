@@ -5,6 +5,7 @@
 #include "components/services/on_device_translation/public/cpp/features.h"
 
 #include "base/command_line.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace on_device_translation {
 
@@ -20,17 +21,13 @@ base::FilePath GetPathFromCommandLine(const char* switch_name) {
 
 }  // namespace
 
-BASE_FEATURE(kTranslationAPIAcceptLanguagesCheck,
-             "TranslationAPIAcceptLanguagesCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kTranslationAPIAcceptLanguagesCheck{
+    &blink::features::kEnableTranslationAPI,
+    "TranslationAPIAcceptLanguagesCheck", true};
 
-BASE_FEATURE(kTranslationAPILimitLanguagePackCount,
-             "TranslationAPILimitLanguagePackCount",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<size_t> kTranslationAPILimitLanguagePackCountMax{
-    &kTranslationAPILimitLanguagePackCount,
-    "TranslationAPILimitLanguagePackCountMax", 3};
+const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount{
+    &blink::features::kEnableTranslationAPI,
+    "TranslationAPILimitLanguagePackCount", true};
 
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {

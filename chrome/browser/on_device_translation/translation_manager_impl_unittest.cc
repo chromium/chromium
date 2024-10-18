@@ -8,8 +8,6 @@
 
 #include "base/logging.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/services/on_device_translation/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,10 +26,6 @@ class TranslationManagerImplTest : public testing::Test {
 };
 
 TEST_F(TranslationManagerImplTest, PassAcceptLanguagesCheck) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      on_device_translation::kTranslationAPIAcceptLanguagesCheck);
-
   // Source lang:
   //   - Is in accept-languages : true
   //   - Is popular lang        : true

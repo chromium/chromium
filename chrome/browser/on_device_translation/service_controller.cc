@@ -54,6 +54,10 @@ namespace {
 
 constexpr size_t kMaxPendingTaskCount = 1024;
 
+// Limit the number of downloadable language packs to 3 during OT to mitigate
+// the risk of fingerprinting attacks.
+constexpr size_t kTranslationAPILimitLanguagePackCountMax = 3;
+
 const char kTranslateKitPackagePaths[] = "translate-kit-packages";
 
 const char kOnDeviceTranslationServiceDisplayName[] =
@@ -280,12 +284,10 @@ void OnDeviceTranslationServiceController::CreateTranslator(
                                       required_not_installed_packs,
                                       to_be_registered_packs);
     if (!to_be_registered_packs.empty()) {
-      if (base::FeatureList::IsEnabled(
-              on_device_translation::kTranslationAPILimitLanguagePackCount)) {
+      if (on_device_translation::kTranslationAPILimitLanguagePackCount.Get()) {
         if (to_be_registered_packs.size() +
                 GetRegisteredLanguagePacks().size() >
-            on_device_translation::kTranslationAPILimitLanguagePackCountMax
-                .Get()) {
+            kTranslationAPILimitLanguagePackCountMax) {
           // TODO(crbug.com/358030919): Add UMA, and consider printing errors
           // to DevTool's console.
           std::move(callback).Run(false);
