@@ -288,6 +288,14 @@ class AttributionInteropParser {
           max_aggregatable_debug_reports_per_source;
     }
 
+    if (int max_aggregatable_reports_per_source;
+        ParseInt(dict, "max_aggregatable_reports_per_source",
+                 max_aggregatable_reports_per_source, required,
+                 /*allow_zero=*/false)) {
+      config.aggregate_limit.max_aggregatable_reports_per_source =
+          max_aggregatable_reports_per_source;
+    }
+
     {
       static constexpr char kAggregationCoordinatorOrigins[] =
           "aggregation_coordinator_origins";
