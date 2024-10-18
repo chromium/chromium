@@ -103,7 +103,6 @@ public class LogoViewBinderUnitTest {
                         /* context= */ null,
                         /* logoClickedCallback= */ null,
                         mLogoModel,
-                        /* shouldFetchDoodle= */ true,
                         /* onLogoAvailableCallback= */ null,
                         /* visibilityObserver= */ null,
                         /* defaultGoogleLogo= */ null);

@@ -76,7 +76,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     private ImageFetcher mImageFetcher;
     private final Callback<LoadUrlParams> mLogoClickedCallback;
     private boolean mHasLogoLoadedForCurrentSearchEngine;
-    private final boolean mShouldFetchDoodle;
     private final LogoCoordinator.VisibilityObserver mVisibilityObserver;
     private final CachedTintedBitmap mDefaultGoogleLogo;
     private boolean mShouldShowLogo;
@@ -95,7 +94,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
      * @param context Used to load colors and resources.
      * @param logoClickedCallback Supplies the StartSurface's parent tab.
      * @param logoModel The model that is required to build the logo on start surface or ntp.
-     * @param shouldFetchDoodle Whether to fetch doodle if there is.
      * @param onLogoAvailableCallback The callback for when logo is available.
      * @param visibilityObserver Observer object monitoring logo visibility.
      * @param defaultGoogleLogo The google logo shared across all NTPs when Google is the default
@@ -105,14 +103,12 @@ public class LogoMediator implements TemplateUrlServiceObserver {
             Context context,
             Callback<LoadUrlParams> logoClickedCallback,
             PropertyModel logoModel,
-            boolean shouldFetchDoodle,
             Callback<Logo> onLogoAvailableCallback,
             VisibilityObserver visibilityObserver,
             CachedTintedBitmap defaultGoogleLogo) {
         mContext = context;
         mLogoModel = logoModel;
         mLogoClickedCallback = logoClickedCallback;
-        mShouldFetchDoodle = shouldFetchDoodle;
         mVisibilityObserver = visibilityObserver;
         mVisibilityObservers.addObserver(mVisibilityObserver);
         mDefaultGoogleLogo = defaultGoogleLogo;
@@ -221,13 +217,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         mHasLogoLoadedForCurrentSearchEngine = true;
         mLogoModel.set(LogoProperties.ANIMATION_ENABLED, animationEnabled);
         showSearchProviderInitialView();
-
-        // If default search engine is google and doodle is not supported, doesn't bother to fetch
-        // logo image.
-        if (TemplateUrlServiceFactory.getForProfile(mProfile).isDefaultSearchEngineGoogle()
-                && !mShouldFetchDoodle) {
-            return;
-        }
 
         if (mLogoBridge == null) {
             mLogoBridge = new LogoBridge(mProfile);

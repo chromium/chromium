@@ -376,13 +376,11 @@ public class NewTabPageLayout extends LinearLayout {
 
         mLogoView = findViewById(R.id.search_provider_logo);
 
-        // TODO(crbug.com/361120351): Clean up LogoCoordinator.
         mLogoCoordinator =
                 new LogoCoordinator(
                         mContext,
                         logoClickedCallback,
                         mLogoView,
-                        /* shouldFetchDoodle= */ true,
                         mOnLogoAvailableCallback,
                         /* visibilityObserver= */ null,
                         mIsLogoPolishFlagEnabled);
