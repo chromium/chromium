@@ -170,8 +170,6 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   struct SourceOrTriggerRFH;
 
-  enum class BrowserPolicy;
-
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
@@ -183,9 +181,10 @@ class CONTENT_EXPORT AttributionManagerImpl
       scoped_refptr<base::UpdateableSequencedTaskRunner> resolver_task_runner,
       bool debug_mode);
 
-  BrowserPolicy GetBrowserPolicy(const SourceOrTriggerRFH&);
-  void MaybeEnqueueEvent(SourceOrTriggerRFH);
-  void ProcessEvent(SourceOrTriggerRFH);
+  template <typename T>
+  void MaybeEnqueueEvent(T&& event, GlobalRenderFrameHostId);
+  void ProcessEvent(StorableSource, GlobalRenderFrameHostId);
+  void ProcessEvent(AttributionTrigger, GlobalRenderFrameHostId);
   void StoreSource(StorableSource source);
   void StoreTrigger(AttributionTrigger trigger,
                     bool cookie_based_debug_allowed);

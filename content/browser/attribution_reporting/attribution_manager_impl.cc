@@ -719,8 +719,7 @@ AttributionDataHostManager* AttributionManagerImpl::GetDataHostManager() {
 void AttributionManagerImpl::HandleSource(
     StorableSource source,
     GlobalRenderFrameHostId render_frame_id) {
-  MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(source),
-                                       .rfh_id = render_frame_id});
+  MaybeEnqueueEvent(std::move(source), render_frame_id);
 }
 
 void AttributionManagerImpl::OnSourceStored(
@@ -755,9 +754,7 @@ void AttributionManagerImpl::HandleTrigger(
     AttributionTrigger trigger,
     GlobalRenderFrameHostId render_frame_id) {
   RecordAggregatableFilteringIdUsage(trigger);
-
-  MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(trigger),
-                                       .rfh_id = render_frame_id});
+  MaybeEnqueueEvent(std::move(trigger), render_frame_id);
 }
 
 void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
@@ -776,10 +773,13 @@ void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
                            cookie_based_debug_allowed));
 }
 
-void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTriggerRFH event) {
+template <typename T>
+void AttributionManagerImpl::MaybeEnqueueEvent(
+    T&& event,
+    GlobalRenderFrameHostId render_frame_id) {
   if (IsReady()) {
     DCHECK(pending_events_.empty());
-    ProcessEvent(std::move(event));
+    ProcessEvent(std::move(event), render_frame_id);
     return;
   }
 
@@ -792,65 +792,39 @@ void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTriggerRFH event) {
     return;
   }
 
-  pending_events_.push_back(std::move(event));
+  pending_events_.emplace_back(std::move(event), render_frame_id);
 }
 
-enum class AttributionManagerImpl::BrowserPolicy {
+namespace {
+
+enum class BrowserPolicy {
   kProhibited,
   kAllowedWithDebug,
   kAllowedWithoutDebug,
 };
 
-AttributionManagerImpl::BrowserPolicy AttributionManagerImpl::GetBrowserPolicy(
-    const SourceOrTriggerRFH& event) {
-  const attribution_reporting::SuitableOrigin* cookie_origin = nullptr;
-  const attribution_reporting::SuitableOrigin* reporting_origin = nullptr;
-  const url::Origin* source_origin = nullptr;
-  const url::Origin* destination_origin = nullptr;
-  ContentBrowserClient::AttributionReportingOperation operation;
-  ContentBrowserClient::AttributionReportingOperation registration_operation;
-
-  absl::visit(
-      base::Overloaded{
-          [&](const StorableSource& source) {
-            reporting_origin = &source.common_info().reporting_origin();
-            cookie_origin = reporting_origin;
-            source_origin = &*source.common_info().source_origin();
-            operation = ContentBrowserClient::AttributionReportingOperation::
-                kSourceTransitionalDebugReporting;
-            registration_operation =
-                ContentBrowserClient::AttributionReportingOperation::kSource;
-          },
-          [&](const AttributionTrigger& trigger) {
-            const attribution_reporting::TriggerRegistration& registration =
-                trigger.registration();
-            reporting_origin = &trigger.reporting_origin();
-            cookie_origin = registration.debug_key.has_value() ||
-                                    registration.debug_reporting
-                                ? reporting_origin
-                                : nullptr;
-            destination_origin = &*trigger.destination_origin();
-            operation = ContentBrowserClient::AttributionReportingOperation::
-                kTriggerTransitionalDebugReporting;
-            registration_operation =
-                ContentBrowserClient::AttributionReportingOperation::kTrigger;
-          },
-      },
-      event.source_or_trigger);
-
-  if (!IsOperationAllowed(*storage_partition_, registration_operation,
-                          RenderFrameHost::FromID(event.rfh_id), source_origin,
-                          destination_origin, &**reporting_origin)) {
+BrowserPolicy GetBrowserPolicy(
+    StoragePartitionImpl& storage_partition,
+    ContentBrowserClient::AttributionReportingOperation registration_operation,
+    ContentBrowserClient::AttributionReportingOperation debug_operation,
+    GlobalRenderFrameHostId rfh_id,
+    const url::Origin* source_origin,
+    const url::Origin* destination_origin,
+    const url::Origin& reporting_origin,
+    bool check_debug) {
+  if (!IsOperationAllowed(storage_partition, registration_operation,
+                          RenderFrameHost::FromID(rfh_id), source_origin,
+                          destination_origin, &reporting_origin)) {
     return BrowserPolicy::kProhibited;
   }
 
-  if (cookie_origin) {
+  if (check_debug) {
     // TODO(crbug.com/40941634): Clean up `can_bypass` after the cookie
     // deprecation experiment.
     bool can_bypass = false;
-    if (IsOperationAllowed(*storage_partition_, operation,
+    if (IsOperationAllowed(storage_partition, debug_operation,
                            /*rfh=*/nullptr, source_origin, destination_origin,
-                           &**cookie_origin, &can_bypass) ||
+                           &reporting_origin, &can_bypass) ||
         can_bypass) {
       return BrowserPolicy::kAllowedWithDebug;
     }
@@ -859,60 +833,77 @@ AttributionManagerImpl::BrowserPolicy AttributionManagerImpl::GetBrowserPolicy(
   return BrowserPolicy::kAllowedWithoutDebug;
 }
 
-void AttributionManagerImpl::ProcessEvent(SourceOrTriggerRFH event) {
-  BrowserPolicy browser_policy = GetBrowserPolicy(event);
+}  // namespace
 
-  absl::visit(
-      base::Overloaded{
-          [&](StorableSource& source) {
-            switch (browser_policy) {
-              case BrowserPolicy::kProhibited:
-                OnSourceStored(
-                    /*cleared_debug_key=*/std::nullopt,
-                    StoreSourceResult(
-                        std::move(source),
-                        /*is_noised=*/false,
-                        /*source_time=*/base::Time::Now(),
-                        /*destination_limit=*/std::nullopt,
-                        StoreSourceResult::ProhibitedByBrowserPolicy()));
-                break;
-              case BrowserPolicy::kAllowedWithDebug:
-                source.set_cookie_based_debug_allowed(/*value=*/true);
-                StoreSource(std::move(source));
-                break;
-              case BrowserPolicy::kAllowedWithoutDebug:
-                source.set_cookie_based_debug_allowed(/*value=*/false);
-                StoreSource(std::move(source));
-                break;
-            }
-          },
-          [&](AttributionTrigger& trigger) {
-            switch (browser_policy) {
-              case BrowserPolicy::kProhibited:
-                OnReportStored(
-                    /*cleared_debug_key=*/std::nullopt,
-                    /*cookie_based_debug_allowed=*/false,
-                    CreateReportResult(
-                        /*trigger_time=*/base::Time::Now(), std::move(trigger),
-                        /*event_level_result=*/
-                        CreateReportResult::ProhibitedByBrowserPolicy(),
-                        /*aggregatable_result=*/
-                        CreateReportResult::ProhibitedByBrowserPolicy(),
-                        /*source=*/std::nullopt,
-                        /*min_null_aggregatable_report_time=*/std::nullopt));
-                break;
-              case BrowserPolicy::kAllowedWithDebug:
-                StoreTrigger(std::move(trigger),
-                             /*cookie_based_debug_allowed=*/true);
-                break;
-              case BrowserPolicy::kAllowedWithoutDebug:
-                StoreTrigger(std::move(trigger),
-                             /*cookie_based_debug_allowed=*/false);
-                break;
-            }
-          },
-      },
-      event.source_or_trigger);
+void AttributionManagerImpl::ProcessEvent(StorableSource source,
+                                          GlobalRenderFrameHostId rfh_id) {
+  BrowserPolicy browser_policy = GetBrowserPolicy(
+      *storage_partition_,
+      ContentBrowserClient::AttributionReportingOperation::kSource,
+      ContentBrowserClient::AttributionReportingOperation::
+          kSourceTransitionalDebugReporting,
+      rfh_id, &*source.common_info().source_origin(),
+      /*destination_origin=*/nullptr, source.common_info().reporting_origin(),
+      /*check_debug=*/true);
+
+  switch (browser_policy) {
+    case BrowserPolicy::kProhibited:
+      OnSourceStored(
+          /*cleared_debug_key=*/std::nullopt,
+          StoreSourceResult(std::move(source),
+                            /*is_noised=*/false,
+                            /*source_time=*/base::Time::Now(),
+                            /*destination_limit=*/std::nullopt,
+                            StoreSourceResult::ProhibitedByBrowserPolicy()));
+      break;
+    case BrowserPolicy::kAllowedWithDebug:
+      source.set_cookie_based_debug_allowed(/*value=*/true);
+      StoreSource(std::move(source));
+      break;
+    case BrowserPolicy::kAllowedWithoutDebug:
+      source.set_cookie_based_debug_allowed(/*value=*/false);
+      StoreSource(std::move(source));
+      break;
+  }
+}
+
+void AttributionManagerImpl::ProcessEvent(AttributionTrigger trigger,
+                                          GlobalRenderFrameHostId rfh_id) {
+  const attribution_reporting::TriggerRegistration& registration =
+      trigger.registration();
+
+  BrowserPolicy browser_policy = GetBrowserPolicy(
+      *storage_partition_,
+      ContentBrowserClient::AttributionReportingOperation::kTrigger,
+      ContentBrowserClient::AttributionReportingOperation::
+          kTriggerTransitionalDebugReporting,
+      rfh_id,
+      /*source_origin=*/nullptr, &*trigger.destination_origin(),
+      trigger.reporting_origin(),
+      /*check_debug=*/registration.debug_key.has_value() ||
+          registration.debug_reporting);
+
+  switch (browser_policy) {
+    case BrowserPolicy::kProhibited:
+      OnReportStored(
+          /*cleared_debug_key=*/std::nullopt,
+          /*cookie_based_debug_allowed=*/false,
+          CreateReportResult(
+              /*trigger_time=*/base::Time::Now(), std::move(trigger),
+              /*event_level_result=*/
+              CreateReportResult::ProhibitedByBrowserPolicy(),
+              /*aggregatable_result=*/
+              CreateReportResult::ProhibitedByBrowserPolicy(),
+              /*source=*/std::nullopt,
+              /*min_null_aggregatable_report_time=*/std::nullopt));
+      break;
+    case BrowserPolicy::kAllowedWithDebug:
+      StoreTrigger(std::move(trigger), /*cookie_based_debug_allowed=*/true);
+      break;
+    case BrowserPolicy::kAllowedWithoutDebug:
+      StoreTrigger(std::move(trigger), /*cookie_based_debug_allowed=*/false);
+      break;
+  }
 }
 
 void AttributionManagerImpl::StoreSource(StorableSource source) {
@@ -1622,23 +1613,30 @@ void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
 }
 
 void AttributionManagerImpl::ProcessOsEvent(OsRegistration event) {
-  ContentBrowserClient::AttributionReportingOperation operation;
+  ContentBrowserClient::AttributionReportingOperation registration_operation;
+  ContentBrowserClient::AttributionReportingOperation debug_operation;
   const url::Origin* source_origin;
   const url::Origin* destination_origin;
   switch (event.GetType()) {
     case RegistrationType::kSource:
-      operation =
+      registration_operation =
           ContentBrowserClient::AttributionReportingOperation::kOsSource;
+      debug_operation = ContentBrowserClient::AttributionReportingOperation::
+          kOsSourceTransitionalDebugReporting;
       source_origin = &event.top_level_origin;
       destination_origin = nullptr;
       break;
     case RegistrationType::kTrigger:
-      operation =
+      registration_operation =
           ContentBrowserClient::AttributionReportingOperation::kOsTrigger;
+      debug_operation = ContentBrowserClient::AttributionReportingOperation::
+          kOsTriggerTransitionalDebugReporting;
       source_origin = nullptr;
       destination_origin = &event.top_level_origin;
       break;
   }
+
+  std::vector<bool> debug_allowed;
 
   std::erase_if(event.registration_items, [&, now = base::Time::Now()](
                                               const OsRegistrationItem& item) {
@@ -1650,46 +1648,31 @@ void AttributionManagerImpl::ProcessOsEvent(OsRegistration event) {
       return true;
     }
 
-    if (!IsOperationAllowed(*storage_partition_, operation,
-                            RenderFrameHost::FromID(event.render_frame_id),
-                            source_origin, destination_origin,
-                            &registration_origin)) {
-      NotifyOsRegistration(now, item, event.top_level_origin,
-                           /*is_debug_key_allowed=*/false, event.GetType(),
-                           OsRegistrationResult::kProhibitedByBrowserPolicy);
-      return true;
+    BrowserPolicy browser_policy =
+        GetBrowserPolicy(*storage_partition_, registration_operation,
+                         debug_operation, event.render_frame_id, source_origin,
+                         destination_origin, registration_origin,
+                         /*check_debug=*/true);
+
+    switch (browser_policy) {
+      case BrowserPolicy::kProhibited:
+        NotifyOsRegistration(now, item, event.top_level_origin,
+                             /*is_debug_key_allowed=*/false, event.GetType(),
+                             OsRegistrationResult::kProhibitedByBrowserPolicy);
+        return true;
+      case BrowserPolicy::kAllowedWithDebug:
+        debug_allowed.push_back(true);
+        return false;
+      case BrowserPolicy::kAllowedWithoutDebug:
+        debug_allowed.push_back(false);
+        return false;
     }
 
-    return false;
+    NOTREACHED_NORETURN();
   });
 
   if (event.registration_items.empty()) {
     return;
-  }
-
-  switch (event.GetType()) {
-    case RegistrationType::kSource:
-      operation = ContentBrowserClient::AttributionReportingOperation::
-          kOsSourceTransitionalDebugReporting;
-      break;
-    case RegistrationType::kTrigger:
-      operation = ContentBrowserClient::AttributionReportingOperation::
-          kOsTriggerTransitionalDebugReporting;
-      break;
-  }
-
-  const size_t num_items = event.registration_items.size();
-  std::vector<bool> debug_allowed(num_items);
-  for (size_t i = 0; i < num_items; ++i) {
-    const auto& item = event.registration_items.at(i);
-    const auto reporting_origin = url::Origin::Create(item.url);
-
-    bool can_bypass = false;
-    debug_allowed[i] =
-        IsOperationAllowed(*storage_partition_, operation, /*rfh=*/nullptr,
-                           source_origin, destination_origin, &reporting_origin,
-                           &can_bypass) ||
-        can_bypass;
   }
 
   os_level_manager_->Register(
@@ -1842,7 +1825,9 @@ void AttributionManagerImpl::OnAttestationsLoaded() {
       std::make_unique<ReportScheduler>(weak_factory_.GetWeakPtr()));
 
   for (SourceOrTriggerRFH& event : pending_events_) {
-    ProcessEvent(std::move(event));
+    absl::visit([this, rfh_id = event.rfh_id](
+                    auto& event) { ProcessEvent(std::move(event), rfh_id); },
+                event.source_or_trigger);
   }
   pending_events_.clear();
 
