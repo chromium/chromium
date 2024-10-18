@@ -64,10 +64,9 @@ CachedMatchedProperties::CachedMatchedProperties(
       parent_computed_style(parent_style),
       last_used(clock) {
   matched_properties.ReserveInitialCapacity(properties.size());
-  matched_properties_metadata.ReserveInitialCapacity(properties.size());
   for (const auto& new_matched_properties : properties) {
-    matched_properties.push_back(new_matched_properties.properties);
-    matched_properties_metadata.push_back(new_matched_properties.data_);
+    matched_properties.emplace_back(new_matched_properties.properties,
+                                    new_matched_properties.data_);
   }
 }
 
@@ -80,16 +79,14 @@ void CachedMatchedProperties::Set(const ComputedStyle* style,
   last_used = clock;
 
   matched_properties.clear();
-  matched_properties_metadata.clear();
   for (const auto& new_matched_properties : properties) {
-    matched_properties.push_back(new_matched_properties.properties);
-    matched_properties_metadata.push_back(new_matched_properties.data_);
+    matched_properties.emplace_back(new_matched_properties.properties,
+                                    new_matched_properties.data_);
   }
 }
 
 void CachedMatchedProperties::Clear() {
   matched_properties.clear();
-  matched_properties_metadata.clear();
   computed_style = nullptr;
   parent_computed_style = nullptr;
 }
@@ -185,17 +182,14 @@ bool CachedMatchedProperties::CorrespondsTo(
   if (lookup_properties.size() != matched_properties.size()) {
     return false;
   }
-  CHECK_EQ(matched_properties.size(), matched_properties_metadata.size());
 
   // These incantations are to make Clang realize it does not have to
   // bounds-check.
   auto lookup_it = lookup_properties.begin();
   auto cached_it = matched_properties.begin();
-  auto metadata_it = matched_properties_metadata.begin();
-  for (; lookup_it != lookup_properties.end(); std::advance(lookup_it, 1),
-                                               std::advance(cached_it, 1),
-                                               std::advance(metadata_it, 1)) {
-    CSSPropertyValueSet* cached_properties = *cached_it;
+  for (; lookup_it != lookup_properties.end();
+       std::advance(lookup_it, 1), std::advance(cached_it, 1)) {
+    CSSPropertyValueSet* cached_properties = cached_it->first.Get();
     DCHECK(!lookup_it->properties->ModifiedSinceHashing())
         << "This should have been checked in AddMatchedProperties()";
     if (cached_properties->ModifiedSinceHashing()) {
@@ -211,7 +205,7 @@ bool CachedMatchedProperties::CorrespondsTo(
     if (!lookup_it->properties->Equals(*cached_properties)) {
       return false;
     }
-    if (lookup_it->data_ != *metadata_it) {
+    if (lookup_it->data_ != cached_it->second) {
       return false;
     }
   }
@@ -369,12 +363,13 @@ void MatchedPropertiesCache::Trace(Visitor* visitor) const {
 
 static inline bool ShouldRemoveMPCEntry(CachedMatchedProperties& value,
                                         const LivenessBroker& info) {
-  return std::any_of(value.matched_properties.begin(),
-                     value.matched_properties.end(),
-                     [&info](const CSSPropertyValueSet* properties) {
-                       return !info.IsHeapObjectAlive(properties) ||
-                              properties->ModifiedSinceHashing();
-                     });
+  for (const auto& [properties, metadata] : value.matched_properties) {
+    if (!info.IsHeapObjectAlive(properties) ||
+        properties->ModifiedSinceHashing()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void MatchedPropertiesCache::CleanMatchedPropertiesCache(
