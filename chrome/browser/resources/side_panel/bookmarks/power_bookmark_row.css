@@ -34,7 +34,8 @@ cr-input {
   width: 100%;
 }
 
-iron-icon {
+iron-icon,
+cr-icon {
   --iron-icon-fill-color: currentColor;
   height: 16px;
   width: 16px;
