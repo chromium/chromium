@@ -73,7 +73,7 @@ class VarSerializationRules;
 // want to modify that to convert strings and do refcounting.
 //
 // The helper classes used for accessing the SerializedVar have more reasonable
-// behavior and will enforce that you don't do stupid things.
+// behavior and will enforce that you don't do bad things.
 class PPAPI_PROXY_EXPORT SerializedVar {
  public:
   SerializedVar();
