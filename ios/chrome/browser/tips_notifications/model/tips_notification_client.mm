@@ -13,11 +13,13 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/search/search.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -41,6 +43,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/device_form_factor.h"
 
@@ -426,8 +429,19 @@ bool TipsNotificationClient::ShouldSendOmniboxPosition() {
 
 bool TipsNotificationClient::ShouldSendLens() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Early return if Lens is not available.
-  if (!ios::provider::IsLensSupported()) {
+  // Early return if Lens is not available or disabled by policy.
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  if (!browser) {
+    return false;
+  }
+  TemplateURLService* template_url_service =
+      ios::TemplateURLServiceFactory::GetForProfile(browser->GetProfile());
+  bool default_search_is_google =
+      search::DefaultSearchProviderIsGoogle(template_url_service);
+  const bool lens_enabled =
+      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+          LensEntrypoint::NewTabPage, default_search_is_google);
+  if (!lens_enabled) {
     return false;
   }
 
@@ -443,7 +457,8 @@ bool TipsNotificationClient::ShouldSendEnhancedSafeBrowsing() {
     return false;
   }
   PrefService* user_prefs = browser->GetProfile()->GetPrefs();
-  return !safe_browsing::IsEnhancedProtectionEnabled(*user_prefs);
+  return user_prefs->GetBoolean(prefs::kAdvancedProtectionAllowed) &&
+         !safe_browsing::IsEnhancedProtectionEnabled(*user_prefs);
 }
 
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {
