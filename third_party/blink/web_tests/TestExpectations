@@ -2630,12 +2630,12 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win11 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash Timeout ]
-[ Win11-arm64 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash Timeout ]
-[ Win10.20h2 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash ]
-[ Linux ] external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash Timeout ]
-[ Mac ] external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash ]
-[ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-bluetooth.https.html [ Timeout ]
+crbug.com/373924121 [ Win11 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash Timeout ]
+crbug.com/373924121 [ Win11-arm64 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash Timeout ]
+crbug.com/373924121 [ Win10.20h2 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash ]
+crbug.com/373924121 [ Linux ] external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash Timeout ]
+crbug.com/373924121 [ Mac ] external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash ]
+crbug.com/373959867 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-bluetooth.https.html [ Timeout ]
 crbug.com/372287206 [ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Crash ]
 crbug.com/372103377 [ Webview ] external/wpt/visual-viewport/scroll-event-order.html [ Crash ]
 crbug.com/371659899 [ Mac ] external/wpt/selection/caret/editing-host-has-only-invisible-br.html [ Timeout ]
