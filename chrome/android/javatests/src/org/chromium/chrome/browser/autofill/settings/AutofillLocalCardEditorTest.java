@@ -936,6 +936,20 @@ public class AutofillLocalCardEditorTest {
                 mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasUnchanged"));
     }
 
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenAddCardFlowStarted() throws Exception {
+        // Expect histogram to record add card flow.
+        HistogramWatcher addCardFlowHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(AutofillLocalCardEditor.ADD_CARD_FLOW_HISTOGRAM, true)
+                        .build();
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        addCardFlowHistogram.assertExpected();
+    }
+
     private void openDeletePaymentMethodConfirmationDialog(
             AutofillLocalCardEditor autofillLocalCardEditorFragment,
             ModalDialogManager modalDialogManager) {

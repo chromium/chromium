@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/timezone.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -1323,6 +1324,8 @@ void PaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
   if (FindByContents(local_credit_cards_, credit_card)) {
     return;
   }
+
+  UMA_HISTOGRAM_BOOLEAN("Autofill.PaymentsDataManager.LocalCardAdded", true);
 
   // Add the new credit card to the web database.
   GetLocalDatabase()->AddCreditCard(credit_card);

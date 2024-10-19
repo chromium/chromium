@@ -56,6 +56,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     private static final String AMEX_NETWORK_NAME = "amex";
     static final String CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM =
             "Autofill.PaymentMethods.SettingsPage.StoredCreditCardCountBeforeCardAdded";
+    static final String ADD_CARD_FLOW_HISTOGRAM =
+            "Autofill.PaymentMethodsSettingsPage.AddCardClicked";
 
     protected Button mDoneButton;
     private TextInputLayout mNameLabel;
@@ -134,6 +136,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
 
         addCardDataToEditFields();
         initializeButtons(v);
+        RecordHistogram.recordBooleanHistogram(ADD_CARD_FLOW_HISTOGRAM, true);
         if (sObserverForTest != null) {
             sObserverForTest.onResult(this);
         }

@@ -3395,5 +3395,23 @@ TEST_F(PaymentsDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   EXPECT_TRUE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 }
 
+TEST_F(PaymentsDataManagerTest, RecordLocalCardAdded) {
+  base::HistogramTester histogram_tester;
+  // Add a local card.
+  CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
+                          test::kEmptyOrigin);
+  test::SetCreditCardInfo(&credit_card0, "Clyde Barrow",
+                          "4234 5678 9012 2110" /* Visa */, "04", "2999", "1");
+  payments_data_manager().AddCreditCard(credit_card0);
+
+  // Make sure everything is set up correctly.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+  EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsDataManager.LocalCardAdded", true, 1);
+}
+
 }  // namespace
 }  // namespace autofill

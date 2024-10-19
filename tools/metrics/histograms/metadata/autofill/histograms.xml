@@ -4203,6 +4203,30 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.PaymentMethodsSettingsPage.AddCardClicked"
+    enum="Boolean" expires_after="2025-02-01">
+  <owner>npnavarro@google.com</owner>
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Logs when the add card flow is started (currently only on Android). Recorded
+    when a user starts the flow to add a new local card through the Chrome
+    payment methods settings page.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.PaymentsDataManager.LocalCardAdded" enum="Boolean"
+    expires_after="2025-02-01">
+  <owner>npnavarro@google.com</owner>
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Logs when a credit card is saved locally for any reason. This includes when
+    a server card upload fails, or when the user adds a new local card through
+    the Chrome payment methods settings page.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails{Result}"
     units="ms" expires_after="2025-03-02">
