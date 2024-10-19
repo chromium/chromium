@@ -8,6 +8,8 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_forward.h"
+
 namespace ash::babelorca {
 
 // Provider for tachyon requests common data.
@@ -18,6 +20,11 @@ class TachyonRequestDataProvider {
       delete;
 
   virtual ~TachyonRequestDataProvider() = default;
+
+  // Signin to Tachyon and run the callback with `true` on success and with
+  // `false` otherwise.
+  virtual void SigninToTachyonAndRespond(
+      base::OnceCallback<void(bool)> on_response_cb) = 0;
 
   virtual std::optional<std::string> session_id() const = 0;
   virtual std::optional<std::string> tachyon_token() const = 0;

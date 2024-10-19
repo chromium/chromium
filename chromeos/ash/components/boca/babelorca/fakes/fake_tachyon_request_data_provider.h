@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
 
 namespace ash::babelorca {
@@ -25,6 +26,9 @@ class FakeTachyonRequestDataProvider : public TachyonRequestDataProvider {
       const FakeTachyonRequestDataProvider&) = delete;
 
   ~FakeTachyonRequestDataProvider() override;
+
+  void SigninToTachyonAndRespond(
+      base::OnceCallback<void(bool)> on_response_cb) override;
 
   std::optional<std::string> session_id() const override;
   std::optional<std::string> tachyon_token() const override;

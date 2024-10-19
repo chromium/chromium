@@ -51,11 +51,9 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
 
   bool IsCaptioningAvailable();
 
-  // Signin to Tachyon and run the callback with `true` on success and with
-  // `false` otherwise.
-  void SigninToTachyonAndRespond(base::OnceCallback<void(bool)> on_response_cb);
-
   // babelorca::TachyonRequestDataProvider
+  void SigninToTachyonAndRespond(
+      base::OnceCallback<void(bool)> on_response_cb) override;
   std::optional<std::string> session_id() const override;
   std::optional<std::string> tachyon_token() const override;
   std::optional<std::string> group_id() const override;

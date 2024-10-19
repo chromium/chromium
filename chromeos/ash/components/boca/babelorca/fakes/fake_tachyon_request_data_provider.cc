@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback.h"
+
 namespace ash::babelorca {
 
 FakeTachyonRequestDataProvider::FakeTachyonRequestDataProvider(
@@ -21,6 +23,9 @@ FakeTachyonRequestDataProvider::FakeTachyonRequestDataProvider(
       sender_email_(std::move(sender_email)) {}
 
 FakeTachyonRequestDataProvider::~FakeTachyonRequestDataProvider() = default;
+
+void FakeTachyonRequestDataProvider::SigninToTachyonAndRespond(
+    base::OnceCallback<void(bool)> on_response_cb) {}
 
 std::optional<std::string> FakeTachyonRequestDataProvider::session_id() const {
   return session_id_;
