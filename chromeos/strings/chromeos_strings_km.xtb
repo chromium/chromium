@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">បាន​លើស​ការ​ព្យាយាម​ចូូល​អតិបរមា​ដែល​បាន​អនុញ្ញាត​ហើយ​។​</translation>
 <translation id="1908234395526491708">សំណើ UDP មិនបានសម្រេច</translation>
 <translation id="1908394185991500139">ព្រួញ​ទៅឆ្វេង</translation>
+<translation id="1914144885717544695">នៅថ្ងៃសុក្រ</translation>
 <translation id="1923388006036088459">ពណ៌​រំលេច</translation>
 <translation id="1945403655450283000">កម្មវិធីថតសំឡេង</translation>
 <translation id="1947737735496445907">បានបោះពុម្ព</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">រសាត់កាត់ពីលើ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">ថ្ងៃនេះ</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059">រូបថត <ph name="NUMBER" /> សន្លឹក</translation>
 <translation id="2154460308960858308">សម្អាត​ការស្វែងរក</translation>
 <translation id="2157660087437850958">ផ្ទាំង​ជ្រើសរើស​រូបអារម្មណ៍</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">ស</translation>
 <translation id="2715723665057727940">ទន្លេ</translation>
 <translation id="2717139507051041123">បើកមុខងារពណ៌ងងឹត</translation>
+<translation id="2726755229438917165">នៅថ្ងៃចន្ទ</translation>
 <translation id="2728460467788544679">សម្អាតប្រវត្តិបោះពុម្ពទាំងអស់</translation>
 <translation id="2731700343119398978">សូមរង់ចាំ...</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">គ្រោង</translation>
 <translation id="3061850252076394168">បើក​មុខងារជ្រើសរើសដើម្បីអាន</translation>
+<translation id="3066772729299747758">នៅថ្ងៃអង្គារ</translation>
 <translation id="3069085583900247081">ការធ្វើតេស្ត​​មិនបានសម្រេចទេ</translation>
 <translation id="3078740164268491126">តារាង</translation>
 <translation id="3081652522083185657">ភ្លឺ</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">ស៊ូស៊ី</translation>
 <translation id="3368922792935385530">បានភ្ជាប់</translation>
 <translation id="3369013195428705271">តើអ្នក​ពិតជាចង់​សម្អាត​ប្រវត្តិបោះពុម្ព​ទាំងអស់​មែនឬ? ការងារ​បោះពុម្ព​របស់អ្នកដែល​កំពុងដំណើរការ​នឹងមិនត្រូវបាន​សម្អាតទេ។</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">ផ្ទាំង​រូបភាពចលនាផែនដី</translation>
 <translation id="33736539805963175">ផ្ទៃខាងក្រោយពណ៌<ph name="LETTERS_COLOR" />ដែលមានអក្សរ <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">ផ្តាច់មុខ</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">បន្តដាក់ព្រួញលើ​សម្រាប់​ជម្រើស​ប្លង់​ច្រើនទៀត</translation>
 <translation id="4130750466177569591">ខ្ញុំយល់ព្រម</translation>
 <translation id="4131410914670010031">ពណ៌ខ្មៅ និងស</translation>
+<translation id="4137700675046373159">នៅថ្ងៃសៅរ៍</translation>
 <translation id="4143226836069425823">ចុចលើគ្រាប់ចុចផ្សេងទៀតនៅលើក្តារចុច ដើម្បីជំនួស</translation>
 <translation id="4145784616224233563">ជញ្ជាំងភ្លើង HTTP</translation>
 <translation id="4147897805161313378">Google រូបថត</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515">ពាក្យសម្ងាត់ផុតកំណត់​ក្នុងរយៈពេល <ph name="TIME" /></translation>
 <translation id="4238516577297848345">មិនមានកិច្ចការបោះពុម្ពកំពុងដំណើរការទេ</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">នៅថ្ងៃអាទិត្យ</translation>
 <translation id="4250229828105606438">ថតអេក្រង់</translation>
 <translation id="4251839292699800785">ការិយាល័យ​ទាន់សម័យ</translation>
 <translation id="4258281355379922695">ការពន្យារ HTTP</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">មិនស្គាល់​ប្រូតូកូល​សុវត្ថិភាព WiFi</translation>
 <translation id="6535178685492749208">អ្នក​គ្មាន​អ៊ីនធឺណិត​ទេ។ មតិកែលម្អ​នឹង​ត្រូវ​បាន​ផ្ញើ​នៅ​ពេល​ក្រោយ។</translation>
 <translation id="6543412779435705598">តាកូ</translation>
+<translation id="6550369542114086980">នៅថ្ងៃព្រហស្បតិ៍</translation>
 <translation id="6551839203326557324">ប៉ោម</translation>
 <translation id="65526652485742171">ឥឡូវនេះ ប៊ូតុងបញ្ជាក់ត្រូវបានបើកហើយ</translation>
 <translation id="6557784757915238407">APN គឺជាប្រភេទ <ph name="ATTACH" />។</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">កែសម្រួល</translation>
 <translation id="7182063559013288142">ហតស្ប៉តដែលភ្ជាប់បានភ្លាមៗ</translation>
 <translation id="7184043045742675738">ចុច​លើ​គ្រាប់ចុច​ណា​មួយ ដើម្បី​ប្ដូរ​ប៊ូតុង​របស់​អ្នក​តាមបំណង។ ប្ដូរទីតាំងគ្រាប់ចុច ដោយ​ប្រើ​កណ្ដុរ ឬ​គ្រាប់ចុច​ព្រួញ។</translation>
+<translation id="7187669805838282391">នៅថ្ងៃពុធ</translation>
 <translation id="7206979415662233817">លក្ខខណ្ឌ​ប្រើប្រាស់</translation>
 <translation id="7210635925306941239">ស៊ីលៀប</translation>
 <translation id="7212547870105584639">គ្រប់គ្រង​ការកំណត់ APN បណ្ដាញ។ APN បង្កើត​ការតភ្ជាប់​រវាង​បណ្ដាញ​ចល័ត និង​អ៊ីនធឺណិត។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@
 <translation id="7388959671917308825">ផ្ទាំងប៉ះដែលបានភ្ជាប់​មកជាមួយ​ស្រាប់</translation>
 <translation id="7397270852490618635">បិទ​រចនាប័ទ្ម​ភ្លឺ</translation>
 <translation id="7401543881546089382">លុបផ្លូវកាត់</translation>
+<translation id="7405493795721832710">អាចដំឡើងកំណែ <ph name="DEVICE_NAME" /> បានហើយ</translation>
 <translation id="741244894080940828">ការបំប្លែង</translation>
 <translation id="7415801143053185905">ការពន្យារ HTTP ខ្ពស់ខ្លាំង</translation>
 <translation id="7425037327577270384">ជួយខ្ញុំក្នុងការសរសេរ</translation>
@@ -1325,6 +1335,7 @@
 <translation id="7500205272584643581">អនុញ្ញាតឱ្យ​កម្មវិធី​ថតសំឡេង​ចាប់ដឹង និង​ដាក់ស្លាក​អ្នកនិយាយ​ទេ?</translation>
 <translation id="7501957181231305652">ឬ</translation>
 <translation id="7502658306369382406">អាសយដ្ឋាន IPv6</translation>
+<translation id="7503342217608032738">មិនអាចប្រើឧបករណ៍បានទេ</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" />ពណ៌<ph name="FLOWER_COLOR" /></translation>
 <translation id="7513770521371759388">ក្រោម</translation>
 <translation id="7514365320538308">ទាញយក</translation>
@@ -1337,6 +1348,8 @@
 <translation id="7544853251252956727">ច្របល់</translation>
 <translation id="7550715992156305117">ការធ្វើតេស្ត​តាមការកំណត់</translation>
 <translation id="7551123448725492271">ឧបករណ៍គឺជាឧបករណ៍សំឡេង។</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />អ្នកគ្រប់គ្រង <ph name="MANAGER" /> បានកំណត់ពេលដែលអាចប្រើ <ph name="DEVICE_TYPE" /> នេះបាន។<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />អ្នកនឹងអាចប្រើឧបករណ៍នេះម្ដងទៀត<ph name="DAY" /> ម៉ោង <ph name="TIME" />។<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">មើលរូបថតអេក្រង់សាកល្បង</translation>
 <translation id="7561454561030345039">សកម្មភាពនេះត្រូវបានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ត្រូវបានចាប់ផ្តើមដោយស្វ័យប្រវត្តិ}other{កម្មវិធីចំនួន # ត្រូវបានចាប់ផ្ដើមដោយស្វ័យប្រវត្តិ}}</translation>
 <translation id="7994702968232966508">វិធីសាស្ត្រ EAP</translation>
 <translation id="8004582292198964060">កម្មវិធីរុករក</translation>
+<translation id="8010765388850538088">ស្វែងយល់​បន្ថែម​អំពី AI ដែលមានសមត្ថភាពបង្កើត</translation>
 <translation id="8017679124341497925">បាន​កែសម្រួល​ផ្លូវកាត់</translation>
 <translation id="802154636333426148">បានបរាជ័យក្នុងការទាញយក</translation>
 <translation id="8028993641010258682">ទំហំ</translation>
@@ -1434,6 +1448,7 @@
 <translation id="8045012663542226664">ប៊ូតុងបិទ/បើកសំឡេងមីក្រូហ្វូន</translation>
 <translation id="8054112564438735763">ត្នោត​ខ្ចី</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" />ពណ៌<ph name="CHARACTERS_COLOR" />នៅលើផ្ទៃខាងក្រោយពណ៌<ph name="CHARACTERS_BACKGROUND" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN ត្រូវបាន​ភ្ជាប់។</translation>
 <translation id="8067208048261192356">ត្នោត</translation>
 <translation id="8067224607978179455">លុប<ph name="ACTION_NAME" /></translation>
@@ -1537,6 +1552,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ក្រុមហ៊ុនសេវាទូរសព្ទ​របស់អ្នកអាច​តម្រូវឱ្យមានជម្រើសនេះ ដើម្បីភ្ជាប់ជាមួយ​បណ្ដាញរបស់ក្រុមហ៊ុននោះ។ សូមទាក់ទងក្រុមហ៊ុន​សេវាទូរសព្ទរបស់អ្នក ដើម្បីទទួលបាន​ព័ត៌មានលម្អិត។</translation>
 <translation id="8576249514688522074">មិនបាន​ចាប់​ផ្ដើម</translation>
+<translation id="8584654835905316966">តម្រូវឱ្យចាប់ផ្ដើម​ឡើងវិញ ដើម្បីបញ្ចប់ការដំឡើងកម្មវិធី​បង្កប់សម្រាប់ <ph name="DEVICE_NAME" /> ទៅកំណែ <ph name="VERSION" />។ កុំព្យូទ័ររបស់អ្នកប្រហែលជាចាប់​ផ្ដើម​ឡើង​វិញច្រើនដង។ លក្ខណៈដំណើរការនេះត្រូវបានរំពឹងទុក។</translation>
 <translation id="8593058461203131755">ផ្អាក​មេឌៀ</translation>
 <translation id="8620617069779373398">ស្ថានភាពរ៉ូមីង</translation>
 <translation id="8626489604350149811">សកម្មភាព​ច្រើន​ទៀត​សម្រាប់ <ph name="APN_NAME" /></translation>
@@ -1671,6 +1687,7 @@
 <translation id="917720651393141712">ធ្វើតេស្ត</translation>
 <translation id="9188992814426075118">ក្ដារចុច​របស់អ្នក​អាច​ត្រូវគ្នា​ជាមួយ​ផ្ទាំង​រូបភាព​របស់អ្នក​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="9189000703457422362">មិនអាច​ភ្ជាប់ទៅ​បណ្ដាញនេះ ដោយប្រើ APN ដែលបាន​រកឃើញ​ដោយស្វ័យប្រវត្តិ​ទេ។ សូម​ទាក់ទង​ទៅក្រុមហ៊ុន​សេវាទូរសព្ទចល័ត​របស់​អ្នក ដើម្បីទទួល​បាន​ព័ត៌មាន​បន្ថែម។</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">គ្រាប់ចុចដងបញ្ជាដែលបានជ្រើសរើសគឺ <ph name="KEYS" />។ ចុចលើប៊ូតុងនេះ ដើម្បីកែប៊ូតុងបញ្ជា</translation>
 <translation id="9204237731135241582">មិនអាចទាក់ទងច្រកពីកម្មវិធី Android បានទេ</translation>
