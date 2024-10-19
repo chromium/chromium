@@ -21,8 +21,7 @@ namespace {
 
 // Histogram suffix used by ImportantFileWriter for recording seed file write
 // information.
-// TODO(crbug.com/369080917): Add this back when we begin writing.
-// constexpr char kSeedWriterHistogramSuffix[] = "VariationsSeedsV1";
+constexpr char kSeedWriterHistogramSuffix[] = "VariationsSeedsV1";
 
 // Returns true if a seed should be written to its new storage.
 bool ShouldWriteToNewSeedStorage(version_info::Channel channel) {
@@ -42,7 +41,7 @@ std::optional<std::string> DoSerialize(std::string seed_data) {
 // Returns the file path used to store a seed. If `seed_file_dir` is empty, an
 // empty file path is returned.
 base::FilePath GetFilePath(const base::FilePath& seed_file_dir,
-                           const base::FilePath::CharType* filename) {
+                           base::FilePath::StringPieceType filename) {
   return seed_file_dir.empty() ? base::FilePath()
                                : seed_file_dir.Append(filename);
 }
@@ -52,7 +51,7 @@ base::FilePath GetFilePath(const base::FilePath& seed_file_dir,
 SeedReaderWriter::SeedReaderWriter(
     PrefService* local_state,
     const base::FilePath& seed_file_dir,
-    const base::FilePath::CharType* seed_filename,
+    base::FilePath::StringPieceType seed_filename,
     const version_info::Channel channel,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner)
     : local_state_(local_state),
@@ -62,7 +61,7 @@ SeedReaderWriter::SeedReaderWriter(
   if (!seed_file_dir.empty()) {
     seed_writer_ = std::make_unique<base::ImportantFileWriter>(
         GetFilePath(seed_file_dir, seed_filename), file_task_runner_,
-        std::string());
+        kSeedWriterHistogramSuffix);
   }
 }
 
@@ -73,11 +72,13 @@ SeedReaderWriter::~SeedReaderWriter() {
   }
 }
 
-void SeedReaderWriter::StoreValidatedSeed(const std::string& seed_data) {
+void SeedReaderWriter::StoreValidatedSeed(
+    const std::string& compressed_seed_data,
+    const std::string& base64_seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->SetString(prefs::kVariationsCompressedSeed, seed_data);
+  local_state_->SetString(prefs::kVariationsCompressedSeed, base64_seed_data);
   if (ShouldWriteToNewSeedStorage(channel_)) {
-    ScheduleSeedFileWrite(seed_data);
+    ScheduleSeedFileWrite(compressed_seed_data);
   }
 }
 
@@ -102,11 +103,6 @@ void SeedReaderWriter::SetTimerForTesting(base::OneShotTimer* timer_override) {
   if (seed_writer_) {
     seed_writer_->SetTimerForTesting(timer_override);  // IN-TEST
   }
-}
-
-bool SeedReaderWriter::HasPendingWriteForTesting() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return seed_writer_ ? seed_writer_->HasPendingWrite() : false;
 }
 
 base::ImportantFileWriter::BackgroundDataProducerCallback

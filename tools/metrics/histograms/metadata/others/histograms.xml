@@ -148,6 +148,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".TransportSecurityPersister"
       summary="TransportSecurity state file"/>
   <variant name=".TrustedVault" summary="Trusted Vault file"/>
+  <variant name=".VariationsSeedsV1" summary="Variations seeds data files"/>
 </variants>
 
 <variants name="InterestGroupRequestType">

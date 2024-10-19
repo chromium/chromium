@@ -157,6 +157,11 @@ StoreSeedResult Uncompress(const std::string& compressed, std::string* result) {
 }
 }  // namespace
 
+ValidatedSeed::ValidatedSeed() = default;
+ValidatedSeed::~ValidatedSeed() = default;
+ValidatedSeed::ValidatedSeed(ValidatedSeed&& other) = default;
+ValidatedSeed& ValidatedSeed::operator=(ValidatedSeed&& other) = default;
+
 VariationsSeedStore::VariationsSeedStore(
     PrefService* local_state,
     std::unique_ptr<VariationsSafeSeedStore> safe_seed_store)
@@ -443,7 +448,7 @@ VariationsSeedStore::SeedProcessingResult::operator=(
 // for the next safe seed.
 void VariationsSeedStore::ClearPrefs(SeedType seed_type) {
   if (seed_type == SeedType::LATEST) {
-    local_state_->ClearPref(prefs::kVariationsCompressedSeed);
+    seed_reader_writer_->ClearSeed();
     local_state_->ClearPref(prefs::kVariationsLastFetchTime);
     local_state_->ClearPref(prefs::kVariationsSeedDate);
     local_state_->ClearPref(prefs::kVariationsSeedSignature);
@@ -690,9 +695,8 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
   // are identical.
   bool matches_safe_seed =
       (seed.base64_seed_data == safe_seed_store_->GetCompressedSeed());
-  // TODO(crbug.com/369080917): Use seed_reader_writer to store a seed.
-  local_state_->SetString(
-      prefs::kVariationsCompressedSeed,
+  seed_reader_writer_->StoreValidatedSeed(
+      seed.compressed_seed_data,
       matches_safe_seed ? kIdenticalToSafeSeedSentinel : seed.base64_seed_data);
 
   UpdateSeedDateAndLogDayChange(date_fetched);
@@ -847,12 +851,12 @@ StoreSeedResult VariationsSeedStore::ValidateSeedBytes(
       return StoreSeedResult::kFailedSignature;
   }
 
-  std::optional<std::string> base64_seed_data =
-      SeedBytesToCompressedBase64Seed(seed_bytes);
-  if (!base64_seed_data.has_value()) {
+  std::string compressed_seed_data;
+  if (!compression::GzipCompress(seed_bytes, &compressed_seed_data)) {
     return StoreSeedResult::kFailedGzip;
   }
-  result->base64_seed_data = base64_seed_data.value();
+  result->base64_seed_data = base::Base64Encode(compressed_seed_data);
+  result->compressed_seed_data = std::move(compressed_seed_data);
   result->base64_seed_signature = base64_seed_signature;
   result->parsed.Swap(&seed);
   return StoreSeedResult::kSuccess;

@@ -37,8 +37,17 @@ class VariationsSeed;
 
 // A seed that has passed validation.
 struct ValidatedSeed {
+  ValidatedSeed();
+  ~ValidatedSeed();
+
+  // Move-only to avoid expensive copies of seed data.
+  ValidatedSeed(ValidatedSeed&& other);
+  ValidatedSeed& operator=(ValidatedSeed&& other);
+
   // Gzipped and base-64 encoded serialized VariationsSeed.
   std::string base64_seed_data;
+  // Gzipped serialized VariationsSeed.
+  std::string compressed_seed_data;
   // A cryptographic signature on the seed_data.
   std::string base64_seed_signature;
   // The seed data parsed as a proto.
@@ -214,6 +223,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Fails if gzip encoding fails.
   static std::optional<std::string> SeedBytesToCompressedBase64Seed(
       const std::string& seed_bytes);
+
+  // Sets |seed_reader_writer_| to the given SeedReaderWriter for testing.
+  void SetSeedReaderWriterForTesting(
+      std::unique_ptr<SeedReaderWriter> seed_reader_writer) {
+    seed_reader_writer_ = std::move(seed_reader_writer);
+  }
 
  protected:
   // Verify an already-loaded |seed_data| along with its |base64_seed_signature|

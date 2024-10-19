@@ -29,16 +29,14 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
  public:
   // `local_state` provides access to the local state prefs. Must not be null.
   // `seed_file_dir` denotes the directory for storing a seed file. Note that
-  // Android Webview intentionally uses an empty path as it will continue using
-  // local state to store seeds.
-  // `seed_filename` is the name of the seed file to be appended to
-  // `seed_file_dir` (see GetFilePath()). Must not be null.
+  // Android Webview intentionally uses an empty path as it uses only local
+  // state to store seeds.
+  // `seed_filename` is the base name of a file in which seed data is stored.
   // `channel` describes the browser's release channel.
-  // `file_task_runner` handles IO-related tasks. Must not be
-  // null.
+  // `file_task_runner` handles IO-related tasks. Must not be null.
   SeedReaderWriter(PrefService* local_state,
                    const base::FilePath& seed_file_dir,
-                   const base::FilePath::CharType* seed_filename,
+                   base::FilePath::StringPieceType seed_filename,
                    const version_info::Channel channel,
                    scoped_refptr<base::SequencedTaskRunner> file_task_runner =
                        base::ThreadPool::CreateSequencedTaskRunner(
@@ -50,19 +48,17 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
 
   ~SeedReaderWriter() override;
 
-  // Schedules a write of `serialized_data` to disk. For some clients (see
-  // ShouldWriteToNewSeedStorage()), two writes are scheduled.
-  void StoreValidatedSeed(const std::string& serialized_data);
+  // Schedules a write of `base64_seed_data` to local state. For some clients
+  // (see ShouldWriteToNewSeedStorage()), another write using
+  // `compressed_seed_data` is scheduled to a seed file.
+  void StoreValidatedSeed(const std::string& compressed_seed_data,
+                          const std::string& base64_seed_data);
 
   // Clears seed data by overwriting it with an empty string.
   void ClearSeed();
 
   // Overrides the timer used for scheduling writes with `timer_override`.
   void SetTimerForTesting(base::OneShotTimer* timer_override);
-
-  // Returns whether or not `seed_writer_` currently has a write
-  // scheduled/pending.
-  bool HasPendingWriteForTesting() const;
 
  private:
   // Returns the serialized data to be written to disk. This is done

@@ -4,6 +4,7 @@
 
 #include "components/variations/seed_reader_writer.h"
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
@@ -26,25 +27,27 @@ using ::testing::Values;
 
 const base::FilePath::CharType kSeedFilename[] = FILE_PATH_LITERAL("TestSeed");
 
-VariationsSeed CreateTestSeed() {
-  VariationsSeed seed;
-  seed.add_study()->set_name("TestStudy");
-  return seed;
+// Compresses `data` using Gzip compression.
+std::string Gzip(const std::string& data) {
+  std::string compressed;
+  CHECK(compression::GzipCompress(data, &compressed));
+  return compressed;
 }
 
-std::string SerializeSeed(const VariationsSeed& seed) {
+// Creates, serializes, and then Gzip compresses a test seed.
+std::string CreateCompressedVariationsSeed() {
+  VariationsSeed seed;
+  seed.add_study()->set_name("TestStudy");
   std::string serialized_seed;
   seed.SerializeToString(&serialized_seed);
-  return serialized_seed;
+  return Gzip(serialized_seed);
 }
 
 class SeedReaderWriterTest : public TestWithParam<version_info::Channel> {
  public:
   SeedReaderWriterTest() : file_writer_thread_("SeedReaderWriter Test thread") {
     file_writer_thread_.Start();
-    if (!temp_dir_.CreateUniqueTempDir()) {
-      ADD_FAILURE() << "Failed to create temp directory.";
-    }
+    CHECK(temp_dir_.CreateUniqueTempDir());
     temp_seed_file_path_ = temp_dir_.GetPath().Append(kSeedFilename);
     VariationsSeedStore::RegisterPrefs(local_state_.registry());
   }
@@ -71,21 +74,23 @@ TEST_P(SeedReaderWriterPreStableTest, WriteSeed) {
       GetParam(), file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
-  // Create and store seed. Note that the data format written here is contrived.
-  const std::string serialized_seed = SerializeSeed(CreateTestSeed());
-  seed_reader_writer.StoreValidatedSeed(serialized_seed);
+  // Create and store seed.
+  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  const std::string base64_compressed_seed =
+      base::Base64Encode(compressed_seed);
+  seed_reader_writer.StoreValidatedSeed(compressed_seed,
+                                        base64_compressed_seed);
 
   // Force write.
   timer_.Fire();
   file_writer_thread_.FlushForTesting();
 
-  // Verify seed stored correctly, should be found in both Local State prefs and
-  // the seed file.
+  // Verify that a seed was written to both Local State and a seed file.
   std::string seed_file_data;
-  EXPECT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
-  EXPECT_EQ(seed_file_data, serialized_seed);
+  ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
+  EXPECT_EQ(seed_file_data, compressed_seed);
   EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
-            serialized_seed);
+            base64_compressed_seed);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -103,19 +108,20 @@ TEST_P(SeedReaderWriterStableAndUnknownTest, WriteSeed) {
       GetParam(), file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
-  // Create and store seed. Note that the data format written here is contrived.
-  const std::string serialized_seed = SerializeSeed(CreateTestSeed());
-  seed_reader_writer.StoreValidatedSeed(serialized_seed);
+  // Create and store seed.
+  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  const std::string base64_compressed_seed =
+      base::Base64Encode(compressed_seed);
+  seed_reader_writer.StoreValidatedSeed(compressed_seed,
+                                        base64_compressed_seed);
 
   // Ensure there's no pending write.
-  EXPECT_FALSE(seed_reader_writer.HasPendingWriteForTesting());
-  ASSERT_FALSE(timer_.IsRunning());
+  EXPECT_FALSE(timer_.IsRunning());
 
   // Verify seed stored correctly, should only be found in Local State prefs.
-  std::string seed_file_data;
-  EXPECT_FALSE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
+  EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
   EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
-            serialized_seed);
+            base64_compressed_seed);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -134,17 +140,19 @@ TEST_P(SeedReaderWriterTest, EmptySeedFilePathIsValid) {
                                       file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
-  // Create and store seed. Note that the data format written here is contrived.
-  const std::string serialized_seed = SerializeSeed(CreateTestSeed());
-  seed_reader_writer.StoreValidatedSeed(serialized_seed);
+  // Create and store seed.
+  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  const std::string base64_compressed_seed =
+      base::Base64Encode(compressed_seed);
+  seed_reader_writer.StoreValidatedSeed(compressed_seed,
+                                        base64_compressed_seed);
 
   // Ensure there's no pending write.
-  EXPECT_FALSE(seed_reader_writer.HasPendingWriteForTesting());
-  ASSERT_FALSE(timer_.IsRunning());
+  EXPECT_FALSE(timer_.IsRunning());
 
   // Verify seed stored correctly, should only be found in Local State prefs.
   EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
-            serialized_seed);
+            base64_compressed_seed);
 }
 
 // Verifies that the latest seed is cleared from both Local State and its seed
@@ -156,17 +164,18 @@ TEST_P(SeedReaderWriterTest, ClearSeed) {
       GetParam(), file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
-  // Create and store seed. Note that the data format written here is contrived.
-  const std::string serialized_seed = SerializeSeed(CreateTestSeed());
-  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, serialized_seed));
-  local_state_.SetString(prefs::kVariationsCompressedSeed, serialized_seed);
+  // Create and store seed.
+  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
+  local_state_.SetString(prefs::kVariationsCompressedSeed,
+                         base::Base64Encode(compressed_seed));
 
   // Clear seed and force write.
   seed_reader_writer.ClearSeed();
   timer_.Fire();
   file_writer_thread_.FlushForTesting();
 
-  // Verify seed cleared correctly in both Local State prefs and the seed file.
+  // Verify seed cleared correctly in both Local State prefs and a seed file.
   std::string seed_file_data;
   ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
   EXPECT_THAT(seed_file_data, IsEmpty());
