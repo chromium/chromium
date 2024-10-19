@@ -52,6 +52,8 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_features.h"
 
 using message_center::MessageCenter;
 
@@ -152,7 +154,8 @@ class AccessibilityControllerTest : public AshTestBase {
                               ::features::kAccessibilityMouseKeys,
                               ::features::
                                   kAccessibilityCaretBlinkIntervalSetting,
-                              ::features::kAccessibilityFlashScreenFeature},
+                              ::features::kAccessibilityFlashScreenFeature,
+                              ::features::kOverlayScrollbarsOSSetting},
         /*disabled_features=*/{});
     AshTestBase::SetUp();
   }
@@ -359,6 +362,32 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityFlashNotificationsEnabled));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityFlashNotificationsColor));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityOverlayScrollbarEnabled));
+}
+
+TEST_F(AccessibilityControllerTest, SetAlwaysShowScrollbarEnabled) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  EXPECT_FALSE(controller->always_show_scrollbar().enabled());
+
+  TestAccessibilityObserver observer;
+  controller->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  controller->always_show_scrollbar().SetEnabled(true);
+  EXPECT_TRUE(controller->always_show_scrollbar().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosAlwaysShowScrollbar", 0);
+  EXPECT_TRUE(ui::NativeTheme::GetPrefersAlwaysShowScrollbar());
+
+  controller->always_show_scrollbar().SetEnabled(false);
+  EXPECT_FALSE(controller->always_show_scrollbar().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosAlwaysShowScrollbar", 1);
+  EXPECT_FALSE(ui::NativeTheme::GetPrefersAlwaysShowScrollbar());
+
+  controller->RemoveObserver(&observer);
 }
 
 TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {

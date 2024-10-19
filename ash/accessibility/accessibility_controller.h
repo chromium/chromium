@@ -253,6 +253,7 @@ class ASH_EXPORT AccessibilityController
   base::WeakPtr<AccessibilityController> GetWeakPtr();
 
   // Getters for the corresponding features.
+  Feature& always_show_scrollbar() const;
   Feature& autoclick() const;
   Feature& caret_highlight() const;
   Feature& color_correction() const;

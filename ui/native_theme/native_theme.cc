@@ -31,6 +31,9 @@ static constexpr base::TimeDelta kDefaultCaretBlinkInterval =
     base::Milliseconds(500);
 }
 
+// static
+bool NativeTheme::prefers_always_show_scrollbar_ = false;
+
 NativeTheme::MenuListExtraParams::MenuListExtraParams() = default;
 NativeTheme::TextFieldExtraParams::TextFieldExtraParams() = default;
 

@@ -30,6 +30,7 @@
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_features.h"
 #include "ui/native_theme/native_theme_fluent.h"
+#include "ui/native_theme/native_theme_utils.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
 namespace ui {

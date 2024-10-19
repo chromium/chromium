@@ -144,6 +144,9 @@ struct FeatureDialogData {
 
 // A static array describing each feature.
 const FeatureData kFeatures[] = {
+    {FeatureType::kAlwaysShowScrollbar,
+     prefs::kAccessibilityOverlayScrollbarEnabled, nullptr, 0,
+     /*toggleable_in_quicksettings=*/false},
     {FeatureType::kAutoclick, prefs::kAccessibilityAutoclickEnabled,
      &kSystemMenuAccessibilityAutoClickIcon,
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_AUTOCLICK},
@@ -989,6 +992,9 @@ void AccessibilityController::Feature::LogDurationMetric() {
 
   std::string feature_duration_metric = "Accessibility.";
   switch (type_) {
+    case FeatureType::kAlwaysShowScrollbar:
+      feature_duration_metric += "CrosAlwaysShowScrollbar";
+      break;
     case FeatureType::kAutoclick:
       feature_duration_metric += "CrosAutoclick";
       break;
@@ -1541,10 +1547,9 @@ void AccessibilityController::RegisterProfilePrefs(
     registry->RegisterIntegerPref(prefs::kAccessibilityFlashNotificationsColor,
                                   kDefaultFlashNotificationsColor);
   }
-  if (::features::IsOverlayScrollbarOSSettingEnabled()) {
-    registry->RegisterBooleanPref(prefs::kAccessibilityOverlayScrollbarEnabled,
+
+  registry->RegisterBooleanPref(prefs::kAccessibilityOverlayScrollbarEnabled,
                                   false);
-  }
 }
 
 void AccessibilityController::Shutdown() {
@@ -1611,6 +1616,11 @@ AccessibilityController::GetEnabledFeaturesInQuickSettings() const {
 
 base::WeakPtr<AccessibilityController> AccessibilityController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+AccessibilityController::Feature&
+AccessibilityController::always_show_scrollbar() const {
+  return GetFeature(FeatureType::kAlwaysShowScrollbar);
 }
 
 AccessibilityController::Feature& AccessibilityController::autoclick() const {
@@ -3642,6 +3652,10 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
     case FeatureType::kReducedAnimations:
       gfx::Animation::SetPrefersReducedMotionForA11y(
           reduced_animations().enabled());
+      break;
+    case FeatureType::kAlwaysShowScrollbar:
+      ui::NativeTheme::SetPrefersAlwaysShowScrollbar(
+          always_show_scrollbar().enabled());
       break;
     case FeatureType::kSelectToSpeak:
       select_to_speak_state_ = SelectToSpeakState::kSelectToSpeakStateInactive;

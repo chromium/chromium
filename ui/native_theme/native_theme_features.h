@@ -26,9 +26,10 @@ NATIVE_THEME_EXPORT BASE_DECLARE_FEATURE(kFluentOverlayScrollbar);
 
 namespace ui {
 
-NATIVE_THEME_EXPORT bool IsOverlayScrollbarEnabled();
-NATIVE_THEME_EXPORT bool IsFluentScrollbarEnabled();
 NATIVE_THEME_EXPORT bool IsFluentOverlayScrollbarEnabled();
+NATIVE_THEME_EXPORT bool IsFluentScrollbarEnabled();
+
+NATIVE_THEME_EXPORT bool IsOverlayScrollbarEnabledByFeatureFlag();
 
 }  // namespace ui
 

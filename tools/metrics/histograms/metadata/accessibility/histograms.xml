@@ -1127,6 +1127,7 @@ chromium-metrics-reviews@google.com.
     out or turning off the machine, or when they disable the feature.
   </summary>
   <token key="FeatureName" variants="BaseCrosAccessibilityFeatures">
+    <variant name="AlwaysShowScrollbar"/>
     <variant name="Autoclick"/>
     <variant name="CursorColor"/>
     <variant name="FlashNotifications"/>
@@ -1156,6 +1157,8 @@ even if they fit the naming pattern. -->
         summary="to always show the Chrome OS Accessibility Menu, regardless
                  of the state of a11y features. Warning: this histogram was
                  expired 2023-11-30 to 2024-02-29, data might be missing."/>
+    <variant name="AlwaysShowScrollbar"
+        summary="to always show the scrollbar."/>
     <variant name="Autoclick"
         summary="- Warning: this histogram was expired 2021-12-31 to
                  2022-07-07, and 2023-11-30 to 2024-02-29, data might be

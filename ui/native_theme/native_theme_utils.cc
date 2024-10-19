@@ -6,6 +6,8 @@
 
 #include <string_view>
 
+#include "ui/native_theme/native_theme_features.h"
+
 namespace ui {
 
 std::string_view NativeThemeColorSchemeName(
@@ -23,6 +25,11 @@ std::string_view NativeThemeColorSchemeName(
       NOTREACHED_IN_MIGRATION() << "Invalid NativeTheme::ColorScheme";
       return "<invalid>";
   }
+}
+
+bool IsOverlayScrollbarEnabled() {
+  return IsOverlayScrollbarEnabledByFeatureFlag() &&
+         NativeTheme::IsOverlayScrollbarEnabledByOSSetting();
 }
 
 }  // namespace ui

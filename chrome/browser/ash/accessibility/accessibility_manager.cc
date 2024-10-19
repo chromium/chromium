@@ -1980,6 +1980,10 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
     base::UmaHistogramBoolean("Accessibility.CrosFaceGaze",
                               IsFaceGazeEnabled());
   }
+  if (::features::IsOverlayScrollbarOSSettingEnabled()) {
+    base::UmaHistogramBoolean("Accessibility.CrosAlwaysShowScrollbar",
+                              IsOverlayScrollbarEnabled());
+  }
 }
 
 void AccessibilityManager::PlayVolumeAdjustSound() {
