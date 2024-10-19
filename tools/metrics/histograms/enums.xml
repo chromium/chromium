@@ -22778,6 +22778,7 @@ from previous Chrome versions.
   <int value="1102780374" label="ClickToCallDetectionV2:disabled"/>
   <int value="1104206686" label="UseMultiPlaneFormatForHardwareVideo:enabled"/>
   <int value="1104948452" label="manual-enhanced-bookmarks-optout"/>
+  <int value="1105058168" label="CrosSafetyService:enabled"/>
   <int value="1105182444"
       label="ChromeCleanupScanCompletedNotification:disabled"/>
   <int value="1105439588" label="enable-swipe-selection"/>
@@ -23351,6 +23352,7 @@ from previous Chrome versions.
   <int value="1319725131" label="enable-distance-field-text"/>
   <int value="1320201920" label="enable-touchpad-three-finger-click"/>
   <int value="1320450434" label="ArcUsbStorageUI:disabled"/>
+  <int value="1321935981" label="CrosSafetyService:disabled"/>
   <int value="1322013438" label="CrOSLateBootGravedigger:enabled"/>
   <int value="1323808967" label="PlaybackSpeedButton:disabled"/>
   <int value="1324043544" label="SyncSettingsCategorization:enabled"/>

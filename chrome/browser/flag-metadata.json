@@ -1831,6 +1831,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "cros-safety-service",
+    "owners": [ "chensa@google.com", "jmpollock@chromium.org", "cros-odml-foundations-eng@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "cros-soul",
     "owners": [ "cschlosser@chromium.org", "cros-privacy-features-dev@google.com" ],
     "expiry_milestone": 135

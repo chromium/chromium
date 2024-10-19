@@ -3586,6 +3586,9 @@ extern const char kCaptureModeGifRecordingDescription[];
 extern const char kCrosContentAdjustedRefreshRateName[];
 extern const char kCrosContentAdjustedRefreshRateDescription[];
 
+extern const char kCrosSafetyServiceName[];
+extern const char kCrosSafetyServiceDescription[];
+
 extern const char kCrosSoulName[];
 extern const char kCrosSoulDescription[];
 

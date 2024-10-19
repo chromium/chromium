@@ -10878,6 +10878,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBluetoothWifiQSPodRefreshDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kBluetoothWifiQSPodRefresh)},
 
+    {"cros-safety-service", flag_descriptions::kCrosSafetyServiceName,
+     flag_descriptions::kCrosSafetyServiceDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kCrosSafetyService)},
+
     {"mahi", flag_descriptions::kMahiName, flag_descriptions::kMahiDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(chromeos::features::kMahi)},
 

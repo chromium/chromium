@@ -6241,6 +6241,10 @@ const char kCrosContentAdjustedRefreshRateName[] =
 const char kCrosContentAdjustedRefreshRateDescription[] =
     "Allows the display to adjust the refresh rate in order to match content.";
 
+const char kCrosSafetyServiceName[] = "Safety Service on ChromeOS";
+const char kCrosSafetyServiceDescription[] =
+    "Enables trust and safety filtering for ChromeOS on-device features.";
+
 const char kCrosSoulName[] = "CrOS SOUL";
 const char kCrosSoulDescription[] = "Enable the CrOS SOUL feature.";
 
