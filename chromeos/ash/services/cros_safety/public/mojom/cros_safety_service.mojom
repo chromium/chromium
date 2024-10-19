@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 module ash.cros_safety.mojom;
 
@@ -14,6 +14,7 @@ import "chromeos/ash/services/cros_safety/public/mojom/cros_safety.mojom";
 enum GetCloudSafetySessionResult {
   kOk = 0,
   [Default] kGenericError = 1,
+  [MinVersion=1] kMantaServiceFailedToCreate = 2,
 };
 
 // This enum type identifies the result of retrieving the on device safety

@@ -14,17 +14,31 @@ static_library("cros_safety") {
     "cros_safety_service.h",
   ]
   deps = [
+    ":cloud_safety_session",
     "//ash/components/arc:arc_base_utils",
     "//ash/components/arc/mojom",
     "//ash/components/arc/session",
     "//base",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/services/cros_safety/public/mojom",
+    "//components/manta:manta",
     "//components/user_manager:user_manager",
   ]
 
   data_deps = [ ":mojo_service_manager_policy" ]
+}
+
+static_library("cloud_safety_session") {
+  sources = [
+    "cloud_safety_session.cc",
+    "cloud_safety_session.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos/ash/services/cros_safety/public/mojom",
+    "//components/manta",
+    "//mojo/public/cpp/bindings:bindings",
+  ]
 }
 
 copy("mojo_service_manager_policy") {
