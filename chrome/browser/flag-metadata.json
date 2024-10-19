@@ -916,7 +916,7 @@
   {
     "name": "back-forward-transitions",
     "owners": [ "liuwilliam@google.com", "chrome-seamless-core@google.com" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "back-gesture-activity-tab-provider",
