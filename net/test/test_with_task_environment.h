@@ -17,7 +17,7 @@ class TickClock;
 
 namespace net {
 
-class FileNetLogObserver;
+class TestNetLogManager;
 
 // Inherit from this class if a TaskEnvironment is needed in a test.
 // Use in class hierachies where inheritance from ::testing::Test at the same
@@ -78,7 +78,7 @@ class WithTaskEnvironment {
   void MaybeStartNetLog();
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<FileNetLogObserver> file_net_log_observer_;
+  std::unique_ptr<TestNetLogManager> net_log_manager_;
 };
 
 // Inherit from this class instead of ::testing::Test directly if a
