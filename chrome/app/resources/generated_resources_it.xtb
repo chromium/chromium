@@ -5047,6 +5047,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4602776638371779614">Questa scheda sta eseguendo attivamente la ricerca dei dispositivi Bluetooth</translation>
 <translation id="4605026046465576953">Impossibile aprire questa app perché non disponi dell'autorizzazione per eseguire app web isolate</translation>
 <translation id="4606551464649945562">Non consentire ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera</translation>
+<translation id="4606933160360542263">Combinazione di tasti personalizzata: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vuoi eliminare il gruppo di schede?}other{Vuoi eliminare i gruppi di schede?}}</translation>
 <translation id="4608500690299898628">&amp;Trova...</translation>
 <translation id="4610162781778310380">Si è verificato un errore in <ph name="PLUGIN_NAME" /></translation>
@@ -6282,6 +6283,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5517304475148761050">L'app richiede l'accesso al Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Rimuovi azione <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">È la pagina iniziale prevista?</translation>
 <translation id="5522156646677899028">Questa estensione contiene una grave vulnerabilità di sicurezza.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Il tuo amministratore ha installato un'estensione}other{Il tuo amministratore ha installato # estensioni}}</translation>
@@ -10267,6 +10269,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8429928917752180743">Altre opzioni per <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Mostra tocchi</translation>
 <translation id="843173223122814223">Crea sfondi con l'IA</translation>
+<translation id="8431977087510901105">Impostazioni del cursore reimpostate</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="8434109185104929038">Angolo lettura</translation>
 <translation id="8434480141477525001">Porta di debug NaCl</translation>

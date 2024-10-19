@@ -2542,6 +2542,7 @@ Questo criterio può essere impostato soltanto come criterio relativo agli utent
 <translation id="2872968825059227580">Disattiva il supporto delle GIF.</translation>
 <translation id="2874209944580848064">Nota per i dispositivi <ph name="PRODUCT_OS_NAME" /> che supportano le app Android:</translation>
 <translation id="287474029350993681">Disattiva la trasmissione di contenuti al dispositivo</translation>
+<translation id="2874983257003956579">Configura gli strumenti di gestione dei corsi</translation>
 <translation id="2875192972412983412">Consente di specificare il sottoinsieme di server di stampa a cui verranno inviate query sulle stampanti.
 
       Se viene usato questo criterio, gli utenti avranno a disposizione soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio.
@@ -2669,6 +2670,10 @@ comportamento dei tasti funzione e questa impostazione non sarà modificabile da
 Se un cookie è impostato per un dominio che corrisponde a uno dei filtri forniti, viene escluso dal trasferimento. I domini dei cookie vengono associati in base alle regole dei campi "host" descritte nella pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format, tutti gli altri campi vengono ignorati. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
 
 Il criterio <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> ha la precedenza.</translation>
+<translation id="2953447815703785478">Consente di specificare i certificati client a livello di dispositivo che dovrebbero essere registrati usando il
+protocollo di gestione del dispositivo.
+
+L'opzione dell'algoritmo chiave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> è supportata a partire dalla versione 132 di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2957506574938329824">Non consentire ad alcun sito di richiedere l'accesso ai dispositivi Bluetooth tramite l'API Web Bluetooth</translation>
 <translation id="2957513448235202597">Tipo di account per l'autenticazione <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Invia sempre i punti di accesso Wi-Fi al server durante le operazioni per stabilire il fuso orario</translation>
@@ -4501,6 +4506,7 @@ Se viene disattivato, gli utenti non possono monitorare i loro pacchetti su <ph 
       Questo criterio è stato rimosso nella versione M121 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="439661169333921592">Disattiva l'evidenziazione dell'elemento attivo tramite tastiera nella schermata di accesso</translation>
 <translation id="4397045637922200204">Disattiva recupero dell'account</translation>
+<translation id="4397157269508242312">La configurazione della policy specifica se gli utenti utilizzano gli strumenti di gestione dei corsi per inviare/ricevere contenuti, inviare/ricevere didascalie come studenti o insegnanti oppure se gli strumenti di gestione dei corsi sono disattivati per gli utenti.</translation>
 <translation id="4397464099112037398">Impostazione predefinita dell'autorizzazione per il posizionamento delle finestre</translation>
 <translation id="4398803806072237638">La sintassi <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> per la funzionalità di stato personalizzato CSS verrà sostituita da <ph name="CUSTOM_STATE_NEW_SYNTAX" /> in <ph name="PRODUCT_NAME" /> per conformarsi alle modifiche apportate in <ph name="FIREFOX_PRODUCT_NAME" /> e <ph name="SAFARI_PRODUCT_NAME" />. Questo criterio consente di attivare la sintassi deprecata precedente fino alla versione M133.
 
@@ -4968,6 +4974,7 @@ Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione 
 <translation id="4739596156184678950">Consenti il salvataggio dei file direttamente su <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Limita la modalità di stampa delle immagini di sfondo</translation>
 <translation id="4745232963710538589">Attiva l'estensione Insights per segnalare le metriche di utilizzo</translation>
+<translation id="4746394249367607432">Gli utenti potranno partecipare ed essere aggiunti a una sessione di gestione dei corsi. Gli insegnanti potranno inviare contenuti a questi utenti.</translation>
 <translation id="4749670563834935149">Consente di attivare <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL nella schermata di accesso e di blocco.
 
 La configurazione di questo criterio consente di specificare gli URL offerti da <ph name="PRODUCT_OS_NAME" /> per avviare il flusso di attestazione. Il secondo consente a questi siti web di ricevere dal dispositivo un insieme attestato di indicatori sensibili al contesto.
@@ -6264,6 +6271,10 @@ Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio
       Se il criterio viene impostato su Disattivato, la funzionalità di controllo ortografico viene disattivata da tutte le origini e gli utenti non potranno attivarla. I criteri <ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME" />, <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> e <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> non hanno effetto se questo criterio viene impostato su Falso.
 
       Se il criterio non viene configurato, gli utenti possono attivare o disattivare la funzionalità di controllo ortografico nelle impostazioni relative alla lingua. </translation>
+<translation id="5655060841667911118">Consente di specificare i certificati client che dovrebbero essere registrati usando il protocollo
+di gestione del dispositivo.
+
+L'opzione dell'algoritmo chiave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> è supportata a partire dalla versione 132 di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5655553344896004108">Consenti l'utilizzo dell'API U2F Security Key deprecata</translation>
 <translation id="5656177735561364047">Attiva la funzione Appunti condivisi</translation>
 <translation id="5657752663637568277">Il criterio consente di stabilire se gli avvisi relativi al ritiro di <ph name="CLOUD_PRINT_NAME" /> vengono mostrati agli utenti nella finestra di anteprima di stampa o nelle pagine di impostazioni.
@@ -7579,6 +7590,7 @@ Le modifiche al criterio vengono applicate solo mentre ARC non è in esecuzione,
 <translation id="6607983779935460461">Supporto dell'URL dei dati per SVGUseElement.</translation>
 <translation id="6609867253856597039">Imposta l'esperienza utente delle funzionalità disattivate</translation>
 <translation id="6614557704487944013">Consenti agli utenti di usare il browser <ph name="LACROS_NAME" /></translation>
+<translation id="6614648642325603511">L'algoritmo per la generazione di coppie di chiavi. L'opzione EC è supportata a partire dalla versione 132.</translation>
 <translation id="661610294649586421">Non consentire le richieste API WebAuthn su siti con certificati TLS inaccessibili.</translation>
 <translation id="6617589895942747919">Ora di inizio dell'intervallo (valore inserito incluso).</translation>
 <translation id="6621830999036927230">Se questo criterio viene configurato, l'host di accesso remoto usa l'URL indicato per convalidare i token di autenticazione dei client di accesso remoto allo scopo di accettare connessioni. Questa funzionalità viene disattivata se il criterio viene lasciato vuoto o se non viene configurato.
@@ -7873,6 +7885,7 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 
       Questo criterio è deprecato, al suo posto utilizza <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6847379587945465889">Attiva il trasferimento dei cookie SSO SAML nella sessione utente durante l'accesso</translation>
+<translation id="6847810176590195243">Gli utenti potranno collegare e distribuire contenuti agli studenti. Questo include l'invio di contenuti web e la disponibilità di traduzioni/sottotitoli in tempo reale della voce dell'insegnante per gli studenti.</translation>
 <translation id="684856667300805181">Questa norma è stata rimossa in <ph name="PRODUCT_NAME" /> 68 e sostituita da <ph name="ARC_GLS_POLICY_NAME" />.</translation>
 <translation id="684882090733715433">Reporting sugli eventi del browser</translation>
 <translation id="6850300477973481112">Impostazioni del connettore di scrivania</translation>
@@ -9094,6 +9107,7 @@ Per maggiori informazioni sul criterio <ph name="IEEM_SITELIST_POLICY" /> di Int
 <translation id="782661371433719637">Non consentire a nessun sito di richiedere l'accesso di lettura di file e directory tramite l'API file system</translation>
 <translation id="7827127381981620448">App della piattaforma</translation>
 <translation id="7829436838673974723">Consenti alle pagine di inviare richieste XHR sincrone durante la chiusura delle pagine</translation>
+<translation id="7829546795016635784">Gli utenti non possono utilizzare nessuna delle funzionalità di gestione dei corsi né essere aggiunti a una sessione di gestione dei corsi.</translation>
 <translation id="782978857350824974">Consenti le richieste di autenticazione web su siti con certificati TLS inaccessibili.</translation>
 <translation id="7830775338190021763">Attiva la funzionalità di trasferimento di file nelle sessioni aziendali di assistenza da remoto</translation>
 <translation id="7832225468415136704">Impedisci a Chrome Software Cleaner di eseguire scansioni periodiche del sistema e disattiva le scansioni manuali</translation>
@@ -10904,6 +10918,7 @@ L'impostazione predefinita è RollbackDisabled.</translation>
       Per impostazione predefinita, l'host browser esegue il rendering, ma in alternativa è possibile sostituire questa impostazione e far sì che <ph name="PRODUCT_FRAME_NAME" /> esegua il rendering delle pagine HTML per impostazione predefinita.</translation>
 <translation id="944817693306670849">Imposta dimensioni cache su disco</translation>
 <translation id="949192525372487705">Blocca il passaggio a un gestore delle password di terze parti</translation>
+<translation id="956107219808875608">Consente di controllare le impostazioni degli strumenti di gestione dei corsi.</translation>
 <translation id="957322141096206402">La risoluzione DNS di sistema può essere eseguita all'interno o all'esterno del processo di rete, a seconda della configurazione di sistema e dei flag funzionalità.</translation>
 <translation id="957778406002650056">L'URL da cui è possibile scaricare l'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="957920984193041197">Consenti alle pagine di mostrare popup durante l'unload</translation>
@@ -10916,6 +10931,7 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="966425658642788645">Applica il comportamento predefinito</translation>
 <translation id="971677226939413180">L'opzione Stampa come immagine non può essere selezionata dagli utenti</translation>
 <translation id="974349541138387272">Specifica il modello URI del resolver DNS over HTTPS desiderato</translation>
+<translation id="978619365985286086">Impostazioni degli strumenti di gestione dei corsi</translation>
 <translation id="978658824596356870">Formato dell'orologio di 24 ore</translation>
 <translation id="979467274961593903">Non consentire l'uso del debug remoto</translation>
 <translation id="980218166381006412">Se il criterio viene impostato su Attivato, la modalità in background viene abilitata. Nella modalità in background, all'accesso al sistema operativo viene avviato un processo <ph name="PRODUCT_NAME" /> che rimane in esecuzione quando viene chiusa l'ultima finestra del browser, consentendo alle app in background e alla sessione di navigazione di rimanere attive. Nella barra delle applicazioni viene visualizzata un'icona per il processo in background che consente di chiuderlo in qualsiasi momento.

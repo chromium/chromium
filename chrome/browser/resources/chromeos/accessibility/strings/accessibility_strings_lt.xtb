@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="100421257800558142">Paspausti rodyklės dešinėn klavišą</translation>
 <translation id="100506692671054486">nėra ankstesnės komandos</translation>
 <translation id="1009046985747440431">Jei norite naršyti, paspauskite rodyklę aukštyn arba žemyn; kad suaktyvintumėte, paspauskite „Enter“</translation>
 <translation id="1011903154582639569">Radę klavišą pakelkite, kad įvestumėte</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Perjungimo mygtukas</translation>
 <translation id="1299774449519412690">Šviesi dangaus mėlynumo spalva</translation>
 <translation id="1303806948938513162">Kad pasiektumėte „ChromeVox“ meniu, palieskite keturiais pirštais</translation>
+<translation id="1304162325618937178">Paspausti tarpo klavišą</translation>
 <translation id="1313373992684326101">Pereiti į ankstesnę skiltį. Pavyzdžiai apima būsenos dėklą ir paleidimo priemonę.</translation>
 <translation id="1315077335264761176">Lietimo orientacija</translation>
 <translation id="1325363694295259631">„<ph name="NAME" />“, meniu elemento akutės pasirinkimas atšauktas</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Rusva spalva</translation>
 <translation id="1618597272655350600">Paskelbiamas išsamus esamos pozicijos aprašas</translation>
 <translation id="1627222324347828322">Blyški balta spalva</translation>
+<translation id="1632810692616643246">Įjungti slinkimo režimą arba išeiti iš jo</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ženklas daugiau}one{# ženklas daugiau}few{# ženklai daugiau}many{# greater than signs}other{# ženklų daugiau}}</translation>
 <translation id="1653266918374749391">Ankstesnė 3 lygio antraštė</translation>
 <translation id="1657616855184033958">Rodyti įvykių srauto filtrus</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Nėra ankstesnio valdiklio</translation>
 <translation id="2045606329038304310">Formos lauko valdymas</translation>
 <translation id="2063539687800151747">Epigrafas</translation>
+<translation id="2067158561093481039">Atlikti tinkintą klavišų derinį</translation>
 <translation id="2086961585857038472">Kitas žodis</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">lt</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Sodriai ruda spalva</translation>
 <translation id="2199994615414171367">Ankstesnis matematinis raktas</translation>
 <translation id="2203046366315513658">Sumažinti vertę</translation>
+<translation id="2206580811360135054">Rodyti arba slėpti langų apžvalgą</translation>
 <translation id="2216790501338699346">Nuorodos URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Perkelti atgal per vieną simbolį</translation>
 <translation id="2220529011494928058">Pranešti apie problemą</translation>
+<translation id="2239819015858077439">Paspausti rodyklės žemyn klavišą</translation>
 <translation id="2243633977138166243">Paspausdami rodyklę kairėn arba dešinėn naršykite, „Enter“ – suaktyvinkite</translation>
 <translation id="224426591676115802">Nepasiekiamos balso paslaugos šia kalba: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Stabdomas mokomasis režimas</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Sodriai raudona spalva</translation>
 <translation id="4432896207833262240">Pažymėtas turinys</translation>
 <translation id="4437615272777527928">Įveskite, jei norite ieškoti meniu. Naršykite rezultatus rodyklėmis aukštyn ir žemyn. Reguliuokite teksto žymeklį ir judėkite tarp meniu rodyklėmis dešinėn ir kairėn.</translation>
+<translation id="4441677939526091190">Paspausti rodyklės aukštyn klavišą</translation>
 <translation id="4453530046591759283">Jei norite pereiti į kitas ekrano dalis, pvz., įrankių juostas ar sistemos juostelę, paspauskite „Control“ + F1. F1 yra pirmasis klavišas dešinėje nuo klavišo „Escape“.</translation>
 <translation id="4457472090507035117">Pasirinkti dabartinį balsą:</translation>
 <translation id="4476183483923481720">nauja eilutė</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">„Chromebook“ jutiklinio ekrano pritaikymo neįgaliesiems funkcijų naudojimas</translation>
 <translation id="5655682562155942719">Praleisti komandas</translation>
 <translation id="56637627897541303">Teksto sritis</translation>
+<translation id="5666746275818170484">Paspausti rodyklės kairėn klavišą</translation>
 <translation id="5669637233317991674">Jei norite naršyti šią pamoką, paspauskite paieškos klavišą ir rodyklę dešinėn arba paieškos klavišą ir rodyklę kairėn</translation>
 <translation id="5677240841070992068">Dabartinė vietovė</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Iššokantysis mygtukas</translation>
 <translation id="7167657087543110">simbolio aidas</translation>
 <translation id="7173102181852295013">Sodriai mėlyna spalva</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Išskleista</translation>
 <translation id="7209751026933045237">Nėra kito šliaužiklio</translation>
 <translation id="7218782500591078391">Ryškiai geltona spalva</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">Regionas</translation>
 <translation id="8382679411218029383">Automatinis eilutės ir sąrašo užbaigimas</translation>
 <translation id="8394908167088220973">Leisti / pristabdyti mediją</translation>
+<translation id="8409502156784390079">Slinkimo režimas aktyvus</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8428603554127842284"><ph name="DEPTH" /> lygis</translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">Pamiršti</translation>
 <translation id="8989104346085848538">Jei norite sustabdyti bet kurią dabartinę „ChromeVox“ kalbą, paspauskite klavišą „Control“.</translation>
 <translation id="9014206344398081366">„ChromeVox“ mokymo programa</translation>
+<translation id="9034592733577768445">Valdymas pagal veidą pristabdytas</translation>
 <translation id="9040132695316389094">1 antraštė</translation>
 <translation id="9061884144798498064">Pasirinkti 8 taškų Brailio rašmenų lentelę:</translation>
 <translation id="9063946545000394379">eiti prie ankstesnio simbolio</translation>
