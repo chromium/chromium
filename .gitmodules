@@ -39,6 +39,7 @@
 	path = clank
 	url = https://chrome-internal.googlesource.com/clank/internal/apps
 	gclient-condition = checkout_android and checkout_src_internal
+	gclient-recursedeps = true
 [submodule "docs/website"]
 	path = docs/website
 	url = https://chromium.googlesource.com/website
@@ -125,6 +126,7 @@
 [submodule "third_party/angle"]
 	path = third_party/angle
 	url = https://chromium.googlesource.com/angle/angle
+	gclient-recursedeps = true
 [submodule "third_party/anonymous_tokens/src"]
 	path = third_party/anonymous_tokens/src
 	url = https://chromium.googlesource.com/external/github.com/google/anonymous-tokens
@@ -137,6 +139,7 @@
 [submodule "third_party/dawn"]
 	path = third_party/dawn
 	url = https://dawn.googlesource.com/dawn
+	gclient-recursedeps = true
 [submodule "third_party/highway/src"]
 	path = third_party/highway/src
 	url = https://chromium.googlesource.com/external/github.com/google/highway
@@ -205,10 +208,12 @@
 [submodule "third_party/devtools-frontend/src"]
 	path = third_party/devtools-frontend/src
 	url = https://chromium.googlesource.com/devtools/devtools-frontend
+	gclient-recursedeps = true
 [submodule "third_party/devtools-frontend-internal"]
 	path = third_party/devtools-frontend-internal
 	url = https://chrome-internal.googlesource.com/devtools/devtools-internal
 	gclient-condition = checkout_src_internal
+	gclient-recursedeps = true
 [submodule "third_party/dom_distiller_js/dist"]
 	path = third_party/dom_distiller_js/dist
 	url = https://chromium.googlesource.com/chromium/dom-distiller/dist
@@ -269,6 +274,7 @@
 	path = third_party/instrumented_libs
 	url = https://chromium.googlesource.com/chromium/third_party/instrumented_libraries
 	gclient-condition = checkout_instrumented_libraries
+	gclient-recursedeps = true
 [submodule "third_party/jszip/src"]
 	path = third_party/jszip/src
 	url = https://chromium.googlesource.com/external/github.com/Stuk/jszip
@@ -457,6 +463,7 @@
 [submodule "third_party/openscreen/src"]
 	path = third_party/openscreen/src
 	url = https://chromium.googlesource.com/openscreen
+	gclient-recursedeps = true
 [submodule "third_party/openxr/src"]
 	path = third_party/openxr/src
 	url = https://chromium.googlesource.com/external/github.com/KhronosGroup/OpenXR-SDK
@@ -750,6 +757,7 @@
 	path = components/optimization_guide/internal
 	url = https://chrome-internal.googlesource.com/chrome/components/optimization_guide
 	gclient-condition = checkout_src_internal
+	gclient-recursedeps = true
 [submodule "components/plus_addresses/resources/internal"]
 	path = components/plus_addresses/resources/internal
 	url = https://chrome-internal.googlesource.com/chrome/components/plus_addresses/resources
@@ -794,6 +802,7 @@
 	path = ios_internal
 	url = https://chrome-internal.googlesource.com/chrome/ios_internal
 	gclient-condition = checkout_ios and checkout_src_internal
+	gclient-recursedeps = true
 [submodule "remoting/host/installer/linux/internal"]
 	path = remoting/host/installer/linux/internal
 	url = https://chrome-internal.googlesource.com/chrome/remoting/host/installer/linux/internal
