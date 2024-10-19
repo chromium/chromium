@@ -2153,8 +2153,15 @@ void PdfViewWebPlugin::OnViewportChanged(
   const gfx::Size new_image_size =
       PaintManager::GetNewContextSize(old_image_size, plugin_rect_.size());
   if (new_image_size != old_image_size) {
-    image_data_.allocPixels(
-        SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(new_image_size)));
+    SkAlphaType alpha_type;
+    if (base::FeatureList::IsEnabled(
+            features::kPdfPaintManagerDrawsBackground)) {
+      alpha_type = kUnpremul_SkAlphaType;
+    } else {
+      alpha_type = kPremul_SkAlphaType;
+    }
+    image_data_.allocPixels(SkImageInfo::MakeN32(
+        new_image_size.width(), new_image_size.height(), alpha_type));
     first_paint_ = true;
   }
 

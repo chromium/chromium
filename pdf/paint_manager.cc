@@ -14,12 +14,14 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "pdf/paint_ready_rect.h"
+#include "pdf/pdf_features.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -285,7 +287,18 @@ void PaintManager::DoPaint() {
   }
 
   for (const auto& ready_rect : ready_now) {
-    SkRect skia_rect = gfx::RectToSkRect(ready_rect.rect());
+    const SkRect skia_rect = gfx::RectToSkRect(ready_rect.rect());
+
+    if (base::FeatureList::IsEnabled(
+            features::kPdfPaintManagerDrawsBackground)) {
+      // Paint the page's white background, and then paint the page's contents.
+      // If `ready_rect.image()` has transparencies, this is necessary to paint
+      // over the stale data in `skia_rect` in `surface_`.
+      SkPaint paint;
+      paint.setColor(SK_ColorWHITE);
+      surface_->getCanvas()->drawRect(skia_rect, paint);
+    }
+
     surface_->getCanvas()->drawImageRect(
         ready_rect.image(), skia_rect, skia_rect, SkSamplingOptions(), nullptr,
         SkCanvas::kStrict_SrcRectConstraint);

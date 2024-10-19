@@ -27,6 +27,12 @@ BASE_FEATURE(kPdfIncrementalLoading,
 
 BASE_FEATURE(kPdfOopif, "PdfOopif", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch in case this goes horribly wrong.
+// TODO(crbug.com/40216952): Remove after this lands safely in a Stable release.
+BASE_FEATURE(kPdfPaintManagerDrawsBackground,
+             "PdfPaintManagerDrawsBackground",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // "Partial loading" refers to loading only specific parts of the PDF.
 // TODO(crbug.com/40123601): Remove this once partial loading is fixed.
 BASE_FEATURE(kPdfPartialLoading,

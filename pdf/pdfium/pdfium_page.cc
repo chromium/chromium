@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include <algorithm>
 #include <memory>
@@ -13,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,6 +26,7 @@
 #include "pdf/accessibility_helper.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
+#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_ocr.h"
@@ -1766,29 +1769,38 @@ void PDFiumPage::RequestThumbnail(float device_pixel_ratio,
 Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   DCHECK(available());
 
+  FPDF_PAGE page = GetPage();
+  const bool has_alpha = !!FPDFPage_HasTransparency(page);
+  const int format = has_alpha ? FPDFBitmap_BGRA : FPDFBitmap_BGRx;
+  uint32_t fill_color;
+  if (base::FeatureList::IsEnabled(features::kPdfPaintManagerDrawsBackground)) {
+    fill_color = has_alpha ? 0x00000000 : 0xFFFFFFFF;
+  } else {
+    fill_color = 0xFFFFFFFF;
+  }
+
   Thumbnail thumbnail = GetThumbnail(device_pixel_ratio);
   const gfx::Size& image_size = thumbnail.image_size();
 
-  ScopedFPDFBitmap fpdf_bitmap(FPDFBitmap_CreateEx(
-      image_size.width(), image_size.height(), FPDFBitmap_BGRA,
-      thumbnail.GetImageData().data(), thumbnail.stride()));
+  // Create and initialize the bitmap.
+  ScopedFPDFBitmap fpdf_bitmap(
+      FPDFBitmap_CreateEx(image_size.width(), image_size.height(), format,
+                          thumbnail.GetImageData().data(), thumbnail.stride()));
 
-  // Clear the bitmap.
   FPDFBitmap_FillRect(fpdf_bitmap.get(), /*left=*/0, /*top=*/0,
-                      image_size.width(), image_size.height(),
-                      /*color=*/0xFFFFFFFF);
+                      image_size.width(), image_size.height(), fill_color);
 
   // The combination of the `FPDF_REVERSE_BYTE_ORDER` rendering flag and the
   // `FPDFBitmap_BGRA` format when initializing `fpdf_bitmap` results in an RGBA
   // rendering, which is the format required by HTML <canvas>.
   constexpr int kRenderingFlags = FPDF_ANNOT | FPDF_REVERSE_BYTE_ORDER;
-  FPDF_RenderPageBitmap(fpdf_bitmap.get(), GetPage(), /*start_x=*/0,
+  FPDF_RenderPageBitmap(fpdf_bitmap.get(), page, /*start_x=*/0,
                         /*start_y=*/0, image_size.width(), image_size.height(),
                         ToPDFiumRotation(PageOrientation::kOriginal),
                         kRenderingFlags);
 
   // Draw the forms.
-  FPDF_FFLDraw(engine_->form(), fpdf_bitmap.get(), GetPage(), /*start_x=*/0,
+  FPDF_FFLDraw(engine_->form(), fpdf_bitmap.get(), page, /*start_x=*/0,
                /*start_y=*/0, image_size.width(), image_size.height(),
                ToPDFiumRotation(PageOrientation::kOriginal), kRenderingFlags);
 

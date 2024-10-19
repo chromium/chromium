@@ -1179,7 +1179,6 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailForAnnotation) {
                         "signature_widget");
 }
 
-// TODO(crbug.com/40216952): The thumbnail should not be blank.
 TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailWithTransparency) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
