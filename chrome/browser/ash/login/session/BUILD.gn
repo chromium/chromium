@@ -95,6 +95,7 @@ static_library("session") {
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/tpm",
+    "//chromeos/ash/services/cros_safety",
     "//chromeos/constants",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/ui/base",

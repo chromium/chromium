@@ -480,6 +480,12 @@ BASE_FEATURE(kCrosPrivacyHubAppPermissionsV2,
              "CrosPrivacyHubAppPermissionsV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables cros safety service for trust and safety filtering for the text/image
+// output of on-device gen ai models.
+BASE_FEATURE(kCrosSafetyService,
+             "CrosSafetyService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables syncing attestation certificates to cryptauth for use by Cross Device
 // features, including Eche and Phone Hub.
 BASE_FEATURE(kCryptauthAttestationSyncing,
@@ -3654,6 +3660,10 @@ bool IsCrosPrivacyHubAppPermissionsV2Enabled() {
 
 bool IsCrosPrivacyHubLocationEnabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHub);
+}
+
+bool IsCrosSafetyServiceEnabled() {
+  return base::FeatureList::IsEnabled(kCrosSafetyService);
 }
 
 bool IsCrossDeviceFeatureSuiteAllowed() {

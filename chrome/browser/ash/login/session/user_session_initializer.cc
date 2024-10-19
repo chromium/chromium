@@ -41,6 +41,7 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/google/google_brand_chromeos.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -61,6 +62,7 @@
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/services/cros_safety/cros_safety_service.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/live_caption/caption_util.h"
 #include "components/prefs/pref_service.h"
@@ -190,6 +192,10 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
     FamilyUserMetricsServiceFactory::GetForBrowserContext(profile);
     if (chromeos::features::IsSparkyEnabled()) {
       ash::SparkyManagerServiceFactory::GetForProfile(profile);
+    }
+    if (features::IsCrosSafetyServiceEnabled()) {
+      cros_safety_service_ = std::make_unique<CrosSafetyService>(
+          manta::MantaServiceFactory::GetForProfile(profile));
     }
   }
 
