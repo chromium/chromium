@@ -281,8 +281,8 @@ TEST_F(AndroidTelemetryServiceTest, GetReport_ValidateAllFields) {
       .WillByDefault(testing::ReturnRefOfCopy(std::string(kItemHash)));
   ON_CALL(*download_item_, GetReceivedBytes())
       .WillByDefault(testing::Return(kItemReceivedBytes));
-  ON_CALL(*download_item_, GetTargetFilePath())
-      .WillByDefault(testing::ReturnRefOfCopy(
+  ON_CALL(*download_item_, GetFileNameToReportUser())
+      .WillByDefault(testing::Return(
           base::FilePath(FILE_PATH_LITERAL(kItemTargetFilePath))));
   g_browser_process->SetApplicationLocale("en_US");
   std::unique_ptr<ClientSafeBrowsingReportRequest> report =
