@@ -1612,9 +1612,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
       return;
     }
   } else if (delegate && form_structure && autofill_field &&
-             delegate->ShouldDisplayIph(*form_structure, *autofill_field)) {
-    client().ShowAutofillFieldIphForFeature(
-        field, AutofillClient::IphFeature::kPredictionImprovements);
+             delegate->ShouldDisplayIph(*form_structure, *autofill_field) &&
+             client().ShowAutofillFieldIphForFeature(
+                 field, AutofillClient::IphFeature::kPredictionImprovements)) {
     return;
   }
 

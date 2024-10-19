@@ -548,7 +548,7 @@ class MockAutofillClient : public TestAutofillClient {
               (FillingProduct, (const std::map<std::string, std::string>&)),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               ShowAutofillFieldIphForFeature,
               (const FormFieldData& field, AutofillClient::IphFeature feature),
               (override));

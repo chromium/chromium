@@ -179,6 +179,8 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     auto autofill_field_promo_controller =
         std::make_unique<MockAutofillFieldPromoController>();
     autofill_field_promo_controller_ = autofill_field_promo_controller.get();
+    ON_CALL(*autofill_field_promo_controller_, IsMaybeShowing)
+        .WillByDefault(Return(false));
     ON_CALL(*autofill_field_promo_controller_, GetFeaturePromo)
         .WillByDefault(ReturnRef(feature_promo));
     client()->SetAutofillFieldPromoTesting(
@@ -498,19 +500,44 @@ TEST_F(ChromeAutofillClientTest, EditAddressDialogFooter) {
                 base::ASCIIToUTF16(account->email)));
 }
 
+TEST_F(ChromeAutofillClientTest,
+       AutofillManualFallbackIPH_NotShownByPromoController) {
+  SetUpIphForTesting(feature_engagement::kIPHAutofillManualFallbackFeature);
+
+  EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_FALSE(client()->ShowAutofillFieldIphForFeature(
+      FormFieldData{}, AutofillClient::IphFeature::kManualFallback));
+}
+
 TEST_F(ChromeAutofillClientTest, AutofillManualFallbackIPH_IsShown) {
   SetUpIphForTesting(feature_engagement::kIPHAutofillManualFallbackFeature);
+
+  InSequence sequence;
+  EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
+      .WillOnce(Return(false));
   EXPECT_CALL(*autofill_field_promo_controller(), Show);
-  client()->ShowAutofillFieldIphForFeature(
-      FormFieldData{}, AutofillClient::IphFeature::kManualFallback);
+  EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(client()->ShowAutofillFieldIphForFeature(
+      FormFieldData{}, AutofillClient::IphFeature::kManualFallback));
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
   SetUpIphForTesting(
       feature_engagement::kIPHAutofillPredictionImprovementsFeature);
+
+  InSequence sequence;
+  EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
+      .WillOnce(Return(false));
   EXPECT_CALL(*autofill_field_promo_controller(), Show);
-  client()->ShowAutofillFieldIphForFeature(
-      FormFieldData{}, AutofillClient::IphFeature::kPredictionImprovements);
+  EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(client()->ShowAutofillFieldIphForFeature(
+      FormFieldData{}, AutofillClient::IphFeature::kPredictionImprovements));
 }
 
 TEST_F(ChromeAutofillClientTest,

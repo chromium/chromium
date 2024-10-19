@@ -517,8 +517,9 @@ class AutofillClient {
 
   // Attaches the IPH for `feature` to the `field`, on
   // platforms that it. If another IPH has been shown for the tab, the IPH is
-  // granteed not to be shown.
-  virtual void ShowAutofillFieldIphForFeature(
+  // granteed not to be shown. Returns `true` if the IPH bubble is shown after
+  // this method call, which includes the case when it was open before the call.
+  virtual bool ShowAutofillFieldIphForFeature(
       const FormFieldData& field,
       AutofillClient::IphFeature feature);
 
