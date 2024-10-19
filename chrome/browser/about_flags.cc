@@ -547,13 +547,6 @@ const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
 #endif  // ENABLE_VR
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kAndroidDefaultFontFamilyDevTesting[] = {
-    {"dev_testing", "true"}};
-
-const FeatureEntry::FeatureVariation kAndroidDefaultFontFamilyVariations[] = {
-    {"Use dev testing font families", kAndroidDefaultFontFamilyDevTesting,
-     std::size(kAndroidDefaultFontFamilyDevTesting), nullptr}};
-
 const FeatureEntry::FeatureParam kCCTAuthTabHttpsVerificationTimeout10000Ms[] =
     {{"verification_timeout_ms", "10000"}};
 const FeatureEntry::FeatureParam kCCTAuthTabHttpsVerificationTimeout1000Ms[] = {
@@ -7699,12 +7692,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidElegantTextHeightName,
      flag_descriptions::kAndroidElegantTextHeightDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidElegantTextHeight)},
-
-    {"android-google-sans-text", flag_descriptions::kAndroidGoogleSansTextName,
-     flag_descriptions::kAndroidGoogleSansTextDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidGoogleSansText,
-                                    kAndroidDefaultFontFamilyVariations,
-                                    "AndroidDefaultFontFamilyVariations")},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

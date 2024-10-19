@@ -15,7 +15,6 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
  * Class to load downloadable fonts async and emit histograms related to the availability of these
@@ -27,10 +26,6 @@ public class FontPreloader {
     private static FontPreloader sInstance;
 
     private static final Integer[] FONTS = {
-        R.font.chrome_google_sans, R.font.chrome_google_sans_medium, R.font.chrome_google_sans_bold
-    };
-
-    private static final Integer[] FONTS_V2 = {
         R.font.chrome_google_sans,
         R.font.chrome_google_sans_medium,
         R.font.chrome_google_sans_bold,
@@ -74,11 +69,7 @@ public class FontPreloader {
     }
 
     private FontPreloader() {
-        if (ChromeFeatureList.sAndroidGoogleSansText.isEnabled()) {
-            mFonts = FONTS_V2;
-        } else {
-            mFonts = FONTS;
-        }
+        mFonts = FONTS;
     }
 
     /**

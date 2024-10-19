@@ -21,7 +21,6 @@ BASE_DECLARE_FEATURE(kAndroidAppIntegration);
 BASE_DECLARE_FEATURE(kAndroidAppIntegrationWithFavicon);
 BASE_DECLARE_FEATURE(kAndroidBottomToolbar);
 BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
-BASE_DECLARE_FEATURE(kAndroidGoogleSansText);
 BASE_DECLARE_FEATURE(kAndroidHubFloatingActionButton);
 BASE_DECLARE_FEATURE(kAndroidHubSearch);
 BASE_DECLARE_FEATURE(kAndroidHubV2);

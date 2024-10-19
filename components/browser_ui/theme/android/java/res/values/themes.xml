@@ -311,9 +311,4 @@ found in the LICENSE file.
         <item name="defaultFontFamily">sans-serif</item>
         <item name="defaultMediumFontFamily">sans-serif-medium</item>
     </style>
-
-    <style name="ThemeOverlay.BrowserUI.DevTestingDefaultFontFamilyThemeOverlay" parent="">
-        <item name="defaultFontFamily">casual</item>
-        <item name="defaultMediumFontFamily">cursive</item>
-    </style>
 </resources>

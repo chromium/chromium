@@ -417,13 +417,9 @@ public class WarmupManager {
             context.getTheme().applyStyle(elegantTextHeightOverlay, true);
         }
 
-        if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU
-                && ChromeFeatureList.sAndroidGoogleSansText.isEnabled()) {
-            int defaultFontFamilyOverlay =
-                    ChromeBaseAppCompatActivity.DEFAULT_FONT_FAMILY_TESTING.getValue()
-                            ? R.style.ThemeOverlay_BrowserUI_DevTestingDefaultFontFamilyThemeOverlay
-                            : R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
-            context.getTheme().applyStyle(defaultFontFamilyOverlay, true);
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+            context.getTheme()
+                    .applyStyle(R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay, true);
         }
     }
 

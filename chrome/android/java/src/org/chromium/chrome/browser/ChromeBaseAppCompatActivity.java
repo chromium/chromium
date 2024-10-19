@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.ui.display.DisplaySwitches;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -96,13 +95,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         /** Automotive toolbar is not added. */
         int NONE = -1;
     }
-
-    public static final String DEFAULT_FONT_FAMILY_TESTING_PARAM = "dev_testing";
-    public static final BooleanCachedFieldTrialParameter DEFAULT_FONT_FAMILY_TESTING =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.ANDROID_GOOGLE_SANS_TEXT,
-                    DEFAULT_FONT_FAMILY_TESTING_PARAM,
-                    false);
 
     private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
             new ObservableSupplierImpl<>();
@@ -339,12 +331,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             mThemeResIds.add(elegantTextHeightOverlay);
         }
 
-        if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU
-                && ChromeFeatureList.sAndroidGoogleSansText.isEnabled()) {
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
             int defaultFontFamilyOverlay =
-                    DEFAULT_FONT_FAMILY_TESTING.getValue()
-                            ? R.style.ThemeOverlay_BrowserUI_DevTestingDefaultFontFamilyThemeOverlay
-                            : R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
+                    R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
             getTheme().applyStyle(defaultFontFamilyOverlay, true);
             mThemeResIds.add(defaultFontFamilyOverlay);
         }

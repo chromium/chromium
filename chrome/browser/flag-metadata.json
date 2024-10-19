@@ -178,11 +178,6 @@
     "expiry_milestone": 119
   },
   {
-    "name": "android-google-sans-text",
-    "owners": [ "twellington@chromium.org", "clank-app-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "android-hub-floating-action-button",
     "owners": [ "clank-hub-dev@google.com" ],
     "expiry_milestone": 131

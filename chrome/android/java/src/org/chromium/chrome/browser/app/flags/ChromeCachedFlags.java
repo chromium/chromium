@@ -14,7 +14,6 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.JankTrackerExperiment;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -97,7 +96,6 @@ public class ChromeCachedFlags {
                         AuxiliarySearchProvider.MAX_FAVICON_NUMBER,
                         BackPressManager.TAB_HISTORY_RECOVER,
                         ChimeFeatures.ALWAYS_REGISTER,
-                        ChromeBaseAppCompatActivity.DEFAULT_FONT_FAMILY_TESTING,
                         TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM,
                         CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES,
                         CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST,
