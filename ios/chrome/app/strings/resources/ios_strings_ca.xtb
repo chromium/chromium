@@ -69,7 +69,7 @@
 <translation id="1312721752506309252">La protecció millorada està activada</translation>
 <translation id="1317821187353201763">Tanca la pestanya</translation>
 <translation id="1320164290882380380">{COUNT,plural, =1{Fes el seguiment d'aquest paquet}other{Fes el seguiment de tots els paquets}}</translation>
-<translation id="1321993286294231467">S'ha produït un error en desar la imatge.</translation>
+<translation id="1321993286294231467">Hi ha hagut un error en desar la imatge.</translation>
 <translation id="1322735045095424339">La teva organització requereix el mode d'incògnit</translation>
 <translation id="1323735185997015385">Suprimeix</translation>
 <translation id="132683371494960526">Feu doble toc per canviar la carpeta principal.</translation>
@@ -807,7 +807,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4936354130727646074">No moguis mai</translation>
 <translation id="4937410517508563815">Desa les contrasenyes al compte</translation>
 <translation id="4938338714234463591">Això et permetrà fer servir la veu amb determinades funcions als llocs web.</translation>
-<translation id="4941089862236492464">S'ha produït un problema en compartir el vostre element.</translation>
+<translation id="4941089862236492464">Hi ha hagut un problema en compartir el vostre element.</translation>
 <translation id="4945756290001680296">Accedeix a la configuració de la contrasenya</translation>
 <translation id="4949302115427722371">Gestiona la configuració…</translation>
 <translation id="4958444002117714549">Desplega la llista</translation>
@@ -979,7 +979,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="572328651809341494">Pestanyes recents</translation>
 <translation id="5724941645893276623">Per navegar pel web de manera privada, obre una pestanya nova</translation>
 <translation id="5728072125198221967">Serveis de Google enllaçats</translation>
-<translation id="5728700505257787410">S'ha produït un problema en iniciar la sessió al vostre compte.</translation>
+<translation id="5728700505257787410">Hi ha hagut un problema en iniciar la sessió al vostre compte.</translation>
 <translation id="5737974891429562743">Actualitza les dades d'inici de sessió del compte per iniciar la sincronització.</translation>
 <translation id="5738385766833540397">Gestiona com reps les alertes de baixada de preu dels productes que segueixes</translation>
 <translation id="5738887413654608789">Això et permet detectar pàgines web rellevants del teu entorn.</translation>

@@ -221,7 +221,7 @@
 <translation id="2764206540577097904">Has fet servir tot el teu emmagatzematge individual de Google Workspace.</translation>
 <translation id="2771816809568414714">Formatge</translation>
 <translation id="2781645665747935084">Belga</translation>
-<translation id="2782104745158847185">S'ha produït un error en instal·lar l'aplicació per a Linux</translation>
+<translation id="2782104745158847185">Hi ha hagut un error en instal·lar l'aplicació per a Linux</translation>
 <translation id="2802583107108007218">Més informació sobre aquestes restriccions</translation>
 <translation id="2803375539583399270">Introdueix el PIN</translation>
 <translation id="2819519502129272135">La sincronització de fitxers està desactivada</translation>
@@ -438,7 +438,7 @@
 <translation id="4474142134969976028">No hi ha cap resultat coincident</translation>
 <translation id="4477002475007461989">Romanès</translation>
 <translation id="4477219268485577442">Fonètic búlgar</translation>
-<translation id="4508265954913339219">S'ha produït un error en l'activació.</translation>
+<translation id="4508265954913339219">Hi ha hagut un error en l'activació.</translation>
 <translation id="4509667233588080747">Anglès (EUA) amb teclat Workman internacional</translation>
 <translation id="4522570452068850558">Detalls</translation>
 <translation id="4527800702232535228">Aquesta carpeta es comparteix amb Parallels Desktop</translation>
@@ -539,7 +539,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />No retireu el dispositiu encara.<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Si retireu el dispositiu mentre encara s'està utilitzant, es poden perdre dades. Espereu fins que hagi acabat l'operació i, a continuació, expulseu el dispositiu amb l'aplicació Fitxers.</translation>
-<translation id="5163869187418756376">S'ha produït un error en compartir. Comproveu la connexió i torneu-ho a provar més tard.</translation>
+<translation id="5163869187418756376">Hi ha hagut un error en compartir. Comproveu la connexió i torneu-ho a provar més tard.</translation>
 <translation id="516592729076796170">Dvorak nord-americà per a programadors</translation>
 <translation id="5177526793333269655">Visualització de miniatures</translation>
 <translation id="5181896909298187506">No hi ha cap fitxer recent</translation>
@@ -642,7 +642,7 @@
 <translation id="5861477046012235702">Jugador de videojocs</translation>
 <translation id="5864471791310927901">Error en la cerca de DHCP</translation>
 <translation id="5896749729057314184">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, intensitat del senyal <ph name="SIGNAL_STRENGTH" />%, detalls</translation>
-<translation id="5911887972742538906">S'ha produït un error en instal·lar l'aplicació per a Linux.</translation>
+<translation id="5911887972742538906">Hi ha hagut un error en instal·lar l'aplicació per a Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Ara hi ha noves funcions de cerca disponibles</translation>
 <translation id="5926082595146149752">Neerlandès (Països Baixos) amb teclat internacional dels EUA (PC)</translation>
@@ -894,7 +894,7 @@
 <translation id="78104721049218340">Tai amb teclat kedmanee</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
-<translation id="7831491651892296503">S'ha produït un error en configurar la xarxa</translation>
+<translation id="7831491651892296503">Hi ha hagut un error en configurar la xarxa</translation>
 <translation id="7839804798877833423">Per obtenir aquests fitxers s'utilitzaran aproximadament <ph name="FILE_SIZE" /> de dades mòbils.</translation>
 <translation id="7846076177841592234">Cancel·la la selecció</translation>
 <translation id="7853966320808728790">BÉPO francès</translation>
@@ -1032,7 +1032,7 @@
 <translation id="8798099450830957504">Predeterminat</translation>
 <translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 advertiment.}other{# advertiments.}}</translation>
 <translation id="8808686172382650546">Gat</translation>
-<translation id="8810671769985673465">S'ha produït un error en la compressió; l'element existeix: "<ph name="FILE_NAME" />"</translation>
+<translation id="8810671769985673465">Hi ha hagut un error en la compressió; l'element existeix: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Espanyol (Espanya)</translation>
 <translation id="8834164572807951958">Els membres de la unitat <ph name="DESTINATION_NAME" /> obtindran accés a la còpia d'aquests elements.</translation>
 <translation id="8849389110234859568">La política de l'administrador restringeix l'accés a alguns fitxers.</translation>
@@ -1059,7 +1059,7 @@
 <translation id="9035012421917565900">Com que els elements no es poden retornar a <ph name="DESTINATION_NAME" />, aquesta acció no es pot desfer.</translation>
 <translation id="9035689366572880647">Introdueix el PIN actual</translation>
 <translation id="9038620279323455325">Ja hi ha un fitxer anomenat <ph name="FILE_NAME" />. Tria un altre nom.</translation>
-<translation id="9046895021617826162">S'ha produït un error en la connexió</translation>
+<translation id="9046895021617826162">Hi ha hagut un error en la connexió</translation>
 <translation id="9065512565307033593">Si no fas la verificació, l'accés a la xarxa es desactivarà.</translation>
 <translation id="908378762078012445">Rus amb teclat AATSEEL fonètic</translation>
 <translation id="9086302186042011942">Sincronització</translation>
@@ -1071,7 +1071,7 @@
 <translation id="912419004897138677">Còdec</translation>
 <translation id="9130775360844693113">Els membres de la unitat <ph name="DESTINATION_NAME" />, obtindran accés a aquets elements.</translation>
 <translation id="9131598836763251128">Seleccioneu un o diversos fitxers</translation>
-<translation id="9133055936679483811">S'ha produït un error en la compressió. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9133055936679483811">Hi ha hagut un error en la compressió. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9144340019284012223">Català</translation>
 <translation id="914873105831852105">El PIN no és vàlid. Et queda 1 intent.</translation>
 <translation id="9153934054460603056">Desa la identitat i la contrasenya</translation>

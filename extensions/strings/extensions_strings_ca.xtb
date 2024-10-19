@@ -24,7 +24,7 @@
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveïdor <ph name="VENDOR_ID" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">El valor d'entrada per a la clau privada ha de ser un camí vàlid.</translation>
 <translation id="388442998277590542">No s'ha pogut carregar la pàgina d'opcions "<ph name="OPTIONS_PAGE" />".</translation>
-<translation id="3984413272403535372">S'ha produït un error en signar l'extensió.</translation>
+<translation id="3984413272403535372">Hi ha hagut un error en signar l'extensió.</translation>
 <translation id="4115165561519362854">L'administrador d'aquest ordinador requereix que <ph name="EXTENSION_NAME" /> tingui com a mínim la versió <ph name="EXTENSION_VERSION" />. No es pot activar fins que no s'hagi actualitzat a aquesta versió (o posterior).</translation>
 <translation id="4233778200880751280">No s'ha pogut carregar la pàgina d'informació "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">No s'ha pogut generar la clau privada.</translation>

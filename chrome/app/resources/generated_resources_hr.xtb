@@ -351,7 +351,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1239841552505950173">Pokreni aplikaciju</translation>
 <translation id="1241066500170667906">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Više jezika</translation>
-<translation id="1241381048229838873">Pokaži sve oznake</translation>
+<translation id="1241381048229838873">Prikaži sve oznake</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> želi vratiti vaše postavke na zadano.</translation>
 <translation id="1243002225871118300">Promjena veličine prikaza i teksta</translation>
 <translation id="1243314992276662751">Prenesi</translation>
@@ -759,7 +759,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1543538514740974167">Brže otvaranje ove stranice</translation>
 <translation id="1544588554445317666">Pokušajte upotrijebiti kraći naziv datoteke ili je spremiti u drugu mapu</translation>
 <translation id="1545177026077493356">Automatski način kioska</translation>
-<translation id="1545749641540134597">Skeniranje QR koda</translation>
+<translation id="1545749641540134597">Skenirajte QR kod</translation>
 <translation id="1545775234664667895">Instalirana tema "<ph name="THEME_NAME" />"</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{Anonimni se prozor neće ponovno otvoriti.}one{Vaš # anonimni prozor neće se ponovno otvoriti.}few{Vaša # anonimna prozora neće se ponovno otvoriti.}other{Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="1546280085599573572">Ovo proširenje promijenilo je stranicu koja se prikazuje kada se klikne gumb Početna.</translation>
@@ -2870,7 +2870,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3010234549896186761">{COUNT,plural, =0{Vaše zaporke izgledaju snažno}=1{{COUNT} slaba zaporka}one{{COUNT} slaba zaporka}few{{COUNT} slabe zaporke}other{{COUNT} slabih zaporki}}</translation>
 <translation id="3010279545267083280">Zaporka je izbrisana</translation>
 <translation id="3010389206479238935">Nametanje otvaranja u pregledniku</translation>
-<translation id="3010961843303056486">Pokaži sve oznake</translation>
+<translation id="3010961843303056486">Prikaži sve oznake</translation>
 <translation id="3011384993885886186">Topla siva</translation>
 <translation id="3011488081941333749">Kolačići domene <ph name="DOMAIN" /> izbrisat će se prilikom zatvaranja</translation>
 <translation id="3012631534724231212">(iframe)</translation>

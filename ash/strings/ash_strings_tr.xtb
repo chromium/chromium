@@ -634,7 +634,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3265032511221679826">Tam konum erişimi açılsın mı?</translation>
 <translation id="3269597722229482060">Sağ Tıkla</translation>
 <translation id="3271554781793662131">Eklemek için arama yapın</translation>
-<translation id="3273040715184276344">Caps Lock kapalı</translation>
 <translation id="3274634049061007184">Telefonunuzdaki uygulamaları görün</translation>
 <translation id="3289364673986435196">Güç menüsü</translation>
 <translation id="3289544412142055976">Linux uygulamaları şu anda desteklenmiyor</translation>
@@ -1951,7 +1950,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7670953955701272011">Bu tarihi Google Takvim'de aç</translation>
 <translation id="7671610481353807627">Uygulamalar renge göre sıralandı</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> ağına bağlı, <ph name="SUBTEXT" /></translation>
-<translation id="7680417644536099065">Caps Lock açık</translation>
 <translation id="7682351277038250258">Panodaki içeriği düz metin olarak yapıştır</translation>
 <translation id="7684531502177797067">Kamera girişi <ph name="CAMERA_NAME" /> olarak ayarlandı.</translation>
 <translation id="7687172143976244806">Siz açtınız</translation>
@@ -2082,7 +2080,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8052898407431791827">Panoya kopyalandı</translation>
 <translation id="8054466585765276473">Pilin süresi hesaplanıyor.</translation>
 <translation id="8079538659226626406">Ekran Paylaşımı</translation>
-<translation id="8083540854303889870">Daha sonra kullanmak için kaydedildi</translation>
+<translation id="8083540854303889870">Daha sonrası için kaydedilenler</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Diğer seçenekler için sekmeyi kullanın. Tüm masalara erişmek için sol ve sağ okları kullanın.</translation>
 <translation id="8091153018031979607">Başlama zamanı: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
