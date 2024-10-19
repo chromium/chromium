@@ -1479,7 +1479,11 @@ void ExtensionService::OnAllExternalProvidersReady() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  InstallLimiter::Get(profile_)->OnAllExternalProvidersReady();
+  auto* install_limiter = InstallLimiter::Get(profile_);
+  if (install_limiter) {
+    install_limiter->OnAllExternalProvidersReady();
+  }
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Install any pending extensions.
@@ -2097,7 +2101,12 @@ bool ExtensionService::OnExternalExtensionFileFound(
                      ? GetPolicyVerifierFormat()
                      : GetExternalVerifierFormat());
 #if BUILDFLAG(IS_CHROMEOS)
-  InstallLimiter::Get(profile_)->Add(installer, file_info);
+  auto* install_limiter = InstallLimiter::Get(profile_);
+  if (install_limiter) {
+    install_limiter->Add(installer, file_info);
+  } else {
+    installer->InstallCrxFile(file_info);
+  }
 #else
   installer->InstallCrxFile(file_info);
 #endif

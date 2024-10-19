@@ -495,7 +495,10 @@ void ExtensionServiceTestBase::CreateExtensionService(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!enable_install_limiter) {
-    InstallLimiter::Get(profile())->DisableForTest();
+    auto* install_limiter = InstallLimiter::Get(profile());
+    if (install_limiter) {
+      install_limiter->DisableForTest();
+    }
   }
 #endif
 }
