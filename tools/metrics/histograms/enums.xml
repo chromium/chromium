@@ -28755,6 +28755,13 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="FalseNegative"/>
 </enum>
 
+<enum name="PrefetchDataPipeTeeState">
+  <int value="0" label="Loading"/>
+  <int value="1" label="SizeExceededNoTarget"/>
+  <int value="2" label="SizeExceeded"/>
+  <int value="3" label="Loaded"/>
+</enum>
+
 <enum name="PrefetchProxyPrefetchStatus">
   <int value="0" label="DEPRECATED Prefetch Used, No Probe">
     The interceptor used a prefetch. (Deprecated M115)

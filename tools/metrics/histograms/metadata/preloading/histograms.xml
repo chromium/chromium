@@ -36,6 +36,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Positive" summary=""/>
 </variants>
 
+<variants name="PrefetchDataPipeTeeStateLoadingOrSizeExceeded">
+  <variant name="Loading" summary=""/>
+  <variant name="SizeExceeded" summary=""/>
+</variants>
+
 <variants name="PreloadingPredictor">
   <variant name="BackButtonHover"
       summary="When the user hovers their mouse over the back button."/>
@@ -174,6 +179,49 @@ chromium-metrics-reviews@google.com.
     cases are not required to compute the recall and are not recorded here.
   </summary>
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
+</histogram>
+
+<histogram
+    name="Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.{PrefetchDataPipeTeeStateLoadingOrSizeExceeded}"
+    units="count" expires_after="2025-04-17">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records how many times `PrefetchDataPipeTee::Clone()` is called when the
+    method failed.
+
+    {PrefetchDataPipeTeeStateLoadingOrSizeExceeded} indicates
+    `PrefetchDataPipeTee::State` at the failure.
+
+    It is used for investigation crbug.com/374039756.
+  </summary>
+  <token key="PrefetchDataPipeTeeStateLoadingOrSizeExceeded"
+      variants="PrefetchDataPipeTeeStateLoadingOrSizeExceeded"/>
+</histogram>
+
+<histogram name="Preloading.Prefetch.PrefetchDataPipeTeeDtorState"
+    enum="PrefetchDataPipeTeeState" expires_after="2025-04-17">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the `PrefetchDataPipeTee::State` at `PrefetchDataPipeTee`'s
+    destructor.
+
+    It is used for investigation crbug.com/374039756.
+  </summary>
+</histogram>
+
+<histogram
+    name="Preloading.Prefetch.PrefetchResponseReaderCreateRequestHandlerInvalidBody"
+    units="bool" expires_after="2025-04-17">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records `true` when `PrefetchResponseReader::CreateRequestHandler` couldn't
+    get valid `body`.
+
+    It is used for investigation crbug.com/374039756.
+  </summary>
 </histogram>
 
 <histogram name="Preloading.Prefetch.PrefetchStatus"

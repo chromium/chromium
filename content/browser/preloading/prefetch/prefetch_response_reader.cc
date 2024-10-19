@@ -162,6 +162,10 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
       if (!body) {
         // This might be because `CreateRequestHandler()` is called for the
         // second time.
+        base::UmaHistogramBoolean(
+            "Preloading.Prefetch."
+            "PrefetchResponseReaderCreateRequestHandlerInvalidBody",
+            true);
         return {};
       }
       break;
