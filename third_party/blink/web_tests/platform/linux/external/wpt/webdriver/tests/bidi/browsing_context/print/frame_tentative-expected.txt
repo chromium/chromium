@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_iframe
+  AssertionError: assert {'type': 'array', 'value': [{'type': 'string', 'value': 'TestIframe'}]} == {'type': 'array', 'value': [{'type': 'string', 'value': 'Iframe'}]}
+[FAIL] test_iframe_origin[cross_origin]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+Harness: the test ran to completion.

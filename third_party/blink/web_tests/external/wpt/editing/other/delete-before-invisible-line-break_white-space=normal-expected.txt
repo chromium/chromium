@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] document.execCommand("delete") when <p>a []<br></p>
+  assert_equals: expected "<p>a</p>" but got "<p><br></p>"
+[FAIL] Backspace when <p>a []<br></p>
+  assert_equals: expected "<p>a</p>" but got "<p><br></p>"
+[FAIL] document.execCommand("delete") when <p>a[ ]<br></p>
+  assert_equals: expected "<p>a</p>" but got "<p><br></p>"
+[FAIL] Backspace when <p>a[ ]<br></p>
+  assert_equals: expected "<p>a</p>" but got "<p><br></p>"
+[FAIL] document.execCommand("delete") when <p>a b[]<br></p>
+  assert_in_array: value "<p>a&nbsp;<br></p>" not in array ["<p>a <br></p>", "<p>a&nbsp;</p>"]
+[FAIL] Backspace when <p>a b[]<br></p>
+  assert_in_array: value "<p>a&nbsp;<br></p>" not in array ["<p>a <br></p>", "<p>a&nbsp;</p>"]
+[FAIL] document.execCommand("delete") when <p>a [b]<br></p>
+  assert_in_array: value "<p>a&nbsp;<br></p>" not in array ["<p>a <br></p>", "<p>a&nbsp;</p>"]
+[FAIL] Backspace when <p>a [b]<br></p>
+  assert_in_array: value "<p>a&nbsp;<br></p>" not in array ["<p>a <br></p>", "<p>a&nbsp;</p>"]
+[FAIL] document.execCommand("delete") when <div>a []<br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div><br><div>b</div></div>"
+[FAIL] Backspace when <div>a []<br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div><br><div>b</div></div>"
+[FAIL] document.execCommand("delete") when <div>a[ ]<br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div><br><div>b</div></div>"
+[FAIL] Backspace when <div>a[ ]<br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div><br><div>b</div></div>"
+[FAIL] document.execCommand("delete") when <div>a b[]<br><div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;<br><div>b</div></div>" not in array ["<div>a <br><div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+[FAIL] Backspace when <div>a b[]<br><div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;<br><div>b</div></div>" not in array ["<div>a <br><div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+[FAIL] document.execCommand("delete") when <div>a [b]<br><div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;<br><div>b</div></div>" not in array ["<div>a <br><div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+[FAIL] Backspace when <div>a [b]<br><div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;<br><div>b</div></div>" not in array ["<div>a <br><div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+Harness: the test ran to completion.
+

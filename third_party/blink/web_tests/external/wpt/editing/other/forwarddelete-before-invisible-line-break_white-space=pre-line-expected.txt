@@ -1,0 +1,67 @@
+This is a testharness.js-based test.
+[FAIL] document.execCommand("forwardDelete") when <p>a[] <br></p>
+  assert_equals: expected "<p>a</p>" but got "<p>a <br></p>"
+[FAIL] (Forward) Delete when <p>a[] <br></p>
+  assert_equals: expected "<p>a</p>" but got "<p>a <br></p>"
+[FAIL] document.execCommand("forwardDelete") when <p>a[ ]<br></p>
+  assert_equals: expected "<p>a</p>" but got "<p>a <br></p>"
+[FAIL] (Forward) Delete when <p>a[ ]<br></p>
+  assert_equals: expected "<p>a</p>" but got "<p>a <br></p>"
+[FAIL] document.execCommand("forwardDelete") when <p>a []b<br></p>
+  assert_in_array: value "<p>a&nbsp;<br></p>" not in array ["<p>a <br></p>", "<p>a \\n</p>", "<p>a&nbsp;</p>"]
+[FAIL] (Forward) Delete when <p>a []b<br></p>
+  assert_in_array: value "<p>a&nbsp;<br></p>" not in array ["<p>a <br></p>", "<p>a \\n</p>", "<p>a&nbsp;</p>"]
+[FAIL] document.execCommand("forwardDelete") when <p>a [b]<br></p>
+  assert_in_array: value "<p>a&nbsp;<br></p>" not in array ["<p>a <br></p>", "<p>a \\n</p>", "<p>a&nbsp;</p>"]
+[FAIL] (Forward) Delete when <p>a [b]<br></p>
+  assert_in_array: value "<p>a&nbsp;<br></p>" not in array ["<p>a <br></p>", "<p>a \\n</p>", "<p>a&nbsp;</p>"]
+[FAIL] document.execCommand("forwardDelete") when <p>a[] \\n</p>
+  assert_equals: expected "<p>a</p>" but got "<p>a \\n</p>"
+[FAIL] (Forward) Delete when <p>a[] \\n</p>
+  assert_equals: expected "<p>a</p>" but got "<p>a \\n</p>"
+[FAIL] document.execCommand("forwardDelete") when <p>a[ ]\\n</p>
+  assert_equals: expected "<p>a</p>" but got "<p>a \\n</p>"
+[FAIL] (Forward) Delete when <p>a[ ]\\n</p>
+  assert_equals: expected "<p>a</p>" but got "<p>a \\n</p>"
+[FAIL] document.execCommand("forwardDelete") when <p>a []b\\n</p>
+  assert_in_array: value "<p>a&nbsp;\\n</p>" not in array ["<p>a \\n</p>", "<p>a&nbsp;</p>"]
+[FAIL] (Forward) Delete when <p>a []b\\n</p>
+  assert_in_array: value "<p>a&nbsp;\\n</p>" not in array ["<p>a \\n</p>", "<p>a&nbsp;</p>"]
+[FAIL] document.execCommand("forwardDelete") when <p>a [b]\\n</p>
+  assert_in_array: value "<p>a&nbsp;\\n</p>" not in array ["<p>a \\n</p>", "<p>a&nbsp;</p>"]
+[FAIL] (Forward) Delete when <p>a [b]\\n</p>
+  assert_in_array: value "<p>a&nbsp;\\n</p>" not in array ["<p>a \\n</p>", "<p>a&nbsp;</p>"]
+[FAIL] document.execCommand("forwardDelete") when <div>a[] <br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "ab"
+[FAIL] (Forward) Delete when <div>a[] <br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "ab"
+[FAIL] document.execCommand("forwardDelete") when <div>a[ ]<br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "ab"
+[FAIL] (Forward) Delete when <div>a[ ]<br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "ab"
+[FAIL] document.execCommand("forwardDelete") when <div>a []b<br><div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;<br><div>b</div></div>" not in array ["<div>a <br><div>b</div></div>", "<div>a \\n<div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+[FAIL] (Forward) Delete when <div>a []b<br><div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;<br><div>b</div></div>" not in array ["<div>a <br><div>b</div></div>", "<div>a \\n<div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+[FAIL] document.execCommand("forwardDelete") when <div>a [b]<br><div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;<br><div>b</div></div>" not in array ["<div>a <br><div>b</div></div>", "<div>a \\n<div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+[FAIL] (Forward) Delete when <div>a [b]<br><div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;<br><div>b</div></div>" not in array ["<div>a <br><div>b</div></div>", "<div>a \\n<div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+[FAIL] document.execCommand("forwardDelete") when <div>a[] \\n<div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "ab"
+[FAIL] (Forward) Delete when <div>a[] \\n<div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "ab"
+[FAIL] document.execCommand("forwardDelete") when <div>a[ ]\\n<div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "ab"
+[FAIL] (Forward) Delete when <div>a[ ]\\n<div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "ab"
+[FAIL] document.execCommand("forwardDelete") when <div>a []b\\n<div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;\\n<div>b</div></div>" not in array ["<div>a \\n<div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+[FAIL] (Forward) Delete when <div>a []b\\n<div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;\\n<div>b</div></div>" not in array ["<div>a \\n<div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+[FAIL] document.execCommand("forwardDelete") when <div>a [b]\\n<div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;\\n<div>b</div></div>" not in array ["<div>a \\n<div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+[FAIL] (Forward) Delete when <div>a [b]\\n<div>b</div></div>
+  assert_in_array: value "<div>a&nbsp;\\n<div>b</div></div>" not in array ["<div>a \\n<div>b</div></div>", "<div>a&nbsp;<div>b</div></div>"]
+Harness: the test ran to completion.
+

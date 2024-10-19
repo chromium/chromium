@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Setting the current time to an absolute time value throws exception
+  assert_throws_js: function "() => {\n    animation.currentTime = CSSNumericValue.parse("300");\n  }" threw object "NotSupportedError: Failed to set the 'currentTime' property on 'Animation': Invalid currentTime. CSSNumericValue must be a percentage for progress based animations." ("NotSupportedError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+Harness: the test ran to completion.
+
