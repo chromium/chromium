@@ -441,6 +441,71 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsInsert) {
       "Ash.Lobster.State", LobsterMetricState::kCommitAsInsertError, 1);
 }
 
+TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsDownload) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+  ui::FakeTextInputClient text_input_client(&ime(), {.can_insert_image = true});
+
+  ON_CALL(*lobster_client,
+          InflateCandidate(/*seed=*/21, testing::_, testing::_))
+      .WillByDefault([](uint32_t seed, std::string_view query,
+                        InflateCandidateCallback done_callback) {
+        std::vector<LobsterImageCandidate> inflated_candidates = {
+            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
+                                  /*seed=*/21,
+                                  /*query=*/"a nice strawberry")};
+        std::move(done_callback).Run(std::move(inflated_candidates));
+      });
+
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kPicker);
+
+  base::test::TestFuture<bool> future;
+
+  session.CommitAsDownload(/*id=*/1, base::FilePath("dummy_path"),
+                           future.GetCallback());
+  RunUntilIdle();
+
+  EXPECT_TRUE(future.Get());
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCommitAsDownload, 1);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCommitAsDownloadSuccess, 1);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCommitAsDownloadError, 0);
+}
+
+TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsDownload) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+  ui::FakeTextInputClient text_input_client(&ime(),
+                                            {.can_insert_image = false});
+
+  ON_CALL(*lobster_client,
+          InflateCandidate(/*seed=*/21, testing::_, testing::_))
+      .WillByDefault([](uint32_t seed, std::string_view query,
+                        InflateCandidateCallback done_callback) {
+        std::move(done_callback).Run({});
+      });
+
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kPicker);
+
+  base::test::TestFuture<bool> future;
+
+  session.CommitAsDownload(/*id=*/1, base::FilePath("dummy_path"),
+                           future.GetCallback());
+  RunUntilIdle();
+
+  EXPECT_FALSE(future.Get());
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCommitAsDownload, 1);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCommitAsDownloadSuccess, 0);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCommitAsDownloadError, 1);
+}
+
 }  // namespace
 
 }  // namespace ash

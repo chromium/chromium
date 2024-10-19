@@ -85,15 +85,15 @@ void LobsterSessionImpl::CommitAsInsert(int candidate_id,
 void LobsterSessionImpl::CommitAsDownload(int candidate_id,
                                           const base::FilePath& file_path,
                                           StatusCallback status_callback) {
-  InflateCandidateAndPerformAction(candidate_id,
-                                   base::BindOnce(&WriteImageToPath, file_path),
-                                   base::BindOnce([](bool success) {
-                                     // TODO: b:348514797 - Adds any logic to
-                                     // execute before returning the status back
-                                     // to WebUI, e.g. recording commit as
-                                     // download metric.
-                                     return success;
-                                   }).Then(std::move(status_callback)));
+  RecordLobsterState(LobsterMetricState::kCommitAsDownload);
+  InflateCandidateAndPerformAction(
+      candidate_id, base::BindOnce(&WriteImageToPath, file_path),
+      base::BindOnce([](bool success) {
+        RecordLobsterState(success
+                               ? LobsterMetricState::kCommitAsDownloadSuccess
+                               : LobsterMetricState::kCommitAsDownloadError);
+        return success;
+      }).Then(std::move(status_callback)));
 }
 
 void LobsterSessionImpl::PreviewFeedback(
