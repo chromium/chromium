@@ -1874,7 +1874,8 @@ PrefetchContainer::SinglePrefetch::SinglePrefetch(
     : url_(url),
       is_isolated_network_context_required_(
           net::SchemefulSite(referring_origin) != net::SchemefulSite(url_)),
-      response_reader_(base::MakeRefCounted<PrefetchResponseReader>()) {}
+      response_reader_(base::MakeRefCounted<PrefetchResponseReader>(
+          base::FeatureList::IsEnabled(features::kPrefetchReusable))) {}
 
 PrefetchContainer::SinglePrefetch::~SinglePrefetch() {
   CHECK(response_reader_);
