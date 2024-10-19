@@ -11,6 +11,7 @@ import("//build/config/ui.gni")
 import("//build/nocompile.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
+import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//mojo/features.gni")
@@ -3100,13 +3101,13 @@ test("content_unittests") {
     "//content/browser/private_aggregation/proto:private_aggregation_budgets_proto",
     "//content/browser/tracing/trace_report:mojo_bindings",
     "//content/child:for_content_tests",
-    "//content/common:buildflags",
     "//content/common:for_content_tests",
     "//content/gpu",
     "//content/public/browser",
     "//content/public/browser:proto",
     "//content/public/child",
     "//content/public/common",
+    "//content/public/common:buildflags",
     "//content/public/renderer",
     "//content/renderer:for_content_tests",
     "//content/services/auction_worklet:tests",

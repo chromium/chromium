@@ -14,6 +14,7 @@ import("//build/config/ui.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
+import("//content/public/common/features.gni")
 import("//content/public/common/zygote/features.gni")
 import("//device/bluetooth/emulation/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -167,6 +168,7 @@ source_set("browser") {
     "//content/common:buildflags",
     "//content/common:mojo_bindings",
     "//content/public/browser:proto",
+    "//content/public/common:buildflags",
     "//content/public/common:common_sources",
     "//content/public/common:content_descriptor_keys",
     "//content/public/common/zygote:buildflags",

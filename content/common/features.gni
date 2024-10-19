@@ -23,6 +23,3 @@ declare_args() {
   # Pepper usage.
   content_enable_legacy_ipc = is_android || enable_ppapi
 }
-
-enable_screen_capture = is_linux || is_chromeos || (is_apple && use_blink) ||
-                        is_win || is_android || is_fuchsia

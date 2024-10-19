@@ -577,6 +577,7 @@ static_library("constants") {
     ":non_code_constants",
     "//components/compose:buildflags",
     "//components/signin/public/base:signin_buildflags",
+    "//content/public/common:buildflags",
     "//content/public/common:result_codes",
     "//rlz/buildflags",
     "//third_party/widevine/cdm:buildflags",
