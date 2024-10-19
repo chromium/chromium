@@ -11084,6 +11084,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/elevation_service:public_headers",
         "//chrome/install_static:install_static_util",
         "//chrome/installer/util:strings",
+        "//chrome/windows_services/service_program/test_support",
         "//third_party/isimpledom",
         "//third_party/webrtc_overrides:webrtc_component",
         "//third_party/wtl",

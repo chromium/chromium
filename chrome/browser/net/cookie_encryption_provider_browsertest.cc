@@ -33,6 +33,7 @@
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/browser/os_crypt/test_support.h"
 #include "chrome/install_static/test/scoped_install_details.h"
+#include "chrome/windows_services/service_program/test_support/scoped_log_grabber.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) && defined(USE_DBUS)
@@ -177,7 +178,7 @@ class CookieEncryptionProviderBrowserTest
     switch (configuration) {
       case kOSCryptAsync:
 #if BUILDFLAG(IS_WIN)
-        maybe_uninstall_service_ = os_crypt::InstallService();
+        maybe_uninstall_service_ = os_crypt::InstallService(log_grabber_);
         EXPECT_TRUE(maybe_uninstall_service_.has_value());
         disabled_features.push_back(
             features::kUseAppBoundEncryptionProviderForEncryption);
@@ -188,7 +189,7 @@ class CookieEncryptionProviderBrowserTest
         break;
 #if BUILDFLAG(IS_WIN)
       case kOSCryptAsyncWithAppBoundProviderWithEncryption:
-        maybe_uninstall_service_ = os_crypt::InstallService();
+        maybe_uninstall_service_ = os_crypt::InstallService(log_grabber_);
         EXPECT_TRUE(maybe_uninstall_service_.has_value());
         enabled_features.push_back(
             features::kUseAppBoundEncryptionProviderForEncryption);
@@ -198,7 +199,7 @@ class CookieEncryptionProviderBrowserTest
             features::kUseAppBoundEncryptionProviderForEncryption);
         break;
       case kOSCryptAsyncWithAppBoundProviderWithEncryptionUnsupportedUserData:
-        maybe_uninstall_service_ = os_crypt::InstallService();
+        maybe_uninstall_service_ = os_crypt::InstallService(log_grabber_);
         EXPECT_TRUE(maybe_uninstall_service_.has_value());
         enabled_features.push_back(
             features::kUseAppBoundEncryptionProviderForEncryption);
@@ -206,7 +207,7 @@ class CookieEncryptionProviderBrowserTest
             /*supported=*/false);
         break;
       case kOSCryptAsyncWithAppBoundProviderDisabledByPolicy:
-        maybe_uninstall_service_ = os_crypt::InstallService();
+        maybe_uninstall_service_ = os_crypt::InstallService(log_grabber_);
         EXPECT_TRUE(maybe_uninstall_service_.has_value());
         disabled_features.push_back(
             features::kUseAppBoundEncryptionProviderForEncryption);
@@ -310,6 +311,7 @@ class CookieEncryptionProviderBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 #if BUILDFLAG(IS_WIN)
+  ScopedLogGrabber log_grabber_;
   std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 #endif  // BUILDFLAG(IS_WIN)

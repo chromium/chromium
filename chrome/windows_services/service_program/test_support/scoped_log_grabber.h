@@ -23,7 +23,7 @@ class ScopedLogGrabber : public base::PlatformThread::Delegate {
 
   // Adds switches to `command_line` so that a COM service started with it can
   // direct its stderr to this test process's stderr.
-  void AddLoggingSwitches(base::CommandLine& command_line);
+  void AddLoggingSwitches(base::CommandLine& command_line) const;
 
   // base::PlatformThread::Delegate:
   void ThreadMain() override;

@@ -53,6 +53,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/elevation_service:public_headers",
     "//chrome/test:test_support",
+    "//chrome/windows_services/service_program/test_support",
     "//content/test:test_support",
   ]
 
@@ -74,6 +75,7 @@ source_set("test_support") {
     "//chrome/install_static/test:test_support",
     "//chrome/installer/util:constants",
     "//chrome/installer/util:work_item",
+    "//chrome/windows_services/service_program/test_support",
   ]
 }
 

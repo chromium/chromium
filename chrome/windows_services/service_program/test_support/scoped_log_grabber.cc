@@ -41,7 +41,8 @@ ScopedLogGrabber::~ScopedLogGrabber() {
   base::PlatformThread::Join(output_thread_);
 }
 
-void ScopedLogGrabber::AddLoggingSwitches(base::CommandLine& command_line) {
+void ScopedLogGrabber::AddLoggingSwitches(
+    base::CommandLine& command_line) const {
   command_line.AppendSwitchASCII(switches::kLogFile,
                                  base::NumberToString(base::win::HandleToUint32(
                                      write_pipe_.GetPlatformFile())));
