@@ -161,7 +161,12 @@ autofill_private::IbanEntry IbanToIbanEntry(
 
   // Populated IBAN fields need to be converted to an `IbanEntry` to be rendered
   // in the settings page.
-  iban_entry.guid = iban.guid();
+  bool is_local = iban.record_type() == autofill::Iban::RecordType::kLocalIban;
+  if (is_local) {
+    iban_entry.guid = iban.guid();
+  } else {
+    iban_entry.instrument_id = base::NumberToString(iban.instrument_id());
+  }
   if (!iban.nickname().empty())
     iban_entry.nickname = base::UTF16ToUTF8(iban.nickname());
 
@@ -171,8 +176,7 @@ autofill_private::IbanEntry IbanToIbanEntry(
   iban_entry.metadata.emplace();
   iban_entry.metadata->summary_label =
       base::UTF16ToUTF8(iban.GetIdentifierStringForAutofillDisplay());
-  iban_entry.metadata->is_local =
-      iban.record_type() == autofill::Iban::RecordType::kLocalIban;
+  iban_entry.metadata->is_local = is_local;
 
   return iban_entry;
 }
@@ -249,7 +253,7 @@ IbanEntryList GenerateIbanList(
     const autofill::PersonalDataManager& personal_data) {
   IbanEntryList list;
   for (const autofill::Iban* iban :
-       personal_data.payments_data_manager().GetLocalIbans()) {
+       personal_data.payments_data_manager().GetIbans()) {
     list.push_back(IbanToIbanEntry(*iban, personal_data));
   }
 

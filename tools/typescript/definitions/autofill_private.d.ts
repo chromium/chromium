@@ -187,6 +187,7 @@ declare global {
 
       export interface IbanEntry {
         guid?: string;
+        instrumentId?: string;
         value?: string;
         nickname?: string;
         metadata?: AutofillMetadata;
