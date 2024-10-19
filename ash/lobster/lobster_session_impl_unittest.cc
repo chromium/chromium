@@ -17,6 +17,8 @@
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ash/input_method_ash.h"
+#include "ui/base/ime/fake_text_input_client.h"
 
 namespace ash {
 namespace {
@@ -81,7 +83,10 @@ class LobsterSessionImplTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  ui::InputMethod& ime() { return ime_; }
+
  private:
+  InputMethodAsh ime_{nullptr};
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
 };
@@ -371,6 +376,69 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToDownloadCandidate) {
       "Ash.Lobster.State", LobsterMetricState::kCandidateDownloadSuccess, 0);
   histogram_tester().ExpectBucketCount(
       "Ash.Lobster.State", LobsterMetricState::kCandidateDownloadError, 1);
+}
+
+TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsInsert) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+  ui::FakeTextInputClient text_input_client(&ime(), {.can_insert_image = true});
+
+  ON_CALL(*lobster_client,
+          InflateCandidate(/*seed=*/21, testing::_, testing::_))
+      .WillByDefault([](uint32_t seed, std::string_view query,
+                        InflateCandidateCallback done_callback) {
+        std::vector<LobsterImageCandidate> inflated_candidates = {
+            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
+                                  /*seed=*/21,
+                                  /*query=*/"a nice strawberry")};
+        std::move(done_callback).Run(std::move(inflated_candidates));
+      });
+
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kPicker);
+
+  base::test::TestFuture<bool> future;
+
+  session.CommitAsInsert(/*id=*/1, &text_input_client, future.GetCallback());
+  RunUntilIdle();
+
+  EXPECT_TRUE(future.Get());
+  histogram_tester().ExpectBucketCount("Ash.Lobster.State",
+                                       LobsterMetricState::kCommitAsInsert, 1);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCommitAsInsertSuccess, 1);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCommitAsInsertError, 0);
+}
+
+TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsInsert) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+  ui::FakeTextInputClient text_input_client(&ime(),
+                                            {.can_insert_image = false});
+
+  ON_CALL(*lobster_client,
+          InflateCandidate(/*seed=*/21, testing::_, testing::_))
+      .WillByDefault([](uint32_t seed, std::string_view query,
+                        InflateCandidateCallback done_callback) {
+        std::move(done_callback).Run({});
+      });
+
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kPicker);
+
+  base::test::TestFuture<bool> future;
+
+  session.CommitAsInsert(/*id=*/1, nullptr, future.GetCallback());
+  RunUntilIdle();
+
+  EXPECT_FALSE(future.Get());
+  histogram_tester().ExpectBucketCount("Ash.Lobster.State",
+                                       LobsterMetricState::kCommitAsInsert, 1);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCommitAsInsertSuccess, 0);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCommitAsInsertError, 1);
 }
 
 }  // namespace

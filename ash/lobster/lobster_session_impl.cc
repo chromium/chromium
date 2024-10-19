@@ -17,23 +17,8 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/types/expected.h"
-#include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/input_method.h"
 
 namespace ash {
-
-namespace {
-
-ui::TextInputClient* GetFocusedTextInputClient() {
-  const ui::InputMethod* input_method =
-      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  if (!input_method || !input_method->GetTextInputClient()) {
-    return nullptr;
-  }
-  return input_method->GetTextInputClient();
-}
-
-}  // namespace
 
 LobsterSessionImpl::LobsterSessionImpl(
     std::unique_ptr<LobsterClient> client,
@@ -84,17 +69,17 @@ void LobsterSessionImpl::RequestCandidates(const std::string& query,
 }
 
 void LobsterSessionImpl::CommitAsInsert(int candidate_id,
+                                        ui::TextInputClient* text_input_client,
                                         StatusCallback status_callback) {
-  InflateCandidateAndPerformAction(candidate_id,
-                                   base::BindOnce(&InsertImageOrCopyToClipboard,
-                                                  GetFocusedTextInputClient()),
-                                   base::BindOnce([](bool success) {
-                                     // TODO: b:348514607 - Adds any logic to
-                                     // execute before returning the status back
-                                     // to WebUI, e.g. recording commit as
-                                     // insert metric.
-                                     return success;
-                                   }).Then(std::move(status_callback)));
+  RecordLobsterState(LobsterMetricState::kCommitAsInsert);
+  InflateCandidateAndPerformAction(
+      candidate_id,
+      base::BindOnce(&InsertImageOrCopyToClipboard, text_input_client),
+      base::BindOnce([](bool success) {
+        RecordLobsterState(success ? LobsterMetricState::kCommitAsInsertSuccess
+                                   : LobsterMetricState::kCommitAsInsertError);
+        return success;
+      }).Then(std::move(status_callback)));
 }
 
 void LobsterSessionImpl::CommitAsDownload(int candidate_id,

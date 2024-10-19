@@ -18,6 +18,7 @@
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "ui/base/ime/input_method.h"
 
 namespace ash {
 
@@ -40,7 +41,9 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
   void DownloadCandidate(int candidate_id,
                          const base::FilePath& file_path,
                          StatusCallback callback) override;
-  void CommitAsInsert(int candidate_id, StatusCallback callback) override;
+  void CommitAsInsert(int candidate_id,
+                      ui::TextInputClient* text_input_client,
+                      StatusCallback callback) override;
   void CommitAsDownload(int candidate_id,
                         const base::FilePath& file_path,
                         StatusCallback callback) override;

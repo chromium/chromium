@@ -44,7 +44,9 @@ class FakeLobsterSession : public LobsterSession {
                          StatusCallback callback) override {
     std::move(callback).Run(commit_or_download_status_);
   }
-  void CommitAsInsert(int candidate_id, StatusCallback callback) override {
+  void CommitAsInsert(int candidate_id,
+                      ui::TextInputClient* text_input_client,
+                      StatusCallback callback) override {
     std::move(callback).Run(commit_or_download_status_);
   }
   void CommitAsDownload(int candidate_id,
