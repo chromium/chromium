@@ -653,6 +653,10 @@ bool AutofillPredictionImprovementsManager::
     return true;
   }
 
+  if (!url.SchemeIs("https")) {
+    return false;
+  }
+
   optimization_guide::OptimizationGuideDecision decision =
       decider_->CanApplyOptimization(
           url,

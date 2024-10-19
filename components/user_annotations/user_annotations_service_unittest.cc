@@ -162,6 +162,9 @@ TEST_P(UserAnnotationsServiceTest, ShouldAddFormSubmissionForURL) {
       GURL("https://notallowed.com/whatever")));
   EXPECT_TRUE(service()->ShouldAddFormSubmissionForURL(
       GURL("https://allowed.com/whatever")));
+  // Allowed host but not HTTPS.
+  EXPECT_FALSE(service()->ShouldAddFormSubmissionForURL(
+      GURL("http://allowed.com/whatever")));
 }
 
 TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {

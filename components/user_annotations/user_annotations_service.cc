@@ -163,6 +163,11 @@ bool UserAnnotationsService::ShouldAddFormSubmissionForURL(const GURL& url) {
     return true;
   }
 
+  // Only allow HTTPS sites.
+  if (!url.SchemeIs("https")) {
+    return false;
+  }
+
   // Fall back to optimization guide if not in override list.
   if (optimization_guide_decider_) {
     optimization_guide::OptimizationGuideDecision decision =

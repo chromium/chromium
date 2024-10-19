@@ -1205,8 +1205,10 @@ class IsFormAndFieldEligibleAutofillPredictionImprovementsTest
     form_ = autofill::test::GetFormData(form_description);
   }
 
-  std::unique_ptr<autofill::FormStructure> CreateEligibleForm() {
+  std::unique_ptr<autofill::FormStructure> CreateEligibleForm(
+      const GURL& url = GURL("https://example.com")) {
     autofill::FormData form_data;
+    form_data.set_main_frame_origin(url::Origin::Create(url));
     auto form = std::make_unique<autofill::FormStructure>(form_data);
     autofill::AutofillField& prediction_improvement_field =
         test_api(*form).PushField();
@@ -1318,6 +1320,22 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
   EXPECT_TRUE(manager.IsPredictionImprovementsEligible(
+      *form, *prediction_improvement_field));
+}
+
+TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+       IsNotEligibleForNotHttps) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
+                                              {{"skip_allowlist", "false"}});
+  AutofillPredictionImprovementsManager manager{&client_, &decider_,
+                                                &strike_database_};
+
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateEligibleForm(GURL("http://http.com"));
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
+
+  EXPECT_FALSE(manager.IsPredictionImprovementsEligible(
       *form, *prediction_improvement_field));
 }
 
