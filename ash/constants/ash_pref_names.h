@@ -2513,8 +2513,21 @@ inline constexpr char kDnsOverHttpsIncludedDomains[] =
 inline constexpr char kGraduationEnablementStatus[] =
     "ash.graduation.enablement_status";
 
+// Deprecated. Use kGraduationNudgeShownCount and kGraduationNudgeLastShownTime
+// prefs instead.
 // Boolean pref representing if the nudge for the Graduation app has been shown.
-inline constexpr char kGraduationNudgeShown[] = "ash.graduation.nudge_shown";
+inline constexpr char kGraduationNudgeShownDeprecated[] =
+    "ash.graduation.nudge_shown";
+
+// Integer pref representing how many times the nudge for the Graduation app has
+// been shown.
+inline constexpr char kGraduationNudgeShownCount[] =
+    "ash.graduation.nudge_shown_count";
+
+// Time pref representing the last time the Graduation app nudge was shown. The
+// default value is the default NULL time, base::Time().
+inline constexpr char kGraduationNudgeLastShownTime[] =
+    "ash.graduation.nudge_last_shown_time";
 
 //-----------------------------------------------------------------------------
 // Language related Prefs

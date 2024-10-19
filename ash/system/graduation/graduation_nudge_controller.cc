@@ -20,22 +20,37 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash::graduation {
 
+namespace {
+constexpr int kMaxNudgeShownCount = 3;
+constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
+}  // namespace
+
 GraduationNudgeController::GraduationNudgeController(
     PrefService* pref_service) {
   CHECK(pref_service);
   pref_service_ = pref_service;
+
+  // TODO(b:374164026): Clean up this deprecated pref.
+  pref_service_->ClearPref(prefs::kGraduationNudgeShownDeprecated);
 }
 
 GraduationNudgeController::~GraduationNudgeController() = default;
 
 void GraduationNudgeController::MaybeShowNudge(const ShelfID& id) {
-  bool nudge_shown = pref_service_->GetBoolean(prefs::kGraduationNudgeShown);
-  if (nudge_shown) {
+  int nudge_shown_count =
+      pref_service_->GetInteger(prefs::kGraduationNudgeShownCount);
+  if (nudge_shown_count >= kMaxNudgeShownCount) {
+    return;
+  }
+  if (base::Time::Now() -
+          pref_service_->GetTime(prefs::kGraduationNudgeLastShownTime) <
+      kNudgeTimeBetweenShown) {
     return;
   }
 
@@ -64,15 +79,20 @@ void GraduationNudgeController::MaybeShowNudge(const ShelfID& id) {
   // has been shown to a user.
   Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
 
-  pref_service_->SetBoolean(prefs::kGraduationNudgeShown, true);
+  pref_service_->SetInteger(prefs::kGraduationNudgeShownCount,
+                            ++nudge_shown_count);
+  pref_service_->SetTime(prefs::kGraduationNudgeLastShownTime,
+                         base::Time::Now());
 }
 
 void GraduationNudgeController::ResetNudgePref() {
-  bool nudge_shown = pref_service_->GetBoolean(prefs::kGraduationNudgeShown);
-  if (!nudge_shown) {
+  int nudge_shown =
+      pref_service_->GetInteger(prefs::kGraduationNudgeShownCount);
+  if (nudge_shown == 0) {
     VLOG(1) << "graduation: Nudge has not been shown but pref is being reset";
   }
-  pref_service_->SetBoolean(prefs::kGraduationNudgeShown, false);
+  pref_service_->ClearPref(prefs::kGraduationNudgeShownCount);
+  pref_service_->ClearPref(prefs::kGraduationNudgeLastShownTime);
 }
 
 }  // namespace ash::graduation
