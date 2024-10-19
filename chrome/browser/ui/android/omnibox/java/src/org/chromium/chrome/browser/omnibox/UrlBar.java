@@ -112,7 +112,7 @@ public class UrlBar extends AutocompleteEditText {
     private boolean mFocused;
     private boolean mFocusEventEmitted;
     private boolean mAllowFocus = true;
-    private boolean mTypingStartedEventSent;
+    private boolean mShouldSendTypingStartedEvent;
 
     private boolean mPendingScroll;
 
@@ -344,7 +344,6 @@ public class UrlBar extends AutocompleteEditText {
     @Override
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-        mTypingStartedEventSent = false;
         mFocused = focused;
         if (!mFocused) mFocusEventEmitted = false;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
@@ -355,6 +354,8 @@ public class UrlBar extends AutocompleteEditText {
             mPendingScroll = false;
         }
         fixupTextDirection();
+
+        mShouldSendTypingStartedEvent = focused;
     }
 
     @Override
@@ -444,9 +445,9 @@ public class UrlBar extends AutocompleteEditText {
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
 
-        if (!mTypingStartedEventSent && mFocused && lengthAfter > 0) {
+        if (mShouldSendTypingStartedEvent && lengthAfter > 0) {
             mTypingStartedListener.ifPresent(Runnable::run);
-            mTypingStartedEventSent = true;
+            mShouldSendTypingStartedEvent = false;
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

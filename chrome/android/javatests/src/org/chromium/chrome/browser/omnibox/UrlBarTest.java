@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assume.assumeFalse;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -45,6 +44,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.Clipboard;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
@@ -674,30 +674,24 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void typingStarted_emittedOncePerFocus() {
-        typingStarted_emittedOncePerFocus(
-                /* expectRetainOmniboxOnFocus= */ ThreadUtils.runOnUiThreadBlocking(
-                        OmniboxFeatures::shouldRetainOmniboxOnFocus));
+        testTypingStarted_emittedOncePerFocus();
     }
 
     @Test
     @SmallTest
     public void typingStarted_emittedOncePerFocusWithRetainOmniboxOnFocusDisabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
-        typingStarted_emittedOncePerFocus(/* expectRetainOmniboxOnFocus= */ false);
+        testTypingStarted_emittedOncePerFocus();
     }
 
     @Test
     @SmallTest
     public void typingStarted_emittedOncePerFocusWithRetainOmniboxOnFocusEnabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
-        typingStarted_emittedOncePerFocus(/* expectRetainOmniboxOnFocus= */ true);
+        testTypingStarted_emittedOncePerFocus();
     }
 
-    private void typingStarted_emittedOncePerFocus(boolean expectRetainOmniboxOnFocus) {
-        assumeFalse(
-                "TODO(crbug.com/347632178): Fix emit timing when retaining omnibox on focus.",
-                expectRetainOmniboxOnFocus);
-
+    private void testTypingStarted_emittedOncePerFocus() {
         var listener = mock(Runnable.class);
 
         mOmnibox.clearFocus();
@@ -721,30 +715,24 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void typingStarted_emittedOnceEveryFocus() {
-        typingStarted_emittedOnceEveryFocus(
-                /* expectRetainOmniboxOnFocus= */ ThreadUtils.runOnUiThreadBlocking(
-                        OmniboxFeatures::shouldRetainOmniboxOnFocus));
+        testTypingStarted_emittedOnceEveryFocus();
     }
 
     @Test
     @SmallTest
     public void typingStarted_emittedOnceEveryFocusWithRetainOmniboxOnFocusDisabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
-        typingStarted_emittedOnceEveryFocus(/* expectRetainOmniboxOnFocus= */ false);
+        testTypingStarted_emittedOnceEveryFocus();
     }
 
     @Test
     @SmallTest
     public void typingStarted_emittedOnceEveryFocusWithRetainOmniboxOnFocusEnabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
-        typingStarted_emittedOnceEveryFocus(/* expectRetainOmniboxOnFocus= */ true);
+        testTypingStarted_emittedOnceEveryFocus();
     }
 
-    private void typingStarted_emittedOnceEveryFocus(boolean expectRetainOmniboxOnFocus) {
-        assumeFalse(
-                "TODO(crbug.com/347632178): Fix emit timing when retaining omnibox on focus.",
-                expectRetainOmniboxOnFocus);
-
+    private void testTypingStarted_emittedOnceEveryFocus() {
         var listener = mock(Runnable.class);
 
         mOmnibox.clearFocus();
@@ -771,7 +759,7 @@ public class UrlBarTest {
     @SmallTest
     @RequiresRestart("crbug.com/358170962")
     public void typingStarted_notEmittedForNonTypingCharacters() {
-        typingStarted_notEmittedForNonTypingCharacters(
+        testTypingStarted_notEmittedForNonTypingCharacters(
                 /* expectRetainOmniboxOnFocus= */ ThreadUtils.runOnUiThreadBlocking(
                         OmniboxFeatures::shouldRetainOmniboxOnFocus));
     }
@@ -781,7 +769,7 @@ public class UrlBarTest {
     @RequiresRestart("crbug.com/358170962")
     public void typingStarted_notEmittedForNonTypingCharactersWithRetainOmniboxOnFocusDisabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
-        typingStarted_notEmittedForNonTypingCharacters(/* expectRetainOmniboxOnFocus= */ false);
+        testTypingStarted_notEmittedForNonTypingCharacters(/* expectRetainOmniboxOnFocus= */ false);
     }
 
     @Test
@@ -789,15 +777,11 @@ public class UrlBarTest {
     @RequiresRestart("crbug.com/358170962")
     public void typingStarted_notEmittedForNonTypingCharactersWithRetainOmniboxOnFocusEnabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
-        typingStarted_notEmittedForNonTypingCharacters(/* expectRetainOmniboxOnFocus= */ true);
+        testTypingStarted_notEmittedForNonTypingCharacters(/* expectRetainOmniboxOnFocus= */ true);
     }
 
-    private void typingStarted_notEmittedForNonTypingCharacters(
+    private void testTypingStarted_notEmittedForNonTypingCharacters(
             boolean expectRetainOmniboxOnFocus) {
-        assumeFalse(
-                "TODO(crbug.com/347632178): Fix emit timing when retaining omnibox on focus.",
-                expectRetainOmniboxOnFocus);
-
         var listener = mock(Runnable.class);
 
         mOmnibox.clearFocus();
@@ -806,13 +790,22 @@ public class UrlBarTest {
         mOmnibox.requestFocus();
 
         var nonTypingKeys =
-                List.of(
-                        KeyEvent.KEYCODE_F1,
-                        KeyEvent.KEYCODE_TAB,
-                        KeyEvent.KEYCODE_SHIFT_LEFT,
-                        KeyEvent.KEYCODE_DEL,
-                        KeyEvent.KEYCODE_PAGE_UP,
-                        KeyEvent.KEYCODE_DPAD_LEFT);
+                new ArrayList<>(
+                        List.of(
+                                KeyEvent.KEYCODE_F1,
+                                KeyEvent.KEYCODE_SHIFT_LEFT,
+                                KeyEvent.KEYCODE_DEL,
+                                KeyEvent.KEYCODE_PAGE_UP,
+                                KeyEvent.KEYCODE_DPAD_LEFT));
+
+        // When retaining omnibox on focus, the tab key causes selection of the first omnibox
+        // suggestion. This results in a push to the model which, in turn, results in a typing
+        // started event. This is not a real world scenario for the NTP on Large-Form-Factor
+        // devices, where the omnibox is pre-focused and the tab key reveals the suggestions list,
+        // so this is acceptable.
+        if (!expectRetainOmniboxOnFocus) {
+            nonTypingKeys.add(KeyEvent.KEYCODE_TAB);
+        }
 
         for (int key : nonTypingKeys) {
             mOmnibox.sendKey(key);
@@ -823,9 +816,7 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void typingStarted_clipboardPasteTriggersTypingStarted() {
-        typingStarted_clipboardPasteTriggersTypingStarted(
-                /* expectRetainOmniboxOnFocus= */ ThreadUtils.runOnUiThreadBlocking(
-                        OmniboxFeatures::shouldRetainOmniboxOnFocus));
+        testTypingStarted_clipboardPasteTriggersTypingStarted();
     }
 
     @Test
@@ -833,22 +824,17 @@ public class UrlBarTest {
     public void
             typingStarted_clipboardPasteTriggersTypingStartedWithRetainOmniboxOnFocusDisabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
-        typingStarted_clipboardPasteTriggersTypingStarted(/* expectRetainOmniboxOnFocus= */ false);
+        testTypingStarted_clipboardPasteTriggersTypingStarted();
     }
 
     @Test
     @SmallTest
     public void typingStarted_clipboardPasteTriggersTypingStartedWithRetainOmniboxOnFocusEnabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
-        typingStarted_clipboardPasteTriggersTypingStarted(/* expectRetainOmniboxOnFocus= */ true);
+        testTypingStarted_clipboardPasteTriggersTypingStarted();
     }
 
-    private void typingStarted_clipboardPasteTriggersTypingStarted(
-            boolean expectRetainOmniboxOnFocus) {
-        assumeFalse(
-                "TODO(crbug.com/347632178): Fix emit timing when retaining omnibox on focus.",
-                expectRetainOmniboxOnFocus);
-
+    private void testTypingStarted_clipboardPasteTriggersTypingStarted() {
         var listener = mock(Runnable.class);
 
         mOmnibox.clearFocus();
