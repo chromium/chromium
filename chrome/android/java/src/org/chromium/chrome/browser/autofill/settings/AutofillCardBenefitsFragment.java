@@ -49,6 +49,8 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
                 Preference.OnPreferenceChangeListener {
     public static final String CARD_BENEFITS_LEARN_MORE_CLICKED_USER_ACTION =
             "CardBenefits_LearnMoreLinkClicked";
+    public static final String CARD_BENEFITS_TERMS_CLICKED_USER_ACTION =
+            "CardBenefits_TermsLinkClicked";
     public static final String CARD_BENEFITS_TOGGLED_OFF_USER_ACTION = "CardBenefits_ToggledOff";
     public static final String CARD_BENEFITS_TOGGLED_ON_USER_ACTION = "CardBenefits_ToggledOn";
     public static final String PREF_LIST_TERMS_URL = "card_benefits_terms_url";
@@ -211,6 +213,7 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
     @Override
     public boolean onPreferenceClick(Preference preference) {
         openUrlInCct(preference.getExtras().getString(PREF_LIST_TERMS_URL));
+        RecordUserAction.record(CARD_BENEFITS_TERMS_CLICKED_USER_ACTION);
         return true;
     }
 

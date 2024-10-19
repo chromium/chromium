@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.containsString;
 
 import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.CARD_BENEFITS_LEARN_MORE_CLICKED_USER_ACTION;
+import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.CARD_BENEFITS_TERMS_CLICKED_USER_ACTION;
 import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.CARD_BENEFITS_TOGGLED_OFF_USER_ACTION;
 import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.CARD_BENEFITS_TOGGLED_ON_USER_ACTION;
 import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.PREF_KEY_CARD_BENEFIT_TERM;
@@ -241,6 +242,15 @@ public class AutofillCardBenefitsFragmentTest {
                 cardPreference.getSummary(),
                 activity.getString(R.string.autofill_settings_page_card_benefits_issuer_term_text));
         Assert.assertTrue(cardPreference.getIcon().isVisible());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    cardPreference.performClick();
+                    Assert.assertTrue(
+                            "User action should be logged when the user clicks on terms.",
+                            mActionTester
+                                    .getActions()
+                                    .contains(CARD_BENEFITS_TERMS_CLICKED_USER_ACTION));
+                });
     }
 
     // Test to verify that when there is no card benefits, the benefit settings page only contains
