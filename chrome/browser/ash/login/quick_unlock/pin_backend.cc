@@ -210,9 +210,6 @@ void PinBackend::Set(const AccountId& account_id,
     return;
   }
 
-  QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-  DCHECK(storage);
-
   if (cryptohome_backend_) {
     if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
       PostResponse(std::move(did_set), false);
@@ -223,6 +220,9 @@ void PinBackend::Set(const AccountId& account_id,
         base::BindOnce(&PinBackend::SetWithContext, base::Unretained(this),
                        account_id, token, pin, std::move(did_set)));
   } else {
+    QuickUnlockStorage* storage = GetPrefsBackend(account_id);
+    DCHECK(storage);
+
     storage->pin_storage_prefs()->SetPin(pin);
     storage->MarkStrongAuth();
     UpdatePinAutosubmitOnSet(account_id, pin.length());

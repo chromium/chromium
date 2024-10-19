@@ -102,6 +102,10 @@ interface RecoveryFactorEditor {
 interface PinFactorEditor {
   // Set the user pin to the desired value.
   SetPin(string auth_token, string pin) => (ConfigureResult result);
+  // Update an already set user pin to the desired value. This method will
+  // only update a cryptohome pin if already present, for prefs-based pins and
+  // empty pins, it's a no-op.
+  UpdatePin(string auth_token, string pin) => (ConfigureResult result);
   // Remove the pin factor for the user.
   RemovePin(string auth_token) => (ConfigureResult result);
 };

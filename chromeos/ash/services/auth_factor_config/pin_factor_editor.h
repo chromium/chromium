@@ -27,6 +27,10 @@ class PinFactorEditor : public mojom::PinFactorEditor {
       const std::string& auth_token,
       const std::string& pin,
       base::OnceCallback<void(mojom::ConfigureResult)> callback) override;
+  void UpdatePin(
+      const std::string& auth_token,
+      const std::string& pin,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback) override;
   void RemovePin(
       const std::string& auth_token,
       base::OnceCallback<void(mojom::ConfigureResult)> callback) override;
@@ -51,6 +55,11 @@ class PinFactorEditor : public mojom::PinFactorEditor {
       bool success,
       std::unique_ptr<UserContext> context);
   void SetPinWithContext(
+      const std::string& auth_token,
+      const std::string& pin,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      std::unique_ptr<UserContext> context);
+  void UpdatePinWithContext(
       const std::string& auth_token,
       const std::string& pin,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
