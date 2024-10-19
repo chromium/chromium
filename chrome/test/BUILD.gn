@@ -6015,6 +6015,7 @@ test("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "../browser/ash/scalable_iph/scalable_iph_factory_impl_unittest.cc",
       "../browser/metrics/chrome_metrics_service_client_ash_unittest.cc",
       "../browser/metrics/chromeos_metrics_provider_unittest.cc",
       "../browser/metrics/structured/arena_event_buffer_unittest.cc",
@@ -6637,6 +6638,8 @@ test("unit_tests") {
     sources += [ "../browser/device_reauth/chromeos/device_authenticator_chromeos_unittest.cc" ]
 
     deps += [
+      "//chrome/browser/ash/scalable_iph",
+      "//chrome/browser/ash/scalable_iph:test_support",
       "//chrome/browser/chromeos/office_web_app:office_web_app",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/policy/dlp/test:test_support",
