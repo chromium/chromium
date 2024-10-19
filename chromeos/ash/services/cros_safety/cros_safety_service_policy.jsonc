@@ -1,0 +1,21 @@
+[
+  {
+    // This is the selinux security context of ash chrome.
+    "identity": "u:r:cros_browser:s0",
+    "own": [
+      "CrosSafetyService"
+    ]
+  },
+  {
+    "identity": "u:r:cros_odml_service:s0",
+    "request": [
+      "CrosSafetyService"
+    ]
+  },
+  {
+    "identity": "u:r:cros_ssh_session:s0",
+    "request": [
+      "CrosSafetyService"
+    ]
+  }
+]
