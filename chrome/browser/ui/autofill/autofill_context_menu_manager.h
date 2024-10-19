@@ -180,6 +180,9 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // Dangling on linux-lacros-rel in:
   // AutofillContextMenuManagerFeedbackUILacrosBrowserTest
   //   .CloseTabWhileUIIsOpenShouldNotCrash.
+  //
+  // TODO(crbug.com/374115896): Check whether the `dangling` classification
+  // still applies now that lacros support has been removed.
   const raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
   const raw_ptr<ui::SimpleMenuModel> menu_model_;
   const raw_ptr<RenderViewContextMenuBase> delegate_;

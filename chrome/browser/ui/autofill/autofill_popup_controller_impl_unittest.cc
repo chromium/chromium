@@ -8,7 +8,6 @@
 
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
@@ -29,9 +28,9 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/gfx/range/range.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "content/public/test/scoped_accessibility_mode_override.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace autofill {
 namespace {
@@ -927,7 +926,7 @@ TEST_F(AutofillPopupControllerImplTest, UnselectingClearsPreview) {
   client().popup_controller(manager()).UnselectSuggestion();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
   using ContentAutofillDriver::ContentAutofillDriver;

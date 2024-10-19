@@ -18,7 +18,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -1626,8 +1625,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         UploadCardUpdatedDesktopUiTestData(
             UpdatedDesktopUiTreatmentArm::kDefault,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
             IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4,
 #else
             IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3,

@@ -1427,7 +1427,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class PasswordsFallbackWithGuestProfileTest : public PasswordsFallbackTest {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(ash::switches::kGuestSession);
     command_line->AppendSwitchASCII(ash::switches::kLoginUser,

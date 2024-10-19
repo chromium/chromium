@@ -280,7 +280,6 @@ source_set("unit_tests") {
     ]
     deps += [
       ":payments",
-      "//build:chromeos_buildflags",
       "//chrome/app:generated_resources",
       "//chrome/app:generated_resources_grit",
       "//chrome/browser/autofill",

@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(
       autofill_metrics::Vcn3dsFlowEvent::kProgressDialogCancelled, 1);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 // Tests that if a VCN 3DS flow is ongoing, and the original tab is set active,
 // the payments window manager popup's web contents are re-activated.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                   ->tab_strip_model()
                   ->GetActiveWebContents() == GetPopupWebContents());
 }
-#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // #if BUILDFLAG(IS_LINUX)
 
 // Integration test using Kombucha to ensure that the consent dialog creates a
 // new pop-up when the ok button is clicked, and cancels the flow when the
