@@ -90,6 +90,7 @@ const CGFloat kSeparatorHeight = 0.5;
   _titleLabel.text = l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_TITLE);
   _titleLabel.isAccessibilityElement = YES;
+  _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
 
   _descriptionLabel = [[UILabel alloc] init];
   _descriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
