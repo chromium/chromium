@@ -28,14 +28,13 @@ IbanManager::IbanManager(PersonalDataManager* personal_data_manager)
 IbanManager::~IbanManager() = default;
 
 bool IbanManager::OnGetSingleFieldSuggestions(
-    const FormStructure* form_structure,
     const FormFieldData& field,
-    const AutofillField* autofill_field,
+    const AutofillField& autofill_field,
     const AutofillClient& client,
-    OnSuggestionsReturnedCallback on_suggestions_returned) {
+    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+        on_suggestions_returned) {
   // The field is eligible only if it's focused on an IBAN field.
-  if (!autofill_field ||
-      autofill_field->Type().GetStorableType() != IBAN_VALUE) {
+  if (autofill_field.Type().GetStorableType() != IBAN_VALUE) {
     return false;
   }
 
@@ -56,7 +55,7 @@ bool IbanManager::OnGetSingleFieldSuggestions(
           client.GetAutofillOptimizationGuide()) {
     if (autofill_optimization_guide->ShouldBlockSingleFieldSuggestions(
             client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
-            autofill_field)) {
+            &autofill_field)) {
       autofill_metrics::LogIbanSuggestionBlockListStatusMetric(
           autofill_metrics::IbanSuggestionBlockListStatus::kBlocked);
       return false;

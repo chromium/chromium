@@ -506,8 +506,6 @@ static_library("browser") {
     "select_control_util.h",
     "single_field_form_fill_router.cc",
     "single_field_form_fill_router.h",
-    "single_field_form_filler.cc",
-    "single_field_form_filler.h",
     "strike_databases/address_suggestion_strike_database.cc",
     "strike_databases/address_suggestion_strike_database.h",
     "strike_databases/autofill_profile_migration_strike_database.h",

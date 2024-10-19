@@ -4,8 +4,14 @@
 
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 
+#include <string>
+#include <vector>
+
 #include "base/check_deref.h"
+#include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/merchant_promo_code_manager.h"
+#include "components/autofill/core/browser/payments/iban_manager.h"
 
 namespace autofill {
 
@@ -63,22 +69,22 @@ bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
     const FormFieldData& field,
     const AutofillField* autofill_field,
     const AutofillClient& client,
-    OnSuggestionsReturnedCallback on_suggestions_returned) {
+    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+        on_suggestions_returned) {
   // Retrieving suggestions for a new field; select the appropriate filler.
-  if (merchant_promo_code_manager_ &&
+  if (merchant_promo_code_manager_ && form_structure && autofill_field &&
       merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-          form_structure, field, autofill_field, client,
+          *form_structure, field, *autofill_field, client,
           on_suggestions_returned)) {
     return true;
   }
-  if (iban_manager_ && iban_manager_->OnGetSingleFieldSuggestions(
-                           form_structure, field, autofill_field, client,
-                           on_suggestions_returned)) {
+  if (iban_manager_ && autofill_field &&
+      iban_manager_->OnGetSingleFieldSuggestions(field, *autofill_field, client,
+                                                 on_suggestions_returned)) {
     return true;
   }
   return autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-      form_structure, field, autofill_field, client,
-      std::move(on_suggestions_returned));
+      field, client, std::move(on_suggestions_returned));
 }
 
 void SingleFieldFormFillRouter::OnWillSubmitFormWithFields(

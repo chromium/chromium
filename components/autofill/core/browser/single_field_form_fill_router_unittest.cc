@@ -48,10 +48,16 @@ class SingleFieldFormFillRouterTest : public testing::Test {
     autocomplete_history_manager_.Init(web_data_service_, prefs_.get(), false);
     merchant_promo_code_manager_.Init(&personal_data_manager_,
                                       /*is_off_the_record=*/false);
-    test_field_ =
+
+    FormData form;
+    test_api(form).Append(
         test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
-                                  FormControlType::kInputText);
+                                  FormControlType::kInputText));
+    form_structure_ = std::make_unique<FormStructure>(form);
   }
+
+  FormStructure& form() { return *form_structure_; }
+  AutofillField& field() { return *form_structure_->fields().front(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -63,8 +69,23 @@ class SingleFieldFormFillRouterTest : public testing::Test {
   MockIbanManager iban_manager_;
   MockMerchantPromoCodeManager merchant_promo_code_manager_;
   SingleFieldFormFillRouter single_field_form_fill_router_;
-  FormFieldData test_field_;
+
+ private:
+  std::unique_ptr<FormStructure> form_structure_;
 };
+
+// Tests that FormStructure and AutofillField nullptrs are handled by
+// SingleFieldFormFillRouter.
+TEST_F(SingleFieldFormFillRouterTest, TolerateNullPtrs) {
+  EXPECT_FALSE(single_field_form_fill_router_.OnGetSingleFieldSuggestions(
+      nullptr, field(), &field(), autofill_client_, base::DoNothing()));
+  EXPECT_FALSE(single_field_form_fill_router_.OnGetSingleFieldSuggestions(
+      &form(), field(), nullptr, autofill_client_, base::DoNothing()));
+  EXPECT_FALSE(single_field_form_fill_router_.OnGetSingleFieldSuggestions(
+      &form(), field(), &field(), autofill_client_, {}));
+  single_field_form_fill_router_.OnWillSubmitForm(
+      form().ToFormData(), nullptr, /*is_autocomplete_enabled=*/true);
+}
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
 // OnGetSingleFieldSuggestions call if the field has autocomplete on.
@@ -73,31 +94,29 @@ TEST_F(SingleFieldFormFillRouterTest,
   for (bool test_field_should_autocomplete : {true, false}) {
     SCOPED_TRACE(testing::Message() << "test_field_should_autocomplete = "
                                     << test_field_should_autocomplete);
-    test_field_.set_should_autocomplete(test_field_should_autocomplete);
+    field().set_should_autocomplete(test_field_should_autocomplete);
 
-    // If `test_field_.should_autocomplete` is true, that means autocomplete is
+    // If `field().should_autocomplete` is true, that means autocomplete is
     // turned on for the given test field and
     // AutocompleteHistoryManager::OnGetSingleFieldSuggestions() should return
-    // true. If `test_field_.should_autocomplete` is false, then autocomplete is
+    // true. If `field().should_autocomplete` is false, then autocomplete is
     // turned off for the given test field and
     // AutocompleteHistoryManager::OnGetSingleFieldSuggestions() should return
     // false.
     EXPECT_CALL(autocomplete_history_manager_, OnGetSingleFieldSuggestions)
-        .WillOnce(testing::Return(test_field_.should_autocomplete()));
+        .WillOnce(testing::Return(field().should_autocomplete()));
 
     EXPECT_EQ(
-        test_field_.should_autocomplete(),
+        field().should_autocomplete(),
         single_field_form_fill_router_.OnGetSingleFieldSuggestions(
-            /*form_structure=*/nullptr, test_field_, /*autofill_field=*/nullptr,
-            autofill_client_, base::DoNothing()));
+            &form(), field(), &field(), autofill_client_, base::DoNothing()));
   }
 }
 
-// Ensure that the router routes to all SingleFieldFormFillers for this
-// OnWillSubmitForm call, and call OnWillSubmitFormWithFields
-// if corresponding manager (e.g., IbanManager) presents.
-TEST_F(SingleFieldFormFillRouterTest,
-       RouteToAllSingleFieldFormFillers_OnWillSubmitForm) {
+// Ensure that the router routes to all fillers for this OnWillSubmitForm call,
+// and call OnWillSubmitFormWithFields if corresponding manager (e.g.,
+// IbanManager) presents.
+TEST_F(SingleFieldFormFillRouterTest, RouteToAllFillers_OnWillSubmitForm) {
   FormData form_data;
   size_t number_of_fields_for_testing = 3;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -159,10 +178,8 @@ TEST_F(SingleFieldFormFillRouterTest,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
-// Ensure that the router routes to SingleFieldFormFillers for this
-// CancelPendingQueries call.
-TEST_F(SingleFieldFormFillRouterTest,
-       RouteToAllSingleFieldFormFillers_CancelPendingQueries) {
+// Ensure that the router routes to fillers for this CancelPendingQueries call.
+TEST_F(SingleFieldFormFillRouterTest, RouteToAllFillers_CancelPendingQueries) {
   EXPECT_CALL(autocomplete_history_manager_, CancelPendingQueries);
   EXPECT_CALL(merchant_promo_code_manager_, CancelPendingQueries);
   EXPECT_CALL(iban_manager_, CancelPendingQueries);
@@ -199,9 +216,9 @@ TEST_F(SingleFieldFormFillRouterTest,
   for (bool test_field_should_autocomplete : {true, false}) {
     SCOPED_TRACE(testing::Message() << "test_field_should_autocomplete = "
                                     << test_field_should_autocomplete);
-    test_field_.set_should_autocomplete(test_field_should_autocomplete);
+    field().set_should_autocomplete(test_field_should_autocomplete);
 
-    // `test_field_.should_autocomplete` should not affect merchant promo code
+    // `field().should_autocomplete` should not affect merchant promo code
     // autofill, so MerchantPromoCodeManager::OnGetSingleFieldSuggestions()
     // should always be called since the given test field is a merchant promo
     // code field.
@@ -209,8 +226,7 @@ TEST_F(SingleFieldFormFillRouterTest,
         .WillOnce(testing::Return(true));
 
     EXPECT_TRUE(single_field_form_fill_router_.OnGetSingleFieldSuggestions(
-        /*form_structure=*/nullptr, test_field_, /*autofill_field=*/nullptr,
-        autofill_client_, base::DoNothing()));
+        &form(), field(), &field(), autofill_client_, base::DoNothing()));
   }
 }
 
@@ -226,12 +242,11 @@ TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerNotPresent) {
   EXPECT_CALL(autocomplete_history_manager_, OnGetSingleFieldSuggestions)
       .WillOnce(testing::Return(true));
 
-  // As `test_field_.should_autocomplete` is true, this was a valid field for
+  // As `field().should_autocomplete` is true, this was a valid field for
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(router.OnGetSingleFieldSuggestions(
-      /*form_structure=*/nullptr, test_field_, /*autofill_field=*/nullptr,
-      autofill_client_, base::DoNothing()));
+      &form(), field(), &field(), autofill_client_, base::DoNothing()));
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -249,12 +264,11 @@ TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerReturnedFalse) {
   EXPECT_CALL(autocomplete_history_manager_, OnGetSingleFieldSuggestions)
       .WillOnce(testing::Return(true));
 
-  // As `test_field_.should_autocomplete` is true, this was a valid field for
+  // As `field().should_autocomplete` is true, this was a valid field for
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_.OnGetSingleFieldSuggestions(
-      /*form_structure=*/nullptr, test_field_, /*autofill_field=*/nullptr,
-      autofill_client_, base::DoNothing()));
+      &form(), field(), &field(), autofill_client_, base::DoNothing()));
 }
 
 // Ensure that the router routes to MerchantPromoCodeManager for this
@@ -281,20 +295,18 @@ TEST_F(SingleFieldFormFillRouterTest,
 
 // Ensure that SingleFieldFormFillRouter::OnGetSingleFieldSuggestions() returns
 // false if all single field form fillers returned false.
-TEST_F(
-    SingleFieldFormFillRouterTest,
-    FieldNotEligibleForAnySingleFieldFormFiller_OnGetSingleFieldSuggestions) {
+TEST_F(SingleFieldFormFillRouterTest,
+       FieldNotEligibleForAnyFillersOnGetSingleFieldSuggestions) {
   EXPECT_CALL(merchant_promo_code_manager_, OnGetSingleFieldSuggestions)
       .WillOnce(testing::Return(false));
 
   EXPECT_CALL(autocomplete_history_manager_, OnGetSingleFieldSuggestions)
       .WillOnce(testing::Return(false));
 
-  // All SingleFieldFormFillers returned false, so we should return false as we
-  // did not attempt to display any single field form fill suggestions.
+  // All fillers returned false, so we should return false as we did not attempt
+  // to display any single field form fill suggestions.
   EXPECT_FALSE(single_field_form_fill_router_.OnGetSingleFieldSuggestions(
-      /*form_structure=*/nullptr, test_field_, /*autofill_field=*/nullptr,
-      autofill_client_, base::DoNothing()));
+      &form(), field(), &field(), autofill_client_, base::DoNothing()));
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -309,12 +321,11 @@ TEST_F(SingleFieldFormFillRouterTest, IbanManagerNotPresent) {
   EXPECT_CALL(autocomplete_history_manager_, OnGetSingleFieldSuggestions)
       .WillOnce(testing::Return(true));
 
-  // As `test_field_.should_autocomplete` is true, this was a valid field for
+  // As `field().should_autocomplete` is true, this was a valid field for
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(router.OnGetSingleFieldSuggestions(
-      /*form_structure=*/nullptr, test_field_, /*autofill_field=*/nullptr,
-      autofill_client_, base::DoNothing()));
+      &form(), field(), &field(), autofill_client_, base::DoNothing()));
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -332,12 +343,11 @@ TEST_F(SingleFieldFormFillRouterTest, IbanManagerReturnedFalse) {
   EXPECT_CALL(autocomplete_history_manager_, OnGetSingleFieldSuggestions)
       .WillOnce(testing::Return(true));
 
-  // As `test_field_.should_autocomplete` is true, this was a valid field for
+  // As `field().should_autocomplete` is true, this was a valid field for
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_.OnGetSingleFieldSuggestions(
-      /*form_structure=*/nullptr, test_field_, /*autofill_field=*/nullptr,
-      autofill_client_, base::DoNothing()));
+      &form(), field(), &field(), autofill_client_, base::DoNothing()));
 }
 
 // Ensure that the router routes to IbanManager for this

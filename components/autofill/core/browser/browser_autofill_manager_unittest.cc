@@ -2302,7 +2302,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillOnce([&](const FormStructure*, const FormFieldData& field,
                     const AutofillField*, const AutofillClient&,
-                    SingleFieldFormFiller::OnSuggestionsReturnedCallback
+                    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
                         on_suggestions_returned) {
         std::move(on_suggestions_returned).Run(field.global_id(), suggestions);
         return true;
@@ -8243,8 +8243,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
                           const AutofillField*, const AutofillClient&,
-                          SingleFieldFormFiller::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
+                          SingleFieldFormFillRouter::
+                              OnSuggestionsReturnedCallback
+                                  on_suggestions_returned) {
         std::move(on_suggestions_returned)
             .Run(field.global_id(),
                  std::vector<Suggestion>{
@@ -8288,8 +8289,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
                           const AutofillField*, const AutofillClient&,
-                          SingleFieldFormFiller::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
+                          SingleFieldFormFillRouter::
+                              OnSuggestionsReturnedCallback
+                                  on_suggestions_returned) {
         std::move(on_suggestions_returned)
             .Run(field.global_id(),
                  std::vector<Suggestion>{
@@ -8340,8 +8342,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
                           const AutofillField*, const AutofillClient&,
-                          SingleFieldFormFiller::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
+                          SingleFieldFormFillRouter::
+                              OnSuggestionsReturnedCallback
+                                  on_suggestions_returned) {
         std::move(on_suggestions_returned)
             .Run(field.global_id(),
                  std::vector<Suggestion>{
