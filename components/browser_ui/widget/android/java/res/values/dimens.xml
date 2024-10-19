@@ -94,9 +94,9 @@ found in the LICENSE file.
     <dimen name="promo_slim_padding_vertical">10dp</dimen>
 
     <dimen name="promo_large_image_size">48dp</dimen>
-    <dimen name="promo_large_padding_vertical">8dp</dimen>
+    <dimen name="promo_large_padding_vertical">16dp</dimen>
     <dimen name="promo_large_padding_horizontal">24dp</dimen>
-    <dimen name="promo_large_illustration_margin">16dp</dimen>
+    <dimen name="promo_large_illustration_margin">12dp</dimen>
     <dimen name="promo_large_text_group_bottom_margin">10dp</dimen>
 
     <!-- TextBubble dimensions -->
