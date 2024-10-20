@@ -67,6 +67,7 @@ enum class PermissionType {
 
   // Always keep this at the end.
   NUM,
+  MIN_VALUE = MIDI_SYSEX,
 };
 
 // Converts a permission string ("granted", "denied", "prompt") into a
