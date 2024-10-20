@@ -20,7 +20,6 @@ import {AiPageActions, FeatureOptInState} from './constants.js';
 import {getTemplate} from './history_search_page.html.js';
 
 const SettingsHistorySearchPageElementBase = PrefsMixin(PolymerElement);
-
 export class SettingsHistorySearchPageElement extends
     SettingsHistorySearchPageElementBase {
   static get is() {

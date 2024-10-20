@@ -10,6 +10,7 @@ import {AiPageCompareInteractions, AiPageHistorySearchInteractions, AiPageTabOrg
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -147,6 +148,35 @@ suite('HistorySearchSubpage', function() {
     await assertFeatureInteractionMetrics(
         AiPageHistorySearchInteractions.LEARN_MORE_LINK_CLICKED,
         AiPageActions.HISTORY_SEARCH_LEARN_MORE_CLICKED);
+  });
+
+  test('historySearchTextWithAnswers', async () => {
+    function checkVisibility(selector: string) {
+      const element = subpage.shadowRoot!.querySelector(selector);
+      assertTrue(!!element);
+      return isVisible(element);
+    }
+
+    await createPage();
+    assertTrue(checkVisibility('#linkoutText'));
+    assertFalse(checkVisibility('#linkoutTextWithAnswers'));
+    assertTrue(checkVisibility('#whenOnPageContentText'));
+    assertFalse(checkVisibility('#whenOnPageContentTextWithAnswers'));
+    assertFalse(checkVisibility('#whenOnLogStartItem'));
+    assertTrue(checkVisibility('#considerDataEncryptedText'));
+    assertFalse(checkVisibility('#considerDataEncryptedTextWithAnswers'));
+    assertFalse(checkVisibility('#considerOutDatedItem'));
+
+    loadTimeData.overrideValues({historyEmbeddingsAnswersFeatureEnabled: true});
+    await createPage();
+    assertFalse(checkVisibility('#linkoutText'));
+    assertTrue(checkVisibility('#linkoutTextWithAnswers'));
+    assertFalse(checkVisibility('#whenOnPageContentText'));
+    assertTrue(checkVisibility('#whenOnPageContentTextWithAnswers'));
+    assertTrue(checkVisibility('#whenOnLogStartItem'));
+    assertFalse(checkVisibility('#considerDataEncryptedText'));
+    assertTrue(checkVisibility('#considerDataEncryptedTextWithAnswers'));
+    assertTrue(checkVisibility('#considerOutDatedItem'));
   });
 });
 

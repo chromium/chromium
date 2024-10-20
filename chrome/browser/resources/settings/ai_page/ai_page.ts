@@ -226,11 +226,17 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private getHistorySearchSublabel_(): string {
+    const isAnswersEnabled =
+        loadTimeData.getBoolean('historyEmbeddingsAnswersFeatureEnabled');
     if (this.getPref(SettingsAiPageFeaturePrefName.HISTORY_SEARCH).value ===
         FeatureOptInState.ENABLED) {
-      return loadTimeData.getString('historySearchSublabelOn');
+      return isAnswersEnabled ?
+          loadTimeData.getString('historySearchWithAnswersSublabelOn') :
+          loadTimeData.getString('historySearchSublabelOn');
     }
-    return loadTimeData.getString('historySearchSublabelOff');
+    return isAnswersEnabled ?
+        loadTimeData.getString('historySearchWithAnswersSublabelOff') :
+        loadTimeData.getString('historySearchSublabelOff');
   }
 }
 
