@@ -13,6 +13,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/token.h"
+#include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 
 namespace ash {
 
@@ -20,7 +22,8 @@ class BirchModel;
 class CoralItemRemover;
 
 class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
-                                      public TabClusterUIController::Observer {
+                                      public TabClusterUIController::Observer,
+                                      public coral::mojom::TitleObserver {
  public:
   explicit BirchCoralProvider(BirchModel* birch_model);
   BirchCoralProvider(const BirchCoralProvider&) = delete;
@@ -50,6 +53,11 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   void OnTabItemAdded(TabClusterUIItem* tab_item) override;
   void OnTabItemUpdated(TabClusterUIItem* tab_item) override;
   void OnTabItemRemoved(TabClusterUIItem* tab_item) override;
+
+  // coral::mojom::TitleObserver:
+  void TitleUpdated(const base::Token& id, const std::string& title) override;
+
+  mojo::PendingRemote<coral::mojom::TitleObserver> BindRemote();
 
   const CoralRequest& GetCoralRequestForTest() const { return request_; }
 
@@ -112,6 +120,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   // Used to filter out coral items which have been removed by the user in
   // the current session.
   std::unique_ptr<CoralItemRemover> coral_item_remover_;
+
+  mojo::Receiver<coral::mojom::TitleObserver> receiver_{this};
 
   base::WeakPtrFactory<BirchCoralProvider> weak_ptr_factory_{this};
 };

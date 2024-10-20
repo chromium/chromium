@@ -30,6 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/wm/core/window_util.h"
 
 // Implement custom hash for TabPtr because GURL doesn't support hash.
@@ -329,8 +330,10 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
   }
 
   request_.set_content(std::move(tab_app_data));
+  // TODO(b/370851826): Change `mojo::NullRemote()` to `BindRemote()` when we
+  // can update BirchModel on title updates.
   Shell::Get()->coral_controller()->GenerateContentGroups(
-      request_,
+      request_, mojo::NullRemote(),
       base::BindOnce(&BirchCoralProvider::HandlePostLoginCoralResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -352,8 +355,10 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
   }
   FilterCoralContentItems(&active_tab_app_data);
   request_.set_content(std::move(active_tab_app_data));
+  // TODO(b/370851826): Change `mojo::NullRemote()` to `BindRemote()` when we
+  // can update BirchModel on title updates.
   Shell::Get()->coral_controller()->GenerateContentGroups(
-      request_,
+      request_, mojo::NullRemote(),
       base::BindOnce(&BirchCoralProvider::HandleInSessionCoralResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -431,6 +436,22 @@ void BirchCoralProvider::CacheTabEmbedding(TabClusterUIItem* tab_item) {
 
 void BirchCoralProvider::HandleEmbeddingResult(bool success) {
   // TODO(yulunwu) Add metrics.
+}
+
+void BirchCoralProvider::TitleUpdated(const base::Token& id,
+                                      const std::string& title) {
+  for (coral::mojom::GroupPtr& group : response_->groups()) {
+    if (group->id == id) {
+      group->title = title;
+      return;
+    }
+  }
+}
+
+mojo::PendingRemote<coral::mojom::TitleObserver>
+BirchCoralProvider::BindRemote() {
+  receiver_.reset();
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
 }  // namespace ash

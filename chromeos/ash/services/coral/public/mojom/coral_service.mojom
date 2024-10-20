@@ -10,6 +10,7 @@
 module coral.mojom;
 
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/token.mojom";
 
 // Represents metadata of a Chrome tab entity.
 struct Tab {
@@ -84,6 +85,10 @@ enum CoralError {
 };
 
 struct Group {
+  // A random id that uniquely identifies the group.
+  mojo_base.mojom.Token id;
+  // This could be empty, in that case the title will be updated to the
+  // observer with corresponding group ID when the generation is done.
   string title;
   // This is sorted by descending rank of importance.
   array<Entity> entities;
@@ -123,12 +128,28 @@ union CacheEmbeddingsResult {
   CacheEmbeddingsResponse response;
 };
 
+// The interface is used to provide updates of the |Group.title| field inside
+// the |GroupResponse|. Title generation may take significantly high amount of
+// time compared to the grouping process, so this observer is used such that
+// |CoralService::Group| can return the groupings without titles first, then
+// update the title through this observer when they are ready.
+interface TitleObserver {
+  // Updates the title of the group with id |group_id| to |title|.
+  // Currently this should be called exactly once for each group. If |title|
+  // is empty, that means some error is encountered and can't be generated.
+  TitleUpdated(mojo_base.mojom.Token group_id, string title);
+};
+
 // The ChromeOS odml daemon implements this service interface, utilizing the on
 // device models for backend logic. Ash Chrome is the client, implementing
 // UI features using this coral service.
 interface CoralService {
-  // Group the request entities into suitable groups with titles.
-  Group@0(GroupRequest request) => (GroupResult result);
+  // Group the request entities into suitable groups with titles. When the
+  // observer is passed, the service could return groups with empty title
+  // before the title is generated, then trigger title updates on the observer
+  // afterwards.
+  Group@0(GroupRequest request, pending_remote<TitleObserver>? observer)
+      => (GroupResult result);
 
   // Generate and cache the embeddings for the request entities.
   CacheEmbeddings@1(CacheEmbeddingsRequest request)

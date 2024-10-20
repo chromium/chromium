@@ -61,8 +61,10 @@ CoralController::CoralController() = default;
 
 CoralController::~CoralController() = default;
 
-void CoralController::GenerateContentGroups(const CoralRequest& request,
-                                            CoralResponseCallback callback) {
+void CoralController::GenerateContentGroups(
+    const CoralRequest& request,
+    mojo::PendingRemote<coral::mojom::TitleObserver> title_observer,
+    CoralResponseCallback callback) {
   // There couldn't be valid groups, skip generating and return an empty
   // response.
   if (request.content().size() < kMinItemsInGroup) {
@@ -91,7 +93,7 @@ void CoralController::GenerateContentGroups(const CoralRequest& request,
     group_request->entities.push_back(request.content()[i]->Clone());
   }
   coral_service->Group(
-      std::move(group_request),
+      std::move(group_request), std::move(title_observer),
       base::BindOnce(&CoralController::HandleGroupResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

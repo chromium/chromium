@@ -6,8 +6,10 @@
 
 namespace ash {
 
-void FakeCoralService::Group(coral::mojom::GroupRequestPtr request,
-                             GroupCallback callback) {
+void FakeCoralService::Group(
+    coral::mojom::GroupRequestPtr request,
+    mojo::PendingRemote<coral::mojom::TitleObserver> observer,
+    GroupCallback callback) {
   const int total_num = request->entities.size();
   const int min_group_size = request->clustering_options->min_items_in_cluster;
   const int max_group_size = request->clustering_options->max_items_in_cluster;
