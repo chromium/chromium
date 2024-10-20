@@ -14,6 +14,7 @@
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_feedback_preview.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
+#include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "base/files/file_path.h"
@@ -57,6 +58,7 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
   void LoadUI(std::optional<std::string> query) override;
   void ShowUI() override;
   void CloseUI() override;
+  void RecordWebUIMetricEvent(ash::LobsterMetricState metric_event) override;
 
  private:
   void OnRequestCandidates(RequestCandidatesCallback callback,

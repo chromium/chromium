@@ -14,6 +14,7 @@
 #include "ash/lobster/lobster_metrics_recorder.h"
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
+#include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/types/expected.h"
@@ -175,6 +176,11 @@ void LobsterSessionImpl::ShowUI() {
 
 void LobsterSessionImpl::CloseUI() {
   client_->CloseUI();
+}
+
+void LobsterSessionImpl::RecordWebUIMetricEvent(
+    ash::LobsterMetricState metric_event) {
+  RecordLobsterState(metric_event);
 }
 
 }  // namespace ash

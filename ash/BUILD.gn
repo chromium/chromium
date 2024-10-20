@@ -871,7 +871,6 @@ component("ash") {
     "lobster/lobster_image_actuator.h",
     "lobster/lobster_metrics_recorder.cc",
     "lobster/lobster_metrics_recorder.h",
-    "lobster/lobster_metrics_state_enums.h",
     "lobster/lobster_session_impl.cc",
     "lobster/lobster_session_impl.h",
     "lock_screen_action/lock_screen_action_background_controller.cc",

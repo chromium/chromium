@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module lobster.mojom;
 
@@ -45,6 +45,22 @@ union Response {
     Error error@1;
 };
 
+[Stable, Extensible]
+enum WebUIMetricEvent {
+  [Default] kUnknown = 0,
+  kQueryPageImpression = 1,
+  kRequestInitialCandidates = 2,
+  kRequestInitialCandidatesSuccess = 3,
+  kRequestInitialCandidatesError = 4,
+  kInitialCandidatesImpression = 5,
+  kRequestMoreCandidates = 6,
+  kRequestMoreCandidatesSuccess = 7,
+  kRequestMoreCandidatesError = 8,
+  kMoreCandidatesAppended = 9,
+  kFeedbackThumbsUp = 10,
+  kFeedbackThumbsDown = 11,
+};
+
 // This interface is used from an untrusted UI to communicate with the service.
 [RenamedFrom="lobster.mojom.LobsterPageHandler"]
 interface UntrustedLobsterPageHandler {
@@ -74,4 +90,7 @@ interface UntrustedLobsterPageHandler {
 
   // Requests the Lobster UI to close.
   [MinVersion=3] CloseUI();
+
+  // Sends a metric event for recording.
+  [MinVersion=4] EmitMetricEvent(WebUIMetricEvent metric_event);
 };

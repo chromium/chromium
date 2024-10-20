@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_LOBSTER_LOBSTER_METRICS_STATE_ENUMS_H_
-#define ASH_LOBSTER_LOBSTER_METRICS_STATE_ENUMS_H_
+#ifndef ASH_PUBLIC_CPP_LOBSTER_LOBSTER_METRICS_STATE_ENUMS_H_
+#define ASH_PUBLIC_CPP_LOBSTER_LOBSTER_METRICS_STATE_ENUMS_H_
 
 namespace ash {
 
@@ -83,9 +83,13 @@ enum class LobsterMetricState {
   //  recorded when a user requests to end their session by inserting an image
   //  candidate and the insertion failed.
   kCommitAsInsertError = 28,
-  kMaxValue = kCommitAsInsertError,
+  //  recorded when a user presses thumbs up button for any image candidate.
+  kFeedbackThumbsUp = 29,
+  //  recorded when a user presses thumbs down button for any image candidate.
+  kFeedbackThumbsDown = 30,
+  kMaxValue = kFeedbackThumbsDown,
 };
 
 }  // namespace ash
 
-#endif  // ASH_LOBSTER_LOBSTER_METRICS_STATE_ENUMS_H_
+#endif  // ASH_PUBLIC_CPP_LOBSTER_LOBSTER_METRICS_STATE_ENUMS_H_

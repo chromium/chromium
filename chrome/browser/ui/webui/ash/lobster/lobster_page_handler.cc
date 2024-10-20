@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/base64.h"
 #include "base/strings/strcat.h"
@@ -137,6 +138,10 @@ void LobsterPageHandler::ShowUI() {
 
 void LobsterPageHandler::CloseUI() {
   session_->CloseUI();
+}
+
+void LobsterPageHandler::EmitMetricEvent(LobsterMetricState metric_event) {
+  session_->RecordWebUIMetricEvent(metric_event);
 }
 
 }  // namespace ash

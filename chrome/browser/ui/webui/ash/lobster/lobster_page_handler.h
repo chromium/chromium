@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -44,6 +45,7 @@ class LobsterPageHandler : public lobster::mojom::UntrustedLobsterPageHandler {
                       SubmitFeedbackCallback) override;
   void ShowUI() override;
   void CloseUI() override;
+  void EmitMetricEvent(ash::LobsterMetricState metric_event) override;
 
  private:
   // Not owned by this class

@@ -66,6 +66,10 @@ mojom("lobster_mojom") {
           mojom = "lobster.mojom.FeedbackPreview"
           cpp = "::ash::LobsterFeedbackPreview"
         },
+        {
+          mojom = "lobster.mojom.WebUIMetricEvent"
+          cpp = "::ash::LobsterMetricState"
+        },
       ]
 
       traits_headers = [ "lobster_mojom_traits.h" ]

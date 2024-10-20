@@ -7,8 +7,8 @@
 #include <optional>
 #include <string_view>
 
-#include "ash/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_client.h"
+#include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "base/files/file_util.h"
@@ -504,6 +504,49 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsDownload) {
       "Ash.Lobster.State", LobsterMetricState::kCommitAsDownloadSuccess, 0);
   histogram_tester().ExpectBucketCount(
       "Ash.Lobster.State", LobsterMetricState::kCommitAsDownloadError, 1);
+}
+
+class LobsterSessionImplMetricsTest : public testing::Test {
+ public:
+  LobsterSessionImplMetricsTest() = default;
+  ~LobsterSessionImplMetricsTest() override = default;
+
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+ private:
+  base::HistogramTester histogram_tester_;
+};
+
+class LobsterSessionImplMetrics
+    : public LobsterSessionImplMetricsTest,
+      public testing::WithParamInterface<LobsterMetricState> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    LobsterSessionImplMetricsTest,
+    LobsterSessionImplMetrics,
+    testing::ValuesIn<LobsterMetricState>({
+        LobsterMetricState::kQueryPageImpression,
+        LobsterMetricState::kRequestInitialCandidates,
+        LobsterMetricState::kRequestInitialCandidatesSuccess,
+        LobsterMetricState::kRequestInitialCandidatesError,
+        LobsterMetricState::kInitialCandidatesImpression,
+        LobsterMetricState::kRequestMoreCandidates,
+        LobsterMetricState::kRequestMoreCandidatesSuccess,
+        LobsterMetricState::kRequestMoreCandidatesError,
+        LobsterMetricState::kMoreCandidatesAppended,
+        LobsterMetricState::kFeedbackThumbsUp,
+        LobsterMetricState::kFeedbackThumbsDown,
+    }));
+
+TEST_P(LobsterSessionImplMetrics, RecordsWebUIMetricEvent) {
+  const LobsterMetricState& state = GetParam();
+
+  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(),
+                             LobsterEntryPoint::kPicker);
+
+  session.RecordWebUIMetricEvent(state);
+
+  histogram_tester().ExpectBucketCount("Ash.Lobster.State", state, 1);
 }
 
 }  // namespace

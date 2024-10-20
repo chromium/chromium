@@ -68,11 +68,17 @@ class FakeLobsterSession : public LobsterSession {
   void LoadUI(std::optional<std::string> query) override {}
   void ShowUI() override {}
   void CloseUI() override {}
+  void RecordWebUIMetricEvent(LobsterMetricState metric_state) override {
+    metric_state_ = metric_state;
+  }
+
+  LobsterMetricState metric_state() { return metric_state_; }
 
  private:
   LobsterResult result_;
   bool commit_or_download_status_;
   bool feedback_submission_status_;
+  LobsterMetricState metric_state_;
 };
 
 class LobsterPageHandlerTest : public testing::Test {
@@ -237,6 +243,38 @@ TEST_F(LobsterPageHandlerTest, SubmitFeedbackSucceeds) {
                               future.GetCallback());
 
   EXPECT_TRUE(future.Get());
+}
+
+class LobsterPageHandlerMetrics
+    : public LobsterPageHandlerTest,
+      public testing::WithParamInterface<LobsterMetricState> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    LobsterPageHandlerTest,
+    LobsterPageHandlerMetrics,
+    testing::ValuesIn<LobsterMetricState>({
+        LobsterMetricState::kQueryPageImpression,
+        LobsterMetricState::kRequestInitialCandidates,
+        LobsterMetricState::kRequestInitialCandidatesSuccess,
+        LobsterMetricState::kRequestInitialCandidatesError,
+        LobsterMetricState::kInitialCandidatesImpression,
+        LobsterMetricState::kRequestMoreCandidates,
+        LobsterMetricState::kRequestMoreCandidatesSuccess,
+        LobsterMetricState::kRequestMoreCandidatesError,
+        LobsterMetricState::kMoreCandidatesAppended,
+        LobsterMetricState::kFeedbackThumbsUp,
+        LobsterMetricState::kFeedbackThumbsDown,
+    }));
+
+TEST_P(LobsterPageHandlerMetrics, EmitMetricEvent) {
+  const LobsterMetricState& state = GetParam();
+  FakeLobsterSession session({}, /*commit_or_download_status=*/true,
+                             /*feedback_submission_status=*/true);
+  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+
+  page_handler.EmitMetricEvent(state);
+
+  EXPECT_EQ(session.metric_state(), state);
 }
 
 }  // namespace

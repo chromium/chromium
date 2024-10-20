@@ -4,7 +4,7 @@
 
 #include "ash/lobster/lobster_metrics_recorder.h"
 
-#include "ash/lobster/lobster_metrics_state_enums.h"
+#include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "base/metrics/histogram_functions.h"
 
 namespace ash {
