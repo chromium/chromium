@@ -4095,6 +4095,17 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
                             browsing_context_state);
   DCHECK_EQ(new_render_frame_host->GetSiteInstance(), instance);
 
+  // Speculative fix for https://crbug.com/354382462 where we're seeing a page
+  // in BFCache sharing SiteInstances with a non-BFCached page. We're
+  // suspecting that a navigation with a related SiteInstance is ongoing just
+  // before the related page enters BFCache. To prevent confusion, evict any
+  // BFCached page that has a related SiteInstance as this RenderFrameHost now.
+  // TODO(https://crbug.com/354382462): Make this a proper fix with a repro
+  // test and delete the debugging code around this.
+  GetNavigationController()
+      .GetBackForwardCache()
+      .EvictFramesInRelatedSiteInstances(instance);
+
   // Prevent the process from exiting while we're trying to navigate in it.
   new_render_frame_host->GetProcess()->AddPendingView();
 
@@ -5251,18 +5262,6 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
     old_render_frame_host->SetRenderFrameHostOwner(nullptr);
 
   if (render_frame_host_) {
-    // Speculative fix for https://crbug.com/354382462 where we're seeing a page
-    // in BFCache sharing SiteInstances with a non-BFCached page. We're
-    // suspecting that a navigation with a related SiteInstance is ongoing when
-    // the page enters BFCache, and later that navigation commits. To prevent
-    // confusion, evict any BFCached page that has a related SiteInstance as
-    // this RenderFrameHost now.
-    // TODO(https://crbug.com/354382462): Make this a proper fix with a repro
-    // test and delete the debugging code below and elsewhere.
-    GetNavigationController()
-        .GetBackForwardCache()
-        .EvictFramesInRelatedSiteInstances(
-            render_frame_host_->GetSiteInstance());
     SiteInstanceGroupId sig_id =
         render_frame_host_->GetSiteInstance()->group()->GetId();
     bool rfh_in_bfcache =
