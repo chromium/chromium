@@ -23,12 +23,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 
 #include <algorithm>
@@ -308,7 +302,7 @@ static void ReplaceColorHintsWithColorStops(
       continue;
     }
 
-    GradientStop new_stops[9];
+    std::array<GradientStop, 9> new_stops;
     // Position the new color stops. These must be in the range
     // [offset_left, offset_right], and in non-decreasing order, even in the
     // face of floating-point rounding.
@@ -360,7 +354,7 @@ static void ReplaceColorHintsWithColorStops(
 
     // Replace the color hint with the new color stops.
     stops.EraseAt(x);
-    stops.insert(x, new_stops, 9);
+    stops.insert(x, new_stops.data(), 9);
     index_offset += 8;
   }
 }
@@ -1566,8 +1560,8 @@ gfx::SizeF RadiusToCorner(const gfx::PointF& point,
                           EndShapeType shape,
                           bool (*compare)(float, float)) {
   const gfx::RectF rect(size);
-  const gfx::PointF corners[] = {rect.origin(), rect.top_right(),
-                                 rect.bottom_right(), rect.bottom_left()};
+  const std::array<gfx::PointF, 4> corners = {
+      rect.origin(), rect.top_right(), rect.bottom_right(), rect.bottom_left()};
 
   unsigned corner_index = 0;
   float distance = (point - corners[corner_index]).Length();
