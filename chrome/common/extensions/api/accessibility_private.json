@@ -170,6 +170,11 @@
             "type": "boolean",
             "description": "True if the double click flag should be set.",
             "optional": true
+          },
+          "useRewriters": {
+            "type": "boolean",
+            "description": "If true, uses rewriters for the mouse event; only allowed if used from FaceGaze. Otherwise indicates that rewriters should be skipped.",
+            "optional": true
           }
         }
       },
@@ -1132,6 +1137,18 @@
             "name": "text",
             "type": "string",
             "description": "The text to be displayed in the bubble UI."
+          }
+        ]
+      },
+      {
+        "name": "enableDragEventRewriter",
+        "type": "function",
+        "description": "Turns on/off the DragEventRewriter, which rewrites kMouseMoved events into kMouseDragged events.",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "Whether or not the DragEventRewriter should be enabled."
           }
         ]
       }

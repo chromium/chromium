@@ -3135,7 +3135,8 @@ void AccessibilityManager::SendSyntheticMouseEvent(
     ui::EventType type,
     int flags,
     int changed_button_flags,
-    gfx::Point location_in_screen) {
+    gfx::Point location_in_screen,
+    bool use_rewriters) {
   const display::Display& display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
@@ -3167,8 +3168,12 @@ void AccessibilityManager::SendSyntheticMouseEvent(
   synthetic_mouse_event.UpdateForRootTransform(
       host->GetRootTransform(),
       host->GetRootTransformForLocalEventCoordinates());
-  // This skips rewriters.
-  host->DeliverEventToSink(&synthetic_mouse_event);
+
+  if (use_rewriters) {
+    host->SendEventToSink(&synthetic_mouse_event);
+  } else {
+    host->DeliverEventToSink(&synthetic_mouse_event);
+  }
 
   if (!is_mouse_events_enabled) {
     cursor_client->DisableMouseEvents();

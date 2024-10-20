@@ -95,7 +95,8 @@ void UserInputImpl::SendSyntheticMouseEvent(
   }
 
   AccessibilityManager::Get()->SendSyntheticMouseEvent(
-      type, flags, changed_button_flags, mouse_event->point);
+      type, flags, changed_button_flags, mouse_event->point,
+      /*use_rewriters=*/false);
 }
 
 }  // namespace ash

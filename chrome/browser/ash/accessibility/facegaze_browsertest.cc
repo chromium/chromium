@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/drag_event_rewriter.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
@@ -83,7 +84,8 @@ class MockEventHandler : public ui::EventHandler {
     if (type == ui::EventType::kMousePressed ||
         type == ui::EventType::kMouseReleased ||
         type == ui::EventType::kMouseMoved ||
-        type == ui::EventType::kMousewheel) {
+        type == ui::EventType::kMousewheel ||
+        type == ui::EventType::kMouseDragged) {
       mouse_events_.push_back(*event);
     }
   }
@@ -378,8 +380,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MousePressAndReleaseEvents) {
   ASSERT_EQ(0u, event_handler().mouse_events().size());
 }
 
-IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
-                       MouseLongPressAndReleaseEvents) {
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MouseLongClick) {
   utils()->EnableFaceGaze(
       Config()
           .Default()
@@ -388,6 +389,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
           .WithGestureConfidences({{FaceGazeGesture::MOUTH_RIGHT, 30}})
           .WithGestureRepeatDelayMs(0));
   event_handler().ClearEvents();
+
+  auto* drag_event_rewriter = ash::Shell::Get()
+                                  ->accessibility_controller()
+                                  ->GetDragEventRewriterForTest();
+  ASSERT_NE(drag_event_rewriter, nullptr);
+  ASSERT_FALSE(drag_event_rewriter->IsEnabled());
 
   // Move mouth right to trigger mouse press event.
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
@@ -399,8 +406,21 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
   ASSERT_EQ(kCenter, mouse_events.back().root_location());
   ASSERT_TRUE(mouse_events.back().IsSynthesized());
+  ASSERT_TRUE(drag_event_rewriter->IsEnabled());
 
-  // TODO(b:371199038): Move mouse to trigger drag event.
+  // Move forehead to trigger a kMouseDragged event.
+  event_handler().ClearEvents();
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(
+          std::make_pair(0.9, 0.9)));
+  utils()->TriggerMouseControllerInterval();
+  mouse_events = event_handler().mouse_events(ui::EventType::kMouseDragged);
+  ASSERT_EQ(1u, mouse_events.size());
+  ASSERT_EQ(ui::EventType::kMouseDragged, mouse_events.back().type());
+  ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
+  ASSERT_NE(kCenter, mouse_events.back().root_location());
+  ASSERT_TRUE(mouse_events.back().IsSynthesized());
+  ASSERT_TRUE(drag_event_rewriter->IsEnabled());
 
   // Move mouth right again to trigger mouse release event.
   event_handler().ClearEvents();
@@ -410,8 +430,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   ASSERT_EQ(1u, mouse_events.size());
   ASSERT_EQ(ui::EventType::kMouseReleased, mouse_events.back().type());
   ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
-  ASSERT_EQ(kCenter, mouse_events.back().root_location());
+  ASSERT_NE(kCenter, mouse_events.back().root_location());
   ASSERT_TRUE(mouse_events.back().IsSynthesized());
+  ASSERT_FALSE(drag_event_rewriter->IsEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, PerformanceHistogram) {

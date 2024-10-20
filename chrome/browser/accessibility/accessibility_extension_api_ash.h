@@ -34,6 +34,16 @@ class AccessibilityPrivateDarkenScreenFunction : public ExtensionFunction {
                              ACCESSIBILITY_PRIVATE_DARKENSCREEN)
 };
 
+// API function that enables the DragEventRewriter. While the event rewriter is
+// enabled, it will convert all mouse moved events into mouse dragged events.
+class AccessibilityPrivateEnableDragEventRewriterFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateEnableDragEventRewriterFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.enableDragEventRewriter",
+                             ACCESSIBILITY_PRIVATE_ENABLEDRAGEVENTREWRITER)
+};
+
 // API function that enables or disables mouse events in ChromeVox / Magnifier /
 // FaceGaze.
 class AccessibilityPrivateEnableMouseEventsFunction : public ExtensionFunction {

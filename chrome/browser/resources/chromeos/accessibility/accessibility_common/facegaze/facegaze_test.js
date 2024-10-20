@@ -635,7 +635,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'SendMouseDragFromCursorControlDuringLongClick',
+    'FaceGazeTest', 'SendMouseMoveFromCursorControlDuringLongClick',
     async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
@@ -670,7 +670,7 @@ AX_TEST_F(
       assertEquals(600, pressEvent.x);
       assertEquals(400, pressEvent.y);
 
-      // Move the cursor to trigger drag event. Cursor control will send another
+      // Move the cursor to trigger move event. Cursor control will send another
       // two synthetic mouse events.
       result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
           0.11, 0.21);
@@ -679,24 +679,24 @@ AX_TEST_F(
       this.assertLatestCursorPosition({x: 360, y: 560});
 
       this.assertNumMouseEvents(5);
-      let dragEvent = this.getMouseEvents()[3];
+      let moveEvent = this.getMouseEvents()[3];
       assertEquals(
-          this.mockAccessibilityPrivate.SyntheticMouseEventType.DRAG,
-          dragEvent.type);
-      assertEquals(
-          this.mockAccessibilityPrivate.SyntheticMouseEventButton.LEFT,
-          dragEvent.mouseButton);
-      assertEquals(360, dragEvent.x);
-      assertEquals(560, dragEvent.y);
-      dragEvent = this.getMouseEvents()[4];
-      assertEquals(
-          this.mockAccessibilityPrivate.SyntheticMouseEventType.DRAG,
-          dragEvent.type);
+          this.mockAccessibilityPrivate.SyntheticMouseEventType.MOVE,
+          moveEvent.type);
       assertEquals(
           this.mockAccessibilityPrivate.SyntheticMouseEventButton.LEFT,
-          dragEvent.mouseButton);
-      assertEquals(360, dragEvent.x);
-      assertEquals(560, dragEvent.y);
+          moveEvent.mouseButton);
+      assertEquals(360, moveEvent.x);
+      assertEquals(560, moveEvent.y);
+      moveEvent = this.getMouseEvents()[4];
+      assertEquals(
+          this.mockAccessibilityPrivate.SyntheticMouseEventType.MOVE,
+          moveEvent.type);
+      assertEquals(
+          this.mockAccessibilityPrivate.SyntheticMouseEventButton.LEFT,
+          moveEvent.mouseButton);
+      assertEquals(360, moveEvent.x);
+      assertEquals(560, moveEvent.y);
 
       // Trigger jaw open again to get the release event.
       result = new MockFaceLandmarkerResult().addGestureWithConfidence(
@@ -717,7 +717,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'SendMouseDragFromUserDuringLongClick', async function() {
+    'FaceGazeTest', 'SendMouseMoveFromUserDuringLongClick', async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -744,20 +744,20 @@ AX_TEST_F(
       assertEquals(600, pressEvent.x);
       assertEquals(400, pressEvent.y);
 
-      // Move the cursor to trigger drag event.
+      // Move the cursor to trigger move event.
       this.sendAutomationMouseEvent(
           {mouseX: 360, mouseY: 560, eventFrom: 'user'});
 
       this.assertNumMouseEvents(2);
-      const dragEvent = this.getMouseEvents()[1];
+      const moveEvent = this.getMouseEvents()[1];
       assertEquals(
-          this.mockAccessibilityPrivate.SyntheticMouseEventType.DRAG,
-          dragEvent.type);
+          this.mockAccessibilityPrivate.SyntheticMouseEventType.MOVE,
+          moveEvent.type);
       assertEquals(
           this.mockAccessibilityPrivate.SyntheticMouseEventButton.LEFT,
-          dragEvent.mouseButton);
-      assertEquals(360, dragEvent.x);
-      assertEquals(560, dragEvent.y);
+          moveEvent.mouseButton);
+      assertEquals(360, moveEvent.x);
+      assertEquals(560, moveEvent.y);
 
       // Trigger jaw open again to get the release event.
       result = new MockFaceLandmarkerResult().addGestureWithConfidence(

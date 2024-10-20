@@ -2776,6 +2776,7 @@ Called by update_extension_histograms.py.-->
   <int value="1909"
       label="AUTOFILLPRIVATE_PREDICTIONIMPROVEMENTSIPHFFEATUREUSED"/>
   <int value="1910" label="AUTOFILLPRIVATE_TRIGGERANNOTATIONSBOOTSTRAPPING"/>
+  <int value="1911" label="ACCESSIBILITY_PRIVATE_ENABLEDRAGEVENTREWRITER"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

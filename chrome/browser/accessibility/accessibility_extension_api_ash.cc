@@ -223,6 +223,16 @@ AccessibilityPrivateDarkenScreenFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+AccessibilityPrivateEnableDragEventRewriterFunction::Run() {
+  std::optional<accessibility_private::EnableDragEventRewriter::Params> params =
+      accessibility_private::EnableDragEventRewriter::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  ash::AccessibilityController::Get()->EnableDragEventRewriter(params->enabled);
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
 AccessibilityPrivateEnableMouseEventsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
@@ -681,10 +691,13 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
     flags |= ui::EF_IS_DOUBLE_CLICK;
   }
 
+  bool use_rewriters = mouse_data->use_rewriters.has_value() &&
+                       mouse_data->use_rewriters.value();
+
   // Locations are assumed to be in screen coordinates.
   gfx::Point location_in_screen(mouse_data->x, mouse_data->y);
   AccessibilityManager::Get()->SendSyntheticMouseEvent(
-      type, flags, changed_button_flags, location_in_screen);
+      type, flags, changed_button_flags, location_in_screen, use_rewriters);
 
   return RespondNow(NoArguments());
 }

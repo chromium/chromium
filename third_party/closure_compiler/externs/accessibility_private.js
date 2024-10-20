@@ -208,7 +208,8 @@ chrome.accessibilityPrivate.SyntheticMouseEventButton = {
  *   y: number,
  *   touchAccessibility: (boolean|undefined),
  *   mouseButton: (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined),
- *   isDoubleClick: (boolean|undefined)
+ *   isDoubleClick: (boolean|undefined),
+ *   useRewriters: (boolean|undefined)
  * }}
  */
 chrome.accessibilityPrivate.SyntheticMouseEvent;
@@ -816,6 +817,14 @@ chrome.accessibilityPrivate.sendGestureInfoToSettings = function(gestureInfo) {}
  * @param {string} text The text to be displayed in the bubble UI.
  */
 chrome.accessibilityPrivate.updateFaceGazeBubble = function(text) {};
+
+/**
+ * Turns on/off the DragEventRewriter, which rewrites kMouseMoved events into
+ * kMouseDragged events.
+ * @param {boolean} enabled Whether or not the DragEventRewriter should be
+ *     enabled.
+ */
+chrome.accessibilityPrivate.enableDragEventRewriter = function(enabled) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.

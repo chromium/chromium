@@ -21,6 +21,7 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/disable_touchpad_event_rewriter.h"
+#include "ash/accessibility/drag_event_rewriter.h"
 #include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
@@ -3720,8 +3721,22 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
           facegaze_bubble_controller_ =
               std::make_unique<FaceGazeBubbleController>();
         }
+        if (!drag_event_rewriter_) {
+          drag_event_rewriter_ = std::make_unique<DragEventRewriter>();
+
+          Shell::GetPrimaryRootWindow()
+              ->GetHost()
+              ->GetEventSource()
+              ->AddEventRewriter(drag_event_rewriter_.get());
+        }
       } else {
         facegaze_bubble_controller_.reset();
+
+        Shell::GetPrimaryRootWindow()
+            ->GetHost()
+            ->GetEventSource()
+            ->RemoveEventRewriter(drag_event_rewriter_.get());
+        drag_event_rewriter_.reset();
       }
       UpdateFaceGazeFromPrefs();
       break;
@@ -3839,4 +3854,13 @@ void AccessibilityController::ObserveInputDeviceSettings() {
         Shell::Get()->input_device_settings_controller());
   }
 }
+
+void AccessibilityController::EnableDragEventRewriter(bool enabled) {
+  if (!drag_event_rewriter_) {
+    return;
+  }
+
+  drag_event_rewriter_->SetEnabled(enabled);
+}
+
 }  // namespace ash

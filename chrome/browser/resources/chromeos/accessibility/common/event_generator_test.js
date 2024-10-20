@@ -13,9 +13,8 @@ AccessibilityExtensionEventGeneratorTest = class extends CommonE2ETestBase {
     await importModule('EventGenerator', '/common/event_generator.js');
   }
 
-  runMovePressDragReleaseTest(button) {
+  runMovePressReleaseTest(button) {
     const MOVE = chrome.accessibilityPrivate.SyntheticMouseEventType.MOVE;
-    const DRAG = chrome.accessibilityPrivate.SyntheticMouseEventType.DRAG;
     const PRESS = chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS;
     const RELEASE = chrome.accessibilityPrivate.SyntheticMouseEventType.RELEASE;
 
@@ -40,11 +39,11 @@ AccessibilityExtensionEventGeneratorTest = class extends CommonE2ETestBase {
     assertFalse(EventGenerator.sendMousePress(84, 1973, button));
     assertEquals(2, mouseEventLog.length);
 
-    // Move while pressed is a drag with the mouse key used
+    // Move while pressed is a move with the mouse key used
     // during the press event.
     EventGenerator.sendMouseMove(126, 42);
     assertEquals(3, mouseEventLog.length);
-    assertEquals(DRAG, mouseEventLog[2].type);
+    assertEquals(MOVE, mouseEventLog[2].type);
     assertEquals(button, mouseEventLog[2].mouseButton);
     assertEquals(126, mouseEventLog[2].x);
     assertEquals(42, mouseEventLog[2].y);
@@ -139,13 +138,13 @@ AX_TEST_F(
 AX_TEST_F(
     'AccessibilityExtensionEventGeneratorTest', 'MouseMovePressDragReleaseLeft',
     function() {
-      this.runMovePressDragReleaseTest(
+      this.runMovePressReleaseTest(
           chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT);
     });
 
 AX_TEST_F(
     'AccessibilityExtensionEventGeneratorTest',
     'MouseMovePressDragReleaseRight', function() {
-      this.runMovePressDragReleaseTest(
+      this.runMovePressReleaseTest(
           chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT);
     });

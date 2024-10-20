@@ -318,7 +318,8 @@ export class MouseController {
         // If gravity is enabled, adjust the cursor position.
         mappedLocation = this.mapPoint_(mappedLocation);
       }
-      EventGenerator.sendMouseMove(mappedLocation.x, mappedLocation.y);
+      EventGenerator.sendMouseMove(
+          mappedLocation.x, mappedLocation.y, {useRewriters: true});
       chrome.accessibilityPrivate.setCursorPosition(mappedLocation);
     }
   }
@@ -563,9 +564,13 @@ export class MouseController {
       EventGenerator.sendMousePress(
           this.mouseLocation_.x, this.mouseLocation_.y,
           SyntheticMouseEventButton.LEFT);
+      // Enable the DragEventRewriter so that mouse moved events get rewritten
+      // into mouse dragged events.
+      chrome.accessibilityPrivate.enableDragEventRewriter(true);
     } else {
       EventGenerator.sendMouseRelease(
           this.mouseLocation_.x, this.mouseLocation_.y);
+      chrome.accessibilityPrivate.enableDragEventRewriter(false);
     }
 
     if (!this.isLongClickActive()) {
@@ -591,7 +596,8 @@ export class MouseController {
         // Send a synthetic drag event from the user's mouse move event.
         // FaceGaze cursor control should already have sent a synthetic drag
         // event, so this only needs to occur on user mouse movements.
-        EventGenerator.sendMouseMove(event.mouseX, event.mouseY);
+        EventGenerator.sendMouseMove(
+            event.mouseX, event.mouseY, {useRewriters: true});
       }
     }
   }

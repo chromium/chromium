@@ -464,7 +464,8 @@ class AccessibilityManager
   void SendSyntheticMouseEvent(ui::EventType type,
                                int flags,
                                int changed_button_flags,
-                               gfx::Point location_in_screen);
+                               gfx::Point location_in_screen,
+                               bool use_rewriters);
 
   // Looks up the action key that translates to F7 for caret browsing dialog.
   std::optional<ui::KeyboardCode> GetCaretBrowsingActionKey();

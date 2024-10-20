@@ -17,6 +17,11 @@ interface MouseClick {
   params: MouseClickParams;
 }
 
+interface MouseMoveArgs {
+  touchAccessibility?: boolean;
+  useRewriters?: boolean;
+}
+
 /** Functions to send synthetic key and mouse events. */
 export class EventGenerator {
   static midMouseClickButton:
@@ -163,16 +168,18 @@ export class EventGenerator {
     return true;
   }
 
-  /** Sends a synthetic mouse event to simulate a move or drag event. */
-  static sendMouseMove(x: number, y: number, touchAccessibility = false): void {
-    const type = EventGenerator.midMouseClickButton !== undefined ?
-        chrome.accessibilityPrivate.SyntheticMouseEventType.DRAG :
-        chrome.accessibilityPrivate.SyntheticMouseEventType.MOVE;
+  /** Sends a synthetic mouse event to simulate a move event. */
+  static sendMouseMove(x: number, y: number, optArgs: MouseMoveArgs = {}):
+      void {
+    const type = chrome.accessibilityPrivate.SyntheticMouseEventType.MOVE;
+    const touchAccessibility = optArgs.touchAccessibility;
+    const useRewriters = optArgs.useRewriters;
     chrome.accessibilityPrivate.sendSyntheticMouseEvent({
       type,
       x,
       y,
       touchAccessibility,
+      useRewriters,
       mouseButton: EventGenerator.midMouseClickButton,
     });
   }

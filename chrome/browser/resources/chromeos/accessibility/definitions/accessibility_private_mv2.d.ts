@@ -165,6 +165,7 @@ declare global {
         touchAccessibility?: boolean;
         mouseButton?: SyntheticMouseEventButton;
         isDoubleClick?: boolean;
+        useRewriters?: boolean;
       }
 
       export enum SelectToSpeakState {
@@ -485,6 +486,8 @@ declare global {
           void;
 
       export function updateFaceGazeBubble(text: string): void;
+
+      export function enableDragEventRewriter(enabled: boolean): void;
 
       export const onIntroduceChromeVox: ChromeEvent<() => void>;
 

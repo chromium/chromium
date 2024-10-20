@@ -574,6 +574,9 @@ class MockAccessibilityPrivate {
     this.faceGazeBubbleText_ = text;
   }
 
+  /** @param {boolean} enabled */
+  enableDragEventRewriter(enabled) {}
+
   /** @return {!chrome.accessibilityPrivate.DictationBubbleProperties|null} */
   getDictationBubbleProps() {
     return this.dictationBubbleProps_;

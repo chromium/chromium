@@ -65,6 +65,7 @@ enum class DictationBubbleIconType;
 enum class DictationNotificationType;
 class DisableTouchpadEventRewriter;
 enum class DisableTouchpadMode;
+class DragEventRewriter;
 class FaceGazeBubbleController;
 class FilterKeysEventRewriter;
 class FlashScreenController;
@@ -685,6 +686,10 @@ class ASH_EXPORT AccessibilityController
 
   FaceGazeBubbleController* GetFaceGazeBubbleControllerForTest();
 
+  DragEventRewriter* GetDragEventRewriterForTest() const {
+    return drag_event_rewriter_.get();
+  }
+
   bool IsDictationKeyboardDialogShowingForTesting() {
     return dictation_keyboard_dialog_showing_for_testing_;
   }
@@ -728,6 +733,10 @@ class ASH_EXPORT AccessibilityController
   void StopObservingInputDeviceSettings() {
     input_device_settings_observer_.Reset();
   }
+
+  // Enables the drag event rewriter, which is used by features like FaceGaze
+  // and Autoclick.
+  void EnableDragEventRewriter(bool enabled);
 
  private:
   // Populate |features_| with the feature of the correct type.
@@ -865,6 +874,9 @@ class ASH_EXPORT AccessibilityController
 
   // Used to control the FaceGaze bubble UI.
   std::unique_ptr<FaceGazeBubbleController> facegaze_bubble_controller_;
+
+  // Used to support drag-and-drop for features, including FaceGaze.
+  std::unique_ptr<DragEventRewriter> drag_event_rewriter_;
 
   // Used to control accessibility-related notifications.
   std::unique_ptr<AccessibilityNotificationController>
