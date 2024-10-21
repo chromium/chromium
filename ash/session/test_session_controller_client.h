@@ -170,11 +170,16 @@ class TestSessionControllerClient : public SessionControllerClient {
  private:
   void DoSwitchUser(const AccountId& account_id, bool switch_user);
 
+  // Notify first session ready if the notification has not sent, there
+  // is at least one user session created, and session state is ACTIVE.
+  void MaybeNotifyFirstSessionReady();
+
   const raw_ptr<SessionControllerImpl, DanglingUntriaged> controller_;
   const raw_ptr<TestPrefServiceProvider> prefs_provider_;
 
   int fake_session_id_ = 0;
   SessionInfo session_info_;
+  bool first_session_ready_fired_ = false;
 
   bool use_lower_case_user_id_ = true;
   int request_hide_lock_screen_count_ = 0;

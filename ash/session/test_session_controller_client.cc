@@ -73,6 +73,7 @@ void TestSessionControllerClient::Reset() {
   session_info_.should_lock_screen_automatically = false;
   session_info_.add_user_session_policy = AddUserSessionPolicy::ALLOWED;
   session_info_.state = session_manager::SessionState::LOGIN_PRIMARY;
+  first_session_ready_fired_ = false;
 
   controller_->ClearUserSessionsForTest();
   controller_->SetSessionInfo(session_info_);
@@ -102,6 +103,8 @@ void TestSessionControllerClient::SetSessionState(
     session_manager::SessionState state) {
   session_info_.state = state;
   controller_->SetSessionInfo(session_info_);
+
+  MaybeNotifyFirstSessionReady();
 }
 
 void TestSessionControllerClient::SetIsRunningInAppMode(bool app_mode) {
@@ -179,6 +182,8 @@ void TestSessionControllerClient::AddUserSession(
       !controller_->GetUserPrefServiceForUser(account_id)) {
     ProvidePrefServiceForUser(account_id);
   }
+
+  MaybeNotifyFirstSessionReady();
 }
 
 void TestSessionControllerClient::ProvidePrefServiceForUser(
@@ -353,6 +358,15 @@ void TestSessionControllerClient::DoSwitchUser(const AccountId& account_id,
   }
 
   controller_->SetUserSessionOrder(session_order);
+}
+
+void TestSessionControllerClient::MaybeNotifyFirstSessionReady() {
+  if (!first_session_ready_fired_ &&
+      controller_->IsActiveUserSessionStarted() &&
+      session_info_.state == session_manager::SessionState::ACTIVE) {
+    first_session_ready_fired_ = true;
+    controller_->NotifyFirstSessionReady();
+  }
 }
 
 }  // namespace ash
