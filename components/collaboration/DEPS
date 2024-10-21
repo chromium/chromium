@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/keyed_service",
+  "+components/saved_tab_groups/public",
+]

@@ -1,0 +1,48 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_COLLABORATION_INTERNAL_COLLABORATION_SERVICE_IMPL_H_
+#define COMPONENTS_COLLABORATION_INTERNAL_COLLABORATION_SERVICE_IMPL_H_
+
+#include "components/collaboration/public/collaboration_service.h"
+
+namespace data_sharing {
+class DataSharingService;
+}  // namespace data_sharing
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
+
+namespace collaboration {
+
+// The internal implementation of the CollborationService.
+class CollaborationServiceImpl : public CollaborationService {
+ public:
+  CollaborationServiceImpl(
+      tab_groups::TabGroupSyncService* tab_group_sync_service,
+      data_sharing::DataSharingService* data_sharing_service,
+      signin::IdentityManager* identity_manager,
+      syncer::SyncService* sync_service);
+  ~CollaborationServiceImpl() override;
+
+  // CollaborationService implementation.
+  bool IsEmptyService() override;
+  void StartJoinFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
+                     const GURL& url) override;
+  void StartShareFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
+                      tab_groups::EitherGroupID group_id) override;
+};
+
+}  // namespace collaboration
+
+#endif  // COMPONENTS_COLLABORATION_INTERNAL_COLLABORATION_SERVICE_IMPL_H_
