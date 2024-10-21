@@ -28,6 +28,10 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -298,7 +302,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ExtensionActionIconFactory icon_factory(
       extension, GetBrowserAction(browser(), *extension), nullptr);
   // Test that there is a browser action in the toolbar.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+  ExtensionsToolbarContainer* extensions_container =
+      browser()->GetBrowserView().toolbar()->extensions_container();
+  ASSERT_EQ(1, extensions_container->GetNumberOfActionsForTesting());
 
   gfx::Image action_icon = icon_factory.GetIcon(0);
   uint32_t action_icon_last_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -307,9 +313,14 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ASSERT_EQ(action_icon_last_id,
             icon_factory.GetIcon(0).ToSkBitmap()->getGenerationID());
 
-  gfx::Image last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
-  EXPECT_TRUE(gfx::test::AreImagesEqual(
-      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
+  ToolbarActionView* action_view =
+      extensions_container->GetViewForId(extension->id());
+  ToolbarActionViewController* action_controller =
+      extensions_container->GetActionForId(extension->id());
+  ASSERT_TRUE(action_view);
+  ASSERT_TRUE(action_controller);
+
+  gfx::Image last_bar_icon = gfx::Image(action_view->GetIconForTest());
 
   // The reason we don't test more standard scales (like 1x, 2x, etc.) is that
   // these may be generated from the provided scales.
@@ -324,12 +335,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
 
   // Tell the extension to update the icon using ImageData object.
   ResultCatcher catcher;
-  GetBrowserActionsBar()->Press(extension->id());
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   ASSERT_TRUE(catcher.GetNextResult());
 
   EXPECT_FALSE(gfx::test::AreImagesEqual(
-      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
+      last_bar_icon, gfx::Image(action_view->GetIconForTest())));
+  last_bar_icon = gfx::Image(action_view->GetIconForTest());
 
   action_icon = icon_factory.GetIcon(0);
   uint32_t action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -342,13 +354,14 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   EXPECT_FALSE(action_icon.ToImageSkia()->HasRepresentation(kLargeIconScale));
 
   // Tell the extension to update the icon using path.
-  GetBrowserActionsBar()->Press(extension->id());
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Make sure the browser action bar updated.
   EXPECT_FALSE(gfx::test::AreImagesEqual(
-      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
+      last_bar_icon, gfx::Image(action_view->GetIconForTest())));
+  last_bar_icon = gfx::Image(action_view->GetIconForTest());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -362,12 +375,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
 
   // Tell the extension to update the icon using dictionary of ImageData
   // objects.
-  GetBrowserActionsBar()->Press(extension->id());
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   ASSERT_TRUE(catcher.GetNextResult());
 
   EXPECT_FALSE(gfx::test::AreImagesEqual(
-      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
+      last_bar_icon, gfx::Image(action_view->GetIconForTest())));
+  last_bar_icon = gfx::Image(action_view->GetIconForTest());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -380,12 +394,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   EXPECT_TRUE(action_icon.AsImageSkia().HasRepresentation(kLargeIconScale));
 
   // Tell the extension to update the icon using dictionary of paths.
-  GetBrowserActionsBar()->Press(extension->id());
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   ASSERT_TRUE(catcher.GetNextResult());
 
   EXPECT_FALSE(gfx::test::AreImagesEqual(
-      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
+      last_bar_icon, gfx::Image(action_view->GetIconForTest())));
+  last_bar_icon = gfx::Image(action_view->GetIconForTest());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -399,12 +414,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
 
   // Tell the extension to update the icon using dictionary of ImageData
   // objects, but setting only one size.
-  GetBrowserActionsBar()->Press(extension->id());
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   ASSERT_TRUE(catcher.GetNextResult());
 
   EXPECT_FALSE(gfx::test::AreImagesEqual(
-      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
+      last_bar_icon, gfx::Image(action_view->GetIconForTest())));
+  last_bar_icon = gfx::Image(action_view->GetIconForTest());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -418,12 +434,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
 
   // Tell the extension to update the icon using dictionary of paths, but
   // setting only one size.
-  GetBrowserActionsBar()->Press(extension->id());
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   ASSERT_TRUE(catcher.GetNextResult());
 
   EXPECT_FALSE(gfx::test::AreImagesEqual(
-      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
+      last_bar_icon, gfx::Image(action_view->GetIconForTest())));
+  last_bar_icon = gfx::Image(action_view->GetIconForTest());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -437,12 +454,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
 
   // Tell the extension to update the icon using dictionary of ImageData
   // objects, but setting only size 42.
-  GetBrowserActionsBar()->Press(extension->id());
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   ASSERT_TRUE(catcher.GetNextResult());
 
   EXPECT_FALSE(gfx::test::AreImagesEqual(
-      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
+      last_bar_icon, gfx::Image(action_view->GetIconForTest())));
+  last_bar_icon = gfx::Image(action_view->GetIconForTest());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -454,12 +472,14 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   EXPECT_TRUE(action_icon.AsImageSkia().HasRepresentation(kLargeIconScale));
 
   // Try setting icon with empty dictionary of ImageData objects.
-  GetBrowserActionsBar()->Press(extension->id());
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   ASSERT_FALSE(catcher.GetNextResult());
   EXPECT_EQ(kEmptyImageDataError, catcher.message());
 
   // Try setting icon with empty dictionary of path objects.
-  GetBrowserActionsBar()->Press(extension->id());
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   ASSERT_FALSE(catcher.GetNextResult());
   EXPECT_EQ(kEmptyPathError, catcher.message());
 }
