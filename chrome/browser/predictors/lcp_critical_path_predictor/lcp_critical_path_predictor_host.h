@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_HOST_H_
 #define CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_HOST_H_
 
+#include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -38,6 +39,9 @@ class LCPCriticalPathPredictorHost
           receiver);
 
   ~LCPCriticalPathPredictorHost() override;
+
+  LcpCriticalPathPredictorPageLoadMetricsObserver*
+  GetLcpCriticalPathPredictorPageLoadMetricsObserver() const;
 
   // Implements blink::mojom::LCPCriticalPathPredictorHost.
   void SetLcpElementLocator(

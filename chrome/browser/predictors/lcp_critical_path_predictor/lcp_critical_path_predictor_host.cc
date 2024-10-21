@@ -5,7 +5,6 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
@@ -38,19 +37,26 @@ void LCPCriticalPathPredictorHost::Create(
 
 LCPCriticalPathPredictorHost::~LCPCriticalPathPredictorHost() = default;
 
-void LCPCriticalPathPredictorHost::SetLcpElementLocator(
-    const std::string& lcp_element_locator,
-    std::optional<uint32_t> predicted_lcp_index) {
-  // `LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit()` stores
-  // `LcpCriticalPathPredictorPageLoadMetricsObserver` in `PageData` as a weak
-  // pointer. This weak pointer can be deleted at any time.
+LcpCriticalPathPredictorPageLoadMetricsObserver* LCPCriticalPathPredictorHost::
+    GetLcpCriticalPathPredictorPageLoadMetricsObserver() const {
+  // Due to an unresolved bug (crbug.com/1335845), GetForPage can return
+  // nullptr.
   if (auto* page_data =
           LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
               render_frame_host().GetPage())) {
-    if (auto* plmo =
-            page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
-      plmo->SetLcpElementLocator(lcp_element_locator, predicted_lcp_index);
-    }
+    // `LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit()` stores
+    // `LcpCriticalPathPredictorPageLoadMetricsObserver` in `PageData` as a weak
+    // pointer. This weak pointer can be deleted at any time.
+    return page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver();
+  }
+  return nullptr;
+}
+
+void LCPCriticalPathPredictorHost::SetLcpElementLocator(
+    const std::string& lcp_element_locator,
+    std::optional<uint32_t> predicted_lcp_index) {
+  if (auto* plmo = GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
+    plmo->SetLcpElementLocator(lcp_element_locator, predicted_lcp_index);
   }
 }
 
@@ -59,13 +65,8 @@ void LCPCriticalPathPredictorHost::SetLcpInfluencerScriptUrls(
   if (!blink::LcppScriptObserverEnabled()) {
     return;
   }
-  if (auto* page_data =
-          LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
-              render_frame_host().GetPage())) {
-    if (auto* plmo =
-            page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
-      plmo->SetLcpInfluencerScriptUrls(lcp_influencer_scripts);
-    }
+  if (auto* plmo = GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
+    plmo->SetLcpInfluencerScriptUrls(lcp_influencer_scripts);
   }
 }
 
@@ -75,13 +76,8 @@ void LCPCriticalPathPredictorHost::SetPreconnectOrigins(
           blink::features::kLCPPAutoPreconnectLcpOrigin)) {
     return;
   }
-  if (auto* page_data =
-          LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
-              render_frame_host().GetPage())) {
-    if (auto* plmo =
-            page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
-      plmo->SetPreconnectOrigins(origins);
-    }
+  if (auto* plmo = GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
+    plmo->SetPreconnectOrigins(origins);
   }
 }
 
@@ -90,13 +86,8 @@ void LCPCriticalPathPredictorHost::SetUnusedPreloads(
   if (!base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload)) {
     return;
   }
-  if (auto* page_data =
-          LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
-              render_frame_host().GetPage())) {
-    if (auto* plmo =
-            page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
-      plmo->SetUnusedPreloads(unused_preloads);
-    }
+  if (auto* plmo = GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
+    plmo->SetUnusedPreloads(unused_preloads);
   }
 }
 
@@ -117,18 +108,9 @@ void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url,
     // bad message.
     return;
   }
-  auto* page_data =
-      LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
-          render_frame_host().GetPage());
-  if (!page_data) {
-    return;
+  if (auto* plmo = GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
+    plmo->AppendFetchedFontUrl(font_url, hit);
   }
-  auto* plmo = page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver();
-  if (!plmo) {
-    return;
-  }
-
-  plmo->AppendFetchedFontUrl(font_url, hit);
 }
 
 void LCPCriticalPathPredictorHost::NotifyFetchedSubresource(
@@ -160,23 +142,10 @@ void LCPCriticalPathPredictorHost::NotifyFetchedSubresource(
     // bad message.
     return;
   }
-  // Due to an unresolved bug (crbug.com/1335845), GetForPage can return
-  // nullptr.
-  auto* page_data =
-      LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
-          render_frame_host().GetPage());
-  if (!page_data) {
-    return;
+  if (auto* plmo = GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
+    plmo->AppendFetchedSubresourceUrl(subresource_url, subresource_load_start,
+                                      request_destination);
   }
-  // `LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit()` stores
-  // `LcpCriticalPathPredictorPageLoadMetricsObserver` in `PageData` as a weak
-  // pointer. This weak pointer can be deleted at any time.
-  auto* plmo = page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver();
-  if (!plmo) {
-    return;
-  }
-  plmo->AppendFetchedSubresourceUrl(subresource_url, subresource_load_start,
-                                    request_destination);
 }
 
 }  // namespace predictors
