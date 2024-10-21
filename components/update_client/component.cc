@@ -560,7 +560,7 @@ bool Component::StateCanUpdate::CanTryDiffUpdate() const {
 }
 
 void Component::StateCanUpdate::GetNextCrxFromCacheComplete(
-    const base::expected<base::FilePath, UnpackerError>& result) {
+    base::expected<base::FilePath, UnpackerError> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& component = State::component();
   if (result.has_value()) {
@@ -580,7 +580,7 @@ void Component::StateCanUpdate::GetNextCrxFromCacheComplete(
 }
 
 void Component::StateCanUpdate::CheckIfCacheContainsPreviousCrxComplete(
-    const base::expected<base::FilePath, UnpackerError>& result) {
+    base::expected<base::FilePath, UnpackerError> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& component = State::component();
   if (result.has_value()) {
@@ -651,7 +651,7 @@ void Component::StateDownloading::DoHandle() {
 }
 
 void Component::StateDownloading::DownloadComplete(
-    const base::expected<base::FilePath, CategorizedError>& file) {
+    base::expected<base::FilePath, CategorizedError> file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   Component& component = Component::State::component();
@@ -709,7 +709,7 @@ void Component::StateUpdatingDiff::DoHandle() {
 }
 
 void Component::StateUpdatingDiff::PatchingComplete(
-    const base::expected<base::FilePath, CategorizedError>& result) {
+    base::expected<base::FilePath, CategorizedError> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& component = Component::State::component();
   CHECK(component.crx_component());

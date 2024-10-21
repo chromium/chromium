@@ -100,8 +100,8 @@ void DownloadComplete(
     scoped_refptr<CrxDownloader> crx_downloader,
     scoped_refptr<Cancellation> cancellation,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
-    base::OnceCallback<
-        void(const base::expected<base::FilePath, CategorizedError>&)> callback,
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback,
     const CrxDownloader::Result& download_result) {
   cancellation->Clear();
 
@@ -144,8 +144,8 @@ void HandleAvailableSpace(
     const std::string& hash,
     CrxDownloader::ProgressCallback progress_callback,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
-    base::OnceCallback<
-        void(const base::expected<base::FilePath, CategorizedError>&)> callback,
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback,
     int64_t available_bytes) {
   if (available_bytes / 2 <= size) {
     VLOG(1) << "available_bytes: " << available_bytes
@@ -178,8 +178,8 @@ base::OnceClosure DownloadOperation(
     const std::string& hash,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
     CrxDownloader::ProgressCallback progress_callback,
-    base::OnceCallback<void(
-        const base::expected<base::FilePath, CategorizedError>&)> callback) {
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback) {
   auto cancellation = base::MakeRefCounted<Cancellation>();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,

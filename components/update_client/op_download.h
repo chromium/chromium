@@ -20,6 +20,8 @@ namespace base {
 class FilePath;
 }
 
+class GURL;
+
 namespace update_client {
 
 struct CategorizedError;
@@ -37,8 +39,8 @@ base::OnceClosure DownloadOperation(
     const std::string& hash,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
     CrxDownloader::ProgressCallback progress_callback,
-    base::OnceCallback<void(
-        const base::expected<base::FilePath, CategorizedError>&)> callback);
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback);
 
 }  // namespace update_client
 

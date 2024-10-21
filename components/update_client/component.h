@@ -232,9 +232,9 @@ class Component {
     void DoHandle() override;
     bool CanTryDiffUpdate() const;
     void GetNextCrxFromCacheComplete(
-        const base::expected<base::FilePath, UnpackerError>& result);
+        base::expected<base::FilePath, UnpackerError> result);
     void CheckIfCacheContainsPreviousCrxComplete(
-        const base::expected<base::FilePath, UnpackerError>& result);
+        base::expected<base::FilePath, UnpackerError> result);
   };
 
   class StateUpToDate : public State {
@@ -261,8 +261,7 @@ class Component {
     void DoHandle() override;
 
     void DownloadComplete(
-        const base::expected<base::FilePath, CategorizedError>&
-            download_result);
+        base::expected<base::FilePath, CategorizedError> download_result);
 
     bool diff_;
   };
@@ -278,8 +277,7 @@ class Component {
     // State overrides.
     void DoHandle() override;
 
-    void PatchingComplete(
-        const base::expected<base::FilePath, CategorizedError>&);
+    void PatchingComplete(base::expected<base::FilePath, CategorizedError>);
     void InstallProgress(int install_progress);
     void InstallComplete(const CrxInstaller::Result& installer_result);
   };

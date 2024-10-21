@@ -37,7 +37,7 @@ namespace {
 class FakeDownloader : public CrxDownloader {
  public:
   FakeDownloader(const base::FilePath& dest,
-                 const base::expected<std::string, int>& result,
+                 base::expected<std::string, int> result,
                  const CrxDownloader::DownloadMetrics& metrics)
       : CrxDownloader(nullptr),
         dest_(dest),
@@ -66,7 +66,7 @@ class FakeDownloader : public CrxDownloader {
 class FakeFactory : public CrxDownloaderFactory {
  public:
   FakeFactory(const base::FilePath dest,
-              const base::expected<std::string, int>& result,
+              base::expected<std::string, int> result,
               const CrxDownloader::DownloadMetrics& metrics)
       : dest_(dest), result_(result), metrics_(metrics) {}
 
@@ -95,7 +95,7 @@ class OpDownloadTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   scoped_refptr<UpdateContext> MakeUpdateContext(
-      const base::expected<std::string, int>& result,
+      base::expected<std::string, int> result,
       const CrxDownloader::DownloadMetrics& metrics) {
     scoped_refptr<TestConfigurator> config =
         base::MakeRefCounted<TestConfigurator>(pref_.get());
@@ -119,11 +119,10 @@ class OpDownloadTest : public testing::Test {
         [&](base::Value::Dict ping) { pings_.push_back(std::move(ping)); });
   }
 
-  base::OnceCallback<
-      void(const base::expected<base::FilePath, CategorizedError>&)>
+  base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
   MakeDoneCallback() {
     return base::BindLambdaForTesting(
-        [&](const base::expected<base::FilePath, CategorizedError>& outcome) {
+        [&](base::expected<base::FilePath, CategorizedError> outcome) {
           outcome_ = outcome;
           runloop_.Quit();
         });

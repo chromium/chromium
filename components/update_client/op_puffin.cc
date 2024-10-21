@@ -48,10 +48,10 @@ namespace {
 
 // Runs on the original sequence. Adds events and calls the original callback.
 void PatchDone(
-    base::OnceCallback<
-        void(const base::expected<base::FilePath, CategorizedError>&)> callback,
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
-    const base::expected<base::FilePath, CategorizedError>& result) {
+    base::expected<base::FilePath, CategorizedError> result) {
   // TODO(crbug.com/353249967): Add an event describing the patch's outcome.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
@@ -59,8 +59,8 @@ void PatchDone(
 
 // Runs in the blocking pool. Deletes any files that are no longer needed.
 void CleanUp(
-    base::OnceCallback<
-        void(const base::expected<base::FilePath, CategorizedError>&)> callback,
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback,
     const base::FilePath& patch_file,
     const base::FilePath& new_file,
     int result) {
@@ -82,8 +82,8 @@ void Patch(
     const base::FilePath& old_file,
     const base::FilePath& patch_file,
     const base::FilePath& temp_dir,
-    base::OnceCallback<void(
-        const base::expected<base::FilePath, CategorizedError>&)> callback) {
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback) {
   base::FilePath new_file = temp_dir.AppendASCII("puffpatch_out");
   patcher->PatchPuffPatch(
       base::File(old_file, base::File::FLAG_OPEN | base::File::FLAG_READ),
@@ -100,9 +100,9 @@ void CacheLookupDone(
     scoped_refptr<Patcher> patcher,
     const base::FilePath& patch_file,
     const base::FilePath& temp_dir,
-    base::OnceCallback<
-        void(const base::expected<base::FilePath, CategorizedError>&)> callback,
-    const base::expected<base::FilePath, UnpackerError>& cache_result) {
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback,
+    base::expected<base::FilePath, UnpackerError> cache_result) {
   if (!cache_result.has_value()) {
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, kTaskTraits,
@@ -132,8 +132,8 @@ void PuffOperation(
     const std::string& prev_fp,
     const base::FilePath& patch_file,
     const base::FilePath& temp_dir,
-    base::OnceCallback<void(
-        const base::expected<base::FilePath, CategorizedError>&)> callback) {
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback) {
   crx_cache->Get(id, prev_fp,
                  base::BindOnce(&CacheLookupDone, event_adder, patcher,
                                 patch_file, temp_dir, std::move(callback)));

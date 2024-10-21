@@ -35,8 +35,8 @@ void PuffOperation(
     const std::string& prev_fp,
     const base::FilePath& patch_file,
     const base::FilePath& temp_dir,
-    base::OnceCallback<void(
-        const base::expected<base::FilePath, CategorizedError>&)> callback);
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback);
 
 }  // namespace update_client
 

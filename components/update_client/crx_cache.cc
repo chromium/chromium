@@ -21,15 +21,16 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/types/expected.h"
+#include "build/build_config.h"
+
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #endif
 
-#include "base/task/task_runner.h"
-#include "base/task/thread_pool.h"
-
 namespace update_client {
-
 namespace {
 
 void CleanUp(const base::FilePath& path, const std::string& id) {
@@ -61,7 +62,7 @@ void CrxCache::Get(
     const std::string& id,
     const std::string& fp,
     base::OnceCallback<
-        void(const base::expected<base::FilePath, UnpackerError>&)> callback) {
+        void(const base::expected<base::FilePath, UnpackerError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (!crx_cache_root_path_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -90,7 +91,7 @@ void CrxCache::Put(
     const std::string& id,
     const std::string& fp,
     base::OnceCallback<
-        void(const base::expected<base::FilePath, UnpackerError>&)> callback) {
+        void(const base::expected<base::FilePath, UnpackerError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (!crx_cache_root_path_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

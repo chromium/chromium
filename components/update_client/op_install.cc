@@ -162,7 +162,7 @@ void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
             std::unique_ptr<Unzipper> unzipper,
             const std::vector<uint8_t>& pk_hash,
             crx_file::VerifierFormat crx_format,
-            const base::expected<base::FilePath, UnpackerError>& cache_result) {
+            base::expected<base::FilePath, UnpackerError> cache_result) {
   if (!cache_result.has_value()) {
     // Caching is optional: continue with the install, but add a task to clean
     // up crx_file.

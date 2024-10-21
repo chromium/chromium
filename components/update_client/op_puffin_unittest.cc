@@ -44,8 +44,8 @@ TEST(PuffOperationTest, Success) {
 
   cache->Put(
       old_file, "appid", "prev_fp",
-      base::BindLambdaForTesting([&](const base::expected<base::FilePath,
-                                                          UnpackerError>& r) {
+      base::BindLambdaForTesting([&](base::expected<base::FilePath,
+                                                    UnpackerError> r) {
         ASSERT_TRUE(r.has_value());
         PuffOperation(
             cache,
@@ -55,8 +55,7 @@ TEST(PuffOperationTest, Success) {
             base::DoNothing(), "appid", "prev_fp", patch_file,
             temp_dir.GetPath(),
             base::BindLambdaForTesting(
-                [&](const base::expected<base::FilePath, CategorizedError>&
-                        result) {
+                [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
                   loop.Quit();
                   ASSERT_TRUE(result.has_value());
@@ -90,8 +89,8 @@ TEST(PuffOperationTest, BadPatch) {
 
   cache->Put(
       old_file, "appid", "prev_fp",
-      base::BindLambdaForTesting([&](const base::expected<base::FilePath,
-                                                          UnpackerError>& r) {
+      base::BindLambdaForTesting([&](base::expected<base::FilePath,
+                                                    UnpackerError> r) {
         ASSERT_TRUE(r.has_value());
         PuffOperation(
             cache,
@@ -101,8 +100,7 @@ TEST(PuffOperationTest, BadPatch) {
             base::DoNothing(), "appid", "prev_fp", patch_file,
             temp_dir.GetPath(),
             base::BindLambdaForTesting(
-                [&](const base::expected<base::FilePath, CategorizedError>&
-                        result) {
+                [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
                   loop.Quit();
                   ASSERT_FALSE(result.has_value());
@@ -136,7 +134,7 @@ TEST(PuffOperationTest, NotInCache) {
           ->Create(),
       base::DoNothing(), "appid", "prev_fp", patch_file, temp_dir.GetPath(),
       base::BindLambdaForTesting(
-          [&](const base::expected<base::FilePath, CategorizedError>& result) {
+          [&](base::expected<base::FilePath, CategorizedError> result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
             loop.Quit();
             ASSERT_FALSE(result.has_value());
@@ -168,7 +166,7 @@ TEST(PuffOperationTest, NoCache) {
           ->Create(),
       base::DoNothing(), "appid", "prev_fp", patch_file, temp_dir.GetPath(),
       base::BindLambdaForTesting(
-          [&](const base::expected<base::FilePath, CategorizedError>& result) {
+          [&](base::expected<base::FilePath, CategorizedError> result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
             loop.Quit();
             ASSERT_FALSE(result.has_value());

@@ -31,21 +31,23 @@ class CrxCache : public base::RefCountedThreadSafe<CrxCache> {
 
   // Requests a lookup of the previous CRX for the requested component given
   // `id` and `fp`.
-  void Get(const std::string& id,
-           const std::string& fp,
-           base::OnceCallback<void(
-               const base::expected<base::FilePath, UnpackerError>&)> callback);
+  void Get(
+      const std::string& id,
+      const std::string& fp,
+      base::OnceCallback<void(base::expected<base::FilePath, UnpackerError>)>
+          callback);
 
   // Requests an entry for the current CRX to be added given the path `crx`,
   // `id` and `fp`. An entry with the same `id` is overwritten. This helps
   // to reduce cache size. This method takes ownership of the file, moves it,
   // and can only be accessed via the new path in the cache, given by `result`.
   // `callback` is called with the result.
-  void Put(const base::FilePath& crx,
-           const std::string& id,
-           const std::string& fp,
-           base::OnceCallback<void(
-               const base::expected<base::FilePath, UnpackerError>&)> callback);
+  void Put(
+      const base::FilePath& crx,
+      const std::string& id,
+      const std::string& fp,
+      base::OnceCallback<void(base::expected<base::FilePath, UnpackerError>)>
+          callback);
 
   // Removes any stale entries for the given product, should any exist. Runs as
   // a best effort and ignores any delete errors.
