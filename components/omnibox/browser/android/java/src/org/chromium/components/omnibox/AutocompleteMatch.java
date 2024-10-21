@@ -508,6 +508,7 @@ public class AutocompleteMatch {
                 .setUrl(mUrl.getSpec())
                 .setTransition(mTransition)
                 .setGroupId(mGroupId)
+                .setIsSearchType(mIsSearchType)
                 .setAllowedToBeDefaultMatch(mAllowedToBeDefaultMatch);
 
         if (!TextUtils.isEmpty(mFillIntoEdit)) {
