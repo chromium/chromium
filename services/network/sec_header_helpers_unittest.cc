@@ -5,6 +5,7 @@
 #include "services/network/sec_header_helpers.h"
 
 #include "base/test/task_environment.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -14,6 +15,7 @@
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -37,6 +39,8 @@ constexpr char kHeaderValue[] = "testdata";
 }  // namespace
 
 namespace network {
+
+using testing::UnorderedElementsAreArray;
 
 class SecHeaderHelpersTest : public PlatformTest {
  public:
@@ -82,18 +86,14 @@ TEST_F(SecHeaderHelpersTest, SecHeadersRemovedOnDowngrade) {
                                     .size()));
 
   MaybeRemoveSecHeaders(current_url_request, GURL(kInsecureSite));
-  ASSERT_EQ(2, static_cast<int>(current_url_request->extra_request_headers()
-                                    .GetHeaderVector()
-                                    .size()));
 
-  ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecChHeader));
-  ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader));
-  ASSERT_TRUE(
-      current_url_request->extra_request_headers().GetHeader(kOtherSecHeader));
-  ASSERT_TRUE(
-      current_url_request->extra_request_headers().GetHeader(kOtherHeader));
+  EXPECT_THAT(current_url_request->extra_request_headers().GetHeaderVector(),
+              UnorderedElementsAreArray({
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kOtherSecHeader,
+                                                              kHeaderValue},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kOtherHeader,
+                                                              kHeaderValue},
+              }));
 }
 
 // Validate that if no downgrade occurs any Sec- prefixed headers remain on the
@@ -116,18 +116,19 @@ TEST_F(SecHeaderHelpersTest, SecHeadersRemainOnSecureRedirect) {
                                     .GetHeaderVector()
                                     .size()));
 
-  ASSERT_EQ(4, static_cast<int>(current_url_request->extra_request_headers()
-                                    .GetHeaderVector()
-                                    .size()));
+  MaybeRemoveSecHeaders(current_url_request, GURL(kSecureSite));
 
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecChHeader));
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader));
-  ASSERT_TRUE(
-      current_url_request->extra_request_headers().GetHeader(kOtherSecHeader));
-  ASSERT_TRUE(
-      current_url_request->extra_request_headers().GetHeader(kOtherHeader));
+  EXPECT_THAT(current_url_request->extra_request_headers().GetHeaderVector(),
+              UnorderedElementsAreArray({
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kKnownSecChHeader,
+                                                              kHeaderValue},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchSiteHeader, kHeaderValue},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kOtherSecHeader,
+                                                              kHeaderValue},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kOtherHeader,
+                                                              kHeaderValue},
+              }));
 }
 
 // Validate that if Sec- headers exist as the first or last entries we properly
@@ -148,16 +149,12 @@ TEST_F(SecHeaderHelpersTest, SecHeadersRemoveFirstLast) {
                                     .size()));
 
   MaybeRemoveSecHeaders(current_url_request, GURL(kInsecureSite));
-  ASSERT_EQ(1, static_cast<int>(current_url_request->extra_request_headers()
-                                    .GetHeaderVector()
-                                    .size()));
 
-  ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader));
-  ASSERT_TRUE(
-      current_url_request->extra_request_headers().GetHeader(kOtherHeader));
-  ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecChHeader));
+  EXPECT_THAT(current_url_request->extra_request_headers().GetHeaderVector(),
+              UnorderedElementsAreArray({
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kOtherHeader,
+                                                              kHeaderValue},
+              }));
 }
 
 // Validate Sec-Fetch-Site and Sec-Fetch-Mode are set correctly with
@@ -175,21 +172,16 @@ TEST_F(SecHeaderHelpersTest, UnprivilegedRequestOnExtension) {
                           network::mojom::RequestMode::kCors, false,
                           network::mojom::RequestDestination::kIframe, &url,
                           params, origin_access_list);
-  ASSERT_EQ(3, static_cast<int>(current_url_request->extra_request_headers()
-                                    .GetHeaderVector()
-                                    .size()));
 
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchSiteHeader),
-            "cross-site");
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchModeHeader),
-            "cors");
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchDestHeader),
-            "iframe");
+  EXPECT_THAT(current_url_request->extra_request_headers().GetHeaderVector(),
+              UnorderedElementsAreArray({
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchSiteHeader, "cross-site"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchModeHeader, "cors"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchDestHeader, "iframe"},
+              }));
 }
 
 // Validate Sec-Fetch-Site and Sec-Fetch-Mode are set correctly with privileged
@@ -216,25 +208,17 @@ TEST_F(SecHeaderHelpersTest, PrivilegedRequestOnExtension) {
                           network::mojom::RequestDestination::kEmbed, &url,
                           params, origin_access_list);
 
-  ASSERT_EQ(4, static_cast<int>(current_url_request->extra_request_headers()
-                                    .GetHeaderVector()
-                                    .size()));
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchSiteHeader),
-            "none");
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchModeHeader),
-            "cors");
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchUserHeader),
-            "?1");
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchDestHeader),
-            "embed");
+  EXPECT_THAT(current_url_request->extra_request_headers().GetHeaderVector(),
+              UnorderedElementsAreArray({
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchSiteHeader, "none"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchModeHeader, "cors"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchUserHeader, "?1"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchDestHeader, "embed"},
+              }));
 }
 
 }  // namespace network

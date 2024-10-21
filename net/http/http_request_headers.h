@@ -36,6 +36,8 @@ class NET_EXPORT HttpRequestHeaders {
     HeaderKeyValuePair(std::string_view key, const char* value)
         : HeaderKeyValuePair(key, std::string_view(value)) {}
 
+    bool operator==(const HeaderKeyValuePair& other) const = default;
+
     std::string key;
     std::string value;
   };
