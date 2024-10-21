@@ -608,7 +608,6 @@ ci.thin_tester(
     # Gardeners don't need to fix this, so exclude it from Sheriff-o-Matic.
     # It should be added back to SoM once the roller runs it.
     gardener_rotations = args.ignore_default(None),
-    # Uncomment this entry when this experimental tester is actually in use.
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Android",
         short_name = "exp",
@@ -691,6 +690,9 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    # TODO(crbug.com/40942991): This config is experimental and currently
+    # is too difficult for gardeners to keep green.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "ChromeOS|Intel",
         short_name = "vlt",

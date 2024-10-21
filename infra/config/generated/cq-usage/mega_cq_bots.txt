@@ -48,7 +48,6 @@ chromium/try/dawn-chromium-presubmit
 chromium/try/dawn-linux-x64-deps-rel
 chromium/try/dawn-mac-arm64-deps-rel
 chromium/try/dawn-mac-x64-deps-rel
-chromium/try/dawn-try-chromeos-volteer-rel
 chromium/try/dawn-try-linux-tsan-rel
 chromium/try/dawn-try-linux-x64-intel-uhd770-rel
 chromium/try/dawn-try-mac-amd-exp
