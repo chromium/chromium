@@ -2523,12 +2523,12 @@ bool AttributionStorageSql::ClearReportsForSourceIds(
 
 namespace {
 
-RateLimitResult AggregatableAttributionAllowedForBudgetLimit(
+bool AggregatableAttributionAllowedForBudgetLimit(
     const AttributionReport::AggregatableAttributionData&
         aggregatable_attribution,
     int remaining_aggregatable_attribution_budget) {
   if (remaining_aggregatable_attribution_budget <= 0) {
-    return RateLimitResult::kNotAllowed;
+    return false;
   }
 
   const base::CheckedNumeric<int64_t> budget_required =
@@ -2536,10 +2536,10 @@ RateLimitResult AggregatableAttributionAllowedForBudgetLimit(
   if (!budget_required.IsValid() ||
       budget_required.ValueOrDie() >
           remaining_aggregatable_attribution_budget) {
-    return RateLimitResult::kNotAllowed;
+    return false;
   }
 
-  return RateLimitResult::kAllowed;
+  return true;
 }
 
 }  // namespace
@@ -2692,14 +2692,10 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
     return AggregatableResult::kExcessiveReports;
   }
 
-  switch (AggregatableAttributionAllowedForBudgetLimit(
-      *aggregatable_attribution, remaining_aggregatable_attribution_budget)) {
-    case RateLimitResult::kAllowed:
-      break;
-    case RateLimitResult::kNotAllowed:
-      return AggregatableResult::kInsufficientBudget;
-    case RateLimitResult::kError:
-      return AggregatableResult::kInternalError;
+  if (!AggregatableAttributionAllowedForBudgetLimit(
+          *aggregatable_attribution,
+          remaining_aggregatable_attribution_budget)) {
+    return AggregatableResult::kInsufficientBudget;
   }
 
   sql::Transaction transaction(&db_);
