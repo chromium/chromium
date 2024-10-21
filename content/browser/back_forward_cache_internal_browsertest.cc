@@ -3720,29 +3720,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(rfh_a->child_at(0)->child_at(0), "true"));
 }
 
-class BackForwardCacheBrowserTestWithFlagForScreenReader
-    : public BackForwardCacheBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (IsBackForwardCacheEnabledForScreenReader()) {
-      EnableFeatureAndSetParams(
-          features::kEnableBackForwardCacheForScreenReader, "", "true");
-    } else {
-      DisableFeature(features::kEnableBackForwardCacheForScreenReader);
-    }
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  bool IsBackForwardCacheEnabledForScreenReader() { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackForwardCacheBrowserTestWithFlagForScreenReader,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
-                       ScreenReaderOn) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ScreenReaderOn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -3755,28 +3733,14 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
   // Navigate to Page A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  int process_id = current_frame_host()->GetProcess()->GetID();
-  int routing_id = current_frame_host()->GetRoutingID();
 
   // Navigate away to Page B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  if (IsBackForwardCacheEnabledForScreenReader()) {
-    EXPECT_TRUE(rfh_a.get());
-    EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-    // Navigate back.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    ExpectRestored(FROM_HERE);
-  } else {
-    EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
-    // Navigate back.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kScreenReader);
-    ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
-                      {}, {reason}, {}, FROM_HERE);
-    EXPECT_TRUE(
-        tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
-  }
+  EXPECT_TRUE(rfh_a.get());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  // Navigate back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 class BackForwardCacheBrowserTestWithFlagForAXEvents
@@ -3784,8 +3748,6 @@ class BackForwardCacheBrowserTestWithFlagForAXEvents
       public ::testing::WithParamInterface<bool> {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kEnableBackForwardCacheForScreenReader,
-                              "", "true");
     if (ShouldEvictOnAXEvents()) {
       EnableFeatureAndSetParams(features::kEvictOnAXEvents, "", "true");
     } else {
@@ -3884,8 +3846,6 @@ class BackForwardCacheBrowserTestWithFlagForAXLocationChange
       public ::testing::WithParamInterface<bool> {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kEnableBackForwardCacheForScreenReader,
-                              "", "true");
     if (ShouldEvictOnAXLocationChange()) {
       DisableFeature(features::kDoNotEvictOnAXLocationChange);
     } else {

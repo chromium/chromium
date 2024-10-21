@@ -128,12 +128,6 @@ BASE_FEATURE(kEmbeddingRequiresOptIn,
              "EmbeddingRequiresOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable back/forward cache for screen reader users. This flag should be
-// removed once the https://crbug.com/1271450 is resolved.
-BASE_FEATURE(kEnableBackForwardCacheForScreenReader,
-             "EnableBackForwardCacheForScreenReader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable back/forward cache when a page which has subframe(s) with ongoing
 // navigation(s) is navigated. Currently, this is only for navigations which
 // don't need URLLoaders or haven't yet sent network requests. This flag should

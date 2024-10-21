@@ -210,9 +210,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // Returns whether MediaSession's service is allowed for the BackForwardCache.
   static bool IsMediaSessionServiceAllowed();
 
-  // Returns whether back/forward cache is enabled for screen reader users.
-  static bool IsScreenReaderAllowed();
-
   // Returns where back/forward cache is allowed for pages with unload handlers.
   static bool IsUnloadAllowed();
 
