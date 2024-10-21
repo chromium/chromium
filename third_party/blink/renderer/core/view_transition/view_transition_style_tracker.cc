@@ -90,6 +90,9 @@ CSSPropertyID kLayeredCaptureProperties[] = {
     CSSPropertyID::kOutline,
     CSSPropertyID::kBorderImage,
     CSSPropertyID::kPadding,
+    CSSPropertyID::kOverflow,
+    CSSPropertyID::kOverflowClipMargin,
+    CSSPropertyID::kContain,
 };
 
 CSSPropertyID kPropertiesToAnimate[] = {
