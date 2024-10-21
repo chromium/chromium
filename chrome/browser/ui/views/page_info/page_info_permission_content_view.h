@@ -69,6 +69,10 @@ class PageInfoPermissionContentView
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) override;
 
+  const raw_ptr<views::ToggleButton> GetToggleButtonForTesting() const {
+    return toggle_button_;
+  }
+
 #if !BUILDFLAG(IS_CHROMEOS)
   const raw_ptr<views::Label> GetTitleForTesting() const { return title_; }
 

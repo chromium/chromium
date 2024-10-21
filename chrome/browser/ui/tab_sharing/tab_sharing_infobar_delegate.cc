@@ -206,7 +206,8 @@ class TabSharingInfoBarDelegate::CscIndicatorButton
       return;
     }
     ShowPageInfoDialog(web_contents_.get(), base::DoNothing(),
-                       bubble_anchor_util::Anchor::kLocationBar);
+                       bubble_anchor_util::Anchor::kLocationBar,
+                       ContentSettingsType::CAPTURED_SURFACE_CONTROL);
   }
 
   std::u16string GetLabel() const override {

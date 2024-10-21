@@ -70,11 +70,14 @@
   <message name="IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM_WITH_COUNT" desc="The label used for the Camera PTZ site settings controls, in addition to the number of real cameras.">
     Camera use &amp; movement (<ph name="CAMERAS_COUNT">$1<ex>1</ex></ph>)
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL" desc="The label used for the Captured Surface Control site settings controls.">
-    Scrolling &amp; zooming
-  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_MID_SENTENCE" desc="The label used for the Captured Surface Control site settings controls when used mid-sentence.">
     scrolling &amp; zooming
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SHARED_TABS" desc="The label used for the main menu in Captured Surface Control site settings controls.">
+    Shared tabs
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SUB_MENU" desc="The label used for the sub menu in Captured Surface Control site settings controls.">
+    Scrolling &amp; zooming
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_CLIPBOARD" desc="The label used for the clipboard site settings controls.">
     Clipboard

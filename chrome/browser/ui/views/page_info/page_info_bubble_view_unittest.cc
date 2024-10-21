@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
@@ -583,6 +584,33 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
   // permission is not being omitted from the UI.
   api_->SetPermissionInfo(list);
   EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
+}
+
+TEST_F(PageInfoBubbleViewTest, CheckToggleSettingForCapturedSurfaceControl) {
+  PermissionInfoList list(1);
+  list.back().type = ContentSettingsType::CAPTURED_SURFACE_CONTROL;
+  api_->SetPermissionInfo(list);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SHARED_TABS),
+            api_->GetPermissionLabelTextAt(0));
+  // Verifies that there is no toggle in the main page info.
+  EXPECT_EQ(api_->GetToggleViewAt(0), nullptr);
+
+  // Opens the submenu for Captured Surface Control permission.
+  api_->navigation_handler()->OpenPermissionPage(
+      ContentSettingsType::CAPTURED_SURFACE_CONTROL);
+  ASSERT_GE(api_->current_view()->children().size(), 2u);
+  auto* page_view = static_cast<PageInfoPermissionContentView*>(
+      api_->current_view()->children()[1]);
+  ASSERT_TRUE(page_view);
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SUB_MENU),
+            page_view->GetTitleForTesting()->GetText());
+#endif
+  // Verifies that there is a toggle in the permission page view.
+  EXPECT_NE(page_view->GetToggleButtonForTesting(), nullptr);
 }
 
 class PageInfoBubbleViewOffTheRecordTest : public PageInfoBubbleViewTest {

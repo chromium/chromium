@@ -82,6 +82,14 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   title_->SetEnabledColorId(kColorPageInfoForeground);
 
+  // Without this, the title text inside the submenu of
+  // |CAPTURED_SURFACE_CONTROL| permission type would be the same as in the main
+  // page info. This block sets the submenu title text to a different one.
+  if (type == ContentSettingsType::CAPTURED_SURFACE_CONTROL) {
+    title_->SetText(l10n_util::GetStringUTF16(
+        IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SUB_MENU));
+  }
+
   state_label_ = label_wrapper->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_BODY_4));

@@ -379,6 +379,15 @@ TEST_F(PageInfoTest, PermissionStringsHaveMidSentenceVersion) {
         EXPECT_EQ(base::ToLowerASCII(normal), base::ToLowerASCII(mid_sentence));
         break;
 #endif
+      case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+        // The mid sentence for 'CAPTURED_SURFACE_CONTROL' type is different
+        // from the normal text and instead matches the submenu text which is
+        // "scrolling & zooming".
+        normal = l10n_util::GetStringUTF16(
+            IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SUB_MENU);
+        EXPECT_NE(normal, mid_sentence);
+        EXPECT_EQ(base::ToLowerASCII(normal), mid_sentence);
+        break;
       default:
         EXPECT_NE(normal, mid_sentence);
         EXPECT_EQ(base::ToLowerASCII(normal), mid_sentence);

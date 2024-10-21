@@ -196,7 +196,8 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
     const GURL& url,
     base::OnceClosure initialized_callback,
     PageInfoClosingCallback closing_callback,
-    bool allow_about_this_site) {
+    bool allow_about_this_site,
+    std::optional<ContentSettingsType> type) {
   DCHECK(web_contents);
   gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
 
@@ -207,10 +208,14 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
                                           web_contents, url);
   }
 
-  return new PageInfoBubbleView(
+  PageInfoBubbleView* bubble = new PageInfoBubbleView(
       anchor_view, anchor_rect, parent_view, web_contents, url,
       std::move(initialized_callback), std::move(closing_callback),
       allow_about_this_site);
+  if (type) {
+    bubble->OpenPermissionPage(*type);
+  }
+  return bubble;
 }
 
 void PageInfoBubbleView::OpenMainPage(base::OnceClosure initialized_callback) {
@@ -332,7 +337,8 @@ void ShowPageInfoDialogImpl(Browser* browser,
                             const GURL& virtual_url,
                             bubble_anchor_util::Anchor anchor,
                             base::OnceClosure initialized_callback,
-                            PageInfoClosingCallback closing_callback) {
+                            PageInfoClosingCallback closing_callback,
+                            std::optional<ContentSettingsType> type) {
   AnchorConfiguration configuration =
       GetPageInfoAnchorConfiguration(browser, anchor);
   gfx::Rect anchor_rect =
@@ -343,7 +349,7 @@ void ShowPageInfoDialogImpl(Browser* browser,
       PageInfoBubbleView::CreatePageInfoBubble(
           configuration.anchor_view, anchor_rect, parent_window, web_contents,
           virtual_url, std::move(initialized_callback),
-          std::move(closing_callback), /*allow_about_this_site=*/true);
+          std::move(closing_callback), /*allow_about_this_site=*/true, type);
   bubble->SetHighlightedButton(configuration.highlighted_button);
   bubble->SetArrow(configuration.bubble_arrow);
   bubble->GetWidget()->Show();
