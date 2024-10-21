@@ -58,7 +58,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -70,7 +69,6 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"  // nogncheck
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -94,10 +92,6 @@ constexpr char kTestWebAppName1[] = "test_web_app_name1";
 constexpr char kTestWebAppName2[] = "test_web_app_name2";
 constexpr char kTestUrl[] = "www.test.com";
 constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kTestWebAppUrl[] = "https://install.url";
-#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 constexpr char16_t kPepperPluginName1[] = u"pepper_plugin_name1";
@@ -1481,52 +1475,4 @@ TEST_F(KioskBrowserSessionTest, OnPluginHung) {
 // TODO(b/325648738): add KioskBrowserSessionDeathTest to check kiosk session
 // crash when unexpected browser is not closed.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-class KioskBrowserSessionAshWithLacrosEnabledTest
-    : public KioskBrowserSessionTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        ash::standalone_browser::GetFeatureRefs(), {});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-    KioskBrowserSessionTest::SetUp();
-    LoginKioskUser(CreateKioskAppId());
-  }
-
-  void TearDown() override { CloseMainBrowser(); }
-
- private:
-  ash::KioskAppId CreateKioskAppId() {
-    std::string email = policy::GenerateDeviceLocalAccountUserId(
-        kTestWebAppUrl, policy::DeviceLocalAccountType::kWebKioskApp);
-    AccountId account_id(AccountId::FromUserEmail(email));
-    return ash::KioskAppId::ForWebApp(account_id);
-  }
-
-  void LoginKioskUser(ash::KioskAppId kiosk_app_id) {
-    fake_user_manager_->AddWebKioskAppUser(kiosk_app_id.account_id);
-    fake_user_manager_->LoginUser(kiosk_app_id.account_id);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
-};
-
-TEST_F(KioskBrowserSessionAshWithLacrosEnabledTest,
-       AshBrowserShouldGetClosedIfLacrosIsEnabled) {
-  StartWebKioskSession(kTestWebAppName1);
-
-  DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName1));
-
-  histogram()->ExpectBucketCount(
-      kKioskNewBrowserWindowHistogram,
-      KioskBrowserWindowType::kClosedAshBrowserWithLacrosEnabled, 1);
-  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
-}
-
-#endif
 }  // namespace chromeos

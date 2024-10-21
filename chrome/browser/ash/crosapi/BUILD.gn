@@ -721,7 +721,6 @@ source_set("unit_tests") {
     "one_drive_integration_service_ash_unittest.cc",
     "parent_access_ash_unittest.cc",
     "payment_app_instance_ash_unittest.cc",
-    "persistent_forced_extension_keep_alive_unittest.cc",
     "prefs_ash_unittest.cc",
     "primary_profile_creation_waiter_unittest.cc",
     "rootfs_lacros_loader_unittest.cc",

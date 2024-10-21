@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "ash/components/arc/test/fake_app_instance.h"
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
@@ -19,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -45,8 +42,6 @@
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/app_constants/constants.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -723,67 +718,6 @@ TEST_F(AppContextMenuTest, InternalAppMenu) {
     EXPECT_EQ(1u, menu->GetItemCount());
     ValidateItemState(menu.get(), 0, MenuState(ash::TOGGLE_PIN));
   }
-}
-
-// Lacros has its own test suite because the feature needs to be enabled before
-// SetUp().
-class AppContextMenuLacrosTest : public AppContextMenuTest {
- public:
-  AppContextMenuLacrosTest() {
-    feature_list_.InitWithFeatures(
-        ash::standalone_browser::GetFeatureRefs(),
-        {ash::features::kEnforceAshExtensionKeeplist});
-    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForTest(
-        true);
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-  AppContextMenuLacrosTest(const AppContextMenuLacrosTest&) = delete;
-  AppContextMenuLacrosTest& operator=(const AppContextMenuLacrosTest&) = delete;
-  ~AppContextMenuLacrosTest() override = default;
-
-  // testing::Test:
-  void SetUp() override {
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-
-    // Login a user. The "email" must match the TestingProfile's
-    // GetProfileUserName() so that profile() will be the primary profile.
-    const AccountId account_id = AccountId::FromUserEmail("testing_profile");
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-
-    // Creates profile().
-    AppContextMenuTest::SetUp();
-
-    ASSERT_TRUE(ash::ProfileHelper::Get()->IsPrimaryProfile(profile()));
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-};
-
-TEST_F(AppContextMenuLacrosTest, LacrosApp) {
-  app_service_test().SetUp(profile());
-
-  // Create the context menu.
-  AppServiceContextMenu menu(menu_delegate(), profile(),
-                             app_constants::kLacrosAppId, controller(),
-                             ash::AppListItemContext::kNone);
-  std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
-  ASSERT_NE(menu_model, nullptr);
-
-  // Verify expected menu items.
-  // It should have, Open new window, Open incognito window, and app info.
-  EXPECT_EQ(menu_model->GetItemCount(), 3u);
-  std::vector<MenuState> states;
-  AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_WINDOW), &states);
-  AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW),
-              &states);
-  AddToStates(menu, MenuState(ash::SHOW_APP_INFO), &states);
-  ValidateMenuState(menu_model.get(), states);
 }
 
 }  // namespace app_list

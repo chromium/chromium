@@ -9,9 +9,7 @@
 #include <vector>
 
 #include "ash/components/arc/app/arc_app_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/webui/mall/app_id.h"
@@ -20,7 +18,6 @@
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
@@ -312,58 +309,6 @@ TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
   // Change the profile. Migration is necessary again!
   shelf_prefs_->AttachProfile(nullptr);
   ASSERT_TRUE(shelf_prefs_->ShouldPerformConsistencyMigrations());
-}
-
-// If Lacros is the only browser, then it should be pinned instead of ash.
-TEST_F(ChromeShelfPrefsTest, LacrosOnlyPinnedApp) {
-  // Enable lacros-only.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-  AddRegularUser("test@test.com");
-
-  // Migration is necessary to begin with.
-  ASSERT_TRUE(shelf_prefs_->ShouldPerformConsistencyMigrations());
-  std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
-
-  // Pinned apps should have the chrome app as the first item.
-  ASSERT_GE(pinned_apps_strs.size(), 1u);
-  EXPECT_EQ(pinned_apps_strs[0], app_constants::kLacrosAppId);
-
-  // Pinned apps should have the gmail app.
-  EXPECT_TRUE(base::Contains(pinned_apps_strs, ash::kGmailAppId));
-}
-
-// When moving from ash-only to lacros-only, the shelf position of the chrome
-// app should stay constant.
-TEST_F(ChromeShelfPrefsTest, ShelfPositionAfterLacrosMigration) {
-  // Set up ash-chrome in the middle position.
-  syncer::StringOrdinal ordinal1 =
-      syncer::StringOrdinal::CreateInitialOrdinal();
-  syncer::StringOrdinal ordinal2 = ordinal1.CreateAfter();
-  syncer::StringOrdinal ordinal3 = ordinal2.CreateAfter();
-
-  syncable_service().item_map_["dummy1"] = MakeSyncItem("dummy1", ordinal1);
-  syncable_service().item_map_[app_constants::kChromeAppId] =
-      MakeSyncItem(app_constants::kChromeAppId, ordinal2);
-  syncable_service().item_map_["dummy2"] = MakeSyncItem("dummy2", ordinal3);
-
-  // Enable lacros-only.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-  AddRegularUser("test@test.com");
-
-  // Perform migration
-  std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
-
-  // Confirm that the ash-chrome position gets replaced by lacros-chrome.
-  EXPECT_TRUE(base::Contains(pinned_apps_strs, app_constants::kLacrosAppId));
-  EXPECT_FALSE(base::Contains(pinned_apps_strs, app_constants::kChromeAppId));
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallSystemApp) {

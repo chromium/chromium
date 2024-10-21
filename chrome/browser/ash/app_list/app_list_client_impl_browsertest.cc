@@ -818,30 +818,6 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
             client->GetAppListDisplayId());
 }
 
-class AppListClientImplLacrosOnlyBrowserTest
-    : public AppListClientImplBrowserTest {
- public:
-  AppListClientImplLacrosOnlyBrowserTest() {
-    feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
-                                   {});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-};
-
-IN_PROC_BROWSER_TEST_F(AppListClientImplLacrosOnlyBrowserTest, ChromeApp) {
-  AppListControllerDelegate* delegate = AppListClientImpl::GetInstance();
-  ASSERT_TRUE(delegate);
-  ASSERT_TRUE(profile());
-  EXPECT_EQ(
-      extensions::LAUNCH_TYPE_INVALID,
-      delegate->GetExtensionLaunchType(profile(), app_constants::kChromeAppId));
-}
-
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ChromeApp) {
   AppListControllerDelegate* delegate = AppListClientImpl::GetInstance();
   ASSERT_TRUE(delegate);

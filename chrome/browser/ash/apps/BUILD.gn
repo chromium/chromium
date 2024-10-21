@@ -52,10 +52,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "apk_web_app_installer_browsertest.cc",
-    "apk_web_app_service_lacros_browsertest.cc",
-  ]
+  sources = [ "apk_web_app_installer_browsertest.cc" ]
 
   deps = [
     ":apps",
