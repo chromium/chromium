@@ -666,12 +666,15 @@ void InitLogging(const std::string& process_type) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   logging::InitChromeLogging(command_line, file_state);
+
+#if BUILDFLAG(IS_CHROMEOS)
   // Log the Chrome version for information. Do so at WARNING level as that's
   // the min level on ChromeOS.
   if (process_type.empty()) {
     LOG(WARNING) << "This is Chrome version " << chrome::kChromeVersion
                  << " (not a warning)";
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
