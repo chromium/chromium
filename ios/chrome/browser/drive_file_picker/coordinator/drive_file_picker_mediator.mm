@@ -781,11 +781,6 @@ NSString* kDriveIconRepositoryPrefix =
     return;
   }
 
-  if (!append) {
-    // If replacing current items, disable them until new items are loaded.
-    [self.consumer setEnabledItems:nil];
-  }
-
   // If there is a timer programmed to fetch items, cancel it.
   _timerBeforeFetch.Stop();
   // Cancel any pending fetch query.
@@ -845,8 +840,9 @@ NSString* kDriveIconRepositoryPrefix =
   }
 
   if (!append) {
-    // If this is a new query, then `_nextPageToken` can be reset and items
-    // should be cleared if it takes too long.
+    // If this is a new query, then `_nextPageToken` can be reset, current items
+    // can be disabled and should be cleared if the query takes too long.
+    [self.consumer setEnabledItems:nil];
     [self setNextPageToken:nil];
     _timerAfterFetchBeforeClearItems.Start(
         FROM_HERE, kClearItemsDelay,
