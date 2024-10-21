@@ -77,6 +77,224 @@
       }
     ]
   },
+  "optimization_guide-linux": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--use-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "chrome_ml_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_ml_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:chrome_ml_unittests/"
+      },
+      {
+        "args": [
+          "--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*",
+          "--use-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_browser_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*",
+          "--use-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_components_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--ui-test-action-timeout=30000",
+          "-use-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gpu": "10de:2184",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_gpu_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
+        "variant_id": "NVIDIA GeForce GTX 1660"
+      },
+      {
+        "args": [
+          "--use-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--out_dir=.",
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "chrome",
+          "--use-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "model_validation_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "model_validation_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/"
+      },
+      {
+        "args": [
+          "--out_dir=.",
+          "--use-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "model_validation_tests_light",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "model_validation_tests_light",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests_light/"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "chrome",
+          "--no-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests NVIDIA GeForce GTX 1660",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gpu": "10de:2184",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
+        "variant_id": "NVIDIA GeForce GTX 1660"
+      },
+      {
+        "args": [
+          "--no-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests_light NVIDIA GeForce GTX 1660",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gpu": "10de:2184",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests_light",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests_light/",
+        "variant_id": "NVIDIA GeForce GTX 1660"
+      }
+    ]
+  },
   "optimization_guide-mac-arm64": {
     "additional_compile_targets": [
       "ondevice_model_benchmark",
@@ -1065,220 +1283,7 @@
       }
     ]
   },
-  "optimization_guide_official-linux": {
-    "additional_compile_targets": [
-      "ondevice_model_benchmark",
-      "ondevice_model_example"
-    ],
-    "gtest_tests": [
-      {
-        "args": [
-          "--use-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "chrome_ml_unittests",
-        "swarming": {
-          "dimensions": {
-            "gce": "1",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_ml_unittests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal:chrome_ml_unittests/"
-      },
-      {
-        "args": [
-          "--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*",
-          "--use-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_browser_tests",
-        "swarming": {
-          "dimensions": {
-            "gce": "1",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "browser_tests",
-        "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      },
-      {
-        "args": [
-          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*",
-          "--use-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_components_unittests",
-        "swarming": {
-          "dimensions": {
-            "gce": "1",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
-      },
-      {
-        "args": [
-          "--ui-test-action-timeout=30000",
-          "-use-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
-        "swarming": {
-          "dimensions": {
-            "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "optimization_guide_gpu_unittests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
-        "variant_id": "NVIDIA GeForce GTX 1660"
-      },
-      {
-        "args": [
-          "--use-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_unittests",
-        "swarming": {
-          "dimensions": {
-            "gce": "1",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "optimization_guide_unittests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_unittests/"
-      }
-    ],
-    "isolated_scripts": [
-      {
-        "args": [
-          "--out_dir=.",
-          "--chromedriver",
-          "chromedriver",
-          "--binary",
-          "chrome",
-          "--use-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "model_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "gce": "1",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "model_validation_tests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/"
-      },
-      {
-        "args": [
-          "--out_dir=.",
-          "--use-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "model_validation_tests_light",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "gce": "1",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "model_validation_tests_light",
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests_light/"
-      },
-      {
-        "args": [
-          "--chromedriver",
-          "chromedriver",
-          "--binary",
-          "chrome",
-          "--no-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ondevice_stability_tests NVIDIA GeForce GTX 1660",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ondevice_stability_tests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
-        "variant_id": "NVIDIA GeForce GTX 1660"
-      },
-      {
-        "args": [
-          "--no-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ondevice_stability_tests_light NVIDIA GeForce GTX 1660",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ondevice_stability_tests_light",
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests_light/",
-        "variant_id": "NVIDIA GeForce GTX 1660"
-      }
-    ]
-  },
-  "optimization_guide_official-win64": {
+  "optimization_guide-win64": {
     "additional_compile_targets": [
       "ondevice_model_benchmark",
       "ondevice_model_example"
@@ -1609,6 +1614,53 @@
         "test": "ondevice_stability_tests_light",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests_light/",
         "variant_id": "NVIDIA GeForce GTX 1660"
+      }
+    ]
+  },
+  "optimization_guide_official-linux": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--ui-test-action-timeout=30000",
+          "-use-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_gpu_unittests",
+        "swarming": {
+          "dimensions": {
+            "gpu": "10de:2184",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_gpu_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/"
+      }
+    ]
+  },
+  "optimization_guide_official-win64": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--ui-test-action-timeout=30000"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_gpu_unittests",
+        "swarming": {
+          "dimensions": {
+            "gpu": "10de:2184",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_gpu_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/"
       }
     ]
   }

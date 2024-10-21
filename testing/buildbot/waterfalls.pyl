@@ -3979,6 +3979,18 @@
         },
         'os_type': 'chromeos',
       },
+      'optimization_guide-linux': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'test_suites': {
+           'gtest_tests': 'optimization_guide_linux_gtests',
+           'isolated_scripts': 'optimization_guide_linux_script_tests',
+        },
+        'os_type': 'linux',
+      },
       'optimization_guide-mac-arm64': {
         'additional_compile_targets': [
           'ondevice_model_benchmark',
@@ -4039,27 +4051,11 @@
         },
         'os_type': 'win',
       },
-      'optimization_guide_official-linux': {
+      'optimization_guide-win64': {
         'additional_compile_targets': [
           'ondevice_model_benchmark',
           'ondevice_model_example',
         ],
-        'mixins': [
-          'chrome-intelligence-swarming-pool',
-          'linux-jammy',
-        ],
-        'test_suites': {
-           'gtest_tests': 'optimization_guide_linux_gtests',
-           'isolated_scripts': 'optimization_guide_linux_script_tests',
-        },
-        'os_type': 'linux',
-      },
-      'optimization_guide_official-win64': {
-        'additional_compile_targets': [
-          'ondevice_model_benchmark',
-          'ondevice_model_example',
-        ],
-        'browser_config': 'release_x64',
         'mixins': [
           'chrome-intelligence-swarming-pool',
           'win10',
@@ -4067,7 +4063,32 @@
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
            'isolated_scripts': 'optimization_guide_win_script_tests',
-
+        },
+        'os_type': 'win',
+      },
+      # The following official builders are for catching
+      # official-specific ODML issues. Thus, they only run the
+      # optimization_guide_gpu_gtests on NVIDIA GeForce GTX 1660.
+      'optimization_guide_official-linux': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'nvidia_geforce_gtx_1660',
+          'linux-jammy',
+        ],
+        'test_suites': {
+           'gtest_tests': 'optimization_guide_gpu_gtests',
+        },
+        'os_type': 'linux',
+      },
+      'optimization_guide_official-win64': {
+        'browser_config': 'release_x64',
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'nvidia_geforce_gtx_1660',
+          'win10',
+        ],
+        'test_suites': {
+           'gtest_tests': 'optimization_guide_gpu_gtests',
         },
         'os_type': 'win',
       },
