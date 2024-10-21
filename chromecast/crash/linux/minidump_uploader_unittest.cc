@@ -5,6 +5,7 @@
 #include "chromecast/crash/linux/minidump_uploader.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -182,9 +183,9 @@ TEST_F(MinidumpUploaderTest, RemovesDumpsWithoutOptIn) {
   ASSERT_FALSE(base::PathExists(minidump_path));
   ASSERT_FALSE(base::PathExists(logfile_path));
 
-  int64_t size = -1;
-  ASSERT_TRUE(base::GetFileSize(lockfile_, &size));
-  ASSERT_EQ(size, 0);
+  std::optional<int64_t> size = base::GetFileSize(lockfile_);
+  ASSERT_TRUE(size.has_value());
+  ASSERT_EQ(size.value(), 0);
 }
 
 TEST_F(MinidumpUploaderTest, SavesDumpInfoWithUploadFailure) {
@@ -269,9 +270,9 @@ TEST_F(MinidumpUploaderTest, SavesRemainingDumpInfoWithMidwayUploadFailure) {
   }
 
   // Ensure all dump files have been removed, lockfile has been emptied.
-  int64_t size = -1;
-  ASSERT_TRUE(base::GetFileSize(lockfile_, &size));
-  ASSERT_EQ(size, 0);
+  std::optional<int64_t> size = base::GetFileSize(lockfile_);
+  ASSERT_TRUE(size.has_value());
+  ASSERT_EQ(size.value(), 0);
 
   ASSERT_TRUE(base::DeleteFile(lockfile_));
   ASSERT_TRUE(base::DeleteFile(metadata_));
@@ -295,9 +296,9 @@ TEST_F(MinidumpUploaderTest, FailsUploadWithMissingMinidumpFile) {
   ASSERT_FALSE(base::PathExists(minidump_path));
   ASSERT_FALSE(base::PathExists(logfile_path));
 
-  int64_t size = -1;
-  ASSERT_TRUE(base::GetFileSize(lockfile_, &size));
-  ASSERT_EQ(size, 0);
+  std::optional<int64_t> size = base::GetFileSize(lockfile_);
+  ASSERT_TRUE(size.has_value());
+  ASSERT_EQ(size.value(), 0);
 }
 
 TEST_F(MinidumpUploaderTest, UploadsWithoutMissingLogFile) {
@@ -319,9 +320,9 @@ TEST_F(MinidumpUploaderTest, UploadsWithoutMissingLogFile) {
   ASSERT_FALSE(base::PathExists(minidump_path));
   ASSERT_FALSE(base::PathExists(logfile_path));
 
-  int64_t size = -1;
-  ASSERT_TRUE(base::GetFileSize(lockfile_, &size));
-  ASSERT_EQ(size, 0);
+  std::optional<int64_t> size = base::GetFileSize(lockfile_);
+  ASSERT_TRUE(size.has_value());
+  ASSERT_EQ(size.value(), 0);
 }
 
 TEST_F(MinidumpUploaderTest, UploadsWithMultipleAttachments) {
@@ -353,9 +354,9 @@ TEST_F(MinidumpUploaderTest, UploadsWithMultipleAttachments) {
   ASSERT_FALSE(base::PathExists(base::FilePath(attachments[0])));
   ASSERT_TRUE(base::PathExists(base::FilePath(attachments[1])));
 
-  int64_t size = -1;
-  ASSERT_TRUE(base::GetFileSize(lockfile_, &size));
-  ASSERT_EQ(size, 0);
+  std::optional<int64_t> size = base::GetFileSize(lockfile_);
+  ASSERT_TRUE(size.has_value());
+  ASSERT_EQ(size.value(), 0);
 }
 
 TEST_F(MinidumpUploaderTest, DeletesLingeringFiles) {
@@ -392,9 +393,9 @@ TEST_F(MinidumpUploaderTest, DeletesLingeringFiles) {
   ASSERT_FALSE(base::PathExists(temp1));
   ASSERT_FALSE(base::PathExists(temp2));
 
-  int64_t size = -1;
-  ASSERT_TRUE(base::GetFileSize(lockfile_, &size));
-  ASSERT_EQ(size, 0);
+  std::optional<int64_t> size = base::GetFileSize(lockfile_);
+  ASSERT_TRUE(size.has_value());
+  ASSERT_EQ(size.value(), 0);
 }
 
 TEST_F(MinidumpUploaderTest, SchedulesRebootWhenRatelimited) {
@@ -426,9 +427,9 @@ TEST_F(MinidumpUploaderTest, SchedulesRebootWhenRatelimited) {
   ASSERT_FALSE(base::PathExists(minidump_path));
   ASSERT_FALSE(base::PathExists(logfile_path));
 
-  int64_t size = -1;
-  ASSERT_TRUE(base::GetFileSize(lockfile_, &size));
-  ASSERT_EQ(size, 0);
+  std::optional<int64_t> size = base::GetFileSize(lockfile_);
+  ASSERT_TRUE(size.has_value());
+  ASSERT_EQ(size.value(), 0);
 
   // Generate one dump for a second pass.
   GenerateDumpWithFiles(minidump_path, logfile_path);
@@ -448,8 +449,9 @@ TEST_F(MinidumpUploaderTest, SchedulesRebootWhenRatelimited) {
   ASSERT_FALSE(base::PathExists(minidump_path));
   ASSERT_FALSE(base::PathExists(logfile_path));
 
-  ASSERT_TRUE(base::GetFileSize(lockfile_, &size));
-  ASSERT_EQ(size, 0);
+  size = base::GetFileSize(lockfile_);
+  ASSERT_TRUE(size.has_value());
+  ASSERT_EQ(size.value(), 0);
 }
 
 TEST_F(MinidumpUploaderTest, UploadInitializesFileState) {

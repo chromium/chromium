@@ -6,6 +6,8 @@
 
 #include <sys/stat.h>
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -51,12 +53,13 @@ CastCrashdumpUploader::~CastCrashdumpUploader() {
 
 bool CastCrashdumpUploader::AddAttachment(const std::string& label,
                                           const std::string& filename) {
-  int64_t file_size = 0;
-  if (!base::GetFileSize(base::FilePath(filename), &file_size)) {
+  std::optional<int64_t> file_size =
+      base::GetFileSize(base::FilePath(filename));
+  if (!file_size.has_value()) {
     LOG(WARNING) << "file size of " << filename << " not readable";
     return false;
   }
-  LOG(INFO) << "file size of " << filename << ": " << file_size;
+  LOG(INFO) << "file size of " << filename << ": " << file_size.value();
   attachments_[label] = filename;
   return true;
 }
