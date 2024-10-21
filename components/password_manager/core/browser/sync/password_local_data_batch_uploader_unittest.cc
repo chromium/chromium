@@ -499,9 +499,6 @@ class PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest
     std::vector<PasswordForm> passwords;
     std::string store_string = store->IsAccountStore() ? "account" : "local";
     for (int i = 0; i < count; ++i) {
-      LOG(ERROR)
-          << "XXX: base::StringPrintf(\"http://%s%i.com\", store_string, i): "
-          << base::StringPrintf("http://%s%i.com", store_string, i);
       PasswordForm password = CreatePasswordForm(
           base::StringPrintf("http://%s%i.com", store_string, i));
       passwords.push_back(password);
