@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -38,6 +39,8 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/lens/lens_features.h"
@@ -86,9 +89,16 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
-    product_specifications_entry_point_controller_ =
-        std::make_unique<commerce::ProductSpecificationsEntryPointController>(
-            browser);
+    if (browser->GetProfile()->IsRegularProfile()) {
+      auto* shopping_service =
+          commerce::ShoppingServiceFactory::GetForBrowserContext(
+              browser->GetProfile());
+      if (shopping_service && commerce::CanLoadProductSpecificationsFullPageUi(
+                                  shopping_service->GetAccountChecker())) {
+        product_specifications_entry_point_controller_ = std::make_unique<
+            commerce::ProductSpecificationsEntryPointController>(browser);
+      }
+    }
 
     if (browser->GetProfile()->IsRegularProfile() &&
         tab_groups::IsTabGroupsSaveV2Enabled() &&
