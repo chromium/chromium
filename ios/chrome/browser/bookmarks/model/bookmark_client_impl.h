@@ -12,10 +12,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/task/deferred_sequenced_task_runner.h"
 #import "components/power_bookmarks/core/bookmark_client_base.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class BookmarkUndoService;
 class GURL;
+class ProfileIOS;
 
 namespace bookmarks {
 class BookmarkModel;

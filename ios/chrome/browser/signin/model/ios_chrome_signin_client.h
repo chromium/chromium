@@ -11,9 +11,9 @@
 #import "components/content_settings/core/browser/cookie_settings.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/signin/public/base/signin_client.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "net/cookies/cookie_change_dispatcher.h"
 
+class ProfileIOS;
 class WaitForNetworkCallbackHelperIOS;
 
 namespace version_info {

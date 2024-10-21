@@ -10,9 +10,9 @@
 
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/sync/service/sync_service_observer.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ui/gfx/image/image.h"
 
+class ProfileIOS;
 @protocol SettingsCommands;
 @class UIViewController;
 
