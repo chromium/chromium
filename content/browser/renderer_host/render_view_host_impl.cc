@@ -527,11 +527,6 @@ bool RenderViewHostImpl::CreateRenderView(
         frame_tree_node->current_frame_host()->IsRenderFrameLive() &&
         frame_tree_node->current_frame_host()->GetSiteInstance()->group() ==
             site_instance_group_.get()) {
-      // The main frame in a prerendered frame tree should commit exactly one
-      // real navigation, so it should never perform a local -> local main frame
-      // swap.
-      DCHECK(!frame_tree_->is_prerendering());
-
       local_frame_params->widget_params->reuse_compositor =
           frame_tree_node->current_frame_host()->ShouldReuseCompositing(
               *main_rfh->GetSiteInstance());
