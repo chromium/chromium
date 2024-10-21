@@ -484,20 +484,11 @@ AudioDevicesPrefHandlerImpl::AudioDevicesPrefHandlerImpl(
   LoadInputDevicesUserPriorityPref();
   LoadOutputDevicesUserPriorityPref();
 
-  // Reset set-based audio selection preference pref for testing purpose.
-  if (features::IsResetAudioSelectionImprovementPrefEnabled()) {
-    SaveDevicesStatePref();
-    SaveInputDevicePreferenceSetPref();
-    SaveOutputDevicePreferenceSetPref();
-    SaveMostRecentActivatedInputDeviceIdsPref();
-    SaveMostRecentActivatedOutputDeviceIdsPref();
-  } else {
-    LoadDevicesStatePref();
-    LoadInputDevicePreferenceSetPref();
-    LoadOutputDevicePreferenceSetPref();
-    LoadMostRecentActivatedInputDeviceIdsPref();
-    LoadMostRecentActivatedOutputDeviceIdsPref();
-  }
+  LoadDevicesStatePref();
+  LoadInputDevicePreferenceSetPref();
+  LoadOutputDevicePreferenceSetPref();
+  LoadMostRecentActivatedInputDeviceIdsPref();
+  LoadMostRecentActivatedOutputDeviceIdsPref();
 }
 
 AudioDevicesPrefHandlerImpl::~AudioDevicesPrefHandlerImpl() = default;
