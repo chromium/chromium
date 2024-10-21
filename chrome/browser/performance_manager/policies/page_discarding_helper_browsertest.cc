@@ -160,8 +160,7 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest,
-                       DISABLED_DiscardSpecificPage) {
+IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
   // Test urgent and proactive discards in a loop to avoid the overhead of
   // starting a new browser every time.
   // TODO(crbug.com/40899366): Add tests for all the other heuristics in
