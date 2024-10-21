@@ -9,7 +9,8 @@
 #import <vector>
 
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace base {
 template <typename T>

@@ -12,7 +12,8 @@
 #import "base/memory/weak_ptr.h"
 #import "components/sync/service/sync_client.h"
 #import "components/trusted_vault/trusted_vault_client.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace browser_sync {
 class SyncEngineFactoryImpl;
