@@ -41,6 +41,21 @@ BASE_FEATURE(kPrerender2FallbackPrefetchSpecRules,
              "Prerender2FallbackPrefetchSpecRules",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<Prerender2FallbackPrefetchReusablePolicy>::Option
+    kPrerender2FallbackPrefetchReusablePolicyOptions[] = {
+        {Prerender2FallbackPrefetchReusablePolicy::kNotUse, "NotUse"},
+        {Prerender2FallbackPrefetchReusablePolicy::
+             kUseIfIsLikelyAheadOfPrerender,
+         "UseIfIsLikelyAheadOfPrerender"},
+        {Prerender2FallbackPrefetchReusablePolicy::kUseAlways, "UseAlways"},
+};
+const base::FeatureParam<Prerender2FallbackPrefetchReusablePolicy>
+    kPrerender2FallbackPrefetchReusablePolicy{
+        &kPrerender2FallbackPrefetchSpecRules,
+        "kPrerender2FallbackPrefetchReusablePolicy",
+        Prerender2FallbackPrefetchReusablePolicy::kNotUse,
+        &kPrerender2FallbackPrefetchReusablePolicyOptions};
+
 const base::FeatureParam<int>
     kPrerender2NoVarySearchWaitForHeadersTimeoutEagerPrerender{
         &blink::features::kPrerender2NoVarySearch,
