@@ -393,8 +393,12 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
 void ChromePasswordManagerClient::PromptUserToMovePasswordToAccount(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_move) {
 #if !BUILDFLAG(IS_ANDROID)
-  PasswordsClientUIDelegateFromWebContents(web_contents())
-      ->OnShowMoveToAccountBubble(std::move(form_to_move));
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents());
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnShowMoveToAccountBubble(
+        std::move(form_to_move));
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -487,9 +491,13 @@ bool ChromePasswordManagerClient::PromptUserToChooseCredentials(
                                       std::move(intercept));
   return acccount_chooser_dialog->ShowDialog();
 #else
-  return PasswordsClientUIDelegateFromWebContents(web_contents())
-      ->OnChooseCredentials(std::move(local_forms), origin,
-                            std::move(intercept));
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents());
+  if (!manage_passwords_ui_controller) {
+    return false;
+  }
+  return manage_passwords_ui_controller->OnChooseCredentials(
+      std::move(local_forms), origin, std::move(intercept));
 #endif
 }
 
@@ -686,8 +694,12 @@ void ChromePasswordManagerClient::NotifyUserAutoSignin(
 #if BUILDFLAG(IS_ANDROID)
   ShowAutoSigninPrompt(web_contents(), local_forms[0]->username_value);
 #else
-  PasswordsClientUIDelegateFromWebContents(web_contents())
-      ->OnAutoSignin(std::move(local_forms), origin);
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents());
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnAutoSignin(std::move(local_forms),
+                                                 origin);
+  }
 #endif
 }
 
@@ -771,8 +783,10 @@ void ChromePasswordManagerClient::AutomaticPasswordSave(
 #else
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
-  manage_passwords_ui_controller->OnAutomaticPasswordSave(
-      std::move(saved_form), is_update_confirmation);
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnAutomaticPasswordSave(
+        std::move(saved_form), is_update_confirmation);
+  }
 #endif
 }
 
@@ -784,6 +798,9 @@ void ChromePasswordManagerClient::PasswordWasAutofilled(
 #if !BUILDFLAG(IS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
+  if (!manage_passwords_ui_controller) {
+    return;
+  }
   manage_passwords_ui_controller->OnPasswordAutofilled(best_matches, origin,
                                                        federated_matches);
 #endif
@@ -792,8 +809,8 @@ void ChromePasswordManagerClient::PasswordWasAutofilled(
       !IsAuthenticatorRequestWindowUrl(GetLastCommittedURL()) &&
       password_manager_util::
           ShouldShowBiometricAuthenticationBeforeFillingPromo(this)) {
-    PasswordsClientUIDelegateFromWebContents(web_contents())
-        ->OnBiometricAuthenticationForFilling(GetPrefs());
+    manage_passwords_ui_controller->OnBiometricAuthenticationForFilling(
+        GetPrefs());
   }
 #endif
 }
@@ -839,7 +856,9 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
 #else   // !BUILDFLAG(IS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
-  manage_passwords_ui_controller->OnCredentialLeak(leak_type, url, username);
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnCredentialLeak(leak_type, url, username);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -847,7 +866,9 @@ void ChromePasswordManagerClient::NotifyKeychainError() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
-  manage_passwords_ui_controller->OnKeychainError();
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnKeychainError();
+  }
 #endif
 }
 
@@ -956,8 +977,11 @@ void ChromePasswordManagerClient::PromptUserToEnableAutosignin() {
       new AutoSigninFirstRunDialogAndroid(web_contents());
   auto_signin_first_run_dialog->ShowDialog();
 #else
-  PasswordsClientUIDelegateFromWebContents(web_contents())
-      ->OnPromptEnableAutoSignin();
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents());
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnPromptEnableAutoSignin();
+  }
 #endif
 }
 
