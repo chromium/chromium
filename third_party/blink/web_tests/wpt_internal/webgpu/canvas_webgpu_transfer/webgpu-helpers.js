@@ -522,25 +522,6 @@ function test_transferToGPUTexture_usage_flags(adapter, adapterInfo, device,
 }
 
 /**
- * WebGPU access should work normally on a canvas which has been downgraded to
- * CPU, transparently bringing it back to the GPU.
- */
-function test_canvas_works_after_cpu_downgrade(adapterInfo, device, canvas) {
-  const ctx = canvas.getContext('2d');
-
-  // Force the canvas into software.
-  internals.disableCanvasAcceleration(canvas);
-
-  // Perform a GPU clear to demonstrate that the canvas still works in WebGPU.
-  const tex = ctx.transferToGPUTexture({device: device});
-  clearTextureToColor(device, tex, { r: 0.0, g: 1.0, b: 0.0, a: 1.0 });
-  ctx.transferBackFromGPUTexture();
-
-  // Verify that WebGPU did its job; every pixel on the canvas should be green.
-  checkCanvasColor(ctx, [0x00, 0xFF, 0x00, 0xFF]);
-}
-
-/**
  * WebGPU access should not allow transferring back after drawing to the canvas.
  */
 function test_canvas_disallows_transfer_back_after_draw(device, canvas) {
