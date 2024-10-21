@@ -349,7 +349,6 @@ class CONTENT_EXPORT BucketContext
   // Bind `receiver` to read from the file at `path`.
   void BindFileReader(
       const base::FilePath& path,
-      base::Time expected_modification_time,
       base::OnceClosure release_callback,
       mojo::PendingReceiver<storage::mojom::BlobDataItemReader> receiver);
   // Removes all readers for this file path.

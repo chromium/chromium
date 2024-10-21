@@ -228,11 +228,9 @@ std::
 class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
  public:
   IndexedDBDataItemReader(const base::FilePath& file_path,
-                          base::Time expected_modification_time,
                           base::OnceCallback<void(const base::FilePath&)>
                               on_last_receiver_disconnected)
       : file_path_(file_path),
-        expected_modification_time_(std::move(expected_modification_time)),
         on_last_receiver_disconnected_(
             std::move(on_last_receiver_disconnected)) {
     // The `BlobStorageContext` will disconnect when the blob is no longer
@@ -283,7 +281,6 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
   mojo::ReceiverSet<storage::mojom::BlobDataItemReader> receivers_;
 
   base::FilePath file_path_;
-  base::Time expected_modification_time_;
 
   // Called when the last receiver is disconnected. Will destroy `this`.
   base::OnceCallback<void(const base::FilePath&)>
@@ -526,13 +523,7 @@ void BucketContext::CreateAllExternalObjects(
         element->content_type = base::UTF16ToUTF8(blob_info.type());
         element->type = storage::mojom::BlobDataItemType::kIndexedDB;
 
-        base::Time last_modified;
-        // Android doesn't seem to consistently be able to set file modification
-        // times. https://crbug.com/1045488
-#if !BUILDFLAG(IS_ANDROID)
-        last_modified = blob_info.last_modified();
-#endif
-        BindFileReader(blob_info.indexed_db_file_path(), last_modified,
+        BindFileReader(blob_info.indexed_db_file_path(),
                        blob_info.release_callback(),
                        element->reader.InitWithNewPipeAndPassReceiver());
 
@@ -966,7 +957,6 @@ void BucketContext::CloseNow() {
 
 void BucketContext::BindFileReader(
     const base::FilePath& path,
-    base::Time expected_modification_time,
     base::OnceClosure release_callback,
     mojo::PendingReceiver<storage::mojom::BlobDataItemReader> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -976,9 +966,8 @@ void BucketContext::BindFileReader(
   if (itr == file_reader_map_.end()) {
     // Unretained is safe because `this` owns the reader.
     auto reader = std::make_unique<IndexedDBDataItemReader>(
-        path, expected_modification_time,
-        base::BindOnce(&BucketContext::RemoveBoundReaders,
-                       base::Unretained(this)));
+        path, base::BindOnce(&BucketContext::RemoveBoundReaders,
+                             base::Unretained(this)));
     itr = file_reader_map_
               .insert({path, std::make_tuple(std::move(reader),
                                              base::ScopedClosureRunner(
