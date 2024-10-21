@@ -12,6 +12,7 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -139,6 +140,7 @@ class BASE_EXPORT PowerMonitor {
 
   mutable Lock battery_power_status_lock_;
 
+  perfetto::NamedTrack process_track_;
   PowerThermalObserver::DeviceThermalState power_thermal_state_
       GUARDED_BY(power_thermal_state_lock_) =
           PowerThermalObserver::DeviceThermalState::kUnknown;

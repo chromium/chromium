@@ -455,6 +455,11 @@ struct Track {
   explicit Track(uint64_t id) {}
 };
 
+struct NamedTrack {
+  template <class T>
+  explicit NamedTrack(T name, uint64_t id = 0, Track parent = Track{0}) {}
+};
+
 namespace protos::pbzero {
 namespace SequenceManagerTask {
 
