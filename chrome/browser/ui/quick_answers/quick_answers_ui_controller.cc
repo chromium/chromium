@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
@@ -35,23 +34,15 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/new_window_delegate.h"
+//
+// TODO(crbug.com/374253370): Check whether it is possible to clean up the
+// inclusions below.
+//
 // gn --check is not aware of conditional includes, add nogncheck.
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"  // nogncheck
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"  // nogncheck
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_commands.h"          // nogncheck
-#include "chrome/browser/ui/browser_finder.h"            // nogncheck
-#include "chrome/browser/ui/browser_navigator.h"         // nogncheck
-#include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
-#include "chromeos/crosapi/mojom/url_handler.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -60,13 +51,12 @@ using quick_answers::QuickAnswersExitPoint;
 
 constexpr char kFeedbackDescriptionTemplate[] = "#QuickAnswers\nQuery:%s\n";
 
-// TODO(b/365588558): `OSSettingsType` and `ShowOSSettings` are to avoid having
-// ash dependency from lacros build. Delete those code once we can delete lacros
-// code.
+// TODO(b/365588558, crbug.com/374253370): `OSSettingsType` and `ShowOSSettings`
+// are to avoid having ash dependency from lacros build. Delete those code once
+// we can delete lacros code.
 enum class OSSettingsType { QuickAnswers, Mahi };
 
 void ShowOSSettings(Profile* profile, OSSettingsType type) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   switch (type) {
     case OSSettingsType::QuickAnswers:
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
@@ -81,29 +71,13 @@ void ShowOSSettings(Profile* profile, OSSettingsType type) {
   }
 
   CHECK(false) << "Invalid os settings type provided";
-
-#else
-// Lacros and other non-Ash build configs are not supported.
-#endif
 }
 
 // Open the specified URL in a new tab with the specified profile
 void OpenUrl(Profile* profile, const GURL& url) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // We always want to open a link in Lacros browser if LacrosOnly is true.
-  // `GetPrimary` returns a proper delegate depending on the flag.
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  NavigateParams navigate_params(
-      profile, url,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
-                                ui::PAGE_TRANSITION_FROM_API));
-  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
-  Navigate(&navigate_params);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 quick_answers::Design GetDesign(QuickAnswersState::FeatureType feature_type) {
@@ -397,17 +371,11 @@ void QuickAnswersUiController::OpenFeedbackPage(
     return;
   }
 
-  // TODO(b/229007013): Merge the logics after resolve the deps cycle with
-  // //c/b/ui in ash chrome build.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(b/229007013, crbug.com/374253370): Merge the logics after resolve the
+  // deps cycle with //c/b/ui in ash chrome build.
   ash::NewWindowDelegate::GetPrimary()->OpenFeedbackPage(
       ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers,
       feedback_template);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chrome::OpenFeedbackDialog(
-      chrome::FindBrowserWithActiveWindow(),
-      feedback::FeedbackSource::kFeedbackSourceQuickAnswers, feedback_template);
-#endif
 }
 
 void QuickAnswersUiController::SetFakeOpenWebUrlForTesting(

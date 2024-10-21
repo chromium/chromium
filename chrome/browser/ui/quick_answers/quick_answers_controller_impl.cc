@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_state_ash.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
@@ -23,15 +23,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/menu/menu_controller.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/quick_answers/quick_answers_state_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/feedback_util.h"
-#include "chrome/browser/ui/quick_answers/lacros/quick_answers_state_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -114,12 +105,8 @@ bool ShouldShowQuickAnswers() {
 }
 
 bool IsActiveUserInternal() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* user = user_manager::UserManager::Get()->GetActiveUser();
   const std::string email = user->GetAccountId().GetUserEmail();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const std::string email = feedback_util::GetSignedInUserEmail();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return gaia::IsGoogleInternalAccountEmail(email);
 }
@@ -190,11 +177,7 @@ class PerformOnConsentAccepted : public QuickAnswersStateObserver {
 };
 
 std::unique_ptr<QuickAnswersState> CreateQuickAnswersState() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<QuickAnswersStateAsh>();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::make_unique<QuickAnswersStateLacros>();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace

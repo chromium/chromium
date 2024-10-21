@@ -330,12 +330,8 @@ void RichAnswersView::UpdateBounds() {
       {kDefaultRichCardWidth, preferred_height}};
   bounds.AdjustToFit(display_bounds);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // For Ash, convert the position relative to the screen.
-  // For Lacros, `bounds` is already relative to the top-level window and
-  // the position will be calculated on server side.
+  // Convert the position relative to the screen.
   wm::ConvertRectFromScreen(GetWidget()->GetNativeWindow()->parent(), &bounds);
-#endif
 
   GetWidget()->SetBounds(bounds);
 }
