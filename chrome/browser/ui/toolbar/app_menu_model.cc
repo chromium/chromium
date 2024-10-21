@@ -485,7 +485,6 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
   avatar_image_model_ = ui::ImageModel::FromVectorIcon(
       kAccountCircleChromeRefreshIcon, ui::kColorMenuIcon, avatar_icon_size);
-
   if (profile->IsIncognitoProfile()) {
     avatar_image_model_ = ui::ImageModel::FromVectorIcon(
         kIncognitoIcon, ui::kColorAvatarIconIncognito, avatar_icon_size);
@@ -643,8 +642,6 @@ bool ProfileSubMenuModel::BuildSyncSection() {
       IdentityManagerFactory::GetForProfile(profile_);
   AddTitle(GetSyncSectionTitle(profile_, identity_manager));
 
-  const bool is_sync_feature_enabled =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   // First, check for sync errors. They may exist even if sync-the-feature is
   // disabled and only sync-the-transport is running.
   const std::optional<AvatarSyncErrorType> error =
@@ -668,7 +665,7 @@ bool ProfileSubMenuModel::BuildSyncSection() {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_SHOW_SIGNIN_WHEN_PAUSED, IDS_PROFILES_VERIFY_ACCOUNT_BUTTON,
         vector_icons::kAccountCircleOffChromeRefreshIcon);
-  } else if (is_sync_feature_enabled) {
+  } else if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SYNC_SETTINGS,
                                      IDS_PROFILE_ROW_SYNC_IS_ON,
                                      vector_icons::kSyncChromeRefreshIcon);
