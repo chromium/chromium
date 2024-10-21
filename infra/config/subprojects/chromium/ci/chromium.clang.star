@@ -792,6 +792,7 @@ ci.builder(
             apply_configs = [
                 "clang_tot",
                 "fuchsia_x64",
+                "fuchsia_no_hooks",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -876,6 +877,7 @@ ci.builder(
                 "clang_tot",
                 "fuchsia_arm64",
                 "fuchsia_arm64_host",
+                "fuchsia_no_hooks",
             ],
         ),
         chromium_config = builder_config.chromium_config(

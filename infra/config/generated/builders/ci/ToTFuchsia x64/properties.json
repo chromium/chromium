@@ -28,7 +28,8 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "clang_tot",
-                  "fuchsia_x64"
+                  "fuchsia_x64",
+                  "fuchsia_no_hooks"
                 ],
                 "config": "chromium"
               },

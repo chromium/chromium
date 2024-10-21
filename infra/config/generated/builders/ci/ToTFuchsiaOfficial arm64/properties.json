@@ -30,7 +30,8 @@
                   "checkout_pgo_profiles",
                   "clang_tot",
                   "fuchsia_arm64",
-                  "fuchsia_arm64_host"
+                  "fuchsia_arm64_host",
+                  "fuchsia_no_hooks"
                 ],
                 "config": "chromium"
               },
