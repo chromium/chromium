@@ -23,8 +23,8 @@ class ComputedStyle;
 class ContainerQuery;
 class Element;
 class MatchResult;
+class ScrollStateQuerySnapshot;
 class SnappedQueryScrollSnapshot;
-class StuckQueryScrollSnapshot;
 class StyleRecalcContext;
 
 class CORE_EXPORT ContainerQueryEvaluator final
@@ -227,7 +227,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   ContainerOverflowingFlags overflowing_vertical_ =
       static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
-  Member<StuckQueryScrollSnapshot> stuck_snapshot_;
+  Member<ScrollStateQuerySnapshot> scroll_state_snapshot_;
   // The MediaQueryExpValue::UnitFlags of all queries evaluated against this
   // ContainerQueryEvaluator.
   unsigned unit_flags_ = 0;

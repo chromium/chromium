@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/css/css_container_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
+#include "third_party/blink/renderer/core/css/scroll_state_query_snapshot.h"
 #include "third_party/blink/renderer/core/css/snapped_query_scroll_snapshot.h"
-#include "third_party/blink/renderer/core/css/stuck_query_scroll_snapshot.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -299,12 +299,12 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   }
   if (!depends_on_stuck_) {
     depends_on_stuck_ = query.Selector().SelectsStickyContainers();
-    if (depends_on_stuck_ && !stuck_snapshot_) {
+    if (depends_on_stuck_ && !scroll_state_snapshot_) {
       CHECK(media_query_evaluator_);
       Element* container_element = ContainerElement();
       CHECK(container_element);
-      stuck_snapshot_ =
-          MakeGarbageCollected<StuckQueryScrollSnapshot>(*container_element);
+      scroll_state_snapshot_ =
+          MakeGarbageCollected<ScrollStateQuerySnapshot>(*container_element);
     }
   }
   if (!depends_on_snapped_) {
@@ -318,12 +318,12 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   }
   if (!depends_on_overflowing_) {
     depends_on_overflowing_ = query.Selector().SelectsOverflowContainers();
-    if (depends_on_overflowing_ && !stuck_snapshot_) {
+    if (depends_on_overflowing_ && !scroll_state_snapshot_) {
       CHECK(media_query_evaluator_);
       Element* container_element = ContainerElement();
       CHECK(container_element);
-      stuck_snapshot_ =
-          MakeGarbageCollected<StuckQueryScrollSnapshot>(*container_element);
+      scroll_state_snapshot_ =
+          MakeGarbageCollected<ScrollStateQuerySnapshot>(*container_element);
     }
   }
   unit_flags_ |= result.unit_flags;
@@ -374,12 +374,12 @@ void ContainerQueryEvaluator::SetPendingSnappedStateFromScrollSnapshot(
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ApplyScrollState() {
   Change change = Change::kNone;
-  if (stuck_snapshot_) {
-    change = StickyContainerChanged(stuck_snapshot_->StuckHorizontal(),
-                                    stuck_snapshot_->StuckVertical());
-    Change overflow_change =
-        OverflowContainerChanged(stuck_snapshot_->OverflowingHorizontal(),
-                                 stuck_snapshot_->OverflowingVertical());
+  if (scroll_state_snapshot_) {
+    change = StickyContainerChanged(scroll_state_snapshot_->StuckHorizontal(),
+                                    scroll_state_snapshot_->StuckVertical());
+    Change overflow_change = OverflowContainerChanged(
+        scroll_state_snapshot_->OverflowingHorizontal(),
+        scroll_state_snapshot_->OverflowingVertical());
     change = std::max(change, overflow_change);
   }
   Change snap_change = SnapContainerChanged(pending_snapped_);
@@ -494,7 +494,7 @@ void ContainerQueryEvaluator::UpdateContainerValues() {
 void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
   visitor->Trace(media_query_evaluator_);
   visitor->Trace(results_);
-  visitor->Trace(stuck_snapshot_);
+  visitor->Trace(scroll_state_snapshot_);
 }
 
 void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/stuck_query_scroll_snapshot.h"
+#include "third_party/blink/renderer/core/css/scroll_state_query_snapshot.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -13,11 +13,11 @@
 
 namespace blink {
 
-StuckQueryScrollSnapshot::StuckQueryScrollSnapshot(Element& container)
+ScrollStateQuerySnapshot::ScrollStateQuerySnapshot(Element& container)
     : ScrollSnapshotClient(container.GetDocument().GetFrame()),
       container_(container) {}
 
-bool StuckQueryScrollSnapshot::UpdateStuckState() {
+bool ScrollStateQuerySnapshot::UpdateScrollState() {
   ContainerStuckPhysical stuck_horizontal = ContainerStuckPhysical::kNo;
   ContainerStuckPhysical stuck_vertical = ContainerStuckPhysical::kNo;
   ContainerOverflowingFlags overflowing_horizontal =
@@ -84,22 +84,22 @@ bool StuckQueryScrollSnapshot::UpdateStuckState() {
   return false;
 }
 
-void StuckQueryScrollSnapshot::UpdateSnapshot() {
-  UpdateStuckState();
+void ScrollStateQuerySnapshot::UpdateSnapshot() {
+  UpdateScrollState();
 }
 
-bool StuckQueryScrollSnapshot::ValidateSnapshot() {
-  if (UpdateStuckState()) {
+bool ScrollStateQuerySnapshot::ValidateSnapshot() {
+  if (UpdateScrollState()) {
     return false;
   }
   return true;
 }
 
-bool StuckQueryScrollSnapshot::ShouldScheduleNextService() {
+bool ScrollStateQuerySnapshot::ShouldScheduleNextService() {
   return false;
 }
 
-void StuckQueryScrollSnapshot::Trace(Visitor* visitor) const {
+void ScrollStateQuerySnapshot::Trace(Visitor* visitor) const {
   visitor->Trace(container_);
   ScrollSnapshotClient::Trace(visitor);
 }
