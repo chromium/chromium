@@ -6,7 +6,6 @@ include_rules = [
   "+net/dns/public",
   "+net/filter/source_stream.h",
   "+net/http/alternate_protocol_usage.h",
-  "+net/http/http_connection_info.h",
   "+net/ssl/ssl_info.h",
   "+net/storage_access_api/status.h",
   "+third_party/blink/renderer/platform/mojo",

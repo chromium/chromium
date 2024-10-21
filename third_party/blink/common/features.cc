@@ -680,28 +680,6 @@ BASE_FEATURE_PARAM(bool,
                    "delay_async_exec_opt_out_high_fetch_priority_hint",
                    false);
 
-BASE_FEATURE(kDelayLowPriorityRequestsAccordingToNetworkState,
-             "DelayLowPriorityRequestsAccordingToNetworkState",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(size_t,
-                   kMaxNumOfThrottleableRequestsInTightMode,
-                   &kDelayLowPriorityRequestsAccordingToNetworkState,
-                   "MaxNumOfThrottleableRequestsInTightMode",
-                   5);
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kHttpRttThreshold,
-                   &kDelayLowPriorityRequestsAccordingToNetworkState,
-                   "HttpRttThreshold",
-                   base::Milliseconds(450));
-
-BASE_FEATURE_PARAM(double,
-                   kCostReductionOfMultiplexedRequests,
-                   &kDelayLowPriorityRequestsAccordingToNetworkState,
-                   "CostReductionOfMultiplexedRequests",
-                   0.5);
-
 BASE_FEATURE(kDirectCompositorThreadIpc,
              "DirectCompositorThreadIpc",
              base::FEATURE_DISABLED_BY_DEFAULT);

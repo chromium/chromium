@@ -1005,9 +1005,6 @@ void ResourceLoader::DidReceiveResponseInternal(
     }
   }
 
-  scheduler_->SetConnectionInfo(scheduler_client_id_,
-                                response.ConnectionInfo());
-
   // A response should not serve partial content if it was not requested via a
   // Range header: https://fetch.spec.whatwg.org/#main-fetch
   if (response.GetType() == network::mojom::FetchResponseType::kOpaque &&
