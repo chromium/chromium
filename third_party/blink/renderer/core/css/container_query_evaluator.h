@@ -61,9 +61,11 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool DependsOnStyle() const { return depends_on_style_; }
   bool DependsOnStuck() const { return depends_on_stuck_; }
   bool DependsOnSnapped() const { return depends_on_snapped_; }
+  bool DependsOnOverflowing() const { return depends_on_overflowing_; }
   bool DependsOnSize() const { return depends_on_size_; }
   bool MayDependOnWritingDirection() const {
-    return DependsOnSize() || DependsOnStuck() || DependsOnSnapped();
+    return DependsOnSize() || DependsOnStuck() || DependsOnSnapped() ||
+           DependsOnOverflowing();
   }
 
   enum class Change : uint8_t {
@@ -143,8 +145,9 @@ class CORE_EXPORT ContainerQueryEvaluator final
   void UpdateContainerSnapped(ContainerSnappedFlags snapped);
 
   // Update the CSSContainerValues with the new overflowing state.
-  void UpdateContainerOverflowing(ContainerOverflowing overflowing_horizontal,
-                                  ContainerOverflowing overflowing_vertical);
+  void UpdateContainerOverflowing(
+      ContainerOverflowingFlags overflowing_horizontal,
+      ContainerOverflowingFlags overflowing_vertical);
 
   // Re-evaluate the cached results and clear any results which are affected by
   // the ContainerStuckPhysical changes.
@@ -157,8 +160,9 @@ class CORE_EXPORT ContainerQueryEvaluator final
 
   // Re-evaluate the cached results and clear any results which are affected by
   // the snapped target changes.
-  Change OverflowContainerChanged(ContainerOverflowing overflowing_horizontal,
-                                  ContainerOverflowing overflowing_vertical);
+  Change OverflowContainerChanged(
+      ContainerOverflowingFlags overflowing_horizontal,
+      ContainerOverflowingFlags overflowing_vertical);
 
   enum ContainerType {
     kSizeContainer,
@@ -176,8 +180,18 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Re-evaluate cached query results after a style change and return which
   // elements need to be invalidated if necessary.
   Change ComputeStyleChange() const;
+
+  // Re-evaluate cached query results after a stuck state change and return
+  // which elements need to be invalidated if necessary.
   Change ComputeStickyChange() const;
+
+  // Re-evaluate cached query results after a snapped state change and return
+  // which elements need to be invalidated if necessary.
   Change ComputeSnapChange() const;
+
+  // Re-evaluate cached query results after a overflowing state change and
+  // return which elements need to be invalidated if necessary.
+  Change ComputeOverflowChange() const;
 
   struct Result {
     // Main evaluation result.
@@ -208,6 +222,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
       static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
   ContainerSnappedFlags pending_snapped_ =
       static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
+  ContainerOverflowingFlags overflowing_horizontal_ =
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  ContainerOverflowingFlags overflowing_vertical_ =
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
   Member<StuckQueryScrollSnapshot> stuck_snapshot_;
   // The MediaQueryExpValue::UnitFlags of all queries evaluated against this
@@ -217,6 +235,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool depends_on_style_ = false;
   bool depends_on_stuck_ = false;
   bool depends_on_snapped_ = false;
+  bool depends_on_overflowing_ = false;
   bool depends_on_size_ = false;
 };
 
