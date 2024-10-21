@@ -156,6 +156,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -232,7 +233,7 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
       const GURL& url) {
     return CreateContextMenu(unfiltered_url, url, std::u16string(),
                              blink::mojom::ContextMenuDataMediaType::kNone,
-                             ui::MENU_SOURCE_NONE);
+                             ui::mojom::MenuSourceType::kNone);
   }
 
   std::unique_ptr<TestRenderViewContextMenu>
@@ -241,14 +242,15 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
                                               const GURL& url) {
     return CreateContextMenuInWebContents(
         web_contents, unfiltered_url, url, std::u16string(),
-        blink::mojom::ContextMenuDataMediaType::kNone, ui::MENU_SOURCE_NONE);
+        blink::mojom::ContextMenuDataMediaType::kNone,
+        ui::mojom::MenuSourceType::kNone);
   }
 
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenuMediaTypeImage(
       const GURL& url) {
     return CreateContextMenu(GURL(), url, std::u16string(),
                              blink::mojom::ContextMenuDataMediaType::kImage,
-                             ui::MENU_SOURCE_NONE);
+                             ui::mojom::MenuSourceType::kNone);
   }
 
   std::unique_ptr<TestRenderViewContextMenu>
@@ -259,7 +261,7 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
     params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
     params.selection_text = selection_text;
     params.page_url = web_contents->GetVisibleURL();
-    params.source_type = ui::MENU_SOURCE_NONE;
+    params.source_type = ui::mojom::MenuSourceType::kNone;
 #if BUILDFLAG(IS_MAC)
     params.writing_direction_default = 0;
     params.writing_direction_left_to_right = 0;
@@ -276,7 +278,7 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
       const GURL& url,
       const std::u16string& link_text,
       blink::mojom::ContextMenuDataMediaType media_type,
-      ui::MenuSourceType source_type) {
+      ui::mojom::MenuSourceType source_type) {
     return CreateContextMenuInWebContents(
         browser()->tab_strip_model()->GetActiveWebContents(), unfiltered_url,
         url, link_text, media_type, source_type);
@@ -300,7 +302,7 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
       const GURL& url,
       const std::u16string& link_text,
       blink::mojom::ContextMenuDataMediaType media_type,
-      ui::MenuSourceType source_type) {
+      ui::mojom::MenuSourceType source_type) {
     content::ContextMenuParams params;
     params.media_type = media_type;
     params.unfiltered_link_url = unfiltered_url;
@@ -711,7 +713,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
 
   std::unique_ptr<TestRenderViewContextMenu> menu3 = CreateContextMenu(
       GURL("http://www.google.com/"), GURL("http://www.google.com/"), u"",
-      blink::mojom::ContextMenuDataMediaType::kNone, ui::MENU_SOURCE_TOUCH);
+      blink::mojom::ContextMenuDataMediaType::kNone,
+      ui::mojom::MenuSourceType::kTouch);
 
   EXPECT_TRUE(menu3->IsCommandIdVisible(IDC_CONTENT_CONTEXT_COPYLINKTEXT));
 }
@@ -803,7 +806,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
 
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
       GURL("http://example.com/"), GURL("http://example.com/foo.mp4"), u"",
-      blink::mojom::ContextMenuDataMediaType::kVideo, ui::MENU_SOURCE_MOUSE);
+      blink::mojom::ContextMenuDataMediaType::kVideo,
+      ui::mojom::MenuSourceType::kMouse);
 
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEAVAS));
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEAVAS));
@@ -1322,7 +1326,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   auto menu = CreateContextMenuInWebContents(
       web_contents, GURL("http://www.google.com/"),
       GURL("http://www.google.com/"), u"Google",
-      blink::mojom::ContextMenuDataMediaType::kCanvas, ui::MENU_SOURCE_MOUSE);
+      blink::mojom::ContextMenuDataMediaType::kCanvas,
+      ui::mojom::MenuSourceType::kMouse);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGE, /*event_flags=*/0);
   EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
@@ -1440,7 +1445,8 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, CopyLinkTextMouse) {
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
       GURL("http://www.google.com/"), GURL("http://www.google.com/"), u"Google",
-      blink::mojom::ContextMenuDataMediaType::kNone, ui::MENU_SOURCE_MOUSE);
+      blink::mojom::ContextMenuDataMediaType::kNone,
+      ui::mojom::MenuSourceType::kMouse);
 
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKTEXT));
 }
@@ -1448,7 +1454,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, CopyLinkTextMouse) {
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, CopyLinkTextTouchNoText) {
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
       GURL("http://www.google.com/"), GURL("http://www.google.com/"), u"",
-      blink::mojom::ContextMenuDataMediaType::kNone, ui::MENU_SOURCE_TOUCH);
+      blink::mojom::ContextMenuDataMediaType::kNone,
+      ui::mojom::MenuSourceType::kTouch);
 
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKTEXT));
 }
@@ -1456,7 +1463,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, CopyLinkTextTouchNoText) {
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, CopyLinkTextTouchTextOnly) {
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
       GURL("http://www.google.com/"), GURL("http://www.google.com/"), u"Google",
-      blink::mojom::ContextMenuDataMediaType::kNone, ui::MENU_SOURCE_TOUCH);
+      blink::mojom::ContextMenuDataMediaType::kNone,
+      ui::mojom::MenuSourceType::kTouch);
 
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKTEXT));
 }
@@ -1464,7 +1472,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, CopyLinkTextTouchTextOnly) {
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, CopyLinkTextTouchTextImage) {
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
       GURL("http://www.google.com/"), GURL("http://www.google.com/"), u"Google",
-      blink::mojom::ContextMenuDataMediaType::kImage, ui::MENU_SOURCE_TOUCH);
+      blink::mojom::ContextMenuDataMediaType::kImage,
+      ui::mojom::MenuSourceType::kTouch);
 
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKTEXT));
 }
@@ -4091,7 +4100,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, ContextMenuForVideo) {
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
       GURL("http://www.example.com/"), GURL("http://www.example.com/foo.mp4"),
       u"", blink::mojom::ContextMenuDataMediaType::kVideo,
-      ui::MENU_SOURCE_MOUSE);
+      ui::mojom::MenuSourceType::kMouse);
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYAVLOCATION));
 }
 
@@ -4100,7 +4109,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
       GURL("http://www.example.com/"),
       GURL("blob:http://example.com/00000000-0000-0000-0000-000000000000"), u"",
-      blink::mojom::ContextMenuDataMediaType::kVideo, ui::MENU_SOURCE_MOUSE);
+      blink::mojom::ContextMenuDataMediaType::kVideo,
+      ui::mojom::MenuSourceType::kMouse);
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYAVLOCATION));
 }
 
@@ -4179,10 +4189,11 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, BrowserlessWebContentsCrash) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->profile()));
-  CreateContextMenuInWebContents(
-      web_contents.get(), GURL("http://www.google.com/"),
-      GURL("http://www.google.com/"), u"Google",
-      blink::mojom::ContextMenuDataMediaType::kNone, ui::MENU_SOURCE_MOUSE);
+  CreateContextMenuInWebContents(web_contents.get(),
+                                 GURL("http://www.google.com/"),
+                                 GURL("http://www.google.com/"), u"Google",
+                                 blink::mojom::ContextMenuDataMediaType::kNone,
+                                 ui::mojom::MenuSourceType::kMouse);
 }
 
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, GifImageShare) {
@@ -4336,7 +4347,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenInReadingMode) {
   menu = CreateContextMenu(GURL("http://www.example.com/"),
                            GURL("http://www.example.com/foo.mp4"), u"",
                            blink::mojom::ContextMenuDataMediaType::kVideo,
-                           ui::MENU_SOURCE_MOUSE);
+                           ui::mojom::MenuSourceType::kMouse);
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 
   // Open in reading mode is NOT an option for <canvas>.

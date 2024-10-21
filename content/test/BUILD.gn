@@ -3189,6 +3189,7 @@ test("content_unittests") {
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/idle:test_support",
     "//ui/base/ime/init",
+    "//ui/base/mojom:ui_base_types",
     "//ui/compositor:test_support",
     "//ui/display",
     "//ui/display:test_support",

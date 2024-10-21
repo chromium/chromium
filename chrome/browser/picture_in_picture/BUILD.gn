@@ -167,6 +167,7 @@ if (!is_android) {
       "//testing/gtest",
       "//third_party/blink/public/common:headers",
       "//ui/base:hit_test",
+      "//ui/base/mojom:ui_base_types",
       "//ui/compositor:test_support",
       "//ui/display",
       "//ui/events:test_support",

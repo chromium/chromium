@@ -4179,6 +4179,9 @@ static_library("browser") {
     ]
 
     #!is_android
+    public_deps += [ "//ui/base/mojom:ui_base_types" ]
+
+    #!is_android
     deps += [
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
@@ -7724,6 +7727,7 @@ static_library("browser") {
       "//chrome/browser/extensions:keyed_service_factories",
       "//chrome/browser/extensions/api",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//ui/base/mojom:ui_base_types",
     ]
 
     # Any circular includes must depend on the target

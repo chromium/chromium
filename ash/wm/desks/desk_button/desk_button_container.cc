@@ -270,7 +270,7 @@ void DeskButtonContainer::HandleLocaleChange() {
 void DeskButtonContainer::MaybeShowContextMenu(views::View* source,
                                                ui::LocatedEvent* event) {
   if (!desk_button_->is_activated()) {
-    ui::MenuSourceType source_type = ui::MENU_SOURCE_MOUSE;
+    ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kMouse;
     if (event->type() == ui::EventType::kGestureLongPress) {
       source_type = ui::mojom::MenuSourceType::kLongPress;
     } else if (event->type() == ui::EventType::kGestureLongTap) {

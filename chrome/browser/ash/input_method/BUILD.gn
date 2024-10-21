@@ -179,6 +179,7 @@ static_library("input_method") {
     "//ui/base/ime:ime_types",
     "//ui/base/ime:text_input_types",
     "//ui/base/ime/ash",
+    "//ui/base/mojom:ui_base_types",
     "//ui/display",
     "//ui/events",
     "//ui/events:dom_keycode_converter",

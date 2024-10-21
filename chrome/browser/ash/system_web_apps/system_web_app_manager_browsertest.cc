@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+
 #include <string>
 #include <tuple>
 #include <utility>
@@ -39,7 +41,6 @@
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
@@ -89,6 +90,7 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/test/event_generator.h"
@@ -1641,7 +1643,7 @@ class SystemWebAppManagerContextMenuBrowserTest
     params.link_text = std::u16string();
     params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
     params.page_url = web_contents->GetVisibleURL();
-    params.source_type = ui::MENU_SOURCE_NONE;
+    params.source_type = ui::mojom::MenuSourceType::kNone;
     auto menu = std::make_unique<TestRenderViewContextMenu>(
         *web_contents->GetPrimaryMainFrame(), params);
     menu->Init();

@@ -121,6 +121,7 @@ source_set("browser_tests") {
     "//extensions/common",
     "//ui/base/idle",
     "//ui/base/idle:test_support",
+    "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",
 
     # Tests from subdirectories:

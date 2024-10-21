@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
@@ -198,7 +199,7 @@ void LensPreselectionBubble::OpenMoreInfoMenu() {
                               more_info_button_->button_controller()),
                           more_info_button_->GetAnchorBoundsInScreen(),
                           views::MenuAnchorPosition::kTopRight,
-                          ui::MENU_SOURCE_NONE);
+                          ui::mojom::MenuSourceType::kNone);
 }
 
 void LensPreselectionBubble::ExecuteCommand(int command_id, int event_flags) {

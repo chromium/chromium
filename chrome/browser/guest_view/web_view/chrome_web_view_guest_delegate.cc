@@ -17,6 +17,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "url/gurl.h"
 
 using guest_view::GuestViewEvent;
@@ -54,9 +55,9 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
   DCHECK_EQ(guest_web_contents(),
             content::WebContents::FromRenderFrameHost(&render_frame_host));
 
-  if ((params.source_type == ui::MENU_SOURCE_LONG_PRESS ||
-       params.source_type == ui::MENU_SOURCE_LONG_TAP ||
-       params.source_type == ui::MENU_SOURCE_TOUCH) &&
+  if ((params.source_type == ui::mojom::MenuSourceType::kLongPress ||
+       params.source_type == ui::mojom::MenuSourceType::kLongTap ||
+       params.source_type == ui::mojom::MenuSourceType::kTouch) &&
       !params.selection_text.empty() &&
       (guest_web_contents()->GetRenderWidgetHostView() &&
        guest_web_contents()

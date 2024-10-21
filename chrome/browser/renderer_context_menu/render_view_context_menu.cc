@@ -224,6 +224,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/point.h"
@@ -831,7 +832,8 @@ bool IsLensOptionEnteredThroughKeyboard(int event_flags) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // This check must be done inside the BUILDFLAG block because
   // GetMenuSourceType is only available in this case.
-  return ui::GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD;
+  return ui::GetMenuSourceType(event_flags) ==
+         ui::mojom::MenuSourceType::kKeyboard;
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1918,7 +1920,7 @@ void RenderViewContextMenu::AppendLinkItems() {
                                       ? IDS_CONTENT_CONTEXT_COPYEMAILADDRESS
                                       : IDS_CONTENT_CONTEXT_COPYLINKLOCATION);
 
-  if (params_.source_type == ui::MENU_SOURCE_TOUCH &&
+  if (params_.source_type == ui::mojom::MenuSourceType::kTouch &&
       params_.media_type != ContextMenuDataMediaType::kImage &&
       !params_.link_text.empty()) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYLINKTEXT,
@@ -4895,7 +4897,8 @@ void RenderViewContextMenu::ShowClipboardHistoryMenu(int event_flags) {
   anchor_point_in_screen.Offset(params_.x, params_.y);
 
   // Calculate the menu source type from `event_flags`.
-  const ui::MenuSourceType source_type = ui::GetMenuSourceType(event_flags);
+  const ui::mojom::MenuSourceType source_type =
+      ui::GetMenuSourceType(event_flags);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ClipboardHistoryController::Get()->ShowMenu(

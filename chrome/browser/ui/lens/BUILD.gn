@@ -71,6 +71,7 @@ source_set("lens") {
     "//components/find_in_page",
     "//components/lens",
     "//content/public/browser",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   deps = [

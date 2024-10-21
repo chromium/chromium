@@ -5891,7 +5891,7 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
 
   RenderViewHostFactory::set_is_real_render_view_host(true);
 
-  // A context menu request with the MENU_SOURCE_MOUSE source type should
+  // A context menu request with the `MenuSourceType::kMouse` source type should
   // result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called. This means that the request worked correctly.
   ContextMenuParams context_menu_params;
@@ -5903,7 +5903,7 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
   EXPECT_EQ(delegate_ptr->context_menu_source_type(),
             ui::mojom::MenuSourceType::kMouse);
 
-  // A context menu request with the MENU_SOURCE_TOUCH source type should
+  // A context menu request with the `MenuSourceType::kTouch` source type should
   // result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called on all platforms. This means that the request worked
   // correctly.
@@ -5914,8 +5914,8 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
       mojo::NullAssociatedRemote(), context_menu_params);
   EXPECT_TRUE(delegate_ptr->context_menu_request_received());
 
-  // A context menu request with the MENU_SOURCE_LONG_TAP source type should
-  // result in the MockWebContentsViewDelegate::ShowContextMenu method
+  // A context menu request with the `MenuSourceType::kLongTap` source type
+  // should result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called on all platforms. This means that the request worked
   // correctly.
   delegate_ptr->ClearState();
@@ -5925,8 +5925,8 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
       mojo::NullAssociatedRemote(), context_menu_params);
   EXPECT_TRUE(delegate_ptr->context_menu_request_received());
 
-  // A context menu request with the MENU_SOURCE_LONG_PRESS source type should
-  // result in the MockWebContentsViewDelegate::ShowContextMenu method
+  // A context menu request with the `MenuSourceType::kLongPress` source type
+  // should result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called on non Windows platforms. This means that the request
   //  worked correctly.
   delegate_ptr->ClearState();

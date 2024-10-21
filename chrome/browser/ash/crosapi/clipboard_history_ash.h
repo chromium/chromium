@@ -10,7 +10,7 @@
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace ash {
 class Shell;
@@ -39,7 +39,7 @@ class ClipboardHistoryAsh : public mojom::ClipboardHistory,
   // mojom::ClipboardHistory:
   void ShowClipboard(
       const gfx::Rect& anchor_point,
-      ui::MenuSourceType menu_source_type,
+      ui::mojom::MenuSourceType menu_source_type,
       mojom::ClipboardHistoryControllerShowSource show_source) override;
   void PasteClipboardItemById(
       const base::UnguessableToken& item_id,

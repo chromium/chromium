@@ -13,6 +13,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace crosapi {
 
@@ -73,7 +74,7 @@ ClipboardHistoryAsh::~ClipboardHistoryAsh() = default;
 
 void ClipboardHistoryAsh::ShowClipboard(
     const gfx::Rect& anchor_point,
-    ui::MenuSourceType menu_source_type,
+    ui::mojom::MenuSourceType menu_source_type,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
   if (auto* clipboard_history_controller =
           ash::ClipboardHistoryController::Get()) {
