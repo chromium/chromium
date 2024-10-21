@@ -43,7 +43,21 @@ std::string CreateCompressedVariationsSeed() {
   return Gzip(serialized_seed);
 }
 
-class SeedReaderWriterTest : public TestWithParam<version_info::Channel> {
+struct SeedReaderWriterTestParams {
+  using TupleT = std::tuple<std::string_view, version_info::Channel>;
+
+  SeedReaderWriterTestParams(std::string_view seed_pref,
+                             version_info::Channel channel)
+      : seed_pref(seed_pref), channel(channel) {}
+
+  explicit SeedReaderWriterTestParams(const TupleT& t)
+      : SeedReaderWriterTestParams(std::get<0>(t), std::get<1>(t)) {}
+
+  std::string_view seed_pref;
+  const version_info::Channel channel;
+};
+
+class SeedReaderWriterTest : public TestWithParam<SeedReaderWriterTestParams> {
  public:
   SeedReaderWriterTest() : file_writer_thread_("SeedReaderWriter Test thread") {
     file_writer_thread_.Start();
@@ -65,13 +79,13 @@ class SeedReaderWriterPreStableTest : public SeedReaderWriterTest {};
 
 class SeedReaderWriterStableAndUnknownTest : public SeedReaderWriterTest {};
 
-// Verifies that pre-stable clients write latest seeds to Local State and the
-// new seed file.
+// Verifies pre-stable clients write seeds to Local State and the seed file.
 TEST_P(SeedReaderWriterPreStableTest, WriteSeed) {
   // Initialize seed_reader_writer with test thread and timer.
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
-      GetParam(), file_writer_thread_.task_runner());
+      GetParam().channel, GetParam().seed_pref,
+      file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed.
@@ -89,23 +103,30 @@ TEST_P(SeedReaderWriterPreStableTest, WriteSeed) {
   std::string seed_file_data;
   ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
   EXPECT_EQ(seed_file_data, compressed_seed);
-  EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
+  EXPECT_EQ(local_state_.GetString(GetParam().seed_pref),
             base64_compressed_seed);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SeedReaderWriterPreStableTest,
-                         Values(version_info::Channel::CANARY,
-                                version_info::Channel::DEV,
-                                version_info::Channel::BETA));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SeedReaderWriterPreStableTest,
+    ::testing::ConvertGenerator<SeedReaderWriterTestParams::TupleT>(
+        ::testing::Combine(
+            ::testing::Values(prefs::kVariationsCompressedSeed
+                              // TODO(crbug.com/365079796) Add when we begin
+                              // writing the safe seed.
+                              /*,prefs::kVariationsSafeCompressedSeed*/),
+            ::testing::Values(version_info::Channel::CANARY,
+                              version_info::Channel::DEV,
+                              version_info::Channel::BETA))));
 
-// Verifies that stable and unknown channel clients write latest seeds only to
-// Local State.
+// Verifies stable and unknown channel clients write seeds only to Local State.
 TEST_P(SeedReaderWriterStableAndUnknownTest, WriteSeed) {
   // Initialize seed_reader_writer with test thread and timer.
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
-      GetParam(), file_writer_thread_.task_runner());
+      GetParam().channel, GetParam().seed_pref,
+      file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed.
@@ -120,24 +141,31 @@ TEST_P(SeedReaderWriterStableAndUnknownTest, WriteSeed) {
 
   // Verify seed stored correctly, should only be found in Local State prefs.
   EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
-  EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
+  EXPECT_EQ(local_state_.GetString(GetParam().seed_pref),
             base64_compressed_seed);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SeedReaderWriterStableAndUnknownTest,
-                         Values(version_info::Channel::STABLE,
-                                version_info::Channel::UNKNOWN));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SeedReaderWriterStableAndUnknownTest,
+    ::testing::ConvertGenerator<SeedReaderWriterTestParams::TupleT>(
+        ::testing::Combine(
+            ::testing::Values(prefs::kVariationsCompressedSeed
+                              // TODO(crbug.com/365079796) Add when we begin
+                              // writing the safe seed.
+                              /*,prefs::kVariationsSafeCompressedSeed*/),
+            ::testing::Values(version_info::Channel::STABLE,
+                              version_info::Channel::UNKNOWN))));
 
-// Verifies that writing latest seeds with an empty path for `seed_file_dir`
-// does not cause a crash.
+// Verifies that writing seeds with an empty path for `seed_file_dir` does not
+// cause a crash.
 TEST_P(SeedReaderWriterTest, EmptySeedFilePathIsValid) {
   // Initialize seed_reader_writer with test thread and timer and an empty file
   // path.
-  SeedReaderWriter seed_reader_writer(&local_state_,
-                                      /*seed_file_dir=*/base::FilePath(),
-                                      kSeedFilename, GetParam(),
-                                      file_writer_thread_.task_runner());
+  SeedReaderWriter seed_reader_writer(
+      &local_state_,
+      /*seed_file_dir=*/base::FilePath(), kSeedFilename, GetParam().channel,
+      GetParam().seed_pref, file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed.
@@ -151,23 +179,23 @@ TEST_P(SeedReaderWriterTest, EmptySeedFilePathIsValid) {
   EXPECT_FALSE(timer_.IsRunning());
 
   // Verify seed stored correctly, should only be found in Local State prefs.
-  EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
+  EXPECT_EQ(local_state_.GetString(GetParam().seed_pref),
             base64_compressed_seed);
 }
 
-// Verifies that the latest seed is cleared from both Local State and its seed
-// file.
+// Verifies that a seed is cleared from both Local State and the seed file.
 TEST_P(SeedReaderWriterTest, ClearSeed) {
   // Initialize seed_reader_writer with test thread and timer.
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
-      GetParam(), file_writer_thread_.task_runner());
+      GetParam().channel, GetParam().seed_pref,
+      file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed.
   const std::string compressed_seed = CreateCompressedVariationsSeed();
   ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
-  local_state_.SetString(prefs::kVariationsCompressedSeed,
+  local_state_.SetString(GetParam().seed_pref,
                          base::Base64Encode(compressed_seed));
 
   // Clear seed and force write.
@@ -179,16 +207,21 @@ TEST_P(SeedReaderWriterTest, ClearSeed) {
   std::string seed_file_data;
   ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
   EXPECT_THAT(seed_file_data, IsEmpty());
-  EXPECT_THAT(local_state_.GetString(prefs::kVariationsCompressedSeed),
-              IsEmpty());
+  EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SeedReaderWriterTest,
-                         Values(version_info::Channel::CANARY,
-                                version_info::Channel::DEV,
-                                version_info::Channel::BETA,
-                                version_info::Channel::STABLE,
-                                version_info::Channel::UNKNOWN));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SeedReaderWriterTest,
+    ::testing::ConvertGenerator<SeedReaderWriterTestParams::TupleT>(
+        ::testing::Combine(
+            ::testing::Values(prefs::kVariationsCompressedSeed
+                              // TODO(crbug.com/365079796) Add when we begin
+                              // writing the safe seed.
+                              /*,prefs::kVariationsSafeCompressedSeed*/),
+            ::testing::Values(version_info::Channel::CANARY,
+                              version_info::Channel::DEV,
+                              version_info::Channel::BETA,
+                              version_info::Channel::STABLE,
+                              version_info::Channel::UNKNOWN))));
 }  // namespace
 }  // namespace variations

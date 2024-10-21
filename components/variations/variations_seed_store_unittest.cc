@@ -531,7 +531,7 @@ class StoreSeedDataChannelTest
     // Initialize |seed_reader_writer_| with test thread and timer.
     seed_reader_writer_ = std::make_unique<SeedReaderWriter>(
         &prefs_, temp_dir_.GetPath(), kSeedFilename, GetParam().channel,
-        file_writer_thread_.task_runner());
+        prefs::kVariationsCompressedSeed, file_writer_thread_.task_runner());
     seed_reader_writer_->SetTimerForTesting(&timer_);
   }
 

@@ -174,10 +174,12 @@ VariationsSeedStore::VariationsSeedStore(
       safe_seed_store_(std::move(safe_seed_store)),
       signature_verification_enabled_(signature_verification_enabled),
       use_first_run_prefs_(use_first_run_prefs),
-      seed_reader_writer_(std::make_unique<SeedReaderWriter>(local_state,
-                                                             seed_file_dir,
-                                                             kSeedFilename,
-                                                             channel)) {
+      seed_reader_writer_(std::make_unique<SeedReaderWriter>(
+          local_state,
+          seed_file_dir,
+          kSeedFilename,
+          channel,
+          prefs::kVariationsCompressedSeed)) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (initial_seed)
     ImportInitialSeed(std::move(initial_seed));

@@ -53,9 +53,11 @@ SeedReaderWriter::SeedReaderWriter(
     const base::FilePath& seed_file_dir,
     base::FilePath::StringPieceType seed_filename,
     const version_info::Channel channel,
+    std::string_view seed_pref,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner)
     : local_state_(local_state),
       channel_(channel),
+      seed_pref_(seed_pref),
       file_task_runner_(std::move(file_task_runner)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!seed_file_dir.empty()) {
@@ -76,7 +78,7 @@ void SeedReaderWriter::StoreValidatedSeed(
     const std::string& compressed_seed_data,
     const std::string& base64_seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->SetString(prefs::kVariationsCompressedSeed, base64_seed_data);
+  local_state_->SetString(seed_pref_, base64_seed_data);
   if (ShouldWriteToNewSeedStorage(channel_)) {
     ScheduleSeedFileWrite(compressed_seed_data);
   }
@@ -84,7 +86,7 @@ void SeedReaderWriter::StoreValidatedSeed(
 
 void SeedReaderWriter::ClearSeed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->ClearPref(prefs::kVariationsCompressedSeed);
+  local_state_->ClearPref(seed_pref_);
   // TODO(crbug.com/372009105): Remove if-statement when all channels are ready
   // to launch.
   if (!ShouldWriteToNewSeedStorage(channel_) && seed_writer_ &&
