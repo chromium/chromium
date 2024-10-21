@@ -969,7 +969,7 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
           auto* data = event->set_chrome_graphics_pipeline();
           data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                              StepName::STEP_GENERATE_COMPOSITOR_FRAME);
-          data->set_display_trace_id(
+          data->set_surface_frame_trace_id(
               host_impl_->CurrentBeginFrameArgs().trace_id);
         });
 

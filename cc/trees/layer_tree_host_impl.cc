@@ -2740,7 +2740,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
           auto* data = event->set_chrome_graphics_pipeline();
           data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                              StepName::STEP_SUBMIT_COMPOSITOR_FRAME);
-          data->set_display_trace_id(CurrentBeginFrameArgs().trace_id);
+          data->set_surface_frame_trace_id(CurrentBeginFrameArgs().trace_id);
           for (const ui::LatencyInfo& latency :
                compositor_frame.metadata.latency_info) {
             data->add_latency_ids(latency.trace_id());

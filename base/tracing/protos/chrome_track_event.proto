@@ -1453,9 +1453,35 @@ message ChromeGraphicsPipeline {
   optional StepName step = 1;
   optional FrameSinkId frame_sink_id = 2;
 
+  // Id used to link `ChromeGraphicsPipeline`s corresponding to work done by a
+  // Viz client to produce a frame. This corresponds to
+  // `viz::BeginFrameAck.trace_id`. Covers steps:
+  // * STEP_ISSUE_BEGIN_FRAME
+  // * STEP_RECEIVE_BEGIN_FRAME
+  // * STEP_GENERATE_RENDER_PASS
+  // * STEP_GENERATE_COMPOSITOR_FRAME
+  // * STEP_SUBMIT_COMPOSITOR_FRAME
+  // * STEP_RECEIVE_COMPOSITOR_FRAME
+  // * STEP_RECEIVE_BEGIN_FRAME_DISCARD
+  // * STEP_DID_NOT_PRODUCE_FRAME
+  // * STEP_DID_NOT_PRODUCE_COMPOSITOR_FRAME
+  optional int64 surface_frame_trace_id = 10;
+
   // Id used to link `ChromeGraphicsPipeline`s corresponding to work done
-  // on creating and presenting one frame.
+  // on creating and presenting one frame *after* surface aggregation. Covers
+  // steps:
+  // * STEP_DRAW_AND_SWAP
+  // * STEP_SURFACE_AGGREGATION
+  // * STEP_SEND_BUFFER_SWAP
+  // * STEP_BUFFER_SWAP_POST_SUBMIT
+  // * STEP_FINISH_BUFFER_SWAP
+  // * STEP_SWAP_BUFFERS_ACK
   optional int64 display_trace_id = 3;
+
+  // `viz::BeginFrameAck.trace_id`s for frames aggregated at this step.
+  // Used with `STEP_SURFACE_AGGREGATION` only. This can be "joined" with
+  // `surface_frame_trace_id`.
+  repeated int64 aggregated_surface_frame_trace_ids = 8;
 
   optional LocalSurfaceId local_surface_id = 4;
   optional int64 frame_sequence = 5;
@@ -1463,10 +1489,6 @@ message ChromeGraphicsPipeline {
 
   // Optional variable that can be set together with STEP_BACKEND*.
   optional int64 backend_frame_id = 7;
-
-  // `viz::BeginFrameAck.trace_id`s for frames aggregated at this step.
-  // Used with `STEP_SURFACE_AGGREGATION` only.
-  repeated int64 aggregated_frames_ids = 8;
 
   // List of LatencyInfo.trace_ids associated with this frame, which
   // should allow us to match input to frame production.
