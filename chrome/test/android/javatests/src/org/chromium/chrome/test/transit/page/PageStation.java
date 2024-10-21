@@ -11,7 +11,6 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
@@ -43,7 +42,7 @@ import java.util.function.Function;
  * <p>Contains extra configurable Conditions such as waiting for a tab to be created, selected, have
  * the expected title, etc.
  */
-public class PageStation extends Station {
+public class PageStation extends Station<ChromeTabbedActivity> {
     /**
      * Builder for all PageStation subclasses.
      *
@@ -150,8 +149,6 @@ public class PageStation extends Station {
     public static final ViewSpec URL_BAR = viewSpec(withId(R.id.url_bar));
     public static final ViewSpec TAB_SWITCHER_BUTTON = viewSpec(withId(R.id.tab_switcher_button));
     public static final ViewSpec MENU_BUTTON = viewSpec(withId(R.id.menu_button));
-
-    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
     protected Supplier<Tab> mActivityTabSupplier;
     protected Supplier<Tab> mSelectedTabSupplier;
     protected Supplier<Tab> mPageLoadedSupplier;
@@ -159,6 +156,7 @@ public class PageStation extends Station {
     /** Use the PageStation's subclass |newBuilder()|. */
     protected <T extends PageStation> PageStation(Builder<T> builder) {
         // incognito is optional and defaults to false
+        super(ChromeTabbedActivity.class);
         mIncognito = builder.mIncognito == null ? false : builder.mIncognito;
 
         // isEntryPoint is optional and defaults to false
@@ -194,8 +192,7 @@ public class PageStation extends Station {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
-
+        super.declareElements(elements);
         // TODO(crbug.com/41497463): These should be scoped, but for now they need to be unscoped
         // since they unintentionally still exist in the non-Hub tab switcher. They are mostly
         // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still
@@ -350,17 +347,6 @@ public class PageStation extends Station {
 
     public WebPageStation loadAboutBlank() {
         return loadPageProgrammatically("about:blank", WebPageStation.newBuilder());
-    }
-
-    /**
-     * Returns the {@link ChromeTabbedActivity} matched to the ActivityCondition.
-     *
-     * <p>The element is only guaranteed to exist as long as the station is ACTIVE or in transition
-     * triggers when it is already TRANSITIONING_FROM.
-     */
-    public ChromeTabbedActivity getActivity() {
-        assertSuppliersCanBeUsed();
-        return mActivityElement.get();
     }
 
     public Tab getLoadedTab() {

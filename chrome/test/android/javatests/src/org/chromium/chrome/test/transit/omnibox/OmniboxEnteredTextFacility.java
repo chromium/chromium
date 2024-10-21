@@ -21,7 +21,7 @@ import org.chromium.base.test.transit.ViewElement;
  * <p>TODO(crbug.com/345808144): Make this a child of OmniboxFacility when Facilities can have
  * children like Stations.
  */
-public class OmniboxEnteredTextFacility extends Facility<Station> {
+public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
     private final OmniboxFacility mOmniboxFacility;
     private final String mText;
 

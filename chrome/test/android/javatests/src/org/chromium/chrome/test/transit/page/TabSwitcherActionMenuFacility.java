@@ -111,7 +111,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
         return selectCloseTab(destination);
     }
 
-    private <T extends Station> T selectCloseTab(T destination) {
+    private <T extends Station<?>> T selectCloseTab(T destination) {
         return mHostStation.travelToSync(
                 destination,
                 Transition.conditionOption(

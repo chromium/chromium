@@ -15,9 +15,10 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.ui.test.transit.SoftKeyboardElement;
 
 /** Represents the soft keyboard shown, expecting it to hide after exiting the Facility. */
-public class SoftKeyboardFacility extends Facility<Station> {
+public class SoftKeyboardFacility extends Facility<Station<?>> {
     private final Supplier<? extends Activity> mActivitySupplier;
 
+    // TODO(crbug.com/374366760): Use mHostStation.getActivitySupplier().
     public SoftKeyboardFacility(Supplier<? extends Activity> activitySupplier) {
         mActivitySupplier = activitySupplier;
     }

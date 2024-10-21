@@ -41,7 +41,7 @@ import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabModelSelectorCondition;
 
 /** The base station for Hub, with several panes and a toolbar. */
-public abstract class HubBaseStation extends Station {
+public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     public static final ViewSpec HUB_TOOLBAR = viewSpec(withId(R.id.hub_toolbar));
     public static final ViewSpec HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
     public static final ViewSpec HUB_MENU_BUTTON =
@@ -59,13 +59,12 @@ public abstract class HubBaseStation extends Station {
     public static final ViewSpec INCOGNITO_TOGGLE_TAB_BUTTON =
             viewSpec(withContentDescription(R.string.accessibility_tab_switcher_incognito_stack));
 
-    protected Supplier<ChromeTabbedActivity> mActivitySupplier;
     protected Supplier<TabModelSelector> mTabModelSelectorSupplier;
     protected final boolean mIncognitoTabsExist;
     protected final boolean mRegularTabsExist;
 
     public HubBaseStation(boolean regularTabsExist, boolean incognitoTabsExist) {
-        super();
+        super(ChromeTabbedActivity.class);
         mRegularTabsExist = regularTabsExist;
         mIncognitoTabsExist = incognitoTabsExist;
     }
@@ -75,9 +74,9 @@ public abstract class HubBaseStation extends Station {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mActivitySupplier = elements.declareActivity(ChromeTabbedActivity.class);
+        super.declareElements(elements);
         mTabModelSelectorSupplier =
-                elements.declareEnterCondition(new TabModelSelectorCondition(mActivitySupplier));
+                elements.declareEnterCondition(new TabModelSelectorCondition(mActivityElement));
 
         elements.declareView(HUB_TOOLBAR);
         elements.declareView(HUB_PANE_HOST);
@@ -92,24 +91,13 @@ public abstract class HubBaseStation extends Station {
                 uiThreadLogicalElement(
                         "LayoutManager is showing TAB_SWITCHER (Hub)",
                         this::isHubLayoutShowing,
-                        mActivitySupplier));
+                        mActivityElement));
         elements.declareEnterCondition(new HubLayoutNotInTransition());
     }
 
     /** Returns the {@link Condition} that acts as {@link Supplier<TabModelSelector>}. */
     public Supplier<TabModelSelector> getTabModelSelectorSupplier() {
         return mTabModelSelectorSupplier;
-    }
-
-    /** Returns the {@link ChromeTabbedActivity} supplier for this station. */
-    public Supplier<ChromeTabbedActivity> getActivitySupplier() {
-        return mActivitySupplier;
-    }
-
-    /** Returns the {@link ChromeTabbedActivity} for this station. */
-    public ChromeTabbedActivity getActivity() {
-        assertSuppliersCanBeUsed();
-        return mActivitySupplier.get();
     }
 
     /**
@@ -181,12 +169,12 @@ public abstract class HubBaseStation extends Station {
 
     private class HubLayoutNotInTransition extends UiThreadCondition {
         private HubLayoutNotInTransition() {
-            dependOnSupplier(mActivitySupplier, "ChromeTabbedActivity");
+            dependOnSupplier(mActivityElement, "ChromeTabbedActivity");
         }
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            LayoutManager layoutManager = mActivitySupplier.get().getLayoutManager();
+            LayoutManager layoutManager = mActivityElement.get().getLayoutManager();
             boolean startingToShow = layoutManager.isLayoutStartingToShow(LayoutType.TAB_SWITCHER);
             boolean startingToHide = layoutManager.isLayoutStartingToHide(LayoutType.TAB_SWITCHER);
             return whether(

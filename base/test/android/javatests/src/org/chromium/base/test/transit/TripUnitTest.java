@@ -7,6 +7,8 @@ package org.chromium.base.test.transit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -19,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TripUnitTest {
 
-    public static class NestedFactoryStation extends Station {
+    public static class NestedFactoryStation extends Station<Activity> {
         public final Condition mOuterCondition;
         public final Condition mInnerCondition;
         public final CallbackHelper mDeclareElementsCallbackHelper = new CallbackHelper();
@@ -27,12 +29,14 @@ public class TripUnitTest {
         public final CallbackHelper mInnerCallbackHelper = new CallbackHelper();
 
         public NestedFactoryStation(Condition outerCondition, Condition innerCondition) {
+            super(null);
             mOuterCondition = outerCondition;
             mInnerCondition = innerCondition;
         }
 
         @Override
         public void declareElements(Elements.Builder elements) {
+            super.declareElements(elements);
             elements.declareLogicalElement(
                     LogicalElement.instrumentationThreadLogicalElement(
                             "LogicalElement 1, always True", () -> Condition.fulfilled()));
@@ -111,7 +115,8 @@ public class TripUnitTest {
         Condition alwaysTrueCondition =
                 InstrumentationThreadCondition.from(
                         "AlwaysTrueCondition", () -> Condition.fulfilled());
-        Station sourceStation = new NestedFactoryStation(alwaysTrueCondition, alwaysTrueCondition);
+        NestedFactoryStation sourceStation =
+                new NestedFactoryStation(alwaysTrueCondition, alwaysTrueCondition);
         sourceStation.setStateActiveWithoutTransition();
 
         TestCondition outerCondition = new TestCondition("outer condition");

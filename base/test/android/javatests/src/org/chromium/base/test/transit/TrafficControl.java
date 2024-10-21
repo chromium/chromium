@@ -17,12 +17,12 @@ import java.util.List;
  * <p>Also keeps track of which test is currently running for batched tests.
  */
 public class TrafficControl {
-    private static final List<Pair<String, Station>> sAllStations = new ArrayList<>();
+    private static final List<Pair<String, Station<?>>> sAllStations = new ArrayList<>();
     private static String sCurrentTestCase;
 
-    private static Station sActiveStation;
+    private static Station<?> sActiveStation;
 
-    static void notifyCreatedStation(Station station) {
+    static void notifyCreatedStation(Station<?> station) {
         sAllStations.add(Pair.create(sCurrentTestCase, station));
     }
 
@@ -31,7 +31,7 @@ public class TrafficControl {
         sActiveStation = sentinelStation;
     }
 
-    static void notifyActiveStationChanged(Station newActiveStation) {
+    static void notifyActiveStationChanged(Station<?> newActiveStation) {
         assert newActiveStation.getPhase() == Phase.ACTIVE : "New active Station must be ACTIVE";
         if (sActiveStation != null) {
             assert sActiveStation.getPhase() != Phase.ACTIVE
@@ -40,11 +40,11 @@ public class TrafficControl {
         sActiveStation = newActiveStation;
     }
 
-    public static List<Pair<String, Station>> getAllStations() {
+    public static List<Pair<String, Station<?>>> getAllStations() {
         return sAllStations;
     }
 
-    public static Station getActiveStation() {
+    public static Station<?> getActiveStation() {
         return sActiveStation;
     }
 

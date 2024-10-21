@@ -18,7 +18,7 @@ import org.junit.runners.model.Statement;
  *
  * @param <T> The Class of the home {@link Station}
  */
-public class BatchedPublicTransitRule<T extends Station> implements TestRule {
+public class BatchedPublicTransitRule<T extends Station<?>> implements TestRule {
     private final Class<T> mHomeStationType;
     private final boolean mExpectResetByTest;
 

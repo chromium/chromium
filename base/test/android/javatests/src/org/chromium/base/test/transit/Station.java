@@ -4,6 +4,12 @@
 
 package org.chromium.base.test.transit;
 
+import static org.junit.Assert.fail;
+
+import android.app.Activity;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 
 import org.chromium.base.test.transit.Transition.TransitionOptions;
@@ -22,8 +28,10 @@ import java.util.List;
  *
  * <p>Transitions should be done with {@link Trip#travelSync(Station, Station, Trigger)}. The
  * transit-layer derived class should expose screen-specific methods for the test-layer to use.
+ *
+ * @param <HostActivity> The activity this station is associate to.
  */
-public abstract class Station extends ConditionalState {
+public abstract class Station<HostActivity extends Activity> extends ConditionalState {
     private static final String TAG = "Transit";
     private static int sLastStationId;
 
@@ -32,8 +40,18 @@ public abstract class Station extends ConditionalState {
     // be queried.
     private final List<Facility<?>> mFacilities = new ArrayList<>();
     private final String mName;
+    private final @Nullable Class<HostActivity> mActivityClass;
 
-    protected Station() {
+    protected ActivityElement<HostActivity> mActivityElement;
+
+    /**
+     * Create a base station.
+     *
+     * @param activityClass the subclass of Activity this Station expects as an element. Expect no
+     *     Activity if null.
+     */
+    protected Station(@Nullable Class<HostActivity> activityClass) {
+        mActivityClass = activityClass;
         mId = sLastStationId++;
         TrafficControl.notifyCreatedStation(this);
         mName = String.format("<S%d: %s>", mId, getClass().getSimpleName());
@@ -70,6 +88,14 @@ public abstract class Station extends ConditionalState {
         return mName;
     }
 
+    @CallSuper
+    @Override
+    public void declareElements(Elements.Builder elements) {
+        if (mActivityClass != null) {
+            mActivityElement = elements.declareActivity(mActivityClass);
+        }
+    }
+
     /**
      * @return the self-incrementing id for logging purposes.
      */
@@ -88,14 +114,14 @@ public abstract class Station extends ConditionalState {
      * @return the destination {@link Station}, now ACTIVE.
      * @param <T> the type of the destination {@link Station}.
      */
-    public final <T extends Station> T travelToSync(T destination, Trigger trigger) {
+    public final <T extends Station<?>> T travelToSync(T destination, Trigger trigger) {
         Trip trip = new Trip(this, destination, TransitionOptions.DEFAULT, trigger);
         trip.transitionSync();
         return destination;
     }
 
     /** Version of #travelToSync() with extra TransitionOptions. */
-    public final <T extends Station> T travelToSync(
+    public final <T extends Station<?>> T travelToSync(
             T destination, TransitionOptions options, Trigger trigger) {
         Trip trip = new Trip(this, destination, options, trigger);
         trip.transitionSync();
@@ -255,7 +281,26 @@ public abstract class Station extends ConditionalState {
      *
      * <p>Left vague because back behavior is too case-by-case to determine in the Transit Layer.
      */
-    public <T extends Station> T pressBack(T destination) {
+    public <T extends Station<?>> T pressBack(T destination) {
         return travelToSync(destination, Espresso::pressBack);
+    }
+
+    /** Get the activity element associate with this station, if there's any. */
+    public ActivityElement<HostActivity> getActivityElement() {
+        if (mActivityClass == null) {
+            fail("Requesting an ActivityElement for a station with no host activity.");
+        }
+        return mActivityElement;
+    }
+
+    /**
+     * Returns the Activity matched to the ActivityCondition.
+     *
+     * <p>The element is only guaranteed to exist as long as the station is ACTIVE or in transition
+     * triggers when it is already TRANSITIONING_FROM.
+     */
+    public HostActivity getActivity() {
+        assertSuppliersCanBeUsed();
+        return mActivityElement.get();
     }
 }

@@ -36,6 +36,7 @@ import org.chromium.ui.test.transit.SoftKeyboardElement;
 import java.util.List;
 
 /** Dialog that appears when a new tab group is created to name the group and pick a color. */
+// TODO(crbug.com/374366760): Change to generic Facility<HostStationT>.
 public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     public static final ViewSpec DIALOG = viewSpec(withId(R.id.visual_data_dialog_layout));
@@ -98,7 +99,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
         elements.declareView(DONE_BUTTON);
 
-        elements.declareElement(new SoftKeyboardElement(mHostStation.getActivitySupplier()));
+        elements.declareElement(new SoftKeyboardElement(mHostStation.getActivityElement()));
     }
 
     private ViewSpec colorPickerIconSpec(
