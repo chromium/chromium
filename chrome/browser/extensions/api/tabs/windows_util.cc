@@ -127,7 +127,7 @@ IncognitoResult ShouldOpenIncognitoWindow(Profile* profile,
   if (incognito_result && !profile->IsGuestSession()) {
     std::string first_url_erased;
     for (size_t i = 0; i < urls->size();) {
-      if (IsURLAllowedInIncognito((*urls)[i], profile)) {
+      if (IsURLAllowedInIncognito((*urls)[i])) {
         i++;
       } else {
         if (first_url_erased.empty())

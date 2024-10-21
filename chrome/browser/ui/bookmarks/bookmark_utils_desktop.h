@@ -102,8 +102,7 @@ bool HasBookmarkURLs(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
 // in |selection| with incognito mode.
 bool HasBookmarkURLsAllowedInIncognitoMode(
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection,
-    content::BrowserContext* browser_context);
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection);
 
 // Populates |folder_data| with all tab items and sub-folders for any open tab
 // groups.
