@@ -217,6 +217,9 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_ACK_BUTTON},
       {"m1NoticeRestrictedSettingsButton",
        IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_SETTINGS_BUTTON},
+      // Strings for the privacy policy page.
+      {"privacyPolicyBackButtonAria",
+       IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON},
       // Shared for all dialogs.
       {"m1DialogMoreButton", IDS_PRIVACY_SANDBOX_M1_DIALOG_MORE_BUTTON}};
 
