@@ -32,7 +32,7 @@ namespace {
 
 const base::FeatureParam<std::string> kAllowlistedExtensions{
     &kAllowlistedAiDataExtensions, "allowlisted_extension_ids",
-    /*default_value=*/""};
+    /*default_value=*/"hpkopmikdojpadgmioifjjodbmnjjjca"};
 
 }  // namespace
 
