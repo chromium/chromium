@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -19,11 +17,6 @@ class TrustedVaultService : public KeyedService {
  public:
   explicit TrustedVaultService(
       std::unique_ptr<TrustedVaultClient> chrome_sync_security_domain_client);
-#if BUILDFLAG(IS_CHROMEOS)
-  TrustedVaultService(
-      std::unique_ptr<TrustedVaultClient> chrome_sync_security_domain_client,
-      std::unique_ptr<TrustedVaultClient> passkeys_security_domain_client);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   TrustedVaultService(const TrustedVaultService&) = delete;
   TrustedVaultService& operator=(const TrustedVaultService&) = delete;
@@ -34,9 +27,6 @@ class TrustedVaultService : public KeyedService {
 
  private:
   std::unique_ptr<TrustedVaultClient> chrome_sync_security_domain_client_;
-#if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<TrustedVaultClient> passkeys_security_domain_client_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace trusted_vault

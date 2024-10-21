@@ -33,8 +33,6 @@
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/proto_time_conversion.h"
-#include "components/trusted_vault/recovery_key_store_connection_impl.h"
-#include "components/trusted_vault/recovery_key_store_controller.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -304,37 +302,12 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     SecurityDomainId security_domain_id,
     const base::FilePath& file_path,
     std::unique_ptr<Delegate> delegate,
-    std::unique_ptr<TrustedVaultConnection> connection,
-    std::unique_ptr<RecoveryKeyStoreController::RecoveryKeyProvider>
-        recovery_key_provider,
-    std::unique_ptr<RecoveryKeyStoreConnection> recovery_key_store_connection)
+    std::unique_ptr<TrustedVaultConnection> connection)
     : security_domain_id_(security_domain_id),
       file_path_(file_path),
       delegate_(std::move(delegate)),
       connection_(std::move(connection)),
-      clock_(base::DefaultClock::GetInstance()) {
-  if (recovery_key_provider) {
-    // TODO(crbug.com/40187814): Initialize/recreate in SetPrimaryAccount().
-    CHECK(recovery_key_store_connection);
-    recovery_key_store_controller_ =
-        std::make_unique<RecoveryKeyStoreController>(
-            std::move(recovery_key_provider),
-            std::move(recovery_key_store_connection), this);
-  }
-}
-
-StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
-    SecurityDomainId security_domain_id,
-    const base::FilePath& file_path,
-    std::unique_ptr<Delegate> delegate,
-    std::unique_ptr<TrustedVaultConnection> connection)
-    : StandaloneTrustedVaultBackend(security_domain_id,
-                                    file_path,
-                                    std::move(delegate),
-                                    std::move(connection),
-                                    /*recovery_key_provider=*/nullptr,
-                                    /*recovery_key_store_connection=*/nullptr) {
-}
+      clock_(base::DefaultClock::GetInstance()) {}
 
 StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 
@@ -573,7 +546,6 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   }
 
   MaybeProcessPendingTrustedRecoveryMethod();
-  MaybeStartRecoveryKeyStoreUploads();
 }
 
 void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
@@ -731,58 +703,6 @@ void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
   // mode. Trigger device registration attempt immediately as it can succeed in
   // these cases.
   MaybeRegisterDevice();
-}
-
-void StandaloneTrustedVaultBackend::SetRecoveryKeyStoreUploadEnabled(
-    const CoreAccountInfo& account_info,
-    bool is_enabled) {
-  // `recovery_key_store_controller_` may not be nullopt at construction if this
-  // method is called.
-  CHECK(recovery_key_store_controller_);
-
-  // TODO(crbug.com/40187814): Shift responsibility for updating the enabled bit
-  // in the state to the RecoveryKeyStoreController.
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(account_info.gaia);
-  if (!per_user_vault) {
-    return;
-  }
-  trusted_vault_pb::RecoveryKeyStoreState* recovery_key_store_state =
-      per_user_vault->mutable_recovery_key_store_state();
-  recovery_key_store_state->set_recovery_key_store_upload_enabled(is_enabled);
-  WriteDataToDisk();
-
-  if (primary_account_ != account_info) {
-    // Only the primary account uploads to recovery key store.
-    return;
-  }
-
-  if (!is_enabled) {
-    recovery_key_store_controller_->StopPeriodicUploads();
-    return;
-  }
-
-  MaybeStartRecoveryKeyStoreUploads();
-}
-
-void StandaloneTrustedVaultBackend::MaybeStartRecoveryKeyStoreUploads() {
-  CHECK(primary_account_);
-
-  if (!recovery_key_store_controller_) {
-    return;
-  }
-
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(primary_account_->gaia);
-  CHECK(per_user_vault);
-  const trusted_vault_pb::RecoveryKeyStoreState& recovery_key_store_state =
-      per_user_vault->recovery_key_store_state();
-  if (!recovery_key_store_state.recovery_key_store_upload_enabled()) {
-    return;
-  }
-  recovery_key_store_controller_->StartPeriodicUploads(
-      *primary_account_, recovery_key_store_state,
-      RecoveryKeyStoreController::kDefaultUpdatePeriod);
 }
 
 std::optional<CoreAccountInfo>
@@ -1257,62 +1177,6 @@ StandaloneTrustedVaultBackend::FindUserVault(const std::string& gaia_id) {
 void StandaloneTrustedVaultBackend::WriteDataToDisk() {
   WriteDataToDiskImpl(data_, file_path_, security_domain_id_);
   delegate_->NotifyStateChanged();
-}
-
-void StandaloneTrustedVaultBackend::WriteRecoveryKeyStoreState(
-    const trusted_vault_pb::RecoveryKeyStoreState& state) {
-  CHECK(primary_account_);
-  CHECK(state.recovery_key_store_upload_enabled());
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(primary_account_->gaia);
-  *per_user_vault->mutable_recovery_key_store_state() = state;
-  WriteDataToDisk();
-}
-
-void StandaloneTrustedVaultBackend::AddRecoveryKeyToSecurityDomain(
-    const std::vector<uint8_t>& public_key_bytes,
-    RecoveryKeyRegistrationCallback callback) {
-  CHECK(primary_account_);
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(primary_account_->gaia);
-  CHECK(per_user_vault);
-
-  std::unique_ptr<SecureBoxPublicKey> public_key =
-      SecureBoxPublicKey::CreateByImport(public_key_bytes);
-  if (!public_key) {
-    // Invalid public key.
-    return;
-  }
-
-  // Resetting `ongoing_recovery_key_registration_request_` will cancel any
-  // other recovery key registration request that is already in progress.
-  //
-  // AreConnectionRequestsThrottled() isn't used because we ensure externally
-  // that this doesn't spam the server.
-  ongoing_recovery_key_registration_request_ =
-      connection_->RegisterAuthenticationFactor(
-          *primary_account_,
-          GetTrustedVaultKeysWithVersions(
-              GetAllVaultKeys(*per_user_vault),
-              per_user_vault->last_vault_key_version()),
-          *public_key, LockScreenKnowledgeFactor(),
-          base::BindOnce(&StandaloneTrustedVaultBackend::
-                             OnRecoveryKeyAddedToSecurityDomain,
-                         base::Unretained(this), std::move(callback)));
-}
-
-void StandaloneTrustedVaultBackend::OnRecoveryKeyAddedToSecurityDomain(
-    RecoveryKeyRegistrationCallback callback,
-    TrustedVaultRegistrationStatus status,
-    int key_version_unused) {
-  // |key_version_unused| is unused because this callback is invoked when
-  // adding a member to an existing security domain. In this case the key
-  // version is already known.
-  CHECK(primary_account_);
-  CHECK(ongoing_recovery_key_registration_request_);
-
-  ongoing_recovery_key_registration_request_.reset();
-  std::move(callback).Run(status);
 }
 
 }  // namespace trusted_vault

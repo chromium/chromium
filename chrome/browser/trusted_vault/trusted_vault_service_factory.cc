@@ -8,7 +8,6 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -23,21 +22,6 @@
 #include "base/files/file_path.h"
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 #include "content/public/browser/storage_partition.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/browser_process.h"
-#include "components/trusted_vault/recovery_key_store_controller.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/check_is_test.h"
-#include "chrome/browser/browser_process.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "components/trusted_vault/recovery_key_provider_ash.h"
-#include "components/user_manager/known_user.h"
-#include "components/user_manager/user.h"
-#include "content/public/browser/browser_thread.h"
 #endif
 
 namespace {
@@ -75,56 +59,10 @@ CreateChromeSyncTrustedVaultClient(Profile* profile) {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-std::unique_ptr<trusted_vault::TrustedVaultClient>
-CreatePasskeyStandaloneTrustedVaultClient(Profile* profile) {
-  // Uploads to Recovery Key Store are only supported for the primary profile in
-  // ash-chrome.
-  std::unique_ptr<
-      trusted_vault::RecoveryKeyStoreController::RecoveryKeyProvider>
-      recovery_key_provider;
-
-  const user_manager::User* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
-  // `user` may be nullptr in tests.
-  if (user) {
-    AccountId account_id = user->GetAccountId();
-    std::string device_id =
-        user_manager::KnownUser(g_browser_process->local_state())
-            .GetDeviceId(account_id);
-    recovery_key_provider = std::make_unique<
-        trusted_vault::RecoveryKeyProviderAsh>(
-        /*user_data_auth_client_task_runner=*/content::GetUIThreadTaskRunner(
-            {}),
-        std::move(account_id), std::move(device_id));
-  } else {
-    CHECK_IS_TEST();
-  }
-
-  return std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
-      trusted_vault::SecurityDomainId::kPasskeys,
-      /*base_dir=*/profile->GetPath(),
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      std::move(recovery_key_provider));
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 std::unique_ptr<KeyedService> BuildTrustedVaultService(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(!profile->IsOffTheRecord());
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(device::kChromeOsPasskeys)) {
-    return std::make_unique<trusted_vault::TrustedVaultService>(
-        CreateChromeSyncTrustedVaultClient(profile),
-        CreatePasskeyStandaloneTrustedVaultClient(profile));
-  }
-#endif
-
   return std::make_unique<trusted_vault::TrustedVaultService>(
       CreateChromeSyncTrustedVaultClient(profile));
 }
