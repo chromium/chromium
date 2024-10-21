@@ -4,10 +4,15 @@
 
 #include "chrome/browser/scalable_iph/scalable_iph_factory_impl.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
@@ -78,6 +83,41 @@ base::expected<bool, Error> IsMinor(content::BrowserContext* browser_context,
   return is_minor;
 }
 
+// Wait for refresh tokens load and run the provided callback. This object
+// immediately runs the callback if refresh tokens are already loaded.
+class RefreshTokensLoadedBarrier : public signin::IdentityManager::Observer {
+ public:
+  RefreshTokensLoadedBarrier(Profile* profile,
+                             base::OnceCallback<void(Profile*)> callback)
+      : profile_(profile), callback_(std::move(callback)) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    if (!identity_manager) {
+      return;
+    }
+
+    if (identity_manager->AreRefreshTokensLoaded()) {
+      std::move(callback_).Run(profile_);
+      return;
+    }
+
+    identity_manager_observation_.Observe(identity_manager);
+  }
+
+  void OnRefreshTokensLoaded() override {
+    std::move(callback_).Run(profile_);
+    identity_manager_observation_.Reset();
+  }
+
+  Profile* profile() { return profile_; }
+
+ private:
+  raw_ptr<Profile> profile_;
+  base::OnceCallback<void(Profile*)> callback_;
+  base::ScopedObservation<signin::IdentityManager, RefreshTokensLoadedBarrier>
+      identity_manager_observation_{this};
+};
+
 }  // namespace
 
 ScalableIphFactoryImpl::ScalableIphFactoryImpl() {
@@ -125,6 +165,35 @@ content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUse(
   return GetBrowserContextToUseInternal(browser_context, &logger_unused);
 }
 
+void ScalableIphFactoryImpl::BrowserContextShutdown(
+    content::BrowserContext* browser_context) {
+  MaybeResetRefreshTokensBarrier(browser_context);
+
+  ScalableIphFactory::BrowserContextShutdown(browser_context);
+}
+
+void ScalableIphFactoryImpl::MaybeResetRefreshTokensBarrier(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile) {
+    return;
+  }
+
+  if (!refresh_tokens_barrier_) {
+    return;
+  }
+
+  if (profile !=
+      static_cast<RefreshTokensLoadedBarrier*>(refresh_tokens_barrier_.get())
+          ->profile()) {
+    return;
+  }
+
+  // `RefreshTokensLoadedBarrier` has a pointer to `Profile`. Reset it before a
+  // profile gets released to avoid a dangling pointer.
+  refresh_tokens_barrier_.reset();
+}
+
 std::unique_ptr<KeyedService>
 ScalableIphFactoryImpl::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
@@ -154,6 +223,49 @@ ScalableIphFactoryImpl::BuildServiceInstanceForBrowserContext(
       tracker, std::move(scalable_iph_delegate), std::move(logger));
 }
 
+void ScalableIphFactoryImpl::InitializeServiceInternal(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile) {
+    return;
+  }
+
+  // `InitializeServiceInternal` must be called only once with a primary
+  // profile. This return is a fail-safe behavior. Avoid using `CHECK` as this
+  // code path is called from user session initialization code.
+  if (refresh_tokens_barrier_) {
+    return;
+  }
+
+  // Refresh tokens are required to perform `IsMinor` check. Barrier with the
+  // refresh tokens load. Holds `RefreshTokensLoadedBarrier` as a member
+  // variable as this won't be released before refresh tokens are loaded. It is
+  // safe to use `base::Unretained` as `refresh_tokens_barrier_` is owned by
+  // this object.
+  refresh_tokens_barrier_ = std::make_unique<RefreshTokensLoadedBarrier>(
+      profile, base::BindOnce(&ScalableIphFactoryImpl::OnRefreshTokensReady,
+                              base::Unretained(this)));
+}
+
+void ScalableIphFactoryImpl::OnRefreshTokensReady(Profile* profile) {
+  // Create a `ScalableIph` service to start a timer for time tick event. Ignore
+  // a return value. It can be nullptr if the browser context (i.e. profile) is
+  // not eligible for `ScalableIph`.
+  GetServiceForBrowserContext(profile, /*create=*/true);
+}
+
+signin::IdentityManager::Observer*
+ScalableIphFactoryImpl::GetRefreshTokenBarrierForTesting() {
+  CHECK_IS_TEST();
+  return refresh_tokens_barrier_.get();
+}
+
+void ScalableIphFactoryImpl::SetByPassEligiblityCheckForTesting() {
+  CHECK_IS_TEST();
+  CHECK(!by_pass_eligibility_check_for_testing_) << "Already set to by-pass";
+  by_pass_eligibility_check_for_testing_ = true;
+}
+
 content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUseInternal(
     content::BrowserContext* browser_context,
     scalable_iph::Logger* logger) const {
@@ -168,6 +280,13 @@ content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUseInternal(
   if (!scalable_iph::ScalableIph::IsAnyIphFeatureEnabled()) {
     SCALABLE_IPH_LOG(logger) << "No iph feature is enabled.";
     return nullptr;
+  }
+
+  if (by_pass_eligibility_check_for_testing_) {
+    // This by pass logic is used by
+    // `ScalableIphFactoryImplTest::WaitForRefreshTokensLoad`.
+    CHECK_IS_TEST();
+    return browser_context;
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);

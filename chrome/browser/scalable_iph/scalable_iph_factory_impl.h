@@ -11,6 +11,8 @@
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/browser_context.h"
 
 // `ScalableIphFactoryImpl` is responsible for initializing `ScalableIphFactory`
 // instances. This is to circumvent dependencies on //chrome/browser,
@@ -39,12 +41,19 @@ class ScalableIphFactoryImpl : public ScalableIphFactory {
       content::BrowserContext* browser_context,
       scalable_iph::Logger* logger) const override;
 
+  signin::IdentityManager::Observer* GetRefreshTokenBarrierForTesting();
+  void SetByPassEligiblityCheckForTesting();
+
  protected:
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* browser_context) const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
+
+  void InitializeServiceInternal(
+      content::BrowserContext* browser_context) override;
 
  private:
   friend base::NoDestructor<ScalableIphFactoryImpl>;
@@ -60,7 +69,12 @@ class ScalableIphFactoryImpl : public ScalableIphFactory {
       Profile* profile,
       scalable_iph::Logger* logger) const;
 
+  void OnRefreshTokensReady(Profile* profile);
+  void MaybeResetRefreshTokensBarrier(content::BrowserContext* browser_context);
+
+  bool by_pass_eligibility_check_for_testing_ = false;
   DelegateTestingFactory delegate_testing_factory_;
+  std::unique_ptr<signin::IdentityManager::Observer> refresh_tokens_barrier_;
 };
 
 #endif  // CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_IMPL_H_

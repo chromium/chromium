@@ -55,10 +55,7 @@ void ScalableIphFactory::InitializeServiceForProfile(Profile* profile) {
     on_building_service_instance_for_testing_callback_.Run(profile);
   }
 
-  // Create a `ScalableIph` service to start a timer for time tick event. Ignore
-  // a return value. It can be nullptr if the browser context (i.e. profile) is
-  // not eligible for `ScalableIph`.
-  GetServiceForBrowserContext(profile, /*create=*/true);
+  InitializeServiceInternal(profile);
 }
 
 void ScalableIphFactory::SetOnBuildingServiceInstanceForTestingCallback(

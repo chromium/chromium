@@ -53,6 +53,9 @@ class COMPONENT_EXPORT(SCALABLE_IPH_FACTORY) ScalableIphFactory
   ScalableIphFactory();
   ~ScalableIphFactory() override;
 
+  virtual void InitializeServiceInternal(
+      content::BrowserContext* browser_context) {}
+
  private:
   OnBuildingServiceInstanceForTestingCallback
       on_building_service_instance_for_testing_callback_;
