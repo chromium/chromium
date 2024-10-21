@@ -284,6 +284,13 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   void OnVirtualCreditCardFetched(CreditCardFetchResult result,
                                   const CreditCard* credit_card);
 
+  // Triggered when the user undoes the filling of an address profile using an
+  // email override.
+  void OnEmailOverrideUndone(SuggestionType suggestion_type,
+                             Suggestion::Guid guid,
+                             const SuggestionMetadata& metadata,
+                             const AutofillTriggerDetails& trigger_details);
+
   // Handle applying any Autofill option listings to the Autofill popup.
   // This function should only get called when there is at least one
   // multi-field suggestion in the list of suggestions.

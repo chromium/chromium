@@ -1369,18 +1369,26 @@ void AutofillExternalDelegate::FillAutofillFormData(
                  : mojom::ActionPersistence::kFill;
 
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  if (absl::holds_alternative<Suggestion::AutofillProfilePayload>(payload)) {
+  if (const Suggestion::AutofillProfilePayload* profile_payload =
+          absl::get_if<Suggestion::AutofillProfilePayload>(&payload)) {
     std::optional<AutofillProfile> profile =
         type == SuggestionType::kDevtoolsTestAddressEntry
-            ? GetTestAddressByGUID(
-                  manager_->client().GetTestAddresses(),
-                  absl::get<Suggestion::AutofillProfilePayload>(payload)
-                      .guid.value())
+            ? GetTestAddressByGUID(manager_->client().GetTestAddresses(),
+                                   profile_payload->guid.value())
             : GetProfileFromPayload(*pdm, payload);
     if (profile) {
       manager_->FillOrPreviewProfileForm(action_persistence, query_form_,
                                          query_field_, *profile,
                                          trigger_details);
+      // Only show the email override notification when the suggestion is
+      // accepted, not previewed.
+      if (!is_preview && !profile_payload->email_override.empty()) {
+        manager_->client().ShowPlusAddressEmailOverrideNotification(
+            base::UTF16ToUTF8(profile->GetRawInfo(EMAIL_ADDRESS)),
+            base::BindOnce(&AutofillExternalDelegate::OnEmailOverrideUndone,
+                           GetWeakPtr(), type, std::move(profile_payload->guid),
+                           *metadata, trigger_details));
+      }
     }
     return;
   }
@@ -1580,6 +1588,18 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           CalculateFormSignature(query_form_),
           CalculateFieldSignatureForField(query_field_), query_form_.url());
 #endif
+}
+
+void AutofillExternalDelegate::OnEmailOverrideUndone(
+    SuggestionType suggestion_type,
+    Suggestion::Guid guid,
+    const SuggestionMetadata& metadata,
+    const AutofillTriggerDetails& trigger_details) {
+  // Fill the unmodified profile by using a payload with no email override.
+  FillAutofillFormData(suggestion_type,
+                       Suggestion::AutofillProfilePayload(guid), metadata,
+                       /*is_preview=*/false, trigger_details);
+  // TODO(crbug.com/324557053): Add metrics.
 }
 
 void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(

@@ -285,6 +285,10 @@ class MockAutofillClient : public TestAutofillClient {
               ShowDeleteAddressProfileDialog,
               (const AutofillProfile&, AddressProfileDeleteDialogCallback),
               (override));
+  MOCK_METHOD(void,
+              ShowPlusAddressEmailOverrideNotification,
+              (const std::string&, AutofillClient::EmailOverrideUndoCallback),
+              (override));
 
 #if BUILDFLAG(IS_IOS)
   // Mock the client query ID check.
@@ -2649,6 +2653,62 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
                                           SuggestionPosition{.row = 0});
   ASSERT_TRUE(reshow_suggestions);
   std::move(reshow_suggestions).Run();
+}
+
+// Tests that an address suggestion with an email override is filled when
+// selected. In addition, if the undo operation is called, the original profile
+// without the email override is filled.
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       ExternalDelegateFillsEmailOverrideAndShowsUserNotification) {
+  IssueOnQuery();
+
+  const std::u16string plus_address = u"test+plus@test.example";
+  const AutofillProfile profile = test::GetFullProfile();
+  pdm().address_data_manager().AddProfile(profile);
+
+  EXPECT_CALL(client(),
+              ShowAutofillSuggestions(PopupOpenArgsAre(SuggestionVectorIdsAre(
+                                          SuggestionType::kAddressEntry)),
+                                      _));
+
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(/*main_text=*/plus_address,
+                           SuggestionType::kAddressEntry);
+  suggestions.back().payload = Suggestion::AutofillProfilePayload(
+      Suggestion::Guid(profile.guid()), plus_address);
+
+  // This function tests the filling of existing plus addresses, which is why
+  // `OfferPlusAddressCreation` need not be mocked.
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  // Assert that the profile contained the email override.
+  AutofillProfile updated_profile = profile;
+  updated_profile.SetRawInfoWithVerificationStatus(
+      EMAIL_ADDRESS, plus_address, VerificationStatus::kObserved);
+  AutofillClient::EmailOverrideUndoCallback undo_callback;
+  {
+    InSequence s;
+    EXPECT_CALL(manager(),
+                FillOrPreviewProfileForm(
+                    mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                    HasQueriedFieldId(), updated_profile, _));
+    EXPECT_CALL(client(), ShowPlusAddressEmailOverrideNotification(
+                              base::UTF16ToUTF8(plus_address), _))
+        .WillOnce(MoveArg<1>(&undo_callback));
+    EXPECT_CALL(client(), HideAutofillSuggestions(
+                              SuggestionHidingReason::kAcceptSuggestion));
+  }
+
+  // This should trigger a call to hide the popup since we've selected an
+  // option.
+  external_delegate().DidAcceptSuggestion(suggestions[0],
+                                          SuggestionPosition{.row = 0});
+  ASSERT_TRUE(undo_callback);
+  EXPECT_CALL(manager(),
+              FillOrPreviewProfileForm(mojom::ActionPersistence::kFill,
+                                       HasQueriedFormId(), HasQueriedFieldId(),
+                                       profile, _));
+  std::move(undo_callback).Run();
 }
 
 TEST_F(
