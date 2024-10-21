@@ -1336,22 +1336,22 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   InitGpuDiskCacheFactorySingleton();
 
   bool always_uses_gpu = true;
-  bool established_gpu_channel = false;
+  bool establish_gpu_channel = false;
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40396955): This should be set to |true|.
-  established_gpu_channel = false;
+  establish_gpu_channel = false;
   always_uses_gpu = ShouldStartGpuProcessOnBrowserStartup();
-  BrowserGpuChannelHostFactory::Initialize(established_gpu_channel);
+  BrowserGpuChannelHostFactory::Initialize(establish_gpu_channel);
 #else
-  established_gpu_channel = true;
+  establish_gpu_channel = true;
   if (parsed_command_line_->HasSwitch(switches::kDisableGpu) ||
       parsed_command_line_->HasSwitch(switches::kDisableGpuCompositing) ||
       parsed_command_line_->HasSwitch(switches::kDisableGpuEarlyInit)) {
-    established_gpu_channel = always_uses_gpu = false;
+    establish_gpu_channel = always_uses_gpu = false;
   }
 
   host_frame_sink_manager_ = std::make_unique<viz::HostFrameSinkManager>();
-  BrowserGpuChannelHostFactory::Initialize(established_gpu_channel);
+  BrowserGpuChannelHostFactory::Initialize(establish_gpu_channel);
   compositing_mode_reporter_impl_ =
       std::make_unique<viz::CompositingModeReporterImpl>();
 
@@ -1449,7 +1449,12 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
 #endif
   ui::Clipboard::SetAllowedThreads(allowed_clipboard_threads);
 
-  if (!established_gpu_channel && always_uses_gpu) {
+  // Post a task to launch the GPU process if appropriate. Note that if we
+  // earlier established the GPU channel, that took care of launching the GPU
+  // process and so it is not necessary to do so here.
+  bool should_post_task_to_launch_gpu_process =
+      always_uses_gpu && !establish_gpu_channel;
+  if (should_post_task_to_launch_gpu_process) {
     TRACE_EVENT_INSTANT0("gpu", "Post task to launch GPU process",
                          TRACE_EVENT_SCOPE_THREAD);
     GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, true /* force_create */);
