@@ -849,6 +849,9 @@ crbug.com/1322062 external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.
 crbug.com/970201 external/wpt/css/css-sizing/slice-intrinsic-size.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure ]
 
+# Flaky across platforms
+crbug.com/374675198 external/wpt/css/css-sizing/keyword-sizes-on-inline-block.html [ Failure Pass ]
+
 # Block direction compressibility.
 crbug.com/357649027 external/wpt/css/css-sizing/range-percent-intrinsic-size-2.html [ Failure ]
 crbug.com/357649027 external/wpt/css/css-sizing/range-percent-intrinsic-size-2a.html [ Failure ]
