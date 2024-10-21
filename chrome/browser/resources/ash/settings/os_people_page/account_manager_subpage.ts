@@ -24,7 +24,7 @@ import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
@@ -378,37 +378,6 @@ export class SettingsAccountManagerSubpageElement extends
     return this.actionMenuAccount_.isAvailableInArc ?
         this.i18n('accountStopUsingInArcButtonLabel') :
         this.i18n('accountUseInArcButtonLabel');
-  }
-
-  /**
-   * Change ARC availability for |this.actionMenuAccount_|.
-   * Closes the 'More actions' menu and focuses the 'More actions' button for
-   * |this.actionMenuAccount_|.
-   */
-  private onChangeArcAvailability_(): void {
-    assertExists(this.actionMenuAccount_);
-    this.shadowRoot!.querySelector('cr-action-menu')!.close();
-    const newArcAvailability = !this.actionMenuAccount_.isAvailableInArc;
-    this.browserProxy_.changeArcAvailability(
-        this.actionMenuAccount_, newArcAvailability);
-
-    const actionMenuAccountIndex =
-        this.shadowRoot!.querySelector<DomRepeat>('#account-list')!.items!
-            .indexOf(this.actionMenuAccount_);
-    if (actionMenuAccountIndex >= 0) {
-      // Focus 'More actions' button for the current account.
-      this.shadowRoot!
-          .querySelectorAll<HTMLElement>(
-              '.icon-more-vert')[actionMenuAccountIndex]
-          .focus();
-    } else {
-      console.error(
-          'Couldn\'t find active account in the list: ',
-          this.actionMenuAccount_);
-      this.shadowRoot!.querySelector<CrButtonElement>(
-                          '#add-account-button')!.focus();
-    }
-    this.actionMenuAccount_ = null;
   }
 }
 

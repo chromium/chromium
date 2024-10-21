@@ -93,9 +93,6 @@ class AccountManagerUIHandler
   // WebUI "removeAccount" message callback.
   void HandleRemoveAccount(const base::Value::List& args);
 
-  // WebUI "changeArcAvailability" message callback.
-  void HandleChangeArcAvailability(const base::Value::List& args);
-
   // |account_manager::AccountManager::CheckDummyGaiaTokenForAllAccounts|
   // callback.
   void OnCheckDummyGaiaTokenForAllAccounts(

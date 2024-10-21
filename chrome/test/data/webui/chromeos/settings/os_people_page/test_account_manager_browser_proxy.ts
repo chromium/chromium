@@ -66,7 +66,6 @@ export class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
       'reauthenticateAccount',
       'removeAccount',
       'migrateAccount',
-      'changeArcAvailability',
     ]);
   }
 
@@ -94,10 +93,6 @@ export class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
 
   migrateAccount(accountEmail: string): void {
     this.methodCalled('migrateAccount', accountEmail);
-  }
-
-  changeArcAvailability(account: Account, isAvailableInArc: boolean): void {
-    this.methodCalled('changeArcAvailability', [account, isAvailableInArc]);
   }
 }
 

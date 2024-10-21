@@ -219,10 +219,6 @@ void AccountManagerUIHandler::RegisterMessages() {
       "removeAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleRemoveAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "changeArcAvailability",
-      base::BindRepeating(&AccountManagerUIHandler::HandleChangeArcAvailability,
-                          weak_factory_.GetWeakPtr()));
 }
 
 void AccountManagerUIHandler::SetProfileForTesting(Profile* profile) {
@@ -417,11 +413,6 @@ void AccountManagerUIHandler::HandleRemoveAccount(
             l10n_util::GetStringFUTF16(
                 IDS_SETTINGS_ACCOUNT_MANAGER_ACCOUNT_REMOVED_MESSAGE,
                 base::UTF8ToUTF16(*email)));
-}
-
-void AccountManagerUIHandler::HandleChangeArcAvailability(
-    const base::Value::List& args) {
-  NOTREACHED();
 }
 
 void AccountManagerUIHandler::OnJavascriptAllowed() {
