@@ -59,6 +59,13 @@ class CONTENT_EXPORT TtsControllerImpl
   void Stop(const GURL& source_url) override;
   void Pause() override;
   void Resume() override;
+  void UpdateLanguageStatus(const std::string& lang,
+                            LanguageInstallStatus install_status,
+                            const std::string& error) override;
+  void AddUpdateLanguageStatusDelegate(
+      UpdateLanguageStatusDelegate* delegate) override;
+  void RemoveUpdateLanguageStatusDelegate(
+      UpdateLanguageStatusDelegate* delegate) override;
   void InstallLanguageRequest(BrowserContext* browser_context,
                               const std::string& lang,
                               const std::string& client_id,
@@ -209,6 +216,11 @@ class CONTENT_EXPORT TtsControllerImpl
 
   // A set of delegates that want to be notified when the voices change.
   base::ObserverList<VoicesChangedDelegate> voices_changed_delegates_;
+
+  // A set of delegates to be notified when a voice status for a language
+  // changes.
+  base::ObserverList<UpdateLanguageStatusDelegate>
+      update_language_status_delegates_;
 
   // The current utterance being spoken.
   std::unique_ptr<TtsUtterance> current_utterance_;

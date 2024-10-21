@@ -114,4 +114,13 @@ class ExtensionTtsEngineSendTtsAudioFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("ttsEngine.sendTtsAudio", TTSENGINE_SENDTTSAUDIO)
 };
 
+// Function that allows tts engines to update the status of voice for a language
+class ExtensionTtsEngineUpdateLanguageFunction : public ExtensionFunction {
+ private:
+  ~ExtensionTtsEngineUpdateLanguageFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("ttsEngine.updateLanguage",
+                             TTSENGINE_UPDATELANGUAGE)
+};
+
 #endif  // CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_API_H_

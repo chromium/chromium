@@ -48,6 +48,14 @@ struct CONTENT_EXPORT VoiceData {
   bool from_remote_tts_engine = false;
 };
 
+enum class LanguageInstallStatus {
+  NOT_INSTALLED,
+  INSTALLING,
+  INSTALLED,
+  FAILED,
+  UNKNOWN
+};
+
 // Interface that delegates TTS requests to engines in content embedders.
 class CONTENT_EXPORT TtsEngineDelegate {
  public:
@@ -115,6 +123,15 @@ class CONTENT_EXPORT VoicesChangedDelegate : public base::CheckedObserver {
   virtual void OnVoicesChanged() = 0;
 };
 
+// Class that wants to be notified when a language status changes.
+class CONTENT_EXPORT UpdateLanguageStatusDelegate
+    : public base::CheckedObserver {
+ public:
+  virtual void OnUpdateLanguageStatus(const std::string& lang,
+                                      LanguageInstallStatus install_status,
+                                      const std::string& error) = 0;
+};
+
 // Singleton class that manages text-to-speech for all TTS engines and
 // APIs, maintaining a queue of pending utterances and keeping
 // track of all state.
@@ -148,6 +165,20 @@ class CONTENT_EXPORT TtsController {
 
   // Resume speaking.
   virtual void Resume() = 0;
+
+  // Called by the content embedder when the status of a voice for a language
+  // has changed.
+  virtual void UpdateLanguageStatus(const std::string& lang,
+                                    LanguageInstallStatus install_status,
+                                    const std::string& error) = 0;
+
+  // Add a delegate that wants to be notified when the set of voices changes.
+  virtual void AddUpdateLanguageStatusDelegate(
+      UpdateLanguageStatusDelegate* delegate) = 0;
+
+  // Remove delegate that wants to be notified when the set of voices changes.
+  virtual void RemoveUpdateLanguageStatusDelegate(
+      UpdateLanguageStatusDelegate* delegate) = 0;
 
   // Requests to install a new voice for the language. For example, Reading Mode
   // manages voice installation by sending an InstallLanguageRequest event to

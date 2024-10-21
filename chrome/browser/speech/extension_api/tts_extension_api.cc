@@ -421,6 +421,7 @@ TtsAPI::TtsAPI(content::BrowserContext* context) {
   registry.RegisterFunction<ExtensionTtsEngineUpdateVoicesFunction>();
   registry.RegisterFunction<ExtensionTtsEngineSendTtsEventFunction>();
   registry.RegisterFunction<ExtensionTtsEngineSendTtsAudioFunction>();
+  registry.RegisterFunction<ExtensionTtsEngineUpdateLanguageFunction>();
   registry.RegisterFunction<TtsGetVoicesFunction>();
   registry.RegisterFunction<TtsIsSpeakingFunction>();
   registry.RegisterFunction<TtsSpeakFunction>();

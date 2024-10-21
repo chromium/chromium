@@ -47,6 +47,28 @@ chrome.ttsEngine.VoiceGender = {
 };
 
 /**
+ * @enum {string}
+ * @see https://developer.chrome.com/extensions/ttsEngine#type-LanguageInstallStatus
+ */
+chrome.ttsEngine.LanguageInstallStatus = {
+  NOT_INSTALLED: 'notInstalled',
+  INSTALLING: 'installing',
+  INSTALLED: 'installed',
+  FAILED: 'failed',
+};
+
+/**
+ * Install status of a language.
+ * @typedef {{
+ *   lang: string,
+ *   installStatus: !chrome.ttsEngine.LanguageInstallStatus,
+ *   error: (string|undefined)
+ * }}
+ * @see https://developer.chrome.com/extensions/ttsEngine#type-LanguageStatus
+ */
+chrome.ttsEngine.LanguageStatus;
+
+/**
  * Options specified to the tts.speak() method.
  * @typedef {{
  *   voiceName: (string|undefined),
@@ -108,6 +130,17 @@ chrome.ttsEngine.sendTtsEvent = function(requestId, event) {};
  * @see https://developer.chrome.com/extensions/ttsEngine#method-sendTtsAudio
  */
 chrome.ttsEngine.sendTtsAudio = function(requestId, audio) {};
+
+/**
+ * Called by an engine when a language install is attempted, and when a language
+ * is uninstalled. Also called in response to a status request from a client.
+ * When a voice is installed or uninstalled, the engine should also call
+ * ttsEngine.updateVoices to register the voice.
+ * @param {!chrome.ttsEngine.LanguageStatus} status The install status of the
+ *     language.
+ * @see https://developer.chrome.com/extensions/ttsEngine#method-updateLanguage
+ */
+chrome.ttsEngine.updateLanguage = function(status) {};
 
 /**
  * Called when the user makes a call to tts.speak() and one of the voices from

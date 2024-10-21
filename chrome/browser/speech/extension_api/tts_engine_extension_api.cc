@@ -216,6 +216,22 @@ std::string TtsClientSourceEnumToString(
       return "extension";
   }
 }
+content::LanguageInstallStatus VoicePackInstallStatusFromString(
+    const std::string& install_status) {
+  if (install_status == constants::kVoicePackStatusNotInstalled) {
+    return content::LanguageInstallStatus::NOT_INSTALLED;
+  }
+  if (install_status == constants::kVoicePackStatusInstalling) {
+    return content::LanguageInstallStatus::INSTALLING;
+  }
+  if (install_status == constants::kVoicePackStatusInstalled) {
+    return content::LanguageInstallStatus::INSTALLED;
+  }
+  if (install_status == constants::kVoicePackStatusFailed) {
+    return content::LanguageInstallStatus::FAILED;
+  }
+  return content::LanguageInstallStatus::UNKNOWN;
+}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -484,6 +500,30 @@ base::Value::List TtsExtensionEngine::BuildSpeakArgs(
   args.Append(std::move(options));
   args.Append(utterance->GetId());
   return args;
+}
+
+ExtensionFunction::ResponseAction
+ExtensionTtsEngineUpdateLanguageFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
+  const base::Value::Dict& voice_pack_status = args()[0].GetDict();
+
+  const std::string* lang = voice_pack_status.FindString(constants::kLangKey);
+  EXTENSION_FUNCTION_VALIDATE(lang);
+
+  const std::string* install_status =
+      voice_pack_status.FindString(constants::kInstallStatusKey);
+  EXTENSION_FUNCTION_VALIDATE(install_status);
+
+  const std::string* error = voice_pack_status.FindString(constants::kErrorKey);
+  std::string error_message = error != nullptr ? *error : "";
+
+  // Notify that status of a language for a voice has changed.
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      *lang, VoicePackInstallStatusFromString(*install_status), error_message);
+
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction

@@ -32,6 +32,19 @@ declare global {
         FEMALE = 'female',
       }
 
+      export enum LanguageInstallStatus {
+        NOT_INSTALLED = 'notInstalled',
+        INSTALLING = 'installing',
+        INSTALLED = 'installed',
+        FAILED = 'failed',
+      }
+
+      export interface LanguageStatus {
+        lang: string;
+        installStatus: LanguageInstallStatus;
+        error?: string;
+      }
+
       export interface SpeakOptions {
         voiceName?: string;
         lang?: string;
@@ -58,6 +71,8 @@ declare global {
           void;
 
       export function sendTtsAudio(requestId: number, audio: AudioBuffer): void;
+
+      export function updateLanguage(status: LanguageStatus): void;
 
       export const onSpeak: ChromeEvent<
           (utterance: string, options: SpeakOptions,

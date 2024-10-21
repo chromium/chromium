@@ -458,6 +458,29 @@ bool TtsControllerImpl::IsSpeaking() {
          (TtsPlatformReady() && GetTtsPlatform()->IsSpeaking());
 }
 
+void TtsControllerImpl::UpdateLanguageStatus(
+    const std::string& lang,
+    LanguageInstallStatus install_status,
+    const std::string& error) {
+  if (update_language_status_delegates_.empty()) {
+    return;
+  }
+
+  for (auto& delegate : update_language_status_delegates_) {
+    delegate.OnUpdateLanguageStatus(lang, install_status, error);
+  }
+}
+
+void TtsControllerImpl::AddUpdateLanguageStatusDelegate(
+    UpdateLanguageStatusDelegate* delegate) {
+  update_language_status_delegates_.AddObserver(delegate);
+}
+
+void TtsControllerImpl::RemoveUpdateLanguageStatusDelegate(
+    UpdateLanguageStatusDelegate* delegate) {
+  update_language_status_delegates_.RemoveObserver(delegate);
+}
+
 void TtsControllerImpl::VoicesChanged() {
   if (voices_changed_delegates_.empty() || TtsPlatformLoading())
     return;

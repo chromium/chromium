@@ -10,12 +10,14 @@ const char kCharIndexKey[] = "charIndex";
 const char kLengthKey[] = "length";
 const char kDesiredEventTypesKey[] = "desiredEventTypes";
 const char kEnqueueKey[] = "enqueue";
+const char kErrorKey[] = "error";
 const char kErrorMessageKey[] = "errorMessage";
 const char kEventTypeKey[] = "type";
 const char kEventTypesKey[] = "eventTypes";
 const char kExtensionIdKey[] = "extensionId";
 const char kGenderKey[] = "gender";
 const char kIdKey[] = "id";
+const char kInstallStatusKey[] = "installStatus";
 const char kIsFinalEventKey[] = "isFinalEvent";
 const char kLangKey[] = "lang";
 const char kOnEventKey[] = "onEvent";
@@ -43,6 +45,11 @@ const char kEventTypeResume[] = "resume";
 const char kEventTypeSentence[] = "sentence";
 const char kEventTypeStart[] = "start";
 const char kEventTypeWord[] = "word";
+
+const char kVoicePackStatusNotInstalled[] = "notInstalled";
+const char kVoicePackStatusInstalling[] = "installing";
+const char kVoicePackStatusInstalled[] = "installed";
+const char kVoicePackStatusFailed[] = "failed";
 
 const char kErrorExtensionIdMismatch[] = "Extension id mismatch.";
 const char kErrorInvalidLang[] = "Invalid lang.";

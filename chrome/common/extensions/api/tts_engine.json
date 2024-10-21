@@ -35,6 +35,32 @@
         "enum": ["male", "female"]
       },
       {
+        "id": "LanguageInstallStatus",
+        "type": "string",
+        "enum": ["notInstalled", "installing", "installed", "failed"],
+        "description": "The install status of a voice."
+      },
+      {
+        "id": "LanguageStatus",
+        "type": "object",
+        "description": "Install status of a language.",
+        "properties": {
+          "lang": {
+            "type": "string",
+            "description": "Language string in the form language code-region code, where the region may be omitted. Examples are en, en-AU, zh-CH."
+          },
+          "installStatus": {
+            "$ref": "LanguageInstallStatus",
+            "description": "Installation status."
+          },
+          "error": {
+            "type": "string",
+            "description": "Detail about installation failures. Optionally populated if the language failed to install.",
+            "optional": true
+          }
+        }
+      },
+      {
         "id": "SpeakOptions",
         "type": "object",
         "description": "Options specified to the tts.speak() method.",
@@ -163,6 +189,18 @@
           }
         ],
         "platforms": ["chromeos"]
+      },
+      {
+        "name": "updateLanguage",
+        "type": "function",
+        "description": "Called by an engine when a language install is attempted, and when a language is uninstalled. Also called in response to a status request from a client. When a voice is installed or uninstalled, the engine should also call ttsEngine.updateVoices to register the voice.",
+        "parameters": [
+          {
+            "name": "status",
+            "$ref": "LanguageStatus",
+            "description": "The install status of the language."
+          }
+        ]
       }
     ],
     "events": [
