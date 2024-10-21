@@ -42,6 +42,8 @@ constexpr base::TimeDelta kFetchItemsDelay = base::Seconds(0.5);
 constexpr base::TimeDelta kFetchItemsDelayToRetryMin = base::Seconds(0.5);
 // Maximum delay to retry after fetching items failed.
 constexpr base::TimeDelta kFetchItemsDelayToRetryMax = base::Seconds(10.0);
+// Delay before current items are cleared if fetching new items takes too long.
+constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 // folder_identifier parameter for the My Drive view.
 NSString* kMyDriveFolderIdentifier = @"root";
 // Dimension to resize background images for shared drives.
@@ -107,7 +109,9 @@ NSString* kDriveIconRepositoryPrefix =
   BOOL _shouldShowSearchItems;
   // Timer to delay fetching to avoid fetching too frequently if the query
   // parameters are modified frequently or if queries fail several times.
-  base::OneShotTimer _fetchTimer;
+  base::OneShotTimer _timerBeforeFetch;
+  // Timer to clear items after fetching did not complete for too long.
+  base::OneShotTimer _timerAfterFetchBeforeClearItems;
   // The page token to use to continue the current list/search.
   NSString* _nextPageToken;
   // A filter that has been set externally. The value will be applied the next
@@ -195,6 +199,8 @@ NSString* kDriveIconRepositoryPrefix =
   }
   // Clear selection on shutdown (stops download, allows dismissal, etc...)
   [self setSelectedFile:std::nullopt];
+  _timerBeforeFetch.Stop();
+  _timerAfterFetchBeforeClearItems.Stop();
   _webState = nullptr;
   _driveService = nullptr;
   _driveList = nullptr;
@@ -230,7 +236,7 @@ NSString* kDriveIconRepositoryPrefix =
   _searchBarFocused = NO;
   _searchText = nil;
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
-  [self clearItems];
+  [self clearItemsAndShowLoadingIndicator];
   [self configureConsumerIdentitiesMenu];
   [self updateTitle];
   _driveList = _driveService->CreateList(_identity);
@@ -238,7 +244,6 @@ NSString* kDriveIconRepositoryPrefix =
   [_consumer setFilter:_filter];
   [_consumer setAllFilesEnabled:_ignoreAcceptedTypes];
   [_consumer setSortingCriteria:_sortingCriteria direction:_sortingDirection];
-  [_consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
   [_consumer setCancelButtonVisible:_collectionType ==
                                     DriveFilePickerCollectionType::kRoot];
   [_consumer setSearchBarFocused:NO searchText:nil];
@@ -396,7 +401,6 @@ NSString* kDriveIconRepositoryPrefix =
                                   sortingDirection:direction
                                ignoreAcceptedTypes:_ignoreAcceptedTypes];
   [self.consumer setSortingCriteria:criteria direction:direction];
-  [self.consumer setEnabledItems:nil];
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
@@ -518,7 +522,6 @@ NSString* kDriveIconRepositoryPrefix =
                                   sortingDirection:_sortingDirection
                                ignoreAcceptedTypes:_ignoreAcceptedTypes];
   [self.consumer setFilter:filter];
-  [self.consumer setEnabledItems:nil];
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
@@ -548,8 +551,7 @@ NSString* kDriveIconRepositoryPrefix =
   if (_searchText.length == 0 || previousSearchText.length == 0) {
     // When switching from zero-state to non-zero-state search or the other way
     // around, items are trashed and the loading indicator is presented.
-    [self clearItems];
-    [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
+    [self clearItemsAndShowLoadingIndicator];
   }
   if (_searchText.length == 0) {
     _metricsHelper.searchingState = DriveFilePickerSearchState::kSearchRecent;
@@ -636,7 +638,7 @@ NSString* kDriveIconRepositoryPrefix =
 }
 
 // Clears items in the mediator and consumer.
-- (void)clearItems {
+- (void)clearItemsAndShowLoadingIndicator {
   _fetchedDriveItems = {};
   [self.consumer populatePrimaryItems:nil
                        secondaryItems:nil
@@ -644,6 +646,7 @@ NSString* kDriveIconRepositoryPrefix =
                      showSearchHeader:NO
                     nextPageAvailable:NO
                              animated:NO];
+  [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
 }
 
 - (void)setShouldShowSearchItems:(BOOL)shouldShowSearchItems {
@@ -671,8 +674,7 @@ NSString* kDriveIconRepositoryPrefix =
   }
   // When switching between search items and non-search items, the list of items
   // is cleared and the loading indicator is presented.
-  [self clearItems];
-  [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
+  [self clearItemsAndShowLoadingIndicator];
   [_consumer setFilterMenuEnabled:[self filterMenuShouldBeEnabled]];
   [_consumer setSortingMenuEnabled:[self sortingMenuShouldBeEnabled]];
   [self updateTitle];
@@ -772,10 +774,16 @@ NSString* kDriveIconRepositoryPrefix =
     return;
   }
 
+  if (!append) {
+    // If replacing current items, disable them until new items are loaded.
+    [self.consumer setEnabledItems:nil];
+  }
+
   // If there is a timer programmed to fetch items, cancel it.
-  _fetchTimer.Stop();
+  _timerBeforeFetch.Stop();
   // Cancel any pending fetch query.
   if (_driveList->IsExecutingQuery()) {
+    _timerAfterFetchBeforeClearItems.Stop();
     _driveList->CancelCurrentQuery();
   }
 
@@ -816,28 +824,36 @@ NSString* kDriveIconRepositoryPrefix =
                       delay:(base::TimeDelta)delay
                delayToRetry:(base::TimeDelta)delayToRetry
                    animated:(BOOL)animated {
+  __weak __typeof(self) weakSelf = self;
+
   // If the fetching needs to be delayed, post it for later and return early.
   if (delay != base::TimeDelta()) {
-    __weak __typeof(self) weakSelf = self;
-    _fetchTimer.Start(FROM_HERE, delay, base::BindOnce(^{
-                        [weakSelf fetchItemsAppending:append
-                                                delay:base::TimeDelta()
-                                         delayToRetry:delayToRetry
-                                             animated:animated];
-                      }));
+    _timerBeforeFetch.Start(FROM_HERE, delay, base::BindOnce(^{
+                              [weakSelf fetchItemsAppending:append
+                                                      delay:base::TimeDelta()
+                                               delayToRetry:delayToRetry
+                                                   animated:animated];
+                            }));
     return;
   }
 
   if (!append) {
-    // If this is a new query, then `_nextPageToken` can be reset.
+    // If this is a new query, then `_nextPageToken` can be reset and items
+    // should be cleared if it takes too long.
     [self setNextPageToken:nil];
+    _timerAfterFetchBeforeClearItems.Start(
+        FROM_HERE, kClearItemsDelay,
+        base::BindOnce(
+            [](DriveFilePickerMediator* mediator) {
+              [mediator clearItemsAndShowLoadingIndicator];
+            },
+            weakSelf));
   }
 
   DriveListQuery query = CreateDriveListQuery(
       _collectionType, _folderIdentifier, _filter, _sortingCriteria,
       _sortingDirection, _shouldShowSearchItems, _searchText, _nextPageToken);
 
-  __weak __typeof(self) weakSelf = self;
   auto completion = base::BindOnce(
       [](DriveFilePickerMediator* mediator, const base::TimeDelta& delayToRetry,
          BOOL animated, const DriveListResult& result) {
@@ -861,6 +877,9 @@ NSString* kDriveIconRepositoryPrefix =
 - (void)handleListItemsResponse:(const DriveListResult&)result
                    delayToRetry:(base::TimeDelta)delayToRetry
                        animated:(BOOL)animated {
+  // Cancel clearing items if fetching completed.
+  _timerAfterFetchBeforeClearItems.Stop();
+
   const BOOL append = _nextPageToken != nil;
   if (result.error) {
     // If there is an error, try again with twice the delay at the next attempt.
