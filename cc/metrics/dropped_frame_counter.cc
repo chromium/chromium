@@ -432,14 +432,16 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
 
   const bool is_dropped = frame_info.IsDroppedAffectingSmoothness();
   if (!in_dropping_ && is_dropped) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "cc,benchmark", "DroppedFrameDuration", TRACE_ID_LOCAL(this),
-        args.frame_time);
+    TRACE_EVENT_BEGIN("cc,benchmark,latency", "DroppedFrameDuration",
+                      perfetto::Track(reinterpret_cast<uint64_t>(this),
+                                      perfetto::ThreadTrack::Current()),
+                      args.frame_time);
     in_dropping_ = true;
   } else if (in_dropping_ && !is_dropped) {
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "cc,benchmark", "DroppedFrameDuration", TRACE_ID_LOCAL(this),
-        args.frame_time);
+    TRACE_EVENT_END("cc,benchmark,latency" /* "DroppedFrameDuration" */,
+                    perfetto::Track(reinterpret_cast<uint64_t>(this),
+                                    perfetto::ThreadTrack::Current()),
+                    args.frame_time);
     in_dropping_ = false;
   }
 
