@@ -18,6 +18,13 @@ ScopedInputTransferToken::ScopedInputTransferToken(
           .AInputTransferToken_fromJavaFn(env, input_transfer_token);
 }
 
+ScopedInputTransferToken::ScopedInputTransferToken(AInputReceiver* receiver) {
+  CHECK(base::AndroidInputReceiverCompat::IsSupportAvailable());
+  a_input_transfer_token_ =
+      base::AndroidInputReceiverCompat::GetInstance()
+          .AInputReceiver_getInputTransferTokenFn(receiver);
+}
+
 ScopedInputTransferToken::~ScopedInputTransferToken() {
   DestroyIfNeeded();
 }

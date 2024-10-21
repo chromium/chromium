@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
+struct AInputReceiver;
 struct AInputTransferToken;
 
 namespace input {
@@ -21,6 +22,7 @@ namespace input {
 class COMPONENT_EXPORT(INPUT) ScopedInputTransferToken {
  public:
   explicit ScopedInputTransferToken(const jobject& input_transfer_token);
+  explicit ScopedInputTransferToken(AInputReceiver* receiver);
   ~ScopedInputTransferToken();
 
   ScopedInputTransferToken(ScopedInputTransferToken&& other);

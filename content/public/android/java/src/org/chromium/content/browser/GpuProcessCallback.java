@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser;
 
+import android.os.Build;
 import android.view.Surface;
 
 import org.jni_zero.JNINamespace;
@@ -12,7 +13,10 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UnguessableToken;
 import org.chromium.content.common.IGpuProcessCallback;
+import org.chromium.content.common.InputTransferTokenWrapper;
 import org.chromium.content.common.SurfaceWrapper;
+import org.chromium.content_public.browser.InputTransferHandler;
+import org.chromium.content_public.browser.SurfaceInputTransferHandlerMap;
 
 @JNINamespace("content")
 class GpuProcessCallback extends IGpuProcessCallback.Stub {
@@ -26,6 +30,17 @@ class GpuProcessCallback extends IGpuProcessCallback.Stub {
     @Override
     public SurfaceWrapper getViewSurface(int surfaceId) {
         return GpuProcessCallbackJni.get().getViewSurface(surfaceId);
+    }
+
+    @Override
+    public void forwardInputTransferToken(int surfaceId, InputTransferTokenWrapper wrapper) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return;
+        }
+        InputTransferHandler handler = SurfaceInputTransferHandlerMap.getMap().get(surfaceId);
+        if (handler != null) {
+            handler.setVizToken(wrapper.getInputTransferToken());
+        }
     }
 
     @NativeMethods

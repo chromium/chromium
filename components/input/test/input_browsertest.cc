@@ -157,6 +157,42 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest, AndroidInputReceiverCreated) {
       /*kSuccessfullyCreated*/ 0, expected_count);
 }
 
+IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
+                       VizInputTransferTokenReceivedOnBrowser) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("input,Java");
+  content::RenderFrameSubmissionObserver render_frame_submission_observer(
+      shell()->web_contents());
+
+  EXPECT_TRUE(content::NavigateToURL(
+      shell(), GURL("data:text/html,<!doctype html>"
+                    "<body style='background-color: magenta;'></body>")));
+  if (render_frame_submission_observer.render_frame_count() == 0) {
+    render_frame_submission_observer.WaitForAnyFrameSubmission();
+  }
+  // By this point a root compositor frame sink should have been created as
+  // well, and if an input receiver were to be created it should have been
+  // since it happens when root compositor frame sink is created.
+
+  absl::Status status = ttp.StopAndParseTrace();
+  EXPECT_TRUE(status.ok()) << status.message();
+
+  std::string query = R"(SELECT COUNT(*) as cnt
+                         FROM slice
+                         WHERE slice.name = 'Storing InputTransferToken')";
+  auto result = ttp.RunQuery(query);
+
+  EXPECT_TRUE(result.has_value());
+
+  // `result.value()` would look something like this: {{"cnt"}, {"<num>"}.
+  EXPECT_EQ(result.value().size(), 2u);
+  EXPECT_EQ(result.value()[1].size(), 1u);
+  const std::string slice_count = result.value()[1][0];
+  const std::string expected_count =
+      IsTransferInputToVizSupported() ? "1" : "0";
+  EXPECT_EQ(slice_count, expected_count);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AndroidInputBrowserTest,
                          ::testing::Bool(),

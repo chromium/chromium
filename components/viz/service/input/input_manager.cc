@@ -15,6 +15,8 @@
 #include "components/viz/service/input/render_input_router_delegate_impl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_input_receiver_compat.h"
+#include "components/input/android/input_token_forwarder.h"
 #include "components/input/android/scoped_input_receiver.h"
 #include "components/input/android/scoped_input_receiver_callbacks.h"
 #include "components/input/android/scoped_input_transfer_token.h"
@@ -52,7 +54,8 @@ enum class CreateAndroidInputReceiverResult {
   kFailedNullLooper = 3,
   kFailedNullInputTransferToken = 4,
   kFailedNullCallbacks = 5,
-  kMaxValue = kFailedNullCallbacks,
+  kSuccessfulButNullTransferToken = 6,
+  kMaxValue = kSuccessfulButNullTransferToken,
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -235,14 +238,32 @@ void InputManager::CreateAndroidInputReceiver(
       looper, browser_input_token.a_input_transfer_token(), surface->surface(),
       callbacks.a_input_receiver_callbacks());
 
-  if (receiver) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kInputReceiverCreationResultHistogram,
-        CreateAndroidInputReceiverResult::kSuccessfullyCreated);
-  } else {
+  if (!receiver) {
     UMA_HISTOGRAM_ENUMERATION(kInputReceiverCreationResultHistogram,
                               CreateAndroidInputReceiverResult::kFailedUnknown);
+    return;
   }
+
+  input::ScopedInputTransferToken viz_input_token(receiver.a_input_receiver());
+  if (!viz_input_token) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kInputReceiverCreationResultHistogram,
+        CreateAndroidInputReceiverResult::kSuccessfulButNullTransferToken);
+    return;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION(
+      kInputReceiverCreationResultHistogram,
+      CreateAndroidInputReceiverResult::kSuccessfullyCreated);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaGlobalRef<jobject> viz_input_token_java(
+      env, base::AndroidInputReceiverCompat::GetInstance()
+               .AInputTransferToken_toJavaFn(
+                   env, viz_input_token.a_input_transfer_token()));
+
+  input::InputTokenForwarder::GetInstance()->ForwardVizInputTransferToken(
+      surface_handle, viz_input_token_java);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

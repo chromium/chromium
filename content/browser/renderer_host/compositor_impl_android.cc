@@ -304,7 +304,7 @@ void CompositorImpl::SetRootLayer(scoped_refptr<cc::slim::Layer> root_layer) {
   }
 }
 
-void CompositorImpl::SetSurface(
+std::optional<gpu::SurfaceHandle> CompositorImpl::SetSurface(
     const base::android::JavaRef<jobject>& surface,
     bool can_be_used_with_surface_control,
     const base::android::JavaRef<jobject>& host_input_token) {
@@ -321,14 +321,17 @@ void CompositorImpl::SetSurface(
   gl::ScopedJavaSurface scoped_surface(surface, /*auto_release=*/false);
   gl::ScopedANativeWindow window(scoped_surface);
 
-  if (window) {
-    window_ = std::move(window);
-    // Register first, SetVisible() might create a LayerTreeFrameSink.
-    surface_handle_ = tracker->AddSurfaceForNativeWidget(
-        gpu::SurfaceRecord(std::move(scoped_surface),
-                           can_be_used_with_surface_control, host_input_token));
-    SetVisible(true);
+  if (!window) {
+    return std::nullopt;
   }
+
+  window_ = std::move(window);
+  // Register first, SetVisible() might create a LayerTreeFrameSink.
+  surface_handle_ = tracker->AddSurfaceForNativeWidget(
+      gpu::SurfaceRecord(std::move(scoped_surface),
+                         can_be_used_with_surface_control, host_input_token));
+  SetVisible(true);
+  return surface_handle_;
 }
 
 void CompositorImpl::SetBackgroundColor(int color) {
