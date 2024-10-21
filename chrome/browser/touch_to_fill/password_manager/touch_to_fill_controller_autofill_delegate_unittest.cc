@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/access_loss/mock_password_access_loss_warning_bridge.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -193,12 +194,17 @@ class TouchToFillControllerAutofillTest
     std::unique_ptr<MockPasswordAccessLossWarningBridge> mock_bridge =
         std::make_unique<MockPasswordAccessLossWarningBridge>();
     mock_access_loss_warning_bridge_ = mock_bridge.get();
+    auto grouped_credential_sheet_controller =
+        std::make_unique<AcknowledgeGroupedCredentialSheetController>();
+    grouped_credential_sheet_controller_ =
+        grouped_credential_sheet_controller.get();
     return std::make_unique<TouchToFillControllerAutofillDelegate>(
         base::PassKey<TouchToFillControllerAutofillTest>(), &client_,
         web_contents(), std::move(authenticator_),
         webauthn_credentials_delegate_.AsWeakPtr(), std::move(filler),
         form_to_fill, focused_field_renderer_id, should_show_hybrid_option,
-        show_password_migration_warning().Get(), std::move(mock_bridge));
+        show_password_migration_warning().Get(), std::move(mock_bridge),
+        std::move(grouped_credential_sheet_controller));
   }
 
   password_manager::MockWebAuthnCredentialsDelegate&
@@ -221,6 +227,11 @@ class TouchToFillControllerAutofillTest
 
   MockPasswordAccessLossWarningBridge* mock_access_loss_warning_bridge() {
     return mock_access_loss_warning_bridge_;
+  }
+
+  AcknowledgeGroupedCredentialSheetController*
+  grouped_credential_sheet_controller() {
+    return grouped_credential_sheet_controller_;
   }
 
   void SetUp() override {
@@ -258,6 +269,8 @@ class TouchToFillControllerAutofillTest
   raw_ptr<MockPasswordAccessLossWarningBridge> mock_access_loss_warning_bridge_;
   raw_ptr<MockPasswordCredentialFiller> weak_filler_;
   password_manager::PasswordForm form_to_fill_;
+  raw_ptr<AcknowledgeGroupedCredentialSheetController>
+      grouped_credential_sheet_controller_;
 };
 
 TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Submit) {
@@ -933,6 +946,37 @@ TEST_F(TouchToFillControllerAutofillTest,
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
       &cred_man_delegate, /*frame_driver=*/nullptr);
   EXPECT_FALSE(is_shown);
+}
+
+TEST_F(TouchToFillControllerAutofillTest,
+       TriggersAcknowledgeDialogBeforeFillingGroupedCredential) {
+  // Test multiple credentials with one of them being an Android credential.
+  UiCredential credentials[] = {
+      MakeUiCredential({
+          .username = "bob",
+          .password = "s3cr3t",
+          .origin = "",
+          .match_type = password_manager_util::GetLoginMatchType::kGrouped,
+          .time_since_last_use = base::Minutes(3),
+      }),
+  };
+
+  touch_to_fill_controller().Show(
+      credentials, /*passkey_credentials=*/{},
+      MakeTouchToFillControllerDelegate(
+          autofill::mojom::SubmissionReadinessState::kNoInformation,
+          CreateMockFiller(), form_to_fill(),
+          form_to_fill()->password_element_renderer_id,
+          TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
+      /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
+
+  // TODO(crbug.com/372635361): After implementing the bridge, expect the call
+  // to show the actual sheet. Now only check, that FillUsernameAndPassword will
+  // not be called because there is a stub, which simulates that sheet was
+  // declined.
+  EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword).Times(0);
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
+  touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
 
 class TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest
