@@ -162,6 +162,8 @@ source_set("test_support") {
   sources = [
     "fake_chrome_lens_overlay.h",
     "fake_chrome_lens_overlay.mm",
+    "fake_chrome_lens_overlay_result.h",
+    "fake_chrome_lens_overlay_result.mm",
   ]
   deps = [
     "//base",

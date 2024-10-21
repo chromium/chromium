@@ -5,29 +5,9 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay_result.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "url/gurl.h"
-
-/// ChromeLensOverlayResult test object.
-@interface TestChromeLensOverlayResult : NSObject <ChromeLensOverlayResult>
-
-/// The result URL that is meant to be loaded in the LRP.
-@property(nonatomic, assign) GURL searchResultURL;
-/// The selected portion of the original snapshot.
-@property(nonatomic, strong) UIImage* selectionPreviewImage;
-/// Data containing the suggest signals.
-@property(nonatomic, strong) NSData* suggestSignals;
-/// Query text.
-@property(nonatomic, copy, readwrite) NSString* queryText;
-/// Whether the result represents a text selection.
-@property(nonatomic, readonly) BOOL isTextSelection;
-/// The selection rect of the lens region.
-@property(nonatomic, assign) CGRect selectionRect;
-
-@end
-
-@implementation TestChromeLensOverlayResult
-@end
 
 @implementation FakeChromeLensOverlay {
   NSString* _currentQueryText;
@@ -65,8 +45,8 @@
 - (void)reloadResult:(id<ChromeLensOverlayResult>)result {
   self.lastReload = result;
   // Reload the result.
-  TestChromeLensOverlayResult* resultObject =
-      base::apple::ObjCCastStrict<TestChromeLensOverlayResult>(result);
+  FakeChromeLensOverlayResult* resultObject =
+      base::apple::ObjCCastStrict<FakeChromeLensOverlayResult>(result);
   // Reloading a result generates new URL and Image, so they are not copied.
   _currentQueryText = resultObject.queryText;
   [self sendNewResult];
@@ -101,8 +81,8 @@
 }
 
 - (void)simulateSuggestSignalsUpdate:(NSData*)signals {
-  TestChromeLensOverlayResult* mutableResult =
-      base::apple::ObjCCastStrict<TestChromeLensOverlayResult>(self.lastResult);
+  FakeChromeLensOverlayResult* mutableResult =
+      base::apple::ObjCCastStrict<FakeChromeLensOverlayResult>(self.lastResult);
 
   mutableResult.suggestSignals = signals;
   [self.lensOverlayDelegate lensOverlay:self
@@ -112,8 +92,8 @@
 #pragma mark - Private
 
 - (void)sendNewResult {
-  TestChromeLensOverlayResult* result =
-      [[TestChromeLensOverlayResult alloc] init];
+  FakeChromeLensOverlayResult* result =
+      [[FakeChromeLensOverlayResult alloc] init];
   result.queryText = _currentQueryText;
   result.searchResultURL = self.resultURL;
   result.selectionPreviewImage = [[UIImage alloc] init];
