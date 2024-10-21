@@ -258,4 +258,30 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerUnanswerable) {
   EXPECT_EQ(ComputeAnswerStatus::kUnanswerable, answer_result.status);
 }
 
+TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNullScores) {
+  ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
+    return std::make_unique<optimization_guide::MockSessionWrapper>(
+        &session_1_);
+  });
+
+  ON_CALL(session_1_, GetSizeInTokens(_, _))
+      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                  callback) { std::move(callback).Run(100); })));
+
+  // Null score
+  ON_CALL(session_1_, Score(_, _))
+      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelScoreCallback
+                  callback) { std::move(callback).Run(std::nullopt); })));
+
+  Answerer::Context context("1");
+  context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
+
+  TestFuture<AnswererResult> future;
+  ml_answerer_->ComputeAnswer("query", context, future.GetCallback());
+  const auto answer_result = future.Take();
+  EXPECT_EQ(ComputeAnswerStatus::kExecutionFailure, answer_result.status);
+}
+
 }  // namespace history_embeddings

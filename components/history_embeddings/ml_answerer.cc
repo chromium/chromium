@@ -200,14 +200,20 @@ class MlAnswerer::SessionManager {
 
   // Decodes with the highest scored session.
   void SortAndDecode(const std::vector<SessionScoreType>& session_scores) {
-    size_t max_index = 0;
+    size_t max_index = session_scores.size();
     float max_score = 0.0;
     for (size_t i = 0; i < session_scores.size(); i++) {
-      const auto score = std::get<1>(session_scores[i]);
+      const std::optional<float> score = std::get<1>(session_scores[i]);
       if (score.has_value() && *score > max_score) {
         max_score = *score;
         max_index = i;
       }
+    }
+
+    if (max_index == session_scores.size()) {
+      FinishAndResetSessions(AnswererResult{
+          ComputeAnswerStatus::kExecutionFailure, query_, Answer()});
+      return;
     }
 
     // Return unanswerable status due to highest score is below the threshold.
