@@ -14,7 +14,9 @@ export function getHtml(this: HistoryClustersAppElement) {
     label="$i18n{historyClustersSearchPrompt}"
     clear-label="$i18n{clearSearch}"
     @contextmenu="${this.onContextMenu_}"
-    icon-override="${this.searchIcon_}">
+    icon-override="${this.searchIcon_}"
+    @search-term-native-input="${this.onSearchNativeInput_}"
+    @search-term-cleared="${this.onSearchCleared_}">
 </cr-toolbar-search-field>
 ${this.enableHistoryEmbeddings_ ? html`
 <div id="historyEmbeddingsDisclaimer">
@@ -35,6 +37,8 @@ ${this.enableHistoryEmbeddings_ ? html`
       .showRelativeTimes="${true}"
       .forceSuppressLogging="${this.historyEmbeddingsDisclaimerLinkClicked_}"
       .otherHistoryResultClicked="${this.nonEmbeddingsResultClicked_}"
+      .numCharsForQuery="${this.numCharsTypedInSearch_}"
+      .inSidePanel="${true}"
       @answer-click="${this.onHistoryEmbeddingsResultClick_}"
       @answer-context-menu="${this.onHistoryEmbeddingsResultContextMenu_}"
       @result-click="${this.onHistoryEmbeddingsResultClick_}"
