@@ -67,6 +67,10 @@ const char kEnableDawnFeatures[] = "enable-dawn-features";
 // Set the Dawn features(toggles) disabled on the creation of Dawn devices.
 const char kDisableDawnFeatures[] = "disable-dawn-features";
 
+// Start the GPU process for Dawn info collection immediately after the browser
+// starts. The default is to delay for 120 seconds.
+const char kCollectDawnInfoEagerly[] = "collect-dawn-info-eagerly";
+
 // Start the non-sandboxed GPU process for DX12 and Vulkan info collection
 // immediately after the browser starts. The default is to delay for 120
 // seconds.
