@@ -6,10 +6,12 @@
 
 #import <optional>
 
+#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/with_feature_override.h"
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "components/autofill/core/common/form_data.h"
@@ -17,11 +19,16 @@
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
+#import "components/autofill/ios/common/features.h"
+#import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "components/autofill/ios/form_util/programmatic_form_submission_handler_java_script_feature.h"
 #import "components/autofill/ios/form_util/test_form_activity_observer.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
@@ -33,6 +40,7 @@ namespace autofill {
 
 namespace {
 
+using base::test::WithFeatureOverride;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using test::kTrackFormMutationsDelayInMs;
@@ -41,6 +49,7 @@ using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
+using web::JavaScriptFeature;
 using web::WebFrame;
 
 // Default maximum length for text input fields defined by W3C.
@@ -86,10 +95,13 @@ class FormActivityTabHelperTest : public AutofillTestWithWebState {
       : AutofillTestWithWebState(std::make_unique<web::FakeWebClient>()) {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
-    web_client->SetJavaScriptFeatures(
-        {FormUtilJavaScriptFeature::GetInstance(),
-         FormHandlersJavaScriptFeature::GetInstance(),
-         AutofillJavaScriptFeature::GetInstance()});
+    std::vector<JavaScriptFeature*> features = {
+        FormUtilJavaScriptFeature::GetInstance(),
+        FormHandlersJavaScriptFeature::GetInstance(),
+        AutofillJavaScriptFeature::GetInstance(),
+        ProgrammaticFormSubmissionHandlerJavaScriptFeature::GetInstance(),
+    };
+    web_client->SetJavaScriptFeatures(features);
   }
 
   void SetUp() override {
@@ -151,30 +163,6 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
   EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
   EXPECT_EQ(test_form_data, observer_->submit_document_info()->form_data);
 
-  EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
-
-  // Verify that there isn't any form activity metric recorded as the form
-  // submit signals aren't covered.
-  histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount", 0);
-  histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendCount", 0);
-  histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendRatio", 0);
-}
-
-// Tests that observer is called on form submission using submit() method.
-TEST_F(FormActivityTabHelperTest, TestFormSubmittedHook) {
-  LoadHtml(kTestHTMLForm);
-
-  WebFrame* main_frame = WaitForMainFrame();
-  ASSERT_TRUE(main_frame);
-
-  ASSERT_FALSE(observer_->submit_document_info());
-  FormData kTestFormData = BuildTestFormData(main_frame->GetFrameId());
-
-  ExecuteJavaScript(@"document.forms[0].submit();");
-  ASSERT_TRUE(observer_->submit_document_info());
-  EXPECT_EQ(web_state(), observer_->submit_document_info()->web_state);
-  EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
-  EXPECT_EQ(kTestFormData, observer_->submit_document_info()->form_data);
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
 
   // Verify that there isn't any form activity metric recorded as the form
@@ -801,4 +789,76 @@ INSTANTIATE_TEST_SUITE_P(
     FormMutationFormControlElements,
     ::testing::Values("form", "input", "select", "option", "textarea"));
 
+// Test fixture for testing programmatic form submissions with/without Autofill
+// in the isolated world enabled.
+// TODO(crbug.com/359538514): Remove this fixture and move test back to
+// FormActivityTabHelperTest once isolated world for Autofill is launched.
+class FormSubmittedHookTest : public WithFeatureOverride,
+                              public FormActivityTabHelperTest {
+ public:
+  FormSubmittedHookTest()
+      : WithFeatureOverride(kAutofillIsolatedWorldForJavascriptIos),
+        FormActivityTabHelperTest() {
+    web::FakeWebClient* web_client =
+        static_cast<web::FakeWebClient*>(GetWebClient());
+    web_client->SetJavaScriptFeatures({
+        FormUtilJavaScriptFeature::GetInstance(),
+        feature_container_.form_handlers_java_script_feature(),
+        feature_container_.autofill_java_script_feature(),
+        ProgrammaticFormSubmissionHandlerJavaScriptFeature::GetInstance(),
+    });
+  }
+
+ protected:
+  //  Test instances of JavaScriptFeature's that are injected in a different
+  //  content world depending on kAutofillIsolatedWorldForJavascriptIos.
+  //  TODO(crbug.com/359538514): Remove this variable and use
+  //  the statically stored instances once Autofill in the isolated
+  //  world is launched.
+  TestAutofillJavaScriptFeatureContainer feature_container_;
+};
+
+// Validate that programmatic form submissions are detected and sent to
+// observers of the tab helper.
+TEST_P(FormSubmittedHookTest, TestFormSubmittedHook) {
+  LoadHtml(kTestHTMLForm);
+
+  WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  feature_container_.autofill_form_features_java_script_feature()
+      ->SetAutofillIsolatedContentWorld(main_frame, IsParamFeatureEnabled());
+
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(),
+      @"var form = document.forms[0];"
+       "__gCrWeb.fill.setUniqueIDIfNeeded(form);"
+       "var input = document.getElementById('text');"
+       "__gCrWeb.fill.setUniqueIDIfNeeded(input);",
+      feature_container_.autofill_java_script_feature());
+
+  ASSERT_FALSE(observer_->submit_document_info());
+
+  // Make sure the script triggering the submission hooks runs in the page
+  // content world.
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(), @"document.forms[0].submit();",
+      ProgrammaticFormSubmissionHandlerJavaScriptFeature::GetInstance());
+
+  FormData kTestFormData = BuildTestFormData(main_frame->GetFrameId());
+
+  ASSERT_TRUE(observer_->submit_document_info());
+  EXPECT_EQ(web_state(), observer_->submit_document_info()->web_state);
+  EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
+  EXPECT_EQ(kTestFormData, observer_->submit_document_info()->form_data);
+  EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
+
+  // Verify that there isn't any form activity metric recorded as the form
+  // submit signals aren't covered.
+  histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount", 0);
+  histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendCount", 0);
+  histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendRatio", 0);
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FormSubmittedHookTest);
 }  // namespace autofill

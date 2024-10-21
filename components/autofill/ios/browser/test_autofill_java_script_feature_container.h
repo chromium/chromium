@@ -12,6 +12,7 @@ namespace autofill {
 class FormHandlersJavaScriptFeature;
 class AutofillFormFeaturesJavaScriptFeature;
 class AutofillRendererIDJavaScriptFeature;
+class AutofillJavaScriptFeature;
 
 /*
  Holds instances of JavaScriptFeature classes related to Autofill. Use this
@@ -42,6 +43,8 @@ class TestAutofillJavaScriptFeatureContainer {
   AutofillRendererIDJavaScriptFeature*
   autofill_renderer_id_java_script_feature();
 
+  AutofillJavaScriptFeature* autofill_java_script_feature();
+
  private:
   TestAutofillJavaScriptFeatureContainer(
       const TestAutofillJavaScriptFeatureContainer&) = delete;
@@ -54,6 +57,7 @@ class TestAutofillJavaScriptFeatureContainer {
       autofill_form_features_java_script_feature_ = nullptr;
   raw_ptr<AutofillRendererIDJavaScriptFeature>
       autofill_renderer_id_java_script_feature_ = nullptr;
+  raw_ptr<AutofillJavaScriptFeature> autofill_java_script_feature_ = nullptr;
 };
 
 }  // namespace autofill

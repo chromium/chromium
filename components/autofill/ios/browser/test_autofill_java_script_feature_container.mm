@@ -4,6 +4,7 @@
 
 #import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
 
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
@@ -18,6 +19,7 @@ TestAutofillJavaScriptFeatureContainer::
   delete form_handlers_java_script_feature_;
   delete autofill_form_features_java_script_feature_;
   delete autofill_renderer_id_java_script_feature_;
+  delete autofill_java_script_feature_;
 }
 
 FormHandlersJavaScriptFeature*
@@ -52,6 +54,16 @@ AutofillRendererIDJavaScriptFeature* TestAutofillJavaScriptFeatureContainer::
   }
 
   return autofill_renderer_id_java_script_feature_;
+}
+
+AutofillJavaScriptFeature*
+TestAutofillJavaScriptFeatureContainer::autofill_java_script_feature() {
+  if (!autofill_java_script_feature_) {
+    autofill_java_script_feature_ = new AutofillJavaScriptFeature(
+        autofill_form_features_java_script_feature(),
+        autofill_renderer_id_java_script_feature());
+  }
+  return autofill_java_script_feature_;
 }
 
 }  // namespace autofill

@@ -13,6 +13,7 @@
 namespace web {
 class ScriptMessage;
 class WebState;
+enum class ContentWorld;
 }  // namespace web
 
 namespace autofill {

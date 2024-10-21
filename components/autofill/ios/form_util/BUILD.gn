@@ -19,6 +19,7 @@ source_set("form_util") {
     "form_activity_tab_helper.mm",
   ]
   deps = [
+    ":child_frame_registrar",
     ":form_util_feature",
     "//base",
     "//components/autofill/core/common",
@@ -292,6 +293,7 @@ source_set("unit_tests") {
     ":form_js",
     ":form_util",
     ":form_util_feature",
+    ":programmatic_form_submission_handler_feature",
     ":test_support",
     "//base",
     "//base/test:test_support",

@@ -166,4 +166,18 @@ void AutofillJavaScriptFeature::ScriptMessageReceived(
   }
 }
 
+AutofillJavaScriptFeature::AutofillJavaScriptFeature(
+    AutofillFormFeaturesJavaScriptFeature*
+        autofill_form_features_java_script_feature,
+    AutofillRendererIDJavaScriptFeature* renderer_id_feature)
+    : web::JavaScriptFeature(
+          ContentWorldForAutofillJavascriptFeatures(),
+          {FeatureScript::CreateWithFilename(
+              kScriptName,
+              FeatureScript::InjectionTime::kDocumentStart,
+              FeatureScript::TargetFrames::kAllFrames,
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
+          {FormUtilJavaScriptFeature::GetInstance(),
+           autofill_form_features_java_script_feature, renderer_id_feature}) {}
+
 }  // namespace autofill
