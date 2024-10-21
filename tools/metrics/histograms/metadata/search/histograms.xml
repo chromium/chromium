@@ -152,6 +152,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.Schedule.DonateTime" units="ms"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Time taken for donating contents to the auxiliary search from a scheduled
+    background task. The histogram is logged when the donation is completed.
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.AuxiliarySearch.Schedule.FaviconDonateResult"
     enum="DonateResult" expires_after="2025-09-15">
   <owner>hanxi@chromium.org</owner>
