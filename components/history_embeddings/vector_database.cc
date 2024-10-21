@@ -195,16 +195,29 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
 
   // Calculate total boost from term counts across all passages.
   float word_match_boost = 0.0f;
-  for (size_t term_count : term_counts) {
-    float term_boost = search_params.word_match_score_boost_factor *
-                       term_count / search_params.word_match_limit;
-    // Boost factor is applied per term such that longer queries boost more.
-    word_match_boost += term_boost;
+  if (!term_counts.empty()) {
+    size_t terms_found = 0;
+    for (size_t term_count : term_counts) {
+      float term_boost = search_params.word_match_score_boost_factor *
+                         term_count / search_params.word_match_limit;
+      // Boost factor is applied per term such that longer queries boost more.
+      word_match_boost += term_boost;
+      if (term_count > 0) {
+        terms_found++;
+      }
+    }
+    if (static_cast<float>(terms_found) /
+            static_cast<float>(term_counts.size()) <
+        search_params.word_match_required_term_ratio) {
+      // Don't boost at all when not enough of the query terms were found.
+      word_match_boost = 0.0f;
+    } else {
+      // Normalize to avoid over-boosting long queries with many words.
+      word_match_boost /=
+          std::max<size_t>(1, search_params.query_terms.size() +
+                                  search_params.word_match_smoothing_factor);
+    }
   }
-  // Normalize to avoid over-boosting long queries with many words.
-  word_match_boost /=
-      std::max<size_t>(1, search_params.query_terms.size() +
-                              search_params.word_match_smoothing_factor);
 
   return best + word_match_boost;
 }

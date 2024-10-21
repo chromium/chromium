@@ -73,6 +73,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, EmbeddingOperations) {
 TEST(HistoryEmbeddingsVectorDatabaseTest, BestScoreWith) {
   SearchInfo search_info;
   SearchParams search_params;
+  search_params.word_match_required_term_ratio = 0.0f;
 
   UrlPassagesEmbeddings url_data(1, 1, base::Time::Now());
   url_data.url_passages.passages.add_passages("some deterministic passage");
@@ -172,6 +173,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
   search_params.word_match_minimum_embedding_score = 0.0f;
   search_params.word_match_limit = 4;
   search_params.word_match_score_boost_factor = 0.1;
+  search_params.word_match_required_term_ratio = 0.0f;
 
   // Basic embedding search with no query terms produces flat embedding score.
   Embedding query_embedding = DeterministicEmbedding(0);
