@@ -34,11 +34,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.blink_public.input.SelectionGranularity;
-import org.chromium.build.annotations.DoNotInline;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.content.browser.AppWebMessagePort;
 import org.chromium.content.browser.GestureListenerManagerImpl;
-import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.RenderWidgetHostViewImpl;
 import org.chromium.content.browser.ViewEventSinkImpl;
@@ -168,10 +166,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
     // Lazily created proxy observer for handling all Java-based WebContentsObservers.
     private WebContentsObserverProxy mObserverProxy;
-
-    // The media session for this WebContents. It is constructed by the native MediaSession and has
-    // the same life time as native MediaSession.
-    @DoNotInline private MediaSessionImpl mMediaSession;
 
     class SmartClipCallback {
         public SmartClipCallback(final Handler smartClipHandler) {
@@ -1004,11 +998,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     public int getHeight() {
         checkNotDestroyed();
         return WebContentsImplJni.get().getHeight(mNativeWebContentsAndroid);
-    }
-
-    @CalledByNative
-    private final void setMediaSession(MediaSessionImpl mediaSession) {
-        mMediaSession = mediaSession;
     }
 
     @CalledByNative

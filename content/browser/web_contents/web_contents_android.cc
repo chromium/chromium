@@ -869,12 +869,6 @@ void WebContentsAndroid::OnFinishDownloadImage(
       env, obj, callback, id, http_status_code, jurl, jbitmaps, jsizes);
 }
 
-void WebContentsAndroid::SetMediaSession(
-    const ScopedJavaLocalRef<jobject>& j_media_session) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_WebContentsImpl_setMediaSession(env, obj_, j_media_session);
-}
-
 void WebContentsAndroid::SendOrientationChangeEvent(JNIEnv* env,
                                                     jint orientation) {
   base::RecordAction(base::UserMetricsAction("ScreenOrientationChange"));

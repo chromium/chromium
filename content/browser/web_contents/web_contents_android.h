@@ -190,9 +190,6 @@ class CONTENT_EXPORT WebContentsAndroid {
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateEventForwarder(
       JNIEnv* env);
 
-  void SetMediaSession(
-      const base::android::ScopedJavaLocalRef<jobject>& j_media_session);
-
   void SendOrientationChangeEvent(JNIEnv* env, jint orientation);
 
   void OnScaleFactorChanged(JNIEnv* env);
