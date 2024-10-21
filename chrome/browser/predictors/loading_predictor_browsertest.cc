@@ -2787,6 +2787,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameLoadingPredictorBrowserTest,
 
   // Send a response header with link dns-prefetch field.
   response.WaitForRequest();
+  ResetNetworkState();
+  ResetPredictorState();
   response.Send(
       base::StringPrintf("HTTP/1.1 200 OK\r\n"
                          "Content-Type: text/html; charset=utf-8\r\n"
@@ -2882,6 +2884,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameLoadingPredictorBrowserTest,
 
   // Send a response header with link dns-prefetch field.
   dns_prefetch_response.WaitForRequest();
+  ResetNetworkState();
+  ResetPredictorState();
   dns_prefetch_response.Send(
       base::StringPrintf("HTTP/1.1 200 OK\r\n"
                          "Content-Type: text/html; charset=utf-8\r\n"
