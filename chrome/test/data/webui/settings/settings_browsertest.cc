@@ -1261,6 +1261,7 @@ class SettingsSecurityPageTest : public SettingsBrowserTest {
         {
             features::kEnableCertManagementUIV2,
             safe_browsing::kEsbAiStringUpdate,
+            safe_browsing::kPasswordLeakToggleMove,
         },
         {});
   }

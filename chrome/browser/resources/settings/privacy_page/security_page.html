@@ -53,7 +53,8 @@
         padding: 0;
       }
 
-      #httpsOnlyModeToggle {
+      #httpsOnlyModeToggle,
+      #passwordsLeakToggle {
         padding: 0 var(--cr-section-padding);
       }
 
@@ -186,13 +187,15 @@
                               prefs.generated.safe_browsing.*)]]">
               </settings-toggle-button>
             </template>
-            <settings-toggle-button id="passwordsLeakToggle"
-                label="$i18n{passwordsLeakDetectionLabel}"
-                pref="{{prefs.generated.password_leak_detection}}"
-                sub-label="[[getPasswordsLeakToggleSubLabel_(
-                              prefs.profile.password_manager_leak_detection.*,
-                              prefs.generated.password_leak_detection.*)]]">
-            </settings-toggle-button>
+            <template is="dom-if" if="[[!enablePasswordLeakToggleMove_]]">
+              <settings-toggle-button id="passwordsLeakToggleOld"
+                  label="$i18n{passwordsLeakDetectionLabel}"
+                  pref="{{prefs.generated.password_leak_detection}}"
+                  sub-label="[[getPasswordsLeakToggleSubLabel_(
+                                prefs.profile.password_manager_leak_detection.*,
+                                prefs.generated.password_leak_detection.*)]]">
+              </settings-toggle-button>
+            </template>
           </div>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="safeBrowsingDisabled" no-collapse
@@ -274,6 +277,15 @@
         </cr-link-row>
     </template>
 </if>
+    <template is="dom-if" if="[[enablePasswordLeakToggleMove_]]">
+      <settings-toggle-button id="passwordsLeakToggle"
+          label="$i18n{passwordsLeakDetectionLabel}"
+          pref="{{prefs.generated.password_leak_detection}}"
+          sub-label="[[getPasswordsLeakToggleSubLabel_(
+                        prefs.profile.password_manager_leak_detection.*,
+                        prefs.generated.password_leak_detection.*)]]">
+      </settings-toggle-button>
+    </template>
     <cr-link-row id="v8-setting-link" class="hr" on-click="onV8SettingsClick_"
         label="$i18n{securityV8LinkTitle}"
         sub-label="$i18n{securityV8LinkDescription}"

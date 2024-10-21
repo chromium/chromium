@@ -217,6 +217,13 @@ export class SettingsSecurityPageElement extends
         },
       },
 
+      enablePasswordLeakToggleMove_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordLeakToggleMove');
+        },
+      },
+
       showDisableSafebrowsingDialog_: Boolean,
 
       /**
@@ -269,6 +276,7 @@ export class SettingsSecurityPageElement extends
   private eventTracker_: EventTracker = new EventTracker();
   private enableEsbAiStringUpdate_: boolean;
   private hideExtendedReportingRadioButton_: boolean;
+  private enablePasswordLeakToggleMove_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();

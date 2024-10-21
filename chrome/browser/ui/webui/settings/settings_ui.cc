@@ -411,6 +411,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           safe_browsing::kHashPrefixRealTimeLookupsSamplePing));
 
+  html_source->AddBoolean(
+      "enablePasswordLeakToggleMove",
+      base::FeatureList::IsEnabled(safe_browsing::kPasswordLeakToggleMove));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 
