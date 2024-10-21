@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.FastPairAdvertisementStarted.ErrorCode"
-    enum="QuickStartFastPairAdvertisingErrorCode" expires_after="2025-03-09">
+    enum="QuickStartFastPairAdvertisingErrorCode" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.GaiaAuthentication.Duration" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-04-06">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.GaiaTransferResult.FailureReason"
-    enum="QuickStartGaiaTransferResultFailureReason" expires_after="2024-12-01">
+    enum="QuickStartGaiaTransferResultFailureReason" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.HandshakeResult.ErrorCode"
-    enum="QuickStartHandshakeResultErrorCode" expires_after="2024-12-01">
+    enum="QuickStartHandshakeResultErrorCode" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.MessageReceived.DesiredMessageType"
-    enum="QuickStartMessageType" expires_after="2024-12-01">
+    enum="QuickStartMessageType" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.MessageReceived.{MessageType}.ErrorCode"
-    enum="QuickStartMessageReceivedErrorCode" expires_after="2024-12-01">
+    enum="QuickStartMessageReceivedErrorCode" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.MessageReceived.{MessageType}.ListenDuration"
-    units="ms" expires_after="2024-12-01">
+    units="ms" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.MessageSent.MessageType"
-    enum="QuickStartMessageType" expires_after="2024-12-01">
+    enum="QuickStartMessageType" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -545,7 +545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.ScreenOpened" enum="QuickStartScreenName"
-    expires_after="2024-12-01">
+    expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
