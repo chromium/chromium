@@ -797,6 +797,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, EmptyLabel_EmptyRect) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_LTR) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  CHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -861,6 +864,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_LTR) {
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
        Textfield_TextOverflow) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -1007,6 +1013,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_LTR) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_RTL) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -1225,6 +1234,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
        Textfield_ScreenPhysicalPixels) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 

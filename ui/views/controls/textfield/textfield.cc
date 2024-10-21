@@ -1053,39 +1053,42 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                              base::checked_cast<int32_t>(range.start()));
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd,
                              base::checked_cast<int32_t>(range.end()));
+}
 
+void Textfield::OnAccessibilityInitializing(ui::AXNodeData* data) {
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-  // TODO(https://crbug.com/325137417): Recompute the text offsets whenever
-  // the value changes, not when GetAccessibleNodeData is different.
-  std::u16string ax_value = GetViewAccessibility().GetValue();
-  // If the accessible value changed since the last time we computed the text
-  // offsets, we need to recompute them.
+  // TODO(crbug.com/40933356): Add support for multiline textfields.
   if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
-      (ax_value_used_to_compute_offsets_ != ax_value ||
-       needs_ax_text_offsets_update_)) {
-    GetViewAccessibility().ClearTextOffsets();
+      !GetRenderText()->multiline()) {
+    ax_value_used_to_compute_offsets_ = GetRenderText()->GetDisplayText();
 
-    // TODO(crbug.com/325137417): When this function is only used to initialize
-    // the cache with these values, refactor this part to not rely on the cache
-    // as it will cause a chicken and egg situation. For now, this is necessary
-    // to keep the text offsets up to date.
-    RefreshAccessibleTextOffsets();
-    ax_value_used_to_compute_offsets_ = ax_value;
-    needs_ax_text_offsets_update_ = false;
-
-    node_data->AddIntListAttribute(
-        ax::mojom::IntListAttribute::kCharacterOffsets,
-        GetViewAccessibility().GetCharacterOffsets());
-    node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
-                                   GetViewAccessibility().GetWordStarts());
-    node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
-                                   GetViewAccessibility().GetWordEnds());
+    data->AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
+                              ComputeTextOffsets(GetRenderText()));
+    WordBoundaries boundaries = ComputeWordBoundaries(GetText());
+    data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                              boundaries.starts);
+    data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                              boundaries.ends);
   }
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+void Textfield::UpdateAccessibleTextOffsetsIfNeeded() {
+  bool should_update =
+      ax_value_used_to_compute_offsets_ != GetRenderText()->GetDisplayText();
+  if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
+      GetViewAccessibility().is_initialized() && should_update) {
+    GetViewAccessibility().ClearTextOffsets();
+
+    RefreshAccessibleTextOffsets();
+    ax_value_used_to_compute_offsets_ = GetRenderText()->GetDisplayText();
+  }
+}
+
 void Textfield::RefreshAccessibleTextOffsets() {
+  DCHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled());
+  DCHECK(GetViewAccessibility().is_initialized());
   // TODO(crbug.com/40933356): Add support for multiline textfields.
   if (GetRenderText()->multiline()) {
     return;
@@ -2550,12 +2553,6 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
   }
 }
 
-#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-void Textfield::SetNeedsAccessibleTextOffsetsUpdate() {
-  needs_ax_text_offsets_update_ = true;
-}
-#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, private:
 
@@ -2740,6 +2737,10 @@ void Textfield::UpdateAccessibleValue() {
   } else {
     GetViewAccessibility().SetValue(GetText());
   }
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  UpdateAccessibleTextOffsetsIfNeeded();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
 void Textfield::UpdateCursorVisibility() {

@@ -361,6 +361,10 @@ class VIEWS_EXPORT Textfield : public View,
       const ui::DropTargetEvent& event) override;
   void OnDragDone() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  // We don't want to compute the accessible text offsets unless accessibility
+  // is enabled. We need to override this function to make sure that when
+  // accessibility turns on, we compute the current accessible text offsets.
+  void OnAccessibilityInitializing(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
@@ -556,12 +560,6 @@ class VIEWS_EXPORT Textfield : public View,
   // Get the default command for a given key |event|.
   virtual ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event);
 
-#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-  // Called when the accessible text offsets for the textfield need to be
-  // recomputed on the next pass.
-  virtual void SetNeedsAccessibleTextOffsetsUpdate();
-#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-
   // Update the cursor position in the text field.
   void UpdateCursorViewPosition();
 
@@ -574,6 +572,10 @@ class VIEWS_EXPORT Textfield : public View,
   virtual void UpdateAccessibleTextSelection() {}
 
   void AddedToWidget() override;
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  void UpdateAccessibleTextOffsetsIfNeeded();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
  private:
   friend class TextfieldTestApi;

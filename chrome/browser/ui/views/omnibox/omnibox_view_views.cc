@@ -1356,8 +1356,10 @@ void OmniboxViewViews::OnFocus() {
   GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-  // The text offsets are no longer valid when the elide behavior changes.
-  SetNeedsAccessibleTextOffsetsUpdate();
+  // The text offsets are no longer valid when the elide behavior changes, even
+  // if the accessible value is technically still the same. Therefore we are
+  // forcing the update.
+  UpdateAccessibleTextOffsetsIfNeeded();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
   if (location_bar_view_)
@@ -1425,7 +1427,7 @@ void OmniboxViewViews::OnBlur() {
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   // The text offsets are no longer valid when the elide behavior changes.
-  SetNeedsAccessibleTextOffsetsUpdate();
+  UpdateAccessibleTextOffsetsIfNeeded();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
   // In cases where there's a lot of whitespace in the text being shown, we want
@@ -1564,6 +1566,10 @@ void OmniboxViewViews::UpdateAccessibleValue() {
     // Braille display routing keys or other assistive technologies.
     GetViewAccessibility().SetValue(friendly_suggestion_text_);
   }
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  UpdateAccessibleTextOffsetsIfNeeded();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

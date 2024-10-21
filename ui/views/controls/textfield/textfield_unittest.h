@@ -53,6 +53,8 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   void InitTextfield(int count = 1);
   ui::MenuModel* GetContextMenuModel();
 
+  void MockAXModeAdded();
+
   bool TestingNativeMac() const;
   bool TestingNativeCrOs() const;
 

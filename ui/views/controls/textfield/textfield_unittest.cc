@@ -26,6 +26,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -540,6 +541,11 @@ void TextfieldTest::PrepareTextfieldsInternal(int count,
 ui::MenuModel* TextfieldTest::GetContextMenuModel() {
   GetTextfieldTestApi().UpdateContextMenu();
   return GetTextfieldTestApi().context_menu_contents();
+}
+
+void TextfieldTest::MockAXModeAdded() {
+  ui::AXMode mode = ui::AXPlatformForTest::GetInstance().GetProcessMode();
+  widget_->OnAXModeAdded(mode);
 }
 
 bool TextfieldTest::TestingNativeMac() const {
@@ -5384,11 +5390,35 @@ TEST_F(TextfieldTest, WordOffsets) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   InitTextfield();
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  ASSERT_TRUE(textfield_->GetViewAccessibility().is_initialized());
+
   ui::AXNodeData node_data;
   textfield_->SetText(u"abc 12 34 def hij :' $*() ");
   textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   std::vector<int32_t> expected_starts = {0, 4, 7, 10, 14};
   std::vector<int32_t> expected_ends = {3, 6, 9, 13, 17};
+  EXPECT_EQ(
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kWordStarts),
+      expected_starts);
+  EXPECT_EQ(
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kWordEnds),
+      expected_ends);
+}
+
+TEST_F(TextfieldTest, WordOffsetsAXNotOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  InitTextfield();
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  ASSERT_FALSE(textfield_->GetViewAccessibility().is_initialized());
+
+  ui::AXNodeData node_data;
+  textfield_->SetText(u"abc 12 34 def hij :' $*() ");
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_starts = {};
+  std::vector<int32_t> expected_ends = {};
   EXPECT_EQ(
       node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kWordStarts),
       expected_starts);
@@ -5431,6 +5461,9 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsets) {
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
 
   InitTextfield();
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  ASSERT_TRUE(textfield_->GetViewAccessibility().is_initialized());
 
   // Set the glyph width to a fixed value to avoid flakiness and dependency on
   // each platform's default font size.
@@ -5456,6 +5489,9 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsetsObscured) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   InitTextfield();
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  ASSERT_TRUE(textfield_->GetViewAccessibility().is_initialized());
   textfield_->SetText(u"abcdef");
 
   ASSERT_FALSE(GetTextfieldTestApi().GetRenderText()->obscured());
@@ -5476,6 +5512,9 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsetsElidedTail) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   InitTextfield();
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  ASSERT_TRUE(textfield_->GetViewAccessibility().is_initialized());
 
   constexpr int kGlyphWidth = 10;
 
@@ -5499,6 +5538,9 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsetsIndependentOfDisplayOffset) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   InitTextfield();
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  ASSERT_TRUE(textfield_->GetViewAccessibility().is_initialized());
 
   // Size the textfield wide enough to hold 10 characters.
   gfx::test::RenderTextTestApi render_text_test_api(
