@@ -1,0 +1,5 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
+++++TextView text:"Seminole tax hike: Seminole city managers are proposing a 75% increase in property taxes for the coming fiscal year. " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++View text:"null" contentDescription:"Read more about Seminole tax hike" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/aria/taxhike.html"]
+++++++TextView text:"[Read more...]" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]

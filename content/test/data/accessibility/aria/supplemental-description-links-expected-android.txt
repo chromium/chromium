@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.TextView name='Seminole tax hike: Seminole city managers are proposing a 75% increase in property taxes for the coming fiscal year. '
+++++android.view.View role_description='link' clickable focusable link name='Read more about Seminole tax hike'
+++++++android.widget.TextView name='[Read more...]'

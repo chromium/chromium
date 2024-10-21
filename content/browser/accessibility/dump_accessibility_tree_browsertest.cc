@@ -3434,6 +3434,41 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("sub.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySupplementalDescriptionAnnotate) {
+  RunAriaTest(FILE_PATH_LITERAL("supplemental-description-annotate.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySupplementalDescriptionButtonLabel) {
+  RunAriaTest(FILE_PATH_LITERAL("supplemental-description-button-label.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySupplementalDescriptionImageButton) {
+  RunAriaTest(FILE_PATH_LITERAL("supplemental-description-image-button.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySupplementalDescriptionLinks) {
+  RunAriaTest(FILE_PATH_LITERAL("supplemental-description-links.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySupplementalDescriptionNav) {
+  RunAriaTest(FILE_PATH_LITERAL("supplemental-description-nav.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySupplementalDescriptionRegion) {
+  RunAriaTest(FILE_PATH_LITERAL("supplemental-description-region.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySupplementalDescriptionSelect) {
+  RunAriaTest(FILE_PATH_LITERAL("supplemental-description-select.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySup) {
   RunHtmlTest(FILE_PATH_LITERAL("sup.html"));
 }
