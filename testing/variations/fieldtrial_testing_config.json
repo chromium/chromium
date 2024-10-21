@@ -8420,6 +8420,21 @@
             ]
         }
     ],
+    "DisableInstanceLimitDesktop": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableInstanceLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableMemoryReclaimerInBackground": [
         {
             "platforms": [
