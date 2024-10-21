@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "chrome/updater/updater_scope.h"
@@ -95,10 +94,12 @@ void OmahaWnd::InitializeDialog() {
   ui::SetWindowIcon(m_hWnd, IDI_APP,
                     base::win::ScopedGDIObject<HICON>::Receiver(hicon_).get());
 
-  // Disable the Maximize System Menu item.
+  // Disable the maximize system menu item.
   HMENU menu = ::GetSystemMenu(*this, false);
-  CHECK(menu);
-  ::EnableMenuItem(menu, SC_MAXIMIZE, MF_BYCOMMAND | MF_GRAYED);
+  VLOG_IF(2, !menu) << "Failed to find system menu";
+  if (menu) {
+    ::EnableMenuItem(menu, SC_MAXIMIZE, MF_BYCOMMAND | MF_GRAYED);
+  }
 
   progress_bar_.SubclassWindow(GetDlgItem(IDC_PROGRESS));
 
@@ -225,10 +226,12 @@ HRESULT OmahaWnd::EnableClose(bool enable) {
 
 HRESULT OmahaWnd::EnableSystemCloseButton(bool enable) {
   HMENU menu = ::GetSystemMenu(*this, false);
-  CHECK(menu);
-  uint32_t flags = MF_BYCOMMAND;
-  flags |= enable ? MF_ENABLED : MF_GRAYED;
-  ::EnableMenuItem(menu, SC_CLOSE, flags);
+  VLOG_IF(2, !menu) << "Failed to find system menu";
+  if (!menu) {
+    return E_FAIL;
+  }
+  ::EnableMenuItem(menu, SC_CLOSE,
+                   MF_BYCOMMAND | (enable ? MF_ENABLED : MF_GRAYED));
   RecalcLayout();
   return S_OK;
 }
@@ -243,7 +246,6 @@ HRESULT InitializeCommonControls(DWORD control_classes) {
       return HRESULT_FROM_WIN32(error);
     }
   }
-
   return S_OK;
 }
 
