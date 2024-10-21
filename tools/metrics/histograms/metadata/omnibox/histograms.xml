@@ -571,7 +571,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ClipboardSuggestionRemovedAge" units="ms"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -632,7 +632,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ClipboardSuggestionShownWithCurrentURL"
-    enum="BooleanPresent" expires_after="2024-11-01">
+    enum="BooleanPresent" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
