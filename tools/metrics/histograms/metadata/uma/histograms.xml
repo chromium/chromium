@@ -259,6 +259,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.DriveIs{Attribute}Result" enum="OptionalBoolRecord"
+    expires_after="2025-02-28">
+  <owner>spvw@chromium.org</owner>
+  <owner>chrome-catan@chromium.org</owner>
+  <summary>
+    Whether the hard drive containing either the user profile or chrome binary
+    was able to be queried for whether it is {Attribute}, and if so, the result
+    of that query.
+  </summary>
+  <token key="Attribute">
+    <variant name="Removable"/>
+    <variant name="USB"/>
+  </token>
+</histogram>
+
 <histogram name="UMA.EnrollmentStatus" enum="EnrollmentStatus"
     expires_after="never">
 <!-- expires-never: used internally for filtering -->
@@ -801,7 +816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.SeekPenaltyResult.{Implementation}"
-    enum="SeekPenaltyRecord" expires_after="2025-02-28">
+    enum="OptionalBoolRecord" expires_after="2025-02-28">
   <owner>spvw@chromium.org</owner>
   <owner>chrome-catan@chromium.org</owner>
   <summary>

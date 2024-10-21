@@ -7,7 +7,6 @@
 #include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/files/drive_info.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -20,6 +19,16 @@
 #include "base/threading/scoped_blocking_call.h"
 
 namespace metrics {
+
+namespace {
+void RecordTriStateMetric(const char* name, std::optional<bool> sample) {
+  base::UmaHistogramEnumeration(
+      name, !sample.has_value()
+                ? DriveMetricsProvider::OptionalBoolRecord::kUnknown
+                : (*sample ? DriveMetricsProvider::OptionalBoolRecord::kTrue
+                           : DriveMetricsProvider::OptionalBoolRecord::kFalse));
+}
+}  // namespace
 
 DriveMetricsProvider::DriveMetricsProvider(int local_state_path_key)
     : local_state_path_key_(local_state_path_key) {}
@@ -45,8 +54,7 @@ void DriveMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(done_callback)));
 }
 
-DriveMetricsProvider::SeekPenaltyResponse::SeekPenaltyResponse()
-    : success(false) {}
+DriveMetricsProvider::SeekPenaltyResponse::SeekPenaltyResponse() = default;
 
 // static
 DriveMetricsProvider::DriveMetrics
@@ -71,12 +79,18 @@ void DriveMetricsProvider::QuerySeekPenalty(
   if (!base::PathService::Get(path_service_key, &path))
     return;
 
-  response->success = HasSeekPenalty(path, &response->has_seek_penalty);
+  bool has_seek_penalty;
+  bool have_value = HasSeekPenalty(path, &has_seek_penalty);
+  if (have_value) {
+    response->has_seek_penalty = has_seek_penalty;
+  }
   std::optional<base::DriveInfo> drive_info = base::GetFileDriveInfo(path);
-  response->success_base =
-      drive_info.has_value() && drive_info->has_seek_penalty.has_value();
-  if (response->success_base) {
-    response->has_seek_penalty_base = *drive_info->has_seek_penalty;
+  if (drive_info.has_value()) {
+    response->has_seek_penalty_base = drive_info->has_seek_penalty;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    response->is_removable = drive_info->is_removable;
+    response->is_usb = drive_info->is_usb;
+#endif
   }
 }
 
@@ -91,22 +105,18 @@ void DriveMetricsProvider::GotDriveMetrics(
 void DriveMetricsProvider::FillDriveMetrics(
     const DriveMetricsProvider::SeekPenaltyResponse& response,
     metrics::SystemProfileProto::Hardware::Drive* drive) {
-  if (response.success) {
-    drive->set_has_seek_penalty(response.has_seek_penalty);
+  if (response.has_seek_penalty.has_value()) {
+    drive->set_has_seek_penalty(*response.has_seek_penalty);
   }
 
-  base::UmaHistogramEnumeration(
-      "UMA.SeekPenaltyResult.Provider",
-      !response.success
-          ? SeekPenaltyRecord::kUnknown
-          : (response.has_seek_penalty ? SeekPenaltyRecord::kTrue
-                                       : SeekPenaltyRecord::kFalse));
-  base::UmaHistogramEnumeration(
-      "UMA.SeekPenaltyResult.Base",
-      !response.success_base
-          ? SeekPenaltyRecord::kUnknown
-          : (response.has_seek_penalty_base ? SeekPenaltyRecord::kTrue
-                                            : SeekPenaltyRecord::kFalse));
+  RecordTriStateMetric("UMA.SeekPenaltyResult.Provider",
+                       response.has_seek_penalty);
+  RecordTriStateMetric("UMA.SeekPenaltyResult.Base",
+                       response.has_seek_penalty_base);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  RecordTriStateMetric("UMA.DriveIsRemovableResult", response.is_removable);
+  RecordTriStateMetric("UMA.DriveIsUSBResult", response.is_usb);
+#endif
 }
 
 }  // namespace metrics
