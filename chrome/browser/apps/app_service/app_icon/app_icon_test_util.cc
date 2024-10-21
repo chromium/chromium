@@ -74,11 +74,10 @@ void VerifyCompressedIcon(const std::vector<uint8_t>& src_data,
   // Decompress each PNG and make sure the contents are the same. Comparing the
   // compressed bits directly is too strict, since there are many valid ways to
   // represent the same image using different bits.
-  SkBitmap src_bitmap, icon_bitmap;
-  ASSERT_TRUE(
-      gfx::PNGCodec::Decode(&src_data.front(), src_data.size(), &src_bitmap));
-  ASSERT_TRUE(gfx::PNGCodec::Decode(&icon.compressed.front(),
-                                    icon.compressed.size(), &icon_bitmap));
+  SkBitmap src_bitmap = gfx::PNGCodec::Decode(src_data);
+  SkBitmap icon_bitmap = gfx::PNGCodec::Decode(icon.compressed);
+  ASSERT_FALSE(src_bitmap.isNull());
+  ASSERT_FALSE(icon_bitmap.isNull());
   ASSERT_TRUE(gfx::test::AreBitmapsEqual(src_bitmap, icon_bitmap));
 }
 

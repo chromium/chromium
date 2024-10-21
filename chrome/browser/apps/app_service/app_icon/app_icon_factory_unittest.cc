@@ -10,6 +10,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -118,15 +119,12 @@ class AppIconFactoryTest : public testing::Test {
   void GenerateIconFromCompressedData(const std::string& compressed_icon,
                                       float scale,
                                       gfx::ImageSkia& output_image_skia) {
-    std::vector<uint8_t> compressed_data(compressed_icon.begin(),
-                                         compressed_icon.end());
-    SkBitmap decoded;
-    ASSERT_TRUE(gfx::PNGCodec::Decode(compressed_data.data(),
-                                      compressed_data.size(), &decoded));
+    SkBitmap decoded =
+        gfx::PNGCodec::Decode(base::as_byte_span(compressed_icon));
+    ASSERT_FALSE(decoded.isNull());
 
-    output_image_skia = gfx::ImageSkia::CreateFromBitmap(decoded, scale);
-
-    output_image_skia = apps::CreateStandardIconImage(output_image_skia);
+    output_image_skia = apps::CreateStandardIconImage(
+        gfx::ImageSkia::CreateFromBitmap(decoded, scale));
     EnsureRepresentationsLoaded(output_image_skia);
   }
 
