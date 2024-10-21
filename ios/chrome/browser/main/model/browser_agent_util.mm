@@ -8,6 +8,7 @@
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h"
 #import "ios/chrome/browser/favicon/model/favicon_browser_agent.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
@@ -42,6 +43,10 @@
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
+
+#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+#import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
+#endif
 
 void AttachBrowserAgents(Browser* browser) {
   if (breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState())) {
@@ -128,6 +133,10 @@ void AttachBrowserAgents(Browser* browser) {
   if (!browser_is_inactive) {
     TabBasedIPHBrowserAgent::CreateForBrowser(browser);
   }
+
+#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+  CredentialProviderBrowserAgent::CreateForBrowser(browser);
+#endif
 
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.

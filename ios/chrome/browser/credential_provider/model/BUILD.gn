@@ -18,6 +18,8 @@ if (ios_enable_credential_provider_extension) {
     sources = [
       "archivable_credential+password_form.h",
       "archivable_credential+password_form.mm",
+      "credential_provider_browser_agent.h",
+      "credential_provider_browser_agent.mm",
       "credential_provider_migrator.h",
       "credential_provider_migrator.mm",
       "credential_provider_service.h",
@@ -28,6 +30,8 @@ if (ios_enable_credential_provider_extension) {
       "credential_provider_support.h",
       "credential_provider_util.h",
       "credential_provider_util.mm",
+      "ios_credential_provider_infobar_delegate.h",
+      "ios_credential_provider_infobar_delegate.mm",
     ]
     public_deps = [ "//base" ]
     deps = [
@@ -45,10 +49,15 @@ if (ios_enable_credential_provider_extension) {
       "//components/prefs:prefs",
       "//components/signin/public/identity_manager",
       "//components/webauthn/core/browser:passkey_model",
+      "//ios/chrome/app/strings",
       "//ios/chrome/browser/affiliations/model",
       "//ios/chrome/browser/favicon/model",
+      "//ios/chrome/browser/infobars/model",
       "//ios/chrome/browser/passwords/model",
+      "//ios/chrome/browser/shared/model/browser",
       "//ios/chrome/browser/shared/model/profile",
+      "//ios/chrome/browser/shared/model/web_state_list",
+      "//ios/chrome/browser/shared/ui/symbols",
       "//ios/chrome/browser/signin/model",
       "//ios/chrome/browser/signin/model:system_identity",
       "//ios/chrome/browser/sync/model",
@@ -58,6 +67,7 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/common/credential_provider:ui",
       "//ios/chrome/common/ui/favicon:favicon",
       "//ios/chrome/common/ui/favicon:favicon_constants",
+      "//ios/web/public",
       "//url",
     ]
     frameworks = [
@@ -70,9 +80,11 @@ if (ios_enable_credential_provider_extension) {
     testonly = true
     sources = [
       "archivable_credential+password_form_unittest.mm",
+      "credential_provider_browser_agent_unittest.mm",
       "credential_provider_migrator_unittest.mm",
       "credential_provider_service_unittest.mm",
       "credential_provider_util_unittest.mm",
+      "ios_credential_provider_infobar_delegate_unittest.mm",
     ]
     deps = [
       ":features",
@@ -87,14 +99,19 @@ if (ios_enable_credential_provider_extension) {
       "//components/prefs:test_support",
       "//components/variations:test_support",
       "//components/webauthn/core/browser:test_support",
+      "//ios/chrome/app/strings",
       "//ios/chrome/browser/favicon/model",
       "//ios/chrome/browser/history/model",
+      "//ios/chrome/browser/infobars/model",
       "//ios/chrome/browser/shared/model/application_context",
+      "//ios/chrome/browser/shared/model/browser/test:test_support",
       "//ios/chrome/browser/shared/model/profile/test",
+      "//ios/chrome/browser/shared/model/web_state_list",
       "//ios/chrome/browser/signin/model",
       "//ios/chrome/browser/signin/model:fake_system_identity",
       "//ios/chrome/browser/signin/model:fake_system_identity_manager",
       "//ios/chrome/browser/signin/model:test_support",
+      "//ios/chrome/browser/webauthn/model",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
       "//ios/chrome/common/credential_provider:ui",
