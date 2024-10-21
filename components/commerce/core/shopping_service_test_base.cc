@@ -24,6 +24,7 @@
 #include "components/commerce/core/proto/product_category.pb.h"
 #include "components/commerce/core/proto/shopping_page_types.pb.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -35,6 +36,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+using optimization_guide::AnyWrapProto;
 using optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback;
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationGuideDecisionCallback;
@@ -89,10 +91,7 @@ void MockOptGuideDecider::CanApplyOptimization(
     data.add_shopping_page_types(commerce::ShoppingPageTypes::SHOPPING_PAGE);
     data.add_shopping_page_types(
         commerce::ShoppingPageTypes::MERCHANT_DOMAIN_PAGE);
-    Any any;
-    any.set_type_url(data.GetTypeName());
-    data.SerializeToString(any.mutable_value());
-    meta.set_any_metadata(any);
+    meta.set_any_metadata(AnyWrapProto(data));
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   OptimizationGuideDecision::kTrue, meta));
@@ -195,10 +194,7 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceTrackingResponse(
     }
   }
 
-  Any any;
-  any.set_type_url(price_tracking_data.GetTypeName());
-  price_tracking_data.SerializeToString(any.mutable_value());
-  meta.set_any_metadata(any);
+  meta.set_any_metadata(AnyWrapProto(price_tracking_data));
 
   return meta;
 }
@@ -220,10 +216,7 @@ void MockOptGuideDecider::AddPriceUpdateToPriceTrackingResponse(
   price_update->mutable_old_price()->set_amount_micros(previous_price);
   price_update->mutable_old_price()->set_currency_code(currency_code);
 
-  Any any;
-  any.set_type_url(price_tracking_data.GetTypeName());
-  price_tracking_data.SerializeToString(any.mutable_value());
-  out_meta->set_any_metadata(any);
+  out_meta->set_any_metadata(AnyWrapProto(price_tracking_data));
 }
 
 OptimizationMetadata MockOptGuideDecider::BuildMerchantTrustResponse(
@@ -242,10 +235,7 @@ OptimizationMetadata MockOptGuideDecider::BuildMerchantTrustResponse(
   merchant_trust_data.set_contains_sensitive_content(
       contains_sensitive_content);
 
-  Any any;
-  any.set_type_url(merchant_trust_data.GetTypeName());
-  merchant_trust_data.SerializeToString(any.mutable_value());
-  meta.set_any_metadata(any);
+  meta.set_any_metadata(AnyWrapProto(merchant_trust_data));
 
   return meta;
 }
@@ -294,10 +284,7 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceInsightsResponse(
   price_insights_data.set_price_bucket(bucket);
   price_insights_data.set_has_multiple_catalogs(has_multiple_catalogs);
 
-  Any any;
-  any.set_type_url(price_insights_data.GetTypeName());
-  price_insights_data.SerializeToString(any.mutable_value());
-  meta.set_any_metadata(any);
+  meta.set_any_metadata(AnyWrapProto(price_insights_data));
 
   return meta;
 }
@@ -357,10 +344,7 @@ OptimizationMetadata MockOptGuideDecider::BuildDiscountsResponse(
     }
   }
 
-  Any any;
-  any.set_type_url(discounts_data.GetTypeName());
-  discounts_data.SerializeToString(any.mutable_value());
-  meta.set_any_metadata(any);
+  meta.set_any_metadata(AnyWrapProto(discounts_data));
 
   return meta;
 }

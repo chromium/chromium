@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -50,6 +51,7 @@
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using optimization_guide::AnyWrapProto;
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationGuideDecisionCallback;
 using optimization_guide::OptimizationMetadata;
@@ -1899,10 +1901,7 @@ TEST_P(ShoppingServiceTest, TestIsShoppingPage) {
   data.add_shopping_page_types(commerce::ShoppingPageTypes::SHOPPING_PAGE);
   data.add_shopping_page_types(
       commerce::ShoppingPageTypes::MERCHANT_DOMAIN_PAGE);
-  Any any;
-  any.set_type_url(data.GetTypeName());
-  data.SerializeToString(any.mutable_value());
-  meta.set_any_metadata(any);
+  meta.set_any_metadata(AnyWrapProto(data));
   opt_guide_->SetResponse(GURL(kProductUrl),
                           OptimizationType::SHOPPING_PAGE_TYPES,
                           OptimizationGuideDecision::kTrue, meta);
@@ -1935,8 +1934,7 @@ TEST_P(ShoppingServiceTest, TestIsShoppingPage) {
   data.clear_shopping_page_types();
   data.add_shopping_page_types(
       commerce::ShoppingPageTypes::MERCHANT_DOMAIN_PAGE);
-  data.SerializeToString(any.mutable_value());
-  meta.set_any_metadata(any);
+  meta.set_any_metadata(AnyWrapProto(data));
   opt_guide_->SetResponse(GURL(kProductUrl),
                           OptimizationType::SHOPPING_PAGE_TYPES,
                           OptimizationGuideDecision::kTrue, meta);
