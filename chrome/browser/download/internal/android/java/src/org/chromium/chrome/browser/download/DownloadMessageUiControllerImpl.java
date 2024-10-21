@@ -1031,7 +1031,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         if (itemId != null) {
             mDelegate.openDownload(
-                    itemId,
+                    offlineItem,
                     OTRProfileID.deserializeWithoutVerify(
                             offlineItem == null ? null : offlineItem.otrProfileId),
                     DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE,
