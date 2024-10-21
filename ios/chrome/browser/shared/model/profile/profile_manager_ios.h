@@ -10,9 +10,9 @@
 #import <vector>
 
 #import "base/functional/callback.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class ProfileAttributesStorageIOS;
+class ProfileIOS;
 class ProfileManagerObserverIOS;
 
 // Provides methods that allow for various ways of creating non-incognito

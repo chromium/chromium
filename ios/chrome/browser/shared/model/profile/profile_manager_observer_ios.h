@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_OBSERVER_IOS_H_
 
 #import "base/observer_list_types.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 class ProfileManagerIOS;
 
 // An observer that can be registered with a ProfileManagerIOS.

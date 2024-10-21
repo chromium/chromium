@@ -9,10 +9,10 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/supports_user_data.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class BrowserObserver;
 @class CommandDispatcher;
+class ProfileIOS;
 @class SceneState;
 class WebStateList;
 

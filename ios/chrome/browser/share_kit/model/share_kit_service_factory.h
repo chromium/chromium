@@ -8,9 +8,9 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
+class ProfileIOS;
 class ShareKitService;
 
 // Singleton that owns all instances of ShareKitService and associates them with

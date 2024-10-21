@@ -10,8 +10,8 @@
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 class ProfileManagerIOS;
 
 // Tracks whether there are any open off-the-record tabs open by any Profile in
