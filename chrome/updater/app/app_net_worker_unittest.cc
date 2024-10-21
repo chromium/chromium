@@ -132,8 +132,8 @@ TEST_F(AppNetWorkerTest, PostRequest) {
 
 TEST_F(AppNetWorkerTest, DownloadFile) {
   base::FilePath payload_path = updater::test::GetTestFilePath("signed.exe.gz");
-  int64_t payload_size = {};
-  ASSERT_TRUE(base::GetFileSize(payload_path, &payload_size));
+  std::optional<int64_t> payload_size = base::GetFileSize(payload_path);
+  ASSERT_TRUE(payload_size.has_value());
   std::string payload;
   ASSERT_TRUE(base::ReadFileToString(payload_path, &payload));
   net::EmbeddedTestServer test_server;
@@ -162,15 +162,16 @@ TEST_F(AppNetWorkerTest, DownloadFile) {
               [&](int32_t http_status_code, int64_t content_length) {
                 EXPECT_EQ(http_status_code, net::HTTP_OK);
                 if (content_length > 0) {
-                  EXPECT_EQ(content_length, payload_size);
+                  EXPECT_EQ(content_length, payload_size.value());
                 }
               }),
-          base::BindLambdaForTesting(
-              [&](int64_t current) { EXPECT_LE(current, payload_size); }),
+          base::BindLambdaForTesting([&](int64_t current) {
+            EXPECT_LE(current, payload_size.value());
+          }),
           base::BindLambdaForTesting(
               [&](int32_t net_error, int64_t content_length) {
                 EXPECT_EQ(net_error, 0);
-                EXPECT_EQ(content_length, payload_size);
+                EXPECT_EQ(content_length, payload_size.value());
                 run_loop.Quit();
               })));
   run_loop.Run();

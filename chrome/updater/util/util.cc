@@ -258,8 +258,8 @@ void InitLogging(UpdaterScope updater_scope) {
   }
   base::CreateDirectory(log_file->DirName());
   // Rotate log if needed.
-  int64_t size = 0;
-  if (base::GetFileSize(*log_file, &size) && size >= kLogRotateAtSize) {
+  std::optional<int64_t> size = base::GetFileSize(*log_file);
+  if (size.has_value() && size.value() >= kLogRotateAtSize) {
     base::ReplaceFile(
         *log_file, log_file->AddExtension(FILE_PATH_LITERAL(".old")), nullptr);
   }

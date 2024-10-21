@@ -1089,9 +1089,9 @@ void ExpectLogRotated(UpdaterScope scope) {
   std::optional<base::FilePath> log = GetLogFilePath(scope);
   ASSERT_TRUE(log);
   EXPECT_TRUE(base::PathExists(log->AddExtension(FILE_PATH_LITERAL(".old"))));
-  int64_t size = 0;
-  ASSERT_TRUE(base::GetFileSize(*log, &size));
-  EXPECT_TRUE(size < 1024 * 1024);
+  std::optional<int64_t> size = base::GetFileSize(*log);
+  ASSERT_TRUE(size.has_value());
+  EXPECT_TRUE(size.value() < 1024 * 1024);
 }
 
 void ExpectRegistered(UpdaterScope scope, const std::string& app_id) {

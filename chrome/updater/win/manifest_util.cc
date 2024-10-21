@@ -57,20 +57,21 @@ std::unique_ptr<ProtocolParserXML> ParseOfflineManifest(
     return nullptr;
   }
 
-  int64_t file_size = 0;
-  if (!base::GetFileSize(manifest_path.value(), &file_size)) {
+  std::optional<int64_t> file_size = base::GetFileSize(manifest_path.value());
+  if (!file_size.has_value()) {
     VLOG(2) << "Cannot determine manifest file size.";
     return nullptr;
   }
 
   constexpr int64_t kMaxManifestSize = 1024 * 1024;
-  if (file_size > kMaxManifestSize) {
+  if (file_size.value() > kMaxManifestSize) {
     VLOG(2) << "Manifest file is too large.";
     return nullptr;
   }
 
-  std::string contents(file_size, '\0');
-  if (base::ReadFile(manifest_path.value(), &contents[0], file_size) == -1) {
+  std::string contents(file_size.value(), '\0');
+  if (base::ReadFile(manifest_path.value(), &contents[0], file_size.value()) ==
+      -1) {
     VLOG(2) << "Failed to load manifest file: " << manifest_path.value();
     return nullptr;
   }

@@ -10,6 +10,7 @@
 #include "chrome/services/media_gallery_util/media_parser_android.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -106,8 +107,7 @@ class MediaParserAndroidTest : public testing::Test {
   chrome::mojom::ExtractVideoFrameResultPtr ExtractFrame(
       const base::FilePath& file_path,
       const std::string& mime_type) {
-    int64_t size = 0;
-    EXPECT_TRUE(base::GetFileSize(file_path, &size));
+    int64_t size = base::GetFileSize(file_path).value_or(0);
 
     mojo::PendingRemote<chrome::mojom::MediaDataSource> remote_data_source;
     TestMediaDataSource test_data_source(

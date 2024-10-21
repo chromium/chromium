@@ -633,11 +633,11 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
       offline_app_dir.AppendASCII(kAppInstallerName);
   EXPECT_TRUE(BuildTestAppInstaller(batch_script_path, app_installer));
   base::FilePath manifest_path = offline_dir.Append(manifest_filename);
-  int64_t app_installer_size = 0;
-  EXPECT_TRUE(base::GetFileSize(app_installer, &app_installer_size));
+  std::optional<int64_t> app_installer_size = base::GetFileSize(app_installer);
+  ASSERT_TRUE(app_installer_size.has_value());
   const std::string manifest = base::StringPrintfNonConstexpr(
       manifest_format.c_str(), kTestAppID, /*pv=*/"", kAppInstallerName,
-      app_installer_size, kAppInstallerName);
+      app_installer_size.value(), kAppInstallerName);
   EXPECT_TRUE(base::WriteFile(manifest_path, manifest));
 
   // Trigger offline install.

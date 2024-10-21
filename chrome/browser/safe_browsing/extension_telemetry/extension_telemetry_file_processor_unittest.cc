@@ -338,10 +338,10 @@ TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxFileSizeLimit) {
       .Then(std::move(callback));
   task_environment_.RunUntilIdle();
 
-  int64_t file_size;
-  EXPECT_TRUE(base::GetFileSize(
-      extension_root_dir_.AppendASCII("over_sized_file.js"), &file_size));
-  ASSERT_GT(file_size, max_file_size);
+  std::optional<int64_t> file_size =
+      base::GetFileSize(extension_root_dir_.AppendASCII("over_sized_file.js"));
+  EXPECT_TRUE(file_size.has_value());
+  ASSERT_GT(file_size.value(), max_file_size);
 
   base::Value::Dict expected_dict;
   expected_dict.Set(kManifestFile, kManifestFile);

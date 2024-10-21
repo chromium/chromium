@@ -93,9 +93,9 @@ class EventBasedLogUploaderBrowserTest : public MixinBasedInProcessBrowserTest {
 
   void VerifyFileNotEmpty(base::FilePath file) {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
-    ASSERT_TRUE(base::GetFileSize(file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   scoped_refptr<reporting::test::TestStorageModule> reporting_storage() {

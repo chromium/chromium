@@ -4806,37 +4806,40 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
         GetParam().installer_text, always_launch_cmd));
     ASSERT_TRUE(WaitForUpdaterExit());
   } else {
-    int64_t crx_file_size = 0;
+    std::optional<int64_t> crx_file_size;
     {
       base::FilePath exe_path;
       ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
       const base::FilePath crx_path = exe_path.Append(crx_relative_path);
-      EXPECT_TRUE(base::GetFileSize(crx_path, &crx_file_size));
+      crx_file_size = base::GetFileSize(crx_path);
+      ASSERT_TRUE(crx_file_size.has_value());
     }
     ASSERT_NO_FATAL_FAILURE(InstallAppViaService(
         kMsiAppId,
         base::Value::Dict()
-            .Set("expected_update_state",
-                 base::Value::Dict()
-                     .Set("app_id", kMsiAppId)
-                     .Set("state",
-                          static_cast<int>(
-                              should_install_successfully
-                                  ? UpdateService::UpdateState::State::kUpdated
-                                  : UpdateService::UpdateState::State::
-                                        kUpdateError))
-                     .Set("next_version", kMsiUpdatedVersion.GetString())
-                     .Set("downloaded_bytes", static_cast<int>(crx_file_size))
-                     .Set("total_bytes", static_cast<int>(crx_file_size))
-                     .Set("install_progress", -1)
-                     .Set("error_category",
-                          should_install_successfully
-                              ? 0
-                              : static_cast<int>(GetParam().error_category))
-                     .Set("error_code", GetParam().error_code)
-                     .Set("extra_code1", 0)
-                     .Set("installer_text", GetParam().installer_text)
-                     .Set("installer_cmd_line", GetParam().installer_cmd_line))
+            .Set(
+                "expected_update_state",
+                base::Value::Dict()
+                    .Set("app_id", kMsiAppId)
+                    .Set("state",
+                         static_cast<int>(
+                             should_install_successfully
+                                 ? UpdateService::UpdateState::State::kUpdated
+                                 : UpdateService::UpdateState::State::
+                                       kUpdateError))
+                    .Set("next_version", kMsiUpdatedVersion.GetString())
+                    .Set("downloaded_bytes",
+                         static_cast<int>(crx_file_size.value()))
+                    .Set("total_bytes", static_cast<int>(crx_file_size.value()))
+                    .Set("install_progress", -1)
+                    .Set("error_category",
+                         should_install_successfully
+                             ? 0
+                             : static_cast<int>(GetParam().error_category))
+                    .Set("error_code", GetParam().error_code)
+                    .Set("extra_code1", 0)
+                    .Set("installer_text", GetParam().installer_text)
+                    .Set("installer_cmd_line", GetParam().installer_cmd_line))
             .Set("expected_result", 0)));
   }
 

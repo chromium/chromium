@@ -92,10 +92,10 @@ TEST_F(InstallerTest, Overinstall) {
   RunInstaller(true);
 
   ASSERT_TRUE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
-  int64_t exe_size = 0;
-  ASSERT_TRUE(
-      base::GetFileSize(install_dir_.AppendASCII(kExecutableName), &exe_size));
-  EXPECT_GT(exe_size, 0);
+  std::optional<int64_t> exe_size =
+      base::GetFileSize(install_dir_.AppendASCII(kExecutableName));
+  ASSERT_TRUE(exe_size.has_value());
+  EXPECT_GT(exe_size.value(), 0);
 
   ExpectUpdaterRegistration();
 }
