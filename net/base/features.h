@@ -628,6 +628,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDiskCacheBackendExperiment);
 NET_EXPORT extern const base::FeatureParam<DiskCacheBackend>
     kDiskCacheBackendParam;
 
+// If enabled, make sure a cookie isn't being incorrectly set on a TLD or
+// public suffix.
+NET_EXPORT BASE_DECLARE_FEATURE(kCookieDomainFieldIsValid);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

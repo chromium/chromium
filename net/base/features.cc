@@ -616,4 +616,8 @@ const base::FeatureParam<DiskCacheBackend> kDiskCacheBackendParam{
     &kDiskCacheBackendExperiment, "backend", DiskCacheBackend::kBlockfile,
     &kDiskCacheBackendOptions};
 
+BASE_FEATURE(kCookieDomainFieldIsValid,
+             "CookieDomainFieldIsValid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features
