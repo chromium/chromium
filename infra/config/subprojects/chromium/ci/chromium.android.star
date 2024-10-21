@@ -2857,7 +2857,6 @@ ci.builder(
             "cronet_rel_isolated_scripts",
         ],
         additional_compile_targets = [
-            "cronet_package_ci",
             "cronet_smoketests_apk",
         ],
     ),
