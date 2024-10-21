@@ -134,8 +134,9 @@ PositionWithAffinity FrameCaret::UpdateAppearance() {
   SetBlinkingDisabled(false);
   if (RuntimeEnabledFeatures::CSSCaretAnimationEnabled() &&
       caret_position.AnchorNode() &&
-      caret_position.AnchorNode()->GetComputedStyle()->CaretAnimation() ==
-          ECaretAnimation::kManual) {
+      caret_position.AnchorNode()
+              ->GetComputedStyleForElementOrLayoutObject()
+              ->CaretAnimation() == ECaretAnimation::kManual) {
     SetBlinkingDisabled(true);
   }
 

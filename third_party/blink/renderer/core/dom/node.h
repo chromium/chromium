@@ -802,7 +802,13 @@ class CORE_EXPORT Node : public EventTarget {
   // Note that the following 'inline' function is not defined in this header,
   // but in node_computed_style.h. Please include that file if you want to use
   // this function.
-  inline const ComputedStyle* GetComputedStyle() const;
+  //
+  // DO NOT USE - TO BE REMOVED: Only elements have computed styles. This method
+  // falls back to retrieve a ComputedStyle from the LayoutObject for LayoutText
+  // and LayoutView. Use Element::GetComputedStyle() or LayoutObject::Style()
+  // instead.
+  inline const ComputedStyle* GetComputedStyleForElementOrLayoutObject() const;
+
   bool ShouldSkipMarkingStyleDirty() const;
 
   // ---------------------------------------------------------------------------

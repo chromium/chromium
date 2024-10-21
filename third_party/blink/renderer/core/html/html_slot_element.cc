@@ -254,7 +254,8 @@ void HTMLSlotElement::UpdateFlatTreeNodeDataForAssignedNodes() {
   Node* previous = nullptr;
   for (auto& current : assigned_nodes_) {
     bool flat_tree_parent_changed = false;
-    if (!current->NeedsStyleRecalc() && !current->GetComputedStyle()) {
+    if (!current->NeedsStyleRecalc() &&
+        !current->GetComputedStyleForElementOrLayoutObject()) {
       if (auto* node_data = current->GetFlatTreeNodeData())
         flat_tree_parent_changed = !node_data->AssignedSlot();
     }

@@ -111,7 +111,8 @@ class ChunkGraphBuilder {
         node = next;
         continue;
       }
-      const auto* style = node->GetComputedStyle();
+      const ComputedStyle* style =
+          node->GetComputedStyleForElementOrLayoutObject();
       if (!style) {
         const Node* next = FlatTreeTraversal::NextSkippingChildren(*node);
         if (end_node && (end_node == node ||
@@ -191,7 +192,7 @@ class ChunkGraphBuilder {
              node != &block_ancestor) {
         node = FlatTreeTraversal::ParentElement(*node);
         display = EDisplay::kNone;
-        if ((style = node->GetComputedStyle())) {
+        if ((style = node->GetComputedStyleForElementOrLayoutObject())) {
           display = style->Display();
         }
         if (display == EDisplay::kRubyText) {

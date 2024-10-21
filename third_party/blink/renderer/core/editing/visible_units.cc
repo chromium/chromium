@@ -1494,7 +1494,7 @@ gfx::Rect FirstRectForRange(const EphemeralRange& range) {
   //  - RenderViewImplTest.GetCompositionCharacterBoundsTest
   //  - LocalFrameTest.CharacterIndexAtPointWithPinchZoom
   if (start_position.AnchorNode()
-          ->GetComputedStyle()
+          ->GetComputedStyleForElementOrLayoutObject()
           ->IsHorizontalWritingMode()) {
     end_caret_rect.set_width(0);
     start_caret_rect.set_width(0);

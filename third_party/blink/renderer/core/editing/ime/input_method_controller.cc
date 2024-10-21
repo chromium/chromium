@@ -1679,8 +1679,9 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
       GetDocument().Lifecycle());
 
   if (const Node* start_node = first_range.StartPosition().AnchorNode()) {
-    if (start_node->GetComputedStyle() &&
-        !start_node->GetComputedStyle()->IsHorizontalWritingMode()) {
+    const ComputedStyle* style =
+        start_node->GetComputedStyleForElementOrLayoutObject();
+    if (style && !style->IsHorizontalWritingMode()) {
       info.flags |= kWebTextInputFlagVertical;
     }
   }

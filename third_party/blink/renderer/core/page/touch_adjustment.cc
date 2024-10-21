@@ -118,7 +118,8 @@ bool NodeRespondsToTapGesture(Node* node) {
         element->ChildrenOrSiblingsAffectedByHover())
       return true;
   }
-  if (const ComputedStyle* computed_style = node->GetComputedStyle()) {
+  if (const ComputedStyle* computed_style =
+          node->GetComputedStyleForElementOrLayoutObject()) {
     if (computed_style->AffectedByActive() || computed_style->AffectedByHover())
       return true;
   }

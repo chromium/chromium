@@ -228,17 +228,16 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
         return false;
       }
     }
-
-    const ComputedStyle* style = ancestor.GetComputedStyle();
-    if (!style)
-      continue;
-    switch (style->UsedUserModify()) {
-      case EUserModify::kReadOnly:
-        return false;
-      case EUserModify::kReadWrite:
-        return true;
-      case EUserModify::kReadWritePlaintextOnly:
-        return editable_level != kRichlyEditable;
+    if (const ComputedStyle* style =
+            ancestor.GetComputedStyleForElementOrLayoutObject()) {
+      switch (style->UsedUserModify()) {
+        case EUserModify::kReadOnly:
+          return false;
+        case EUserModify::kReadWrite:
+          return true;
+        case EUserModify::kReadWritePlaintextOnly:
+          return editable_level != kRichlyEditable;
+      }
     }
   }
 

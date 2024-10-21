@@ -636,7 +636,7 @@ bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
   if (type != DocumentMarker::kTextFragment) {
     return false;
   }
-  const ComputedStyle* style = node.GetComputedStyle();
+  const ComputedStyle* style = node.GetComputedStyleForElementOrLayoutObject();
   if (!style) {
     return false;
   }
@@ -651,7 +651,7 @@ bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
 bool HighlightStyleUtils::CustomHighlightHasVisualOverflow(
     const Node& node,
     const AtomicString& pseudo_argument) {
-  const ComputedStyle* style = node.GetComputedStyle();
+  const ComputedStyle* style = node.GetComputedStyleForElementOrLayoutObject();
   if (!style) {
     return false;
   }

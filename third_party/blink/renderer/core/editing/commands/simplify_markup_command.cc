@@ -57,7 +57,8 @@ void SimplifyMarkupCommand::DoApply(EditingState* editing_state) {
     ContainerNode* const starting_node = node->parentNode();
     if (!starting_node)
       continue;
-    const ComputedStyle* starting_style = starting_node->GetComputedStyle();
+    const ComputedStyle* starting_style =
+        starting_node->GetComputedStyleForElementOrLayoutObject();
     if (!starting_style)
       continue;
     ContainerNode* current_node = starting_node;
@@ -82,10 +83,11 @@ void SimplifyMarkupCommand::DoApply(EditingState* editing_state) {
         break;
       }
 
-      if (!current_node->GetComputedStyle()
+      if (!current_node->GetComputedStyleForElementOrLayoutObject()
                ->VisualInvalidationDiff(GetDocument(), *starting_style)
-               .HasDifference())
+               .HasDifference()) {
         top_node_with_starting_style = current_node;
+      }
     }
     if (top_node_with_starting_style) {
       for (Node& ancestor_node :

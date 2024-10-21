@@ -343,7 +343,8 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
   // in between that has a separate block flow. An example is an input field.
   for (const Node* node = &start_node; !node->isSameNode(&end_node);
        node = FlatTreeTraversal::Next(*node)) {
-    const ComputedStyle* style = node->GetComputedStyle();
+    const ComputedStyle* style =
+        node->GetComputedStyleForElementOrLayoutObject();
     if (ShouldIgnoreContents(*node) || !style ||
         style->Display() == EDisplay::kNone ||
         style->UsedVisibility() != EVisibility::kVisible) {

@@ -277,7 +277,7 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
 
   // 3. If node's computed value of 'visibility' is not 'visible', then return
   // items.
-  const ComputedStyle* style = node.GetComputedStyle();
+  const ComputedStyle* style = node.GetComputedStyleForElementOrLayoutObject();
   if (style && style->UsedVisibility() != EVisibility::kVisible) {
     return ProcessChildren(node);
   }

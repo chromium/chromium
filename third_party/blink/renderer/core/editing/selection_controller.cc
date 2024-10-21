@@ -1447,11 +1447,13 @@ bool IsUserNodeDraggable(const MouseEventWithHitTestResults& event) {
   // tests WebFrameTest.FrameWidgetTest and WebViewTest.ClientTapHandling fail
   // without a nullptr check, as they don't set the InnerNode() appropriately.
   // Remove the if statement nullptr check when those tests are fixed.
-  if (!inner_node)
+  if (!inner_node) {
     return false;
+  }
 
-  const ComputedStyle* kStyle = inner_node->GetComputedStyle();
-  return kStyle && kStyle->UserDrag() == EUserDrag::kElement;
+  const ComputedStyle* style =
+      inner_node->GetComputedStyleForElementOrLayoutObject();
+  return style && style->UserDrag() == EUserDrag::kElement;
 }
 
 bool IsExtendingSelection(const MouseEventWithHitTestResults& event) {
