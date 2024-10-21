@@ -20,6 +20,8 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/tab_loader_tester.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -49,7 +51,9 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/types.h"
+#include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -74,6 +78,7 @@
 #include "chrome/browser/sessions/tab_loader.h"
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 
+namespace sessions {
 class TabRestoreTest : public InProcessBrowserTest {
  public:
   TabRestoreTest()
@@ -624,6 +629,44 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroup) {
       browser()->tab_strip_model()->group_model();
   EXPECT_EQ(group_model->GetTabGroup(restored_group_id)->ListTabs(),
             gfx::Range(2, 4));
+}
+
+// Verifies that restoring a grouped tab in a browser that does not support tab
+// groups, does restore the tab but does not recreate the group.
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       RestoreGroupInBrowserThatDoesNotSupportGroups) {
+  // Create a browser that does not support groups and try to restore a
+  // grouped tab. This should restore the tab and not recreate the group.
+  Browser::CreateParams app_browser_params =
+      Browser::CreateParams::CreateForApp("App Name", true, gfx::Rect(),
+                                          browser()->profile(), false);
+  Browser* app_browser = Browser::Create(app_browser_params);
+  EXPECT_FALSE(app_browser->tab_strip_model()->group_model());
+
+  // Create a tab entry with a group and add it to TabRestoreService directly.
+  auto service = std::make_unique<sessions::TabRestoreServiceImpl>(
+      std::make_unique<ChromeTabRestoreServiceClient>(app_browser->profile()),
+      app_browser->profile()->GetPrefs(), nullptr);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  std::unique_ptr<sessions::tab_restore::Tab> tab =
+      std::make_unique<sessions::tab_restore::Tab>();
+  tab->current_navigation_index = 0;
+  tab->group = group_id;
+  tab->navigations.push_back(
+      sessions::ContentTestHelper::CreateNavigation("https://1.com", "1"));
+  tab->group_visual_data = tab_groups::TabGroupVisualData(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue);
+
+  service->mutable_entries()->push_front(std::move(tab));
+
+  EXPECT_EQ(1u, service->entries().size());
+  EXPECT_EQ(0, app_browser->tab_strip_model()->count());
+
+  service->RestoreMostRecentEntry(app_browser->live_tab_context());
+
+  EXPECT_EQ(0u, service->entries().size());
+  EXPECT_EQ(1, app_browser->tab_strip_model()->count());
 }
 
 // Close a grouped tab, then the entire group. Restore both. The group should be
@@ -3034,3 +3077,4 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSycnedServiceTest, RestoreCollapsedGroupTab) {
   EXPECT_EQ(data->color(), visual_data.color());
   EXPECT_TRUE(data->is_collapsed());
 }
+}  // namespace sessions
