@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -76,7 +75,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 /** Handles updating the model state for the currently visible omnibox suggestions. */
 class AutocompleteMediator
@@ -110,6 +108,7 @@ class AutocompleteMediator
     private final @NonNull DeferredIMEWindowInsetApplicationCallback
             mDeferredIMEWindowInsetApplicationCallback;
     private final @NonNull OmniboxSuggestionsDropdownEmbedder mEmbedder;
+    private final @NonNull AutocompleteInput mAutocompleteInput = new AutocompleteInput();
 
     private @NonNull Optional<AutocompleteController> mAutocomplete = Optional.empty();
     private @NonNull Optional<AutocompleteResult> mAutocompleteResult = Optional.empty();
@@ -118,7 +117,6 @@ class AutocompleteMediator
     private @NonNull Optional<PropertyModel> mDeleteDialogModel = Optional.empty();
 
     private boolean mNativeInitialized;
-    private boolean mIsInZeroPrefixContext;
     private long mUrlFocusTime;
     // When set, indicates an active omnibox session.
     private boolean mIsActive;
@@ -127,7 +125,6 @@ class AutocompleteMediator
     // When set, specifies the time when the suggestion list was shown the first time.
     // Suggestions are refreshed several times per keystroke.
     private Long mFirstSuggestionListModelCreatedTime;
-    private OptionalInt mPageClassification = OptionalInt.empty();
 
     @IntDef({
         EditSessionState.INACTIVE,
@@ -361,28 +358,24 @@ class AutocompleteMediator
         postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
     }
 
+    /** Save AutocompleteResult to Cache for early serving. */
     private void maybeCacheResult(@NonNull AutocompleteResult result) {
-        if (mIsInZeroPrefixContext
-                && mIsActive
-                && !result.isFromCachedResult()
-                && mDataProvider.getPageClassification(false)
-                        == PageClassification.ANDROID_SEARCH_WIDGET_VALUE) {
-            assert result.getSuggestionsList().size() != 0 : "Attempting to cache empty result.";
-            if (result.getSuggestionsList().size() != 0) {
-                CachedZeroSuggestionsManager.saveToCache(result);
-            }
-        }
-    }
-
-    private void maybeServeCachedResult() {
-        int pageClass = mDataProvider.getPageClassification(false);
-        if (mAutocomplete.isPresent()
-                || !mIsInZeroPrefixContext
-                || (pageClass != PageClassification.ANDROID_SEARCH_WIDGET_VALUE
-                        && pageClass != PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE)) {
+        if (!mAutocompleteInput.isInCacheableContext() || result.isFromCachedResult()) {
             return;
         }
-        onSuggestionsReceived(CachedZeroSuggestionsManager.readFromCache(), true);
+        CachedZeroSuggestionsManager.saveToCache(
+                mAutocompleteInput.getPageClassification().getAsInt(), result);
+    }
+
+    /** Serve AutocompleteResult from Cache if Autocomplete is not yet initialized. */
+    private void maybeServeCachedResult() {
+        if (!mAutocompleteInput.isInCacheableContext() || mAutocomplete.isPresent()) {
+            return;
+        }
+        onSuggestionsReceived(
+                CachedZeroSuggestionsManager.readFromCache(
+                        mAutocompleteInput.getPageClassification().getAsInt()),
+                true);
     }
 
     /** Notify the mediator that a item selection is pending and should be accepted. */
@@ -426,12 +419,12 @@ class AutocompleteMediator
         }
 
         if (activated) {
+            mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(false));
             mDeferredIMEWindowInsetApplicationCallback.attach(mWindowAndroid);
             dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
             mRefineActionUsage = RefineActionUsage.NOT_USED;
             mOmniboxFocusResultedInNavigation = false;
             mSuggestionsListScrolled = false;
-            mPageClassification = OptionalInt.of(mDataProvider.getPageClassification(false));
             mUrlFocusTime = System.currentTimeMillis();
 
             // Ask directly for zero-suggestions related to current input, unless the user is
@@ -452,8 +445,10 @@ class AutocompleteMediator
                     mOmniboxFocusResultedInNavigation);
             OmniboxMetrics.recordRefineActionUsage(mRefineActionUsage);
             OmniboxMetrics.recordSuggestionsListScrolled(
-                    mPageClassification.getAsInt(), mSuggestionsListScrolled);
-            mPageClassification = OptionalInt.empty();
+                    mAutocompleteInput.getPageClassification().getAsInt(),
+                    mSuggestionsListScrolled);
+
+            mAutocompleteInput.reset();
 
             // Reset the per omnibox session state of touch down prefetch.
             OmniboxMetrics.recordNumPrefetchesStartedInOmniboxSession(
@@ -844,6 +839,7 @@ class AutocompleteMediator
     public void onTextChanged(@NonNull String textWithoutAutocomplete) {
         if (mShouldPreventOmniboxAutocomplete) return;
 
+        mAutocompleteInput.setUserText(textWithoutAutocomplete);
         mIgnoreOmniboxItemSelection = true;
         cancelAutocompleteRequests();
 
@@ -855,9 +851,7 @@ class AutocompleteMediator
 
         stopAutocomplete(false);
 
-        mIsInZeroPrefixContext = TextUtils.isEmpty(textWithoutAutocomplete);
-
-        if (mIsInZeroPrefixContext) {
+        if (mAutocompleteInput.isInZeroPrefixContext()) {
             clearSuggestions();
             startCachedZeroSuggest();
         } else if (mDataProvider.hasTab()) {
@@ -871,13 +865,15 @@ class AutocompleteMediator
 
             postAutocompleteRequest(
                     () -> {
-                        if (!mPageClassification.isPresent()) return;
+                        if (mAutocompleteInput.getPageClassification().isEmpty()) return;
                         startMeasuringSuggestionRequestToUiModelTime();
                         mAutocomplete.ifPresent(
                                 a ->
                                         a.start(
                                                 currentUrl,
-                                                mPageClassification.getAsInt(),
+                                                mAutocompleteInput
+                                                        .getPageClassification()
+                                                        .getAsInt(),
                                                 textWithoutAutocomplete,
                                                 cursorPosition,
                                                 preventAutocomplete));
@@ -907,8 +903,7 @@ class AutocompleteMediator
             mAutocompleteResult = Optional.of(autocompleteResult);
             var viewInfoList =
                     mDropdownViewInfoListBuilder.buildDropdownViewInfoList(
-                            new AutocompleteInput(mPageClassification.getAsInt()),
-                            autocompleteResult);
+                            mAutocompleteInput, autocompleteResult);
             mDropdownViewInfoListManager.setSourceViewInfoList(viewInfoList);
             if (mIsActive) {
                 mDelegate.onSuggestionsChanged(defaultMatch);
@@ -1097,11 +1092,11 @@ class AutocompleteMediator
         if (mDelegate.isUrlBarFocused() && mDataProvider.hasTab()) {
             mAutocomplete.ifPresent(
                     a -> {
-                        if (!mPageClassification.isPresent()) return;
+                        if (mAutocompleteInput.getPageClassification().isEmpty()) return;
                         a.startZeroSuggest(
                                 mUrlBarEditingTextProvider.getTextWithAutocomplete(),
                                 mDataProvider.getCurrentGurl(),
-                                mPageClassification.getAsInt(),
+                                mAutocompleteInput.getPageClassification().getAsInt(),
                                 mDataProvider.getTitle());
                     });
         }
@@ -1234,7 +1229,7 @@ class AutocompleteMediator
                                 suggestionLine,
                                 disposition,
                                 currentPageUrl,
-                                mPageClassification.getAsInt(),
+                                mAutocompleteInput.getPageClassification().getAsInt(),
                                 elapsedTimeSinceModified,
                                 autocompleteLength,
                                 webContents));
@@ -1393,6 +1388,11 @@ class AutocompleteMediator
                         new Handler(),
                         window);
         return mAnimationDriver;
+    }
+
+    /** Returns the current AutocompleteInput instance. */
+    AutocompleteInput getAutocompleteInputForTesting() {
+        return mAutocompleteInput;
     }
 
     @Override

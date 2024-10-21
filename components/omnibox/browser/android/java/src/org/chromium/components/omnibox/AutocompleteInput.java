@@ -4,19 +4,60 @@
 
 package org.chromium.components.omnibox;
 
+import android.text.TextUtils;
+
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+
+import java.util.OptionalInt;
+
 /** AutocompleteInput encompasses the input to autocomplete. */
 public class AutocompleteInput {
-    private int mPageClassification;
+    private OptionalInt mPageClassification = OptionalInt.empty();
+    private String mUserText;
 
-    /**
-     * @param pageClassification The PageClassification for the input.
-     */
-    public AutocompleteInput(int pageClassification) {
-        mPageClassification = pageClassification;
+    /** Set the PageClassification for the input. */
+    public void setPageClassification(int pageClassification) {
+        mPageClassification = OptionalInt.of(pageClassification);
     }
 
     /** Returns the current page classification. */
-    public int getPageClassification() {
+    public OptionalInt getPageClassification() {
         return mPageClassification;
+    }
+
+    /** Set the text as currently typed by the User. */
+    public void setUserText(String text) {
+        mUserText = text;
+    }
+
+    /** Returns the text as currently typed by the User. */
+    public String getUserText() {
+        return mUserText;
+    }
+
+    /** Returns whether current context represents zero-prefix context. */
+    public boolean isInZeroPrefixContext() {
+        return TextUtils.isEmpty(mUserText);
+    }
+
+    /** Returns whether current context enables suggestions caching. */
+    public boolean isInCacheableContext() {
+        if (getPageClassification().isEmpty()) return false;
+        if (!isInZeroPrefixContext()) return false;
+
+        int pageClass = getPageClassification().getAsInt();
+        if (pageClass != PageClassification.ANDROID_SEARCH_WIDGET_VALUE
+                && pageClass != PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE
+                && pageClass
+                        != PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void reset() {
+        mPageClassification = OptionalInt.empty();
+        mUserText = null;
     }
 }

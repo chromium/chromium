@@ -504,15 +504,28 @@ public class AutocompleteMatch {
         var builder = AutocompleteProto.AutocompleteMatchProto.newBuilder();
         builder.setType(mType)
                 .setDisplayText(mDisplayText)
-                .setDescription(mDescription)
                 .setFillIntoEdit(mFillIntoEdit)
                 .setUrl(mUrl.getSpec())
-                .setImageUrl(mImageUrl.getSpec())
                 .setTransition(mTransition)
                 .setGroupId(mGroupId)
-                .setAllowedToBeDefaultMatch(mAllowedToBeDefaultMatch)
-                .setInlineAutocompletion(mInlineAutocompletion)
-                .setAdditionalText(mAdditionalText);
+                .setAllowedToBeDefaultMatch(mAllowedToBeDefaultMatch);
+
+        if (!TextUtils.isEmpty(mFillIntoEdit)) {
+            builder.setFillIntoEdit(mFillIntoEdit);
+        }
+        if (!TextUtils.isEmpty(mDescription)) {
+            builder.setDescription(mDescription);
+        }
+        if (!TextUtils.isEmpty(mInlineAutocompletion)) {
+            builder.setInlineAutocompletion(mInlineAutocompletion);
+        }
+        if (!TextUtils.isEmpty(mAdditionalText)) {
+            builder.setAdditionalText(mAdditionalText);
+        }
+        if (mImageUrl.isValid()) {
+            builder.setImageUrl(mImageUrl.getSpec());
+        }
+
         for (int subtype : mSubtypes) {
             builder.addSubtype(subtype);
         }

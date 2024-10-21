@@ -200,7 +200,7 @@ public class SearchActivityTest {
                 .when(mAutocompleteController)
                 .addOnSuggestionsReceivedListener(any());
 
-        doReturn(buildDummyAutocompleteMatch(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL))
+        doReturn(buildSimpleAutocompleteMatch(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL))
                 .when(mAutocompleteController)
                 .classify(any());
 
@@ -208,7 +208,7 @@ public class SearchActivityTest {
         SearchActivity.setDelegateForTests(mTestDelegate);
     }
 
-    private AutocompleteMatch buildDummyAutocompleteMatch(String url) {
+    private AutocompleteMatch buildSimpleAutocompleteMatch(String url) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(url)
                 .setDescription(url)
@@ -216,11 +216,11 @@ public class SearchActivityTest {
                 .build();
     }
 
-    private AutocompleteResult buildDummyAutocompleteResult() {
+    private AutocompleteResult buildSimpleAutocompleteResult() {
         return AutocompleteResult.fromCache(
                 List.of(
-                        buildDummyAutocompleteMatch("https://www.google.com"),
-                        buildDummyAutocompleteMatch("https://android.com")),
+                        buildSimpleAutocompleteMatch("https://www.google.com"),
+                        buildSimpleAutocompleteMatch("https://android.com")),
                 null);
     }
 
@@ -267,7 +267,7 @@ public class SearchActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mOnSuggestionsReceivedListener.onSuggestionsReceived(
-                                buildDummyAutocompleteResult(), true));
+                                buildSimpleAutocompleteResult(), true));
         mOmnibox.checkSuggestionsShown();
 
         // Type in anything.
@@ -291,7 +291,7 @@ public class SearchActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mOnSuggestionsReceivedListener.onSuggestionsReceived(
-                                buildDummyAutocompleteResult(), true));
+                                buildSimpleAutocompleteResult(), true));
         mOmnibox.checkSuggestionsShown();
     }
 
@@ -304,7 +304,7 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     public void testStartsBrowserAfterUrlSubmitted_chromeUrl() throws Exception {
-        doReturn(buildDummyAutocompleteMatch("chrome://flags/"))
+        doReturn(buildSimpleAutocompleteMatch("chrome://flags/"))
                 .when(mAutocompleteController)
                 .classify(any());
         verifyUrlLoads("chrome://flags/");
@@ -464,7 +464,8 @@ public class SearchActivityTest {
                                     });
                 });
 
-        CachedZeroSuggestionsManager.saveToCache(buildDummyAutocompleteResult());
+        CachedZeroSuggestionsManager.saveToCache(
+                PageClassification.ANDROID_SEARCH_WIDGET_VALUE, buildSimpleAutocompleteResult());
 
         // Wait for the activity to load, but don't let it load the native library.
         mTestDelegate.shouldDelayLoadingNative = true;

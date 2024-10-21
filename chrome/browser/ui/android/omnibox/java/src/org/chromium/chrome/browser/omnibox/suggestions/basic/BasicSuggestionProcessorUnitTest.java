@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -112,11 +113,11 @@ public class BasicSuggestionProcessorUnitTest {
     private @Mock UrlBarEditingTextStateProvider mUrlBarText;
     private @Mock Bitmap mBitmap;
     private @Mock OmniboxImageSupplier mImageSupplier;
-    private @Mock AutocompleteInput mInput;
 
     private BasicSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
+    private AutocompleteInput mInput;
 
     private static class BookmarkPredicate implements BasicSuggestionProcessor.BookmarkState {
         boolean mState;
@@ -139,12 +140,14 @@ public class BasicSuggestionProcessorUnitTest {
                         mUrlBarText,
                         Optional.of(mImageSupplier),
                         mIsBookmarked);
+        mInput = new AutocompleteInput();
         OmniboxResourceProvider.disableCachesForTesting();
     }
 
     @After
     public void tearDown() {
         OmniboxResourceProvider.reenableCachesForTesting();
+        mInput.reset();
     }
 
     /**
@@ -364,8 +367,12 @@ public class BasicSuggestionProcessorUnitTest {
     @SmallTest
     public void switchTabIconShownForSwitchToTabSuggestions() {
         final String tabMatch = "tab match";
+        mInput.setPageClassification(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+
         createSwitchToTabSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, tabMatch);
         PropertyModel model = mProcessor.createModel();
+
         mProcessor.populateModel(mInput, mSuggestion, model, 0);
         Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
 

@@ -220,6 +220,14 @@ public class AutocompleteResult {
         var builder = AutocompleteProto.AutocompleteResultProto.newBuilder();
         builder.setGroups(mGroupsInfo);
         for (var match : mSuggestions) {
+            // Note: intentionally skip clipboard suggestions from being preserved.
+            int type = match.getType();
+            if (type == OmniboxSuggestionType.CLIPBOARD_URL
+                    || type == OmniboxSuggestionType.CLIPBOARD_TEXT
+                    || type == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
+                continue;
+            }
+
             builder.addMatch(match.serialize());
         }
         return builder.build();

@@ -149,7 +149,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         Runnable action;
         if (suggestion.hasTabMatch()) {
             // Hub doesn't have refine icons for switch-to-tab.
-            if (input.getPageClassification() == PageClassification.ANDROID_HUB_VALUE) {
+            if (input.getPageClassification().getAsInt() == PageClassification.ANDROID_HUB_VALUE) {
                 return;
             }
             icon = R.drawable.switch_to_tab;
