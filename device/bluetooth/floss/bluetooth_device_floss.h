@@ -191,6 +191,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void FetchRemoteVendorProductInfo(base::OnceClosure callback);
   void FetchRemoteAddressType(base::OnceClosure callback);
 
+  void OnDeviceConnectionFailed(FlossDBusClient::BtifStatus status);
+
  protected:
   // BluetoothDevice override
   void CreateGattConnectionImpl(

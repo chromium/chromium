@@ -308,6 +308,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       FlossAdapterClient::BondState bond_state) override;
   void AdapterDeviceConnected(const FlossDeviceId& device_id) override;
   void AdapterDeviceDisconnected(const FlossDeviceId& device_id) override;
+  void AdapterDeviceConnectionFailed(const FlossDeviceId& device_id,
+                                     uint32_t status) override;
 
   // floss::FlossBatteryManagerClient::FlossBatteryManagerClientObserver
   // override.
