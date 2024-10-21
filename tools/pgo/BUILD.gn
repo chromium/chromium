@@ -22,9 +22,8 @@ if (enable_chrome_android_internal) {
     script_test(target_name) {
       script = "//tools/pgo/generate_profile.py"
 
-      # Stream logcat from device.
-      # TODO(wnwen): Turn this back on once the script is working well.
-      #enable_android_wrapper = true
+      # Stream logcat from device (doesn't seem to fully work yet).
+      enable_android_wrapper = true
 
       args = [
         # Assume that we are running this script from the output directory.
