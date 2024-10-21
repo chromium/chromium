@@ -257,6 +257,7 @@ void FrameSequenceMetrics::Merge(
     v3_.last_frame_delta = metrics->v3_.last_frame_delta;
     v3_.no_update_duration = metrics->v3_.no_update_duration;
   }
+  v4_.frames_dropped += metrics->v4_.frames_dropped;
   v4_.frames_checkerboarded += metrics->v4_.frames_checkerboarded;
   v4_.frames_checkerboarded_need_raster +=
       metrics->v4_.frames_checkerboarded_need_raster;
@@ -322,7 +323,10 @@ void FrameSequenceMetrics::ReportMetrics() {
 
     const int percent_missing_content = get_percent(v3_.frames_missing_content);
     const int percent_dropped = get_percent(v3_.frames_dropped);
-    const int percent_dropped_v4 = get_percent(v4_.frames_dropped);
+    const int percent_dropped_v4 =
+        (type() == FrameSequenceTrackerType::kCompositorRasterAnimation)
+            ? get_percent(v4_.frames_dropped)
+            : percent_dropped;
     const int percent_jank = get_percent(v3_.jank_count);
 
     // v4.
@@ -344,6 +348,9 @@ void FrameSequenceMetrics::ReportMetrics() {
       UMA_HISTOGRAM_PERCENTAGE(
           "Graphics.Smoothness.PercentDroppedFrames3.AllAnimations",
           percent_dropped);
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.PercentDroppedFrames4.AllAnimations",
+          percent_dropped_v4);
     }
     if (is_interaction) {
       UMA_HISTOGRAM_PERCENTAGE(
@@ -357,6 +364,9 @@ void FrameSequenceMetrics::ReportMetrics() {
       UMA_HISTOGRAM_PERCENTAGE(
           "Graphics.Smoothness.PercentDroppedFrames3.AllInteractions",
           percent_dropped);
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.PercentDroppedFrames4.AllInteractions",
+          percent_dropped_v4);
     }
     if (is_animation || is_interaction) {
       UMA_HISTOGRAM_PERCENTAGE(
@@ -376,6 +386,9 @@ void FrameSequenceMetrics::ReportMetrics() {
       UMA_HISTOGRAM_PERCENTAGE(
           "Graphics.Smoothness.PercentDroppedFrames3.AllSequences",
           percent_dropped);
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.PercentDroppedFrames4.AllSequences",
+          percent_dropped_v4);
     }
 
     const char* thread_name = GetThreadTypeName(thread_type);

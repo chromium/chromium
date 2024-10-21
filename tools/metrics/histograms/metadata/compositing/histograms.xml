@@ -1537,6 +1537,70 @@ chromium-metrics-reviews@google.com.
   <token key="Sequence" variants="SmoothnessSequence"/>
 </histogram>
 
+<histogram name="Graphics.Smoothness.PercentDroppedFrames4.AllSequences"
+    units="%" expires_after="2025-10-16">
+  <owner>jonross@chromium.org</owner>
+  <owner>gaiko@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of dropped frames for a sequence by aggregating all its
+    animations and interactions, where a sequence is a series of frames produced
+    which contain at least one of the animations/interactions. Such animations
+    and interactions encompass: Compositor-thread animations; Main-thread
+    animations; JS animations; scrolling; and pinch-gestures.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother the experience.
+
+    The V4 metic differs from it's V3 counterpart in that it accounts for frames
+    dropped during compositor thread invalidation.
+
+    Note that this metric is reported only when there are a sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until an additional sequence completes where there are (&gt;=
+    100) frames available in total.
+
+    This is a new implementation of the older
+    Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
+
+    See http://shortn/_ItBDdHoyCf (internal only) for more details.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PercentDroppedFrames4.{Sequence}"
+    units="%" expires_after="2025-10-16">
+  <owner>jonross@chromium.org</owner>
+  <owner>gaiko@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of dropped frames for a sequence by aggregating all
+    {Sequence}, where a sequence is a series of frames produced which contain at
+    least one of the aforementioned effects.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother the experience.
+
+    The V4 metic differs from it's V3 counterpart in that it accounts for frames
+    dropped during compositor thread invalidation.
+
+    Note that this metric is reported only when there are a sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until an additional sequence completes where there are (&gt;=
+    100) frames available in total.
+
+    This is a new implementation of the older
+    Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
+  </summary>
+  <token key="Sequence" variants="AccumulatedSequences"/>
+</histogram>
+
 <histogram name="Graphics.Smoothness.PercentDroppedFrames4.{Thread}{Sequence}"
     units="%" expires_after="2025-01-19">
   <owner>jonross@chromium.org</owner>
