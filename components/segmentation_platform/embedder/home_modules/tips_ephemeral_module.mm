@@ -27,11 +27,13 @@ namespace {
 
 // Defines the signals that must all evaluate to true for each `TipIdentifier`
 // in order for the corresponding tip to be shown.
-constexpr std::array<std::pair<TipIdentifier, const char*>, 14>
+constexpr std::array<std::pair<TipIdentifier, const char*>, 15>
     kTipRequiredSignals = {
         std::make_pair(TipIdentifier::kAddressBarPosition,
                        segmentation_platform::tips_manager::signals::
                            kAddressBarPositionChoiceScreenDisplayed),
+        std::make_pair(TipIdentifier::kAddressBarPosition,
+                       segmentation_platform::kIsPhoneFormFactor),
         std::make_pair(TipIdentifier::kAutofillPasswords,
                        segmentation_platform::tips_manager::signals::
                            kUsedPasswordAutofill),
@@ -148,6 +150,8 @@ std::map<SignalKey, FeatureQuery> TipsEphemeralModule::GetInputs() {
            kAddressBarPositionChoiceScreenDisplayed,
        create_query(segmentation_platform::tips_manager::signals::
                         kAddressBarPositionChoiceScreenDisplayed)},
+      {segmentation_platform::kIsPhoneFormFactor,
+       create_query(segmentation_platform::kIsPhoneFormFactor)},
       {segmentation_platform::tips_manager::signals::kLensUsed,
        create_query(segmentation_platform::tips_manager::signals::kLensUsed)},
       {segmentation_platform::tips_manager::signals::kOpenedShoppingWebsite,

@@ -43,6 +43,7 @@ AllCardSignals CreateAllCardSignalsFromMap(
        8},
       {segmentation_platform::kLensAllowedByEnterprisePolicy, 9},
       {segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy, 10},
+      {segmentation_platform::kIsPhoneFormFactor, 11},
   };
 
   return AllCardSignals(signal_map, signal_values);
@@ -112,7 +113,7 @@ TEST_F(TipsEphemeralModuleTest, OutputLabelsReturnsExpectedLabels) {
 TEST_F(TipsEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
   TipsEphemeralModule ephemeral_module;
   std::map<SignalKey, FeatureQuery> inputs = ephemeral_module.GetInputs();
-  EXPECT_EQ(inputs.size(), 11u);
+  EXPECT_EQ(inputs.size(), 12u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(inputs.find(segmentation_platform::tips_manager::signals::
                             kAddressBarPositionChoiceScreenDisplayed),
@@ -175,6 +176,7 @@ TEST_F(TipsEphemeralModuleTest,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -205,6 +207,7 @@ TEST_F(TipsEphemeralModuleTest,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -233,6 +236,7 @@ TEST_F(TipsEphemeralModuleTest,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -263,6 +267,7 @@ TEST_F(
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 1,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -274,6 +279,36 @@ TEST_F(
 
   EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
   EXPECT_EQ(kTipsAddressBarPositionVariation, result.result_label);
+}
+
+// Verifies that `ComputeCardResult(…)` does not show the Address Bar Position
+// tip when the device form factor is not a phone.
+TEST_F(
+    TipsEphemeralModuleTest,
+    ComputeCardResultDoesNotShowAddressBarPositionTipWhenNotPhoneFormFactor) {
+  AllCardSignals signals = CreateAllCardSignalsFromMap({
+      /* kLensUsed */ 0,
+      /* kAddressBarPositionChoiceScreenDisplayed */ 1,
+      /* kOpenedShoppingWebsite */ 0,
+      /* kOpenedWebsiteInAnotherLanguage */ 0,
+      /* kSavedPasswords */ 0,
+      /* kUsedGoogleTranslation */ 0,
+      /* kUsedPasswordAutofill */ 0,
+      /* kHasEnhancedSafeBrowsing */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      /* kLensAllowedByEnterprisePolicy */ 1,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
+  });
+
+  CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
+
+  auto ephemeral_module = std::make_unique<TipsEphemeralModule>();
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
 // Verifies that `ComputeCardResult(…)` shows the Lens Shop tip when the
@@ -292,6 +327,7 @@ TEST_F(TipsEphemeralModuleTest,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -321,6 +357,7 @@ TEST_F(TipsEphemeralModuleTest,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -350,6 +387,7 @@ TEST_F(TipsEphemeralModuleTest,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -380,6 +418,7 @@ TEST_F(
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -410,6 +449,7 @@ TEST_F(
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -439,6 +479,7 @@ TEST_F(TipsEphemeralModuleTest,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -468,9 +509,9 @@ TEST_F(TipsEphemeralModuleTest,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 0,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
-      // Disallowed by policy
-      /* kLensAllowedByEnterprisePolicy */ 0,
+      /* kLensAllowedByEnterprisePolicy */ 0,  // Disallowed by policy
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -498,9 +539,9 @@ TEST_F(TipsEphemeralModuleTest,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 0,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
-      // Disallowed by policy
-      /* kLensAllowedByEnterprisePolicy */ 0,
+      /* kLensAllowedByEnterprisePolicy */ 0,  // Disallowed by policy
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -529,9 +570,9 @@ TEST_F(
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 0,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
-      // Disallowed by policy
-      /* kLensAllowedByEnterprisePolicy */ 0,
+      /* kLensAllowedByEnterprisePolicy */ 0,  // Disallowed by policy
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -560,8 +601,9 @@ TEST_F(TipsEphemeralModuleTest,
       /* kHasEnhancedSafeBrowsing */ 0,
       /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       /* kLensAllowedByEnterprisePolicy */ 1,
-      // Disallowed by policy
-      /* kPasswordManagerAllowedByEnterprisePolicy */ 0,
+      /* kPasswordManagerAllowedByEnterprisePolicy */ 0,  // Disallowed by
+                                                          // policy
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
@@ -589,10 +631,11 @@ TEST_F(
       /* kUsedGoogleTranslation */ 0,
       /* kUsedPasswordAutofill */ 0,
       /* kHasEnhancedSafeBrowsing */ 1,
-      // Disallowed by policy
-      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 0,
+      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 0,  // Disallowed by
+                                                               // policy
       /* kLensAllowedByEnterprisePolicy */ 1,
       /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      /* kIsPhoneFormFactor */ 0,
   });
 
   CardSelectionSignals selection_signals(&signals, kTipsEphemeralModule);
