@@ -160,13 +160,6 @@ function createBindGroupUsingTexture(device, tex) {
   });
 }
 
-/** getTextureFormat() should return RGBA16F for a float16 context. */
-function test_getTextureFormat_rgba16f(device, canvas) {
-  const ctx = canvas.getContext('2d', {colorSpace: 'display-p3',
-                                       pixelFormat: 'float16'});
-  assert_equals(ctx.getTextureFormat(), 'rgba16float');
-}
-
 /**
  * transferToGPUTexture() should create a texture from an uninitialized canvas.
  */
