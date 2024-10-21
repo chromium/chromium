@@ -97,18 +97,18 @@ export class LegacyManagedUserProfileNoticeAppElement extends
   }
 
   protected showEnterpriseBadge_: boolean = false;
-  protected pictureUrl_: string;
-  protected title_: string;
-  protected subtitle_: string;
-  protected enterpriseInfo_: string;
+  protected pictureUrl_: string = '';
+  protected title_: string = '';
+  protected subtitle_: string = '';
+  protected enterpriseInfo_: string = '';
   protected isModalDialog_: boolean = loadTimeData.getBoolean('isModalDialog');
   protected showLinkDataCheckbox_: boolean =
       loadTimeData.getBoolean('showLinkDataCheckbox');
   protected useLegacyUi_: boolean = !loadTimeData.getBoolean('useUpdatedUi');
-  protected proceedLabel_: string;
+  protected proceedLabel_: string = '';
   protected disableProceedButton_: boolean = false;
   protected linkData_: boolean = false;
-  private defaultProceedLabel_: string;
+  private defaultProceedLabel_: string = '';
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =
           ManagedUserProfileNoticeBrowserProxyImpl.getInstance();

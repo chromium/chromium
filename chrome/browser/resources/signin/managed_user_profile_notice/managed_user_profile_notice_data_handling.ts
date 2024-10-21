@@ -34,8 +34,8 @@ export class ManagedUserProfileNoticeDataHandlingElement extends CrLitElement {
     };
   }
 
-  override title: string;
-  selectedDataHandling: BrowsingDataHandling;
+  override title: string = '';
+  selectedDataHandling: BrowsingDataHandling|null = null;
 
   protected onSelectedRadioOptionChanged_(
       e: CustomEvent<{value: BrowsingDataHandling}>) {

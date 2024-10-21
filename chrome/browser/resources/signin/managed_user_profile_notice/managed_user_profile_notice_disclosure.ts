@@ -29,15 +29,11 @@ export class ManagedUserProfileNoticeDisclosureElement extends CrLitElement {
     return {
       showEnterpriseBadge: {type: Boolean},
       pictureUrl: {type: String},
-      title: {type: String},
-      subtitle: {type: String},
     };
   }
 
-  showEnterpriseBadge: boolean;
-  pictureUrl: string;
-  override title: string;
-  subtitle: string;
+  showEnterpriseBadge: boolean = false;
+  pictureUrl: string = '';
 }
 
 declare global {

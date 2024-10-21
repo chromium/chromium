@@ -23,7 +23,6 @@ ${this.useUpdatedUi_ ? html`
         </managed-user-profile-notice-value-prop>
       ${this.showDisclosure_ ? html`
         <managed-user-profile-notice-disclosure id="disclosure"
-            title="${this.title_}" subtitle="${this.subtitle_}"
             picture-url="${this.pictureUrl_}"
             ?show-enterprise-badge="${this.showEnterpriseBadge_}">
         </managed-user-profile-notice-disclosure>

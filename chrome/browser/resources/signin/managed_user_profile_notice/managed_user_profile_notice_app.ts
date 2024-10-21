@@ -65,9 +65,6 @@ export class ManagedUserProfileNoticeAppElement extends
       title_: {type: String},
       subtitle_: {type: String},
 
-      /** The detailed info about enterprise management */
-      enterpriseInfo_: {type: String},
-
       /**
        * Whether this page is being shown as a dialog.
        *
@@ -83,9 +80,6 @@ export class ManagedUserProfileNoticeAppElement extends
       continueAs_: {type: String},
       proceedLabel_: {type: String},
       cancelLabel_: {type: String},
-
-      /** Whether to show the cancel button on the screen */
-      showCancelButton_: {type: Boolean},
 
       disableProceedButton_: {type: Boolean},
       currentState_: {type: Number},
@@ -108,19 +102,17 @@ export class ManagedUserProfileNoticeAppElement extends
     };
   }
 
-  protected email_: string;
-  protected accountName_: string;
-  private continueAs_: string;
+  protected email_: string = '';
+  protected accountName_: string = '';
+  private continueAs_: string = '';
   protected showEnterpriseBadge_: boolean = false;
-  protected pictureUrl_: string;
-  protected title_: string;
-  protected subtitle_: string;
-  private enterpriseInfo_: string;
+  protected pictureUrl_: string = '';
+  protected title_: string = '';
+  protected subtitle_: string = '';
   protected isModalDialog_: boolean = loadTimeData.getBoolean('isModalDialog');
-  protected proceedLabel_: string;
-  protected cancelLabel_: string;
+  protected proceedLabel_: string = '';
+  protected cancelLabel_: string = '';
   protected disableProceedButton_: boolean = false;
-  private showCancelButton_: boolean = true;
   private currentState_: State = State.DISCLOSURE;
   protected showValueProposition_: boolean = false;
   protected showDisclosure_: boolean = false;
@@ -132,7 +124,7 @@ export class ManagedUserProfileNoticeAppElement extends
   protected processingSubtitle_: string =
       loadTimeData.getString('processingSubtitle');
   protected showUserDataHandling_: boolean = false;
-  protected selectedDataHandling_: BrowsingDataHandling;
+  protected selectedDataHandling_: BrowsingDataHandling|null = null;
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =
           ManagedUserProfileNoticeBrowserProxyImpl.getInstance();
@@ -192,7 +184,6 @@ export class ManagedUserProfileNoticeAppElement extends
     this.showEnterpriseBadge_ = info.showEnterpriseBadge;
     this.title_ = info.title;
     this.subtitle_ = info.subtitle;
-    this.enterpriseInfo_ = info.enterpriseInfo;
     this.selectedDataHandling_ = info.checkLinkDataCheckboxByDefault ?
         BrowsingDataHandling.MERGE :
         BrowsingDataHandling.SEPARATE;

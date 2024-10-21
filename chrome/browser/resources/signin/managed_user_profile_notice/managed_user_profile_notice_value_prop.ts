@@ -34,11 +34,11 @@ export class ManagedUserProfileNoticeValuePropElement extends CrLitElement {
     };
   }
 
-  pictureUrl: string;
-  override title: string;
-  subtitle: string;
-  email: string;
-  accountName: string;
+  pictureUrl: string = '';
+  override title: string = '';
+  subtitle: string = '';
+  email: string = '';
+  accountName: string = '';
 }
 
 declare global {

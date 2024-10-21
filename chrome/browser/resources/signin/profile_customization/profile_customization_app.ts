@@ -83,11 +83,11 @@ export class ProfileCustomizationAppElement extends
 
   protected isManaged_: boolean = false;
   protected profileName_: string = '';
-  protected pictureUrl_: string;
-  protected welcomeTitle_: string;
+  protected pictureUrl_: string = '';
+  protected welcomeTitle_: string = '';
   protected availableIcons_: AvatarIcon[] = [];
-  protected selectedAvatar_: AvatarIcon;
-  private confirmedAvatar_: AvatarIcon;
+  protected selectedAvatar_: AvatarIcon|null = null;
+  private confirmedAvatar_: AvatarIcon|null = null;
   protected isLocalProfileCreation_: boolean =
       loadTimeData.getBoolean('isLocalProfileCreation');
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
@@ -159,10 +159,10 @@ export class ProfileCustomizationAppElement extends
     // there is only one icon marked as selected.
     icons.forEach((icon, index) => {
       if (icon.selected) {
-        icons[index].selected = false;
-        this.confirmedAvatar_ = icons[index];
+        icons[index]!.selected = false;
+        this.confirmedAvatar_ = icons[index]!;
         if (!this.selectedAvatar_) {
-          this.selectedAvatar_ = icons[index];
+          this.selectedAvatar_ = icons[index]!;
         }
       }
     });
@@ -171,6 +171,7 @@ export class ProfileCustomizationAppElement extends
 
   protected onSelectAvatarConfirmClicked_() {
     assert(this.isLocalProfileCreation_);
+    assert(this.selectedAvatar_);
     this.profileCustomizationBrowserProxy_.setAvatarIcon(
         this.selectedAvatar_.index);
     this.confirmedAvatar_ = this.selectedAvatar_;
