@@ -21,7 +21,6 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 
 import android.content.Context;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -100,16 +99,8 @@ public class PlusAddressCreationCoordinator {
                 .with(DELEGATE, delegate)
                 .with(SHOW_ONBOARDING_NOTICE, showOnboardingNotice)
                 .with(VISIBLE, false)
-                .with(
-                        PLUS_ADDRESS_ICON_VISIBLE,
-                        !ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED))
-                .with(
-                        PLUS_ADDRESS_LOADING_VIEW_VISIBLE,
-                        ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED))
+                .with(PLUS_ADDRESS_ICON_VISIBLE, false)
+                .with(PLUS_ADDRESS_LOADING_VIEW_VISIBLE, true)
                 .with(PROPOSED_PLUS_ADDRESS, normalStateInfo.getProposedPlusAddressPlaceholder())
                 .with(REFRESH_ICON_ENABLED, false)
                 .with(REFRESH_ICON_VISIBLE, refreshSupported)

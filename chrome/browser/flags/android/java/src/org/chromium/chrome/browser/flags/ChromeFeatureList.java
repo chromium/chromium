@@ -397,10 +397,6 @@ public abstract class ChromeFeatureList {
     public static final String PERMISSION_DEDICATED_CPSS_SETTING_ANDROID =
             "PermissionDedicatedCpssSettingAndroid";
     public static final String PLUS_ADDRESSES_ENABLED = "PlusAddressesEnabled";
-    public static final String PLUS_ADDRESS_LOADING_STATES_ANDROID =
-            "PlusAddressLoadingStatesAndroid";
-    public static final String PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED =
-            "PlusAddressAndroidEnhancedLoadingStatesEnabled";
     public static final String PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE =
             "PlusAddressAndroidOpenGmsCoreManagementPage";
     public static final String PLUS_ADDRESS_ANDROID_SETTINGS_ENTRY =
