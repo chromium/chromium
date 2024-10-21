@@ -2,7 +2,9 @@ arc_support: Android apps can be force-installed from the Google Admin console u
   Google Play. They do not use this policy.
 caption: Configure the list of force-installed apps and extensions
 desc: |-
-  Setting the policy specifies a list of apps and extensions that install silently, without user interaction, and which users can't uninstall or turn off. Permissions are granted implicitly, including for the enterprise.deviceAttributes and enterprise.platformKeys extension APIs. (These 2 APIs aren't available to apps and extensions that aren't force-installed.)
+  Setting the policy specifies a list of apps and extensions that install silently, without user interaction, and which users can't uninstall or turn off through the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> interface. Permissions are granted implicitly, including for the enterprise.deviceAttributes and enterprise.platformKeys extension APIs. (These 2 APIs aren't available to apps and extensions that aren't force-installed.)
+
+  Although <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> aims to prevent users from uninstalling these extensions, some operating systems make it impossible for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to defend robustly against extensions being modified externally, so this prevention is best efforts.
 
   Leaving the policy unset means no apps or extensions are autoinstalled, and users can uninstall any app or extension in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
