@@ -41,7 +41,7 @@ consoles.console_view(
     ordering = {
         None: ["release", "debug"],
         "release": consoles.ordering(short_names = ["bld", "tst", "nsl", "gcc"]),
-        "cast": ["arm64", "x64"],
+        "cast": ["arm", "arm64", "x64"],
     },
 )
 

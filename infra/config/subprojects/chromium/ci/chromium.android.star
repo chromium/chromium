@@ -49,6 +49,7 @@ consoles.console_view(
         "builder|det": consoles.ordering(short_names = ["rel", "dbg"]),
         "tester": ["phone", "tablet"],
         "builder_tester|arm64": consoles.ordering(short_names = ["M proguard"]),
+        "cast": ["arm", "arm64"],
     },
 )
 
@@ -694,6 +695,7 @@ ci.builder(
     # TODO(vigeni): Set to True as configuration has been stablized.
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
+        category = "cast",
         short_name = "and32dbg",
     ),
     cq_mirrors_console_view = "mirrors",
@@ -751,6 +753,7 @@ ci.builder(
     # TODO(vigeni): Set to True as configuration has been stablized.
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
+        category = "cast",
         short_name = "and32rel",
     ),
     cq_mirrors_console_view = "mirrors",
@@ -808,6 +811,7 @@ ci.builder(
     # TODO(vigeni): Set to True as configuration has been stablized.
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
+        category = "cast",
         short_name = "and64dbg",
     ),
     cq_mirrors_console_view = "mirrors",
@@ -865,6 +869,7 @@ ci.builder(
     # TODO(vigeni): Set to True as configuration has been stablized.
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
+        category = "cast",
         short_name = "and64rel",
     ),
     cq_mirrors_console_view = "mirrors",
