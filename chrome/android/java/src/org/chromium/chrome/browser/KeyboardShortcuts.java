@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -270,6 +271,11 @@ public class KeyboardShortcuts {
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
                     if (fullscreenManager.getPersistentFullscreenMode()) {
                         fullscreenManager.exitPersistentFullscreenMode();
+                        return true;
+                    }
+                    if (getMetaState(event) == CTRL
+                            && ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK)) {
+                        // TODO(crbug.com/353596679) open task manager.
                         return true;
                     }
                 }
