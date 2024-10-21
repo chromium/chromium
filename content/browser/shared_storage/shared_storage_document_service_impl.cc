@@ -204,6 +204,15 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
     return;
   }
 
+  if (!render_frame_host().GetPermissionsPolicy()->IsFeatureEnabled(
+      blink::mojom::PermissionsPolicyFeature::kFencedFrameUnpartitionedData)) {
+    // We already check for this permissions policy in the renderer.
+    receiver_.ReportBadMessage("Attempted to call get() in a fenced frame "
+        "with the fenced-frame-unpartitioned-data permissions policy "
+        "disabled.");
+    return;
+  }
+
   if (render_frame_host().GetLastCommittedOrigin().opaque()) {
     receiver_.ReportBadMessage(
         "Attempted to call sharedStorage.get() from an opaque origin context.");

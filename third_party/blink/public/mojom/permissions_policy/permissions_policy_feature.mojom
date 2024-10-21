@@ -275,6 +275,11 @@ enum PermissionsPolicyFeature {
   // See https://github.com/WICG/direct-sockets.
   kDirectSocketsPrivate = 126,
 
+  // Allow fenced frames to access unpartitioned data after giving up network
+  // access.
+  // See https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md
+  kFencedFrameUnpartitionedData = 127,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

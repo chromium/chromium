@@ -10912,6 +10912,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="124" label="WebAppInstallation"/>
   <int value="125" label="ControlledFrame"/>
   <int value="126" label="DirectSocketsPrivate"/>
+  <int value="127" label="FencedFrameUnpartitionedData"/>
 </enum>
 
 <enum name="FedCmContinueOnPopupResult">

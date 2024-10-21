@@ -643,6 +643,17 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
           "FencedFramesLocalUnpartitionedDataAccess disabled."));
       return promise;
     }
+
+    if (!execution_context->IsFeatureEnabled(
+        mojom::blink::PermissionsPolicyFeature::
+            kFencedFrameUnpartitionedData)) {
+      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+          "Cannot call get() in a fenced frame without the "
+          "fenced-frame-unpartitioned-data Permissions Policy feature "
+          "enabled."));
+      return promise;
+    }
   }
 
   CHECK(CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
