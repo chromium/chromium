@@ -1464,7 +1464,7 @@
   {
     "name": "cert-management-v2-ui",
     "owners": [ "hchao@chromium.org", "mattm@chromium.org", "chrome-secure-web-and-net@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 138
   },
   {
     "name": "cert-verification-network-time",
