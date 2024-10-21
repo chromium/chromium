@@ -87,6 +87,15 @@ namespace blink {
 
 namespace {
 
+// This function is for convenience of debugging. For example, we can set a
+// breakpoint at the assignment to track new property changes.
+void UpdatePropertyChange(PaintPropertyChangeType& target,
+                          PaintPropertyChangeType new_change) {
+  if (target < new_change) {
+    target = new_change;
+  }
+}
+
 bool AreSubtreeUpdateReasonsIsolationPiercing(unsigned reasons) {
   // This is written to mean that if we have any reason other than the specified
   // ones then the reasons are isolation piercing. This means that if new
@@ -349,53 +358,48 @@ class FragmentPaintPropertyTreeBuilder {
 
   void OnUpdateTransform(PaintPropertyChangeType change) {
     if (change != PaintPropertyChangeType::kUnchanged) {
-      properties_changed_.transform_changed =
-          std::max(properties_changed_.transform_changed, change);
+      UpdatePropertyChange(properties_changed_.transform_changed, change);
       properties_changed_.transform_change_is_scroll_translation_only = false;
     }
   }
   void OnUpdateScrollTranslation(PaintPropertyChangeType change) {
-    properties_changed_.transform_changed =
-        std::max(properties_changed_.transform_changed, change);
+    UpdatePropertyChange(properties_changed_.transform_changed, change);
   }
   void OnClearTransform(bool cleared) {
     if (cleared) {
-      properties_changed_.transform_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.transform_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
       properties_changed_.transform_change_is_scroll_translation_only = false;
     }
   }
 
   void OnUpdateClip(PaintPropertyChangeType change) {
-    properties_changed_.clip_changed =
-        std::max(properties_changed_.clip_changed, change);
+    UpdatePropertyChange(properties_changed_.clip_changed, change);
   }
   void OnClearClip(bool cleared) {
     if (cleared) {
-      properties_changed_.clip_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.clip_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
   }
 
   void OnUpdateEffect(PaintPropertyChangeType change) {
-    properties_changed_.effect_changed =
-        std::max(properties_changed_.effect_changed, change);
+    UpdatePropertyChange(properties_changed_.effect_changed, change);
   }
   void OnClearEffect(bool cleared) {
     if (cleared) {
-      properties_changed_.effect_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.effect_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
   }
 
   void OnUpdateScroll(PaintPropertyChangeType change) {
-    properties_changed_.scroll_changed =
-        std::max(properties_changed_.scroll_changed, change);
+    UpdatePropertyChange(properties_changed_.scroll_changed, change);
   }
   void OnClearScroll(bool cleared) {
     if (cleared) {
-      properties_changed_.scroll_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.scroll_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
   }
 
@@ -2279,17 +2283,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
   }
 
   if (old_transform != new_transform) {
-    properties_changed_.transform_changed =
-        PaintPropertyChangeType::kNodeAddedOrRemoved;
+    UpdatePropertyChange(properties_changed_.transform_changed,
+                         PaintPropertyChangeType::kNodeAddedOrRemoved);
     properties_changed_.transform_change_is_scroll_translation_only = false;
   }
   if (old_clip != new_clip) {
-    properties_changed_.clip_changed =
-        PaintPropertyChangeType::kNodeAddedOrRemoved;
+    UpdatePropertyChange(properties_changed_.clip_changed,
+                         PaintPropertyChangeType::kNodeAddedOrRemoved);
   }
   if (old_effect != new_effect) {
-    properties_changed_.effect_changed =
-        PaintPropertyChangeType::kNodeAddedOrRemoved;
+    UpdatePropertyChange(properties_changed_.effect_changed,
+                         PaintPropertyChangeType::kNodeAddedOrRemoved);
   }
 }
 
@@ -3424,21 +3428,21 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
     fragment.EnsurePaintProperties();
   } else if (auto* properties = fragment.PaintProperties()) {
     if (properties->HasTransformNode()) {
-      properties_changed_.transform_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.transform_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
       properties_changed_.transform_change_is_scroll_translation_only = false;
     }
     if (properties->HasClipNode()) {
-      properties_changed_.clip_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.clip_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
     if (properties->HasEffectNode()) {
-      properties_changed_.effect_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.effect_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
     if (properties->Scroll()) {
-      properties_changed_.scroll_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.scroll_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
     fragment.ClearPaintProperties();
   }
