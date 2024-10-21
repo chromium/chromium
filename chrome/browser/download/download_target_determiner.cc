@@ -1290,6 +1290,14 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
     PriorVisitsToReferrer visits) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  DownloadFileType::DangerLevel danger_level =
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          virtual_path_.BaseName(), download_->GetURL(),
+          GetProfile()->GetPrefs());
+  DownloadPrefs::DownloadRestriction download_restriction =
+      static_cast<DownloadPrefs::DownloadRestriction>(
+          GetProfile()->GetPrefs()->GetInteger(prefs::kDownloadRestrictions));
+
   // If the user has has been prompted or will be, assume that the user has
   // approved the download. A programmatic download is considered safe unless it
   // contains malware.
@@ -1301,6 +1309,15 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
   if (HasPromptedForPath() ||
       confirmation_reason_ != DownloadConfirmationReason::NONE ||
       user_approved_path) {
+    // If the "DownloadRestrictions" enterprise policy explicitly disallows the
+    // download, don't let the user gesture bypass the dangerous verdict.
+    if ((download_restriction ==
+             DownloadPrefs::DownloadRestriction::DANGEROUS_FILES ||
+         download_restriction ==
+             DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES) &&
+        danger_level != DownloadFileType::NOT_DANGEROUS) {
+      return DownloadFileType::DANGEROUS;
+    }
     return DownloadFileType::NOT_DANGEROUS;
   }
 
@@ -1315,11 +1332,6 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
   if (download_prefs_->IsAutoOpenEnabled(download_->GetURL(), virtual_path_) &&
       download_->HasUserGesture())
     return DownloadFileType::NOT_DANGEROUS;
-
-  DownloadFileType::DangerLevel danger_level =
-      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-          virtual_path_.BaseName(), download_->GetURL(),
-          GetProfile()->GetPrefs());
 
   // A danger level of ALLOW_ON_USER_GESTURE is used to label potentially
   // dangerous file types that have a high frequency of legitimate use. We would
