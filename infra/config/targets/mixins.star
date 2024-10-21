@@ -1225,7 +1225,8 @@ targets.mixin(
     name = "mac_vm",
     swarming = targets.swarming(
         dimensions = {
-            "cpu": "arm64-64-Apple_M1_(Virtual)",
+            "cpu": "arm64",
+            "mac_model": "VirtualMac2,1",
             "os": "Mac-14",
             "pool": "chromium.tests.macvm",
         },
