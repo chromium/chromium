@@ -29,6 +29,7 @@
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
@@ -145,7 +146,17 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
       "ON rate_limits(scope,report_id)"
       "WHERE " RATE_LIMIT_ATTRIBUTION_CONDITION
       " AND " RATE_LIMIT_REPORT_ID_SET_CONDITION;
-  return db->Execute(kRateLimitReportIdIndexSql);
+  if (!db->Execute(kRateLimitReportIdIndexSql)) {
+    return false;
+  }
+
+  // Optimizes calls to `CountUniqueReportingOriginsPerSiteForAttribution()`.
+  static constexpr char
+      kRateLimitAttributionDestinationReportingSiteIndexSql[] =
+          "CREATE INDEX rate_limit_attribution_destination_reporting_site_idx "
+          "ON rate_limits(scope,destination_site,reporting_site)"
+          "WHERE" RATE_LIMIT_ATTRIBUTION_CONDITION;
+  return db->Execute(kRateLimitAttributionDestinationReportingSiteIndexSql);
 }
 
 bool RateLimitTable::AddRateLimitForSource(sql::Database* db,
@@ -705,6 +716,30 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
   }
 
   return RateLimitResult::kAllowed;
+}
+
+int64_t RateLimitTable::CountUniqueReportingOriginsPerSiteForAttribution(
+    sql::Database* db,
+    const AttributionTrigger& trigger,
+    base::Time trigger_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE,
+      attribution_queries::
+          kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql));
+  statement.BindString(
+      0, net::SchemefulSite(trigger.destination_origin()).Serialize());
+  statement.BindString(
+      1, net::SchemefulSite(trigger.reporting_origin()).Serialize());
+  statement.BindTime(
+      2, trigger_time - delegate_->GetRateLimits().origins_per_site_window);
+
+  if (!statement.Step()) {
+    return -1;
+  }
+
+  return statement.ColumnInt64(0);
 }
 
 bool RateLimitTable::DeleteAttributionRateLimit(

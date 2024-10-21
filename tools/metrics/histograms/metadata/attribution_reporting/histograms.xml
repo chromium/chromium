@@ -1374,6 +1374,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.UniqueReportingOriginsPerSiteForAttribution"
+    units="reporting origins" expires_after="2025-04-15">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of unique reporting origins per (destination site,
+    reporting site) within a day for attributions. Recorded once for each
+    trigger registration that creates an event-level or aggregatable attribution
+    report. Not recorded if no attribution report is generated.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ValidReportsInDatabase" units="Reports"
     expires_after="2025-01-05">
   <owner>tquintanilla@chromium.org</owner>

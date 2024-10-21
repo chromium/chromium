@@ -69,11 +69,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 64;
+  static constexpr int kCurrentVersionNumber = 65;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 64;
+  static constexpr int kCompatibleVersionNumber = 65;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -394,6 +394,11 @@ class CONTENT_EXPORT AttributionStorageSql {
   [[nodiscard]] bool StoreDedupKey(StoredSource::Id,
                                    uint64_t dedup_key,
                                    AttributionReport::Type);
+
+  // Returns a negative value on failure.
+  int64_t CountUniqueReportingOriginsPerSiteForAttribution(
+      const AttributionTrigger&,
+      base::Time now);
 
  private:
   using ReportCorruptionStatusSet =

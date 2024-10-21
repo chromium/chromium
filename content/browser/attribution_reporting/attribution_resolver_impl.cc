@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_resolver_impl.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <utility>
@@ -528,6 +530,8 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
   auto assemble_report_result =
       [&](std::optional<EventLevelResult> new_event_level_status,
           std::optional<AggregatableResult> new_aggregatable_status) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
         event_level_status = event_level_status.has_value()
                                  ? event_level_status
                                  : new_event_level_status;
@@ -557,6 +561,18 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
         }
         if (new_aggregatable_report.has_value()) {
           RecordDebugKeyUsage(*new_aggregatable_report);
+        }
+
+        if (new_event_level_report.has_value() ||
+            new_aggregatable_report.has_value()) {
+          if (int64_t count =
+                  storage_.CountUniqueReportingOriginsPerSiteForAttribution(
+                      trigger, trigger_time);
+              count >= 0) {
+            base::UmaHistogramCounts100(
+                "Conversions.UniqueReportingOriginsPerSiteForAttribution",
+                count);
+          }
         }
 
         return CreateReportResult(

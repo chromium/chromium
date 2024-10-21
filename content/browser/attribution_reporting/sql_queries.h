@@ -255,6 +255,14 @@ inline constexpr const char kRateLimitSelectSourceReportingOriginsBySiteSql[] =
     " AND reporting_site=?"
     " AND time>?";
 
+inline constexpr const char
+    kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql[] =
+        "SELECT COUNT(DISTINCT reporting_origin)FROM rate_limits "
+        "WHERE " RATE_LIMIT_ATTRIBUTION_CONDITION
+        " AND destination_site=?"
+        " AND reporting_site=?"
+        " AND source_expiry_or_attribution_time>?";
+
 static_assert(RateLimitTable::kUnsetRecordId == -1,
               "update `report_id!=-1` query below");
 #define RATE_LIMIT_REPORT_ID_SET_CONDITION "report_id!=-1"
