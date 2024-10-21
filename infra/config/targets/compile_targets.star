@@ -443,4 +443,6 @@ targets.compile_target(
 targets.compile_target(
     name = "chrome/enterprise_companion:all",
     label = "//chrome/enterprise_companion:all",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )

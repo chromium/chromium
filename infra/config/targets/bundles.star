@@ -1424,6 +1424,56 @@ targets.bundle(
     },
 )
 
+targets.bundle(
+    name = "enterprise_companion_gtests_linux",
+    targets = [
+        "enterprise_companion_integration_tests",
+        "enterprise_companion_tests",
+    ],
+    per_test_modifications = {
+        "enterprise_companion_integration_tests": [
+            "updater-default-pool",
+        ],
+        "enterprise_companion_tests": [
+            "updater-default-pool",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "enterprise_companion_gtests_mac",
+    targets = [
+        "enterprise_companion_integration_tests",
+        "enterprise_companion_tests",
+    ],
+    per_test_modifications = {
+        "enterprise_companion_integration_tests": [
+            "updater-mac-pool",
+        ],
+        "enterprise_companion_tests": [
+            "updater-mac-pool",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "enterprise_companion_gtests_win",
+    targets = [
+        "enterprise_companion_integration_tests",
+        "enterprise_companion_tests",
+    ],
+    per_test_modifications = {
+        "enterprise_companion_integration_tests": [
+            "integrity_high",
+            "updater-default-pool",
+        ],
+        "enterprise_companion_tests": [
+            "integrity_high",
+            "updater-default-pool",
+        ],
+    },
+)
+
 # Runs only the accessibility tests in CI/CQ to reduce accessibility
 # failures that land.
 targets.bundle(

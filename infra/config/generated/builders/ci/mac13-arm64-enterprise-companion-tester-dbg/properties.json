@@ -62,7 +62,8 @@
           "builder": "mac13-arm64-enterprise-companion-tester-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac13-arm64-enterprise-companion-tester-dbg/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

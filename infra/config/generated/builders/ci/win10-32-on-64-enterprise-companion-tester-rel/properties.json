@@ -62,7 +62,8 @@
           "builder": "win10-32-on-64-enterprise-companion-tester-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win10-32-on-64-enterprise-companion-tester-rel/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

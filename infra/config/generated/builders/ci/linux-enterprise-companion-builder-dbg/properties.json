@@ -78,7 +78,8 @@
           "builder": "linux-enterprise-companion-try-builder-dbg",
           "group": "tryserver.chromium.enterprise_companion"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-enterprise-companion-builder-dbg/targets"
     }
   },
   "$build/reclient": {

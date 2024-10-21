@@ -105,7 +105,8 @@
           "builder": "mac12-arm64-enterprise-companion-tester-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-enterprise-companion-builder-arm64-rel/targets"
     }
   },
   "$build/reclient": {

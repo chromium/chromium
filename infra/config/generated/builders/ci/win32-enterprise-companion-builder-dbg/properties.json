@@ -72,7 +72,8 @@
           "builder": "win10-32-on-64-enterprise-companion-tester-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win32-enterprise-companion-builder-dbg/targets"
     }
   },
   "$build/reclient": {

@@ -72,7 +72,8 @@
           "builder": "mac12-x64-enterprise-companion-tester-asan-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-enterprise-companion-builder-asan-dbg/targets"
     }
   },
   "$build/reclient": {

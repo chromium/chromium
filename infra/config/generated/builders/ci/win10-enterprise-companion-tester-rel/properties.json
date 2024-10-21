@@ -68,7 +68,8 @@
           "builder": "win-enterprise-companion-try-builder-rel",
           "group": "tryserver.chromium.enterprise_companion"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win10-enterprise-companion-tester-rel/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

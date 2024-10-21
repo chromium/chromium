@@ -850,6 +850,8 @@ targets.binaries.script(
     name = "enterprise_companion_integration_tests",
     label = "//chrome/enterprise_companion:enterprise_companion_integration_tests",
     script = "//testing/scripts/run_telemetry_as_googletest.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "test_service/enterprise_companion_integration_tests_launcher.py",
         "--test-output-dir=${ISOLATED_OUTDIR}",
@@ -861,6 +863,8 @@ targets.binaries.script(
 targets.binaries.console_test_launcher(
     name = "enterprise_companion_tests",
     label = "//chrome/enterprise_companion:enterprise_companion_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = ["--gtest_shuffle"],
 )
 

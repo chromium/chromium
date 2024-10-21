@@ -1481,47 +1481,6 @@
       },
     },
 
-    'enterprise_companion_gtests_linux': {
-      'enterprise_companion_integration_tests': {
-        'mixins': [
-          'updater-default-pool',
-        ],
-      },
-      'enterprise_companion_tests': {
-        'mixins': [
-          'updater-default-pool',
-        ],
-      },
-    },
-
-    'enterprise_companion_gtests_mac': {
-      'enterprise_companion_integration_tests': {
-        'mixins': [
-          'updater-mac-pool',
-        ],
-      },
-      'enterprise_companion_tests': {
-        'mixins': [
-          'updater-mac-pool',
-        ],
-      },
-    },
-
-    'enterprise_companion_gtests_win': {
-      'enterprise_companion_integration_tests': {
-        'mixins': [
-          'integrity_high',
-          'updater-default-pool',
-        ],
-      },
-      'enterprise_companion_tests': {
-        'mixins': [
-          'integrity_high',
-          'updater-default-pool',
-        ],
-      },
-    },
-
     'fieldtrial_android_tests': {
       'android_browsertests_no_fieldtrial': {
         'test_common': {
