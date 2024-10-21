@@ -7308,12 +7308,13 @@ Node* Element::InsertAdjacent(const String& where,
 }
 
 void Element::HideNonce() {
-  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
-    return;
-  }
-
+  // This is a relatively hot codepath.  Get to the common early return as
+  // fast as possible.
   const AtomicString& nonce_value = FastGetAttribute(html_names::kNonceAttr);
   if (nonce_value.empty()) {
+    return;
+  }
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
     return;
   }
   if (!InActiveDocument()) {
