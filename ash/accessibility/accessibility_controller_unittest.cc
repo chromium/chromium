@@ -2302,21 +2302,12 @@ class AccessibilityControllerSelectToSpeakKeyboardShortcutTest
   ~AccessibilityControllerSelectToSpeakKeyboardShortcutTest() override =
       default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilitySelectToSpeakShortcut);
-    AshTestBase::SetUp();
-  }
-
   void SetDialogAcceptedPref(bool accepted) {
     PrefService* prefs =
         Shell::Get()->session_controller()->GetLastActiveUserPrefService();
     prefs->SetBoolean(prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted,
                       accepted);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AccessibilityControllerSelectToSpeakKeyboardShortcutTest,

@@ -8125,11 +8125,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityMouseKeysDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityMouseKeys)},
 
-    {"enable-accessibility-select-to-speak-shortcut",
-     flag_descriptions::kAccessibilitySelectToSpeakShortcutName,
-     flag_descriptions::kAccessibilitySelectToSpeakShortcutDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilitySelectToSpeakShortcut)},
-
     {"enable-pip-double-tap-to-resize",
      flag_descriptions::kPipDoubleTapToResizeName,
      flag_descriptions::kPipDoubleTapToResizeDescription, kOsCrOS,

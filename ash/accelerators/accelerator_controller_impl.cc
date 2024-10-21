@@ -975,7 +975,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kToggleClipboardHistory:
       return true;
     case AcceleratorAction::kEnableSelectToSpeak:
-      return ::features::IsAccessibilitySelectToSpeakShortcutEnabled();
+      return true;
     case AcceleratorAction::kEnableOrToggleDictation:
       return accelerators::CanEnableOrToggleDictation();
     case AcceleratorAction::kToggleDockedMagnifier:

@@ -246,14 +246,6 @@ bool IsAccessibilityOverscrollSettingFeatureEnabled() {
       ::features::kAccessibilityOverscrollSettingFeature);
 }
 
-BASE_FEATURE(kAccessibilitySelectToSpeakShortcut,
-             "AccessibilitySelectToSpeakShortcut",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilitySelectToSpeakShortcutEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilitySelectToSpeakShortcut);
-}
-
 BASE_FEATURE(kAccessibilityDisableTrackpad,
              "AccessibilityDisableTrackpad",
              base::FEATURE_DISABLED_BY_DEFAULT);

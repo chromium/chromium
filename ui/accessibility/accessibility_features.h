@@ -188,10 +188,6 @@ AX_BASE_EXPORT bool IsAccessibilityCaretBlinkIntervalSettingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOverscrollSettingFeature);
 AX_BASE_EXPORT bool IsAccessibilityOverscrollSettingFeatureEnabled();
 
-// Controls whether the Select to Speak keyboard shortcut is enabled.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakShortcut);
-AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakShortcutEnabled();
-
 // Controls whether the shake cursor to locate feature is available.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityShakeToLocate);
 AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();

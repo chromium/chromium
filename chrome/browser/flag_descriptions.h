@@ -797,9 +797,6 @@ extern const char kAccessibilityMagnifyAcceleratorDialogDescription[];
 extern const char kAccessibilityMouseKeysName[];
 extern const char kAccessibilityMouseKeysDescription[];
 
-extern const char kAccessibilitySelectToSpeakShortcutName[];
-extern const char kAccessibilitySelectToSpeakShortcutDescription[];
-
 extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
 

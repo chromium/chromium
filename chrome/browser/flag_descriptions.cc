@@ -1397,12 +1397,6 @@ const char kAccessibilityMouseKeysName[] = "Mouse Keys";
 const char kAccessibilityMouseKeysDescription[] =
     "This option enables you to control the mouse with the keyboard.";
 
-const char kAccessibilitySelectToSpeakShortcutName[] =
-    "Select to Speak keyboard shortcut";
-const char kAccessibilitySelectToSpeakShortcutDescription[] =
-    "This option enables the keyboard shortcut to enable or activate Select to "
-    "Speak.";
-
 const char kNewMacNotificationAPIName[] =
     "Determines which notification API to use on macOS devices";
 const char kNewMacNotificationAPIDescription[] =

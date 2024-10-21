@@ -2193,8 +2193,7 @@ void AccessibilityController::ToggleDictationFromSource(
 }
 
 void AccessibilityController::EnableSelectToSpeakWithDialog() {
-  if (!::features::IsAccessibilitySelectToSpeakShortcutEnabled() ||
-      select_to_speak().enabled()) {
+  if (select_to_speak().enabled()) {
     return;
   }
 
@@ -2292,7 +2291,7 @@ void AccessibilityController::OnDictationKeyboardDialogDismissed() {
 }
 
 void AccessibilityController::ShowSelectToSpeakKeyboardDialog() {
-  if (!client_ || !::features::IsAccessibilitySelectToSpeakShortcutEnabled()) {
+  if (!client_) {
     return;
   }
 
