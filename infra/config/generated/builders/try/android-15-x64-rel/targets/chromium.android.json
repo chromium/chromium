@@ -2203,7 +2203,6 @@
         "args": [
           "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
-          "--gtest_filter=-TrafficStatsAndroidTest.*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

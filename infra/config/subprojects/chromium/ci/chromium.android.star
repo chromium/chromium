@@ -4401,12 +4401,6 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
                 ],
             ),
-            "net_unittests": targets.mixin(
-                args = [
-                    # TODO(crbug.com/362292404): Fix the failed test
-                    "--gtest_filter=-TrafficStatsAndroidTest.*",
-                ],
-            ),
             "perfetto_unittests": targets.mixin(
                 args = [
                     # TODO(crbug.com/40201873): Fix the failed test
