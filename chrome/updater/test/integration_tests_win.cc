@@ -1641,13 +1641,14 @@ base::FilePath GetRealUpdaterLowerVersionPath() {
   base::FilePath old_updater_path =
       exe_path.Append(FILE_PATH_LITERAL("old_updater"));
 
-// TODO(crbug.com/374217027): Test with newer x64 executables that install to
-// %ProgramFiles(x86)%.
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
   old_updater_path =
       old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_arm64"));
-#else
+#elif defined(ARCH_CPU_X86_64)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_x86_64"));
+#elif defined(ARCH_CPU_X86)
   old_updater_path =
       old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_x86"));
 #endif
@@ -1655,7 +1656,10 @@ base::FilePath GetRealUpdaterLowerVersionPath() {
 #if defined(ARCH_CPU_ARM64)
   old_updater_path =
       old_updater_path.Append(FILE_PATH_LITERAL("chrome_win_arm64"));
-#else
+#elif defined(ARCH_CPU_X86_64)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chrome_win_x86_64"));
+#elif defined(ARCH_CPU_X86)
   old_updater_path =
       old_updater_path.Append(FILE_PATH_LITERAL("chrome_win_x86"));
 #endif

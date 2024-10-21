@@ -27,6 +27,10 @@
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/update_client_errors.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/updater/util/win_util.h"
+#endif
+
 namespace component_updater {
 namespace {
 
@@ -52,10 +56,16 @@ std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
           [is_machine]() -> std::unique_ptr<StateReader> {
         // Create a `StateReaderChromiumUpdater` instance only if a prefs.json
         // file for the updater can be found and parsed successfully.
+        const updater::UpdaterScope updater_scope =
+            is_machine ? updater::UpdaterScope::kSystem
+                       : updater::UpdaterScope::kUser;
         const std::optional<base::FilePath> global_prefs_dir =
-            updater::GetInstallDirectory(is_machine
-                                             ? updater::UpdaterScope::kSystem
-                                             : updater::UpdaterScope::kUser);
+#if BUILDFLAG(IS_WIN)
+            // Google Chrome ships with an x86 updater.
+            updater::GetInstallDirectoryX86(updater_scope);
+#else
+            updater::GetInstallDirectory(updater_scope);
+#endif  //  IS_WIN
         if (!global_prefs_dir)
           return nullptr;
         std::string contents;
