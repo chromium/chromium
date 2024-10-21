@@ -61,6 +61,7 @@ static_library("activity") {
 
     # TODO(b / 372525386): This is a transitive dep on the protobuf, please fix.
     "//chromeos/ash/components/boca/proto",
+    "//services/network/public/mojom",
   ]
 }
 
