@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -440,12 +441,12 @@ int GetNotificationTitleIdForFile(const base::FilePath& file_path) {
 // Returns the size of the file at the given `file_path` in KBs. Returns -1 when
 // a failure occurs.
 int GetFileSizeInKB(const base::FilePath& file_path) {
-  int64_t size_in_bytes = 0;
-  if (!base::GetFileSize(file_path, &size_in_bytes)) {
+  std::optional<int64_t> size_in_bytes = base::GetFileSize(file_path);
+  if (!size_in_bytes.has_value()) {
     return -1;
   }
   // Convert the value to KBs.
-  return size_in_bytes / 1024;
+  return size_in_bytes.value() / 1024;
 }
 
 // Creates a new `CaptureModeSession` based on the given `session_type`. Can be

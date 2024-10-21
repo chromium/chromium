@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/overview_test_api.h"
@@ -176,9 +178,9 @@ class InformedRestoreTest : public InformedRestoreTestBase {
     SetInformedRestoreImagePathForTest(file_path);
 
     TakePrimaryDisplayScreenshotAndSave(file_path);
-    int64_t file_size = 0;
-    ASSERT_TRUE(base::GetFileSize(file_path, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(file_path);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   static base::Time FakeTimeNow() { return fake_time_; }
