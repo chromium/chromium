@@ -110,6 +110,7 @@ public class WarmupManager {
         @Override
         // Invoked when tab crashes, or when the associated renderer process is killed.
         public void onCrash(Tab tab) {
+            if (mSpareTab != tab) return;
             mSpareTabFinalStatus = SpareTabFinalStatus.TAB_CRASHED;
             destroySpareTabInternal();
         }

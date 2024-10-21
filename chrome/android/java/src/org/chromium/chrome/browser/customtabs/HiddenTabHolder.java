@@ -56,33 +56,14 @@ public class HiddenTabHolder {
     }
 
     private class HiddenTabObserver extends EmptyTabObserver {
-        // This WindowAndroid is "owned" by the Tab and should be destroyed when it is no longer
-        // needed by the Tab or when the Tab is destroyed.
-        private WindowAndroid mOwnedWindowAndroid;
-
-        public HiddenTabObserver(WindowAndroid ownedWindowAndroid) {
-            mOwnedWindowAndroid = ownedWindowAndroid;
-        }
-
         @Override
         public void onCrash(Tab tab) {
+            if (mSpeculation == null || mSpeculation.tab != tab) return;
             destroyHiddenTab(null);
         }
 
         @Override
-        public void onDestroyed(Tab tab) {
-            destroyOwnedWindow(tab);
-        }
-
-        @Override
         public void onActivityAttachmentChanged(Tab tab, WindowAndroid window) {
-            destroyOwnedWindow(tab);
-        }
-
-        private void destroyOwnedWindow(Tab tab) {
-            assert mOwnedWindowAndroid != null;
-            mOwnedWindowAndroid.destroy();
-            mOwnedWindowAndroid = null;
             tab.removeObserver(this);
         }
     }
@@ -131,8 +112,7 @@ public class HiddenTabHolder {
 
         tabCreatedCallback.onResult(tab);
 
-        HiddenTabObserver observer = new HiddenTabObserver(tab.getWindowAndroid());
-        tab.addObserver(observer);
+        tab.addObserver(new HiddenTabObserver());
 
         // Updating post message as soon as we have a valid WebContents.
         clientManager.resetPostMessageHandlerForSession(session, tab.getWebContents());
