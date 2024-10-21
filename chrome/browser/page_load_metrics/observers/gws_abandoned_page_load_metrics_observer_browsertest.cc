@@ -978,8 +978,14 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 // at various points during the navigation. Note that the navigation itself
 // might continue to commit, but we will count it as "abandoned" as soon as it's
 // hidden and stop recording navigation milestones metrics after that.
+// TODO - crbug.com/372878281: flaky on Mac builds
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SearchTabHidden DISABLED_SearchTabHidden
+#else
+#define MAYBE_SearchTabHidden SearchTabHidden
+#endif
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
-                       SearchTabHidden) {
+                       MAYBE_SearchTabHidden) {
   for (NavigationMilestone milestone : all_testable_milestones()) {
     // Make sure the WebContents is currently shown, before hiding it later.
     web_contents()->WasShown();
