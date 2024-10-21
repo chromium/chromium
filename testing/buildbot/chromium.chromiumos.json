@@ -545,7 +545,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "shards": 12
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
