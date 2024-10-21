@@ -202,7 +202,7 @@ crbug.com/338071088 [ amd-0x67ef angle-opengl graphite-disabled no-asan passthro
 crbug.com/353650054 [ android ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
 
 # Flaky failure on Mac AMD ASAN - 3 GPU process crashes instead of 4
-crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
+crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 # Flaky failure on Mac release NVIDIA - 3 GPU process crashes instead of 4
 crbug.com/355923591 [ mac release nvidia ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
