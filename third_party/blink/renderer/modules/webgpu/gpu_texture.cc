@@ -96,6 +96,9 @@ wgpu::TextureViewDescriptor AsDawnType(
   if (!label->empty()) {
     dawn_desc.label = label->c_str();
   }
+  if (webgpu_desc->hasUsage()) {
+    dawn_desc.usage = static_cast<wgpu::TextureUsage>(webgpu_desc->usage());
+  }
 
   return dawn_desc;
 }

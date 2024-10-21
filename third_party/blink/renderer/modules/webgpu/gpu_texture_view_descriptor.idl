@@ -12,6 +12,7 @@ dictionary GPUTextureViewDescriptor : GPUObjectDescriptorBase {
     GPUIntegerCoordinate mipLevelCount;
     GPUIntegerCoordinate baseArrayLayer = 0;
     GPUIntegerCoordinate arrayLayerCount;
+    [RuntimeEnabled=WebGPUTextureViewUsage] GPUTextureUsageFlags usage = 0;
 };
 
 enum GPUTextureViewDimension {
