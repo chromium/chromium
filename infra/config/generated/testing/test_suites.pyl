@@ -560,7 +560,41 @@
       'rust_gtest_interop_unittests': {},
       'sql_unittests': {},
       'url_unittests': {},
-      'video_decode_accelerator_tests_fake_vaapi': {
+      'video_decode_accelerator_tests_fake_vaapi_av1': {
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+            '../../media/test/data/test-25fps.av1.ivf',
+            '../../media/test/data/test-25fps.av1.ivf.json',
+          ],
+        },
+        'test': 'video_decode_accelerator_tests',
+        'ci_only': True,
+        'experiment_percentage': 100,
+      },
+      'video_decode_accelerator_tests_fake_vaapi_vp8': {
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+            '../../media/test/data/test-25fps.vp8',
+            '../../media/test/data/test-25fps.vp8.json',
+          ],
+        },
+        'test': 'video_decode_accelerator_tests',
+        'ci_only': True,
+        'experiment_percentage': 100,
+      },
+      'video_decode_accelerator_tests_fake_vaapi_vp9': {
         'test_common': {
           'args': [
             '--env-var',
@@ -592,7 +626,41 @@
         },
         'experiment_percentage': 100,
       },
-      'video_decode_accelerator_tests_fake_vaapi': {
+      'video_decode_accelerator_tests_fake_vaapi_av1': {
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+            '../../media/test/data/test-25fps.av1.ivf',
+            '../../media/test/data/test-25fps.av1.ivf.json',
+          ],
+        },
+        'test': 'video_decode_accelerator_tests',
+        'ci_only': True,
+        'experiment_percentage': 100,
+      },
+      'video_decode_accelerator_tests_fake_vaapi_vp8': {
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+            '../../media/test/data/test-25fps.vp8',
+            '../../media/test/data/test-25fps.vp8.json',
+          ],
+        },
+        'test': 'video_decode_accelerator_tests',
+        'ci_only': True,
+        'experiment_percentage': 100,
+      },
+      'video_decode_accelerator_tests_fake_vaapi_vp9': {
         'test_common': {
           'args': [
             '--env-var',

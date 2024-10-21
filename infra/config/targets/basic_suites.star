@@ -452,8 +452,16 @@ targets.legacy_basic_suite(
         "cc_unittests": targets.legacy_test_config(),
         "crypto_unittests": targets.legacy_test_config(),
         "display_unittests": targets.legacy_test_config(),
-        "video_decode_accelerator_tests_fake_vaapi": targets.legacy_test_config(
+        "video_decode_accelerator_tests_fake_vaapi_vp9": targets.legacy_test_config(
             ci_only = True,
+        ),
+        "video_decode_accelerator_tests_fake_vaapi_vp8": targets.legacy_test_config(
+            ci_only = True,
+            experiment_percentage = 100,
+        ),
+        "video_decode_accelerator_tests_fake_vaapi_av1": targets.legacy_test_config(
+            ci_only = True,
+            experiment_percentage = 100,
         ),
         "fake_libva_driver_unittest": targets.legacy_test_config(
             experiment_percentage = 100,
@@ -587,8 +595,17 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "chromeos_system_friendly_gtests_fails_vmlab",
     tests = {
-        "video_decode_accelerator_tests_fake_vaapi": targets.legacy_test_config(
+        "video_decode_accelerator_tests_fake_vaapi_vp9": targets.legacy_test_config(
             ci_only = True,
+        ),
+        # TODO(b/370554776): Promote following tests out of experimental
+        "video_decode_accelerator_tests_fake_vaapi_vp8": targets.legacy_test_config(
+            ci_only = True,
+            experiment_percentage = 100,
+        ),
+        "video_decode_accelerator_tests_fake_vaapi_av1": targets.legacy_test_config(
+            ci_only = True,
+            experiment_percentage = 100,
         ),
         "fake_libva_driver_unittest": targets.legacy_test_config(
             experiment_percentage = 100,

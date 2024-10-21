@@ -973,7 +973,7 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "video_decode_accelerator_tests_fake_vaapi",
+    name = "video_decode_accelerator_tests_fake_vaapi_vp9",
     args = [
         "--env-var",
         "LIBVA_DRIVERS_PATH",
@@ -983,6 +983,36 @@ targets.tests.gtest_test(
         "libfake",
         "../../media/test/data/test-25fps.vp9",
         "../../media/test/data/test-25fps.vp9.json",
+    ],
+    binary = "video_decode_accelerator_tests",
+)
+
+targets.tests.gtest_test(
+    name = "video_decode_accelerator_tests_fake_vaapi_vp8",
+    args = [
+        "--env-var",
+        "LIBVA_DRIVERS_PATH",
+        "./",
+        "--env-var",
+        "LIBVA_DRIVER_NAME",
+        "libfake",
+        "../../media/test/data/test-25fps.vp8",
+        "../../media/test/data/test-25fps.vp8.json",
+    ],
+    binary = "video_decode_accelerator_tests",
+)
+
+targets.tests.gtest_test(
+    name = "video_decode_accelerator_tests_fake_vaapi_av1",
+    args = [
+        "--env-var",
+        "LIBVA_DRIVERS_PATH",
+        "./",
+        "--env-var",
+        "LIBVA_DRIVER_NAME",
+        "libfake",
+        "../../media/test/data/test-25fps.av1.ivf",
+        "../../media/test/data/test-25fps.av1.ivf.json",
     ],
     binary = "video_decode_accelerator_tests",
 )

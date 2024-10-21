@@ -848,6 +848,88 @@
           "--env-var",
           "LIBVA_DRIVER_NAME",
           "libfake",
+          "../../media/test/data/test-25fps.av1.ivf",
+          "../../media/test/data/test-25fps.av1.ivf.json",
+          "--magic-vm-cache=magic_cros_vm_cache"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "video_decode_accelerator_tests_fake_vaapi_av1",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "kvm": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests"
+          },
+          "named_caches": [
+            {
+              "name": "cros_vm",
+              "path": "magic_cros_vm_cache"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "cros_vm"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "video_decode_accelerator_tests",
+        "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/"
+      },
+      {
+        "args": [
+          "--env-var",
+          "LIBVA_DRIVERS_PATH",
+          "./",
+          "--env-var",
+          "LIBVA_DRIVER_NAME",
+          "libfake",
+          "../../media/test/data/test-25fps.vp8",
+          "../../media/test/data/test-25fps.vp8.json",
+          "--magic-vm-cache=magic_cros_vm_cache"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "video_decode_accelerator_tests_fake_vaapi_vp8",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "kvm": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests"
+          },
+          "named_caches": [
+            {
+              "name": "cros_vm",
+              "path": "magic_cros_vm_cache"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "cros_vm"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "video_decode_accelerator_tests",
+        "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/"
+      },
+      {
+        "args": [
+          "--env-var",
+          "LIBVA_DRIVERS_PATH",
+          "./",
+          "--env-var",
+          "LIBVA_DRIVER_NAME",
+          "libfake",
           "../../media/test/data/test-25fps.vp9",
           "../../media/test/data/test-25fps.vp9.json",
           "--magic-vm-cache=magic_cros_vm_cache"
@@ -856,7 +938,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "video_decode_accelerator_tests_fake_vaapi",
+        "name": "video_decode_accelerator_tests_fake_vaapi_vp9",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
