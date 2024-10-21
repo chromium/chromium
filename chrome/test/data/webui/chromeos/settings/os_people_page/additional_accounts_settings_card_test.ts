@@ -224,7 +224,6 @@ suite('SecondaryAccountAllowedInArcPolicyTests', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       isDeviceAccountManaged: true,
-      arcManagedAccountRestrictionEnabled: true,
     });
 
     userActionRecorder = new FakeUserActionRecorder();

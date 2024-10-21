@@ -235,7 +235,6 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "arcAccountRestrictionsEnabled",
       AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
-  html_source->AddBoolean("arcManagedAccountRestrictionEnabled", true);
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
