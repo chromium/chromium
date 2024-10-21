@@ -191,7 +191,6 @@ Nëse largohesh, do të humbasësh menjëherë qasjen te grupi i skedave "<ph na
 <translation id="8820741577754260431">Shiko rëniet e çmimeve në skeda</translation>
 <translation id="8887921976452567404">Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave".</translation>
 <translation id="8915916167043355778">Mbylli të gjitha</translation>
-<translation id="8926389886865778422">Mos pyet përsëri</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë.}other{Zgjero grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="9090098097337832354">Informacioni për këtë dyqan është mbyllur</translation>
 <translation id="9111228330448174435">Shfaq dialogun në krijimin e një grupi të ri skedash</translation>

@@ -4141,7 +4141,7 @@
 <translation id="3927932062596804919">નકારો</translation>
 <translation id="3928570707778085600">ફેરફારોને <ph name="FILE_OR_FOLDER_NAME" />માં સાચવીએ?</translation>
 <translation id="3928659086758780856">શાહી ઓછી છે</translation>
-<translation id="3929426037718431833">આ સાઇટ પરની માહિતીને આ એક્સ્ટેંશન જોઈ શકે છે અને તેમાં ફેરફાર કરી શકે છે.</translation>
+<translation id="3929426037718431833">આ સાઇટ પરની માહિતીને આ એક્સ્ટેન્શન જોઈ શકે છે અને તેમાં ફેરફાર કરી શકે છે.</translation>
 <translation id="3930155420525972941">ગ્રૂપને નવી વિંડોમાં ખસેડો</translation>
 <translation id="3930602610362250897">કૉપિરાઇટ દ્વારા સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે, સાઇટને કન્ટેન્ટ સુરક્ષા સેવાનો ઉપયોગ કરવાની જરૂર પડી શકે છે</translation>
 <translation id="3930737994424905957">ઉપકરણો શોધી રહ્યાં છીએ</translation>
@@ -5744,7 +5744,7 @@
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">ફેરફારો જુઓ</translation>
 <translation id="5127620150973591153">સુરક્ષિત કનેક્શન ID: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">સમન્વયન બંધ છે</translation>
+<translation id="5127805178023152808">સિંક બંધ છે</translation>
 <translation id="5127881134400491887">નેટવર્ક કનેક્શન્સનું સંચાલન કરો</translation>
 <translation id="5127934926273826089">ફૂલો</translation>
 <translation id="5127986747308934633">તમારા ઍડમિનિસ્ટ્રેટર તમારું ડિવાઇસ નિયંત્રિત કરી રહ્યાં છે</translation>
@@ -7270,7 +7270,7 @@ USB ડિવાઇસ</translation>
 <translation id="6253801023880399036">પાસવર્ડને <ph name="GOOGLE_PASSWORD_MANAGER" />માં સાચવવામાં આવે છે.</translation>
 <translation id="6254503684448816922">કી સમાધાન</translation>
 <translation id="6254892857036829079">ઉત્તમ</translation>
-<translation id="6257602895346497974">સિંક કરવું ચાલુ કરો…</translation>
+<translation id="6257602895346497974">સિંક કરવાનું ચાલુ કરો…</translation>
 <translation id="625827534921607067">જો અગાઉ કનેક્ટ કરેલા કે કન્ફિગર કરેલા એક કરતાં વધારે નેટવર્ક ઉપલબ્ધ હશે, તો આ નેટવર્કની પસંદગી કરવામાં આવશે</translation>
 <translation id="6259776178973198997">WiFi Directના માલિકોની માહિતી રિફ્રેશ કરો</translation>
 <translation id="6262371516389954471">તમારું બૅકઅપ Google પર અપલોડ કરવામાં આવે છે અને તમારા Google એકાઉન્ટ પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
@@ -8466,7 +8466,6 @@ USB ડિવાઇસ</translation>
 <translation id="7131431455372521159">તમામ ટ્રૅક પૉઇન્ટ ડિસ્કનેક્ટ કરવામાં આવ્યા છે</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, રાહ જોઈ રહ્યાં છીએ</translation>
 <translation id="7134098520442464001">ટેક્સ્ટને વધુ નાનો બનાવો</translation>
-<translation id="713415364723069564">કોઈ સાઇટ એ શોધી શકે છે કે તમારા મશીન પર સંબંધિત વેબ ઍપ્લિકેશન ઇન્સ્ટૉલ કરેલી છે કે નહીં. આ માહિતી સાઇટ અને તેના સબડોમેનને ઉપલબ્ધ રહે છે.</translation>
 <translation id="7134951043985383439">જોખમી ફાઇલ ડાઉનલોડ કરી</translation>
 <translation id="7135729336746831607">બ્લૂટૂથ ચાલુ કરીએ?</translation>
 <translation id="7136694880210472378">ડિફૉલ્ટ બનાવો</translation>
@@ -8668,7 +8667,6 @@ USB ડિવાઇસ</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - પરવાનગીની વિનંતી કરવામાં આવી, જવાબ આપવા માટે F6 દબાવો</translation>
 <translation id="7290005709287747471">નિષ્ક્રિય કરો</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> દ્વારા હોસ્ટ થયેલ સાઇન-ઇન સેવા, તમારા કૅમેરાને ઍક્સેસ કરી રહી છે.</translation>
-<translation id="7290524928495200538">ઇન્સ્ટૉલ કરેલી સંબંધિત ઍપ્લિકેશન</translation>
 <translation id="7292067737327289208">તમારી સંસ્થા દ્વારા તમારું <ph name="BEGIN_LINK" />બ્રાઉઝર મેનેજ<ph name="END_LINK" /> કરવામાં આવે છે અને <ph name="PROFILE_DOMAIN" />દ્વારા તમારી <ph name="BEGIN_LINK" />પ્રોફાઇલ મેનેજ<ph name="END_LINK" /> કરવામાં આવે છે</translation>
 <translation id="7292147651179697920">તમારા માતાપિતાને સેટિંગમાં ઍક્સેસની મંજૂરી આપવાનું કહો</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
@@ -9852,7 +9850,7 @@ USB ડિવાઇસ</translation>
 <translation id="8133676275609324831">ફોલ્ડરમાં બતાવો</translation>
 <translation id="8135557862853121765"><ph name="NUM_KILOBYTES" />K</translation>
 <translation id="8136269678443988272">તમે દાખલ કરેલા પિન મેળ ખાતા નથી</translation>
-<translation id="8137559199583651773">એક્સટેન્શનનું સંચાલન કરો</translation>
+<translation id="8137559199583651773">એક્સ્ટેન્શન મેનેજ કરો</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{અસુરક્ષિત હોઈ શકે તેવું 1 એક્સ્ટેન્શન રિવ્યૂ કરો}one{અસુરક્ષિત હોઈ શકે તેવું {NUM_EXTENSIONS} એક્સ્ટેન્શન રિવ્યૂ કરો}other{અસુરક્ષિત હોઈ શકે તેવા {NUM_EXTENSIONS} એક્સ્ટેન્શન રિવ્યૂ કરો}}</translation>
 <translation id="8138217203226449454">શું તમે તમારા શોધ પ્રદાતા બદલવા માગતા હતા?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> સ્ટેટસ</translation>

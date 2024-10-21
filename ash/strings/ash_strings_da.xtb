@@ -445,6 +445,7 @@ Ellers genaktiveres den indbyggede touchplade om 30 sekunder.</translation>
 <translation id="2530896289327917474">Aktivér eller deaktiver tastenavigation</translation>
 <translation id="2531025035050312891">langsom enhed</translation>
 <translation id="2531107890083353124">Tryk på <ph name="KEY_ONE" />, mens du trækker fanen</translation>
+<translation id="2545334090614121435">Forsøger du at bruge Home-tasten? Brug</translation>
 <translation id="254900897760075745">Kopiér valgt indhold til udklipsholderen</translation>
 <translation id="2549711466868162843">Gør belysningen bedre</translation>
 <translation id="2549985041256363841">Start optagelse</translation>
@@ -563,6 +564,7 @@ Ellers genaktiveres den indbyggede touchplade om 30 sekunder.</translation>
 <translation id="2985148236010982088">Se alle apps</translation>
 <translation id="2992272421330787632">Skjul alle medieforslag</translation>
 <translation id="2992327365391326550">Enhedens mikrofonknap er slået fra.</translation>
+<translation id="2993956882370897557">Forsøger du at bruge End-tasten? Brug</translation>
 <translation id="3000461861112256445">Monolyd</translation>
 <translation id="3001391739687111021">Rediger skærmstørrelse</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -615,6 +617,7 @@ Ellers genaktiveres den indbyggede touchplade om 30 sekunder.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> skifter til en tidligere version af din <ph name="DEVICE_TYPE" />. Din enhed nulstilles, og alle data slettes.</translation>
 <translation id="316798519864381606">Google Slides-præsentation</translation>
 <translation id="3171170659304083361">Indstillinger for indtastningsmetoder</translation>
+<translation id="3174897399179348329">Forsøger du at bruge tasten Page Up? Brug</translation>
 <translation id="3176221688814061633">Din Chromebook eller Bluetooth-enhed anvender en ældre version af Bluetooth. Aktivér Bluetooth Super Resolution, eller brug den interne mikrofon for at få bedre lydkvalitet.</translation>
 <translation id="3181441307743005334">Genstarten kan tage lidt tid</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Forbundet til en enhed}one{Forbundet til # enhed}other{Forbundet til # enheder}}</translation>
@@ -1261,6 +1264,7 @@ Du kan også bruge tastaturgenvejen. Fremhæv først tekst, og tryk derefter på
 <translation id="5297704307811127955">Fra</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5302048478445481009">Sprog</translation>
+<translation id="5302531370473608800">Opdater din <ph name="DEVICE_TYPE" /> for at bruge YouTube Music</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" /> % batteri tilbage.
 Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5308380583665731573">Opret forbindelse</translation>
@@ -1820,6 +1824,7 @@ Installeret for nylig</translation>
 <translation id="7144942256906679589">Batteristatus</translation>
 <translation id="7145639536026937076">Batteriet er på <ph name="PERCENTAGE" /> % og oplades. Batterisparefunktion er aktiveret.</translation>
 <translation id="7147587499155271409">Ingen browserhistorik</translation>
+<translation id="7147657298465433425">Du kan få adgang til F-tasterne ved at trykke på fn-tasten + tasterne i øverste række</translation>
 <translation id="7149149900052329230">Administrer dine lokale filer og dine Google Drev-filer – alt sammen i appen Filer.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1929,6 +1934,7 @@ Ellers genaktiveres den indbyggede touchplade om 30 sekunder.</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> anvender i øjeblikket din mikrofon</translation>
 <translation id="7561982940498449837">Luk menu</translation>
 <translation id="7564874036684306347">Hvis du flytter vinduer til et andet skrivebord, kan det resultere i uventet adfærd. Efterfølgende notifikationer, vinduer og dialogbokse kan blive delt mellem skriveborde.</translation>
+<translation id="7568154670718626683">Forsøger du at bruge Delete-tasten? Brug</translation>
 <translation id="7568790562536448087">Opdatering</translation>
 <translation id="7569509451529460200">Braille og ChromeVox er aktiveret</translation>
 <translation id="7569886975397378678">Afvis konfiguration af visning af din telefons notifikationer og apps</translation>
@@ -2131,6 +2137,7 @@ Ellers genaktiveres den indbyggede touchplade om 30 sekunder.</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Du har netop fokuseret i <ph name="FOCUSED_TIME" />. Åbn kvikmenuen for at fokusere igen.</translation>
 <translation id="8203224998425013577">Vis flere emojis og giffer</translation>
 <translation id="8203795194971602413">Højreklik</translation>
+<translation id="8205469348819768313">Forsøger du at bruge tasten Page Down? Brug</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Din Chromebook skal være tændt og tilsluttet strøm i dette tidsrum. Sørg for, at opladeren eller adapterkablerne er sat korrekt i, både i din Chromebook og i stikkontakten. Sluk ikke for din Chromebook.</translation>
 <translation id="8220076512072059941">Tilføj <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2323,6 +2330,7 @@ Ellers genaktiveres den indbyggede touchplade om 30 sekunder.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google-assistenten taler ikke dette sprog.</translation>
 <translation id="8926951137623668982">Hylden er altid skjult</translation>
+<translation id="8929566928381252430">Forsøger du at bruge Caps Lock? Brug</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fil}one{# fil}other{# filer}}</translation>
 <translation id="8936501819958976551">deaktiverede</translation>
 <translation id="8938800817013097409">USB-C-enhed (porten bagpå i højre side)</translation>

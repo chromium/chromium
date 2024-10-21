@@ -8462,7 +8462,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7131431455372521159">Todos los TrackPoints se han desconectado</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, esperando</translation>
 <translation id="7134098520442464001">Reducir el tamaño del texto</translation>
-<translation id="713415364723069564">Un sitio puede averiguar si hay aplicaciones web relacionadas instaladas en tu equipo. Esta información está disponible para el sitio y sus subdominios.</translation>
 <translation id="7134951043985383439">Se ha descargado un archivo peligroso</translation>
 <translation id="7135729336746831607">¿Activar Bluetooth?</translation>
 <translation id="7136694880210472378">Elegir como predeterminado</translation>
@@ -8664,7 +8663,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" />: permiso solicitado, pulsa F6 para responder</translation>
 <translation id="7290005709287747471">Desactivar</translation>
 <translation id="7290242001003353852">Este servicio de inicio de sesión (que se aloja en <ph name="SAML_DOMAIN" />) está accediendo a la cámara.</translation>
-<translation id="7290524928495200538">Aplicaciones instaladas relacionadas</translation>
 <translation id="7292067737327289208">Tu organización <ph name="BEGIN_LINK" />gestiona tu navegador<ph name="END_LINK" />, y <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />gestiona tu perfil<ph name="END_LINK" /></translation>
 <translation id="7292147651179697920">Pídele a tu padre o madre que te dé acceso desde Configuración</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

@@ -8481,7 +8481,6 @@
 <translation id="7131431455372521159">Усі джойстики TrackPoint відключено</translation>
 <translation id="7131896909366247105">Очікування встановлення додатка <ph name="APP_NAME" /></translation>
 <translation id="7134098520442464001">Зменшити розмір тексту</translation>
-<translation id="713415364723069564">Сайт може отримати дані про те, чи встановлено на вашому пристрої пов’язані вебдодатки. Ця інформація доступна для сайту і його субдоменів.</translation>
 <translation id="7134951043985383439">Завантажено небезпечний файл</translation>
 <translation id="7135729336746831607">Увімкнути Bluetooth?</translation>
 <translation id="7136694880210472378">Установити за умовчанням</translation>
@@ -8683,7 +8682,6 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Потрібен дозвіл. Натисніть F6, щоб відповісти</translation>
 <translation id="7290005709287747471">Вимкнути</translation>
 <translation id="7290242001003353852">Ця служба входу в обліковий запис, зареєстрована в домені <ph name="SAML_DOMAIN" />, намагається отримати доступ до вашої камери.</translation>
-<translation id="7290524928495200538">Пов’язані встановлені додатки</translation>
 <translation id="7292067737327289208">Вашим <ph name="BEGIN_LINK" />веб-переглядачем керує<ph name="END_LINK" /> організація, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Попроси батьків надати доступ у налаштуваннях</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

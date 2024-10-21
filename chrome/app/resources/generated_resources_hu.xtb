@@ -8476,7 +8476,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7131431455372521159">Az összes TrackPoint le lett választva</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, várakozás…</translation>
 <translation id="7134098520442464001">Szöveg kicsinyítése</translation>
-<translation id="713415364723069564">A webhely megállapíthatja, hogy vannak-e kapcsolódó internetes alkalmazások telepítve az Ön gépére. Ez az információ a webhely és annak aldomainjei számára áll rendelkezésre.</translation>
 <translation id="7134951043985383439">Veszélyes fájl letöltve</translation>
 <translation id="7135729336746831607">Bekapcsolja a Bluetooth-t?</translation>
 <translation id="7136694880210472378">Legyen alapértelmezett</translation>
@@ -8678,7 +8677,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Engedély kérelmezve, a válaszhoz nyomja le az F6 billentyűt</translation>
 <translation id="7290005709287747471">Deaktiválás</translation>
 <translation id="7290242001003353852">Ez a bejelentkezési szolgáltatás, amelyet a(z) <ph name="SAML_DOMAIN" /> üzemeltet, hozzáfér a kamerához.</translation>
-<translation id="7290524928495200538">Kapcsolódó telepített alkalmazások</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Böngészőjét<ph name="END_LINK" /> a szervezete, <ph name="BEGIN_LINK" />a profilját pedig<ph name="END_LINK" /> a(z) <ph name="PROFILE_DOMAIN" /> kezeli</translation>
 <translation id="7292147651179697920">Kérd meg a szülődet, hogy engedélyezze a hozzáférést a Beállításokban</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

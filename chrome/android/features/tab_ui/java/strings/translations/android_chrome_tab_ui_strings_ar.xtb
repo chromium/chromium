@@ -191,7 +191,6 @@
 <translation id="8820741577754260431">الاطّلاع على الأسعار المنخفضة في علامات التبويب</translation>
 <translation id="8887921976452567404">يمكن إعادة فتح علامات التبويب والمجموعات المغلقة من قسمَي "علامات التبويب الأخيرة" و"مجموعات علامات التبويب".</translation>
 <translation id="8915916167043355778">إغلاق الكل</translation>
-<translation id="8926389886865778422">عدم السؤال مرة أخرى</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{توسيع المجموعة التي تحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{توسيع المجموعة التي تحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="9090098097337832354">تم إخفاء المعلومات حول هذا المتجر.</translation>
 <translation id="9111228330448174435">عرض مربّع الحوار عند إنشاء مجموعة علامات تبويب جديدة</translation>

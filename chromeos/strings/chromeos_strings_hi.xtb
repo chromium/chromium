@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> दबाया गया</translation>
 <translation id="4334293042716981313">आप चाहें, तो<ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />अपना प्रॉम्प्ट दें<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">बटन</translation>
+<translation id="4356100841225547054">आवाज़ बंद करें</translation>
 <translation id="4361257691546579041">एपीएन का टाइप डिफ़ॉल्ट पर सेट है.</translation>
 <translation id="437294888293595148">सभी शॉर्टकट को रीसेट करें</translation>
 <translation id="437477383107495720">खरगोश</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> की यूएसबी केबल हटाएं और इसे फिर से लगाएं</translation>
-<translation id="5095864667399748231">म्यूट बटन को टॉगल करके चालू या बंद करें</translation>
 <translation id="5099354524039520280">ऊपर</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> बटन के बिना किसी शॉर्टकट का इस्तेमाल करने पर, कुछ ऐप्लिकेशन के शॉर्टकट में गड़बड़ी हो सकती है. इस शॉर्टकट का इस्तेमाल जारी रखने के लिए कुंजियों को फिर से दबाएं या <ph name="KEY" /> बटन के साथ किसी नए शॉर्टकट का इस्तेमाल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">इसी अर्थ वाले दूसरे शब्द:</translation>
@@ -1339,6 +1339,7 @@
 <translation id="7551123448725492271">डिवाइस एक ऑडियो डिवाइस है.</translation>
 <translation id="7559239713112547082">स्क्रीनशॉट की झलक देखें</translation>
 <translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन मैनेज करता है</translation>
+<translation id="7561759921596375678">आवाज़ चालू करें</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">यूएसबी टचस्क्रीन</translation>
 <translation id="757747079855995705">पत्थर</translation>

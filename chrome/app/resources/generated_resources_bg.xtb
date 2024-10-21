@@ -8475,7 +8475,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7131431455372521159">Връзката с всички посочващи стикове е прекратена</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" /> се изчаква</translation>
 <translation id="7134098520442464001">Шрифтът на текста се смалява</translation>
-<translation id="713415364723069564">Сайт може да установи дали на машината ви са инсталирани сродни уеб приложения. Тази информация е налице за съответния сайт и поддомейните му.</translation>
 <translation id="7134951043985383439">Изтеглен бе опасен файл</translation>
 <translation id="7135729336746831607">Да се включи ли Bluetooth?</translation>
 <translation id="7136694880210472378">Задаване като основна</translation>
@@ -8677,7 +8676,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> иска разрешение. Натиснете F6, за да отговорите</translation>
 <translation id="7290005709287747471">Деактивиране</translation>
 <translation id="7290242001003353852">Тази услуга за вход, хоствана от <ph name="SAML_DOMAIN" />, осъществява достъп до камерата ви.</translation>
-<translation id="7290524928495200538">Сродни инсталирани приложения</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Браузърът ви се управлява<ph name="END_LINK" /> от организацията ви, а <ph name="BEGIN_LINK" />потребителският ви профил<ph name="END_LINK" /> – от <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Помолете родителя си да разреши достъпа от настройките</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

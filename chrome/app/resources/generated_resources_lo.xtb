@@ -8474,7 +8474,6 @@
 <translation id="7131431455372521159">TrackPoint ທັງໝົດຖືກຕັດການເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, ກຳລັງລໍຖ້າ</translation>
 <translation id="7134098520442464001">ເຮັດ​ຂໍ້​ຄວາມ​ໃຫ້​ນ້ອຍລົງ</translation>
-<translation id="713415364723069564">ເວັບໄຊສາມາດເບິ່ງໄດ້ວ່າມີການຕິດຕັ້ງໂປຣແກຣມນຳໃຊ້ຜ່ານເວັບທີ່ກ່ຽວຂ້ອງໃນເຄື່ອງຂອງທ່ານຫຼືບໍ່. ຂໍ້ມູນນີ້ພ້ອມໃຫ້ໃຊ້ສຳລັບເວັບໄຊດັ່ງກ່າວ ແລະ ໂດເມນຍ່ອຍຂອງເວັບໄຊ.</translation>
 <translation id="7134951043985383439">ດາວໂຫຼດໄຟລ໌ທີ່ອັນຕະລາຍແລ້ວ</translation>
 <translation id="7135729336746831607">ເປີດ Bluetooth ບໍ?</translation>
 <translation id="7136694880210472378">ເຮັດ​ເປັນຄ່າມາດຕະຖານ</translation>
@@ -8676,7 +8675,6 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - ຂໍການອະນຸຍາດແລ້ວ, ກະລຸນາກົດ F6 ເພື່ອຕອບກັບ</translation>
 <translation id="7290005709287747471">ປິດນຳໃຊ້</translation>
 <translation id="7290242001003353852">ການບໍລິການເຂົ້າສູ່ລະບົບ, ທີ່ເປັນແມ່ຂ່າຍໂດຍ <ph name="SAML_DOMAIN" />, ກຳລັງເຂົ້າຫາກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
-<translation id="7290524928495200538">ແອັບພລິເຄຊັນທີ່ຕິດຕັ້ງແລ້ວທີ່ກ່ຽວຂ້ອງ</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຖືກຈັດການ<ph name="END_LINK" /> ໂດຍອົງການຂອງທ່ານ ແລະ <ph name="BEGIN_LINK" />ໂປຣໄຟລ໌ຂອງທ່ານຖືກຈັດການ<ph name="END_LINK" /> ໂດຍ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">ຂໍໃຫ້ຜູ້ປົກຄອງຂອງທ່ານອະນຸຍາດການເຂົ້າເຖິງໃນການຕັ້ງຄ່າ</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

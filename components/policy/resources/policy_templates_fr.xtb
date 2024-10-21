@@ -1728,9 +1728,6 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, le transfert 
 <translation id="2258126710006312594">Autoriser le transfert de fichiers vers et depuis l'hôte pour les utilisateurs connectés à distance</translation>
 <translation id="225830954785359083">Empêcher les pages d'afficher des pop-ups pendant le déchargement</translation>
 <translation id="2261648512244797294">Désactiver l'impression Privet (obsolète)</translation>
-<translation id="2262153510491523927">Si cette règle est définie sur "False", les applis Android peuvent capturer les liens compatibles par défaut.
-Si elle est définie sur "True", tous les liens s'ouvrent par défaut dans le navigateur Chrome.
-Si cette règle n'est pas configurée, les applis Android capturent les liens compatibles par défaut.</translation>
 <translation id="2263881357524831360">Autoriser l'utilisation de gestionnaires de mots de passe tiers dans <ph name="PRODUCT_NAME" /> sous <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Liste des actions à exécuter lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint.
 
@@ -3942,11 +3939,6 @@ Remarque : Si ce paramètre a pour conséquence qu'aucune méthode d'authentifi
 <translation id="3989829840000169163">Bloquer les anciens points d'extension du navigateur</translation>
 <translation id="3990391739475801018">Le mode Économiseur de batterie sera désactivé.</translation>
 <translation id="3990834929384096140">Ne pas appliquer l'annulation de l'écho audio du système</translation>
-<translation id="3992082233013655355">Cette règle permet d'établir la liste des applis Web isolées (AWI) qui s'installent de manière autonome.
-      Les AWI sont des applis avec des propriétés de sécurité utiles qui ne sont pas disponibles pour les pages Web normales. Elles sont empaquetées dans un bundle Web signé. La clé publique de ce bundle sert à créer l'ID du bundle Web qui identifie l'AWI.
-      Pour l'instant, cette règle ne fonctionne que pour les sessions Invité gérées.
-
-      Chaque élément de la règle correspond à un objet avec deux champs obligatoires : l'<ph name="URL_LABEL" /> du fichier manifeste de mise à jour et l'ID de bundle Web de l'appli Web isolée. Chaque élément peut également comporter un champ facultatif avec le nom du canal de version de l'AWI. Si "update_channel" n'est pas défini, la valeur "default" est utilisée.</translation>
 <translation id="3994043824457743421">Afficher l'annonce d'espace intermédiaire sur la page "Nouvel onglet"</translation>
 <translation id="399433537808390819">Ne pas rendre le mode Bureau unifié accessible à l'utilisateur</translation>
 <translation id="3995880046827722248">Manifest V2 est désactivé</translation>

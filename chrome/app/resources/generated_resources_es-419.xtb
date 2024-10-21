@@ -8461,7 +8461,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7131431455372521159">Se desconectaron todos los TrackPoints</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, esperando</translation>
 <translation id="7134098520442464001">Reducir el tamaño del texto</translation>
-<translation id="713415364723069564">Un sitio puede averiguar si se instalaron aplicaciones web relacionadas en tu máquina. Esta información está disponible para el sitio y sus subdominios.</translation>
 <translation id="7134951043985383439">Se descargó el archivo peligroso</translation>
 <translation id="7135729336746831607">¿Quieres activar la conexión Bluetooth?</translation>
 <translation id="7136694880210472378">Configurar como predeterminado</translation>
@@ -8663,7 +8662,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Se solicitó un permiso; para responder, presiona F6</translation>
 <translation id="7290005709287747471">Desactivar</translation>
 <translation id="7290242001003353852">Este servicio de acceso, alojado por <ph name="SAML_DOMAIN" />, está accediendo a tu cámara.</translation>
-<translation id="7290524928495200538">Aplicaciones relacionadas instaladas</translation>
 <translation id="7292067737327289208">Tu organización <ph name="BEGIN_LINK" />administra el navegador<ph name="END_LINK" /> y <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />administra tu perfil<ph name="END_LINK" /></translation>
 <translation id="7292147651179697920">Pídele a tu madre o padre que permita el acceso en Configuración</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

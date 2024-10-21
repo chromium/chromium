@@ -116,6 +116,7 @@
 <translation id="1498283581832036924">Налог за <ph name="WEBSITE" /> неће бити избрисан.</translation>
 <translation id="1506061864768559482">Претраживач</translation>
 <translation id="1506063256525392513">Ово вам омогућава да снимате и отпремате слике, као и да скенирате QR кодове</translation>
+<translation id="1508263560970797965">Настави у режиму без архивирања</translation>
 <translation id="1509486075633541495">Пријавите се на веб-сајт</translation>
 <translation id="1509960214886564027">Функције на многим сајтовима могу да престану са радом</translation>
 <translation id="1513858653616922153">Избриши лозинку</translation>
@@ -488,7 +489,6 @@
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245429137663807393">Ако делите и Chrome извештаје о коришћењу, ти извештаји обухватају URL-ове које посећујете</translation>
 <translation id="3245744387817103524">Чување промене није успело.</translation>
-<translation id="3253190369950280112">Добијајте обавештења о картицама…</translation>
 <translation id="3272527697863656322">Откажи</translation>
 <translation id="3273510436356991673">Прилагодите почетни екран</translation>
 <translation id="3277021493514034324">Адреса сајта је копирана</translation>
@@ -751,6 +751,7 @@
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4592672037257622855">{count,plural, =1{Страница је додата на листу за читање}one{{count} страница је додата на листу за читање}few{{count} странице су додате на листу за читање}other{{count} страница је додато на листу за читање}}</translation>
 <translation id="459644946100970322">Желите да укључите обавештења о ценама?</translation>
+<translation id="4597892826846980979">Добијајте обавештења о картицамa</translation>
 <translation id="4601095002996233687">Детаљна скенирања сумњивих преузимања.</translation>
 <translation id="4606247758155004938">Организација управља прегледачем.</translation>
 <translation id="4611811151908969241">Сакриј опцију Опозови праћење <ph name="DOMAIN_NAME" /></translation>
@@ -1214,6 +1215,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6606914854592108404">Провера безбедности је покренута…</translation>
 <translation id="6609890790934458793">Лозинке за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и <ph name="THIRD_WEBSITE" /> ће бити избрисане. Ваши налози неће бити избрисани.</translation>
 <translation id="661266467055912436">Побољшава безбедност за вас и друге на вебу.</translation>
+<translation id="6612912757320004438">Дозволи обавештења о картицама…</translation>
 <translation id="6617761071025228250">Обришите текст</translation>
 <translation id="6620279676667515405">Откажи</translation>
 <translation id="6624219055418309072">Блокирај у режиму без архивирања</translation>
@@ -1357,7 +1359,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7311244614769792472">Није пронађен ниједан резултат</translation>
 <translation id="7313347584264171202">Овде ћете пронаћи картице без архивирања</translation>
 <translation id="7336264872878993241">Проценат преузимања: <ph name="PERCENT" /></translation>
-<translation id="7337727139976950452">Дозволи обавештења о картицама</translation>
 <translation id="7346909386216857016">Важи</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
 <translation id="7359341089141286329">Аутоматски прати све откривене пакете</translation>

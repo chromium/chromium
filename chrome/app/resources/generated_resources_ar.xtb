@@ -8475,7 +8475,6 @@
 <translation id="7131431455372521159">انقطع اتصال كل عِصيّ التأشير.</translation>
 <translation id="7131896909366247105">جارٍ انتظار تثبيت "<ph name="APP_NAME" />"</translation>
 <translation id="7134098520442464001">لتصغير النص</translation>
-<translation id="713415364723069564">يمكن لهذا الموقع الإلكتروني معرفة ما إذا كانت تطبيقات الويب ذات الصلة مثبّتة على جهازك. وتتوفّر هذه المعلومات للموقع الإلكتروني ونطاقاته الفرعية.</translation>
 <translation id="7134951043985383439">تم تنزيل ملف خطير.</translation>
 <translation id="7135729336746831607">هل تريد تفعيل البلوتوث؟</translation>
 <translation id="7136694880210472378">الضبط كمحرك البحث التلقائي
@@ -8678,7 +8677,6 @@
 <translation id="7289386924227731009">‏<ph name="WINDOW_TITLE" /> - تم طلب الإذن، اضغط على مفتاح F6 للاستجابة للطلب</translation>
 <translation id="7290005709287747471">إيقاف</translation>
 <translation id="7290242001003353852">تحاول خدمة تسجيل الدخول هذه، المُستضافة من قبل <ph name="SAML_DOMAIN" />، الدخول إلى الكاميرا.</translation>
-<translation id="7290524928495200538">التطبيقات المثبَّتة ذات الصلة</translation>
 <translation id="7292067737327289208">تتولّى مؤسستك <ph name="BEGIN_LINK" />إدارة متصفِّحك<ph name="END_LINK" />، ويتولّى <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />إدارة ملفك الشخصي<ph name="END_LINK" />.</translation>
 <translation id="7292147651179697920">اطلب من أحد والدَيك السماح بالوصول في "الإعدادات"</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

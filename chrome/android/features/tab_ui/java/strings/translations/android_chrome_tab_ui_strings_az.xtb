@@ -191,7 +191,6 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="8820741577754260431">Tablarda qiymət endirimləri göstərilsin</translation>
 <translation id="8887921976452567404">Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsindən yenidən aça bilərsiniz.</translation>
 <translation id="8915916167043355778">Hamısını bağlayın</translation>
-<translation id="8926389886865778422">Daha soruşmayın</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab olan tab qrupunu genişləndirin.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu genişləndirin.}}</translation>
 <translation id="9090098097337832354">Bu mağaza haqqında məlumatlar bağlanıb</translation>
 <translation id="9111228330448174435">Yeni tab qrupunun yaradılması dialoqunu göstərin</translation>

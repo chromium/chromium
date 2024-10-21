@@ -191,7 +191,6 @@ Nếu bạn thoát, bạn sẽ lập tức mất quyền truy cập vào nhóm t
 <translation id="8820741577754260431">Xem các mặt hàng giảm giá trong thẻ của bạn</translation>
 <translation id="8887921976452567404">Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ.</translation>
 <translation id="8915916167043355778">Đóng tất cả</translation>
-<translation id="8926389886865778422">Đừng hỏi lại</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ có <ph name="TABS_COUNT_ONE" /> thẻ.}other{Mở rộng nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
 <translation id="9090098097337832354">Thông tin về cửa hàng này đã đóng</translation>
 <translation id="9111228330448174435">Hiện hộp thoại khi tạo nhóm thẻ mới</translation>

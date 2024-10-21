@@ -1777,9 +1777,6 @@ Se questo criterio non viene configurato o se viene disattivato, il trasferiment
 <translation id="2258126710006312594">Consenti l'accesso remoto agli utenti per trasferire file da/verso l'host</translation>
 <translation id="225830954785359083">Impedisci alle pagine di mostrare popup durante l'unload</translation>
 <translation id="2261648512244797294">Disattiva stampa Privet deprecata</translation>
-<translation id="2262153510491523927">Se il criterio viene impostato su False, le app per Android possono acquisire i link supportati per impostazione predefinita.
-Se il criterio è impostato su True, tutti i link vengono aperti per impostazione predefinita nel browser Chrome.
-Se il criterio non viene configurato, le app per Android acquisiscono i link supportati per impostazione predefinita.</translation>
 <translation id="2263881357524831360">Consenti l'utilizzo di gestori delle password di terze parti in <ph name="PRODUCT_NAME" /> su <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Elenco di azioni da eseguire quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
 
@@ -4010,11 +4007,6 @@ possono essere inviati i report aziendali.
 <translation id="3989829840000169163">Blocca punti di estensioni precedenti nel browser</translation>
 <translation id="3990391739475801018">La modalità Risparmio energetico viene disattivata.</translation>
 <translation id="3990834929384096140">Non forzare l'applicazione della cancellazione dell'eco per l'audio di sistema</translation>
-<translation id="3992082233013655355">La configurazione del criterio consente di specificare un elenco di app web isolate (IWA) che vengono installate automaticamente.
-      Le IWA sono applicazioni che presentano proprietà di sicurezza utili non disponibili per le normali pagine web, che vengono pacchettizzati in un bundle web firmato. La chiave pubblica del bundle web firmato viene utilizzata per creare l'ID pacchetto web che identifica l'IWA.
-      Finora questo criterio funziona solo per la sessione Ospite gestita.
-
-      Ogni voce dell'elenco del criterio è un oggetto con due campi obbligatori: il manifest di aggiornamento <ph name="URL_LABEL" /> e l'ID pacchetto web dell'app web isolata. Ogni voce può anche avere un campo facoltativo con il nome del canale di rilascio dell'IWA. Se il criterio "update_channel" non viene configurato, verrà utilizzato il valore "default".</translation>
 <translation id="3994043824457743421">Mostra la comunicazione dell'area centrale nella pagina Nuova scheda</translation>
 <translation id="399433537808390819">Non rendere la modalità Desktop unificato disponibile per l'utente</translation>
 <translation id="3995880046827722248">Manifest v2 disabilitato</translation>

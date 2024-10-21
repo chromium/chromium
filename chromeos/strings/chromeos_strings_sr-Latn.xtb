@@ -670,6 +670,7 @@
 <translation id="4333390807948134856">Taster <ph name="KEY_NAME" /> je pritisnut</translation>
 <translation id="4334293042716981313">Možete i da <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />napišete svoj upit<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">taster</translation>
+<translation id="4356100841225547054">Isključite zvuk</translation>
 <translation id="4361257691546579041">Naziv pristupne tačke je podrazumevanog tipa.</translation>
 <translation id="437294888293595148">Resetuj sve prečice</translation>
 <translation id="437477383107495720">zeke</translation>
@@ -823,7 +824,6 @@
 <translation id="5089810972385038852">Država</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Isključite USB kabl <ph name="DEVICE_NAME" />, pa ga ponovo priključite da biste nastavili proces ažuriranja</translation>
-<translation id="5095864667399748231">Uključite/isključite zvuk</translation>
 <translation id="5099354524039520280">nagore</translation>
 <translation id="5107243100836678918">Prečica bez tastera <ph name="META_KEY" /> može da bude u suprotnosti sa prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da biste nastavili da je koristite ili pritisnite novu prečicu pomoću tastera <ph name="KEY" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Slično:</translation>
@@ -1353,6 +1353,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
         <ph name="BEGIN_PARAGRAPH2" />Moći ćete ponovo da koristite ovaj uređaj <ph name="DAY" /> u <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Pregled snimka ekrana</translation>
 <translation id="7561454561030345039">Ovim podešavanjem upravlja administrator</translation>
+<translation id="7561759921596375678">Uključite zvuk</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB dodirni ekran</translation>
 <translation id="757747079855995705">kamena</translation>

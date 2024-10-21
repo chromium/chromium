@@ -116,6 +116,7 @@
 <translation id="1498283581832036924">Nalog za <ph name="WEBSITE" /> neće biti izbrisan.</translation>
 <translation id="1506061864768559482">Pretraživač</translation>
 <translation id="1506063256525392513">Ovo vam omogućava da snimate i otpremate slike, kao i da skenirate QR kodove</translation>
+<translation id="1508263560970797965">Nastavi u režimu bez arhiviranja</translation>
 <translation id="1509486075633541495">Prijavite se na veb-sajt</translation>
 <translation id="1509960214886564027">Funkcije na mnogim sajtovima mogu da prestanu sa radom</translation>
 <translation id="1513858653616922153">Izbriši lozinku</translation>
@@ -488,7 +489,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Ako delite i Chrome izveštaje o korišćenju, ti izveštaji obuhvataju URL-ove koje posećujete</translation>
 <translation id="3245744387817103524">Čuvanje promene nije uspelo.</translation>
-<translation id="3253190369950280112">Dobijajte obaveštenja o karticama…</translation>
 <translation id="3272527697863656322">Otkaži</translation>
 <translation id="3273510436356991673">Prilagodite početni ekran</translation>
 <translation id="3277021493514034324">Adresa sajta je kopirana</translation>
@@ -751,6 +751,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4587589328781138893">Sajtovi</translation>
 <translation id="4592672037257622855">{count,plural, =1{Stranica je dodata na listu za čitanje}one{{count} stranica je dodata na listu za čitanje}few{{count} stranice su dodate na listu za čitanje}other{{count} stranica je dodato na listu za čitanje}}</translation>
 <translation id="459644946100970322">Želite da uključite obaveštenja o cenama?</translation>
+<translation id="4597892826846980979">Dobijajte obaveštenja o karticama</translation>
 <translation id="4601095002996233687">Detaljna skeniranja sumnjivih preuzimanja.</translation>
 <translation id="4606247758155004938">Organizacija upravlja pregledačem.</translation>
 <translation id="4611811151908969241">Sakrij opciju Opozovi praćenje <ph name="DOMAIN_NAME" /></translation>
@@ -1214,6 +1215,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="6606914854592108404">Provera bezbednosti je pokrenuta…</translation>
 <translation id="6609890790934458793">Lozinke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="THIRD_WEBSITE" /> će biti izbrisane. Vaši nalozi neće biti izbrisani.</translation>
 <translation id="661266467055912436">Poboljšava bezbednost za vas i druge na vebu.</translation>
+<translation id="6612912757320004438">Dozvoli obaveštenja o karticama…</translation>
 <translation id="6617761071025228250">Obrišite tekst</translation>
 <translation id="6620279676667515405">Otkaži</translation>
 <translation id="6624219055418309072">Blokiraj u režimu bez arhiviranja</translation>
@@ -1357,7 +1359,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
 <translation id="7313347584264171202">Ovde ćete pronaći kartice bez arhiviranja</translation>
 <translation id="7336264872878993241">Procenat preuzimanja: <ph name="PERCENT" /></translation>
-<translation id="7337727139976950452">Dozvoli obaveštenja o karticama</translation>
 <translation id="7346909386216857016">Važi</translation>
 <translation id="7352651011704765696">Došlo je do greške</translation>
 <translation id="7359341089141286329">Automatski prati sve otkrivene pakete</translation>

@@ -191,7 +191,6 @@ Ako napustite grupu, odmah ćete izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="8820741577754260431">Pogledajte pad cijena na karticama</translation>
 <translation id="8887921976452567404">Zatvorene kartice i grupe mogu se ponovo otvoriti u odjeljku Nedavne kartice i odjeljku Grupe kartica.</translation>
 <translation id="8915916167043355778">Zatvori sve</translation>
-<translation id="8926389886865778422">Više me ne pitaj</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Proširite grupu kartica koja sadrži <ph name="TABS_COUNT_ONE" /> karticu.}one{Proširite grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Proširite grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Proširite grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="9090098097337832354">Zatvorene su informacije o ovoj trgovini</translation>
 <translation id="9111228330448174435">Prikaži dijaloški okvir pri izradi nove grupe kartica</translation>

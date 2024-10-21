@@ -663,6 +663,7 @@
 <translation id="4333390807948134856">Клавішу "<ph name="KEY_NAME" />" натиснено</translation>
 <translation id="4334293042716981313">Ви також можете <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />написати власний запит<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">клавіша</translation>
+<translation id="4356100841225547054">Вимкнути звук</translation>
 <translation id="4361257691546579041">Тип точки доступу: APN за умовчанням.</translation>
 <translation id="437294888293595148">Скинути всі комбінації клавіш</translation>
 <translation id="437477383107495720">кролики</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">Штат/провінція</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Щоб продовжити оновлення, від’єднайте кабель USB від пристрою <ph name="DEVICE_NAME" /> і вставте його знову</translation>
-<translation id="5095864667399748231">Увімкнути або вимкнути звук</translation>
 <translation id="5099354524039520280">угору</translation>
 <translation id="5107243100836678918">Комбінація клавіш без клавіші <ph name="META_KEY" /> може конфліктувати з налаштуваннями деяких додатків. Натисніть цю комбінацію ще раз, щоб і далі використовувати її, або створіть новий варіант із клавішею <ph name="KEY" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Синоніми:</translation>
@@ -1339,6 +1339,7 @@
 <translation id="7551123448725492271">Це аудіопристрій.</translation>
 <translation id="7559239713112547082">Попередній перегляд знімка екрана</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
+<translation id="7561759921596375678">Увімкнути звук</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сенсорний екран USB</translation>
 <translation id="757747079855995705">каменю</translation>

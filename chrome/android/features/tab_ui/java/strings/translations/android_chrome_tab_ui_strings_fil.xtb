@@ -191,7 +191,6 @@ Kung aalis ka, mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="TITLE
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>
 <translation id="8887921976452567404">Puwedeng mabuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at sa seksyong Mga grupo ng tab.</translation>
 <translation id="8915916167043355778">Isara lahat</translation>
-<translation id="8926389886865778422">Huwag nang itanong ulit</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab.}one{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="9090098097337832354">Isinara ang impormasyon tungkol sa store na ito</translation>
 <translation id="9111228330448174435">Ipakita ang dialog sa paggawa ng bagong grupo ng tab</translation>

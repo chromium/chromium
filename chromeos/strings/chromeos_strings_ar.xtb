@@ -663,6 +663,7 @@
 <translation id="4333390807948134856">تم الضغط على المفتاح <ph name="KEY_NAME" />.</translation>
 <translation id="4334293042716981313">يمكنك أيضًا <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />كتابة طلبك الخاص<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">مفتاح</translation>
+<translation id="4356100841225547054">إيقاف الصوت</translation>
 <translation id="4361257691546579041">إنّ اسم نقطة الوصول من النوع التلقائي.</translation>
 <translation id="437294888293595148">إعادة ضبط جميع الاختصارات</translation>
 <translation id="437477383107495720">أرانب</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">الولاية</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">‏عليك فصل كابل USB في <ph name="DEVICE_NAME" /> ثم إعادة توصيله لمواصلة عملية التحديث</translation>
-<translation id="5095864667399748231">إيقاف أو تفعيل كتم الصوت</translation>
 <translation id="5099354524039520280">لأعلى</translation>
 <translation id="5107243100836678918">قد يتعارض الاختصار بدون مفتاح <ph name="META_KEY" /> مع اختصار بعض التطبيقات. اضغط على هذا الاختصار مرة أخرى لمواصلة استخدامه، أو اضغط على اختصار جديد يستخدِم مفتاح <ph name="KEY" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">المرادفات المشابهة:</translation>
@@ -1339,6 +1339,7 @@
 <translation id="7551123448725492271">الجهاز هو جهاز سماعي.</translation>
 <translation id="7559239713112547082">معاينة لقطة الشاشة</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
+<translation id="7561759921596375678">تفعيل الصوت</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏شاشة USB تعمل باللمس</translation>
 <translation id="757747079855995705">الحجر</translation>

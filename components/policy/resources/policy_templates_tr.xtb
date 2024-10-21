@@ -1754,9 +1754,6 @@ Bu politika ayarlanmadan bırakılır veya devre dışı değerine ayarlanırsa 
 <translation id="2258126710006312594">Uzaktan erişim kullanıcılarının ana makineye/ana makineden dosya aktarımı yapmalarına izin ver</translation>
 <translation id="225830954785359083">Sayfaların yüklemesi kaldırılırken pop-up göstermesini engelle</translation>
 <translation id="2261648512244797294">Kullanımdan kaldırılan privet yazdırmayı devre dışı bırak</translation>
-<translation id="2262153510491523927">Politika, Yanlış değerine ayarlandığında varsayılan olarak Android uygulamaları desteklenen bağlantıları yakalayabilir.
-Politika, Doğru değerine ayarlandığında varsayılan olarak tüm bağlantılar Chrome Tarayıcı'da açılır.
-Politika ayarlanmazsa varsayılan olarak Android uygulamaları desteklenen bağlantıları yakalar.</translation>
 <translation id="2263881357524831360"><ph name="ANDROID_NAME" /> sistemindeki <ph name="PRODUCT_NAME" /> içinde üçüncü taraf şifre yöneticileri kullanılmasına izin ver</translation>
 <translation id="2264286153777425328"><ph name="IDLE_TIMEOUT_POLICY_NAME" /> politikasındaki zaman aşımına ulaşıldığında gerçekleştirilecek işlemlerin listesi.
 
@@ -4025,11 +4022,6 @@ Not: Bu ayar sonucunda ana makine ve istemci tarafında her iki tarafın destekl
 <translation id="3989829840000169163">Tarayıcıdaki Eski Uzantı Noktalarını Engelle</translation>
 <translation id="3990391739475801018">Pil Tasarrufu Modu devre dışı bırakılır.</translation>
 <translation id="3990834929384096140">Sistem ses yankısı giderme özelliğini zorunlu kılma</translation>
-<translation id="3992082233013655355">Politika ayarlanırsa sessiz bir şekilde yüklenen izole web uygulamalarının (IWA) listesi belirtilir.
-      IWA'lar, normal web sayfalarında mevcut olmayan yararlı güvenlik özelliklerine sahip uygulamalardır. Bunlar, imzalanmış Web Bundle'da yer alır. İmzalanmış Web Bundle'ın ortak anahtarı, IWA'yı tanımlayan Web Bundle kimliğini oluşturmak için kullanılır.
-      Bu politika şimdilik yalnızca yönetilen misafir oturumunda geçerlidir.
-
-      Politikanın her liste öğesi, iki zorunlu alan içeren bir nesnedir: <ph name="URL_LABEL" /> güncelleme manifesti ve yalıtılmış web uygulamasının web paketi kimliği. Her öğede ayrıca yalıtılmış web uygulaması sürüm kanalının adını içeren isteğe bağlı bir alan da bulunabilir. "update_channel" ayarlanmazsa "default" değeri kullanılır.</translation>
 <translation id="3994043824457743421">Yeni sekme sayfasında orta aralık duyurusunu göster</translation>
 <translation id="399433537808390819">Birleşik Masaüstü modunu kullanıcının erişimine açma</translation>
 <translation id="3995880046827722248">Manifest v2 devre dışı</translation>

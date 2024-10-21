@@ -1803,6 +1803,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ინსტალაციის დაწყების შემდეგ მას ვეღარ გააუქმებთ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">დომენებში: <ph name="DOMAINS" /> არსებულ ნებისმიერ მოწყობილობასთან მონაცემთა მიმოცვლა</translation>
 <translation id="2270666014403455717">მიაკუთვნეთ გადამრთველი ქმედებას „არჩევა“</translation>
+<translation id="2270668657177045040">საიტი და მისი ქვედომენები ნახავენ, რომელი დაკავშირებული ვებ-აპებია დაყენებული თქვენს მოწყობილობაში.</translation>
 <translation id="2271452184061378400">თქვენი ჩანართების ჯგუფები აქ ინახება</translation>
 <translation id="2271986192355138465">შეიტყვეთ ვებ-აპების ინსტალაციის შესახებ</translation>
 <translation id="2272430695183451567">მინიჭებულია 0 გადამრთველი</translation>
@@ -5047,6 +5048,7 @@
 <translation id="4602776638371779614">ეს ჩანართი აქტიურად ასკანირებს Bluetooth მოწყობილობებს</translation>
 <translation id="4605026046465576953">ეს აპი ვერ გაიხსნება, რადგან იზოლირებული ვებ-აპების გაშვების ნებართვა არ გაქვთ.</translation>
 <translation id="4606551464649945562">საიტებისთვის თქვენი გარემოს 3-განზომილებიანი რუკის შექმნის ან კამერის პოზიციისთვის თვალის მიდევნების აკრძალვა</translation>
+<translation id="4606933160360542263">კლავიშების მორგებული კომბინაცია: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{წაიშალოს ჩანართების ჯგუფი?}other{წაიშალოს ჩანართების ჯგუფები?}}</translation>
 <translation id="4608500690299898628">ძ&amp;ებნა…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />-ს შეექმნა ხარვეზი</translation>
@@ -5328,6 +5330,7 @@
 <translation id="4823193082697477185">იქონიეთ წვდომა გაზიარებულ ფაილებზე, საქაღალდეებზე ან დისკებზე ადგილობრივ ქსელში. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">მომხმარებელთა და მოწყობილობათა პარამეტრების წაკითხვა და შეცვლა</translation>
 <translation id="4824037980212326045">Linux-ის სარეზერვო ასლის შექმნა და აღდგენა</translation>
+<translation id="4824263260587281352">შეცვლის კლავიშების კომბინაცია <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">გსურთ სინქრონიზაციის გაუქმება?</translation>
 <translation id="4825462365587146530">შეიტყვეთ მეტი Chrome Root Store-ის შესახებ ახალ ჩანართში.</translation>
 <translation id="4825532258163983651">წვდომის გასაღების წაშლა ვერ მოხერხდა</translation>
@@ -6283,6 +6286,7 @@
 <translation id="5517304475148761050">ეს აპი საჭიროებს წვდომას Play Store-ზე</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> — <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">ამოიშალოს მოქმედება „<ph name="ACTION_TO_REMOVE" />“</translation>
 <translation id="5521078259930077036">არის ეს ის საწყისი გვერდი, რომელსაც მოელოდით?</translation>
 <translation id="5522156646677899028">ეს გაფართოება შეიცავს უსაფრთხოების სერიოზულ ხარვეზს.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{თქვენმა ადმინისტრატორმა დააინსტალირა გაფართოება}other{თქვენმა ადმინისტრატორმა დააინსტალირა # გაფართოება}}</translation>
@@ -7822,6 +7826,7 @@
 <translation id="6676212663108450937">გირჩევთ, თქვენი ხმის მომზადებისას გამოიყენოთ ყურსასმენები</translation>
 <translation id="6676291960742508499">თქვენი ჩანართები, გვერდის სათაურები და URL-ები ეგზავნება Google-ს</translation>
 <translation id="667752334740867460">მიმდინარეობს Wi-Fi ქსელის ინფორმაციის მიღება...</translation>
+<translation id="6677527809400770913">ჟესტის „<ph name="GESTURE" />“ მინიჭება მოქმედებისთვის „<ph name="ACTION" />“</translation>
 <translation id="6678604587151240716">დიდ ტალღებს სცემს ზღვა, შორს კი ხმელეთი მოჩანს. ჰორიზონტზე ნარინჯისფერი შუქების ნიშნები ჩანს, ცა კი მთლიანად მუქია.</translation>
 <translation id="6678717876183468697">ფრაზის URL</translation>
 <translation id="6680442031740878064">ხელმისაწვდომია: <ph name="AVAILABLE_SPACE" /></translation>
@@ -8463,7 +8468,6 @@
 <translation id="7131431455372521159">ყველა TrackPoint გათიშულია</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, მოლოდინში</translation>
 <translation id="7134098520442464001">დააპატარავეთ ტექსტი</translation>
-<translation id="713415364723069564">საიტს შეუძლია აღმოაჩინოს, დაყენებულია თუ არა დაკავშირებული ვებ-აპები თქვენს მოწყობილობაში. ეს ინფორმაცია ხელმისაწვდომია საიტისთვის და მისი ქვედომენებისთვის.</translation>
 <translation id="7134951043985383439">ჩამოტვირთულია სახიფათო ფაილი</translation>
 <translation id="7135729336746831607">გსურთ Bluetooth-ის ჩართვა?</translation>
 <translation id="7136694880210472378">აქციეთ ნაგულისხმევად</translation>
@@ -8665,7 +8669,6 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> — მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშს F6</translation>
 <translation id="7290005709287747471">დეაქტივაცია</translation>
 <translation id="7290242001003353852">სისტემაში შესვლის ამ სერვისს, რომლის ჰოსტინგსაც <ph name="SAML_DOMAIN" /> უზრუნველყოფს, თქვენს კამერაზე წვდომა აქვს.</translation>
-<translation id="7290524928495200538">დაკავშირებული დაინსტალირებული აპები</translation>
 <translation id="7292067737327289208">თქვენს <ph name="BEGIN_LINK" />ბრაუზერს მართავს<ph name="END_LINK" /> თქვენი ორგანიზაცია, თქვენს <ph name="BEGIN_LINK" />პროფილს<ph name="END_LINK" /> კი — <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">სთხოვეთ მშობლებს პარამეტრებიდან წვდომის დაშვება</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
@@ -10027,6 +10030,7 @@
 <translation id="8261378640211443080">ეს გაფართოება არ არის <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ის სიაში და, შესაძლოა, დამატებულია თქვენი თანხმობის გარეშე.</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8261625296061301062">სკანერის პროგრამული უზრუნველყოფა დაინსტალირდა</translation>
+<translation id="8263149565724023141">დაკავშირებული აპები</translation>
 <translation id="8263228331881858381">წვდომის გასაღები შენახულია</translation>
 <translation id="8263336784344783289">დაარქვით სახელი ამ ჯგუფს</translation>
 <translation id="8264024885325823677">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
@@ -10268,6 +10272,7 @@
 <translation id="8429928917752180743">მეტი ვარიანტი <ph name="EXTENSION_NAME" />-ისთვის</translation>
 <translation id="8431190899827883166">შეხებების ჩვენება</translation>
 <translation id="843173223122814223">შექმენით ფონები ხელოვნური ინტელექტის დახმარებით</translation>
+<translation id="8431977087510901105">კურსორის პარამეტრების გადაყენება</translation>
 <translation id="8433186206711564395">ქსელის პარამეტრები</translation>
 <translation id="8434109185104929038">საკითხავი კუთხე</translation>
 <translation id="8434480141477525001">NaCl გამართვის პორტი</translation>

@@ -8462,7 +8462,6 @@
 <translation id="7131431455372521159">已經解除連接所有 TrackPoint</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" /> 等緊</translation>
 <translation id="7134098520442464001">縮小文字</translation>
-<translation id="713415364723069564">網站可判斷你的機器是否已安裝相關網絡軟件，而該網站及其子網域都能存取這類資料。</translation>
 <translation id="7134951043985383439">下載咗危險嘅檔案</translation>
 <translation id="7135729336746831607">要開啟藍牙嗎？</translation>
 <translation id="7136694880210472378">設定為預設</translation>
@@ -8664,7 +8663,6 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 要求咗權限，㩒 F6 掣就可以回覆</translation>
 <translation id="7290005709287747471">停用</translation>
 <translation id="7290242001003353852">此登入服務商 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的相機。</translation>
-<translation id="7290524928495200538">已安裝的相關應用程式</translation>
 <translation id="7292067737327289208">你的<ph name="BEGIN_LINK" />瀏覽器<ph name="END_LINK" />由機構管理，<ph name="BEGIN_LINK" />個人檔案<ph name="END_LINK" />則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="7292147651179697920">請家長前往「設定」授予存取權</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

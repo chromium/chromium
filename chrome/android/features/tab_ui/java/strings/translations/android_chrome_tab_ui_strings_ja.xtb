@@ -191,7 +191,6 @@
 <translation id="8820741577754260431">タブで値下げ情報を確認します</translation>
 <translation id="8887921976452567404">閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。</translation>
 <translation id="8915916167043355778">すべて閉じる</translation>
-<translation id="8926389886865778422">再表示させない</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{タブグループの <ph name="TABS_COUNT_ONE" /> 個のタブを展開します。}other{タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを展開します。}}</translation>
 <translation id="9090098097337832354">このショップに関する情報は非表示になっています</translation>
 <translation id="9111228330448174435">新しいタブグループの作成時にダイアログを表示する</translation>

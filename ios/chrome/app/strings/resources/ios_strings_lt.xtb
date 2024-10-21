@@ -488,7 +488,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Jei taip pat bendrinate „Chrome“ naudojimo ataskaitas, į tas ataskaitas įtraukiami URL, kuriais lankėtės</translation>
 <translation id="3245744387817103524">Pakeitimo nepavyko išsaugoti.</translation>
-<translation id="3253190369950280112">Gauti skirtukų pranešimus…</translation>
 <translation id="3272527697863656322">Atšaukti</translation>
 <translation id="3273510436356991673">Pagrindinio ekrano tinkinimas</translation>
 <translation id="3277021493514034324">Svetainės adresas nukopijuotas</translation>
@@ -1357,7 +1356,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7311244614769792472">Rezultatų nerasta</translation>
 <translation id="7313347584264171202">Čia rasite inkognito skirtukus</translation>
 <translation id="7336264872878993241">Atsisiųsta <ph name="PERCENT" /> proc.</translation>
-<translation id="7337727139976950452">Leisti skirtukų pranešimus</translation>
 <translation id="7346909386216857016">Gerai, supratau</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
 <translation id="7359341089141286329">Automatiškai stebėti visus aptiktus siuntinius</translation>
@@ -1653,6 +1651,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8601611099293226919">Paieška ekrane naudojant „Google Lens“</translation>
 <translation id="8605219856220328675">Uždaryti skirtuką.</translation>
 <translation id="8609743333007776886">Pridėti ${url} prie žymių</translation>
+<translation id="8611922158252451755">Visi nuorodą turintys žmonės gali redaguoti visus skirtukus, todėl bendrinkite atsakingai. Nuoroda baigia galioti po 48 val.</translation>
 <translation id="8620640915598389714">Redaguoti</translation>
 <translation id="8625706492572042370">Redaguoti pagrindinį ekraną</translation>
 <translation id="8633025649649592204">Naujausia veikla</translation>
@@ -1764,6 +1763,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9032405509996909363">Patvirtinti naršymo duomenų ištrynimą</translation>
 <translation id="9034759925968272072">Nebūsite atjungti nuo „Google“ paskyros. Adresu <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> gali būti pateikta kitų formų jūsų „Google“ paskyros istorija.</translation>
 <translation id="9039373489628511875">Pralaidumas</translation>
+<translation id="9057030985451135243">Sužinokite apie bendrinamas skirtukų grupes</translation>
 <translation id="9057972802061533987">Negalima stebėti. Kažkas nepavyko.</translation>
 <translation id="9065203028668620118">Redaguoti</translation>
 <translation id="9066097352053395362">Slėpti parinktį „Redaguoti žymę“</translation>

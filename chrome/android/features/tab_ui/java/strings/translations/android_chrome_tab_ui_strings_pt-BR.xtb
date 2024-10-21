@@ -191,7 +191,6 @@ Se você sair, vai perder imediatamente o acesso ao grupo de guias <ph name="TIT
 <translation id="8820741577754260431">Ver reduções no preço nas suas guias</translation>
 <translation id="8887921976452567404">Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias".</translation>
 <translation id="8915916167043355778">Fechar todas</translation>
-<translation id="8926389886865778422">Não perguntar novamente</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Abrir grupo de guias com <ph name="TABS_COUNT_ONE" /> guia.}one{Abrir grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Abrir grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="9090098097337832354">As informações sobre a loja estão fechadas</translation>
 <translation id="9111228330448174435">Mostrar caixa de diálogo na criação de um novo grupo de guias</translation>

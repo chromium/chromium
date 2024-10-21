@@ -663,6 +663,7 @@
 <translation id="4333390807948134856">Pritisnuta je tipka <ph name="KEY_NAME" /></translation>
 <translation id="4334293042716981313">Možete i <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />napisati vlastiti upit<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">tipka</translation>
+<translation id="4356100841225547054">Isključite zvuk</translation>
 <translation id="4361257691546579041">APN je zadana vrsta.</translation>
 <translation id="437294888293595148">Poništi sve prečice</translation>
 <translation id="437477383107495720">Zečevi</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">Država</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Iskopčajte USB kabl uređaja <ph name="DEVICE_NAME" />, a zatim ga ponovo umetnite da nastavite postupak ažuriranja</translation>
-<translation id="5095864667399748231">Uključivanje/isključivanje zvuka</translation>
 <translation id="5099354524039520280">gore</translation>
 <translation id="5107243100836678918">Prečica bez tipke "<ph name="META_KEY" />" možda se ne slaže s prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da je nastavite koristiti ili pritisnite novu prečicu pomoću tipke "<ph name="KEY" />". <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Slično:</translation>
@@ -1339,6 +1339,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="7551123448725492271">Uređaj je audio uređaj.</translation>
 <translation id="7559239713112547082">Snimak ekrana pregleda</translation>
 <translation id="7561454561030345039">Ovom radnjom upravlja vaš administrator</translation>
+<translation id="7561759921596375678">Uključite zvuk</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ekran na dodir</translation>
 <translation id="757747079855995705">kamena</translation>

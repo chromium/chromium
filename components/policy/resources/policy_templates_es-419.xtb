@@ -1803,9 +1803,6 @@ Si no estableces esta política o la inhabilitas, no se permitirá la transferen
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos hacia y desde el host</translation>
 <translation id="225830954785359083">Impedir que las páginas muestren ventanas emergentes durante las descargas</translation>
 <translation id="2261648512244797294">Inhabilita la impresión Privet obsoleta</translation>
-<translation id="2262153510491523927">Si estableces la política como falsa, las apps para Android podrán capturar vínculos compatibles de forma predeterminada.
-Si estableces la política como verdadera, todos los vínculos se abrirán en el navegador Chrome de forma predeterminada.
-Si no estableces la política, las apps de Android capturarán los vínculos compatibles de forma predeterminada.</translation>
 <translation id="2263881357524831360">Permitir el uso de administradores de contraseñas de terceros en <ph name="PRODUCT_NAME" /> el <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Lista de acciones para ejecutar cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
 
@@ -4091,11 +4088,6 @@ se pueden enviar informes de la empresa.
 <translation id="3989829840000169163">Bloquear los puntos de extensiones heredados del navegador</translation>
 <translation id="3990391739475801018">Inhabilitar el modo de Ahorro de batería</translation>
 <translation id="3990834929384096140">No aplicar de manera forzosa la cancelación del eco de audio del sistema</translation>
-<translation id="3992082233013655355">Si estableces la política, se especificará una lista de apps web aisladas (IWA) que se instalan de manera silenciosa.
-      Las IWA son aplicaciones que tienen propiedades de seguridad útiles que no están disponibles para las páginas web normales. Se agrupan en un paquete web firmado. La clave pública del paquete web firmado se usa para crear el ID del paquete web que identifica la IWA.
-      Hasta ahora, esta política solo funciona para las sesiones de invitado administradas.
-
-      Cada elemento de la lista de la política es un objeto que tiene dos campos obligatorios: el manifiesto de actualización <ph name="URL_LABEL" /> y el ID del paquete web de la app web aislada. Cada elemento también puede tener un campo opcional con el nombre del canal de versión de la IWA. Si no se establece "update_channel", se usará el valor "default".</translation>
 <translation id="3994043824457743421">Mostrar la notificación del espacio del medio en la página Nueva pestaña</translation>
 <translation id="399433537808390819">Hacer que el Modo de escritorio unificado no esté disponible para el usuario</translation>
 <translation id="3995880046827722248">Inhabilitar Manifest v2</translation>

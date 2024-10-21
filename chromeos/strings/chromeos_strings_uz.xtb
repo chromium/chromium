@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> tugmasi bosildi</translation>
 <translation id="4334293042716981313">Shuningdek, <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />mustaqil soʻrov kiritish<ph name="END_LINK_FREEFORM_SUBPAGE" /> mumkin.</translation>
 <translation id="4354430579665871434">tugma</translation>
+<translation id="4356100841225547054">Tovushni oʻchirish</translation>
 <translation id="4361257691546579041">APN standart tur.</translation>
 <translation id="437294888293595148">Barcha yorliqlarni tiklash</translation>
 <translation id="437477383107495720">quyonlar</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">Shtat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Yangilashda davom etish uchun <ph name="DEVICE_NAME" /> USB kabelini uzib, qayta ulang</translation>
-<translation id="5095864667399748231">Ovozli/ovozsiz qilish</translation>
 <translation id="5099354524039520280">yuqoriga</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> tugmasisiz tezkor tugma ayrim ilova tugmasiga ziddiyat chiqarishi mumkin. Foydalanishda davom etish uchun tezkor tugmani qayta bosing yoki yangisini <ph name="KEY" /> tugmasi bilan bosing. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Oʻxshash:</translation>
@@ -1339,6 +1339,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="7551123448725492271">Qurilma — audio qurilma.</translation>
 <translation id="7559239713112547082">Skrinshotga razm solish</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
+<translation id="7561759921596375678">Tovushni yoqish</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB sensorli ekran</translation>
 <translation id="757747079855995705">tosh</translation>

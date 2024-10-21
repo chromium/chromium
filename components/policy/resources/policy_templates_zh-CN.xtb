@@ -1718,9 +1718,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2258126710006312594">允许远程访问用户将文件传到主机或接收从主机传出的文件</translation>
 <translation id="225830954785359083">禁止页面在卸载期间显示弹出式窗口</translation>
 <translation id="2261648512244797294">停用已弃用的 Privet 本地打印</translation>
-<translation id="2262153510491523927">如果此政策设为 False，受支持的链接将默认在 Android 应用中打开。
-如果此政策设为 True，则所有链接都会默认在 Chrome 浏览器中打开。
-如果此政策未设置，受支持的链接将默认在 Android 应用中打开。</translation>
 <translation id="2263881357524831360">允许在 <ph name="ANDROID_NAME" /> 设备上的 <ph name="PRODUCT_NAME" /> 中使用第三方密码管理工具</translation>
 <translation id="2264286153777425328">在达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后要运行的一系列操作。
 
@@ -3927,11 +3924,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3989829840000169163">屏蔽浏览器旧版扩展点</translation>
 <translation id="3990391739475801018">系统将停用省电模式。</translation>
 <translation id="3990834929384096140">不强制启用系统音频回声消除功能</translation>
-<translation id="3992082233013655355">设置此政策将指定一系列静默安装的独立式 Web 应用 (IWA)。
-      IWA 拥有普通网页不具备的实用安全属性。IWA 会被打包成经过签名的 Web 软件包。经过签名的 Web 软件包的公钥用于创建可标识 IWA 的 Web 软件包 ID。
-      截至目前，此政策仅适用于受管理的访客会话。
-
-      此政策的每个列表项都是一个对象，包含两个必填字段：更新清单<ph name="URL_LABEL" />和 IWA 的 Web 软件包 ID。每个列表项还可以包含一个可选字段，指定 IWA 发布渠道名称。如果未设置“update_channel”，系统将使用“default”值。</translation>
 <translation id="3994043824457743421">在“新标签页”页面上显示中间槽通知</translation>
 <translation id="399433537808390819">不为用户提供统一桌面模式选项</translation>
 <translation id="3995880046827722248">停用 Manifest V2</translation>

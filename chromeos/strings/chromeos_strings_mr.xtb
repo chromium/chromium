@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> की दाबली</translation>
 <translation id="4334293042716981313">तुम्ही <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />तुमचा स्वतःचा प्रॉम्प्ट लिहिणे<ph name="END_LINK_FREEFORM_SUBPAGE" /> हेदेखील करू शकता</translation>
 <translation id="4354430579665871434">की</translation>
+<translation id="4356100841225547054">व्हॉल्यूम बंद करा</translation>
 <translation id="4361257691546579041">APN हे डीफॉल्ट या प्रकारचे आहे.</translation>
 <translation id="437294888293595148">सर्व शॉर्टकट रीसेट करा</translation>
 <translation id="437477383107495720">ससे</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> ची USB केबल अनप्लग करून नंतर ती पुन्हा घाला</translation>
-<translation id="5095864667399748231">म्यूटवर टॉगल करा</translation>
 <translation id="5099354524039520280">वर</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> कीशिवाय शॉर्टकटचा वापर केल्याने, काही अ‍ॅप्सच्या शॉर्टकटमध्ये समस्या निर्माण होऊ शकतात. हा शॉर्टकट वापरणे पुढे सुरू ठेवण्यासाठी, तो पुन्हा प्रेस करा किंवा <ph name="KEY" /> की वापरून नवीन शॉर्टकट प्रेस करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">समानार्थी:</translation>
@@ -1339,6 +1339,7 @@
 <translation id="7551123448725492271">डिव्हाइस हे ऑडिओ डिव्हाइस आहे.</translation>
 <translation id="7559239713112547082">स्क्रीनशॉटचे पूर्वावलोकन करा</translation>
 <translation id="7561454561030345039">ही कृती तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केली जाते</translation>
+<translation id="7561759921596375678">व्हॉल्यूम सुरू करा</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB टचस्क्रीन</translation>
 <translation id="757747079855995705">दगड</translation>

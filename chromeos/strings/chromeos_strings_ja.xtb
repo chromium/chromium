@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
 <translation id="4334293042716981313"><ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />独自のプロンプトを記述する<ph name="END_LINK_FREEFORM_SUBPAGE" />こともできます</translation>
 <translation id="4354430579665871434">キー</translation>
+<translation id="4356100841225547054">音量をオフにする</translation>
 <translation id="4361257691546579041">APN の種類はデフォルトです。</translation>
 <translation id="437294888293595148">すべてのショートカットをリセットする</translation>
 <translation id="437477383107495720">ウサギ</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">都道府県 / 州</translation>
 <translation id="5090362543162270857">IPsec（IKEv2）</translation>
 <translation id="5095761549884461003">更新プロセスを続行するには、<ph name="DEVICE_NAME" /> の USB ケーブルを取り外してから、もう一度差し込んでください</translation>
-<translation id="5095864667399748231">ミュートを切り替え</translation>
 <translation id="5099354524039520280">上</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> キーを使わないショートカットは、一部のアプリのショートカットと競合する可能性があります。そのまま使用する場合は、このショートカットをもう一度押します。または、<ph name="KEY" /> キーを使用した新しいショートカットを押します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">類義語:</translation>
@@ -1339,6 +1339,7 @@
 <translation id="7551123448725492271">デバイスの種類はオーディオ機器です。</translation>
 <translation id="7559239713112547082">スクリーンショットのプレビュー</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
+<translation id="7561759921596375678">音量をオンにする</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB タッチスクリーン</translation>
 <translation id="757747079855995705">石</translation>

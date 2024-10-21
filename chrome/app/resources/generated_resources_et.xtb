@@ -8468,7 +8468,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7131431455372521159">Kõik TrackPointsid on lahti ühendatud</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, ootel</translation>
 <translation id="7134098520442464001">Saate teksti suurust vähendada.</translation>
-<translation id="713415364723069564">Sait saab välja uurida, kas teie seadmesse on installitud seotud veebirakendusi. See teave on saadaval saidile ja selle alamdomeenidele.</translation>
 <translation id="7134951043985383439">Laaditi alla ohtlik fail</translation>
 <translation id="7135729336746831607">Kas lülitada Bluetooth sisse?</translation>
 <translation id="7136694880210472378">Muuda vaikevalikuks</translation>
@@ -8670,7 +8669,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – taotleti luba, vastamiseks vajutage klahvi F6</translation>
 <translation id="7290005709287747471">Inaktiveeri</translation>
 <translation id="7290242001003353852">See domeeni <ph name="SAML_DOMAIN" /> hostitud sisselogimisteenus pääseb teie kaamerale juurde.</translation>
-<translation id="7290524928495200538">Seotud installitud rakendused</translation>
 <translation id="7292067737327289208">Teie <ph name="BEGIN_LINK" />brauserit haldab<ph name="END_LINK" /> teie organisatsioon ja teie <ph name="BEGIN_LINK" />profiili haldab<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Palu vanemal seadetes juurdepääs lubada</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

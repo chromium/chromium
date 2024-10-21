@@ -663,6 +663,7 @@
 <translation id="4333390807948134856">A fost apăsată tasta <ph name="KEY_NAME" /></translation>
 <translation id="4334293042716981313">În plus, poți să <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />scrii propria solicitare<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">tastă</translation>
+<translation id="4356100841225547054">Dezactivează sunetul</translation>
 <translation id="4361257691546579041">APN este tipul prestabilit.</translation>
 <translation id="437294888293595148">Resetează toate comenzile rapide</translation>
 <translation id="437477383107495720">iepurași</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Deconectează cablul USB <ph name="DEVICE_NAME" />, apoi reintrodu-l pentru a continua procesul de actualizare</translation>
-<translation id="5095864667399748231">Activează / dezactivează sunetul</translation>
 <translation id="5099354524039520280">sus</translation>
 <translation id="5107243100836678918">Comanda rapidă fără <ph name="META_KEY" /> poate intra în conflict cu comanda rapidă a unei aplicații. Introdu din nou comanda rapidă ca să o folosești în continuare sau introdu o nouă comandă rapidă care folosește tasta <ph name="KEY" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Sinonime:</translation>
@@ -1339,6 +1339,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7551123448725492271">Dispozitivul este un dispozitiv audio.</translation>
 <translation id="7559239713112547082">Previzualizează captura de ecran</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>
+<translation id="7561759921596375678">Activează sunetul</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ecran tactil USB</translation>
 <translation id="757747079855995705">piatră</translation>

@@ -663,6 +663,7 @@
 <translation id="4333390807948134856">Tasti <ph name="KEY_NAME" /> është i shtypur</translation>
 <translation id="4334293042716981313">Gjithashtu, mund të <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />shkruash kërkesën tënde<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">tast</translation>
+<translation id="4356100841225547054">Çaktivizo volumin</translation>
 <translation id="4361257691546579041">APN-ja është e llojit të parazgjedhur.</translation>
 <translation id="437294888293595148">Rivendos të gjitha shkurtoret</translation>
 <translation id="437477383107495720">lepuj</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">Shteti</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Hiq kabllon USB të "<ph name="DEVICE_NAME" />" dhe më pas fute sërish për të vazhduar procesin e përditësimit</translation>
-<translation id="5095864667399748231">Aktivizo/çaktivizo zërin</translation>
 <translation id="5099354524039520280">lart</translation>
 <translation id="5107243100836678918">Shkurtorja pa tastin "<ph name="META_KEY" />" mund të jetë në konflikt me shkurtoren e një aplikacioni tjetër. Shtyp përsëri këtë shkurtore për të vazhduar ta përdorësh ose shtyp një shkurtore të re duke përdorur tastin "<ph name="KEY" />". <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Të ngjashme:</translation>
@@ -1339,6 +1339,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7551123448725492271">Pajisja është një pajisje audio.</translation>
 <translation id="7559239713112547082">Shiko paraprakisht pamjen e ekranit</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
+<translation id="7561759921596375678">Aktivizo volumin</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekrani me prekje me USB</translation>
 <translation id="757747079855995705">gur</translation>

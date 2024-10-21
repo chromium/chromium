@@ -1729,9 +1729,6 @@ Si no se establece esta política o se inhabilita, no se permitirá la transfere
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos al host y desde el host</translation>
 <translation id="225830954785359083">Impedir que las páginas muestren ventanas emergentes durante la descarga</translation>
 <translation id="2261648512244797294">Inhabilitar el protocolo Privet de impresión obsoleto</translation>
-<translation id="2262153510491523927">Si se asigna el valor False a la política, las aplicaciones Android podrán abrir los enlaces admitidos de forma predeterminada.
-Si se asigna el valor True a la política, todos los enlaces se abrirán en el navegador Chrome de forma predeterminada.
-Si no se define esta política, las aplicaciones Android abrirán los enlaces admitidos de forma predeterminada.</translation>
 <translation id="2263881357524831360">Permitir el uso de gestores de contraseñas de terceros en <ph name="PRODUCT_NAME" /> para <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Lista de acciones que se ejecutarán cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
 
@@ -3954,11 +3951,6 @@ Nota: Si el ajuste implica que ni el host ni el cliente admitan métodos de aute
 <translation id="3989829840000169163">Bloquea los puntos de extensión antiguos del navegador</translation>
 <translation id="3990391739475801018">El modo Ahorro de batería se inhabilitará.</translation>
 <translation id="3990834929384096140">No implementar obligatoriamente la cancelación del eco de audio del sistema</translation>
-<translation id="3992082233013655355">Si se establece esta política, se especificará una lista de aplicaciones web aisladas (IWAs) que se instalarán de forma silenciosa.
-      Las IWAs son aplicaciones que tienen propiedades de seguridad útiles que no están disponibles en las páginas web normales. Cada IWA está empaquetada en un paquete web firmado. La clave pública de cada paquete web firmado se usa para crear el ID del paquete web que identifica a la IWA correspondiente.
-      De momento, esta política solo se puede aplicar a las sesiones de invitado gestionadas.
-
-      Cada elemento de la lista de esta política es un objeto que tiene dos campos obligatorios: el archivo de manifiesto de actualización <ph name="URL_LABEL" /> y el ID del paquete web de la aplicación web aislada. Cada elemento también puede tener un campo opcional con el nombre del canal de lanzamiento de la IWA. Si no se define "update_channel", se usará el valor "default".</translation>
 <translation id="3994043824457743421">Mostrar el anuncio del espacio intermedio en la página Nueva pestaña</translation>
 <translation id="399433537808390819">Hacer que el modo Escritorio unificado no esté disponible para el usuario</translation>
 <translation id="3995880046827722248">Manifest V2 está inhabilitado</translation>

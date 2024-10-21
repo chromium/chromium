@@ -191,7 +191,6 @@ Ayrılırsanız "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişiminizi anınd
 <translation id="8820741577754260431">Sekmelerinizde fiyat düşüşlerini görün</translation>
 <translation id="8887921976452567404">Kapattığınız sekmeleri ve grupları, Son sekmeler bölümünden ve Sekme grupları bölümünden yeniden açabilirsiniz.</translation>
 <translation id="8915916167043355778">Tümünü kapat</translation>
-<translation id="8926389886865778422">Bir daha sorma</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli sekme grubunu genişlet.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu genişlet.}}</translation>
 <translation id="9090098097337832354">Bu mağazayla ilgili bilgiler kapatıldı</translation>
 <translation id="9111228330448174435">Yeni sekme grubu oluşturulurken iletişim kutusunu göster</translation>

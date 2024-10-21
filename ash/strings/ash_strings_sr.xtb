@@ -979,6 +979,7 @@
 <translation id="4356872429719185452">Прегледајте детаље хотспота. Хотспот се укључује.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Снима се</translation>
 <translation id="4371348193907997655">Подешавања пребацивања</translation>
+<translation id="4371834685492830207">PIN мора да садржи само важеће знакове</translation>
 <translation id="4375482231364171368">Претражи у траци за адресу</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /> посто</translation>
 <translation id="4378551569595875038">Повезује се...</translation>
@@ -1565,6 +1566,7 @@
 <translation id="6232416233079464213">Извор: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> тренутно користи камеру и микрофон</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Лозинка може да садржи само важеће знакове</translation>
 <translation id="6240603910551255087">Горње дугме</translation>
 <translation id="6240821072888636753">Увек питај</translation>
 <translation id="6247728804802644171">Отворите обавештења</translation>

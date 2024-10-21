@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> düyməsi basılıb</translation>
 <translation id="4334293042716981313"><ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />Öz sorğunuzu da yaza<ph name="END_LINK_FREEFORM_SUBPAGE" /> bilərsiniz</translation>
 <translation id="4354430579665871434">düymə</translation>
+<translation id="4356100841225547054">Səs səviyyəsini deaktiv edin</translation>
 <translation id="4361257691546579041">APN növü: defolt.</translation>
 <translation id="437294888293595148">Qısayolları sıfırlayın</translation>
 <translation id="437477383107495720">kiçik dovşanlar</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">Dövlət</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Güncəllənmə prosesinə davam etmək üçün <ph name="DEVICE_NAME" /> USB kabelini ayırın və yenidən taxın</translation>
-<translation id="5095864667399748231">Səssiz rejimə keçirin</translation>
 <translation id="5099354524039520280">yuxarı</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> düyməsi olmayan qısayol bəzi tətbiq qısayolları ilə ziddiyyətli ola bilər. Bu qısayoldan istifadəyə davam etmək üçün ona yenidən basın, yaxud <ph name="KEY" /> düyməsindən istifadə edərək yeni qısayola basın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Oxşar:</translation>
@@ -1339,6 +1339,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7551123448725492271">Cihaz audio cihazdır.</translation>
 <translation id="7559239713112547082">Skrinşotu Önizləyin</translation>
 <translation id="7561454561030345039">Bu əməliyyat admininiz tərəfindən idarə olunur</translation>
+<translation id="7561759921596375678">Səs səviyyəsini aktiv edin</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB taçskrin</translation>
 <translation id="757747079855995705">daş</translation>

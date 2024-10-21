@@ -1805,9 +1805,6 @@ Se for deixada sem definição ou desativada, a transferência de arquivos não 
 <translation id="2258126710006312594">Permitir que usuários de acesso remoto transfiram arquivos para/do host</translation>
 <translation id="225830954785359083">Impedir que as páginas mostrem pop-ups durante o descarregamento</translation>
 <translation id="2261648512244797294">Desativar a impressão com o protocolo Privet suspenso</translation>
-<translation id="2262153510491523927">Se a política for definida como falsa, os apps Android poderão capturar links compatíveis por padrão.
-Se a política for definida como verdadeira, todos os links serão abertos no navegador Chrome por padrão.
-Se a política for deixada sem definição, os apps para Android vão capturar links compatíveis por padrão.</translation>
 <translation id="2263881357524831360">Permitir o uso de gerenciadores de senhas de terceiros no <ph name="PRODUCT_NAME" /> no <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Lista de ações a serem executadas quando o tempo limite da política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> for atingido.
 
@@ -4093,11 +4090,6 @@ enviar relatórios corporativos.
 <translation id="3989829840000169163">Bloquear pontos de extensão legados do navegador</translation>
 <translation id="3990391739475801018">O modo Economia de bateria vai ser desativado.</translation>
 <translation id="3990834929384096140">Não aplicar o cancelamento de eco do áudio do sistema</translation>
-<translation id="3992082233013655355">A definição da política especifica uma lista de Apps Isolados da Web (AIWs) que são instalados sem interação do usuário.
-      AIWs são apps que têm propriedades de segurança úteis que não estão presentes em páginas da Web normais. Eles são incluídos em um Pacote assinado da Web. A chave pública do Pacote assinado da Web é usada para criar o ID do pacote que identifica o AIW.
-      Até agora, essa política funciona apenas para a Sessão de visitante gerenciada.
-
-      Cada item da lista da política é um objeto com dois campos obrigatórios: o manifesto de atualização <ph name="URL_LABEL" /> e o ID do pacote do App Isolado da Web. Cada item também pode ter um campo opcional com o nome do canal de lançamento do AIW. Se o "update_channel" não for definido, o valor padrão será usado.</translation>
 <translation id="3994043824457743421">Mostrar o aviso abaixo da caixa de pesquisa na página "Nova guia"</translation>
 <translation id="399433537808390819">Não disponibilizar o Modo área de trabalho unificada para o usuário</translation>
 <translation id="3995880046827722248">O Manifest v2 está desativado</translation>

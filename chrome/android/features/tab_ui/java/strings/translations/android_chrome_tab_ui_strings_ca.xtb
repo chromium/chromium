@@ -191,7 +191,6 @@ Si l'abandones, perdràs immediatament l'accés al grup de pestanyes "<ph name="
 <translation id="8820741577754260431">Consulta les baixades de preu a les pestanyes</translation>
 <translation id="8887921976452567404">Pots tornar a obrir les pestanyes i els grups tancats des de les seccions Pestanyes recents i Grups de pestanyes.</translation>
 <translation id="8915916167043355778">Tanca-ho tot</translation>
-<translation id="8926389886865778422">No m'ho tornis a preguntar</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Desplega el grup format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="9090098097337832354">S'ha tancat la informació sobre aquesta botiga</translation>
 <translation id="9111228330448174435">Mostra un quadre de diàleg en crear un grup de pestanyes nou</translation>

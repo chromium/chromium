@@ -1691,9 +1691,6 @@
 <translation id="2258126710006312594">允許遠端存取使用者向主機傳輸檔案，或從主機接收檔案</translation>
 <translation id="225830954785359083">禁止網頁在卸載時顯示彈出式視窗</translation>
 <translation id="2261648512244797294">停用已淘汰的 Privet 列印功能</translation>
-<translation id="2262153510491523927">如果將這項政策設為 False，Android 應用程式預設將可擷取支援的連結。
-如果將這項政策設為 True，預設會在 Chrome 瀏覽器中開啟所有連結。
-如果不設定這項政策，Android 應用程式預設會擷取支援的連結。</translation>
 <translation id="2263881357524831360">允許在 <ph name="ANDROID_NAME" /> 的 <ph name="PRODUCT_NAME" /> 中使用第三方密碼管理工具</translation>
 <translation id="2264286153777425328">如果達到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策指定的逾時時間，系統要執行的動作清單。
 
@@ -3861,11 +3858,6 @@
 <translation id="3989829840000169163">封鎖瀏覽器的舊版擴充點</translation>
 <translation id="3990391739475801018">裝置將停用省電模式。</translation>
 <translation id="3990834929384096140">不強制啟用系統音訊回音消除功能</translation>
-<translation id="3992082233013655355">如果設定這項政策，就能指定無訊息安裝的隔離網頁應用程式 (IWA) 清單。
-      相較於一般網頁，IWA 應用程式有實用的安全屬性，而且是以 Signed Web Bundle 的形式包裝。Signed Web Bundle 的公開金鑰會用於建立可辨識 IWA 的網頁軟體包 ID。
-      這項政策目前僅適用於受管理的訪客工作階段。
-
-      這項政策中的每個清單項目都是一個物件，當中有兩個必填欄位：更新資訊清單 (<ph name="URL_LABEL" />) 和隔離網頁應用程式的網頁軟體包 ID。每個項目還有一個選用欄位，用於指定 IWA 發布版本名稱。如果未設定「update_channel」，系統會使用「default」的值。</translation>
 <translation id="3994043824457743421">在新分頁顯示中間版位公告</translation>
 <translation id="399433537808390819">不要讓使用者使用整合桌面模式</translation>
 <translation id="3995880046827722248">資訊清單 v2 已停用</translation>

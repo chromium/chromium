@@ -663,6 +663,7 @@
 <translation id="4333390807948134856">Napindot ang key na <ph name="KEY_NAME" /></translation>
 <translation id="4334293042716981313">Puwede ka ring <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />magsulat ng sarili mong prompt<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">key</translation>
+<translation id="4356100841225547054">I-off ang volume</translation>
 <translation id="4361257691546579041">Default ang uri ng APN.</translation>
 <translation id="437294888293595148">I-reset ang lahat ng shortcut</translation>
 <translation id="437477383107495720">mga kuneho</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Bunutin ang USB cable ng <ph name="DEVICE_NAME" /> at ilagay ulit ito para ituloy ang proseso ng pag-update</translation>
-<translation id="5095864667399748231">I-toggle ang pagkaka-mute</translation>
 <translation id="5099354524039520280">pataas</translation>
 <translation id="5107243100836678918">Posibleng sumalungat sa shortcut ng ilang app ang shortcut na walang <ph name="META_KEY" /> key. Pindutin ulit ang shortcut na ito para ituloy ang paggamit nito, o pumindot ng bagong shortcut gamit ang <ph name="KEY" /> key. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Katulad:</translation>
@@ -1339,6 +1339,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7551123448725492271">Audio device ang device.</translation>
 <translation id="7559239713112547082">I-preview ang Screenshot</translation>
 <translation id="7561454561030345039">Pinapamahalaan ng iyong administrator ang pagkilos na ito.</translation>
+<translation id="7561759921596375678">I-on ang volume</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB na touchscreen</translation>
 <translation id="757747079855995705">bato</translation>

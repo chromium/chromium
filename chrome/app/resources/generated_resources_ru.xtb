@@ -8471,7 +8471,6 @@
 <translation id="7131431455372521159">Все джойстики TrackPoint отключены</translation>
 <translation id="7131896909366247105">Ожидание установки приложения "<ph name="APP_NAME" />"</translation>
 <translation id="7134098520442464001">Уменьшить размер текста</translation>
-<translation id="713415364723069564">Сайт может определить, установлены ли на вашем устройстве связанные с ним веб-приложения. Эти данные доступны сайту и его субдоменам.</translation>
 <translation id="7134951043985383439">Скачан опасный файл</translation>
 <translation id="7135729336746831607">Включить Bluetooth?</translation>
 <translation id="7136694880210472378">Использовать по умолчанию</translation>
@@ -8673,7 +8672,6 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите F6, чтобы ответить.</translation>
 <translation id="7290005709287747471">Отключить</translation>
 <translation id="7290242001003353852">Сервису входа, размещенному в домене <ph name="SAML_DOMAIN" />, разрешен доступ к вашей камере.</translation>
-<translation id="7290524928495200538">Установленные приложения, связанные с сайтом</translation>
 <translation id="7292067737327289208">Этим <ph name="BEGIN_LINK" />браузером управляет<ph name="END_LINK" /> ваша организация, а <ph name="BEGIN_LINK" />профилем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="7292147651179697920">Попроси родителя разрешить доступ в настройках.</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

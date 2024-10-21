@@ -8467,7 +8467,6 @@
 <translation id="7131431455372521159">Усе джойсцікі TrackPoint адключаны</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, чакаецца ўсталяванне</translation>
 <translation id="7134098520442464001">Паменшыць тэкст</translation>
-<translation id="713415364723069564">Сайт можа атрымаць доступ да інфармацыі аб усталяванні звязаных вэб-праграм на вашу прыладу. Гэта інфармацыя даступная для сайта і яго субдаменаў.</translation>
 <translation id="7134951043985383439">Спампаваны небяспечны файл</translation>
 <translation id="7135729336746831607">Уключыць Bluetooth?</translation>
 <translation id="7136694880210472378">Зрабіць стандартнай пошукавай сістэмай</translation>
@@ -8669,7 +8668,6 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Запытаны дазвол. Каб адказаць, націсніце F6</translation>
 <translation id="7290005709287747471">Выключыць</translation>
 <translation id="7290242001003353852">Гэты сэрвіс уваходу, размешчаны на дамене <ph name="SAML_DOMAIN" />, атрымлівае доступ да вашай камеры.</translation>
-<translation id="7290524928495200538">Усталяваныя звязаныя праграмы</translation>
 <translation id="7292067737327289208">Вашым <ph name="BEGIN_LINK" />браўзерам кіруе<ph name="END_LINK" /> ваша арганізацыя, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Папрасі бацькоў адкрыць у Наладах доступ</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="100421257800558142">Tekan kekunci anak panah ke kanan</translation>
 <translation id="100506692671054486">tiada perintah sebelumnya</translation>
 <translation id="1009046985747440431">Tekan anak panah ke atas atau ke bawah untuk menavigasi; enter untuk mengaktifkan</translation>
 <translation id="1011903154582639569">Cari kekunci, kemudian angkat untuk menaip</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Butang Togol</translation>
 <translation id="1299774449519412690">Biru Langit Cerah</translation>
 <translation id="1303806948938513162">Ketik dengan 4 jari untuk memasuki menu ChromeVox</translation>
+<translation id="1304162325618937178">Tekan kekunci ruang</translation>
 <translation id="1313373992684326101">Beralih ke bahagian sebelumnya. Contoh termasuk Dulang Status dan Pelancar.</translation>
 <translation id="1315077335264761176">Orientasi sentuhan</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, butang radio item menu dinyahpilih</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Gandum</translation>
 <translation id="1618597272655350600">Mengumumkan huraian lengkap tentang kedudukan semasa</translation>
 <translation id="1627222324347828322">Putih Melepak</translation>
+<translation id="1632810692616643246">Masuk atau keluar daripada mod tatal</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{lebih besar daripada}other{# tanda lebih besar daripada}}</translation>
 <translation id="1653266918374749391">Tajuk tahap 3 sebelumnya</translation>
 <translation id="1657616855184033958">Tunjukkan penapis strim acara</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Tiada kawalan sebelumnya</translation>
 <translation id="2045606329038304310">Kawalan medan borang</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2067158561093481039">Lakukan gabungan kekunci tersuai</translation>
 <translation id="2086961585857038472">Perkataan Seterusnya</translation>
 <translation id="2087981446621639008">btrn snrprhl</translation>
 <translation id="2089387485033699258">ms</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Coklat Pelana</translation>
 <translation id="2199994615414171367">Matematik sebelumnya</translation>
 <translation id="2203046366315513658">Kurangkan nilai</translation>
+<translation id="2206580811360135054">Tunjukkan atau sembunyikan ikhtisar tetingkap</translation>
 <translation id="2216790501338699346">URL Pautan: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Undur satu aksara ke belakang</translation>
 <translation id="2220529011494928058">Laporkan isu</translation>
+<translation id="2239819015858077439">Tekan kekunci anak panah ke bawah</translation>
 <translation id="2243633977138166243">Tekan anak panah ke kiri atau kanan untuk menavigasi; enter untuk mengaktifkan</translation>
 <translation id="224426591676115802">Tiada suara yang tersedia untuk bahasa: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Menghentikan Mod Belajar</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Merah India</translation>
 <translation id="4432896207833262240">Kandungan bertanda</translation>
 <translation id="4437615272777527928">Taip untuk mencari dalam menu. Gunakan anak panah ke atas dan ke bawah untuk pergi ke setiap hasil carian. Gunakan anak panah ke kiri dan ke kanan untuk melaraskan karet teks dan bergerak daripada satu menu kepada menu yang lain.</translation>
+<translation id="4441677939526091190">Tekan kekunci anak panah ke atas</translation>
 <translation id="4453530046591759283">Untuk melangkau kepada bahagian lain skrin, seperti bar alat atau dulang sistem, tekan Control+F1. F1 ialah kekunci pertama sebelah kanan kekunci escape.</translation>
 <translation id="4457472090507035117">Pilih suara semasa:</translation>
 <translation id="4476183483923481720">baris baharu</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Gunakan ciri kebolehaksesan skrin sentuh Chromebook</translation>
 <translation id="5655682562155942719">Perintah Melangkau</translation>
 <translation id="56637627897541303">Kawasan teks</translation>
+<translation id="5666746275818170484">Tekan kekunci anak panah ke kiri</translation>
 <translation id="5669637233317991674">Tekan Carian + Anak Panah ke Kanan atau Carian + Anak Panah ke Kiri untuk menavigasi pelajaran ini</translation>
 <translation id="5677240841070992068">Lokasi semasa</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Butang pop timbul</translation>
 <translation id="7167657087543110">gema aksara</translation>
 <translation id="7173102181852295013">Biru Malam</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Diperluas</translation>
 <translation id="7209751026933045237">Tiada peluncur seterusnya</translation>
 <translation id="7218782500591078391">Batang Emas</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">Wilayah</translation>
 <translation id="8382679411218029383">Autolengkap sebaris dan senarai</translation>
 <translation id="8394908167088220973">Main/Jeda Media</translation>
+<translation id="8409502156784390079">Mod tatal aktif</translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8428603554127842284">tahap <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">Lupa</translation>
 <translation id="8989104346085848538">Untuk menghentikan sebarang pertuturan ChromeVox semasa, tekan kekunci Control.</translation>
 <translation id="9014206344398081366">Tutorial ChromeVox</translation>
+<translation id="9034592733577768445">Kawalan wajah dijeda</translation>
 <translation id="9040132695316389094">Tajuk 1</translation>
 <translation id="9061884144798498064">Pilih jadual braille 8 titik:</translation>
 <translation id="9063946545000394379">beralih ke aksara sebelumnya</translation>

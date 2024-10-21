@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" />-tasten trykkes på</translation>
 <translation id="4334293042716981313">Du kan også <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />skrive din egen forespørsel<ph name="END_LINK_FREEFORM_SUBPAGE" />.</translation>
 <translation id="4354430579665871434">tast</translation>
+<translation id="4356100841225547054">Slå av lyden</translation>
 <translation id="4361257691546579041">APN er type standard.</translation>
 <translation id="437294888293595148">Tilbakestill alle snarveier</translation>
 <translation id="437477383107495720">kaniner</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">Fylke/delstat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Koble fra USB-kabelen for <ph name="DEVICE_NAME" /> og sett den inn igjen for å fortsette oppdateringsprosessen</translation>
-<translation id="5095864667399748231">Slå av/på lyden</translation>
 <translation id="5099354524039520280">opp</translation>
 <translation id="5107243100836678918">Hurtigtaster uten <ph name="META_KEY" />-tasten kan komme i konflikt med hurtigtastene i enkelte apper. Trykk på hurtigtasten en gang til for å fortsette å bruke den, eller trykk på en ny hurtigtast som inneholder <ph name="KEY" />-tasten. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Lignende:</translation>
@@ -1339,6 +1339,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7551123448725492271">Enheten er en lydenhet.</translation>
 <translation id="7559239713112547082">Se forhåndsvisning av skjermbildet</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>
+<translation id="7561759921596375678">Slå på lyd</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-berøringsskjerm</translation>
 <translation id="757747079855995705">stein</translation>

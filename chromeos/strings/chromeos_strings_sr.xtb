@@ -670,6 +670,7 @@
 <translation id="4333390807948134856">Тастер <ph name="KEY_NAME" /> је притиснут</translation>
 <translation id="4334293042716981313">Можете и да <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />напишете свој упит<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">тастер</translation>
+<translation id="4356100841225547054">Искључите звук</translation>
 <translation id="4361257691546579041">Назив приступне тачке је подразумеваног типа.</translation>
 <translation id="437294888293595148">Ресетуј све пречице</translation>
 <translation id="437477383107495720">зеке</translation>
@@ -823,7 +824,6 @@
 <translation id="5089810972385038852">Држава</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Искључите USB кабл <ph name="DEVICE_NAME" />, па га поново прикључите да бисте наставили процес ажурирања</translation>
-<translation id="5095864667399748231">Укључите/искључите звук</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Пречица без тастера <ph name="META_KEY" /> може да буде у супротности са пречицом неке апликације. Поново притисните ову пречицу да бисте наставили да је користите или притисните нову пречицу помоћу тастера <ph name="KEY" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Слично:</translation>
@@ -1353,6 +1353,7 @@
         <ph name="BEGIN_PARAGRAPH2" />Моћи ћете поново да користите овај уређај <ph name="DAY" /> у <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Преглед снимка екрана</translation>
 <translation id="7561454561030345039">Овим подешавањем управља администратор</translation>
+<translation id="7561759921596375678">Укључите звук</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB додирни екран</translation>
 <translation id="757747079855995705">камена</translation>

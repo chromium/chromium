@@ -191,7 +191,6 @@
 <translation id="8820741577754260431">अपने टैब पर कीमत में कमी देखें</translation>
 <translation id="8887921976452567404">बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं.</translation>
 <translation id="8915916167043355778">सभी बंद करें</translation>
-<translation id="8926389886865778422">दोबारा न पूछें</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बड़ा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें.}}</translation>
 <translation id="9090098097337832354">इस स्टोर के बारे में जानकारी दिखाने वाली स्क्रीन बंद हो गई है</translation>
 <translation id="9111228330448174435">नया टैब ग्रुप बनाने पर डायलॉग दिखाएं</translation>

@@ -8478,7 +8478,6 @@
 <translation id="7131431455372521159">Όλα τα TrackPoint αποσυνδέθηκαν</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, σε αναμονή</translation>
 <translation id="7134098520442464001">Σμίκρυνση κειμένου</translation>
-<translation id="713415364723069564">Ένας ιστότοπος μπορεί να δει αν οι σχετικές εφαρμογές ιστού είναι εγκατεστημένες στον υπολογιστή σας. Αυτές οι πληροφορίες είναι διαθέσιμες στον ιστότοπο και τους υποτομείς του.</translation>
 <translation id="7134951043985383439">Έγινε λήψη επικίνδυνου αρχείου</translation>
 <translation id="7135729336746831607">Ενεργοποίηση Bluetooth;</translation>
 <translation id="7136694880210472378">Ορισμός ως προεπιλογής</translation>
@@ -8680,7 +8679,6 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Ζητήθηκε άδεια, πατήστε F6 για απάντηση.</translation>
 <translation id="7290005709287747471">Απενεργοποίηση</translation>
 <translation id="7290242001003353852">Η υπηρεσία σύνδεσης που φιλοξενείται από τον τομέα <ph name="SAML_DOMAIN" />, έχει πρόσβαση στην κάμερά σας.</translation>
-<translation id="7290524928495200538">Σχετικές εγκατεστημένες εφαρμογές</translation>
 <translation id="7292067737327289208">Το <ph name="BEGIN_LINK" />πρόγραμμα περιήγησης είναι υπό τη διαχείριση<ph name="END_LINK" /> του οργανισμού σας και το <ph name="BEGIN_LINK" />προφίλ σας υπό τη διαχείριση<ph name="END_LINK" /> του τομέα <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Ζητήστε από τον γονέα σου να επιτρέψει την πρόσβαση από τις Ρυθμίσεις</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

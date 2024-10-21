@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> की थिचियो</translation>
 <translation id="4334293042716981313">तपाईं <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />आफ्नै प्रम्प्ट लेख्न<ph name="END_LINK_FREEFORM_SUBPAGE" /> पनि सक्नुहुन्छ</translation>
 <translation id="4354430579665871434">की</translation>
+<translation id="4356100841225547054">भोल्युम अफ गर्नुहोस्</translation>
 <translation id="4361257691546579041">APN को प्रकार डिफल्ट सेट गरिएको छ।</translation>
 <translation id="437294888293595148">सबै सर्टकटहरू रिसेट गर्नुहोस्</translation>
 <translation id="437477383107495720">खरायोहरू</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> को USB केबल निकाल्नुहोस् अनि फेरि घुसाउनुहोस्</translation>
-<translation id="5095864667399748231">म्युट गर्ने विकल्प टगल गर्नुहोस्</translation>
 <translation id="5099354524039520280">माथि</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> की समावेश नगरिएको सर्टकट केही एपको सर्टकटसँग जुध्न सक्छ। यो सर्टकट प्रयोग गरिराख्न उक्त सर्टकट फेरि थिच्नुहोस् वा <ph name="KEY" /> की प्रयोग गरेर नयाँ सर्टकट थिच्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">समानार्थक:</translation>
@@ -1339,6 +1339,7 @@
 <translation id="7551123448725492271">यो डिभाइस अडियो डिभाइस हो।</translation>
 <translation id="7559239713112547082">स्क्रिनसट प्रिभ्यू गर्नुहोस्</translation>
 <translation id="7561454561030345039">यो कार्य तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको छ</translation>
+<translation id="7561759921596375678">भोल्युम अन गर्नुहोस्</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB टचस्क्रिन</translation>
 <translation id="757747079855995705">ढुङ्गा</translation>

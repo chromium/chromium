@@ -8464,7 +8464,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7131431455372521159">Tous les trackpoints ont été déconnectés</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" /> en attente</translation>
 <translation id="7134098520442464001">Réduit la taille du texte</translation>
-<translation id="713415364723069564">Un site peut déterminer si des applis Web associées sont installées sur votre machine. Le site et ses sous-domaines peuvent accéder à ces informations.</translation>
 <translation id="7134951043985383439">Fichier dangereux téléchargé</translation>
 <translation id="7135729336746831607">Activer le Bluetooth ?</translation>
 <translation id="7136694880210472378">Utiliser par défaut</translation>
@@ -8666,7 +8665,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> : autorisation demandée, appuyez sur F6 pour répondre</translation>
 <translation id="7290005709287747471">Désactiver</translation>
 <translation id="7290242001003353852">Ce service de connexion hébergé par <ph name="SAML_DOMAIN" /> accède actuellement à votre caméra.</translation>
-<translation id="7290524928495200538">Applis installées associées</translation>
 <translation id="7292067737327289208">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par votre organisation, et votre <ph name="BEGIN_LINK" />profil est géré<ph name="END_LINK" /> par <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Demande à ton parent d'autoriser l'accès dans "Paramètres"</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

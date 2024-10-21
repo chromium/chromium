@@ -5052,6 +5052,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4602776638371779614">Denne fanen søker aktivt etter Bluetooth-enheter</translation>
 <translation id="4605026046465576953">Denne appen kan ikke åpnes fordi du ikke har tillatelse til å kjøre isolerte nettapper</translation>
 <translation id="4606551464649945562">Ikke la nettsteder lage 3D-kart av omgivelsene dine eller spore kameraposisjonen</translation>
+<translation id="4606933160360542263">Egendefinert tastekombinasjon: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vil du slette fanegruppen?}other{Vil du slette fanegruppene?}}</translation>
 <translation id="4608500690299898628">&amp;Finn</translation>
 <translation id="4610162781778310380">Det oppsto en feil med <ph name="PLUGIN_NAME" /></translation>
@@ -6285,6 +6286,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5517304475148761050">Denne appen krever tilgang til Play-butikken</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Fjern handlingen <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Er dette startsiden du forventet?</translation>
 <translation id="5522156646677899028">Denne utvidelsen inneholder et alvorlig sikkerhetsproblem.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administratoren har installert en utvidelse}other{Administratoren har installert # utvidelser}}</translation>
@@ -8466,7 +8468,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7131431455372521159">Alle TrackPoint-mus er koblet fra</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, venter</translation>
 <translation id="7134098520442464001">Forminsk teksten</translation>
-<translation id="713415364723069564">Et nettsted kan finne ut om relaterte nettapper er installert på maskinen din. Denne informasjonen er tilgjengelig på nettstedet og dets underdomener.</translation>
 <translation id="7134951043985383439">Lastet ned en farlig fil</translation>
 <translation id="7135729336746831607">Vil du slå på Bluetooth?</translation>
 <translation id="7136694880210472378">Bruk som standard</translation>
@@ -8668,7 +8669,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> ber om tillatelse. Trykk på F6 for å svare</translation>
 <translation id="7290005709287747471">Deaktiver</translation>
 <translation id="7290242001003353852">Denne påloggingstjenesten, som driftes av <ph name="SAML_DOMAIN" />, har tilgang til kameraet ditt</translation>
-<translation id="7290524928495200538">Relaterte installerte apper</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Nettleseren din administreres<ph name="END_LINK" /> av organisasjonen din, og <ph name="BEGIN_LINK" />profilen din administreres<ph name="END_LINK" /> av <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Be forelderen din om å gi tilgang i innstillingene</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
@@ -10273,6 +10273,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8429928917752180743">Flere alternativer for <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Vis trykk</translation>
 <translation id="843173223122814223">Lag bakgrunner med AI</translation>
+<translation id="8431977087510901105">Markørinnstillingene er tilbakestilt</translation>
 <translation id="8433186206711564395">Nettverksinnstillinger</translation>
 <translation id="8434109185104929038">Lesekrok</translation>
 <translation id="8434480141477525001">Feilsøkingsport for NaCl</translation>

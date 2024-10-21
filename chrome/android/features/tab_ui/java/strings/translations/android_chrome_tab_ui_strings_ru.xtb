@@ -191,7 +191,6 @@
 <translation id="8820741577754260431">Показывать скидки на вкладках</translation>
 <translation id="8887921976452567404">Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок".</translation>
 <translation id="8915916167043355778">Закрыть все</translation>
-<translation id="8926389886865778422">Больше не спрашивать</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Развернуть группу вкладок. В ней <ph name="TABS_COUNT_ONE" /> вкладка.}one{Развернуть группу вкладок. В ней <ph name="TABS_COUNT_MANY" /> вкладка.}few{Развернуть группу вкладок. В ней <ph name="TABS_COUNT_MANY" /> вкладки.}many{Развернуть группу вкладок. В ней <ph name="TABS_COUNT_MANY" /> вкладок.}other{Развернуть группу вкладок. В ней <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="9090098097337832354">Информация об этом магазине закрыта</translation>
 <translation id="9111228330448174435">Показывать диалоговое окно при создании группы вкладок</translation>

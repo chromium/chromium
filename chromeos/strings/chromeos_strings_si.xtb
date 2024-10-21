@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> යතුර ඔබන ලදි</translation>
 <translation id="4334293042716981313">ඔබට <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />ඔබේම ප්‍රේරකයක් ද ලිවිය හැක<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">යතුර</translation>
+<translation id="4356100841225547054">හඬ ක්‍රියා විරහිත කරන්න</translation>
 <translation id="4361257691546579041">APN වර්ගය පෙරනිමි වේ.</translation>
 <translation id="437294888293595148">සියලු කෙටිමං යළි සකසන්න</translation>
 <translation id="437477383107495720">හාවන්</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">ජනපදය</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">යාවත්කාලීන ක්‍රියාවලිය දිගටම කිරීමට <ph name="DEVICE_NAME" /> USB කේබලය පේනු නොගත කර පසුව නැවත එය ඇතුළත් කරන්න</translation>
-<translation id="5095864667399748231">නිහඬ කිරීම මාරු කරන්න</translation>
 <translation id="5099354524039520280">ඉහළ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> යතුර නොමැති කෙටිමඟ සමහර යෙදුම් කෙටිමඟ සමග ගැටිය හැක. එය දිගටම භාවිතා කිරීමට මෙම කෙටිමඟ නැවත ඔබන්න, නැතහොත් <ph name="KEY" /> යතුර භාවිතයෙන් නව කෙටිමඟක් ඔබන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">සමාන:</translation>
@@ -1339,6 +1339,7 @@
 <translation id="7551123448725492271">උපාංගය ශ්‍රව්‍ය උපාංගයකි.</translation>
 <translation id="7559239713112547082">තිර රුව පෙරදසුන් කරන්න</translation>
 <translation id="7561454561030345039">මෙම ක්‍රියාව ඔබේ පරිපාලක විසින් කළමනාකරණය කරයි</translation>
+<translation id="7561759921596375678">හඬ ක්‍රියාත්මක කරන්න</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ස්පර්ශ තිරය</translation>
 <translation id="757747079855995705">ගල</translation>

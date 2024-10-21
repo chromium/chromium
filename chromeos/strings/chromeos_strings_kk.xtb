@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> пернесі басылды.</translation>
 <translation id="4334293042716981313"><ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />Өз нұсқауыңызды жазсаңыз<ph name="END_LINK_FREEFORM_SUBPAGE" /> да болады.</translation>
 <translation id="4354430579665871434">перне</translation>
+<translation id="4356100841225547054">Дыбыс деңгейін өшіру</translation>
 <translation id="4361257691546579041">APN әдепкі.</translation>
 <translation id="437294888293595148">Барлық таңбашаны қайта орнату</translation>
 <translation id="437477383107495720">қояндар</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Жаңарту процесін жалғастыру үшін <ph name="DEVICE_NAME" /> USB кабелін ажыратып, қайта жалғаңыз.</translation>
-<translation id="5095864667399748231">Дыбысты өшіру/қосу</translation>
 <translation id="5099354524039520280">жоғары</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> пернесі жоқ пернелер тіркесімі кейбір қолданбаның пернелер тіркесіміне қайшы келуі мүмкін. Осы пернелер тіркесімін пайдалануды жалғастыру үшін қайта басыңыз немесе <ph name="KEY" /> пернесін пайдаланып, жаңа пернелер тіркесімін басыңыз. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Ұқсас:</translation>
@@ -1339,6 +1339,7 @@
 <translation id="7551123448725492271">Бұл — аудио құрылғы.</translation>
 <translation id="7559239713112547082">Скриншотты алдын ала көру</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
+<translation id="7561759921596375678">Дыбыс деңгейін қосу</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB сенсорлық экраны</translation>
 <translation id="757747079855995705">тас</translation>

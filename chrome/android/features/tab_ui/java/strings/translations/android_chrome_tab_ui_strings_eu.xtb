@@ -191,7 +191,6 @@ Irteten bazara, berehala galduko duzu "<ph name="TITLE_OF_GROUP" />" fitxa talde
 <translation id="8820741577754260431">Ikusi prezio-jaitsierak fitxetan</translation>
 <translation id="8887921976452567404">Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro.</translation>
 <translation id="8915916167043355778">Itxi guztiak</translation>
-<translation id="8926389886865778422">Ez galdetu berriro</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Zabaldu fitxa <ph name="TABS_COUNT_ONE" /> duen fitxa taldea.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea.}}</translation>
 <translation id="9090098097337832354">Denda honi buruzko informazioa itxita dago</translation>
 <translation id="9111228330448174435">Erakutsi leiho bat fitxa taldeak sortzean</translation>

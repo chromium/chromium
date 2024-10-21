@@ -8479,7 +8479,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7131431455372521159">Búið er að aftengja alla stýripinna</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, bíður</translation>
 <translation id="7134098520442464001">Minnka texta</translation>
-<translation id="713415364723069564">Vefsvæði getur greint hvort að tengd vefforrit hafi verið sett upp í vélinni þinni. Vefsvæðið og undirlén þess hafa aðgang að þessum upplýsingum.</translation>
 <translation id="7134951043985383439">Sóttir hættulega skrá</translation>
 <translation id="7135729336746831607">Kveikja á Bluetooth?</translation>
 <translation id="7136694880210472378">Gera sjálfgefið</translation>
@@ -8681,7 +8680,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Heimildar óskað, ýttu á F6 til að svara</translation>
 <translation id="7290005709287747471">Slökkva</translation>
 <translation id="7290242001003353852">Þessi innskráningarþjónusta, sem er hýst af <ph name="SAML_DOMAIN" />, fær aðgang að myndavélinni.</translation>
-<translation id="7290524928495200538">Tengd uppsett forrit</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Vafranum þínum er stjórnað<ph name="END_LINK" /> af fyrirtækinu þínu og <ph name="BEGIN_LINK" />prófílnum þínum er stjórnað<ph name="END_LINK" /> af <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Biddu foreldri þitt um að veita þér aðgang í stillingunum</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

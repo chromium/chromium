@@ -5062,6 +5062,7 @@
 <translation id="4602776638371779614">ਇਹ ਟੈਬ ਕਿਰਿਆਸ਼ੀਲ ਤੌਰ 'ਤੇ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="4605026046465576953">ਇਸ ਐਪ ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਤੁਹਾਡੋ ਕੋਲ ਆਇਸੋਲੇਟਿਡ ਵੈੱਬ ਐਪਾਂ ਚਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4606551464649945562">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਜਾਂ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
+<translation id="4606933160360542263">ਵਿਉਂਤਿਆ ਕੁੰਜੀ ਸੁਮੇਲ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}one{ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}other{ਕੀ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}}</translation>
 <translation id="4608500690299898628">&amp;ਲੱਭੋ...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> ਵਿੱਚ ਕੋਈ ਗੜਬੜ ਹੋਈ</translation>
@@ -6297,6 +6298,7 @@
 <translation id="5517304475148761050">ਇਸ ਐਪ ਨੂੰ Play Store ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> ਕਾਰਵਾਈ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="5521078259930077036">ਕੀ ਇਹ ਉਹੀ ਹੋਮ ਪੰਨਾ ਹੈ ਜਿਸਦੀ ਤੁਸੀਂ ਆਸ ਕਰ ਰਹੇ ਸੀ?</translation>
 <translation id="5522156646677899028">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਵਿੱਚ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਗੰਭੀਰ ਜੋਖਮ ਹੈ।</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਐਕਸਟੈਂਸ਼ਨ ਸਥਾਪਤ ਕੀਤੀ}one{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ # ਐਕਸਟੈਂਸ਼ਨ ਸਥਾਪਤ ਕੀਤੀ}other{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ # ਐਕਸਟੈਂਸ਼ਨਾਂ ਸਥਾਪਤ ਕੀਤੀਆਂ}}</translation>
@@ -8480,7 +8482,6 @@
 <translation id="7131431455372521159">ਸਾਰੇ TrackPoints ਡਿਸਕਨੈਕਟ ਕਰ ਦਿੱਤੇ ਗਏ ਹਨ</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, ਉਡੀਕ ਵਿੱਚ</translation>
 <translation id="7134098520442464001">ਟੈਕਸਟ ਨੂੰ ਛੋਟਾ ਕਰੋ</translation>
-<translation id="713415364723069564">ਸਾਈਟ ਇਹ ਪਤਾ ਲਗਾ ਸਕਦੀ ਹੈ ਕਿ ਤੁਹਾਡੀ ਮਸ਼ੀਨ 'ਤੇ ਸੰਬੰਧਿਤ ਵੈੱਬ ਐਪਲੀਕੇਸ਼ਨਾਂ ਸਥਾਪਤ ਹਨ ਜਾਂ ਨਹੀਂ। ਇਹ ਜਾਣਕਾਰੀ ਇਸ ਸਾਈਟ ਅਤੇ ਇਸ ਦੀਆਂ ਉਪ-ਡੋਮੇਨਾਂ 'ਤੇ ਉਪਲਬਧ ਹੈ।</translation>
 <translation id="7134951043985383439">ਖਤਰਨਾਕ ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਹੋ ਗਈ</translation>
 <translation id="7135729336746831607">ਕੀ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7136694880210472378">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬਣਾਓ</translation>
@@ -8682,7 +8683,6 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - ਇਜਾਜ਼ਤ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ, ਜਵਾਬ ਦੇਣ ਲਈ F6 ਨੂੰ ਦਬਾਓ</translation>
 <translation id="7290005709287747471">ਅਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> ਵੱਲੋਂ ਹੋਸਟ ਕੀਤੀ ਗਈ, ਇਹ ਸਾਈਨ-ਇਨ ਸੇਵਾ, ਤੁਹਾਡੇ ਕੈਮਰੇ 'ਤੇ ਪਹੁੰਚ ਕਰ ਰਹੀ ਹੈ।</translation>
-<translation id="7290524928495200538">ਸਥਾਪਤ ਕੀਤੀਆਂ ਸੰਬੰਧਿਤ ਐਪਲੀਕੇਸ਼ਨਾਂ</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ <ph name="BEGIN_LINK" />ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7292147651179697920">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਆਪਣੇ ਮਾਂ-ਪਿਓ ਨੂੰ ਕਹੋ</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
@@ -10285,6 +10285,7 @@
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> ਲਈ ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="8431190899827883166">ਟੈਪਾਂ ਦਿਖਾਓ</translation>
 <translation id="843173223122814223">AI ਨਾਲ ਵਾਲਪੇਪਰ ਬਣਾਓ</translation>
+<translation id="8431977087510901105">ਕਰਸਰ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8433186206711564395">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8434109185104929038">ਪੜ੍ਹਨ ਲਈ ਸ਼ਾਂਤ ਥਾਂ</translation>
 <translation id="8434480141477525001">NaCl ਡੀਬੱਗ ਪੋਰਟ</translation>

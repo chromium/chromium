@@ -979,6 +979,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4356872429719185452">Pregledajte detalje hotspota. Hotspot se uključuje.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Snima se</translation>
 <translation id="4371348193907997655">Podešavanja prebacivanja</translation>
+<translation id="4371834685492830207">PIN mora da sadrži samo važeće znakove</translation>
 <translation id="4375482231364171368">Pretraži u traci za adresu</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, jačina signala <ph name="SIGNAL_STRENGTH" /> posto</translation>
 <translation id="4378551569595875038">Povezuje se...</translation>
@@ -1565,6 +1566,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6232416233079464213">Izvor: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> trenutno koristi kameru i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Lozinka može da sadrži samo važeće znakove</translation>
 <translation id="6240603910551255087">Gornje dugme</translation>
 <translation id="6240821072888636753">Uvek pitaj</translation>
 <translation id="6247728804802644171">Otvorite obaveštenja</translation>

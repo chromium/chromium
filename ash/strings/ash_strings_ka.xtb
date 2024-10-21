@@ -975,6 +975,7 @@
 <translation id="4356872429719185452">უსადენო ქსელის დეტალების ჩვენება. მიმდინარეობს უსადენო ქსელის ჩართვა.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ჩანაწერი</translation>
 <translation id="4371348193907997655">ტრანსლირების პარამეტრები</translation>
+<translation id="4371834685492830207">PIN-კოდი უნდა შეიცავდეს მხოლოდ დაშვებულ სიმბოლოებს</translation>
 <translation id="4375482231364171368">მისამართთა ზოლში ძიება</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" /> პროცენტი</translation>
 <translation id="4378551569595875038">დაკავშირება…</translation>
@@ -1560,6 +1561,7 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" />-დან</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს კამერას და მიკროფონს</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">პაროლი უნდა შეიცავდეს მხოლოდ დაშვებულ სიმბოლოებს</translation>
 <translation id="6240603910551255087">ზედა ღილაკი</translation>
 <translation id="6240821072888636753">შეკითხვა ყოველ ჯერზე</translation>
 <translation id="6247728804802644171">შეტყობინებების გახსნა</translation>

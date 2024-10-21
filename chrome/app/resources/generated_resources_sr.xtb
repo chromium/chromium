@@ -1815,6 +1815,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Када инсталација почне, не може да се откаже.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Размена података са било којим уређајем на доменима: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Доделите прекидач радњи Изабери</translation>
+<translation id="2270668657177045040">Сајт и његови поддомени могу да виде које сродне веб-апликације су инсталиране на уређају.</translation>
 <translation id="2271452184061378400">Групе картица се чувају овде</translation>
 <translation id="2271986192355138465">Сазнајте како да инсталирате веб-апликације</translation>
 <translation id="2272430695183451567">0 прекидача је додељено</translation>
@@ -5366,6 +5367,7 @@
 <translation id="4823193082697477185">Приступајте дељеним фајловима, фолдерима или дисковима на локалној мрежи. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Читање и мењање подешавања корисника и уређаја</translation>
 <translation id="4824037980212326045">Linux резервне копије и враћање</translation>
+<translation id="4824263260587281352">Промените комбинацију тастера <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">Желите ли да откажете синхронизацију?</translation>
 <translation id="4825462365587146530">Сазнајте више о Chrome Root Store-у на новој картици.</translation>
 <translation id="4825532258163983651">Брисање приступног кључа није успело</translation>
@@ -6110,7 +6112,6 @@
 <translation id="5369491905435686894">Омогући убрзавање миша</translation>
 <translation id="5369694795837229225">Подесите Linux окружење за програмирање</translation>
 <translation id="5370819323174483825">&amp;Учитај поново</translation>
-<translation id="5371801916084758849">Можете да претражујете у траци за адресу користећи @history, као и са странице Историја</translation>
 <translation id="5372529912055771682">Ова верзија оперативног система не подржава наведени режим пријављивања. Проверите да ли користите најновију верзију и покушајте поново.</translation>
 <translation id="5372579129492968947">Откачите додатак</translation>
 <translation id="5372632722660566343">Настави без налога</translation>
@@ -7881,6 +7882,7 @@
 <translation id="6676212663108450937">Препоручујемо вам да користите слушалице током увежбавања гласовног модела</translation>
 <translation id="6676291960742508499">Картице, наслови страница и URL-ови се шаљу Google-у</translation>
 <translation id="667752334740867460">Примају се информације о WiFi мрежи...</translation>
+<translation id="6677527809400770913">Доделили сте покрет <ph name="GESTURE" /> радњи <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Велики таласи у мору, са копном у далекој позадини. Наговештаји наранџасте светлости су одмах иза хоризонта, на иначе мрачном, суморном небу.</translation>
 <translation id="6678717876183468697">URL упита</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
@@ -8528,7 +8530,6 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" />, чека се</translation>
 <translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 лозинка је сачувана само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу}one{{PASSWORD_COUNT} лозинка је сачувана само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу}few{{PASSWORD_COUNT} лозинке су сачуване само на овом уређају. Да бисте их користили на другим уређајима, сачувајте их на Google налогу}other{{PASSWORD_COUNT} лозинки је сачувано само на овом уређају. Да бисте их користили на другим уређајима, сачувајте их на Google налогу}}</translation>
 <translation id="7134098520442464001">Умањи текст</translation>
-<translation id="713415364723069564">Сајт може да утврди да ли су инсталиране сродни веб-апликације на рачунару. Ове информације су доступне на сајту и његовим поддоменима.</translation>
 <translation id="7134951043985383439">Преузет је опасан фајл</translation>
 <translation id="7135729336746831607">Желите ли да укључите Bluetooth?</translation>
 <translation id="7136694880210472378">Постави као подразумевано</translation>
@@ -8731,7 +8732,6 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Затражена је дозвола. Притисните F6 да бисте одговорили</translation>
 <translation id="7290005709287747471">Деактивирај</translation>
 <translation id="7290242001003353852">Ова услуга пријављивања, коју хостује <ph name="SAML_DOMAIN" />, приступа вашој камери.</translation>
-<translation id="7290524928495200538">Повезане инсталиране апликације</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Прегледачем управља<ph name="END_LINK" /> организација, а <ph name="BEGIN_LINK" />профилом управља<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Затражи од родитеља да дозволи приступ у Подешавањима</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
@@ -9016,7 +9016,6 @@
 <translation id="7490683549040131791">Провери преостале лозинке</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 колачић}one{{NUM_COOKIES} колачић}few{{NUM_COOKIES} колачића}other{{NUM_COOKIES} колачића}}</translation>
-<translation id="7493244854553650478">Када претражујете историју прегледања, термини за претрагу историје, садржај странице са најбољим подударањима и генерисани излазни подаци модела се шаљу Google-у</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> ће прикупљати сав текст који унесете, укључујући личне податке, попут лозинки и бројева кредитних картица. Да ли желите да користите овај додатак?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android апликација</translation>
@@ -10107,6 +10106,7 @@
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи овај додатак и он је можда додат без вашег знања.</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8261625296061301062">Софтвер за скенер је инсталиран</translation>
+<translation id="8263149565724023141">Повезане апликације</translation>
 <translation id="8263228331881858381">Приступни кључ је сачуван</translation>
 <translation id="8263336784344783289">Дајте назив овој групи</translation>
 <translation id="8264024885325823677">Овим подешавањем управља администратор.</translation>

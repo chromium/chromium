@@ -191,7 +191,6 @@ Jei išeisite, iš karto neteksite prieigos prie skirtukų grupės „<ph name="
 <translation id="8820741577754260431">Žr. sumažintas kainas skirtukuose</translation>
 <translation id="8887921976452567404">Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“.</translation>
 <translation id="8915916167043355778">Uždaryti viską</translation>
-<translation id="8926389886865778422">Neklauskite dar kartą</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Išskleisti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_ONE" /> skirtukas.}one{Išskleisti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Išskleisti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Išskleisti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Išskleisti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
 <translation id="9090098097337832354">Informacija apie šią parduotuvę uždaryta</translation>
 <translation id="9111228330448174435">Rodyti dialogo langą kuriant naują skirtukų grupę</translation>

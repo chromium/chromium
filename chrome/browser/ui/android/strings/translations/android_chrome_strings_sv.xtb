@@ -115,6 +115,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1460751212339734034">Skriv mindre och spara tid</translation>
 <translation id="1466383950273130737">Välj språk i Chrome</translation>
 <translation id="1477626028522505441">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av serverfel.</translation>
+<translation id="147982357559798527">Ändrade</translation>
 <translation id="1480287803138246127">En del av din historik kanske inte visas här. Öppna fullständig Chrome-historik om du vill se all Chrome-historik.</translation>
 <translation id="148482509007564431">Flöde för att spara bokmärken</translation>
 <translation id="1492417797159476138">Du har redan sparat användarnamnet för den här webbplatsen</translation>
@@ -414,6 +415,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2940075786175545812">Alternativ för att godkänna eller inte godkänna en webbplats</translation>
 <translation id="2942036813789421260">Fliken Förhandsgranskning har stängts</translation>
 <translation id="2951071800649516099">Lägg till sidor som du vill läsa senare i läslistan</translation>
+<translation id="2954586176076923855">Flytta adressfältet högst upp</translation>
 <translation id="2956070106555335453">Översikt</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> oläst sida i listan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> olästa sidor i listan}}</translation>
 <translation id="2972109037780336501">Ta bort behörigheter automatiskt</translation>
@@ -639,6 +641,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4092709865241032354">Hjälp Google Lösenordshantering att spara dina inloggningsuppgifter genom att lägga till ditt användarnamn för den här webbplatsen</translation>
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
 <translation id="4096227151372679484">Flöde för att spara bokmärken har öppnats över halva skärmen</translation>
+<translation id="4105527135143631701">Uppdatering av Google Lösenordshantering har öppnats</translation>
 <translation id="4108314971463891922">Följ</translation>
 <translation id="4113030288477039509">Hanteras av administratören</translation>
 <translation id="4116038641877404294">Ladda ned sidor så att du kan använda dem offline</translation>
@@ -1138,6 +1141,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6440291723980579689">Sidor läses endast in när du har öppnat dem</translation>
 <translation id="6441734959916820584">Namnet är för långt</translation>
 <translation id="6444291413624515012">Flikgruppen <ph name="TAB_GROUP_TITLE" /> har stängts</translation>
+<translation id="6452534462676960500">Ny aktivitet</translation>
 <translation id="6459045781120991510">Enkäter</translation>
 <translation id="6461962085415701688">Det går inte att öppna filen</translation>
 <translation id="6464977750820128603">Du kan se vilka webbplatser du besökt i Chrome och ställa in en timer för dem.\n\nGoogle får information om vilka webbplatser du har ställt in en timer för och hur länge du har stannat på dem. Informationen används för att förbättra Digitalt välmående.</translation>
@@ -1229,6 +1233,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6813446258015311409">Logga in i Chrome, öppet.</translation>
 <translation id="6817747507826986771">Dela den här sidan snabbt. Tryck länge om du vill ändra genvägen.</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Uppdateringen av Google Lösenordshantering har stängts</translation>
 <translation id="6828070228333235514">Avbryt bevakningen av priset</translation>
 <translation id="6830728435402077660">Inte säkert</translation>
 <translation id="6831043979455480757">Översätt</translation>
@@ -1424,6 +1429,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7612619742409846846">Inloggad i Google som</translation>
 <translation id="7612989789287281429">Du loggas in …</translation>
 <translation id="7619072057915878432">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av nätverksfel.</translation>
+<translation id="762537095495606755">Lösenorden slutar att fungera på den här enheten.</translation>
 <translation id="7626032353295482388">Välkommen till Chrome</translation>
 <translation id="7628417132421583481">Öppna Lösenordshantering</translation>
 <translation id="7630202231528827509">Leverantörens webbadress</translation>
@@ -1512,6 +1518,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8015452622527143194">Återställ allt på sidan till standardstorlek</translation>
 <translation id="8017431260099661477">Det gick inte att öppna inbjudningslänken</translation>
 <translation id="8026238112629815203">Vi har ändrat hur lösenord sparas på den här enheten</translation>
+<translation id="8027395186860110042">Lösenorden kan snart sluta att fungera</translation>
 <translation id="8027863900915310177">Välj plats för nedladdningen</translation>
 <translation id="8030852056903932865">Godkänn</translation>
 <translation id="8032569120109842252">Följer</translation>
@@ -1581,7 +1588,9 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8281886186245836920">Hoppa över</translation>
 <translation id="8282297628636750033">Använd mörkt tema på webbplatser när det är möjligt</translation>
 <translation id="8282950411412455249">Öppna säkerhetsinställningarna</translation>
+<translation id="8306751933352925837">Lösenorden slutar snart att fungera på den här enheten. Uppdatera Google Play-tjänsterna om du vill fortsätta att använda dina lösenord. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> har tagit bort fliken <ph name="TAB_NAME" /></translation>
+<translation id="8310451567823644042">Lösenorden slutar snart att fungera</translation>
 <translation id="831192587911042850">Lägger till den aktuella webbplatsen i listan med webbplatser du följer.</translation>
 <translation id="8342727528718219152">Chrome meddelar dig om webbplatser som kanske skickar för många aviseringar</translation>
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
@@ -1648,6 +1657,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8570677896027847510">Det går inte att ladda ned filen på ett säkert sätt</translation>
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>
 <translation id="8582529315803410153">Flikar från andra enheter visas här</translation>
+<translation id="8585103689515290060">Autofylltjänster</translation>
 <translation id="859046281437143747">Bevaka pris via knappen Flera alternativ</translation>
 <translation id="859064343657890103">Flikgruppen <ph name="TAB_GROUP_TITLE" /> har raderats</translation>
 <translation id="860043288473659153">Namn på kortinnehavare</translation>
@@ -1714,6 +1724,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8963117664422609631">Öppna webbplatsinställningarna</translation>
 <translation id="8965591936373831584">väntar</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_ONE" /> flik till stängs}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_MANY" /> flikar till stängs}}</translation>
+<translation id="897061774231912216">Lösenorden slutar snart att fungera eftersom Google Play-tjänster inte är tillgängliga. Om du vill använda lösenord som sparats i Google-kontot kan du logga in med en annan enhet eller besöka passwords.google.com.</translation>
 <translation id="8970887620466824814">Något gick fel.</translation>
 <translation id="8972098258593396643">Vill du ladda ned till standardmappen?</translation>
 <translation id="8982113230057126145">Gilla-markera för att visa att du inte gillar översikten</translation>
@@ -1762,6 +1773,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="9148126808321036104">Logga in igen</translation>
 <translation id="9157212632995922070">Välj ett konto för att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Dela endast innehåll</translation>
+<translation id="9168847423516963845">Flytta adressfältet längst ned</translation>
 <translation id="9169507124922466868">Navigeringshistoriken visas på halva skärmen</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Historiken visas på alla synkroniserade enheter, så att du kan fortsätta där du slutade</translation>

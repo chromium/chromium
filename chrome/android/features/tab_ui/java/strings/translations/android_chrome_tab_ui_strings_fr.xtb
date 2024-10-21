@@ -191,7 +191,6 @@ Si vous le quittez, vous perdrez immédiatement l'accès au groupe d'onglets "<p
 <translation id="8820741577754260431">Consultez les baisses de prix dans les onglets</translation>
 <translation id="8887921976452567404">Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets".</translation>
 <translation id="8915916167043355778">Tout fermer</translation>
-<translation id="8926389886865778422">Ne plus afficher ce message</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="9090098097337832354">Fiche d'infos sur ce magasin fermée</translation>
 <translation id="9111228330448174435">Afficher la boîte de dialogue lors de la création d'un groupe d'onglets</translation>

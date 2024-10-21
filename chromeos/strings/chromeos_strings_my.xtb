@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ခလုတ် နှိပ်လိုက်သည်</translation>
 <translation id="4334293042716981313"><ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />သင့်ကိုယ်ပိုင် တိုက်တွန်းချက်ကိုလည်း ရေးနိုင်သည်<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">ကီး</translation>
+<translation id="4356100841225547054">အသံပိတ်ရန်</translation>
 <translation id="4361257691546579041">APN သည် အမျိုးအစား မူရင်းဖြစ်သည်။</translation>
 <translation id="437294888293595148">ဖြတ်လမ်းလင့်ခ်အားလုံး ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="437477383107495720">ယုန်ကလေး</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">ပြည်နယ်</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">အပ်ဒိတ်လုပ်ငန်းစဉ်ကို ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> USB ကြိုးကို ပလတ်ဖြုတ်ပြီး ပြန်တပ်ပါ</translation>
-<translation id="5095864667399748231">အသံပိတ်ရန်</translation>
 <translation id="5099354524039520280">အပေါ်သို့</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> ခလုတ်မပါသော ဖြတ်လမ်းလင့်ခ်သည် အက်ပ်အချို့၏ ဖြတ်လမ်းလင့်ခ်နှင့် ငြိနိုင်သည်။ ဆက်သုံးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ (သို့) <ph name="KEY" /> ခလုတ်သုံးပြီး ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">အလားတူ-</translation>
@@ -1339,6 +1339,7 @@
 <translation id="7551123448725492271">ကိရိယာသည် အသံစက်ပစ္စည်းဖြစ်သည်။</translation>
 <translation id="7559239713112547082">ဖန်သားပြင်ဓာတ်ပုံ အစမ်းကြည့်ရှုရန်</translation>
 <translation id="7561454561030345039">ဤလုပ်ဆောင်ချက်ကို သင့်ကြီးကြပ်သူက စီမံသည်</translation>
+<translation id="7561759921596375678">အသံဖွင့်ရန်</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB တို့ထိမျက်နှာပြင်</translation>
 <translation id="757747079855995705">ကျောက်တုံး</translation>

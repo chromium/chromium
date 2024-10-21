@@ -28,6 +28,7 @@
 <translation id="1330562121671411446">Registrer sprog</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> kræver, at du læser og accepterer følgende servicevilkår, inden du bruger denne enhed. Disse vilkår udvider, ændrer eller begrænser på ingen måde vilkårene for Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Du kan skifte for at se adgangskoder fra en anden Chrome-profil</translation>
+<translation id="1356661055722410047">Nyhed! Du kan oversætte både tekst og billeder på din skærm</translation>
 <translation id="1363996462118479832">ChromeOS kunne ikke synkronisere dine data på grund af en fejl under login.</translation>
 <translation id="137466361146087520">Google Chrome beta</translation>
 <translation id="1399397803214730675">Denne computer har allerede en nyere version af Google Chrome. Hvis programmet ikke virker, skal du afinstallere Google Chrome og prøve igen.</translation>
@@ -49,6 +50,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Sådan kan du administrere dine data:<ph name="END_BOLD" /> Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dit privatliv. Mens du surfer, kan en interesse vises på listen igen. Du kan også fjerne interesser, som du ikke vil have, at Chrome skal tage med i betragtning.</translation>
 <translation id="1628000112320670027">Få hjælp til Chrome</translation>
 <translation id="1640672724030957280">Downloader...</translation>
+<translation id="1651617469580841801">Når du bruger Google Lens, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Om ChromeOS Flex</translation>
 <translation id="1674870198290878346">Åbn linket i et inko&amp;gnitovindue i Chrome</translation>
 <translation id="1682634494516646069">Google Chrome kan ikke læse og skrive i sin egen datamappe: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -193,6 +195,7 @@
 <translation id="3261565993776444564">Prøv en ny farve for at tilpasse din browser</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3286538390144397061">Genstart nu</translation>
+<translation id="3289358082435924389">Senere spørger Chrome dig, om du vil bruge gemte oplysninger til automatisk at udfylde formularer</translation>
 <translation id="3292333338048274092">Du skal derefter genstarte Chrome.</translation>
 <translation id="3360895254066713204">Hjælp til Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome genstarter nu}=1{Chrome genstarter om 1 sekund}one{Chrome genstarter om # sekund}other{Chrome genstarter om # sekunder}}</translation>
@@ -504,6 +507,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7308322188646931570">Chrome skal have lageradgang for at downloade filer</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7352881504289275361">Udvidet beskyttet browsing tilbyder Chromes stærkeste onlinebeskyttelse, som beskytter dig, når du er på nettet</translation>
+<translation id="7386878009611068389">Hvis du vil være mere sikker online med dine forældres valg, skal du skifte til din Chrome-profil, hvor du allerede er logget ind som <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7394745511930161845">Opret dit eget tema med AI for at give din browser et unikt udseende</translation>
 <translation id="7398801000654795464">Du loggede ind i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7412494426921990001">Klik på Chrome-menuen</translation>
@@ -517,6 +521,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7477130805345743099">Chrome advarer dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="749228101751499733">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chrome. <ph name="SHORTCUT" /> kan ændre dine indstillinger for Google-tjenester.</translation>
+<translation id="7512187482580860950">Chrome kan forstå flere typer oplysninger og automatisk udfylde dine formularer hurtigere. Få flere oplysninger om <ph name="BEGIN_LINK" />autofyld i Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Du kan fastgøre Google Lens for at få nem adgang</translation>
 <translation id="7535429826459677826">Udviklerversionen af Chrome</translation>
@@ -559,6 +564,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7886087451482920026">Vælg tekst med Google Lens</translation>
 <translation id="7890208801193284374">Hvis du deler en computer, kan venner og familie browse individuelt og konfigurere Chrome, som de ønsker hver især.</translation>
 <translation id="7896673875602241923">Nogen har tidligere logget ind på Chrome på denne computer som <ph name="ACCOUNT_EMAIL_LAST" />. Opret en ny Chrome-bruger for at holde dine oplysninger adskilt.</translation>
+<translation id="7917470403848199310">Chrome spørger dig, om du vil gemme formularoplysninger, f.eks. din fødselsdag, din alder og dit pasnummer</translation>
 <translation id="7917876797003313048">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chrome-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome har blokeret denne download, fordi filen er vildledende og kan foretage uventede ændringer på din enhed</translation>
 <translation id="7947083960301164556">Se det sidste nye</translation>
@@ -615,6 +621,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8550334526674375523">Denne arbejdsprofil er totalt adskilt fra din personlige profile.</translation>
 <translation id="8555465886620020932">Tjenestefejl: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Du kan organisere alle dine ting i Chrome ved hjælp af Chrome-profiler. Når du har flere profiler, kan du nemmere adskille arbejde og fornøjelse.</translation>
+<translation id="8601359445272098721">Nyhed! Du kan oversætte både tekst og billeder på din skærm ved at vælge knappen "Oversæt skærmen"</translation>
 <translation id="8614913330719544658">Google Chrome svarer ikke. Vil du genstarte nu?</translation>
 <translation id="861702415419836452">Chrome skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome genstarter om 1 minut}one{Chrome genstarter om # minut}other{Chrome genstarter om # minutter}}</translation>

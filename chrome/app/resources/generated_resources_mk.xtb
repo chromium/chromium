@@ -7895,7 +7895,7 @@
 <translation id="6716798148881908873">Мрежната врска се прекина. Проверете ја мрежната врска или обидете се со друга Wi-Fi мрежа.</translation>
 <translation id="6718849325281682232">Боите на темите на Chrome се освежени за да функционираат подобро за сите, независно од тоа дали се користи „Темен режим“ или „Светол режим“</translation>
 <translation id="671928215901716392">Заклучување на екранот</translation>
-<translation id="6721744718589119342">Ќе ви испратиме е-порака за повеќе информации или известувања</translation>
+<translation id="6721744718589119342">Може да ви испратиме е-порака со барање за повеќе податоци или со известувања</translation>
 <translation id="6721972322305477112">&amp;Датотека</translation>
 <translation id="672208878794563299">Сајтов повторно ќе побара дозвола следниот пат.</translation>
 <translation id="6722744767592605627">Може да ја вратите е-поштата <ph name="EMAIL" />, но ќе се избришат локалните податоци.</translation>
@@ -8479,7 +8479,6 @@
 <translation id="7131431455372521159">Врската со сите TrackPoint е прекината</translation>
 <translation id="7131896909366247105">Се чека <ph name="APP_NAME" /></translation>
 <translation id="7134098520442464001">Направи го текстот помал</translation>
-<translation id="713415364723069564">Даден сајт може да дознае дали се инсталирани поврзани апликации за прелистувач на вашата машина. Овие податоци им се достапни и на сајтот и на неговите поддомени.</translation>
 <translation id="7134951043985383439">Преземена е опасна датотека</translation>
 <translation id="7135729336746831607">Да се вклучи Bluetooth?</translation>
 <translation id="7136694880210472378">Направи стандардно</translation>
@@ -8681,7 +8680,6 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Побарана е дозвола. Притиснете F6 за да одговорите</translation>
 <translation id="7290005709287747471">Деактивирај</translation>
 <translation id="7290242001003353852">Услугава за најавување, чиј хост е <ph name="SAML_DOMAIN" />, пристапува до камерата.</translation>
-<translation id="7290524928495200538">Поврзани инсталирани апликации</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Со вашиот прелистувач управува<ph name="END_LINK" /> вашата организација, а <ph name="BEGIN_LINK" />со вашиот профил управува<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Побарај од родителот да дозволи пристап во „Поставки“</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

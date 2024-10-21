@@ -8474,7 +8474,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7131431455372521159">Kaikkien tappiohjainten yhteys on katkaistu</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, odottaa</translation>
 <translation id="7134098520442464001">Pienennä tekstiä</translation>
-<translation id="713415364723069564">Sivusto voi selvittää, onko laitteelle asennettu asiaan liittyviä verkkosovelluksia. Nämä tiedot ovat sivuston ja sen aliverkkotunnusten saatavilla.</translation>
 <translation id="7134951043985383439">Vaarallinen tiedosto ladattu</translation>
 <translation id="7135729336746831607">Otetaanko Bluetooth käyttöön?</translation>
 <translation id="7136694880210472378">Aseta oletukseksi</translation>
@@ -8676,7 +8675,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Lupaa pyydetty, vastaa painamalla F6</translation>
 <translation id="7290005709287747471">Poista käytöstä</translation>
 <translation id="7290242001003353852">Tämä kirjautumispalvelu, jota isännöi <ph name="SAML_DOMAIN" />, käyttää kameraasi.</translation>
-<translation id="7290524928495200538">Aiheeseen liittyvät asennetut sovellukset</translation>
 <translation id="7292067737327289208">Organisaatio <ph name="BEGIN_LINK" />ylläpitää selaintasi<ph name="END_LINK" /> ja <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />ylläpitää profiiliasi<ph name="END_LINK" /></translation>
 <translation id="7292147651179697920">Pyydä vanhempaa myöntämään pääsy Asetuksista</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>

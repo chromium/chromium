@@ -1806,9 +1806,6 @@ Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, transfer file tidak a
 <translation id="2258126710006312594">Izinkan pengguna dengan akses jarak jauh untuk mentransfer file ke/dari host</translation>
 <translation id="225830954785359083">Cegah halaman menampilkan pop-up selama penghapusan muatan</translation>
 <translation id="2261648512244797294">Nonaktifkan pencetakan privet yang tidak digunakan lagi</translation>
-<translation id="2262153510491523927">Jika kebijakan disetel ke Salah (False), aplikasi Android akan dapat mengambil link yang didukung secara default.
-Jika kebijakan disetel ke Benar (True), semua link akan dibuka di browser Chrome secara default.
-Jika kebijakan ini tidak disetel, aplikasi Android akan mengambil link yang didukung secara default.</translation>
 <translation id="2263881357524831360">Izinkan penggunaan Pengelola Sandi Pihak Ketiga di <ph name="PRODUCT_NAME" /> di <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Daftar tindakan yang akan dijalankan saat waktu tunggu dari kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tercapai.
 
@@ -4103,11 +4100,6 @@ laporan perusahaan dikirim.
 <translation id="3989829840000169163">Memblokir Titik Ekstensi Lama Browser</translation>
 <translation id="3990391739475801018">Mode Penghemat Baterai akan dinonaktifkan.</translation>
 <translation id="3990834929384096140">Jangan terapkan pengurangan gema audio sistem</translation>
-<translation id="3992082233013655355">Menyetel kebijakan ini akan menentukan daftar aplikasi web terisolasi (IWA) yang diinstal secara otomatis.
-      IWA adalah aplikasi yang memiliki properti keamanan yang berguna dan tidak tersedia untuk halaman web normal. Aplikasi tersebut dikemas dalam Paket Web Bertanda Tangan. Kunci publik Paket Web Bertanda Tangan digunakan untuk membuat ID Paket Web yang mengidentifikasi IWA.
-      Sejauh ini, kebijakan ini hanya berfungsi untuk Sesi Tamu Terkelola.
-
-      Setiap item daftar kebijakan merupakan objek yang memiliki dua kolom wajib: <ph name="URL_LABEL" /> manifes update dan ID Paket Web Aplikasi Web Terisolasi. Setiap item juga dapat memiliki kolom opsional dengan nama saluran rilis IWA. Jika "update_channel" tidak disetel, nilai "default" akan digunakan.</translation>
 <translation id="3994043824457743421">Menampilkan pengumuman slot tengah di Halaman Tab Baru</translation>
 <translation id="399433537808390819">Jangan menyediakan Mode Desktop Terpadu untuk pengguna</translation>
 <translation id="3995880046827722248">Manifes v2 dinonaktifkan</translation>

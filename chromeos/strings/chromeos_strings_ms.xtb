@@ -220,6 +220,7 @@
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
 <translation id="1908394185991500139">anak panah ke kiri</translation>
+<translation id="1914144885717544695">pada hari Jumaat</translation>
 <translation id="1923388006036088459">Warna aksen</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">Dicetak</translation>
@@ -258,6 +259,7 @@
 <translation id="2138109643290557664">Terapung-apung</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Hari ini</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2154460308960858308">Kosongkan carian</translation>
 <translation id="2157660087437850958">pemilih emoji</translation>
@@ -376,6 +378,7 @@
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2715723665057727940">sungai</translation>
 <translation id="2717139507051041123">Dayakan mod warna gelap</translation>
+<translation id="2726755229438917165">pada hari Isnin</translation>
 <translation id="2728460467788544679">Kosongkan semua sejarah cetak</translation>
 <translation id="2731700343119398978">Sila tunggu...</translation>
 <translation id="2740531572673183784">Ok</translation>
@@ -419,6 +422,7 @@
 <translation id="3056720590588772262">Titik akhir</translation>
 <translation id="3060579846059757016">Rangka</translation>
 <translation id="3061850252076394168">dayakan pilih untuk bercakap</translation>
+<translation id="3066772729299747758">pada hari Selasa</translation>
 <translation id="3069085583900247081">Ujian gagal</translation>
 <translation id="3078740164268491126">jadual</translation>
 <translation id="3081652522083185657">cerah</translation>
@@ -475,6 +479,7 @@
 <translation id="3361618936611118375">susyi</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369013195428705271">Adakah anda pasti anda ingin mengosongkan semua sejarah cetak? Tugas cetak anda yang masih dijalankan tidak akan dipadamkan.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Hiasan latar aliran Bumi</translation>
 <translation id="33736539805963175">Latar <ph name="LETTERS_COLOR" /> dengan huruf <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Eksklusif</translation>
@@ -622,6 +627,7 @@
 <translation id="4130035430755296270">Teruskan menuding untuk mendapatkan lagi pilihan reka letak</translation>
 <translation id="4130750466177569591">Saya bersetuju</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
+<translation id="4137700675046373159">pada hari Sabtu</translation>
 <translation id="4143226836069425823">Ketik kekunci papan kekunci lain untuk digantikan</translation>
 <translation id="4145784616224233563">Tembok Api HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -644,6 +650,7 @@
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tiada tugas cetak yang sedang dijalankan</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">pada hari Ahad</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
 <translation id="4251839292699800785">Pejabat yang bergaya</translation>
 <translation id="4258281355379922695">Kependaman HTTP</translation>
@@ -663,6 +670,7 @@
 <translation id="4333390807948134856">Kekunci <ph name="KEY_NAME" /> ditekan</translation>
 <translation id="4334293042716981313">Anda boleh juga <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />menulis gesaan anda sendiri<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">kekunci</translation>
+<translation id="4356100841225547054">Matikan kelantangan</translation>
 <translation id="4361257691546579041">APN merupakan jenis lalai.</translation>
 <translation id="437294888293595148">Tetapkan semula semua pintasan</translation>
 <translation id="437477383107495720">arnab</translation>
@@ -816,7 +824,6 @@
 <translation id="5089810972385038852">Negeri</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Cabut kabel USB <ph name="DEVICE_NAME" /> dan masukkan semula kabel USB tersebut untuk meneruskan proses kemaskinian</translation>
-<translation id="5095864667399748231">Togol redam</translation>
 <translation id="5099354524039520280">ke atas</translation>
 <translation id="5107243100836678918">Pintasan tanpa kekunci <ph name="META_KEY" /> mungkin bercanggah dengan sesetengah pintasan apl. Tekan pintasan ini sekali lagi untuk terus digunakan atau tekan pintasan baharu menggunakan kekunci <ph name="KEY" />. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Serupa:</translation>
@@ -900,6 +907,7 @@
 <translation id="550600468576850160">padang rumput</translation>
 <translation id="551689408806449779">Peranti telah diputuskan sambungan. Cuba sambung semula untuk menguji</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5527146180235316490">Pilihan mikrofon</translation>
 <translation id="5534900277405737921">Rupa bumi</translation>
 <translation id="554067135846762198">merjan dan perang</translation>
 <translation id="5543701552415191873">dikunci</translation>
@@ -1118,6 +1126,7 @@
 <translation id="6527081081771465939">Protokol keselamatan Wi-Fi tidak diketahui</translation>
 <translation id="6535178685492749208">Anda di luar talian. Maklum balas akan dihantar kemudian.</translation>
 <translation id="6543412779435705598">taco</translation>
+<translation id="6550369542114086980">pada hari Khamis</translation>
 <translation id="6551839203326557324">epal</translation>
 <translation id="65526652485742171">Butang sahkan kini didayakan</translation>
 <translation id="6557784757915238407">APN merupakan jenis <ph name="ATTACH" />.</translation>
@@ -1265,6 +1274,7 @@
 <translation id="7180865173735832675">Peribadikan</translation>
 <translation id="7182063559013288142">Tempat liputan segera</translation>
 <translation id="7184043045742675738">Klik sebarang kekunci untuk menyesuaikan butang anda. Ubah kedudukan kekunci dengan tetikus atau kekunci anak panah.</translation>
+<translation id="7187669805838282391">pada hari Rabu</translation>
 <translation id="7206979415662233817">Syarat perkhidmatan</translation>
 <translation id="7210635925306941239">sian</translation>
 <translation id="7212547870105584639">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dengan Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1321,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7388959671917308825">Pad sentuh terbina dalam</translation>
 <translation id="7397270852490618635">Matikan tema cerah</translation>
 <translation id="7401543881546089382">Padamkan pintasan</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> bersedia untuk dikemaskinikan</translation>
 <translation id="741244894080940828">penukaran</translation>
 <translation id="7415801143053185905">Kependaman HTTP sangat tinggi</translation>
 <translation id="7425037327577270384">Bantu saya tulis</translation>
@@ -1325,6 +1336,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7500205272584643581">Benarkan Recorder mengesan dan melabel pembesar suara?</translation>
 <translation id="7501957181231305652">atau</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
+<translation id="7503342217608032738">Peranti tidak boleh digunakan</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> yang berseri</translation>
 <translation id="7513770521371759388">bawah</translation>
 <translation id="7514365320538308">Muat Turun</translation>
@@ -1337,8 +1349,11 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7544853251252956727">Rombak</translation>
 <translation id="7550715992156305117">Rutin Diagnostik</translation>
 <translation id="7551123448725492271">Peranti ialah peranti audio.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Pentadbir <ph name="MANAGER" /> telah menetapkan masa <ph name="DEVICE_TYPE" /> boleh digunakan.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Anda akan dapat menggunakan peranti lagi pada <ph name="DAY" /> pukul <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Pratonton Tangkapan Skrin</translation>
 <translation id="7561454561030345039">Tindakan ini diurus oleh pentadbir anda</translation>
+<translation id="7561759921596375678">Hidupkan kelantangan</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Skrin sentuh USB</translation>
 <translation id="757747079855995705">batu</translation>
@@ -1397,6 +1412,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="785170686607360576">bunga tulip</translation>
 <translation id="7856267634822906833">Skrin sentuh Bluetooth</translation>
 <translation id="7859006200041800233">bunga kaktus</translation>
+<translation id="7865217133132122390">Hidupkan mikrofon</translation>
 <translation id="7869143217755017858">Lumpuhkan mod gelap</translation>
 <translation id="7878972877380405573">Ringkaskan dengan Bantu saya baca</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1425,6 +1441,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" telah dimulakan secara automatik}other{# apl dimulakan secara automatik}}</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
+<translation id="8010765388850538088">Ketahui tentang AI Generatif dengan lebih lanjut</translation>
 <translation id="8017679124341497925">Pintasan diedit</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8028993641010258682">Saiz</translation>
@@ -1434,6 +1451,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8045012663542226664">Redam Mikrofon</translation>
 <translation id="8054112564438735763">kuning air</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> pada latar <ph name="CHARACTERS_BACKGROUND" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN telah disambungkan.</translation>
 <translation id="8067208048261192356">coklat</translation>
 <translation id="8067224607978179455">Padamkan <ph name="ACTION_NAME" /></translation>
@@ -1537,6 +1555,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Pembawa anda mungkin memerlukan pilihan ini untuk menyambung kepada rangkaian mereka. Hubungi pembawa anda untuk mendapatkan butiran.</translation>
 <translation id="8576249514688522074">Tidak diasalkan</translation>
+<translation id="8584654835905316966">Pemulaan semula perlu dilakukan untuk melengkapkan proses pemasangan perisian tegar untuk <ph name="DEVICE_NAME" /> kepada versi <ph name="VERSION" />. Komputer anda mungkin akan dibut semula beberapa kali. Gelagat ini dijangkakan.</translation>
 <translation id="8593058461203131755">jeda media</translation>
 <translation id="8620617069779373398">Status perayauan</translation>
 <translation id="8626489604350149811">Lagi tindakan untuk <ph name="APN_NAME" /></translation>
@@ -1670,6 +1689,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="917720651393141712">Ujian</translation>
 <translation id="9188992814426075118">Papan kekunci anda dapat memadankan kertas dinding anda secara automatik</translation>
 <translation id="9189000703457422362">Tidak dapat menyambung kepada rangkaian ini menggunakan APN yang dikesan secara automatik. Hubungi pembawa mudah alih anda untuk mendapatkan maklumat lanjut.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">Kunci kayu bedik yang dipilih ialah <ph name="KEYS" />. Ketik butang untuk mengedit kawalan</translation>
 <translation id="9204237731135241582">Tidak dapat menghubungi get laluan daripada apl Android</translation>
@@ -1690,5 +1710,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="982713511914535780">Jalankan Ujian nyahcas</translation>
 <translation id="98515147261107953">Landskap</translation>
 <translation id="987264212798334818">Umum</translation>
+<translation id="994473081369871639">Matikan mikrofon</translation>
 <translation id="995062385528875723">Tidak dapat menggunakan huruf aksen, abjad bukan Latin atau simbol</translation>
 </translationbundle>

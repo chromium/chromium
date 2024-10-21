@@ -663,6 +663,7 @@
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ਕੁੰਜੀ ਦਬਾਈ ਗਈ</translation>
 <translation id="4334293042716981313">ਤੁਸੀਂ <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />ਆਪਣਾ ਖੁਦ ਦਾ ਉਤਪ੍ਰੇਰਕ<ph name="END_LINK_FREEFORM_SUBPAGE" /> ਵੀ ਲਿਖ ਸਕਦੇ ਹੋ</translation>
 <translation id="4354430579665871434">ਕੁੰਜੀ</translation>
+<translation id="4356100841225547054">ਅਵਾਜ਼ ਬੰਦ ਕਰੋ</translation>
 <translation id="4361257691546579041">APN ਦੀ ਕਿਸਮ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ 'ਤੇ ਸੈੱਟ ਹੈ।</translation>
 <translation id="437294888293595148">ਸਾਰੇ ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="437477383107495720">ਖਰਗੋਸ਼</translation>
@@ -816,7 +817,6 @@
 <translation id="5089810972385038852">ਰਾਜ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003"><ph name="DEVICE_NAME" /> ਦੀ USB ਕੇਬਲ ਨੂੰ ਅਣਪਲੱਗ ਕਰੋ ਅਤੇ ਅੱਪਡੇਟ ਦੀ ਪ੍ਰਕਿਰਿਆ ਜਾਰੀ ਰੱਖਣ ਲਈ ਫਿਰ ਉਸਨੂੰ ਦੁਬਾਰਾ ਪਾਓ</translation>
-<translation id="5095864667399748231">ਮਿਊਟ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="5099354524039520280">ਉੱਪਰ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> ਕੁੰਜੀ ਤੋਂ ਬਿਨਾਂ ਸ਼ਾਰਟਕੱਟ ਦੀ ਵਰਤੋਂ ਕਰਨ 'ਤੇ ਕੁਝ ਐਪਾਂ ਦੇ ਸ਼ਾਰਟਕੱਟ ਵਿੱਚ ਗੜਬੜ ਹੋ ਸਕਦੀ ਹੈ। ਇਸਦੀ ਵਰਤੋਂ ਜਾਰੀ ਰੱਖਣ ਲਈ ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ ਜਾਂ <ph name="KEY" /> ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਕੋਈ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ਮਿਲਦੇ-ਜੁਲਦੇ:</translation>
@@ -1339,6 +1339,7 @@
 <translation id="7551123448725492271">ਡੀਵਾਈਸ ਇੱਕ ਆਡੀਓ ਡੀਵਾਈਸ ਹੈ।</translation>
 <translation id="7559239713112547082">ਸਕ੍ਰੀਨਸ਼ਾਟ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="7561454561030345039">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਕਾਰਵਾਈ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ</translation>
+<translation id="7561759921596375678">ਅਵਾਜ਼ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ਟੱਚਸਕ੍ਰੀਨ</translation>
 <translation id="757747079855995705">ਪੱਥਰ</translation>
