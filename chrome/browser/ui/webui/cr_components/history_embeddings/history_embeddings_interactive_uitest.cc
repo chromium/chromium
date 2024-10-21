@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -95,7 +96,15 @@ class HistoryEmbeddingsInteractiveTest
 // which cannot be easily tested here. Instead, LaCrOS has a separate feedback
 // browser test which gives some coverage.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsInteractiveTest, FeedbackDialog) {
+
+// TODO(crbug.com/374710231): Reenable - currently, this fails consistently on
+// Win11 ARM debug builds.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_FeedbackDialog DISABLED_FeedbackDialog
+#else
+#define MAYBE_FeedbackDialog FeedbackDialog
+#endif
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsInteractiveTest, MAYBE_FeedbackDialog) {
   optimization_guide::EnableSigninAndModelExecutionCapability(
       browser()->profile());
   browser()->profile()->GetPrefs()->SetInteger(
