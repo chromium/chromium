@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/single_field_form_fill_router.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -42,7 +42,7 @@ class AutocompleteHistoryManager : public KeyedService,
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
       const FormFieldData& field,
       const AutofillClient& client,
-      SingleFieldFormFillRouter::OnSuggestionsReturnedCallback&
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback&
           on_suggestions_returned);
 
   // Saves the `fields` that are eligible to be saved as new or updated
@@ -83,7 +83,7 @@ class AutocompleteHistoryManager : public KeyedService,
   struct QueryHandler {
     QueryHandler(FieldGlobalId field_id,
                  std::u16string prefix,
-                 SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+                 SingleFieldFillRouter::OnSuggestionsReturnedCallback
                      on_suggestions_returned);
     QueryHandler(const QueryHandler&) = delete;
     QueryHandler(QueryHandler&&);
@@ -96,7 +96,7 @@ class AutocompleteHistoryManager : public KeyedService,
     std::u16string prefix_;
 
     // Callback to-be-executed once a response from the DB is available.
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback
         on_suggestions_returned_;
   };
 

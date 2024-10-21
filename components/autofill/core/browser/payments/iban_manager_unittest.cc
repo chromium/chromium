@@ -42,7 +42,7 @@ constexpr char kNickname_1[] = "Nickname 1";
 constexpr char16_t kIbanValue[] = u"FR7630006000011234567890189";
 
 using OnSuggestionsReturnedCallback =
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback;
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback;
 
 // Extends base::MockCallback to get references to the underlying callback.
 //

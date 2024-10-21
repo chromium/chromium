@@ -191,11 +191,11 @@ class AutocompleteTest : public InProcessBrowserTest {
   std::vector<Suggestion> GetAutocompleteSuggestions(
       const std::string& input_name,
       const std::string& prefix) {
-    base::MockCallback<SingleFieldFormFillRouter::OnSuggestionsReturnedCallback>
+    base::MockCallback<SingleFieldFillRouter::OnSuggestionsReturnedCallback>
         mock_callback;
     std::vector<Suggestion> suggestions;
     EXPECT_CALL(mock_callback, Run).WillOnce(testing::SaveArg<1>(&suggestions));
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback callback =
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback callback =
         mock_callback.Get();
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
         test::CreateTestFormField(/*label=*/"", input_name, prefix,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/single_field_form_fill_router.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 
 #include <string>
 #include <vector>
@@ -15,7 +15,7 @@
 
 namespace autofill {
 
-SingleFieldFormFillRouter::SingleFieldFormFillRouter(
+SingleFieldFillRouter::SingleFieldFillRouter(
     AutocompleteHistoryManager* autocomplete_history_manager,
     IbanManager* iban_manager,
     MerchantPromoCodeManager* merchant_promo_code_manager)
@@ -23,9 +23,9 @@ SingleFieldFormFillRouter::SingleFieldFormFillRouter(
       iban_manager_(iban_manager),
       merchant_promo_code_manager_(merchant_promo_code_manager) {}
 
-SingleFieldFormFillRouter::~SingleFieldFormFillRouter() = default;
+SingleFieldFillRouter::~SingleFieldFillRouter() = default;
 
-void SingleFieldFormFillRouter::OnWillSubmitForm(
+void SingleFieldFillRouter::OnWillSubmitForm(
     const FormData& form,
     const FormStructure* form_structure,
     bool is_autocomplete_enabled) {
@@ -52,12 +52,12 @@ void SingleFieldFormFillRouter::OnWillSubmitForm(
       autocomplete_fields, is_autocomplete_enabled);
 }
 
-bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
+bool SingleFieldFillRouter::OnGetSingleFieldSuggestions(
     const FormStructure* form_structure,
     const FormFieldData& field,
     const AutofillField* autofill_field,
     const AutofillClient& client,
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback
         on_suggestions_returned) {
   // Retrieving suggestions for a new field; select the appropriate filler.
   if (merchant_promo_code_manager_ && form_structure && autofill_field &&
@@ -75,11 +75,11 @@ bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
       field, client, on_suggestions_returned);
 }
 
-void SingleFieldFormFillRouter::CancelPendingQueries() {
+void SingleFieldFillRouter::CancelPendingQueries() {
   autocomplete_history_manager_->CancelPendingQueries();
 }
 
-void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
+void SingleFieldFillRouter::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
     SuggestionType type) {
@@ -89,7 +89,7 @@ void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
   }
 }
 
-void SingleFieldFormFillRouter::OnSingleFieldSuggestionSelected(
+void SingleFieldFillRouter::OnSingleFieldSuggestionSelected(
     const Suggestion& suggestion) {
   SuggestionType type = suggestion.type;
   if (merchant_promo_code_manager_ &&

@@ -10,7 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/single_field_form_fill_router.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -41,7 +41,7 @@ class MerchantPromoCodeManager : public KeyedService {
       const FormFieldData& field,
       const AutofillField& autofill_field,
       const AutofillClient& client,
-      SingleFieldFormFillRouter::OnSuggestionsReturnedCallback&
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback&
           on_suggestions_returned);
   virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
 
@@ -91,7 +91,7 @@ class MerchantPromoCodeManager : public KeyedService {
   void SendPromoCodeSuggestions(
       std::vector<const AutofillOfferData*> promo_code_offers,
       const FormFieldData& field,
-      SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback
           on_suggestions_returned);
 
   raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;

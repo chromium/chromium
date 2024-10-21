@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FORM_FILL_ROUTER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FORM_FILL_ROUTER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILL_ROUTER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILL_ROUTER_H_
 
 #include <string>
 #include <vector>
@@ -26,30 +26,28 @@ class MerchantPromoCodeManager;
 // form filling requests to direct them to Autocomplete, merchant promo codes or
 // IBAN.
 // TODO: crbug.com/374086145 - Make per-tab.
-class SingleFieldFormFillRouter {
+class SingleFieldFillRouter {
  public:
-  // Some single-field form fillers return suggestions asynchronously. This
-  // callback is used to eventually return suggestions. `field_id` identifies
-  // the field the query refer to. `suggestions` is the list of fetched
-  // suggestions.
+  // Some single-field fillers return suggestions asynchronously. This callback
+  // is used to eventually return suggestions. `field_id` identifies the field
+  // the query refer to. `suggestions` is the list of fetched suggestions.
   using OnSuggestionsReturnedCallback =
       base::OnceCallback<void(FieldGlobalId, const std::vector<Suggestion>&)>;
 
-  explicit SingleFieldFormFillRouter(
+  explicit SingleFieldFillRouter(
       AutocompleteHistoryManager* autocomplete_history_manager,
       IbanManager* iban_manager,
       MerchantPromoCodeManager* merchant_promo_code_manager);
-  SingleFieldFormFillRouter(const SingleFieldFormFillRouter&) = delete;
-  SingleFieldFormFillRouter& operator=(const SingleFieldFormFillRouter&) =
-      delete;
-  virtual ~SingleFieldFormFillRouter();
+  SingleFieldFillRouter(const SingleFieldFillRouter&) = delete;
+  SingleFieldFillRouter& operator=(const SingleFieldFillRouter&) = delete;
+  virtual ~SingleFieldFillRouter();
 
-  // Routes every field in a form to its correct single-field form filler,
-  // calling OnWillSubmitFormWithFields() with the vector of fields for that
-  // specific filler. If |form_structure| is not nullptr, then the fields in
-  // |form| and |form_structure| should be 1:1. It is possible for
-  // |form_structure| to be nullptr while |form| has data, which means there
-  // were fields in the form that were not able to be parsed as autofill fields.
+  // Routes every field in a form to its correct single-field filler, calling
+  // OnWillSubmitFormWithFields() with the vector of fields for that specific
+  // filler. If |form_structure| is not nullptr, then the fields in |form| and
+  // |form_structure| should be 1:1. It is possible for |form_structure| to be
+  // nullptr while |form| has data, which means there were fields in the form
+  // that were not able to be parsed as autofill fields.
   virtual void OnWillSubmitForm(const FormData& form,
                                 const FormStructure* form_structure,
                                 bool is_autocomplete_enabled);
@@ -61,7 +59,7 @@ class SingleFieldFormFillRouter {
   // specific single field form filler that we are trying to retrieve
   // suggestions from. `field` is the given field.
   //
-  // The boolean return value denotes whether a single-field form filler claims
+  // The boolean return value denotes whether a single-field filler claims
   // the opportunity to fill this field. If the return value is `false`, the
   // `callback` is not called. If the return value is `true`, it may be called
   // synchronously or asynchronously or not at all (e.g., querying autocomplete
@@ -92,22 +90,22 @@ class SingleFieldFormFillRouter {
 
  private:
   // Handles autocompleting single fields. The `AutocompleteHistoryManager` is
-  // a KeyedService that outlives the `SingleFieldFormFillRouter`.
+  // a KeyedService that outlives the `SingleFieldFillRouter`.
   // TODO(crbug.com/40941458): Once WebView doesn't have an
   // AutocompleteHistoryManager anymore, this should become a raw_ptr instead.
   raw_ref<AutocompleteHistoryManager> autocomplete_history_manager_;
 
   // Handles autofilling IBAN fields. Can be null on unsupported platforms, but
-  // otherwise outlives the `SingleFieldFormFillRouter`, since it is a
+  // otherwise outlives the `SingleFieldFillRouter`, since it is a
   // KeyedService.
   raw_ptr<IbanManager> iban_manager_;
 
   // Handles autofilling merchant promo code fields. Can be null on unsupported
-  // platforms, but otherwise outlives the `SingleFieldFormFillRouter`, since it
+  // platforms, but otherwise outlives the `SingleFieldFillRouter`, since it
   // is a KeyedService.
   raw_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FORM_FILL_ROUTER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILL_ROUTER_H_

@@ -16,15 +16,14 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
   MockMerchantPromoCodeManager();
   ~MockMerchantPromoCodeManager() override;
 
-  MOCK_METHOD(
-      bool,
-      OnGetSingleFieldSuggestions,
-      (const FormStructure& form_structure,
-       const FormFieldData& field,
-       const AutofillField& autofill_field,
-       const AutofillClient& client,
-       SingleFieldFormFillRouter::OnSuggestionsReturnedCallback& callback),
-      (override));
+  MOCK_METHOD(bool,
+              OnGetSingleFieldSuggestions,
+              (const FormStructure& form_structure,
+               const FormFieldData& field,
+               const AutofillField& autofill_field,
+               const AutofillClient& client,
+               SingleFieldFillRouter::OnSuggestionsReturnedCallback& callback),
+              (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,
               (const Suggestion& suggestion),

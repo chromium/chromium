@@ -40,7 +40,7 @@ namespace autofill {
 namespace {
 
 using OnSuggestionsReturnedCallback =
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback;
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback;
 using ::autofill::test::CreateTestFormField;
 using ::testing::_;
 using ::testing::Eq;

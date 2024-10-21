@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/single_field_form_fill_router.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -41,7 +41,7 @@ class IbanManager : public KeyedService {
       const FormFieldData& field,
       const AutofillField& autofill_field,
       const AutofillClient& client,
-      SingleFieldFormFillRouter::OnSuggestionsReturnedCallback&
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback&
           on_suggestions_returned);
   virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
 

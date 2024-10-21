@@ -24,7 +24,7 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
     const FormFieldData& field,
     const AutofillField& autofill_field,
     const AutofillClient& client,
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback&
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback&
         on_suggestions_returned) {
   // The field is eligible only if it's focused on a merchant promo code.
   if (autofill_field.Type().GetStorableType() != MERCHANT_PROMO_CODE) {
@@ -133,7 +133,7 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
 void MerchantPromoCodeManager::SendPromoCodeSuggestions(
     std::vector<const AutofillOfferData*> promo_code_offers,
     const FormFieldData& field,
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback
         on_suggestions_returned) {
   // If the input box content equals any of the available promo codes, then
   // assume the promo code has been filled, and don't show any suggestions.

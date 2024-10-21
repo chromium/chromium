@@ -16,13 +16,12 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
   MockAutocompleteHistoryManager();
   ~MockAutocompleteHistoryManager() override;
 
-  MOCK_METHOD(
-      bool,
-      OnGetSingleFieldSuggestions,
-      (const FormFieldData& field,
-       const AutofillClient& client,
-       SingleFieldFormFillRouter::OnSuggestionsReturnedCallback& callback),
-      (override));
+  MOCK_METHOD(bool,
+              OnGetSingleFieldSuggestions,
+              (const FormFieldData& field,
+               const AutofillClient& client,
+               SingleFieldFillRouter::OnSuggestionsReturnedCallback& callback),
+              (override));
   MOCK_METHOD(void,
               OnWillSubmitFormWithFields,
               (const std::vector<FormFieldData>& fields,

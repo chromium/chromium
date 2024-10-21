@@ -43,7 +43,7 @@
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_prediction_improvements_delegate.h"
-#include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
+#include "components/autofill/core/browser/mock_single_field_fill_router.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -3274,14 +3274,14 @@ class AutofillExternalDelegate_RemoveSuggestionTest
  public:
   void SetUp() override {
     AutofillExternalDelegateUnitTest::SetUp();
-    test_api(manager()).set_single_field_form_fill_router(
-        std::make_unique<MockSingleFieldFormFillRouter>(
+    test_api(manager()).set_single_field_fill_router(
+        std::make_unique<MockSingleFieldFillRouter>(
             client().GetMockAutocompleteHistoryManager(), nullptr, nullptr));
   }
 
-  MockSingleFieldFormFillRouter& single_field_form_fill_router() {
-    return static_cast<MockSingleFieldFormFillRouter&>(
-        test_api(manager()).single_field_form_fill_router());
+  MockSingleFieldFillRouter& single_field_fill_router() {
+    return static_cast<MockSingleFieldFillRouter&>(
+        test_api(manager()).single_field_fill_router());
   }
 };
 
@@ -3310,7 +3310,7 @@ TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
   pdm().address_data_manager().AddProfile(profile);
 
   if (suggestion.type == SuggestionType::kAutocompleteEntry) {
-    EXPECT_CALL(single_field_form_fill_router(),
+    EXPECT_CALL(single_field_fill_router(),
                 OnRemoveCurrentSingleFieldSuggestion);
   } else if (suggestion.type != SuggestionType::kPasswordEntry) {
     // Passwords entries cannot be deleted. Since all the remaining ones are

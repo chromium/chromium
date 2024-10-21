@@ -57,7 +57,7 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
 bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     const FormFieldData& field,
     const AutofillClient& client,
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback&
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback&
         on_suggestions_returned) {
   if (!field.should_autocomplete()) {
     return false;
@@ -194,7 +194,7 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
 AutocompleteHistoryManager::QueryHandler::QueryHandler(
     FieldGlobalId field_id,
     std::u16string prefix,
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback
         on_suggestions_returned)
     : field_id_(field_id),
       prefix_(std::move(prefix)),
