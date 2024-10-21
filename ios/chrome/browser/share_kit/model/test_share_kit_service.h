@@ -23,6 +23,7 @@ class TestShareKitService : public ShareKitService {
                   UIViewController* base_view_controller,
                   id<ApplicationCommands> commandsHandler) override;
   UIViewController* FacePile(NSString* collab_id) override;
+  UIViewController* FacePile(ShareKitFacePileConfiguration* config) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_TEST_SHARE_KIT_SERVICE_H_

@@ -11,6 +11,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 
 @protocol ApplicationCommands;
+@class ShareKitFacePileConfiguration;
 class TabGroup;
 
 // Service for ShareKit, allowing to manage tab groups sharing.
@@ -38,9 +39,10 @@ class ShareKitService : public KeyedService {
                           UIViewController* base_view_controller,
                           id<ApplicationCommands> commandsHandler);
 
-  // Returns a new FacePile view controller for `collab_id`. It will be a
-  // "share" button if `collab_id` is nil.
-  virtual UIViewController* FacePile(NSString* collab_id) = 0;
+  // Returns a new FacePile view controller for the given `config`.
+  virtual UIViewController* FacePile(ShareKitFacePileConfiguration* config);
+  // TODO(crbug.com/374689843): Remove this API.
+  virtual UIViewController* FacePile(NSString* collab_id);
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_SERVICE_H_

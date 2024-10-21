@@ -26,3 +26,9 @@ UIViewController* TestShareKitService::FacePile(NSString* collab_id) {
   // TODO(crbug.com/358373145): add fake implementation.
   return nil;
 }
+
+UIViewController* TestShareKitService::FacePile(
+    ShareKitFacePileConfiguration* config) {
+  // TODO(crbug.com/358373145): add fake implementation.
+  return nil;
+}

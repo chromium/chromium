@@ -10,11 +10,13 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -96,7 +98,17 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   ShareKitService* shareKitService =
       ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
   if (shareKitService) {
-    _viewController.facePile = shareKitService->FacePile(nil);
+    ShareKitFacePileConfiguration* config =
+        [[ShareKitFacePileConfiguration alloc] init];
+    config.collabID = nil;
+    __weak __typeof(self) weakSelf = self;
+    config.completionBlock = ^(NSString* collabID, BOOL isSignedIn) {
+      if (!collabID) {
+        // If there is no collabID, start the share group flow.
+        [weakSelf shareGroup];
+      }
+    };
+    _viewController.facePile = shareKitService->FacePile(config);
   }
 
   _viewController.gridViewController.delegate = self;
@@ -339,6 +351,21 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 - (void)gridViewControllerDropSessionDidExit:
     (BaseGridViewController*)gridViewController {
   // No-op
+}
+
+#pragma mark - Private
+
+// Share the current group.
+- (void)shareGroup {
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
+  if (!_tabGroup || !shareKitService) {
+    return;
+  }
+  id<ApplicationCommands> commandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  shareKitService->ShareGroup(_tabGroup, self.baseViewController,
+                              commandsHandler);
 }
 
 @end

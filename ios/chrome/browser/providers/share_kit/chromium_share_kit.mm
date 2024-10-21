@@ -22,6 +22,9 @@ class ChromiumShareKitService final : public ShareKitService {
                   UIViewController* base_view_controller,
                   id<ApplicationCommands> commandsHandler) override {}
   UIViewController* FacePile(NSString* collab_id) override { return nil; }
+  UIViewController* FacePile(ShareKitFacePileConfiguration* config) override {
+    return nil;
+  }
 };
 
 }  // namespace
