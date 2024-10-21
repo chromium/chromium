@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH) ScalableIphFactory
   ScalableIphFactory();
   ~ScalableIphFactory() override;
 
+  virtual void InitializeServiceInternal(
+      content::BrowserContext* browser_context) {}
+
  private:
   OnBuildingServiceInstanceForTestingCallback
       on_building_service_instance_for_testing_callback_;

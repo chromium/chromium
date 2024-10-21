@@ -532,6 +532,11 @@ bool ScalableIphDelegateImpl::ShowNotification(
 
 void ScalableIphDelegateImpl::AddObserver(DelegateObserver* observer) {
   observers_.AddObserver(observer);
+
+  auto* session_controller = Shell::Get()->session_controller();
+  CHECK(session_controller);
+  NotifySessionStateChanged(
+      GetDelegateSessionState(session_controller->GetSessionState()));
 }
 
 void ScalableIphDelegateImpl::RemoveObserver(DelegateObserver* observer) {
