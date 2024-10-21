@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -62,7 +63,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 namespace {
@@ -83,12 +83,21 @@ CSSPropertyID kLayeredCaptureProperties[] = {
     // Deliberately capturing the shorthand, to include all the mask-related
     // properties.
     CSSPropertyID::kMask,
+    CSSPropertyID::kBorder,
+    CSSPropertyID::kBackground,
+    CSSPropertyID::kBorderRadius,
+    CSSPropertyID::kBoxShadow,
+    CSSPropertyID::kOutline,
+    CSSPropertyID::kBorderImage,
 };
 
 CSSPropertyID kPropertiesToAnimate[] = {
     CSSPropertyID::kBackdropFilter, CSSPropertyID::kOpacity,
     CSSPropertyID::kClipPath,       CSSPropertyID::kFilter,
-    CSSPropertyID::kMask,
+    CSSPropertyID::kMask,           CSSPropertyID::kBorder,
+    CSSPropertyID::kBackground,     CSSPropertyID::kBorderRadius,
+    CSSPropertyID::kBoxShadow,      CSSPropertyID::kOutline,
+    CSSPropertyID::kBorderImage,
 };
 
 template <typename K, typename V>
@@ -1447,6 +1456,9 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       for (CSSPropertyID id : kLayeredCaptureProperties) {
         capture_property(id);
       }
+
+      // TODO(noamr) Figure out the right model for box-sizing with the CSSWG.
+      css_property_builder.Insert(CSSPropertyID::kBoxSizing, "border-box");
     }
 
     auto css_properties = std::move(css_property_builder).Finish();
