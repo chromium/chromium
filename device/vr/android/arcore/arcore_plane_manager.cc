@@ -5,6 +5,7 @@
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "device/vr/android/arcore/vr_service_type_converters.h"
 
 namespace device {
@@ -245,9 +246,8 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
       // points.
       DCHECK(polygon_size % 2 == 0);
 
-      std::unique_ptr<float[]> vertices_raw =
-          std::make_unique<float[]>(polygon_size);
-      ArPlane_getPolygon(arcore_session_, ar_plane, vertices_raw.get());
+      auto vertices_raw = base::HeapArray<float>::Uninit(polygon_size);
+      ArPlane_getPolygon(arcore_session_, ar_plane, vertices_raw.data());
 
       std::vector<mojom::XRPlanePointDataPtr> vertices;
       for (int i = 0; i < polygon_size; i += 2) {
