@@ -1170,7 +1170,7 @@ enum ClientSideDetectionType {
   KEYBOARD_LOCK_REQUESTED = 4;
   // Pointer lock request triggered.
   POINTER_LOCK_REQUESTED = 5;
-  // Vibration APi is called.
+  // Vibration API request triggered.
   VIBRATION_API = 6;
 }
 
