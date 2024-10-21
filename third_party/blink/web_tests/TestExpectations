@@ -8221,3 +8221,4 @@ crbug.com/40279363 [ Linux ] external/wpt/nav-tracking-mitigations/stateful-clie
 # Gardener 2024-10-21
 crbug.com/374384731 virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-share.https.html [ Crash ]
 crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/print/frame_tentative.py [ Failure Pass ]
+crbug.com/374694820 external/wpt/css/css-sizing/keyword-sizes-on-floated-element.html [ Failure Pass ]
