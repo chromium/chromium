@@ -212,15 +212,15 @@ bool GetUrlForTabId(int tab_id,
                     GURL* url,
                     bool* is_incognito) {
   content::WebContents* contents = nullptr;
-  Browser* browser = nullptr;
+  WindowController* window = nullptr;
   bool found =
       ExtensionTabUtil::GetTabById(tab_id, profile,
                                    true,  // Search incognito tabs, too.
-                                   &browser, nullptr, &contents, nullptr);
+                                   &window, &contents, nullptr);
 
-  if (found) {
+  if (found && window) {
     *url = contents->GetURL();
-    *is_incognito = browser->profile()->IsOffTheRecord();
+    *is_incognito = window->profile()->IsOffTheRecord();
     return true;
   } else {
     return false;

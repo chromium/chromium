@@ -194,11 +194,16 @@ bool DropTabsInNewBrowser(Browser* new_browser,
     if (!base::StringToInt(tab_id_str, &tab_id))
       return false;
 
+    extensions::WindowController* source_window = nullptr;
     int source_index = -1;
     if (!extensions::ExtensionTabUtil::GetTabById(
             tab_id, new_browser->profile(), /* include_incognito = */ false,
-            &source_browser, /* tab_strip = */ nullptr,
-            /* contents = */ nullptr, &source_index)) {
+            &source_window, /* contents = */ nullptr, &source_index) ||
+        !source_window) {
+      return false;
+    }
+    source_browser = source_window->GetBrowser();
+    if (!source_browser) {
       return false;
     }
     tab_indices_to_move = gfx::Range(source_index, source_index + 1);

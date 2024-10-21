@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -238,8 +239,9 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
       return base::unexpected(error);
 
     browser = CreateAndShowBrowser(profile, user_gesture, &error);
-    if (!browser)
-      return base::unexpected(error);
+  }
+  if (!browser) {
+    return base::unexpected(error);
   }
 
   // Ensure the selected browser is normal.
@@ -253,11 +255,12 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // TODO(jstritar): Add a constant, chrome.tabs.TAB_ID_ACTIVE, that
   // represents the active tab.
   WebContents* opener = nullptr;
-  Browser* opener_browser = nullptr;
+  WindowController* opener_window = nullptr;
   if (params.opener_tab_id) {
     if (!GetTabById(*params.opener_tab_id, profile,
-                    function->include_incognito_information(), &opener_browser,
-                    nullptr, &opener, nullptr)) {
+                    function->include_incognito_information(), &opener_window,
+                    &opener, nullptr) ||
+        !opener_window) {
       return base::unexpected(ErrorUtils::FormatErrorMessage(
           kTabNotFoundError, base::NumberToString(*params.opener_tab_id)));
     }
@@ -300,6 +303,8 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
     }
   }
 
+  Browser* opener_browser =
+      opener_window ? opener_window->GetBrowser() : nullptr;
   if (opener_browser && browser != opener_browser) {
     return base::unexpected(
         "Tab opener must be in the same window as the updated tab.");
@@ -654,16 +659,23 @@ content::WebContents* ExtensionTabUtil::GetActiveTab(Browser* browser) {
 bool ExtensionTabUtil::GetTabById(int tab_id,
                                   content::BrowserContext* browser_context,
                                   bool include_incognito,
-                                  Browser** browser,
-                                  TabStripModel** tab_strip,
-                                  WebContents** contents,
-                                  int* tab_index) {
+                                  WindowController** out_window,
+                                  WebContents** out_contents,
+                                  int* out_tab_index) {
+  // Zero the output parameters so they have predictable values on failure.
+  if (out_window) {
+    *out_window = nullptr;
+  }
+  if (out_contents) {
+    *out_contents = nullptr;
+  }
+  if (out_tab_index) {
+    *out_tab_index = api::tabs::TAB_INDEX_NONE;
+  }
+
   if (tab_id == api::tabs::TAB_ID_NONE)
     return false;
-  // If `browser_context` is null, then `Profile::FromBrowserContext` below
-  // will return nullptr, and the subsequent call to `GetPrimaryOTRProfile`
-  // will crash. Since this can happen during shutdown, early-out to avoid
-  // crashing.
+  // `browser_context` can be null during shutdown.
   if (!browser_context) {
     return false;
   }
@@ -674,24 +686,26 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
           ? (profile ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
                      : nullptr)
           : nullptr;
-  for (Browser* target_browser : *BrowserList::GetInstance()) {
-    if (target_browser->profile() == profile ||
-        target_browser->profile() == incognito_profile) {
-      TabStripModel* target_tab_strip = target_browser->tab_strip_model();
-      for (int i = 0; i < target_tab_strip->count(); ++i) {
-        WebContents* target_contents = target_tab_strip->GetWebContentsAt(i);
-        if (sessions::SessionTabHelper::IdForTab(target_contents).id() ==
-            tab_id) {
-          if (browser)
-            *browser = target_browser;
-          if (tab_strip)
-            *tab_strip = target_tab_strip;
-          if (contents)
-            *contents = target_contents;
-          if (tab_index)
-            *tab_index = i;
-          return true;
+
+  for (WindowController* window : *WindowControllerList::GetInstance()) {
+    if (window->profile() != profile &&
+        window->profile() != incognito_profile) {
+      continue;
+    }
+    for (int i = 0; i < window->GetTabCount(); ++i) {
+      WebContents* target_contents = window->GetWebContentsAt(i);
+      if (sessions::SessionTabHelper::IdForTab(target_contents).id() ==
+          tab_id) {
+        if (out_window) {
+          *out_window = window;
         }
+        if (out_contents) {
+          *out_contents = target_contents;
+        }
+        if (out_tab_index) {
+          *out_tab_index = i;
+        }
+        return true;
       }
     }
   }
@@ -699,7 +713,8 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
   if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
     // Prerendering tab is not visible and it cannot be in `TabStripModel`, if
     // the tab id exists as a prerendering tab, and the API will returns
-    // `api::tabs::TAB_INDEX_NONE` for `tab_index` and a valid `WebContents`.
+    // `api::tabs::TAB_INDEX_NONE` for `out_tab_index` and a valid
+    // `WebContents`.
     for (auto rph_iterator = content::RenderProcessHost::AllHostsIterator();
          !rph_iterator.IsAtEnd(); rph_iterator.Advance()) {
       content::RenderProcessHost* rph = rph_iterator.GetCurrentValue();
@@ -717,7 +732,8 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
         continue;
       }
 
-      rph->ForEachRenderFrameHost([&contents, &tab_index, &tab_strip,
+      content::WebContents* found_prerender_contents = nullptr;
+      rph->ForEachRenderFrameHost([&found_prerender_contents,
                                    tab_id](content::RenderFrameHost* rfh) {
         CHECK(rfh);
         WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
@@ -732,24 +748,11 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
           return;
         }
 
-        // TODO(crbug.com/40234240): tab_strip and tab_index are tied to
-        // a specific window, and related APIs return WINDOW_ID_NONE for
-        // prerendering-into-a-new-tab tabs as a tentaive solution. So these
-        // values are set to be invalid here.
-        if (tab_strip) {
-          *tab_strip = nullptr;
-        }
-
-        if (tab_index) {
-          *tab_index = api::tabs::TAB_INDEX_NONE;
-        }
-
-        if (contents) {
-          *contents = web_contents;
-        }
+        found_prerender_contents = web_contents;
       });
 
-      if (contents && *contents) {
+      if (found_prerender_contents && out_contents) {
+        *out_contents = found_prerender_contents;
         return true;
       }
     }
@@ -764,7 +767,7 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
                                   bool include_incognito,
                                   WebContents** contents) {
   return GetTabById(tab_id, browser_context, include_incognito, nullptr,
-                    nullptr, contents, nullptr);
+                    contents, nullptr);
 }
 
 // static
@@ -787,10 +790,18 @@ bool ExtensionTabUtil::GetGroupById(
     int group_id,
     content::BrowserContext* browser_context,
     bool include_incognito,
-    Browser** browser,
+    WindowController** out_window,
     tab_groups::TabGroupId* id,
     const tab_groups::TabGroupVisualData** visual_data,
     std::string* error) {
+  // Zero output parameters for the error cases.
+  if (out_window) {
+    *out_window = nullptr;
+  }
+  if (visual_data) {
+    *visual_data = nullptr;
+  }
+
   if (group_id == -1) {
     return false;
   }
@@ -800,29 +811,34 @@ bool ExtensionTabUtil::GetGroupById(
       include_incognito && profile->HasPrimaryOTRProfile()
           ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : nullptr;
-  for (Browser* target_browser : *BrowserList::GetInstance()) {
-    if (target_browser->profile() == profile ||
-        target_browser->profile() == incognito_profile) {
-      TabStripModel* target_tab_strip = target_browser->tab_strip_model();
-      if (!target_tab_strip->SupportsTabGroups()) {
-        continue;
-      }
-      for (tab_groups::TabGroupId target_group :
-           target_tab_strip->group_model()->ListTabGroups()) {
-        if (ExtensionTabUtil::GetGroupId(target_group) == group_id) {
-          if (browser) {
-            *browser = target_browser;
-          }
-          if (id) {
-            *id = target_group;
-          }
-          if (visual_data) {
-            *visual_data = target_tab_strip->group_model()
-                               ->GetTabGroup(target_group)
-                               ->visual_data();
-          }
-          return true;
+  for (WindowController* target_window : *WindowControllerList::GetInstance()) {
+    if (target_window->profile() != profile &&
+        target_window->profile() != incognito_profile) {
+      continue;
+    }
+    Browser* target_browser = target_window->GetBrowser();
+    if (!target_browser) {
+      continue;
+    }
+    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
+    if (!target_tab_strip->SupportsTabGroups()) {
+      continue;
+    }
+    for (tab_groups::TabGroupId target_group :
+         target_tab_strip->group_model()->ListTabGroups()) {
+      if (ExtensionTabUtil::GetGroupId(target_group) == group_id) {
+        if (out_window) {
+          *out_window = target_window;
         }
+        if (id) {
+          *id = target_group;
+        }
+        if (visual_data) {
+          *visual_data = target_tab_strip->group_model()
+                             ->GetTabGroup(target_group)
+                             ->visual_data();
+        }
+        return true;
       }
     }
   }
@@ -1186,9 +1202,11 @@ void ExtensionTabUtil::ClearBackForwardCache() {
 
 // static
 bool ExtensionTabUtil::IsTabStripEditable() {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser && !browser->window()->IsTabStripEditable())
+  // See comments in the header for why we need to check all of them.
+  for (WindowController* window : *WindowControllerList::GetInstance()) {
+    if (!window->HasEditableTabStrip()) {
       return false;
+    }
   }
   return true;
 }

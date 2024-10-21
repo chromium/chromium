@@ -19,6 +19,7 @@
 #include "chrome/browser/chromeos/echo/echo_util.h"
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/echo_private.h"
@@ -195,19 +196,19 @@ ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
           Error("Not called from an app window - the tabId is required."));
     }
   } else {
-    TabStripModel* tab_strip = nullptr;
+    extensions::WindowController* window = nullptr;
     int tab_index = -1;
     if (!extensions::ExtensionTabUtil::GetTabById(
             *params->consent_requester.tab_id, browser_context(),
-            false /*incognito_enabled*/, nullptr /*browser*/, &tab_strip,
-            &web_contents, &tab_index)) {
+            false /*incognito_enabled*/, &window, &web_contents, &tab_index) ||
+        !window) {
       return RespondNow(Error("Tab not found."));
     }
 
     // Bail out if the requested tab is not active - the dialog is modal to the
     // window, so showing it for a request from an inactive tab could be
     // misleading/confusing to the user.
-    if (tab_index != tab_strip->active_index()) {
+    if (tab_index != window->GetBrowser()->tab_strip_model()->active_index()) {
       return RespondNow(Error("Consent requested from an inactive tab."));
     }
   }

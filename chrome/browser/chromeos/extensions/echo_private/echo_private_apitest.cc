@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -125,15 +126,16 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
   }
 
   bool CloseTabWithId(int tab_id) {
-    TabStripModel* tab_strip = nullptr;
+    extensions::WindowController* window = nullptr;
     int tab_index = -1;
-    if (!extensions::ExtensionTabUtil::GetTabById(tab_id, profile(), false,
-                                                  nullptr, &tab_strip, nullptr,
-                                                  &tab_index)) {
+    if (!extensions::ExtensionTabUtil::GetTabById(
+            tab_id, profile(), false, &window, nullptr, &tab_index) ||
+        !window) {
       ADD_FAILURE() << "Tab not found " << tab_id;
       return false;
     }
 
+    TabStripModel* tab_strip = window->GetBrowser()->tab_strip_model();
     int previous_tab_count = tab_strip->count();
     tab_strip->CloseWebContentsAt(tab_index, 0);
     return (previous_tab_count - 1) == tab_strip->count();

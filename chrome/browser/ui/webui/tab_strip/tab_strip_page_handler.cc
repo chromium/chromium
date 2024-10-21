@@ -571,9 +571,11 @@ void TabStripPageHandler::GetGroupVisualData(
 void TabStripPageHandler::GroupTab(int32_t tab_id,
                                    const std::string& group_id_string) {
   int tab_index = -1;
-  if (!extensions::ExtensionTabUtil::GetTabById(
-          tab_id, browser_->profile(), /*include_incognito=*/true, nullptr,
-          nullptr, nullptr, &tab_index)) {
+  if (!extensions::ExtensionTabUtil::GetTabById(tab_id, browser_->profile(),
+                                                /*include_incognito=*/true,
+                                                /*window=*/nullptr,
+                                                /*contents=*/nullptr,
+                                                &tab_index)) {
     return;
   }
 
@@ -588,9 +590,11 @@ void TabStripPageHandler::GroupTab(int32_t tab_id,
 
 void TabStripPageHandler::UngroupTab(int32_t tab_id) {
   int tab_index = -1;
-  if (!extensions::ExtensionTabUtil::GetTabById(
-          tab_id, browser_->profile(), /*include_incognito=*/true, nullptr,
-          nullptr, nullptr, &tab_index)) {
+  if (!extensions::ExtensionTabUtil::GetTabById(tab_id, browser_->profile(),
+                                                /*include_incognito=*/true,
+                                                /*window=*/nullptr,
+                                                /*contents=*/nullptr,
+                                                &tab_index)) {
     return;
   }
 
@@ -649,18 +653,19 @@ void TabStripPageHandler::MoveTab(int32_t tab_id, int32_t to_index) {
     to_index = browser_->tab_strip_model()->count();
   }
 
-  Browser* source_browser;
+  extensions::WindowController* source_window = nullptr;
   int from_index = -1;
   if (!extensions::ExtensionTabUtil::GetTabById(tab_id, browser_->profile(),
-                                                true, &source_browser, nullptr,
-                                                nullptr, &from_index)) {
+                                                true, &source_window, nullptr,
+                                                &from_index)) {
     return;
   }
 
-  if (source_browser->profile() != browser_->profile()) {
+  if (source_window->profile() != browser_->profile()) {
     return;
   }
 
+  Browser* source_browser = source_window->GetBrowser();
   if (source_browser == browser_) {
     browser_->tab_strip_model()->MoveWebContentsAt(from_index, to_index, false);
     return;
@@ -746,14 +751,15 @@ void TabStripPageHandler::ShowEditDialogForGroup(
 void TabStripPageHandler::ShowTabContextMenu(int32_t tab_id,
                                              int32_t location_x,
                                              int32_t location_y) {
-  gfx::PointF point(location_x, location_y);
-  Browser* browser = nullptr;
+  extensions::WindowController* window = nullptr;
   int tab_index = -1;
-  if (!extensions::ExtensionTabUtil::GetTabById(
-          tab_id, browser_->profile(), true /* include_incognito */, &browser,
-          nullptr, nullptr, &tab_index)) {
+  if (!extensions::ExtensionTabUtil::GetTabById(tab_id, browser_->profile(),
+                                                /*include_incognito=*/true,
+                                                &window, nullptr, &tab_index)) {
     return;
   }
+  CHECK(window);  // Shouldn't be trying to do this for a prerender window.
+  Browser* browser = window->GetBrowser();
 
   if (browser != browser_) {
     // TODO(crbug.com/40727240): Investigate how a context menu is being opened
@@ -764,6 +770,7 @@ void TabStripPageHandler::ShowTabContextMenu(int32_t tab_id,
   }
 
   DCHECK(embedder_);
+  gfx::PointF point(location_x, location_y);
   embedder_->ShowContextMenuAtPoint(
       gfx::ToRoundedPoint(point),
       std::make_unique<WebUITabContextMenu>(

@@ -18,6 +18,7 @@ include_rules = [
   "+chrome/browser/chromeos/echo",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/extensions/extension_tab_util.h",
+  "+chrome/browser/extensions/window_controller.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_navigator.h",

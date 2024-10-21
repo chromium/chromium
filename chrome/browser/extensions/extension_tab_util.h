@@ -202,16 +202,14 @@ class ExtensionTabUtil {
   // null if there is no active tab.
   static content::WebContents* GetActiveTab(Browser* browser);
 
-  // Any out parameter (|browser|, |tab_strip|, |contents|, & |tab_index|) may
-  // be NULL and will not be set within the function.
+  // Any out parameter (`window`, `contents`, & `tab_index`) may be null.
   //
-  // The output `*browser` value may be null if the tab is a prerender tab that
+  // The output `*window` value may be null if the tab is a prerender tab that
   // has no corresponding browser window.
   static bool GetTabById(int tab_id,
                          content::BrowserContext* browser_context,
                          bool include_incognito,
-                         Browser** browser,
-                         TabStripModel** tab_strip,
+                         WindowController** window,
                          content::WebContents** contents,
                          int* tab_index);
   static bool GetTabById(int tab_id,
@@ -226,12 +224,12 @@ class ExtensionTabUtil {
   static int GetWindowIdOfGroup(const tab_groups::TabGroupId& id);
 
   // Gets the metadata for the group with ID `group_id`. Sets the `error` if not
-  // found. `browser`, `id`, or `visual_data` may be nullptr and will not be set
+  // found. `window`, `id`, or `visual_data` may be nullptr and will not be set
   // within the function if so.
   static bool GetGroupById(int group_id,
                            content::BrowserContext* browser_context,
                            bool include_incognito,
-                           Browser** browser,
+                           WindowController** window,
                            tab_groups::TabGroupId* id,
                            const tab_groups::TabGroupVisualData** visual_data,
                            std::string* error);
