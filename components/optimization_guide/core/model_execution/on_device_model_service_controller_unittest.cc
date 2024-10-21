@@ -911,14 +911,10 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
     base::HistogramTester histogram_tester;
 
     proto::TextSafetyModelMetadata model_metadata;
-    proto::Any any;
-    any.set_type_url(
-        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
-    model_metadata.SerializeToString(any.mutable_value());
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         TestModelInfoBuilder()
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
-            .SetModelMetadata(any)
+            .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
     test_controller_->MaybeUpdateSafetyModel(*model_info);
 
@@ -935,14 +931,10 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
     proto::TextSafetyModelMetadata model_metadata;
     model_metadata.add_feature_text_safety_configurations()->set_feature(
         ToModelExecutionFeatureProto(kFeature));
-    proto::Any any;
-    any.set_type_url(
-        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
-    model_metadata.SerializeToString(any.mutable_value());
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         TestModelInfoBuilder()
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
-            .SetModelMetadata(any)
+            .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
     test_controller_->MaybeUpdateSafetyModel(*model_info);
 

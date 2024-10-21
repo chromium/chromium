@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -47,9 +48,6 @@ constexpr std::string_view kAnswerPrefix = "The answer is ";
 optimization_guide::AqaResponseParser::Result ParseAqaResponse(
     const std::string& redacted_output) {
   optimization_guide::proto::HistoryAnswerResponse history_answer_response;
-  optimization_guide::proto::Any any;
-  any.set_type_url("type.googleapis.com/" +
-                   history_answer_response.GetTypeName());
 
   std::string unanswerable_capture;
   std::string remaining_capture;
@@ -57,8 +55,7 @@ optimization_guide::AqaResponseParser::Result ParseAqaResponse(
   if (re2::RE2::FullMatch(redacted_output, *UnanswerableRegex(),
                           &unanswerable_capture, &remaining_capture)) {
     history_answer_response.set_is_unanswerable(true);
-    history_answer_response.SerializeToString(any.mutable_value());
-    return any;
+    return optimization_guide::AnyWrapProto(history_answer_response);
   }
 
   // Capture passage IDs.
@@ -88,8 +85,7 @@ optimization_guide::AqaResponseParser::Result ParseAqaResponse(
     // This handles the special case response of the form "ID:xxxx has the
     // answer. The answer is Unanswerable."
     history_answer_response.set_is_unanswerable(true);
-    history_answer_response.SerializeToString(any.mutable_value());
-    return any;
+    return optimization_guide::AnyWrapProto(history_answer_response);
   }
 
   std::vector<std::string> split_id_strings = base::SplitString(
@@ -100,8 +96,7 @@ optimization_guide::AqaResponseParser::Result ParseAqaResponse(
   for (std::string& id : split_id_strings) {
     answer->add_citations()->set_passage_id(id);
   }
-  history_answer_response.SerializeToString(any.mutable_value());
-  return any;
+  return optimization_guide::AnyWrapProto(history_answer_response);
 }
 
 }  // namespace

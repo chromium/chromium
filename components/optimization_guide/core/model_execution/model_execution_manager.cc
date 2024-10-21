@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -243,9 +244,7 @@ void ModelExecutionManager::ExecuteModel(
         << "ExecuteModel: " << ProtoName(feature);
     switch (feature) {
       case ModelBasedCapabilityKey::kTabOrganization: {
-        proto::Any any;
-        any.set_type_url(request_metadata.GetTypeName());
-        request_metadata.SerializeToString(any.mutable_value());
+        proto::Any any = AnyWrapProto(request_metadata);
         auto tab_request = optimization_guide::ParsedAnyMetadata<
             optimization_guide::proto::TabOrganizationRequest>(any);
         std::string tabs = "";

@@ -26,6 +26,7 @@
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
@@ -206,9 +207,6 @@ FormsAnnotationsTestRequest CreateSampleFormsAnnotationsTestRequest(
     new_entry->set_key(entry.key);
     new_entry->set_value(entry.value);
   }
-  optimization_guide::proto::Any forms_annotations_response;
-  forms_annotations_response.set_type_url(response.GetTypeName());
-  response.SerializeToString(forms_annotations_response.mutable_value());
 
   std::vector<autofill::FormFieldData> form_fields;
   for (const auto& entry : request_entries) {
@@ -223,8 +221,8 @@ FormsAnnotationsTestRequest CreateSampleFormsAnnotationsTestRequest(
   optimization_guide::proto::AXTreeUpdate ax_tree;
   ax_tree.mutable_tree_data()->set_title("title");
 
-  return {forms_annotations_response, ax_tree, form_data, GURL("example.com"),
-          "title"};
+  return {optimization_guide::AnyWrapProto(response), ax_tree, form_data,
+          GURL("example.com"), "title"};
 }
 
 TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
@@ -290,9 +288,6 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
     base::HistogramTester histogram_tester;
 
     optimization_guide::proto::FormsAnnotationsResponse response;
-    optimization_guide::proto::Any any;
-    any.set_type_url(response.GetTypeName());
-    response.SerializeToString(any.mutable_value());
     EXPECT_CALL(
         *model_executor(),
         ExecuteModel(
@@ -301,8 +296,8 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
             An<optimization_guide::
                    OptimizationGuideModelExecutionResultCallback>()))
         .WillOnce(base::test::RunOnceCallback<3>(
-            optimization_guide::OptimizationGuideModelExecutionResult(any,
-                                                                      nullptr),
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                optimization_guide::AnyWrapProto(response), nullptr),
             CreateLogEntry()));
 
     autofill::FormData empty_form_data;
