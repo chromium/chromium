@@ -42,6 +42,8 @@ class POLICY_EXPORT GenAiDefaultSettingsPolicyHandler
   ~GenAiDefaultSettingsPolicyHandler() override;
 
   // policy::TypeCheckingPolicyHandler:
+  bool CheckPolicySettings(const policy::PolicyMap& policies,
+                           policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
