@@ -34,13 +34,6 @@ BASE_FEATURE(kEnableGamepadMultitouch,
              "EnableGamepadMultitouch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables gamepad vibration on Android 12+.
-BASE_FEATURE(kEnableAndroidGamepadVibration,
-             "EnableAndroidGamepadVibration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 bool AreGamepadButtonAxisEventsEnabled() {
   // Check if button and axis events are enabled by a field trial.
   if (base::FeatureList::IsEnabled(kEnableGamepadButtonAxisEvents))

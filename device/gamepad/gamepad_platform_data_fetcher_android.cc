@@ -16,7 +16,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,7 +23,6 @@
 #include "base/trace_event/trace_event.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/haptic_gamepad_android.h"
-#include "device/gamepad/public/cpp/gamepad_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/gamepad/jni_headers/GamepadList_jni.h"
@@ -256,13 +254,10 @@ static void JNI_GamepadList_SetGamepadData(
     }
     GamepadDataFetcher::UpdateGamepadStrings(product_name, vendor_id,
                                              product_id, mapping, pad);
-    if (base::FeatureList::IsEnabled(
-            features::kEnableAndroidGamepadVibration)) {
-      pad.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
-      pad.vibration_actuator.not_null = supports_dual_rumble;
-      if (supports_dual_rumble) {
-        fetcher->SetDualRumbleVibrationActuator(state->source_id);
-      }
+    pad.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
+    pad.vibration_actuator.not_null = supports_dual_rumble;
+    if (supports_dual_rumble) {
+      fetcher->SetDualRumbleVibrationActuator(state->source_id);
     }
   }
 

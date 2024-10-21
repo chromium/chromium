@@ -2603,9 +2603,6 @@ extern const char kEdgeToEdgeWebOptInDescription[];
 extern const char kEducationalTipModuleName[];
 extern const char kEducationalTipModuleDescription[];
 
-extern const char kEnableAndroidGamepadVibrationName[];
-extern const char kEnableAndroidGamepadVibrationDescription[];
-
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 

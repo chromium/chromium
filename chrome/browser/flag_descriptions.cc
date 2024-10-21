@@ -5012,10 +5012,6 @@ const char kPasswordSuggestionBottomSheetV2Description[] =
     "Enables the refactored version of the password suggestions bottom sheet. "
     "All the user facing functionality should stay the same.";
 
-const char kEnableAndroidGamepadVibrationName[] = "Gamepad vibration";
-const char kEnableAndroidGamepadVibrationDescription[] =
-    "Enables the ability to play vibration effects on supported gamepads.";
-
 #if BUILDFLAG(ENABLE_VR) && BUILDFLAG(ENABLE_OPENXR)
 const char kOpenXRExtendedFeaturesName[] =
     "WebXR OpenXR Runtime Extended Features";
