@@ -32,6 +32,9 @@ BASE_FEATURE(kTestModuleEnabled1,
 BASE_FEATURE(kTestModuleEnabled2,
              "TestModuleEnabled2",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestEditionEnabled,
+             "TestEditionEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enabled by default
 BASE_FEATURE(kTestModuleEnabled3,
              "TestModuleEnabled3",
@@ -93,6 +96,9 @@ class WhatsNewRegistryFeatureParamTest : public testing::Test {
         WhatsNewModule(kTestModuleEnabled2, ""));
     whats_new_registry_->RegisterModule(
         WhatsNewModule(kTestModuleEnabled3, ""));
+
+    whats_new_registry_->RegisterEdition(
+        WhatsNewEdition(kTestEditionEnabled, ""));
   }
 
   void TearDown() override {
@@ -165,6 +171,41 @@ TEST_F(WhatsNewRegistryFeatureParamTest, MultipleFeaturesWithCustomizations) {
   EXPECT_EQ(static_cast<size_t>(2), active_customizations.size());
   EXPECT_EQ("hello", active_customizations.at(0));
   EXPECT_EQ("goodbye", active_customizations.at(1));
+}
+
+TEST_F(WhatsNewRegistryFeatureParamTest, FeatureWithoutSurvey) {
+  feature_list_.InitWithFeatures({kTestModuleEnabled1, kTestModuleEnabled2},
+                                 {});
+
+  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
+  RegisterModules(std::move(mock_storage_service));
+
+  std::string survey_param = base::GetFieldTrialParamValueByFeature(
+      kTestEditionEnabled, whats_new::kSurveyParam);
+  EXPECT_EQ("", survey_param);
+
+  auto survey_from_registry =
+      whats_new_registry_->GetEditionSurvey(kTestEditionEnabled.name);
+  EXPECT_FALSE(survey_from_registry.has_value());
+}
+
+TEST_F(WhatsNewRegistryFeatureParamTest, FeatureWithSurvey) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{kTestModuleEnabled1, {{}}},
+       {kTestModuleEnabled2, {{}}},
+       {kTestEditionEnabled, {{whats_new::kSurveyParam, "hello"}}}},
+      {});
+  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
+  RegisterModules(std::move(mock_storage_service));
+
+  std::string survey_param = base::GetFieldTrialParamValueByFeature(
+      kTestEditionEnabled, whats_new::kSurveyParam);
+  EXPECT_EQ("hello", survey_param);
+
+  auto survey_from_registry =
+      whats_new_registry_->GetEditionSurvey(kTestEditionEnabled.name);
+  EXPECT_TRUE(survey_from_registry.has_value());
+  EXPECT_EQ("hello", survey_from_registry.value());
 }
 
 }  // namespace user_education

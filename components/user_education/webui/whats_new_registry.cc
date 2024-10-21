@@ -75,6 +75,15 @@ const std::string WhatsNewEdition::GetCustomization() const {
   return customization;
 }
 
+const std::optional<std::string> WhatsNewEdition::GetSurvey() const {
+  std::string survey = base::GetFieldTrialParamValueByFeature(
+      *feature_, whats_new::kSurveyParam);
+  if (survey.empty()) {
+    return std::nullopt;
+  }
+  return survey;
+}
+
 void WhatsNewRegistry::RegisterModule(WhatsNewModule module) {
   if (module.HasFeature() && module.IsFeatureEnabled()) {
     storage_service_->SetModuleEnabled(module.GetFeatureName());
@@ -208,7 +217,19 @@ const std::vector<std::string> WhatsNewRegistry::GetCustomizations() const {
   return customizations;
 }
 
-void WhatsNewRegistry::SetEditionUsed(std::string_view edition_name) {
+const std::optional<std::string> WhatsNewRegistry::GetEditionSurvey(
+    std::string_view edition_name) const {
+  auto edition = std::find_if(editions_.begin(), editions_.end(),
+                              [&edition_name](WhatsNewEdition const& edition) {
+                                return edition.GetFeatureName() == edition_name;
+                              });
+  if (edition != editions_.end()) {
+    return edition->GetSurvey();
+  }
+  return std::nullopt;
+}
+
+void WhatsNewRegistry::SetEditionUsed(std::string_view edition_name) const {
   // Verify edition exists.
   auto edition = std::find_if(editions_.begin(), editions_.end(),
                               [&edition_name](WhatsNewEdition const& edition) {
@@ -219,7 +240,7 @@ void WhatsNewRegistry::SetEditionUsed(std::string_view edition_name) {
   }
 }
 
-void WhatsNewRegistry::ClearUnregisteredModules() {
+void WhatsNewRegistry::ClearUnregisteredModules() const {
   for (auto& module_value : storage_service_->ReadModuleData()) {
     auto found_module = std::find_if(
         modules_.begin(), modules_.end(),
@@ -236,7 +257,7 @@ void WhatsNewRegistry::ClearUnregisteredModules() {
   }
 }
 
-void WhatsNewRegistry::ClearUnregisteredEditions() {
+void WhatsNewRegistry::ClearUnregisteredEditions() const {
   for (auto edition_value : storage_service_->ReadEditionData()) {
     auto found_edition =
         std::find_if(editions_.begin(), editions_.end(),
@@ -251,7 +272,7 @@ void WhatsNewRegistry::ClearUnregisteredEditions() {
   }
 }
 
-void WhatsNewRegistry::ResetData() {
+void WhatsNewRegistry::ResetData() const {
   storage_service_->Reset();
 }
 
