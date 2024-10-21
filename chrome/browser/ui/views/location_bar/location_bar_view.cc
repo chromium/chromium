@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
-#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
@@ -355,10 +354,6 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kDiscounts);
     params.types_enabled.push_back(PageActionIconType::kPriceInsights);
     params.types_enabled.push_back(PageActionIconType::kPriceTracking);
-
-    if (side_search::IsEnabledForBrowser(browser_)) {
-      params.types_enabled.push_back(PageActionIconType::kSideSearch);
-    }
 
     params.types_enabled.push_back(PageActionIconType::kClickToCall);
     params.types_enabled.push_back(PageActionIconType::kSmsRemoteFetcher);

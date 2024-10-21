@@ -16904,38 +16904,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_REQUEST_ABORTED_DIALOG_TEXT" translateable="false">
       <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> has canceled the request for identity information.
     </message>
-
-      <!-- Side Search -->
-      <message name="IDS_ACCNAME_SIDE_SEARCH_TOOL" desc="The accessible name for the side search tool.">
-        Side Search
-      </message>
-      <message name="IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_ACTIVATED" desc="The accessible name for the side search toolbar button when the button is active and the side panel is open.">
-        Close search in side panel. Search is open in the side panel.
-      </message>
-      <message name="IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED" desc="The accessible name for the side search toolbar button when the button is not active and the side panel is not open.">
-        Open search in side panel. Search is not open in the side panel.
-      </message>
-      <message name="IDS_ACCNAME_SIDE_SEARCH_CLOSE_BUTTON" desc="The accessible name for the side search header close button.">
-        Close search in side panel
-      </message>
-      <message name="IDS_ACCNAME_SIDE_SEARCH_FEEDBACK_BUTTON" desc="The accessible name for the side search header feedback button.">
-        Submit Feedback
-      </message>
-      <message name="IDS_SIDE_SEARCH_ENTRYPOINT_LABEL" desc="The label text that is animated-in when the omnibox entrypoint is first shown.">
-        See more search results
-      </message>
-      <message name="IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_ACTIVATED" desc="The tooltip for the side search toolbar button when the button is active and the side panel is open.">
-        Close search in side panel
-      </message>
-      <message name="IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED" desc="The tooltip for the side search toolbar button when the button is not active and the side panel is not open.">
-        Open search in side panel
-      </message>
-      <message name="IDS_TOOLTIP_SIDE_SEARCH_CLOSE_BUTTON" desc="The tooltip for the side search header close button.">
-        Close search in side panel
-      </message>
-      <message name="IDS_TOOLTIP_SIDE_SEARCH_FEEDBACK_BUTTON" desc="The tooltip for the side search header feedback button.">
-        Submit Feedback
-      </message>
    </if>
 
    <!-- Incognito Profile Menu bubble. -->

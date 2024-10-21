@@ -644,8 +644,6 @@
         // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
-#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #endif
 
@@ -5650,14 +5648,6 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       prerender::NoStatePrefetchNavigationThrottle::MaybeCreateThrottleFor(
           handle),
       &throttles);
-
-#if defined(TOOLKIT_VIEWS)
-  if (profile && IsSideSearchEnabled(profile)) {
-    MaybeAddThrottle(
-        SideSearchSideContentsHelper::MaybeCreateThrottleFor(handle),
-        &throttles);
-  }
-#endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (lens::features::IsLensSidePanelEnabled()) {

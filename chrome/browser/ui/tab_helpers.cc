@@ -216,11 +216,6 @@
 #include "components/zoom/zoom_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
-#include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder_tab_helper.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session_tab_helper.h"
@@ -739,12 +734,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
 #if BUILDFLAG(IS_WIN)
   FontPrewarmerTabHelper::CreateForWebContents(web_contents);
-#endif
-
-#if defined(TOOLKIT_VIEWS)
-  if (IsSideSearchEnabled(profile)) {
-    SideSearchTabContentsHelper::CreateForWebContents(web_contents);
-  }
 #endif
 
   // --- Section 3: Feature tab helpers behind BUILDFLAGs ---

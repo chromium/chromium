@@ -4509,7 +4509,6 @@ if (!is_android) {
         "../browser/ui/views/session_crashed_bubble_view_browsertest.cc",
         "../browser/ui/views/side_panel/extensions/extension_side_panel_browsertest.cc",
         "../browser/ui/views/side_panel/extensions/extension_side_panel_test_utils.cc",
-        "../browser/ui/views/side_search/default_search_icon_source_browsertest.cc",
         "../browser/ui/views/site_data/page_specific_site_data_dialog_browsertest.cc",
         "../browser/ui/views/status_bubble_views_browsertest.cc",
         "../browser/ui/views/tab_sharing/tab_sharing_ui_views_browsertest.cc",
@@ -6070,11 +6069,8 @@ test("unit_tests") {
   }
 
   if (toolkit_views) {
-    sources += [
-      "../browser/bookmarks/bookmark_expanded_state_tracker_unittest.cc",
-      "../browser/ui/side_search/side_search_side_contents_helper_unittest.cc",
-      "../browser/ui/side_search/side_search_tab_contents_helper_unittest.cc",
-    ]
+    sources +=
+        [ "../browser/bookmarks/bookmark_expanded_state_tracker_unittest.cc" ]
   }
 
   if (enable_webui_tab_strip) {
@@ -10385,7 +10381,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/search/instant_test_base.cc",
       "../browser/ui/search/instant_test_base.h",
       "../browser/ui/search/third_party_ntp_uitest.cc",
-      "../browser/ui/side_search/side_search_tab_contents_helper_interactive_uitest.cc",
       "../browser/ui/startup/invalid_user_data_dir_interactive_uitest.cc",
       "../browser/ui/startup/startup_browser_creator_interactive_uitest.cc",
       "../browser/ui/tabs/organization/tab_declutter_controller_interactive_uitest.cc",
@@ -10826,8 +10821,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/permissions/quiet_prompt_interactive_uitest.cc",
         "../browser/ui/views/sad_tab_view_interactive_uitest.cc",
         "../browser/ui/views/side_panel/side_panel_interactive_uitest.cc",
-        "../browser/ui/views/side_search/side_search_browsertest.cc",
-        "../browser/ui/views/side_search/side_search_browsertest.h",
         "../browser/ui/views/site_data/page_specific_site_data_dialog_interactive_uitest.cc",
         "../browser/ui/views/ssl_client_certificate_selector_browsertest.cc",
         "../browser/ui/views/tabs/tab_drag_controller_interactive_uitest.cc",
