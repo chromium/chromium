@@ -692,9 +692,11 @@ void VideoResourceUpdater::ObtainFrameResource(
   UMA_HISTOGRAM_ENUMERATION("Media.VideoResourceUpdater.FrameFormat",
                             video_frame->format(), PIXEL_FORMAT_MAX + 1);
 
-  if (video_frame->metadata().overlay_plane_id.has_value()) {
+  if (video_frame->storage_type() == VideoFrame::STORAGE_OPAQUE &&
+      video_frame->format() == VideoPixelFormat::PIXEL_FORMAT_UNKNOWN &&
+      video_frame->metadata().tracking_token.has_value()) {
     // This is a hole punching VideoFrame, there is nothing to display.
-    overlay_plane_id_ = *video_frame->metadata().overlay_plane_id;
+    overlay_plane_id_ = *video_frame->metadata().tracking_token;
     frame_resource_type_ = VideoFrameResourceType::VIDEO_HOLE;
     return;
   }

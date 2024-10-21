@@ -578,7 +578,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, EmptyVideoFrameMetadata) {
   EXPECT_TRUE(deserialized_video_frame_metadata.power_efficient);
   EXPECT_TRUE(deserialized_video_frame_metadata.read_lock_fences_enabled);
   EXPECT_FALSE(deserialized_video_frame_metadata.interactive_content);
-  EXPECT_FALSE(deserialized_video_frame_metadata.overlay_plane_id.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.tracking_token.has_value());
   EXPECT_FALSE(
       deserialized_video_frame_metadata.device_scale_factor.has_value());
   EXPECT_FALSE(deserialized_video_frame_metadata.page_scale_factor.has_value());
@@ -647,7 +647,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidVideoFrameMetadata) {
   EXPECT_TRUE(deserialized_video_frame_metadata.power_efficient);
   EXPECT_TRUE(deserialized_video_frame_metadata.read_lock_fences_enabled);
   EXPECT_FALSE(deserialized_video_frame_metadata.interactive_content);
-  EXPECT_FALSE(deserialized_video_frame_metadata.overlay_plane_id.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.tracking_token.has_value());
   EXPECT_FALSE(
       deserialized_video_frame_metadata.device_scale_factor.has_value());
   EXPECT_FALSE(deserialized_video_frame_metadata.page_scale_factor.has_value());

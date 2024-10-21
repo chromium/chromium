@@ -391,7 +391,7 @@ struct VideoFrameMetadata {
 
   bool is_webgpu_compatible;
 
-  mojo_base.mojom.UnguessableToken? overlay_plane_id;
+  mojo_base.mojom.UnguessableToken? tracking_token;
 
   bool power_efficient;
 

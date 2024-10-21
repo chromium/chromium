@@ -82,7 +82,7 @@ media::VideoFrameMetadata GetFullVideoFrameMetadata() {
   metadata.interactive_content = true;
 
   // base::UnguessableTokens
-  metadata.overlay_plane_id = base::UnguessableToken::Create();
+  metadata.tracking_token = base::UnguessableToken::Create();
 
   // doubles
   metadata.device_scale_factor = 2.0;
@@ -129,7 +129,7 @@ void VerifyVideoFrameMetadataEquality(const media::VideoFrameMetadata& a,
   EXPECT_EQ(a.wants_promotion_hint, b.wants_promotion_hint);
   EXPECT_EQ(a.protected_video, b.protected_video);
   EXPECT_EQ(a.hw_protected, b.hw_protected);
-  EXPECT_EQ(a.overlay_plane_id, b.overlay_plane_id);
+  EXPECT_EQ(a.tracking_token, b.tracking_token);
   EXPECT_EQ(a.power_efficient, b.power_efficient);
   EXPECT_EQ(a.device_scale_factor, b.device_scale_factor);
   EXPECT_EQ(a.page_scale_factor, b.page_scale_factor);

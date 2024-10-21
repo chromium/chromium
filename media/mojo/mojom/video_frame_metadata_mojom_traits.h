@@ -119,9 +119,9 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.region_capture_rect;
   }
 
-  static const std::optional<base::UnguessableToken>& overlay_plane_id(
+  static const std::optional<base::UnguessableToken>& tracking_token(
       const media::VideoFrameMetadata& input) {
-    return input.overlay_plane_id;
+    return input.tracking_token;
   }
 
   static std::optional<base::TimeTicks> receive_time(

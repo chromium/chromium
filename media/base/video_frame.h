@@ -201,6 +201,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Create a new frame that doesn't contain any valid video content. This frame
   // is meant to be sent to compositor to inform that the compositor should
   // punch a transparent hole so the video underlay will be visible.
+  // |overlay_plane_id| is stored in metadata() as |tracking_token|.
   static scoped_refptr<VideoFrame> CreateVideoHoleFrame(
       const base::UnguessableToken& overlay_plane_id,
       const gfx::Size& natural_size,

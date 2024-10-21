@@ -302,7 +302,7 @@ scoped_refptr<VideoFrame> VideoFrame::CreateVideoHoleFrame(
   scoped_refptr<VideoFrame> frame = new VideoFrame(
       *layout, StorageType::STORAGE_OPAQUE, gfx::Rect(natural_size),
       natural_size, timestamp, FrameControlType::kVideoHole);
-  frame->metadata().overlay_plane_id = overlay_plane_id;
+  frame->metadata().tracking_token = overlay_plane_id;
   return frame;
 }
 

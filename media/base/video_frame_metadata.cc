@@ -56,7 +56,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
 #if BUILDFLAG(USE_VAAPI)
   MERGE_OPTIONAL_FIELD(hw_va_protected_session_id, metadata_source);
 #endif
-  MERGE_OPTIONAL_FIELD(overlay_plane_id, metadata_source);
+  MERGE_OPTIONAL_FIELD(tracking_token, metadata_source);
   MERGE_VALUE_FIELD(power_efficient, metadata_source);
   MERGE_VALUE_FIELD(texture_origin_is_top_left, metadata_source);
   MERGE_OPTIONAL_FIELD(device_scale_factor, metadata_source);
