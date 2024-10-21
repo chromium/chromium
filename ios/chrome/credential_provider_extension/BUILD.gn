@@ -161,10 +161,7 @@ source_set("metrics_util") {
 
 source_set("passkey_keychain_provider") {
   public_deps = [ ":passkey_keychain_provider_header" ]
-
-  # TODO(crbug.com/355042392): Set the dep back to
-  # `ios_passkey_keychain_provider_target` once the internal repo is updated.
-  deps = [ ":passkey_keychain_provider_implementation" ]
+  deps = [ ios_passkey_keychain_provider_target ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]
 }
