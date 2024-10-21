@@ -45,7 +45,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -60,45 +60,11 @@
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-namespace {
-
-bool ShouldSyncBrowserTypes() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::browser_util::IsAshBrowserSyncEnabled();
-#else
-  return true;
-#endif
-}
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-bool IsLacrosSecondaryProfile(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return !profile->IsMainProfile() &&
-         !web_app::IsMainProfileCheckSkippedForTesting();
-#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
-bool ShouldSyncAppsTypesInTransportMode() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // When apps sync controlled by Ash Sync settings, allow running apps-related
-  // types (WEB_APPS, APPS and APP_SETTINGS) in transport-only mode using the
-  // same `delegate`.
-  return base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing);
-#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-}  // namespace
 
 ChromeSyncControllerBuilder::ChromeSyncControllerBuilder() = default;
 
@@ -204,7 +170,6 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
   syncer::RepeatingDataTypeStoreFactory data_type_store_factory =
       data_type_store_service_.value()->GetStoreFactory();
 
-  if (ShouldSyncBrowserTypes()) {
     syncer::DataTypeControllerDelegate* security_events_delegate =
         security_event_recorder_.value()->GetControllerDelegate().get();
     // Forward both full-sync and transport-only modes to the same delegate,
@@ -239,34 +204,23 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
                   kLegacyFullSyncModeOnly,
               extension_system_profile_.value()));
 
-      if (!IsLacrosSecondaryProfile(extension_system_profile_.value())) {
-        auto delegate_mode = browser_sync::ExtensionDataTypeController::
-            DelegateMode::kLegacyFullSyncModeOnly;
-        auto setting_delegate_mode =
-            browser_sync::ExtensionSettingDataTypeController::DelegateMode::
-                kLegacyFullSyncModeOnly;
-        if (ShouldSyncAppsTypesInTransportMode()) {
-          delegate_mode = browser_sync::ExtensionDataTypeController::
-              DelegateMode::kTransportModeWithSingleModel;
-          setting_delegate_mode =
+      controllers.push_back(
+          std::make_unique<browser_sync::ExtensionDataTypeController>(
+              syncer::APPS, data_type_store_factory,
+              extension_sync_service_.value()->AsWeakPtr(), dump_stack,
+              browser_sync::ExtensionDataTypeController::DelegateMode::
+                  kLegacyFullSyncModeOnly,
+              extension_system_profile_.value()));
+
+      controllers.push_back(
+          std::make_unique<browser_sync::ExtensionSettingDataTypeController>(
+              syncer::APP_SETTINGS, data_type_store_factory,
+              extensions::settings_sync_util::GetSyncableServiceProvider(
+                  extension_system_profile_.value(), syncer::APP_SETTINGS),
+              dump_stack,
               browser_sync::ExtensionSettingDataTypeController::DelegateMode::
-                  kTransportModeWithSingleModel;
-        }
-
-        controllers.push_back(
-            std::make_unique<browser_sync::ExtensionDataTypeController>(
-                syncer::APPS, data_type_store_factory,
-                extension_sync_service_.value()->AsWeakPtr(), dump_stack,
-                delegate_mode, extension_system_profile_.value()));
-
-        controllers.push_back(
-            std::make_unique<browser_sync::ExtensionSettingDataTypeController>(
-                syncer::APP_SETTINGS, data_type_store_factory,
-                extensions::settings_sync_util::GetSyncableServiceProvider(
-                    extension_system_profile_.value(), syncer::APP_SETTINGS),
-                dump_stack, setting_delegate_mode,
-                extension_system_profile_.value()));
-      }
+                  kLegacyFullSyncModeOnly,
+              extension_system_profile_.value()));
     }
 
     if (theme_service_.value()) {
@@ -280,8 +234,7 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
               extension_system_profile_.value()));
     }
 
-    if (!IsLacrosSecondaryProfile(extension_system_profile_.value()) &&
-        web_app_provider_.value()) {
+    if (web_app_provider_.value()) {
       syncer::DataTypeControllerDelegate* delegate =
           web_app_provider_.value()
               ->sync_bridge_unsafe()
@@ -289,20 +242,12 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
               ->GetControllerDelegate()
               .get();
 
-      std::unique_ptr<syncer::DataTypeControllerDelegate>
-          delegate_for_transport_mode = nullptr;
-      if (ShouldSyncAppsTypesInTransportMode()) {
-        delegate_for_transport_mode =
-            std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                delegate);
-      }
       controllers.push_back(std::make_unique<syncer::DataTypeController>(
           syncer::WEB_APPS,
           /*delegate_for_full_sync_mode=*/
           std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
               delegate),
-          /*delegate_for_transport_mode=*/
-          std::move(delegate_for_transport_mode)));
+          /*delegate_for_transport_mode=*/nullptr));
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -337,7 +282,6 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
     }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(os_pref_service_syncable_.value());
