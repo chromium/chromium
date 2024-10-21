@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 
@@ -28,6 +29,56 @@ enum class FilePickerDriveOutcome {
   kMaxValue = kSubmittedFromStarred,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
+// The outcome of the Drive File Picker search.
+// LINT.IfChange
+enum class FilePickerSearchOutcome {
+  kSubmittedSearchItem = 0,
+  kSubmittedSearchSubItem = 1,
+  kSubmittedNonSearchItem = 2,
+  kSubmittedWithNoSearch = 3,
+  kCancelledWithNoSearch = 4,
+  kCancelledAfterSearch = 5,
+  kMaxValue = kCancelledAfterSearch,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
+// The Drive File Picker sorting choice.
+// LINT.IfChange
+enum class FilePickerSortingChoice {
+  kNameAscending = 0,
+  kNameDescending = 1,
+  kOpenTimeAscending = 2,
+  kOpenTimeDescending = 3,
+  kModifiedTimeAscending = 4,
+  kModifiedTimeDescending = 5,
+  kMaxValue = kModifiedTimeDescending,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
+// The outcome of the Drive File Picker search.
+// LINT.IfChange
+enum class FilePickerIdentityChange {
+  kChangeAccount = 0,
+  kAddAccountSuccess = 1,
+  kAddAccountFailure = 2,
+  kMaxValue = kAddAccountFailure,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
+// The outcome of the Drive File Picker search.
+// LINT.IfChange
+enum class FilePickerFilterChange {
+  kArchives = 0,
+  kAudio = 1,
+  kVideos = 2,
+  kImages = 3,
+  kPDFs = 4,
+  kAllFiles = 5,
+  kMaxValue = kAllFiles,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
 }  // namespace
 
 @implementation DriveFilePickerMetricsHelper
@@ -44,7 +95,37 @@ enum class FilePickerDriveOutcome {
     base::UmaHistogramMemoryMB("IOS.FilePicker.Drive.SubmittedFileSize",
                                _fileSize / 1024 / 1024);
   }
+
   base::UmaHistogramEnumeration("IOS.FilePicker.Drive.Outcome", [self outcome]);
+  base::UmaHistogramEnumeration("IOS.FilePicker.Drive.SearchOutcome",
+                                [self searchOutcome]);
+}
+
+- (void)reportSortingCriteriaChange:(DriveItemsSortingType)criteria
+                      withDirection:(DriveItemsSortingOrder)direction {
+  base::UmaHistogramEnumeration(
+      "IOS.FilePicker.Drive.Sorting",
+      [self convertToFilePickerSortingChoiceFromCriteria:criteria
+                                               direction:direction]);
+}
+
+- (void)reportFilterChange:(DriveFilePickerFilter)filter {
+  base::UmaHistogramEnumeration(
+      "IOS.FilePicker.Drive.Filter",
+      [self convertToFilePickerFilterChangeFromFilter:filter]);
+}
+
+- (void)reportAccountChangeWithSuccess:(BOOL)success
+                          isAccountNew:(BOOL)isAccountNew {
+  if (!isAccountNew) {
+    base::UmaHistogramEnumeration("IOS.FilePicker.Drive.AccountSelection",
+                                  FilePickerIdentityChange::kChangeAccount);
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      "IOS.FilePicker.Drive.AccountSelection",
+      (success) ? FilePickerIdentityChange::kAddAccountSuccess
+                : FilePickerIdentityChange::kAddAccountFailure);
 }
 
 #pragma mark - Private
@@ -89,6 +170,81 @@ enum class FilePickerDriveOutcome {
   } else {
     return FilePickerDriveOutcome::kInterruptedExternally;
   }
+}
+
+// Return the bucket to log in `IOS.FilePicker.Drive.SearchOutcome`.
+- (FilePickerSearchOutcome)searchOutcome {
+  if (_searchingState != DriveFilePickerSearchState::kNotSearching) {
+    if (_submitted) {
+      return FilePickerSearchOutcome::kSubmittedSearchItem;
+    } else {
+      return FilePickerSearchOutcome::kCancelledAfterSearch;
+    }
+  } else {
+    if (_submitted) {
+      if (_searchSubFolderCounter > 0) {
+        return FilePickerSearchOutcome::kSubmittedSearchSubItem;
+      } else {
+        return (_triggeredSearch)
+                   ? FilePickerSearchOutcome::kSubmittedNonSearchItem
+                   : FilePickerSearchOutcome::kSubmittedWithNoSearch;
+      }
+    } else {
+      return (_triggeredSearch)
+                 ? FilePickerSearchOutcome::kCancelledAfterSearch
+                 : FilePickerSearchOutcome::kCancelledWithNoSearch;
+    }
+  }
+}
+
+- (FilePickerSortingChoice)
+    convertToFilePickerSortingChoiceFromCriteria:(DriveItemsSortingType)criteria
+                                       direction:
+                                           (DriveItemsSortingOrder)direction {
+  if (criteria == DriveItemsSortingType::kName &&
+      direction == DriveItemsSortingOrder::kAscending) {
+    return FilePickerSortingChoice::kNameAscending;
+  }
+  if (criteria == DriveItemsSortingType::kName &&
+      direction == DriveItemsSortingOrder::kDescending) {
+    return FilePickerSortingChoice::kNameDescending;
+  }
+  if (criteria == DriveItemsSortingType::kModificationTime &&
+      direction == DriveItemsSortingOrder::kAscending) {
+    return FilePickerSortingChoice::kModifiedTimeAscending;
+  }
+  if (criteria == DriveItemsSortingType::kModificationTime &&
+      direction == DriveItemsSortingOrder::kDescending) {
+    return FilePickerSortingChoice::kModifiedTimeDescending;
+  }
+  if (criteria == DriveItemsSortingType::kOpeningTime &&
+      direction == DriveItemsSortingOrder::kAscending) {
+    return FilePickerSortingChoice::kOpenTimeAscending;
+  }
+  if (criteria == DriveItemsSortingType::kOpeningTime &&
+      direction == DriveItemsSortingOrder::kDescending) {
+    return FilePickerSortingChoice::kOpenTimeDescending;
+  }
+  NOTREACHED_NORETURN();
+}
+
+- (FilePickerFilterChange)convertToFilePickerFilterChangeFromFilter:
+    (DriveFilePickerFilter)filter {
+  switch (filter) {
+    case DriveFilePickerFilter::kShowAllFiles:
+      return FilePickerFilterChange::kAllFiles;
+    case DriveFilePickerFilter::kOnlyShowAudio:
+      return FilePickerFilterChange::kAudio;
+    case DriveFilePickerFilter::kOnlyShowImages:
+      return FilePickerFilterChange::kImages;
+    case DriveFilePickerFilter::kOnlyShowVideos:
+      return FilePickerFilterChange::kVideos;
+    case DriveFilePickerFilter::kOnlyShowArchives:
+      return FilePickerFilterChange::kArchives;
+    case DriveFilePickerFilter::kOnlyShowPDFs:
+      return FilePickerFilterChange::kPDFs;
+  }
+  NOTREACHED_NORETURN();
 }
 
 @end
