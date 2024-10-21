@@ -70,11 +70,20 @@ void SafeAreaInsetsHostImpl::DidFinishNavigation(
 }
 
 void SafeAreaInsetsHostImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
-  insets_ = insets;
   RenderFrameHostImpl* rfh = ActiveRenderFrameHost();
   if (rfh) {
-    SendSafeAreaToFrame(rfh, insets);
+    // Skip sending the safe area to frame if the values match the latest sent
+    // values.
+    if (insets != insets_) {
+      base::UmaHistogramBoolean(
+          "Android.SafeAreaInsets.SendSafeAreaToFrame.Optimized", false);
+      SendSafeAreaToFrame(rfh, insets);
+    } else {
+      base::UmaHistogramBoolean(
+          "Android.SafeAreaInsets.SendSafeAreaToFrame.Optimized", true);
+    }
   }
+  insets_ = insets;
 }
 
 void SafeAreaInsetsHostImpl::ViewportFitChangedForFrame(
@@ -107,7 +116,9 @@ void SafeAreaInsetsHostImpl::MaybeActiveRenderFrameHostChanged() {
     web_contents_impl_->NotifyViewportFitChanged(new_value);
   }
   // Update Blink so its document displays with the current insets.
-  SetDisplayCutoutSafeArea(insets_);
+  if (new_active_rfh) {
+    SendSafeAreaToFrame(new_active_rfh.get(), insets_);
+  }
 }
 
 RenderFrameHostImpl* SafeAreaInsetsHostImpl::ActiveRenderFrameHost() {

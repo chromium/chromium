@@ -27,6 +27,9 @@ class TestSafeAreaInsetsHostImpl : public SafeAreaInsetsHostImpl {
       : SafeAreaInsetsHostImpl(web_contents_impl) {}
 
   void ResetSafeAreaTracking() { safe_area_insets_ = std::nullopt; }
+  void ResetSendSafeAreaToFrameCallCount() {
+    send_safe_area_to_frame_call_count_ = 0;
+  }
 
   // Override to allow test access.
   void ViewportFitChangedForFrame(RenderFrameHost* rfh,
@@ -39,6 +42,9 @@ class TestSafeAreaInsetsHostImpl : public SafeAreaInsetsHostImpl {
 
   bool did_send_safe_area() { return safe_area_insets_.has_value(); }
   gfx::Insets safe_area_insets() { return safe_area_insets_.value(); }
+  int send_safe_area_to_frame_call_count() {
+    return send_safe_area_to_frame_call_count_;
+  }
 
   RenderFrameHost* active_rfh() { return ActiveRenderFrameHost(); }
 
@@ -46,11 +52,13 @@ class TestSafeAreaInsetsHostImpl : public SafeAreaInsetsHostImpl {
   // Send the safe area insets to a `RenderFrameHost`.
   void SendSafeAreaToFrame(RenderFrameHost* rfh, gfx::Insets insets) override {
     safe_area_insets_ = insets;
+    send_safe_area_to_frame_call_count_++;
     SafeAreaInsetsHostImpl::SendSafeAreaToFrame(rfh, insets);
   }
 
  private:
   std::optional<gfx::Insets> safe_area_insets_;
+  int send_safe_area_to_frame_call_count_ = 0;
 };
 
 class SafeAreaInsetsHostImplTest : public RenderViewHostTestHarness {
@@ -78,6 +86,10 @@ class SafeAreaInsetsHostImplTest : public RenderViewHostTestHarness {
 
   void ResetSafeAreaTracking() {
     test_safe_area_insets_host()->ResetSafeAreaTracking();
+  }
+
+  void ResetSendSafeAreaToFrameCallCount() {
+    test_safe_area_insets_host()->ResetSendSafeAreaToFrameCallCount();
   }
 
   blink::mojom::ViewportFit GetValueOrDefault() {
@@ -121,6 +133,44 @@ class SafeAreaInsetsHostImplTest : public RenderViewHostTestHarness {
  private:
   raw_ptr<TestSafeAreaInsetsHostImpl> test_safe_area_insets_host_;
 };
+
+TEST_F(SafeAreaInsetsHostImplTest, SetDisplayCutoutSafeAreaRedundantInsets) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDrawCutoutEdgeToEdge},
+      /*disabled_features=*/{});
+
+  ResetSafeAreaTracking();
+  FocusWebContentsOnMainFrame();
+  NavigateAndCommit(GURL("https://www.viewportFitCover.com"));
+  test_safe_area_insets_host()->ViewportFitChangedForFrame(
+      main_rfh(), blink::mojom::ViewportFit::kCover);
+
+  ResetSendSafeAreaToFrameCallCount();
+  // Simulate window insets changing, e.g. java's
+  // DisplayCutoutController#onSafeAreaChanged notified from InsetObserver.
+  test_web_contents()->SetDisplayCutoutSafeArea(gfx::Insets::TLBR(42, 0, 0, 0));
+  EXPECT_EQ(1,
+            test_safe_area_insets_host()->send_safe_area_to_frame_call_count())
+      << "New insets should have been sent to the frame.";
+
+  ResetSendSafeAreaToFrameCallCount();
+  test_web_contents()->SetDisplayCutoutSafeArea(
+      gfx::Insets::TLBR(42, 0, 60, 0));
+  test_web_contents()->SetDisplayCutoutSafeArea(
+      gfx::Insets::TLBR(42, 0, 60, 0));
+  EXPECT_EQ(1,
+            test_safe_area_insets_host()->send_safe_area_to_frame_call_count())
+      << "Only one new set of insets should have been sent to the frame.";
+
+  ResetSendSafeAreaToFrameCallCount();
+  test_web_contents()->SetDisplayCutoutSafeArea(gfx::Insets::TLBR(42, 0, 0, 0));
+  test_web_contents()->SetDisplayCutoutSafeArea(gfx::Insets::TLBR(42, 0, 0, 0));
+  test_web_contents()->SetDisplayCutoutSafeArea(gfx::Insets::TLBR(42, 0, 0, 0));
+  EXPECT_EQ(1,
+            test_safe_area_insets_host()->send_safe_area_to_frame_call_count())
+      << "Only one new set of insets should have been sent to the frame.";
+}
 
 TEST_F(SafeAreaInsetsHostImplTest, AutoToCover) {
   base::test::ScopedFeatureList feature_list;
