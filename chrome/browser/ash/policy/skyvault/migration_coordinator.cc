@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -29,8 +30,12 @@ namespace policy::local_user_files {
 namespace {
 
 // Called after `uploader` is fully stopped.
-void OnMigrationStopped(std::unique_ptr<MigrationCloudUploader> uploader) {
+void OnMigrationStopped(std::unique_ptr<MigrationCloudUploader> uploader,
+                        base::OnceClosure cb) {
   VLOG(1) << "Local files migration stopped";
+  if (cb) {
+    std::move(cb).Run();
+  }
 }
 
 // Returns the file's path relative to MyFiles.
@@ -77,13 +82,20 @@ void MigrationCoordinator::Run(CloudProvider cloud_provider,
 void MigrationCoordinator::Cancel() {
   if (uploader_) {
     MigrationCloudUploader* uploader_ptr = uploader_.get();
-    uploader_ptr->Cancel(
-        base::BindOnce(&OnMigrationStopped, std::move(uploader_)));
+    uploader_ptr->Cancel(base::BindOnce(&OnMigrationStopped,
+                                        std::move(uploader_),
+                                        std::move(cancelled_cb_for_testing_)));
   }
 }
 
 bool MigrationCoordinator::IsRunning() const {
   return uploader_ != nullptr;
+}
+
+void MigrationCoordinator::SetCancelledCallbackForTesting(
+    base::OnceClosure cb) {
+  CHECK_IS_TEST();
+  cancelled_cb_for_testing_ = std::move(cb);
 }
 
 void MigrationCoordinator::OnMigrationDone(
@@ -186,20 +198,14 @@ void OneDriveMigrationUploader::OnUploadDone(
     // Some files are still being uploaded.
     return;
   }
-  // If cancelled, invoke the cancelled callback.
+
   if (cancelled_) {
-    if (cancelled_callback_) {
-      std::move(cancelled_callback_).Run();
-    } else {
-      LOG(WARNING) << "Cancelled callback not set.";
-    }
+    CHECK(cancelled_callback_);
+    std::move(cancelled_callback_).Run();
     return;
   }
-  if (done_callback_) {
-    std::move(done_callback_).Run(std::move(errors_), upload_root_path_);
-  } else {
-    LOG(WARNING) << "Done callback not set.";
-  }
+  CHECK(done_callback_);
+  std::move(done_callback_).Run(std::move(errors_), upload_root_path_);
 }
 
 GoogleDriveMigrationUploader::GoogleDriveMigrationUploader(
@@ -239,8 +245,20 @@ void GoogleDriveMigrationUploader::Run() {
 }
 
 void GoogleDriveMigrationUploader::Cancel(base::OnceClosure callback) {
-  // TODO(b/349097807): Stop IO tasks.
-  std::move(callback).Run();
+  cancelled_callback_ = std::move(callback);
+  cancelled_ = true;
+
+  // Create a copy of the keys to iterate over. This is necessary because
+  // calling Cancel() on the uploader may trigger OnUploadDone(), which
+  // modifies the |uploaders_| map, potentially invalidating iterators.
+  std::vector<base::FilePath> file_paths;
+  for (const auto& uploader : uploaders_) {
+    file_paths.push_back(uploader.first);
+  }
+
+  for (const auto& path : file_paths) {
+    uploaders_[path]->Cancel();
+  }
 }
 
 void GoogleDriveMigrationUploader::OnUploadDone(
@@ -264,10 +282,20 @@ void GoogleDriveMigrationUploader::OnUploadDone(
   }
 
   uploaders_.erase(file_path);
-  // If all files are done, invoke the callback.
-  if (uploaders_.empty() && done_callback_) {
-    std::move(done_callback_).Run(errors_, upload_root_path_);
+
+  if (!uploaders_.empty()) {
+    // Some files are still being uploaded.
+    return;
   }
+
+  if (cancelled_) {
+    CHECK(cancelled_callback_);
+    std::move(cancelled_callback_).Run();
+    return;
+  }
+
+  CHECK(done_callback_);
+  std::move(done_callback_).Run(std::move(errors_), upload_root_path_);
 }
 
 }  // namespace policy::local_user_files

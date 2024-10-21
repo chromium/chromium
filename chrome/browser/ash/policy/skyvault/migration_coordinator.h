@@ -54,6 +54,9 @@ class MigrationCoordinator {
   // Returns whether any file uploads are currently in progress.
   virtual bool IsRunning() const;
 
+  // Sets the `cb` to be invoked when all the uploads are stopped.
+  void SetCancelledCallbackForTesting(base::OnceClosure cb);
+
  private:
   // Called after underlying upload operation completes.
   virtual void OnMigrationDone(
@@ -67,6 +70,9 @@ class MigrationCoordinator {
   // The implementation of the upload process, specific to the
   // `cloud_provider` argument passed to the `Run` method.
   std::unique_ptr<MigrationCloudUploader> uploader_ = nullptr;
+
+  // If set, invoked when all the uploaders are stopped. Used in tests.
+  base::OnceClosure cancelled_cb_for_testing_;
 
   base::WeakPtrFactory<MigrationCoordinator> weak_ptr_factory_{this};
 };
