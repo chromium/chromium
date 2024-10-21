@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/db/hash_prefix_map.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/debug/crash_logging.h"
@@ -420,12 +421,12 @@ HashPrefixesView HashPrefixMap::FileInfo::GetView() const {
 
 bool HashPrefixMap::FileInfo::Initialize(const HashFile& hash_file) {
   // Make sure file size is correct before attempting to mmap.
-  int64_t file_size;
   base::FilePath path = GetPath(store_path_, hash_file.extension());
-  if (!GetFileSize(path, &file_size)) {
+  std::optional<int64_t> file_size = base::GetFileSize(path);
+  if (!file_size.has_value()) {
     return false;
   }
-  if (static_cast<uint64_t>(file_size) != hash_file.file_size()) {
+  if (static_cast<uint64_t>(file_size.value()) != hash_file.file_size()) {
     return false;
   }
 
@@ -439,7 +440,7 @@ bool HashPrefixMap::FileInfo::Initialize(const HashFile& hash_file) {
     return false;
   }
 
-  if (file_.length() != static_cast<size_t>(file_size)) {
+  if (file_.length() != static_cast<size_t>(file_size.value())) {
     return false;
   }
 

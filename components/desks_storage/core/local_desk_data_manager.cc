@@ -550,8 +550,7 @@ DeskModel::AddOrUpdateEntryStatus LocalDeskDataManager::AddOrUpdateEntryTask(
   const base::FilePath fully_qualified_path =
       GetFullyQualifiedPath(local_saved_desk_path, uuid);
   if (WriteTemplateFile(fully_qualified_path, std::move(entry_base_value))) {
-    int64_t file_size;
-    GetFileSize(fully_qualified_path, &file_size);
+    int64_t file_size = GetFileSize(fully_qualified_path).value_or(0);
     RecordSavedDeskTemplateSizeHistogram(desk_type, file_size);
     return AddOrUpdateEntryStatus::kOk;
   }

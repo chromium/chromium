@@ -126,8 +126,7 @@ TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace) {
   std::vector<uint8_t> test_data = base::RandBytesAsVector(test_data_size());
   ASSERT_TRUE(base::WriteFile(test_file_path(), test_data));
 
-  int64_t original_size = 0;
-  base::GetFileSize(test_file_path(), &original_size);
+  int64_t original_size = base::GetFileSize(test_file_path()).value_or(0);
 
   auto result = DeobfuscateFileInPlace(test_file_path());
 
@@ -152,9 +151,10 @@ TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace) {
   EXPECT_EQ(deobfuscated_content.value(), test_data);
 
   // Get deobfuscated file size which should match original.
-  int64_t deobfuscated_size = 0;
-  ASSERT_TRUE(base::GetFileSize(test_file_path(), &deobfuscated_size));
-  EXPECT_EQ(deobfuscated_size, original_size);
+  std::optional<int64_t> deobfuscated_size =
+      base::GetFileSize(test_file_path());
+  ASSERT_TRUE(deobfuscated_size.has_value());
+  EXPECT_EQ(deobfuscated_size.value(), original_size);
 
   // Deobfuscating to an invalid path should fail.
   base::FilePath invalid_path(

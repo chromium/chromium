@@ -5842,10 +5842,10 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
 
   EXPECT_FALSE(unpack_path.empty());
   EXPECT_TRUE(base::DirectoryExists(unpack_path));
-  int64_t file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(unpack_path.AppendASCII("ChromeRecovery.crx3"),
-                                &file_size));
-  EXPECT_EQ(44582, file_size);
+  std::optional<int64_t> file_size =
+      base::GetFileSize(unpack_path.AppendASCII("ChromeRecovery.crx3"));
+  EXPECT_TRUE(file_size.has_value());
+  EXPECT_EQ(44582, file_size.value());
 
   base::ScopedTempDir unpack_path_owner;
   EXPECT_TRUE(unpack_path_owner.Set(unpack_path));
