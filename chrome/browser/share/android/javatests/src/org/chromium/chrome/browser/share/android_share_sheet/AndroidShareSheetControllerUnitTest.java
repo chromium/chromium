@@ -38,6 +38,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,6 +66,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -225,12 +227,20 @@ public class AndroidShareSheetControllerUnitTest {
                 "Custom action is empty.",
                 intent.getParcelableArrayExtra(Intent.EXTRA_CHOOSER_CUSTOM_ACTIONS));
 
-        assertCustomActions(
-                intent,
-                R.string.sharing_long_screenshot,
-                R.string.print_share_activity_title,
-                R.string.sharing_send_tab_to_self,
-                R.string.qr_code_share_icon_label);
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
+            assertCustomActions(
+                    intent,
+                    R.string.sharing_long_screenshot,
+                    R.string.sharing_send_tab_to_self,
+                    R.string.qr_code_share_icon_label);
+        } else {
+            assertCustomActions(
+                    intent,
+                    R.string.sharing_long_screenshot,
+                    R.string.print_share_activity_title,
+                    R.string.sharing_send_tab_to_self,
+                    R.string.qr_code_share_icon_label);
+        }
     }
 
     @Test
@@ -255,6 +265,11 @@ public class AndroidShareSheetControllerUnitTest {
             sdk = 34,
             shadows = {ShadowChooserActionHelper.class})
     public void choosePrintAction() throws CanceledException {
+        Assume.assumeFalse(
+                "Test ignored in the desktop mode because the Print action is not showed in the"
+                    + " Share UI.",
+                BuildConfig.IS_DESKTOP_ANDROID);
+
         CallbackHelper callbackHelper = new CallbackHelper();
         TargetChosenCallback callback =
                 new TargetChosenCallback() {
@@ -765,12 +780,20 @@ public class AndroidShareSheetControllerUnitTest {
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(
-                intent,
-                R.string.sharing_long_screenshot,
-                R.string.print_share_activity_title,
-                R.string.sharing_send_tab_to_self,
-                R.string.qr_code_share_icon_label);
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
+            assertCustomActions(
+                    intent,
+                    R.string.sharing_long_screenshot,
+                    R.string.sharing_send_tab_to_self,
+                    R.string.qr_code_share_icon_label);
+        } else {
+            assertCustomActions(
+                    intent,
+                    R.string.sharing_long_screenshot,
+                    R.string.print_share_activity_title,
+                    R.string.sharing_send_tab_to_self,
+                    R.string.qr_code_share_icon_label);
+        }
         chooseCustomAction(
                 intent, R.string.sharing_long_screenshot, ShareCustomAction.LONG_SCREENSHOT);
 

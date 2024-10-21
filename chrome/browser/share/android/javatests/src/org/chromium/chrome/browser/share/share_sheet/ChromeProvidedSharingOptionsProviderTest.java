@@ -38,6 +38,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -195,7 +196,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     }
 
     @Test
-    public void getPropertyModels_printingEnabled_includesPrinting() {
+    public void getPropertyModels_printingEnabled_includesPrintingIfNotDesktop() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
@@ -204,9 +205,15 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         DetailedContentType.NOT_SPECIFIED,
                         /* isMultiWindow= */ false);
 
-        assertTrue(
-                "Property models should contain printing.",
-                propertyModelsContain(propertyModels, R.string.print_share_activity_title));
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
+            assertFalse(
+                    "Property models should not contain printing for desktop.",
+                    propertyModelsContain(propertyModels, R.string.print_share_activity_title));
+        } else {
+            assertTrue(
+                    "Property models should contain printing.",
+                    propertyModelsContain(propertyModels, R.string.print_share_activity_title));
+        }
     }
 
     @Test
