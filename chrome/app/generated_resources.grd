@@ -8833,6 +8833,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MOBILE_PROMO_DESCRIPTION" desc="Description for a promo that shows on the Desktop NTP prompting user to scan a QR code with their mobile device">
         Download Chrome for iOS to access your tabs, bookmarks and passwords on your phone.
       </message>
+      <message name="IDS_NTP_MOBILE_PROMO_QR_CODE_LABEL" desc="Accessibility label for a QR code that shows on the Desktop NTP that prompts the user to scan it.">
+        Scan QR Code
+      </message>
 
       <!-- Extensions NTP Middle Slot Promo -->
       <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">
