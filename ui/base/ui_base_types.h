@@ -7,8 +7,6 @@
 
 #include <cstdint>
 
-#include "ui/base/mojom/menu_source_type.mojom.h"
-
 namespace ui {
 
 // Specifies which edges of the window are tiled.
@@ -82,37 +80,6 @@ enum class ZOrderLevel {
   // used.
   kSecuritySurface,
 };
-
-// Alias until all clients of `MenuSourceType` have been migrated.
-// Will be removed once that is complete.
-using MenuSourceType = ::ui::mojom::MenuSourceType;
-
-// Alias for the old enumerators of `MenuSourceType` until all clients have been
-// migrated. Will be removed once that is complete.
-inline constexpr MenuSourceType MENU_SOURCE_NONE =
-    ui::mojom::MenuSourceType::kNone;
-inline constexpr MenuSourceType MENU_SOURCE_MOUSE =
-    ui::mojom::MenuSourceType::kMouse;
-inline constexpr MenuSourceType MENU_SOURCE_KEYBOARD =
-    ui::mojom::MenuSourceType::kKeyboard;
-inline constexpr MenuSourceType MENU_SOURCE_TOUCH =
-    ui::mojom::MenuSourceType::kTouch;
-inline constexpr MenuSourceType MENU_SOURCE_TOUCH_EDIT_MENU =
-    ui::mojom::MenuSourceType::kTouchEditMenu;
-inline constexpr MenuSourceType MENU_SOURCE_LONG_PRESS =
-    ui::mojom::MenuSourceType::kLongPress;
-inline constexpr MenuSourceType MENU_SOURCE_LONG_TAP =
-    ui::mojom::MenuSourceType::kLongTap;
-inline constexpr MenuSourceType MENU_SOURCE_TOUCH_HANDLE =
-    ui::mojom::MenuSourceType::kTouchHandle;
-inline constexpr MenuSourceType MENU_SOURCE_STYLUS =
-    ui::mojom::MenuSourceType::kStylus;
-inline constexpr MenuSourceType MENU_SOURCE_ADJUST_SELECTION =
-    ui::mojom::MenuSourceType::kAdjustSelection;
-inline constexpr MenuSourceType MENU_SOURCE_ADJUST_SELECTION_RESET =
-    ui::mojom::MenuSourceType::kAdjustSelectionReset;
-inline constexpr MenuSourceType MENU_SOURCE_TYPE_LAST =
-    ui::mojom::MenuSourceType::kMaxValue;
 
 // Where an owned anchored window should be anchored to. Used by such backends
 // as Wayland, which doesn't provide clients with on screen coordinates, but
