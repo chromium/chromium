@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
@@ -96,8 +95,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
       std::move(navigation_handle),
       request_info.common_params->request_destination,
       request_info.begin_params->skip_service_worker,
-      request_info.frame_tree_node_id, ChildProcessHost::kInvalidUniqueID,
-      /* worker_token = */ nullptr, request_info.isolation_info));
+      request_info.frame_tree_node_id, request_info.isolation_info));
 }
 
 std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
@@ -142,8 +140,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle), resource_request.destination,
-      resource_request.skip_service_worker, FrameTreeNodeId(), process_id,
-      &worker_token, isolation_info));
+      resource_request.skip_service_worker, FrameTreeNodeId(), isolation_info));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -250,16 +247,12 @@ ServiceWorkerMainResourceLoaderInterceptor::
         network::mojom::RequestDestination request_destination,
         bool skip_service_worker,
         FrameTreeNodeId frame_tree_node_id,
-        int process_id,
-        const DedicatedOrSharedWorkerToken* worker_token,
         const net::IsolationInfo& isolation_info)
     : handle_(std::move(handle)),
       request_destination_(request_destination),
       skip_service_worker_(skip_service_worker),
       isolation_info_(isolation_info),
-      frame_tree_node_id_(frame_tree_node_id),
-      process_id_(process_id),
-      worker_token_(base::OptionalFromPtr(worker_token)) {
+      frame_tree_node_id_(frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(handle_);
   CHECK(handle_->scoped_service_worker_client());

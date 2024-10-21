@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_MAIN_RESOURCE_LOADER_INTERCEPTOR_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -90,8 +89,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       network::mojom::RequestDestination request_destination,
       bool skip_service_worker,
       FrameTreeNodeId frame_tree_node_id,
-      int process_id,
-      const DedicatedOrSharedWorkerToken* worker_token,
       const net::IsolationInfo& isolation_info);
 
   // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be
@@ -125,16 +122,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   // For window clients:
   // If the intercepted resource load is on behalf
-  // of a window, the |frame_tree_node_id_| will be set, |worker_token_| will be
-  // std::nullopt, and |process_id_| will be invalid.
+  // of a window, the |frame_tree_node_id_| will be set.
   const FrameTreeNodeId frame_tree_node_id_;
-
-  // For web worker clients:
-  // If the intercepted resource load is on behalf of a worker the
-  // |frame_tree_node_id_| will be invalid, and both |process_id_| and
-  // |worker_token_| will be set.
-  const int process_id_;
-  const std::optional<DedicatedOrSharedWorkerToken> worker_token_;
 
   // Handles a single request. Set to a new instance on redirects.
   std::unique_ptr<ServiceWorkerControlleeRequestHandler> request_handler_;
