@@ -35,15 +35,17 @@ static HomogeneousCoordinate ProjectHomogeneousPoint(
   // ray (point p and z-axis direction) that we are trying to project. This
   // happens when the layer is rotated so that it is infinitesimally thin, or
   // when it is co-planar with the camera origin -- i.e. when the layer is
-  // invisible anyway.
-  if (!std::isnormal(m22))
-    return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
+  // invisible anyway. Return an invalid point.
+  if (!std::isnormal(m22)) {
+    return HomogeneousCoordinate(0.0, 0.0, 0.0, 0.0);
+  }
   SkScalar z = -(transform.rc(2, 0) * p.x() + transform.rc(2, 1) * p.y() +
                  transform.rc(2, 3)) /
                m22;
   // Same underlying condition as the previous early return.
-  if (!std::isfinite(z))
-    return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
+  if (!std::isfinite(z)) {
+    return HomogeneousCoordinate(0.0, 0.0, 0.0, 0.0);
+  }
 
   HomogeneousCoordinate result(p.x(), p.y(), z, 1.0);
   transform.TransformVector4(result.vec.data());
