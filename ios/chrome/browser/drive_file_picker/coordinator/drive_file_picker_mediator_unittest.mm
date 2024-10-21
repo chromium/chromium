@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/image_fetcher/core/cached_image_fetcher.h"
@@ -116,6 +117,7 @@ constexpr char kFakeIconURL[] = "http://www.example.com/image";
 @property(nonatomic, assign) DriveItemsSortingOrder sortingDirection;
 @property(nonatomic, strong) NSArray<DriveFilePickerItem*>* primaryItems;
 @property(nonatomic, strong) NSArray<DriveFilePickerItem*>* secondaryItems;
+@property(nonatomic, assign) DriveFilePickerFilter filter;
 
 @end
 
@@ -181,6 +183,7 @@ constexpr char kFakeIconURL[] = "http://www.example.com/image";
 }
 
 - (void)setFilter:(DriveFilePickerFilter)filter {
+  _filter = filter;
 }
 
 - (void)setFilterMenuEnabled:(BOOL)enabled {
@@ -399,6 +402,7 @@ TEST_F(DriveFilePickerMediatorTest, SelectCollectionItemBrowsesCollection) {
 // Tests that setting the sorting criteria and direction updates the consumer
 // and fetches new items, unless they have not changed.
 TEST_F(DriveFilePickerMediatorTest, SelectSortingCriteria) {
+  base::HistogramTester histogram_tester;
   InitializeMediator(DriveFilePickerCollectionType::kFolder);
   // Setting to the same criteria and direction should not fetch new items.
   [mediator_ setSortingCriteria:DriveItemsSortingType::kName
@@ -406,26 +410,26 @@ TEST_F(DriveFilePickerMediatorTest, SelectSortingCriteria) {
   EXPECT_EQ(DriveItemsSortingType::kName, fake_consumer_.sortingCriteria);
   EXPECT_EQ(DriveItemsSortingOrder::kAscending,
             fake_consumer_.sortingDirection);
-  EXPECT_EQ(0U, fake_consumer_.primaryItems.count);
-  // Changing either criteria or direction should update consumer and fetch
-  // new items.
-  drive_list_->SetListItemsCompletionQuitClosure(
-      task_environment_.QuitClosure());
+  EXPECT_FALSE(drive_list_->IsExecutingQuery());
   [mediator_ setSortingCriteria:DriveItemsSortingType::kModificationTime
                       direction:DriveItemsSortingOrder::kDescending];
+
+  // The expected bucket is `kModifiedTimeDescending` which corresponds to 5th
+  // bucket of `IOS.FilePicker.Drive.Sorting` histogram.
+  histogram_tester.ExpectBucketCount("IOS.FilePicker.Drive.Sorting", 5, 1);
+  histogram_tester.ExpectTotalCount("IOS.FilePicker.Drive.Sorting", 1);
+  // Changing either criteria or direction should update consumer and fetch
+  // new items.
   EXPECT_EQ(DriveItemsSortingType::kModificationTime,
             fake_consumer_.sortingCriteria);
   EXPECT_EQ(DriveItemsSortingOrder::kDescending,
             fake_consumer_.sortingDirection);
-  task_environment_.RunUntilQuit();
-  // This test assumes that the fake DriveList object returns items by
-  // default.
-  EXPECT_NE(0U, fake_consumer_.primaryItems.count);
-  fake_consumer_.primaryItems = nil;
+  EXPECT_TRUE(drive_list_->IsExecutingQuery());
 }
 
 // Tests that selecting a file and submitting the selection works as expected.
 TEST_F(DriveFilePickerMediatorTest, SubmitFileSelection) {
+  base::HistogramTester histogram_tester;
   InitializeMediator(DriveFilePickerCollectionType::kFolder);
   // Set up Drive list to return a downloadable file.
   DriveItem file_to_select;
@@ -460,6 +464,12 @@ TEST_F(DriveFilePickerMediatorTest, SubmitFileSelection) {
   EXPECT_FALSE(fake_delegate_.fileSelectionSubmitted);
   [mediator_ submitFileSelection];
   EXPECT_TRUE(fake_delegate_.fileSelectionSubmitted);
+  [metrics_helper_ reportOutcomeMetrics];
+
+  // The expected bucket is `kSubmittedFromMyDrive` which corresponds to 8th
+  // bucket `IOS.FilePicker.Drive.Outcome` histogram.
+  histogram_tester.ExpectBucketCount("IOS.FilePicker.Drive.Outcome", 8, 1);
+  histogram_tester.ExpectTotalCount("IOS.FilePicker.Drive.Outcome", 1);
 }
 
 // Tests that using the mutator interface to fetch an icon invokes the image
@@ -485,4 +495,26 @@ TEST_F(DriveFilePickerMediatorTest, FetchIcon) {
   // Fetch an icon for the folder, test that the URL loader was invoked.
   [mediator_ fetchIconForDriveItem:folder.identifier];
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeIconURL, nullptr));
+}
+
+// Tests that setting the filter updates the consumer and fetches new items,
+// unless setting the an already applied filter.
+TEST_F(DriveFilePickerMediatorTest, SelectFilter) {
+  base::HistogramTester histogram_tester;
+  InitializeMediator(DriveFilePickerCollectionType::kFolder);
+  // Setting to the same filter not fetch new items.
+  [mediator_ setFilter:DriveFilePickerFilter::kShowAllFiles];
+  EXPECT_EQ(DriveItemsSortingType::kName, fake_consumer_.sortingCriteria);
+  EXPECT_EQ(DriveFilePickerFilter::kShowAllFiles, fake_consumer_.filter);
+  EXPECT_FALSE(drive_list_->IsExecutingQuery());
+  [mediator_ setFilter:DriveFilePickerFilter::kOnlyShowPDFs];
+
+  // The expected bucket is `kPDFs` which corresponds to 4th  bucket of
+  // `IOS.FilePicker.Drive.Filter` histogram.
+  histogram_tester.ExpectBucketCount("IOS.FilePicker.Drive.Filter", 4, 1);
+  histogram_tester.ExpectTotalCount("IOS.FilePicker.Drive.Filter", 1);
+
+  // Changing the filter should update the consumer and fetch new items.
+  EXPECT_EQ(DriveFilePickerFilter::kOnlyShowPDFs, fake_consumer_.filter);
+  EXPECT_TRUE(drive_list_->IsExecutingQuery());
 }

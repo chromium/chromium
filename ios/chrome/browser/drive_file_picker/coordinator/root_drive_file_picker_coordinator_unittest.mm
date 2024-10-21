@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
@@ -94,4 +95,17 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
 TEST_F(RootDriveFilePickerCoordinatorTest, StartCoordinator) {
   SignIn();
   [coordinator_ start];
+}
+
+// Tests the metrics for identity change.
+TEST_F(RootDriveFilePickerCoordinatorTest, IdentityChange) {
+  base::HistogramTester histogram_tester;
+  SignIn();
+  [coordinator_ start];
+  [coordinator_ setSelectedIdentity:[FakeSystemIdentity fakeIdentity2]];
+  // The expected bucket is `kChangeAccount` which corresponds to enum 0
+  // bucket of `IOS.FilePicker.Drive.AccountSelection` histogram.
+  histogram_tester.ExpectBucketCount("IOS.FilePicker.Drive.AccountSelection", 0,
+                                     1);
+  histogram_tester.ExpectTotalCount("IOS.FilePicker.Drive.AccountSelection", 1);
 }
