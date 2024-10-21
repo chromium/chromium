@@ -951,27 +951,36 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
     bool force_update) {
   DCHECK(RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled());
 
+  if (!DeprecatedLocalMainFrame()) {
+    return;
+  }
+
   if (Fullscreen::HasFullscreenElements() && !force_update) {
     LOG(WARNING) << "Attempt to set SAI with browser controls in fullscreen.";
     return;
   }
 
-  // Adjust the top / left / right is not needed, since they are set when
-  // display insets was received at |SetSafeArea()|.
-  int inset_bottom = GetMaxSafeAreaInsets().bottom();
-  int bottom_controls_full_height = browser_controls.BottomHeight();
-  float control_ratio = browser_controls.BottomShownRatio();
-  float dip_scale = GetVisualViewport().ScaleFromDIP();
-
-  // As control_ratio decrease, safe_area_inset_bottom will be added to the web
-  // page to keep the bottom element out from the display cutout area.
-  float safe_area_inset_bottom =
-      std::max(0.f, inset_bottom - control_ratio * bottom_controls_full_height /
-                                       dip_scale);
-
-  gfx::Insets new_safe_area = gfx::Insets().TLBR(
+  gfx::Insets new_safe_area = gfx::Insets::TLBR(
       max_safe_area_insets_.top(), max_safe_area_insets_.left(),
-      safe_area_inset_bottom, max_safe_area_insets_.right());
+      max_safe_area_insets_.bottom(), max_safe_area_insets_.right());
+  if (max_safe_area_insets_.bottom() > 0) {
+    // Adjust the top / left / right is not needed, since they are set when
+    // display insets was received at |SetSafeArea()|.
+    int inset_bottom = max_safe_area_insets_.bottom();
+    int bottom_controls_full_height = browser_controls.BottomHeight();
+    float control_ratio = browser_controls.BottomShownRatio();
+    float dip_scale = chrome_client_->GetScreenInfo(*DeprecatedLocalMainFrame())
+                          .device_scale_factor;
+
+    // As control_ratio decrease, safe_area_inset_bottom will be added to the
+    // web page to keep the bottom element out from the display cutout area.
+    float safe_area_inset_bottom = std::max(
+        0.f,
+        inset_bottom - control_ratio * bottom_controls_full_height / dip_scale);
+
+    new_safe_area.set_bottom(safe_area_inset_bottom);
+  }
+
   if (new_safe_area != applied_safe_area_insets_ || force_update) {
     applied_safe_area_insets_ = new_safe_area;
     SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_safe_area);
