@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,8 +44,8 @@ public class SharedImageTilesView extends LinearLayout {
     void setTileBackgroundColor(@ColorInt int backgroundColor) {
         LinearLayout container = (LinearLayout) findViewById(R.id.last_tile_container);
         if (container != null) {
-            Drawable drawable = container.getBackground();
-            drawable.setColorFilter(backgroundColor, PorterDuff.Mode.SRC_IN);
+            GradientDrawable drawable = (GradientDrawable) container.getBackground();
+            drawable.setColor(backgroundColor);
         }
     }
 

@@ -11,4 +11,11 @@ found in the LICENSE file.
     android:layout_width="@dimen/shared_image_tiles_icon_total_height"
     android:layout_height="@dimen/shared_image_tiles_icon_total_height"
     android:background="@drawable/round_image_filled"
-    android:layout_marginEnd="@dimen/shared_image_tiles_overlap_margin_negative"/>
+    android:layout_marginEnd="@dimen/shared_image_tiles_overlap_margin_negative" >
+
+    <FrameLayout
+        android:id="@+id/shared_image_tiles_avatar_container"
+        android:layout_width="@dimen/shared_image_tiles_icon_height"
+        android:layout_height="@dimen/shared_image_tiles_icon_height"
+        android:layout_gravity="center"/>
+</FrameLayout>

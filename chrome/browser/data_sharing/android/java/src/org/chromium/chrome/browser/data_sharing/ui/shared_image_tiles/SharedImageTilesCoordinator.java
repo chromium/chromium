@@ -9,13 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
@@ -125,12 +123,7 @@ public class SharedImageTilesCoordinator {
 
         List<ViewGroup> iconViews = getAllIconViews();
         AvatarConfig config =
-                new AvatarConfig.Builder()
-                        .setAvatarSizeInPixels(getAvatarSizeInPixels())
-                        .setAvatarBackgroundColor(getAvatarBackgroundColor())
-                        .setBorderColor(getBorderColor())
-                        .setBorderWidthInPixels(getBorderWidthInPixels())
-                        .build();
+                new AvatarConfig.Builder().setAvatarSizeInPixels(getAvatarSizeInPixels()).build();
 
         dataSharingUiDelegate.showAvatars(
                 mContext,
@@ -142,20 +135,7 @@ public class SharedImageTilesCoordinator {
 
     private int getAvatarSizeInPixels() {
         return mContext.getResources()
-                .getDimensionPixelSize(R.dimen.shared_image_tiles_icon_total_height);
-    }
-
-    private @ColorInt int getAvatarBackgroundColor() {
-        return SemanticColorUtils.getColorPrimaryContainer(mContext);
-    }
-
-    private @ColorInt int getBorderColor() {
-        return SemanticColorUtils.getDefaultBgColor(mContext);
-    }
-
-    private int getBorderWidthInPixels() {
-        return mContext.getResources()
-                .getDimensionPixelSize(R.dimen.shared_image_tiles_icon_border);
+                .getDimensionPixelSize(R.dimen.shared_image_tiles_icon_height);
     }
 
     /** Populate the shared_image_tiles container with the specific icons. */
@@ -193,7 +173,9 @@ public class SharedImageTilesCoordinator {
         assert (mView.getChildCount() >= mIconTilesCount);
         List<ViewGroup> list = new ArrayList<>();
         for (int i = 0; i < mIconTilesCount; i++) {
-            View view = mView.getChildAt(i);
+            ViewGroup view_group = (ViewGroup) mView.getChildAt(i);
+            assert view_group.getChildCount() == 1;
+            View view = view_group.getChildAt(0);
             list.add((ViewGroup) view);
         }
         return list;
