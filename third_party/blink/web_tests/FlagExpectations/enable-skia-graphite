@@ -49,6 +49,7 @@ external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html [ Cr
 #
 # with what appears to be a memory address, so not rebaselined.
 printing/offscreencanvas-webgl-printing.html [ Failure Pass ]
+virtual/gpu/fast/canvas/webgl/create-query-crash.html [ Failure Pass ]
 virtual/oopr-canvas2d/fast/canvas/webgl/create-query-crash.html [ Failure Pass ]
 virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-main.html [ Failure Pass ]
 virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-worker.html [ Failure Pass ]
