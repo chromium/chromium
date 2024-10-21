@@ -134,15 +134,6 @@ bool AwClientHintsControllerDelegate::IsJavaScriptAllowed(
   return aw_contents->IsJavaScriptAllowed();
 }
 
-bool AwClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
-    const GURL& url,
-    content::RenderFrameHost* rfh) {
-  // This function is related to an OT for the Sec-CH-UA-Reduced client hint
-  // and as this doesn't affect WebView at the moment, we have no reason to
-  // implement it.
-  return false;
-}
-
 blink::UserAgentMetadata
 AwClientHintsControllerDelegate::GetUserAgentMetadata() {
   return GetUserAgentMetadataOverrideBrand();
