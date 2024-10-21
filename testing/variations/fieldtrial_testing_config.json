@@ -25146,34 +25146,6 @@
             ]
         }
     ],
-    "V8WasmCodeFlushing": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebAssemblyLiftoffCodeFlushing"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "WebAssemblyLiftoffCodeFlushing"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8WasmMoreAggressiveCodeCaching": [
         {
             "platforms": [
