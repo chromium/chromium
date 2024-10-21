@@ -940,6 +940,7 @@ try_.builder(
 
 try_.builder(
     name = "android-pie-x86-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-pie-x86-rel",
     ],

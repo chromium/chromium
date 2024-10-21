@@ -3354,6 +3354,7 @@ ci.builder(
 
 ci.builder(
     name = "android-pie-x86-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
