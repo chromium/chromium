@@ -357,13 +357,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
             navigation_handle->GetPageTransition());
       }));
   PredictorDomainCallback is_new_link_nav =
-      base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
-        auto page_transition = navigation_handle->GetPageTransition();
-        return ui::PageTransitionCoreTypeIs(
-                   page_transition, ui::PageTransition::PAGE_TRANSITION_LINK) &&
-               (page_transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT) == 0 &&
-               ui::PageTransitionIsNewNavigation(page_transition);
-      });
+      base::BindRepeating(&PreloadingDataImpl::IsLinkClickNavigation);
   preloading_data->SetIsNavigationInDomainCallback(
       preloading_predictor::kUrlPointerDownOnAnchor, is_new_link_nav);
   preloading_data->SetIsNavigationInDomainCallback(

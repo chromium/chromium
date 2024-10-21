@@ -147,24 +147,6 @@ class MockAnchorElementMetricsHost
   mojo::Receiver<mojom::blink::AnchorElementMetricsHost> receiver_{this};
 };
 
-class TestWebFrameWidgetWithScreenInfo
-    : public frame_test_helpers::TestWebFrameWidget {
- public:
-  template <typename... Args>
-  explicit TestWebFrameWidgetWithScreenInfo(
-      display::ScreenInfo initial_screen_info,
-      Args&&... args)
-      : TestWebFrameWidget(std::forward<Args>(args)...),
-        initial_screen_info_(initial_screen_info) {}
-
-  display::ScreenInfo GetInitialScreenInfo() override {
-    return initial_screen_info_;
-  }
-
- private:
-  display::ScreenInfo initial_screen_info_;
-};
-
 class AnchorElementMetricsSenderTest : public SimTest {
  public:
   static constexpr int kViewportWidth = 400;
@@ -221,14 +203,17 @@ class AnchorElementMetricsSenderTest : public SimTest {
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
       bool is_for_scalable_page) override {
+    auto* test_web_frame_widget =
+        MakeGarbageCollected<frame_test_helpers::TestWebFrameWidget>(
+            std::move(pass_key), std::move(frame_widget_host),
+            std::move(frame_widget), std::move(widget_host), std::move(widget),
+            std::move(task_runner), frame_sink_id, hidden, never_composited,
+            is_for_child_local_root, is_for_nested_main_frame,
+            is_for_scalable_page);
     display::ScreenInfo screen_info;
     screen_info.rect = gfx::Rect(kViewportWidth, kViewportHeight);
-    return MakeGarbageCollected<TestWebFrameWidgetWithScreenInfo>(
-        screen_info, std::move(pass_key), std::move(frame_widget_host),
-        std::move(frame_widget), std::move(widget_host), std::move(widget),
-        std::move(task_runner), frame_sink_id, hidden, never_composited,
-        is_for_child_local_root, is_for_nested_main_frame,
-        is_for_scalable_page);
+    test_web_frame_widget->SetInitialScreenInfo(screen_info);
+    return test_web_frame_widget;
   }
 
   void Bind(mojo::ScopedMessagePipeHandle message_pipe_handle) {

@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/anchor_element_interaction_host_impl.h"
 
+#include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/preloading_decider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_worker_context.h"
@@ -151,6 +153,29 @@ void AnchorElementInteractionHostImpl::OnPointerHover(
   preloading_decider->OnPointerHover(url, std::move(mouse_data));
   MaybePrewarmHttpDiskCache(url, render_frame_host());
   MaybeWarmUpServiceWorkerOnPointerHover(url, render_frame_host());
+}
+
+void AnchorElementInteractionHostImpl::OnViewportHeuristicTriggered(
+    const GURL& url) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPreloadingViewportHeuristics)) {
+    ReportBadMessageAndDeleteThis(
+        "OnViewportHeuristic should not be called by the renderer without "
+        "blink::features::kPreloadingViewportHeuristics being enabled");
+    return;
+  }
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  auto* preloading_data =
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents);
+  ukm::SourceId triggering_page_ukm_source_id =
+      render_frame_host().GetPageUkmSourceId();
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kViewportHeuristic,
+      base::BindRepeating(&PreloadingDataImpl::IsLinkClickNavigation));
+  preloading_data->AddPreloadingPrediction(
+      preloading_predictor::kViewportHeuristic, PreloadingConfidence(100),
+      PreloadingData::GetSameURLMatcher(url), triggering_page_ukm_source_id);
 }
 
 }  // namespace content

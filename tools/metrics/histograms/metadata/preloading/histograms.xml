@@ -84,6 +84,9 @@ chromium-metrics-reviews@google.com.
       summary="When preloading is triggered by OnPointerDown."/>
   <variant name="UrlPointerHoverOnAnchor"
       summary="When preloading is triggered by OnPointerHover."/>
+  <variant name="ViewportHeuristic"
+      summary="When preloading is triggered by a deterministic viewport-based
+               heuristic."/>
 </variants>
 
 <variants name="PreloadingType">

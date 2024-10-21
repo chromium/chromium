@@ -1290,6 +1290,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kPreloadingModelPrerenderModerateThreshold);
 
+// If enabled, a viewport based heuristic will be used to predict the next click
+// for speculation-rule based preloading.
+// Note: To work correctly, this also needs kNavigationPredictor enabled with
+// "random_anchor_sampling_period" set to 1, and
+// kNavigationPredictorNewViewportFeatures.
+// Note: The prediction will _not_ be preloaded and is currently only logged
+// for metrics purposes.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingViewportHeuristics);
+
 // Enables the same-origin main frame navigation in a prerendered page.
 // See https://crbug.com/1239281.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2MainFrameNavigation);

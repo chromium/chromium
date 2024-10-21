@@ -2032,6 +2032,10 @@ BASE_FEATURE_PARAM(int,
                    "prerender_moderate_threshold",
                    50);
 
+BASE_FEATURE(kPreloadingViewportHeuristics,
+             "PreloadingViewportHeuristics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrerender2InNewTab,
              "Prerender2InNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 
+#include <limits>
+
 #include "base/metrics/field_trial_params.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
@@ -369,6 +371,9 @@ void AnchorElementViewportPositionTracker::
     position_update->vertical_position = vertical_position;
     position_update->distance_from_pointer_down =
         distance_from_pointer_down_ratio;
+    position_update->size_in_viewport =
+        rect.size().GetCheckedArea().ValueOrDefault(
+            std::numeric_limits<int>::max());
     position_updates.push_back(position_update);
   }
 

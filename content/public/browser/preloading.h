@@ -140,6 +140,9 @@ static constexpr PreloadingPredictor kBackGestureNavigation(
 static constexpr PreloadingPredictor kPreloadingHeuristicsMLModel(
     5,
     "PreloadingHeuristicsMLModel");
+
+// Preloading is triggered by a deterministic viewport-based heuristic.
+static constexpr PreloadingPredictor kViewportHeuristic(6, "ViewportHeuristic");
 }  // namespace preloading_predictor
 // LINT.ThenChange()
 

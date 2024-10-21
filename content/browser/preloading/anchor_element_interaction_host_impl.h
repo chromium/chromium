@@ -33,6 +33,7 @@ class CONTENT_EXPORT AnchorElementInteractionHostImpl
   void OnPointerHover(
       const GURL& target,
       blink::mojom::AnchorElementPointerDataPtr mouse_data) override;
+  void OnViewportHeuristicTriggered(const GURL& target) override;
 };
 
 }  // namespace content

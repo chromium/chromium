@@ -47,6 +47,8 @@ class CORE_EXPORT AnchorElementViewportPositionTracker
       // The vertical distance between `anchor_element`'s center and the last
       // recorded pointer down (as a ratio of the screen height).
       std::optional<float> distance_from_pointer_down;
+      // Visible area (in viewport coordinates) of `anchor_element`.
+      int size_in_viewport;
 
       void Trace(Visitor* visitor) const;
     };
