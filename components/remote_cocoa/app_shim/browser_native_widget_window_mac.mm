@@ -17,9 +17,6 @@
 - (CGFloat)_titlebarHeight;
 - (void)setStyleMask:(NSUInteger)styleMask;
 - (void)setButtonRevealAmount:(double)amount;
-@property(readonly) NSView* closeButton;
-@property(readonly) NSView* minimizeButton;
-@property(readonly) NSView* zoomButton;
 @end
 
 @interface BrowserWindowFrame : NativeWidgetMacNSWindowTitledFrame
@@ -87,15 +84,13 @@
 }
 
 - (void)maybeShowTrafficLights {
-  if (!_alwaysShowTrafficLights ||
-      ![self respondsToSelector:@selector(closeButton)] ||
-      ![self respondsToSelector:@selector(minimizeButton)] ||
-      ![self respondsToSelector:@selector(zoomButton)]) {
+  if (!_alwaysShowTrafficLights) {
     return;
   }
-  self.closeButton.alphaValue = 1.0;
-  self.minimizeButton.alphaValue = 1.0;
-  self.zoomButton.alphaValue = 1.0;
+  NSWindow* window = [self window];
+  [[window standardWindowButton:NSWindowCloseButton] setAlphaValue:1.0];
+  [[window standardWindowButton:NSWindowMiniaturizeButton] setAlphaValue:1.0];
+  [[window standardWindowButton:NSWindowZoomButton] setAlphaValue:1.0];
 }
 
 @end
