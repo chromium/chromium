@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_response_undefined.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -687,10 +688,11 @@ class Cache::CodeCacheHandleCallbackForPut final
   mojom::blink::FetchAPIResponsePtr fetch_api_response_;
 };
 
-ScriptPromise<Response> Cache::match(ScriptState* script_state,
-                                     const V8RequestInfo* request,
-                                     const CacheQueryOptions* options,
-                                     ExceptionState& exception_state) {
+ScriptPromise<V8UnionResponseOrUndefined> Cache::match(
+    ScriptState* script_state,
+    const V8RequestInfo* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
   DCHECK(request);
   Request* request_object = nullptr;
   switch (request->GetContentType()) {
@@ -891,10 +893,11 @@ AbortController* Cache::CreateAbortController(ScriptState* script_state) {
   return AbortController::Create(script_state);
 }
 
-ScriptPromise<Response> Cache::MatchImpl(ScriptState* script_state,
-                                         const Request* request,
-                                         const CacheQueryOptions* options,
-                                         ExceptionState& exception_state) {
+ScriptPromise<V8UnionResponseOrUndefined> Cache::MatchImpl(
+    ScriptState* script_state,
+    const Request* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
   mojom::blink::FetchAPIRequestPtr mojo_request =
       request->CreateFetchAPIRequest();
   mojom::blink::CacheQueryOptionsPtr mojo_options =
@@ -906,8 +909,9 @@ ScriptPromise<Response> Cache::MatchImpl(ScriptState* script_state,
                          "request", CacheStorageTracedValue(mojo_request),
                          "options", CacheStorageTracedValue(mojo_options));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Response>>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8UnionResponseOrUndefined>>(
+          script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   if (request->method() != http_names::kGET && !options->ignoreMethod()) {
     resolver->Resolve();
@@ -931,7 +935,7 @@ ScriptPromise<Response> Cache::MatchImpl(ScriptState* script_state,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
              int64_t trace_id, Cache* self,
-             ScriptPromiseResolver<Response>* resolver,
+             ScriptPromiseResolver<V8UnionResponseOrUndefined>* resolver,
              mojom::blink::MatchResultPtr result) {
             base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
             UMA_HISTOGRAM_LONG_TIMES("ServiceWorkerCache.Cache.Renderer.Match",

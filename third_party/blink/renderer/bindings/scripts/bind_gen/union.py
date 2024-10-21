@@ -309,6 +309,13 @@ def make_factory_methods(cg_context):
                                   attribute=None,
                                   body=scope_node))
 
+    # 1. If the union type includes undefined and V is undefined, then return
+    # the unique undefined value.
+    member = find_by_type(lambda t: t.is_undefined)
+    if member:
+        dispatch_if("${v8_value}->IsUndefined()",
+                    S("blink_value", "ToV8UndefinedGenerator ${blink_value};"))
+
     # 2. If the union type includes a nullable type and V is null or undefined,
     #   ...
     member = find_by_member(lambda m: m.is_null)

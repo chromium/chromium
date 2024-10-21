@@ -279,7 +279,12 @@ def blink_type_info(idl_type):
                         is_traceable=True)
 
     if real_type.is_undefined:
-        assert False, "Blink does not support/accept IDL undefined type."
+        return TypeInfo("ToV8UndefinedGenerator",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=False,
+                        is_traceable=False,
+                        clear_member_var_fmt="")
 
     if real_type.type_definition_object:
         typename = blink_class_name(real_type.type_definition_object)
