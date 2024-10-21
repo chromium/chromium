@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 
+#include <limits>
+
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -575,6 +577,39 @@ TEST_F(TargetSizeEstimatorTest, ProportionalWorstCase) {
   EXPECT_EQ(estimator.EstimateTargetSize(kOriginB, 100), 108 - kBidderOverhead);
   EXPECT_EQ(estimator.EstimateTargetSize(kOriginC, 208), 110 - kBidderOverhead);
   EXPECT_EQ(estimator.EstimateTargetSize(kOriginD, 318), 111 - kBidderOverhead);
+}
+
+TEST_F(TargetSizeEstimatorTest, LargeRequest) {
+  blink::mojom::AuctionDataConfigPtr config =
+      blink::mojom::AuctionDataConfig::New();
+  config->request_size = std::numeric_limits<uint32_t>::max();
+  config->per_buyer_configs[kOriginA] =
+      blink::mojom::AuctionDataBuyerConfig::New(
+          /*size=*/std::numeric_limits<uint32_t>::max());
+  config->per_buyer_configs[kOriginB] =
+      blink::mojom::AuctionDataBuyerConfig::New(
+          /*size=*/std::numeric_limits<uint32_t>::max());
+  config->per_buyer_configs[kOriginC] =
+      blink::mojom::AuctionDataBuyerConfig::New(
+          /*size=*/std::numeric_limits<uint32_t>::max());
+  config->per_buyer_configs[kOriginD] =
+      blink::mojom::AuctionDataBuyerConfig::New(
+          /*size=*/std::numeric_limits<uint32_t>::max());
+  BiddingAndAuctionSerializer::TargetSizeEstimator estimator(0, &*config);
+  // Values passed to UpdatePerBuyerMaxSize do not include overhead.
+  estimator.UpdatePerBuyerMaxSize(kOriginA, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginB, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginC, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginD, 100 - kBidderOverhead);
+  // Value returned from EstimateTargetSize do not include overhead.
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginA, 0),
+            1073741820 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginB, 100),
+            1431655728 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginC, 200),
+            2147483544 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginD, 300),
+            4294966992 - kBidderOverhead);
 }
 
 }  // namespace
