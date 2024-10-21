@@ -121,14 +121,6 @@ class TestAuctionProcessManager
     NOTREACHED_IN_MIGRATION();
   }
 
-  size_t NumReceivers() {
-    // Flush so that any closed pipes are removed. No need to worry about
-    // pending creation requests, since this class is called into directly,
-    // rather than over a Mojo pipe.
-    receiver_set_.FlushForTesting();
-    return receiver_set_.size();
-  }
-
   void ClosePipes() {
     receiver_set_.Clear();
     // No wait to flush a closed pipe from the end that was closed. Run until
@@ -405,9 +397,11 @@ INSTANTIATE_TEST_SUITE_P(
                     AuctionProcessManager::WorkletType::kBidder));
 
 TEST_P(AuctionProcessManagerTest, Basic) {
-  auto seller = GetServiceExpectSuccess(kOriginA);
-  EXPECT_TRUE(seller->GetService());
-  EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
+  auto worklet = GetServiceExpectSuccess(kOriginA);
+  EXPECT_TRUE(worklet->GetService());
+  EXPECT_EQ(1u, GetActiveProcessesOfParamType());
+  EXPECT_EQ(0u, GetActiveProcesses(GetParamInverse()));
+  EXPECT_EQ(0u, auction_process_manager_.GetIdleProcessCountForTesting());
 }
 
 // Make sure requests for different origins don't share processes, nor do
@@ -417,22 +411,25 @@ TEST_P(AuctionProcessManagerTest, Basic) {
 // test would require another test fixture, and so would add more complexity
 // than it's worth, for only a single unit test.
 TEST_P(AuctionProcessManagerTest, MultipleRequestsForDifferentProcesses) {
-  auto seller_a = GetServiceOfTypeExpectSuccess(
-      AuctionProcessManager::WorkletType::kSeller, kOriginA);
-  auto seller_b = GetServiceOfTypeExpectSuccess(
-      AuctionProcessManager::WorkletType::kSeller, kOriginB);
-  auto buyer_a = GetServiceOfTypeExpectSuccess(
-      AuctionProcessManager::WorkletType::kBidder, kOriginA);
-  auto buyer_b = GetServiceOfTypeExpectSuccess(
-      AuctionProcessManager::WorkletType::kBidder, kOriginB);
+  auto worlket_a = GetServiceOfTypeExpectSuccess(GetParam(), kOriginA);
+  auto worklet_b = GetServiceOfTypeExpectSuccess(GetParam(), kOriginB);
+  auto worklet_of_other_type_a =
+      GetServiceOfTypeExpectSuccess(GetParamInverse(), kOriginA);
+  auto worklet_of_other_type_b =
+      GetServiceOfTypeExpectSuccess(GetParamInverse(), kOriginB);
 
-  EXPECT_EQ(4u, auction_process_manager_.NumReceivers());
-  EXPECT_NE(seller_a->GetService(), seller_b->GetService());
-  EXPECT_NE(seller_a->GetService(), buyer_a->GetService());
-  EXPECT_NE(seller_a->GetService(), buyer_b->GetService());
-  EXPECT_NE(seller_b->GetService(), buyer_a->GetService());
-  EXPECT_NE(seller_b->GetService(), buyer_b->GetService());
-  EXPECT_NE(buyer_a->GetService(), buyer_b->GetService());
+  EXPECT_EQ(2u,
+            GetActiveProcesses(AuctionProcessManager::WorkletType::kBidder));
+  EXPECT_EQ(2u,
+            GetActiveProcesses(AuctionProcessManager::WorkletType::kSeller));
+  EXPECT_EQ(0u, auction_process_manager_.GetIdleProcessCountForTesting());
+  EXPECT_NE(worlket_a->GetService(), worklet_b->GetService());
+  EXPECT_NE(worlket_a->GetService(), worklet_of_other_type_a->GetService());
+  EXPECT_NE(worlket_a->GetService(), worklet_of_other_type_b->GetService());
+  EXPECT_NE(worklet_b->GetService(), worklet_of_other_type_a->GetService());
+  EXPECT_NE(worklet_b->GetService(), worklet_of_other_type_b->GetService());
+  EXPECT_NE(worklet_of_other_type_a->GetService(),
+            worklet_of_other_type_b->GetService());
 }
 
 TEST_P(AuctionProcessManagerTest, MultipleRequestsForSameProcess) {
@@ -442,25 +439,17 @@ TEST_P(AuctionProcessManagerTest, MultipleRequestsForSameProcess) {
   EXPECT_TRUE(process_a1->GetService());
   auto process_a2 = GetServiceExpectSuccess(kOriginA);
   EXPECT_EQ(process_a1->GetService(), process_a2->GetService());
-  EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
+  EXPECT_EQ(1u, GetActiveProcessesOfParamType());
   auto process_a3 = GetServiceExpectSuccess(kOriginA);
   EXPECT_EQ(process_a1->GetService(), process_a3->GetService());
-  EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
+  EXPECT_EQ(1u, GetActiveProcessesOfParamType());
 
   // Request process of the other type with the same origin. It should get a
   // different process.
-  std::unique_ptr<AuctionProcessManager::ProcessHandle> other_process_a1;
-  switch (GetParam()) {
-    case AuctionProcessManager::WorkletType::kSeller:
-      other_process_a1 = GetServiceOfTypeExpectSuccess(
-          AuctionProcessManager::WorkletType::kBidder, kOriginA);
-      break;
-    case AuctionProcessManager::WorkletType::kBidder:
-      other_process_a1 = GetServiceOfTypeExpectSuccess(
-          AuctionProcessManager::WorkletType::kSeller, kOriginA);
-      break;
-  }
-  EXPECT_EQ(2u, auction_process_manager_.NumReceivers());
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> other_process_a1 =
+      GetServiceOfTypeExpectSuccess(GetParamInverse(), kOriginA);
+  EXPECT_EQ(1u, GetActiveProcessesOfParamType());
+  EXPECT_EQ(1u, GetActiveProcesses(GetParamInverse()));
   EXPECT_NE(process_a1->GetService(), other_process_a1->GetService());
 }
 
@@ -702,7 +691,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
       // All requests for the same origin share a process.
       EXPECT_EQ(processes[origin_index].back()->GetService(),
                 processes[origin_index].front()->GetService());
-      EXPECT_EQ(origin_index + 1, auction_process_manager_.NumReceivers());
+      EXPECT_EQ(origin_index + 1, GetActiveProcessesOfParamType());
     }
     histogram_tester.ExpectBucketCount(
         base::StrCat({"Ads.InterestGroup.Auction.",
@@ -740,7 +729,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(run_loop_delayed_a1.AnyQuitCalled());
   EXPECT_FALSE(process_delayed_a1->GetService());
-  EXPECT_EQ(GetMaxProcesses(), auction_process_manager_.NumReceivers());
+  EXPECT_EQ(GetMaxProcesses(), GetActiveProcessesOfParamType());
 
   base::RunLoop run_loop_delayed_a2;
   auto process_delayed_a2 =
@@ -751,7 +740,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(run_loop_delayed_a2.AnyQuitCalled());
   EXPECT_FALSE(process_delayed_a2->GetService());
-  EXPECT_EQ(GetMaxProcesses(), auction_process_manager_.NumReceivers());
+  EXPECT_EQ(GetMaxProcesses(), GetActiveProcessesOfParamType());
 
   base::RunLoop run_loop_delayed_b;
   auto process_delayed_b =
@@ -762,7 +751,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(run_loop_delayed_b.AnyQuitCalled());
   EXPECT_FALSE(process_delayed_b->GetService());
-  EXPECT_EQ(GetMaxProcesses(), auction_process_manager_.NumReceivers());
+  EXPECT_EQ(GetMaxProcesses(), GetActiveProcessesOfParamType());
 
   // Release processes for first origin one at a time, until only one is left.
   // The pending requests for kOriginA and kOriginB should remain stalled.
@@ -775,7 +764,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
     EXPECT_FALSE(process_delayed_a2->GetService());
     EXPECT_FALSE(run_loop_delayed_b.AnyQuitCalled());
     EXPECT_FALSE(process_delayed_b->GetService());
-    EXPECT_EQ(GetMaxProcesses(), auction_process_manager_.NumReceivers());
+    EXPECT_EQ(GetMaxProcesses(), GetActiveProcessesOfParamType());
   }
 
   // Remove the final process for the first origin. It should queue a callback
@@ -799,7 +788,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   EXPECT_EQ(process_delayed_a1->GetService(), process_delayed_a2->GetService());
   EXPECT_FALSE(run_loop_delayed_b.AnyQuitCalled());
   EXPECT_FALSE(process_delayed_b->GetService());
-  EXPECT_EQ(GetMaxProcesses(), auction_process_manager_.NumReceivers());
+  EXPECT_EQ(GetMaxProcesses(), GetActiveProcessesOfParamType());
 
   // Freeing one of the two kOriginA processes should have no effect.
   process_delayed_a2.reset();
@@ -815,7 +804,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
 
   run_loop_delayed_b.Run();
   EXPECT_TRUE(process_delayed_b->GetService());
-  EXPECT_EQ(GetMaxProcesses(), auction_process_manager_.NumReceivers());
+  EXPECT_EQ(GetMaxProcesses(), GetActiveProcessesOfParamType());
 }
 
 TEST_P(AuctionProcessManagerTest, DestroyHandlesWithPendingRequests) {
@@ -874,11 +863,11 @@ TEST_P(AuctionProcessManagerTest, ProcessCrash) {
   auction_worklet::mojom::AuctionWorkletService* service =
       process->GetService();
   EXPECT_TRUE(service);
-  EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
+  EXPECT_EQ(1u, GetActiveProcessesOfParamType());
 
   // Close pipes. No new pipe should be created.
   auction_process_manager_.ClosePipes();
-  EXPECT_EQ(0u, auction_process_manager_.NumReceivers());
+  EXPECT_EQ(0u, GetActiveProcessesOfParamType());
 
   // Requesting a new process will create a new pipe.
   auto process2 = GetServiceExpectSuccess(kOriginA);
@@ -887,7 +876,7 @@ TEST_P(AuctionProcessManagerTest, ProcessCrash) {
   EXPECT_TRUE(service2);
   EXPECT_NE(service, service2);
   EXPECT_NE(process, process2);
-  EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
+  EXPECT_EQ(1u, GetActiveProcessesOfParamType());
 }
 
 TEST_P(AuctionProcessManagerTest, DisconnectBeforeDelete) {
