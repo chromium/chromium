@@ -18,6 +18,8 @@
 
 namespace blink {
 
+using mojom::blink::CanCreateTranslatorResult;
+
 Translation::Translation(ExecutionContext* context)
     : ExecutionContextClient(context),
       task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)) {}
@@ -65,13 +67,28 @@ ScriptPromise<V8TranslationAvailability> Translation::canTranslate(
         options->sourceLanguage(), options->targetLanguage(),
         WTF::BindOnce(
             [](ScriptPromiseResolver<V8TranslationAvailability>* resolver,
-               bool can_create) {
-              if (can_create) {
-                resolver->Resolve(V8TranslationAvailability(
-                    V8TranslationAvailability::Enum::kReadily));
-              } else {
-                resolver->Resolve(V8TranslationAvailability(
-                    V8TranslationAvailability::Enum::kNo));
+               CanCreateTranslatorResult result) {
+              // TODO(crbug.com/369761976): Record UMAs.
+              switch (result) {
+                case CanCreateTranslatorResult::kReadily:
+                  resolver->Resolve(V8TranslationAvailability(
+                      V8TranslationAvailability::Enum::kReadily));
+                  break;
+                case CanCreateTranslatorResult::kAfterDownloadLibraryNotReady:
+                case CanCreateTranslatorResult::
+                    kAfterDownloadLanguagePackNotReady:
+                case CanCreateTranslatorResult::
+                    kAfterDownloadLibraryAndLanguagePackNotReady:
+                  resolver->Resolve(V8TranslationAvailability(
+                      V8TranslationAvailability::Enum::kAfterDownload));
+                  break;
+                case CanCreateTranslatorResult::kNoNotSupportedLanguage:
+                case CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
+                case CanCreateTranslatorResult::
+                    kNoExceedsLanguagePackCountLimitation:
+                  resolver->Resolve(V8TranslationAvailability(
+                      V8TranslationAvailability::Enum::kNo));
+                  break;
               }
             },
             WrapPersistent(resolver)));

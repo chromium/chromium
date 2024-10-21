@@ -78,13 +78,15 @@ void TranslationManagerImpl::CanCreateTranslator(
               ->GetPrefs()
               ->GetString(language::prefs::kAcceptLanguages),
           source_lang, target_lang)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        blink::mojom::CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
     return;
   }
   OnDeviceTranslationServiceController::GetInstance()->CanTranslate(
       source_lang, target_lang, std::move(callback));
 #else
-  std::move(callback).Run(false);
+  std::move(callback).Run(
+      blink::mojom::CanCreateTranslatorResult::kNoNotSupportedLanguage);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

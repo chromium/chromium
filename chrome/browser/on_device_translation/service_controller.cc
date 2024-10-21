@@ -34,11 +34,13 @@
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-shared.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+using blink::mojom::CanCreateTranslatorResult;
 using on_device_translation::GetComponentPathPrefName;
 using on_device_translation::GetRegisteredFlagPrefName;
 using on_device_translation::kLanguagePackComponentConfigMap;
@@ -337,14 +339,77 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
 void OnDeviceTranslationServiceController::CanTranslate(
     const std::string& source_lang,
     const std::string& target_lang,
-    base::OnceCallback<void(bool)> callback) {
-  // If there is no TranslteKit, we immediately return false.
-  // TODO(crbug.com/331735396): Support "after-download" capabilities.
-  if (GetTranslateKitLibraryPath().empty()) {
-    std::move(callback).Run(false);
+    base::OnceCallback<void(CanCreateTranslatorResult)> callback) {
+  if (!language_packs_from_command_line_) {
+    // If the language packs are not set by the command line, returns the result
+    // of CanTranslateImpl().
+    std::move(callback).Run(CanTranslateImpl(source_lang, target_lang));
     return;
   }
-  GetRemote()->CanTranslate(source_lang, target_lang, std::move(callback));
+  // Otherwise, checks the availability of the library and ask the on device
+  // translation service.
+  if (GetTranslateKitLibraryPath().empty()) {
+    // Note: Strictly saying, returning AfterDownloadLibraryNotReady is not
+    // correct. It might happen that the language packs are missing. But it is
+    // OK because this only impacts people loading packs from the commandline.
+    std::move(callback).Run(
+        CanCreateTranslatorResult::kAfterDownloadLibraryNotReady);
+    return;
+  }
+  GetRemote()->CanTranslate(
+      source_lang, target_lang,
+      base::BindOnce(
+          [](base::OnceCallback<void(CanCreateTranslatorResult)> callback,
+             bool result) {
+            std::move(callback).Run(
+                result ? CanCreateTranslatorResult::kReadily
+                       : CanCreateTranslatorResult::kNoNotSupportedLanguage);
+          },
+          std::move(callback)));
+}
+
+CanCreateTranslatorResult
+OnDeviceTranslationServiceController::CanTranslateImpl(
+    const std::string& source_lang,
+    const std::string& target_lang) {
+  std::set<LanguagePackKey> required_packs;
+  std::vector<LanguagePackKey> required_not_installed_packs;
+  std::vector<LanguagePackKey> to_be_registered_packs;
+  CalculateLanguagePackRequirements(source_lang, target_lang, required_packs,
+                                    required_not_installed_packs,
+                                    to_be_registered_packs);
+  if (required_packs.empty()) {
+    // Empty `required_packs` means that the transltion for the specified
+    // language pair is not supported.
+    return CanCreateTranslatorResult::kNoNotSupportedLanguage;
+  }
+
+  if (!to_be_registered_packs.empty() &&
+      on_device_translation::kTranslationAPILimitLanguagePackCount.Get() &&
+      to_be_registered_packs.size() + GetRegisteredLanguagePacks().size() >
+          kTranslationAPILimitLanguagePackCountMax) {
+    // The number of installed language packs will exceed the limitation if the
+    // new required language packs are installed.
+    return CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation;
+  }
+
+  if (required_not_installed_packs.empty()) {
+    // All required language packages are installed.
+    if (GetTranslateKitLibraryPath().empty()) {
+      // The TranslateKit library is not ready.
+      return CanCreateTranslatorResult::kAfterDownloadLibraryNotReady;
+    }
+    // Both the TranslateKit library and the language packs are ready.
+    return CanCreateTranslatorResult::kReadily;
+  }
+
+  if (GetTranslateKitLibraryPath().empty()) {
+    // Both the TranslateKit library and the language packs are not ready.
+    return CanCreateTranslatorResult::
+        kAfterDownloadLibraryAndLanguagePackNotReady;
+  }
+  // The required language packs are not ready.
+  return CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady;
 }
 
 // static
