@@ -558,7 +558,9 @@ CORE_EXPORT void ApplyContextToException(ScriptState*,
 CORE_EXPORT void ApplyContextToException(v8::Isolate*,
                                          v8::Local<v8::Context>,
                                          v8::Local<v8::Value> exception,
-                                         const ExceptionContext&);
+                                         v8::ExceptionContext type,
+                                         const char* class_name,
+                                         const String& property_name);
 
 class CORE_EXPORT DictionaryConversionContext {
  public:

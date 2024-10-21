@@ -350,16 +350,15 @@ void V8Initializer::ExceptionPropagationCallback(
            V8PerIsolateData::From(isolate)->TopOfDictionaryStack();
        dictionary_context;
        dictionary_context = dictionary_context->Previous()) {
-    ApplyContextToException(
-        isolate, isolate->GetCurrentContext(), exception,
-        ExceptionContext(v8::ExceptionContext::kAttributeGet,
-                         dictionary_context->DictionaryName(),
-                         dictionary_context->PropertyName()));
+    ApplyContextToException(isolate, isolate->GetCurrentContext(), exception,
+                            v8::ExceptionContext::kAttributeGet,
+                            dictionary_context->DictionaryName(),
+                            dictionary_context->PropertyName());
   }
 
-  ApplyContextToException(
-      isolate, isolate->GetCurrentContext(), exception,
-      ExceptionContext(context_type, class_name.Utf8().data(), property_name));
+  ApplyContextToException(isolate, isolate->GetCurrentContext(), exception,
+                          context_type, class_name.Utf8().data(),
+                          property_name);
 }
 
 static void PromiseRejectHandlerInWorker(v8::PromiseRejectMessage data) {

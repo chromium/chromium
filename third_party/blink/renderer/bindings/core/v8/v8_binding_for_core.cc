@@ -961,23 +961,26 @@ bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
 void ApplyContextToException(ScriptState* script_state,
                              v8::Local<v8::Value> exception,
                              const ExceptionContext& exception_context) {
-  ApplyContextToException(script_state->GetIsolate(),
-                          script_state->GetContext(), exception,
-                          exception_context);
+  ApplyContextToException(
+      script_state->GetIsolate(), script_state->GetContext(), exception,
+      exception_context.GetType(), exception_context.GetClassName(),
+      exception_context.GetPropertyName());
 }
 
 void ApplyContextToException(v8::Isolate* isolate,
                              v8::Local<v8::Context> context,
                              v8::Local<v8::Value> exception,
-                             const ExceptionContext& exception_context) {
+                             v8::ExceptionContext type,
+                             const char* class_name,
+                             const String& property_name) {
   if (auto* dom_exception = V8DOMException::ToWrappable(isolate, exception)) {
-    dom_exception->AddContextToMessages(exception_context);
+    dom_exception->AddContextToMessages(type, class_name, property_name);
   } else if (exception->IsObject()) {
     v8::TryCatch try_catch(isolate);
     v8::Local<v8::String> message_key = V8String(isolate, "message");
     auto exception_object = exception.As<v8::Object>();
     String updated_message = ExceptionMessages::AddContextToMessage(
-        exception_context,
+        type, class_name, property_name,
         ToCoreString(isolate, exception_object->Get(context, message_key)
                                   .ToLocalChecked()
                                   ->ToString(context)

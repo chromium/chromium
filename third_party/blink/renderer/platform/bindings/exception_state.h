@@ -65,29 +65,29 @@ class PLATFORM_EXPORT ExceptionState {
   // If `isolate` is nullptr, this ExceptionState will ignore all exceptions.
   explicit ExceptionState(v8::Isolate* isolate) : isolate_(isolate) {}
 
-  ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
+  NOINLINE ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
       : context_(context), isolate_(isolate) {}
 
-  ExceptionState(v8::Isolate* isolate, ExceptionContext&& context)
+  NOINLINE ExceptionState(v8::Isolate* isolate, ExceptionContext&& context)
       : context_(std::move(context)), isolate_(isolate) {}
 
-  ExceptionState(v8::Isolate* isolate,
-                 v8::ExceptionContext context_type,
-                 const char* interface_name,
-                 const char* property_name)
+  NOINLINE ExceptionState(v8::Isolate* isolate,
+                          v8::ExceptionContext context_type,
+                          const char* interface_name,
+                          const char* property_name)
       : ExceptionState(
             isolate,
             ExceptionContext(context_type, interface_name, property_name)) {}
 
-  ExceptionState(v8::Isolate* isolate,
-                 v8::ExceptionContext context_type,
-                 const char* interface_name)
+  NOINLINE ExceptionState(v8::Isolate* isolate,
+                          v8::ExceptionContext context_type,
+                          const char* interface_name)
       : ExceptionState(isolate,
                        ExceptionContext(context_type, interface_name)) {}
 
   ExceptionState(const ExceptionState&) = delete;
   ExceptionState& operator=(const ExceptionState&) = delete;
-  ~ExceptionState();
+  NOINLINE ~ExceptionState();
 
   // Throws a DOMException due to the given exception code.
   NOINLINE void ThrowDOMException(DOMExceptionCode, const String& message);
@@ -147,9 +147,8 @@ class PLATFORM_EXPORT ExceptionState {
   // Delegated constructor for NonThrowableExceptionState
   enum ForNonthrowable { kNonthrowable };
   ExceptionState(const char* file, int line, ForNonthrowable)
-      : context_(ExceptionContext(v8::ExceptionContext::kUnknown,
-                                  nullptr,
-                                  String())),
+      : context_(
+            ExceptionContext(v8::ExceptionContext::kUnknown, nullptr, nullptr)),
         isolate_(nullptr) {
 #if DCHECK_IS_ON()
     file_ = file;

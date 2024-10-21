@@ -281,12 +281,14 @@ String DOMException::ToStringForConsole() const {
              : "Uncaught " + name() + ": " + message_for_console;
 }
 
-void DOMException::AddContextToMessages(const ExceptionContext& context) {
-  sanitized_message_ =
-      ExceptionMessages::AddContextToMessage(context, sanitized_message_);
+void DOMException::AddContextToMessages(v8::ExceptionContext type,
+                                        const char* class_name,
+                                        const String& property_name) {
+  sanitized_message_ = ExceptionMessages::AddContextToMessage(
+      type, class_name, property_name, sanitized_message_);
   if (!unsanitized_message_.IsNull()) {
-    unsanitized_message_ =
-        ExceptionMessages::AddContextToMessage(context, unsanitized_message_);
+    unsanitized_message_ = ExceptionMessages::AddContextToMessage(
+        type, class_name, property_name, unsanitized_message_);
   }
 }
 
