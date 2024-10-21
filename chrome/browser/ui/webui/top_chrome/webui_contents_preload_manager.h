@@ -24,8 +24,7 @@ class PerProfileWebUITracker;
 // WebUIs. At anytime, at most one WebContents is preloaded across all profiles.
 // If under heavy memory pressure, no preloaded contents will be created.
 //
-// To make a WebUI preloadable, update GetAllPreloadableWebUIURLs() and
-// ensure that tests pass.
+// See comments in TopChromeWebUIConfig for making a WebUI preloadable.
 class WebUIContentsPreloadManager : public ProfileObserver,
                                     public PerProfileWebUITracker::Observer {
  public:
