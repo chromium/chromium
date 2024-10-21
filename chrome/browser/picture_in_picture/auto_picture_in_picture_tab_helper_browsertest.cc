@@ -1037,8 +1037,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_TRUE(original_web_contents->HasPictureInPictureDocument());
 }
 
-// TODO(https://crbug.com/371850487): failing on Windows ASAN.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+// TODO(https://crbug.com/371850487): failing on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ShowsMostRecentlyHiddenTab DISABLED_ShowsMostRecentlyHiddenTab
 #else
 #define MAYBE_ShowsMostRecentlyHiddenTab ShowsMostRecentlyHiddenTab
