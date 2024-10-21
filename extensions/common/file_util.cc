@@ -62,8 +62,8 @@ bool g_report_error_for_invisible_icon = false;
 
 // Returns true if the given file path exists and is not zero-length.
 bool ValidateFilePath(const base::FilePath& path) {
-  int64_t size = 0;
-  return base::PathExists(path) && base::GetFileSize(path, &size) && size != 0;
+  std::optional<int64_t> size = base::GetFileSize(path);
+  return size.has_value() && size.value() != 0;
 }
 
 // Returns true if the extension installation should flush all files and the

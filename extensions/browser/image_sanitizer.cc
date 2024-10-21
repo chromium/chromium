@@ -9,6 +9,8 @@
 
 #include "extensions/browser/image_sanitizer.h"
 
+#include <optional>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -33,12 +35,13 @@ std::tuple<std::vector<uint8_t>, bool, bool> ReadAndDeleteBinaryFile(
     const base::FilePath& path) {
   std::vector<uint8_t> contents;
   bool read_success = false;
-  int64_t file_size;
-  if (base::GetFileSize(path, &file_size)) {
-    contents.resize(file_size);
+  std::optional<int64_t> file_size = base::GetFileSize(path);
+  if (file_size.has_value()) {
+    int64_t size = file_size.value();
+    contents.resize(size);
     read_success =
-        base::ReadFile(path, reinterpret_cast<char*>(contents.data()),
-                       file_size) == file_size;
+        base::ReadFile(path, reinterpret_cast<char*>(contents.data()), size) ==
+        size;
   }
   bool delete_success = base::DeleteFile(path);
   return std::make_tuple(std::move(contents), read_success, delete_success);
