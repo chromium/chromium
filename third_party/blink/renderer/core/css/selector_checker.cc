@@ -1748,6 +1748,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoDisabled,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
+      }
       return element.MatchesEnabledPseudoClass();
     }
     case CSSSelector::kPseudoFullPageMedia:
@@ -1759,6 +1764,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                               &force_pseudo_state);
       if (force_pseudo_state) {
         return true;
+      }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoEnabled,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
       }
       if (auto* fieldset = DynamicTo<HTMLFieldSetElement>(element)) {
         // <fieldset> should never be considered disabled, but should still
@@ -1774,6 +1784,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoReadWrite,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
+      }
       return element.MatchesReadOnlyPseudoClass();
     }
     case CSSSelector::kPseudoReadWrite: {
@@ -1781,6 +1796,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                               &force_pseudo_state);
       if (force_pseudo_state) {
         return true;
+      }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoReadOnly,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
       }
       return element.MatchesReadWritePseudoClass();
     }
@@ -1790,6 +1810,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoRequired,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
+      }
       return element.IsOptionalFormControl();
     }
     case CSSSelector::kPseudoRequired: {
@@ -1798,6 +1823,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoOptional,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
+      }
       return element.IsRequiredFormControl();
     }
     case CSSSelector::kPseudoUserInvalid: {
@@ -1805,6 +1835,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                               &force_pseudo_state);
       if (force_pseudo_state) {
         return true;
+      }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoUserValid,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
       }
       if (auto* form_control =
               DynamicTo<HTMLFormControlElementWithState>(element)) {
@@ -1818,6 +1853,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoUserInvalid,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
+      }
       if (auto* form_control =
               DynamicTo<HTMLFormControlElementWithState>(element)) {
         return form_control->MatchesUserValidPseudo();
@@ -1830,12 +1870,22 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoInvalid,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
+      }
       return element.MatchesValidityPseudoClasses() && element.IsValidElement();
     case CSSSelector::kPseudoInvalid: {
       probe::ForcePseudoState(&element, CSSSelector::kPseudoInvalid,
                               &force_pseudo_state);
       if (force_pseudo_state) {
         return true;
+      }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoValid,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
       }
       return element.MatchesValidityPseudoClasses() &&
              !element.IsValidElement();
@@ -2034,6 +2084,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoOutOfRange,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
+      }
       return element.IsInRange();
     }
     case CSSSelector::kPseudoOutOfRange: {
@@ -2041,6 +2096,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                               &force_pseudo_state);
       if (force_pseudo_state) {
         return true;
+      }
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoInRange,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return false;
       }
       return element.IsOutOfRange();
     }
