@@ -26,4 +26,8 @@
    "heuristic": "divTable",
    "label": "sibling/ancestor",
    "name": "input7"
+}, {
+   "heuristic": "defaultSelectText",
+   "label": "Select country",
+   "name": "input8"
 } ]

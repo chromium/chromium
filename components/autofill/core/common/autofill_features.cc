@@ -722,6 +722,14 @@ BASE_FEATURE(kAutofillGreekRegexes,
              "AutofillGreekRegexes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the text of a <select> element's first <option> is considered
+// as a potential label.
+// TODO(crbug.com/320965828): Remove when launched.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillInferLabelFromDefaultSelectText,
+             "AutofillInferLabelFromDefaultSelectText",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.
