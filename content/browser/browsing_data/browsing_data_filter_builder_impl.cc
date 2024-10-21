@@ -4,6 +4,7 @@
 
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -212,12 +213,6 @@ bool BrowsingDataFilterBuilderImpl::HasStorageKey() const {
   return storage_key_.has_value();
 }
 
-bool BrowsingDataFilterBuilderImpl::MatchesWithSavedStorageKey(
-    const blink::StorageKey& other_key) const {
-  DCHECK(storage_key_.has_value());
-  return storage_key_.value() == other_key;
-}
-
 bool BrowsingDataFilterBuilderImpl::MatchesAllOriginsAndDomains() {
   return MatchesMostOriginsAndDomains() && origins_.empty() &&
          domains_.empty() && cookie_partition_key_collection_.ContainsAllKeys();
@@ -266,9 +261,8 @@ BrowsingDataFilterBuilderImpl::BuildStorageKeyFilter() {
   if (HasStorageKey()) {
     CHECK(StorageKeyInCookiePartitionKeyCollection(
         *storage_key_, cookie_partition_key_collection_));
-    return base::BindRepeating(
-        &BrowsingDataFilterBuilderImpl::MatchesWithSavedStorageKey,
-        base::Unretained(this));
+    return base::BindRepeating(std::equal_to<const blink::StorageKey&>(),
+                               *storage_key_);
   }
   return base::BindRepeating(&MatchesStorageKey, origins_, domains_, mode_,
                              origin_mode_);
