@@ -4496,6 +4496,8 @@ enum WebFeature {
   kV8AIAssistantCapabilities_LanguageAvailable_Method = 5122,
   kWebGLRenderingContextReadPixels = 5123,
   kSelectAudioOutput = 5124,
+  kV8PaymentManager_UserHint_AttributeGetter = 5125,
+  kV8PaymentManager_UserHint_AttributeSetter = 5126,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

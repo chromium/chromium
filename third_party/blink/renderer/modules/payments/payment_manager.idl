@@ -17,7 +17,7 @@ enum PaymentDelegation {
     SecureContext
 ] interface PaymentManager {
     [SameObject, DeprecateAs=PaymentInstruments, RuntimeEnabled=PaymentInstruments] readonly attribute PaymentInstruments instruments;
-    attribute DOMString userHint;
+    [Measure] attribute DOMString userHint;
     // The implementation resolves with boolean, even though the spec says undefined.
     [CallWith=ScriptState, PromiseIDLTypeMismatch, RaisesException] Promise<undefined> enableDelegations(sequence<PaymentDelegation> delegations);
 };
