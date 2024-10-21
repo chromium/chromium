@@ -599,7 +599,7 @@ ci.builder(
     contact_team_email = "chromeos-sw-engprod@google.com",
     # Inconsistent compile times can cause this builder to flakily hit the
     # default 3 hour timeout.
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 6 * time.hour,
     health_spec = health_spec.modified_default({
         "Unhealthy": health_spec.unhealthy_thresholds(
             build_time = struct(
