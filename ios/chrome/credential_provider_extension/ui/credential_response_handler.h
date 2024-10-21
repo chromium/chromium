@@ -7,14 +7,16 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
-#import "ios/chrome/credential_provider_extension/passkey_keychain_provider.h"
+#import <vector>
 
 @protocol Credential;
 
+typedef std::vector<uint8_t> SharedKey;
+typedef std::vector<SharedKey> SharedKeyList;
+
 typedef void (^CheckEnrolledCompletionBlock)(BOOL is_enrolled, NSError* error);
 typedef void (^EnrollCompletionBlock)(NSError* error);
-typedef void (^FetchKeysCompletionBlock)(
-    const PasskeyKeychainProvider::SharedKeyList& key_list);
+typedef void (^FetchKeysCompletionBlock)(const SharedKeyList& key_list);
 typedef void (^FetchSecurityDomainSecretCompletionBlock)(
     NSData* security_domain_secret);
 
