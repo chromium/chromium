@@ -184,11 +184,12 @@ std::unique_ptr<ChromeML> ChromeML::Create(
 
   static base::NoDestructor<std::unique_ptr<ChromeMLHolder>> holder{
       ChromeMLHolder::Create(library_name)};
-  if (!holder.get()) {
+  ChromeMLHolder* holder_ptr = holder->get();
+  if (!holder_ptr) {
     return {};
   }
 
-  auto& api = (*holder)->api();
+  auto& api = holder_ptr->api();
 
   dawnProcSetProcs(&dawn::native::GetProcs());
   api.InitDawnProcs(dawn::native::GetProcs());
