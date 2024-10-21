@@ -466,8 +466,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     return false;
   }
 #if BUILDFLAG(IS_WIN)
-  UMA_HISTOGRAM_BOOLEAN("GPU.AppHelpIsLoaded",
-                        static_cast<bool>(::GetModuleHandle(L"apphelp.dll")));
   if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn &&
       features::kSkiaGraphiteDawnBackendValidation.Get()) {
     // Enable ANGLE debug layer if we need backend validation for Graphite since
