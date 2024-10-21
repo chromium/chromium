@@ -168,9 +168,8 @@ typename Collector::ResultType IterateOverIdentities(
 // Returns the PatternAccountRestriction according to the given PrefService.
 PatternAccountRestriction PatternAccountRestrictionFromPreference(
     PrefService* pref_service) {
-  auto maybe_restriction = PatternAccountRestrictionFromValue(
+  return PatternAccountRestrictionFromValue(
       pref_service->GetList(prefs::kRestrictAccountsToPatterns));
-  return *std::move(maybe_restriction);
 }
 
 }  // anonymous namespace.
