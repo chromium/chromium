@@ -153,6 +153,10 @@ void TabLoadTracker::DidStopLoading(content::WebContents* web_contents) {
     TransitionState(it, LOADED);
 }
 
+void TabLoadTracker::WasDiscarded(content::WebContents* web_contents) {
+  TransitionToUnloaded(web_contents);
+}
+
 void TabLoadTracker::RenderProcessGone(content::WebContents* web_contents,
                                        base::TerminationStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -169,13 +173,7 @@ void TabLoadTracker::RenderProcessGone(content::WebContents* web_contents,
   // died because of a crash (e.g. bugs, compromised renderer) or been killed by
   // the OS (e.g. OOM on Android). Note: discarded tabs may reach this method,
   // but exit early because of |status|.
-  auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
-  // The tab could already be UNLOADED if it hasn't yet started loading. This
-  // can happen if the renderer crashes between the UNLOADED and LOADING states.
-  if (it->second.loading_state == UNLOADED)
-    return;
-  TransitionState(it, UNLOADED);
+  TransitionToUnloaded(web_contents);
 }
 
 void TabLoadTracker::OnPageStoppedLoading(content::WebContents* web_contents) {
@@ -212,6 +210,17 @@ TabLoadTracker::LoadingState TabLoadTracker::DetermineLoadingState(
   }
 
   return loading_state;
+}
+
+void TabLoadTracker::TransitionToUnloaded(content::WebContents* web_contents) {
+  auto it = tabs_.find(web_contents);
+  CHECK(it != tabs_.end(), base::NotFatalUntil::M133);
+  // The tab could already be UNLOADED if it hasn't yet started loading. This
+  // can happen if the renderer crashes between the UNLOADED and LOADING states.
+  if (it->second.loading_state == UNLOADED) {
+    return;
+  }
+  TransitionState(it, UNLOADED);
 }
 
 void TabLoadTracker::TransitionState(TabMap::iterator it,

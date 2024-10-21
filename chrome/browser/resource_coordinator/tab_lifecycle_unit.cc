@@ -237,7 +237,16 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetFocused(bool focused) {
       // might not be if this is invoked as part of reloading the tab explicitly
       // and we haven't been notified of the ongoing load yet
       // (crbug.com/40075246).
-      if (web_contents()->WasDiscarded()) {
+      //
+      // With "WebContentsDiscard", loading on activation occurs from:
+      //     content::NavigationControllerImpl::SetActive
+      //     content::WebContentsImpl::UpdateVisibilityAndNotifyPageAndView
+      //     content::WebContentsImpl::UpdateWebContentsVisibility
+      // With `content::NavigationControllerImpl::needs_reload_` having been
+      // set from `content::FrameTree::Discard`. So it is undesired to trigger
+      // it explicitly from here.
+      if (web_contents()->WasDiscarded() &&
+          !base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
         bool loaded = Load();
         DCHECK(loaded);
       }
