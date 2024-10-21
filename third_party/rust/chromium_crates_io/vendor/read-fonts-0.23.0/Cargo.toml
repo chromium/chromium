@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "read-fonts"
-version = "0.22.3"
+version = "0.23.0"
 build = false
 autobins = false
 autoexamples = false

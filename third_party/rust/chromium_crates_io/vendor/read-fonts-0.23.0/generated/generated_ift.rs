@@ -29,7 +29,7 @@ impl<'a> Ift<'a> {
     }
 
     /// Unique ID that identifies compatible patches.
-    pub fn compatibility_id(&self) -> &'a [BigEndian<u32>] {
+    pub fn compatibility_id(&self) -> CompatibilityId {
         match self {
             Self::Format1(item) => item.compatibility_id(),
             Self::Format2(item) => item.compatibility_id(),
@@ -97,7 +97,6 @@ impl Format<u8> for PatchMapFormat1Marker {
 #[derive(Debug, Clone, Copy)]
 #[doc(hidden)]
 pub struct PatchMapFormat1Marker {
-    compatibility_id_byte_len: usize,
     applied_entries_bitmap_byte_len: usize,
     uri_template_byte_len: usize,
 }
@@ -113,7 +112,7 @@ impl PatchMapFormat1Marker {
     }
     fn compatibility_id_byte_range(&self) -> Range<usize> {
         let start = self._reserved_byte_range().end;
-        start..start + self.compatibility_id_byte_len
+        start..start + CompatibilityId::RAW_BYTE_LEN
     }
     fn max_entry_index_byte_range(&self) -> Range<usize> {
         let start = self.compatibility_id_byte_range().end;
@@ -158,10 +157,7 @@ impl<'a> FontRead<'a> for PatchMapFormat1<'a> {
         let mut cursor = data.cursor();
         cursor.advance::<u8>();
         cursor.advance::<u32>();
-        let compatibility_id_byte_len = (4_usize)
-            .checked_mul(u32::RAW_BYTE_LEN)
-            .ok_or(ReadError::OutOfBounds)?;
-        cursor.advance_by(compatibility_id_byte_len);
+        cursor.advance::<CompatibilityId>();
         let max_entry_index: u16 = cursor.read()?;
         cursor.advance::<u16>();
         cursor.advance::<Uint24>();
@@ -178,7 +174,6 @@ impl<'a> FontRead<'a> for PatchMapFormat1<'a> {
         cursor.advance_by(uri_template_byte_len);
         cursor.advance::<u8>();
         cursor.finish(PatchMapFormat1Marker {
-            compatibility_id_byte_len,
             applied_entries_bitmap_byte_len,
             uri_template_byte_len,
         })
@@ -196,9 +191,9 @@ impl<'a> PatchMapFormat1<'a> {
     }
 
     /// Unique ID that identifies compatible patches.
-    pub fn compatibility_id(&self) -> &'a [BigEndian<u32>] {
+    pub fn compatibility_id(&self) -> CompatibilityId {
         let range = self.shape.compatibility_id_byte_range();
-        self.data.read_array(range).unwrap()
+        self.data.read_at(range.start).unwrap()
     }
 
     /// Largest entry index which appears in either the glyph map or feature map.
@@ -274,7 +269,10 @@ impl<'a> SomeTable<'a> for PatchMapFormat1<'a> {
     fn get_field(&self, idx: usize) -> Option<Field<'a>> {
         match idx {
             0usize => Some(Field::new("format", self.format())),
-            1usize => Some(Field::new("compatibility_id", self.compatibility_id())),
+            1usize => Some(Field::new(
+                "compatibility_id",
+                traversal::FieldType::Unknown,
+            )),
             2usize => Some(Field::new("max_entry_index", self.max_entry_index())),
             3usize => Some(Field::new(
                 "max_glyph_map_entry_index",
@@ -683,7 +681,6 @@ impl Format<u8> for PatchMapFormat2Marker {
 #[derive(Debug, Clone, Copy)]
 #[doc(hidden)]
 pub struct PatchMapFormat2Marker {
-    compatibility_id_byte_len: usize,
     uri_template_byte_len: usize,
 }
 
@@ -698,7 +695,7 @@ impl PatchMapFormat2Marker {
     }
     fn compatibility_id_byte_range(&self) -> Range<usize> {
         let start = self._reserved_byte_range().end;
-        start..start + self.compatibility_id_byte_len
+        start..start + CompatibilityId::RAW_BYTE_LEN
     }
     fn default_patch_encoding_byte_range(&self) -> Range<usize> {
         let start = self.compatibility_id_byte_range().end;
@@ -731,10 +728,7 @@ impl<'a> FontRead<'a> for PatchMapFormat2<'a> {
         let mut cursor = data.cursor();
         cursor.advance::<u8>();
         cursor.advance::<u32>();
-        let compatibility_id_byte_len = (4_usize)
-            .checked_mul(u32::RAW_BYTE_LEN)
-            .ok_or(ReadError::OutOfBounds)?;
-        cursor.advance_by(compatibility_id_byte_len);
+        cursor.advance::<CompatibilityId>();
         cursor.advance::<u8>();
         cursor.advance::<Uint24>();
         cursor.advance::<Offset32>();
@@ -745,7 +739,6 @@ impl<'a> FontRead<'a> for PatchMapFormat2<'a> {
             .ok_or(ReadError::OutOfBounds)?;
         cursor.advance_by(uri_template_byte_len);
         cursor.finish(PatchMapFormat2Marker {
-            compatibility_id_byte_len,
             uri_template_byte_len,
         })
     }
@@ -762,9 +755,9 @@ impl<'a> PatchMapFormat2<'a> {
     }
 
     /// Unique ID that identifies compatible patches.
-    pub fn compatibility_id(&self) -> &'a [BigEndian<u32>] {
+    pub fn compatibility_id(&self) -> CompatibilityId {
         let range = self.shape.compatibility_id_byte_range();
-        self.data.read_array(range).unwrap()
+        self.data.read_at(range.start).unwrap()
     }
 
     /// Patch format number for patches referenced by this mapping.
@@ -819,7 +812,10 @@ impl<'a> SomeTable<'a> for PatchMapFormat2<'a> {
     fn get_field(&self, idx: usize) -> Option<Field<'a>> {
         match idx {
             0usize => Some(Field::new("format", self.format())),
-            1usize => Some(Field::new("compatibility_id", self.compatibility_id())),
+            1usize => Some(Field::new(
+                "compatibility_id",
+                traversal::FieldType::Unknown,
+            )),
             2usize => Some(Field::new(
                 "default_patch_encoding",
                 self.default_patch_encoding(),
@@ -1635,6 +1631,1141 @@ impl<'a> SomeTable<'a> for IdStringData<'a> {
 
 #[cfg(feature = "experimental_traverse")]
 impl<'a> std::fmt::Debug for IdStringData<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        (self as &dyn SomeTable<'a>).fmt(f)
+    }
+}
+
+/// [Table Keyed Patch](https://w3c.github.io/IFT/Overview.html#table-keyed)
+#[derive(Debug, Clone, Copy)]
+#[doc(hidden)]
+pub struct TableKeyedPatchMarker {
+    patch_offsets_byte_len: usize,
+}
+
+impl TableKeyedPatchMarker {
+    fn format_byte_range(&self) -> Range<usize> {
+        let start = 0;
+        start..start + Tag::RAW_BYTE_LEN
+    }
+    fn _reserved_byte_range(&self) -> Range<usize> {
+        let start = self.format_byte_range().end;
+        start..start + u32::RAW_BYTE_LEN
+    }
+    fn compatibility_id_byte_range(&self) -> Range<usize> {
+        let start = self._reserved_byte_range().end;
+        start..start + CompatibilityId::RAW_BYTE_LEN
+    }
+    fn patches_count_byte_range(&self) -> Range<usize> {
+        let start = self.compatibility_id_byte_range().end;
+        start..start + u16::RAW_BYTE_LEN
+    }
+    fn patch_offsets_byte_range(&self) -> Range<usize> {
+        let start = self.patches_count_byte_range().end;
+        start..start + self.patch_offsets_byte_len
+    }
+}
+
+impl<'a> FontRead<'a> for TableKeyedPatch<'a> {
+    fn read(data: FontData<'a>) -> Result<Self, ReadError> {
+        let mut cursor = data.cursor();
+        cursor.advance::<Tag>();
+        cursor.advance::<u32>();
+        cursor.advance::<CompatibilityId>();
+        let patches_count: u16 = cursor.read()?;
+        let patch_offsets_byte_len = (transforms::add(patches_count, 1_usize))
+            .checked_mul(Offset32::RAW_BYTE_LEN)
+            .ok_or(ReadError::OutOfBounds)?;
+        cursor.advance_by(patch_offsets_byte_len);
+        cursor.finish(TableKeyedPatchMarker {
+            patch_offsets_byte_len,
+        })
+    }
+}
+
+/// [Table Keyed Patch](https://w3c.github.io/IFT/Overview.html#table-keyed)
+pub type TableKeyedPatch<'a> = TableRef<'a, TableKeyedPatchMarker>;
+
+impl<'a> TableKeyedPatch<'a> {
+    pub fn format(&self) -> Tag {
+        let range = self.shape.format_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    /// Unique ID that identifies compatible patches.
+    pub fn compatibility_id(&self) -> CompatibilityId {
+        let range = self.shape.compatibility_id_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn patches_count(&self) -> u16 {
+        let range = self.shape.patches_count_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn patch_offsets(&self) -> &'a [BigEndian<Offset32>] {
+        let range = self.shape.patch_offsets_byte_range();
+        self.data.read_array(range).unwrap()
+    }
+
+    /// A dynamically resolving wrapper for [`patch_offsets`][Self::patch_offsets].
+    pub fn patches(&self) -> ArrayOfOffsets<'a, TablePatch<'a>, Offset32> {
+        let data = self.data;
+        let offsets = self.patch_offsets();
+        ArrayOfOffsets::new(offsets, data, ())
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeTable<'a> for TableKeyedPatch<'a> {
+    fn type_name(&self) -> &str {
+        "TableKeyedPatch"
+    }
+    fn get_field(&self, idx: usize) -> Option<Field<'a>> {
+        match idx {
+            0usize => Some(Field::new("format", self.format())),
+            1usize => Some(Field::new(
+                "compatibility_id",
+                traversal::FieldType::Unknown,
+            )),
+            2usize => Some(Field::new("patches_count", self.patches_count())),
+            3usize => Some({
+                let data = self.data;
+                Field::new(
+                    "patch_offsets",
+                    FieldType::array_of_offsets(
+                        better_type_name::<TablePatch>(),
+                        self.patch_offsets(),
+                        move |off| {
+                            let target = off.get().resolve::<TablePatch>(data);
+                            FieldType::offset(off.get(), target)
+                        },
+                    ),
+                )
+            }),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> std::fmt::Debug for TableKeyedPatch<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        (self as &dyn SomeTable<'a>).fmt(f)
+    }
+}
+
+/// [TablePatch](https://w3c.github.io/IFT/Overview.html#tablepatch)
+#[derive(Debug, Clone, Copy)]
+#[doc(hidden)]
+pub struct TablePatchMarker {
+    brotli_stream_byte_len: usize,
+}
+
+impl TablePatchMarker {
+    fn tag_byte_range(&self) -> Range<usize> {
+        let start = 0;
+        start..start + Tag::RAW_BYTE_LEN
+    }
+    fn flags_byte_range(&self) -> Range<usize> {
+        let start = self.tag_byte_range().end;
+        start..start + TablePatchFlags::RAW_BYTE_LEN
+    }
+    fn max_uncompressed_length_byte_range(&self) -> Range<usize> {
+        let start = self.flags_byte_range().end;
+        start..start + u32::RAW_BYTE_LEN
+    }
+    fn brotli_stream_byte_range(&self) -> Range<usize> {
+        let start = self.max_uncompressed_length_byte_range().end;
+        start..start + self.brotli_stream_byte_len
+    }
+}
+
+impl<'a> FontRead<'a> for TablePatch<'a> {
+    fn read(data: FontData<'a>) -> Result<Self, ReadError> {
+        let mut cursor = data.cursor();
+        cursor.advance::<Tag>();
+        cursor.advance::<TablePatchFlags>();
+        cursor.advance::<u32>();
+        let brotli_stream_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
+        cursor.advance_by(brotli_stream_byte_len);
+        cursor.finish(TablePatchMarker {
+            brotli_stream_byte_len,
+        })
+    }
+}
+
+/// [TablePatch](https://w3c.github.io/IFT/Overview.html#tablepatch)
+pub type TablePatch<'a> = TableRef<'a, TablePatchMarker>;
+
+impl<'a> TablePatch<'a> {
+    pub fn tag(&self) -> Tag {
+        let range = self.shape.tag_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn flags(&self) -> TablePatchFlags {
+        let range = self.shape.flags_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn max_uncompressed_length(&self) -> u32 {
+        let range = self.shape.max_uncompressed_length_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn brotli_stream(&self) -> &'a [u8] {
+        let range = self.shape.brotli_stream_byte_range();
+        self.data.read_array(range).unwrap()
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeTable<'a> for TablePatch<'a> {
+    fn type_name(&self) -> &str {
+        "TablePatch"
+    }
+    fn get_field(&self, idx: usize) -> Option<Field<'a>> {
+        match idx {
+            0usize => Some(Field::new("tag", self.tag())),
+            1usize => Some(Field::new("flags", self.flags())),
+            2usize => Some(Field::new(
+                "max_uncompressed_length",
+                self.max_uncompressed_length(),
+            )),
+            3usize => Some(Field::new("brotli_stream", self.brotli_stream())),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> std::fmt::Debug for TablePatch<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        (self as &dyn SomeTable<'a>).fmt(f)
+    }
+}
+
+#[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, bytemuck :: AnyBitPattern)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[repr(transparent)]
+pub struct TablePatchFlags {
+    bits: u8,
+}
+
+impl TablePatchFlags {
+    pub const REPLACE_TABLE: Self = Self { bits: 0b01 };
+
+    pub const DROP_TABLE: Self = Self { bits: 0b10 };
+}
+
+impl TablePatchFlags {
+    ///  Returns an empty set of flags.
+    #[inline]
+    pub const fn empty() -> Self {
+        Self { bits: 0 }
+    }
+
+    /// Returns the set containing all flags.
+    #[inline]
+    pub const fn all() -> Self {
+        Self {
+            bits: Self::REPLACE_TABLE.bits | Self::DROP_TABLE.bits,
+        }
+    }
+
+    /// Returns the raw value of the flags currently stored.
+    #[inline]
+    pub const fn bits(&self) -> u8 {
+        self.bits
+    }
+
+    /// Convert from underlying bit representation, unless that
+    /// representation contains bits that do not correspond to a flag.
+    #[inline]
+    pub const fn from_bits(bits: u8) -> Option<Self> {
+        if (bits & !Self::all().bits()) == 0 {
+            Some(Self { bits })
+        } else {
+            None
+        }
+    }
+
+    /// Convert from underlying bit representation, dropping any bits
+    /// that do not correspond to flags.
+    #[inline]
+    pub const fn from_bits_truncate(bits: u8) -> Self {
+        Self {
+            bits: bits & Self::all().bits,
+        }
+    }
+
+    /// Returns `true` if no flags are currently stored.
+    #[inline]
+    pub const fn is_empty(&self) -> bool {
+        self.bits() == Self::empty().bits()
+    }
+
+    /// Returns `true` if there are flags common to both `self` and `other`.
+    #[inline]
+    pub const fn intersects(&self, other: Self) -> bool {
+        !(Self {
+            bits: self.bits & other.bits,
+        })
+        .is_empty()
+    }
+
+    /// Returns `true` if all of the flags in `other` are contained within `self`.
+    #[inline]
+    pub const fn contains(&self, other: Self) -> bool {
+        (self.bits & other.bits) == other.bits
+    }
+
+    /// Inserts the specified flags in-place.
+    #[inline]
+    pub fn insert(&mut self, other: Self) {
+        self.bits |= other.bits;
+    }
+
+    /// Removes the specified flags in-place.
+    #[inline]
+    pub fn remove(&mut self, other: Self) {
+        self.bits &= !other.bits;
+    }
+
+    /// Toggles the specified flags in-place.
+    #[inline]
+    pub fn toggle(&mut self, other: Self) {
+        self.bits ^= other.bits;
+    }
+
+    /// Returns the intersection between the flags in `self` and
+    /// `other`.
+    ///
+    /// Specifically, the returned set contains only the flags which are
+    /// present in *both* `self` *and* `other`.
+    ///
+    /// This is equivalent to using the `&` operator (e.g.
+    /// [`ops::BitAnd`]), as in `flags & other`.
+    ///
+    /// [`ops::BitAnd`]: https://doc.rust-lang.org/std/ops/trait.BitAnd.html
+    #[inline]
+    #[must_use]
+    pub const fn intersection(self, other: Self) -> Self {
+        Self {
+            bits: self.bits & other.bits,
+        }
+    }
+
+    /// Returns the union of between the flags in `self` and `other`.
+    ///
+    /// Specifically, the returned set contains all flags which are
+    /// present in *either* `self` *or* `other`, including any which are
+    /// present in both.
+    ///
+    /// This is equivalent to using the `|` operator (e.g.
+    /// [`ops::BitOr`]), as in `flags | other`.
+    ///
+    /// [`ops::BitOr`]: https://doc.rust-lang.org/std/ops/trait.BitOr.html
+    #[inline]
+    #[must_use]
+    pub const fn union(self, other: Self) -> Self {
+        Self {
+            bits: self.bits | other.bits,
+        }
+    }
+
+    /// Returns the difference between the flags in `self` and `other`.
+    ///
+    /// Specifically, the returned set contains all flags present in
+    /// `self`, except for the ones present in `other`.
+    ///
+    /// It is also conceptually equivalent to the "bit-clear" operation:
+    /// `flags & !other` (and this syntax is also supported).
+    ///
+    /// This is equivalent to using the `-` operator (e.g.
+    /// [`ops::Sub`]), as in `flags - other`.
+    ///
+    /// [`ops::Sub`]: https://doc.rust-lang.org/std/ops/trait.Sub.html
+    #[inline]
+    #[must_use]
+    pub const fn difference(self, other: Self) -> Self {
+        Self {
+            bits: self.bits & !other.bits,
+        }
+    }
+}
+
+impl std::ops::BitOr for TablePatchFlags {
+    type Output = Self;
+
+    /// Returns the union of the two sets of flags.
+    #[inline]
+    fn bitor(self, other: TablePatchFlags) -> Self {
+        Self {
+            bits: self.bits | other.bits,
+        }
+    }
+}
+
+impl std::ops::BitOrAssign for TablePatchFlags {
+    /// Adds the set of flags.
+    #[inline]
+    fn bitor_assign(&mut self, other: Self) {
+        self.bits |= other.bits;
+    }
+}
+
+impl std::ops::BitXor for TablePatchFlags {
+    type Output = Self;
+
+    /// Returns the left flags, but with all the right flags toggled.
+    #[inline]
+    fn bitxor(self, other: Self) -> Self {
+        Self {
+            bits: self.bits ^ other.bits,
+        }
+    }
+}
+
+impl std::ops::BitXorAssign for TablePatchFlags {
+    /// Toggles the set of flags.
+    #[inline]
+    fn bitxor_assign(&mut self, other: Self) {
+        self.bits ^= other.bits;
+    }
+}
+
+impl std::ops::BitAnd for TablePatchFlags {
+    type Output = Self;
+
+    /// Returns the intersection between the two sets of flags.
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        Self {
+            bits: self.bits & other.bits,
+        }
+    }
+}
+
+impl std::ops::BitAndAssign for TablePatchFlags {
+    /// Disables all flags disabled in the set.
+    #[inline]
+    fn bitand_assign(&mut self, other: Self) {
+        self.bits &= other.bits;
+    }
+}
+
+impl std::ops::Sub for TablePatchFlags {
+    type Output = Self;
+
+    /// Returns the set difference of the two sets of flags.
+    #[inline]
+    fn sub(self, other: Self) -> Self {
+        Self {
+            bits: self.bits & !other.bits,
+        }
+    }
+}
+
+impl std::ops::SubAssign for TablePatchFlags {
+    /// Disables all flags enabled in the set.
+    #[inline]
+    fn sub_assign(&mut self, other: Self) {
+        self.bits &= !other.bits;
+    }
+}
+
+impl std::ops::Not for TablePatchFlags {
+    type Output = Self;
+
+    /// Returns the complement of this set of flags.
+    #[inline]
+    fn not(self) -> Self {
+        Self { bits: !self.bits } & Self::all()
+    }
+}
+
+impl std::fmt::Debug for TablePatchFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let members: &[(&str, Self)] = &[
+            ("REPLACE_TABLE", Self::REPLACE_TABLE),
+            ("DROP_TABLE", Self::DROP_TABLE),
+        ];
+        let mut first = true;
+        for (name, value) in members {
+            if self.contains(*value) {
+                if !first {
+                    f.write_str(" | ")?;
+                }
+                first = false;
+                f.write_str(name)?;
+            }
+        }
+        if first {
+            f.write_str("(empty)")?;
+        }
+        Ok(())
+    }
+}
+
+impl std::fmt::Binary for TablePatchFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::Binary::fmt(&self.bits, f)
+    }
+}
+
+impl std::fmt::Octal for TablePatchFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::Octal::fmt(&self.bits, f)
+    }
+}
+
+impl std::fmt::LowerHex for TablePatchFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::LowerHex::fmt(&self.bits, f)
+    }
+}
+
+impl std::fmt::UpperHex for TablePatchFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::UpperHex::fmt(&self.bits, f)
+    }
+}
+
+impl font_types::Scalar for TablePatchFlags {
+    type Raw = <u8 as font_types::Scalar>::Raw;
+    fn to_raw(self) -> Self::Raw {
+        self.bits().to_raw()
+    }
+    fn from_raw(raw: Self::Raw) -> Self {
+        let t = <u8>::from_raw(raw);
+        Self::from_bits_truncate(t)
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> From<TablePatchFlags> for FieldType<'a> {
+    fn from(src: TablePatchFlags) -> FieldType<'a> {
+        src.bits().into()
+    }
+}
+
+/// [Glyph Keyed Patch](https://w3c.github.io/IFT/Overview.html#glyph-keyed)
+#[derive(Debug, Clone, Copy)]
+#[doc(hidden)]
+pub struct GlyphKeyedPatchMarker {
+    brotli_stream_byte_len: usize,
+}
+
+impl GlyphKeyedPatchMarker {
+    fn format_byte_range(&self) -> Range<usize> {
+        let start = 0;
+        start..start + Tag::RAW_BYTE_LEN
+    }
+    fn _reserved_byte_range(&self) -> Range<usize> {
+        let start = self.format_byte_range().end;
+        start..start + u32::RAW_BYTE_LEN
+    }
+    fn flags_byte_range(&self) -> Range<usize> {
+        let start = self._reserved_byte_range().end;
+        start..start + GlyphKeyedFlags::RAW_BYTE_LEN
+    }
+    fn compatibility_id_byte_range(&self) -> Range<usize> {
+        let start = self.flags_byte_range().end;
+        start..start + CompatibilityId::RAW_BYTE_LEN
+    }
+    fn max_uncompressed_length_byte_range(&self) -> Range<usize> {
+        let start = self.compatibility_id_byte_range().end;
+        start..start + u32::RAW_BYTE_LEN
+    }
+    fn brotli_stream_byte_range(&self) -> Range<usize> {
+        let start = self.max_uncompressed_length_byte_range().end;
+        start..start + self.brotli_stream_byte_len
+    }
+}
+
+impl<'a> FontRead<'a> for GlyphKeyedPatch<'a> {
+    fn read(data: FontData<'a>) -> Result<Self, ReadError> {
+        let mut cursor = data.cursor();
+        cursor.advance::<Tag>();
+        cursor.advance::<u32>();
+        cursor.advance::<GlyphKeyedFlags>();
+        cursor.advance::<CompatibilityId>();
+        cursor.advance::<u32>();
+        let brotli_stream_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
+        cursor.advance_by(brotli_stream_byte_len);
+        cursor.finish(GlyphKeyedPatchMarker {
+            brotli_stream_byte_len,
+        })
+    }
+}
+
+/// [Glyph Keyed Patch](https://w3c.github.io/IFT/Overview.html#glyph-keyed)
+pub type GlyphKeyedPatch<'a> = TableRef<'a, GlyphKeyedPatchMarker>;
+
+impl<'a> GlyphKeyedPatch<'a> {
+    pub fn format(&self) -> Tag {
+        let range = self.shape.format_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn flags(&self) -> GlyphKeyedFlags {
+        let range = self.shape.flags_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn compatibility_id(&self) -> CompatibilityId {
+        let range = self.shape.compatibility_id_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn max_uncompressed_length(&self) -> u32 {
+        let range = self.shape.max_uncompressed_length_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn brotli_stream(&self) -> &'a [u8] {
+        let range = self.shape.brotli_stream_byte_range();
+        self.data.read_array(range).unwrap()
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeTable<'a> for GlyphKeyedPatch<'a> {
+    fn type_name(&self) -> &str {
+        "GlyphKeyedPatch"
+    }
+    fn get_field(&self, idx: usize) -> Option<Field<'a>> {
+        match idx {
+            0usize => Some(Field::new("format", self.format())),
+            1usize => Some(Field::new("flags", self.flags())),
+            2usize => Some(Field::new(
+                "compatibility_id",
+                traversal::FieldType::Unknown,
+            )),
+            3usize => Some(Field::new(
+                "max_uncompressed_length",
+                self.max_uncompressed_length(),
+            )),
+            4usize => Some(Field::new("brotli_stream", self.brotli_stream())),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> std::fmt::Debug for GlyphKeyedPatch<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        (self as &dyn SomeTable<'a>).fmt(f)
+    }
+}
+
+#[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, bytemuck :: AnyBitPattern)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[repr(transparent)]
+pub struct GlyphKeyedFlags {
+    bits: u8,
+}
+
+impl GlyphKeyedFlags {
+    pub const NONE: Self = Self { bits: 0b0 };
+
+    pub const WIDE_GLYPH_IDS: Self = Self { bits: 0b1 };
+}
+
+impl GlyphKeyedFlags {
+    ///  Returns an empty set of flags.
+    #[inline]
+    pub const fn empty() -> Self {
+        Self { bits: 0 }
+    }
+
+    /// Returns the set containing all flags.
+    #[inline]
+    pub const fn all() -> Self {
+        Self {
+            bits: Self::NONE.bits | Self::WIDE_GLYPH_IDS.bits,
+        }
+    }
+
+    /// Returns the raw value of the flags currently stored.
+    #[inline]
+    pub const fn bits(&self) -> u8 {
+        self.bits
+    }
+
+    /// Convert from underlying bit representation, unless that
+    /// representation contains bits that do not correspond to a flag.
+    #[inline]
+    pub const fn from_bits(bits: u8) -> Option<Self> {
+        if (bits & !Self::all().bits()) == 0 {
+            Some(Self { bits })
+        } else {
+            None
+        }
+    }
+
+    /// Convert from underlying bit representation, dropping any bits
+    /// that do not correspond to flags.
+    #[inline]
+    pub const fn from_bits_truncate(bits: u8) -> Self {
+        Self {
+            bits: bits & Self::all().bits,
+        }
+    }
+
+    /// Returns `true` if no flags are currently stored.
+    #[inline]
+    pub const fn is_empty(&self) -> bool {
+        self.bits() == Self::empty().bits()
+    }
+
+    /// Returns `true` if there are flags common to both `self` and `other`.
+    #[inline]
+    pub const fn intersects(&self, other: Self) -> bool {
+        !(Self {
+            bits: self.bits & other.bits,
+        })
+        .is_empty()
+    }
+
+    /// Returns `true` if all of the flags in `other` are contained within `self`.
+    #[inline]
+    pub const fn contains(&self, other: Self) -> bool {
+        (self.bits & other.bits) == other.bits
+    }
+
+    /// Inserts the specified flags in-place.
+    #[inline]
+    pub fn insert(&mut self, other: Self) {
+        self.bits |= other.bits;
+    }
+
+    /// Removes the specified flags in-place.
+    #[inline]
+    pub fn remove(&mut self, other: Self) {
+        self.bits &= !other.bits;
+    }
+
+    /// Toggles the specified flags in-place.
+    #[inline]
+    pub fn toggle(&mut self, other: Self) {
+        self.bits ^= other.bits;
+    }
+
+    /// Returns the intersection between the flags in `self` and
+    /// `other`.
+    ///
+    /// Specifically, the returned set contains only the flags which are
+    /// present in *both* `self` *and* `other`.
+    ///
+    /// This is equivalent to using the `&` operator (e.g.
+    /// [`ops::BitAnd`]), as in `flags & other`.
+    ///
+    /// [`ops::BitAnd`]: https://doc.rust-lang.org/std/ops/trait.BitAnd.html
+    #[inline]
+    #[must_use]
+    pub const fn intersection(self, other: Self) -> Self {
+        Self {
+            bits: self.bits & other.bits,
+        }
+    }
+
+    /// Returns the union of between the flags in `self` and `other`.
+    ///
+    /// Specifically, the returned set contains all flags which are
+    /// present in *either* `self` *or* `other`, including any which are
+    /// present in both.
+    ///
+    /// This is equivalent to using the `|` operator (e.g.
+    /// [`ops::BitOr`]), as in `flags | other`.
+    ///
+    /// [`ops::BitOr`]: https://doc.rust-lang.org/std/ops/trait.BitOr.html
+    #[inline]
+    #[must_use]
+    pub const fn union(self, other: Self) -> Self {
+        Self {
+            bits: self.bits | other.bits,
+        }
+    }
+
+    /// Returns the difference between the flags in `self` and `other`.
+    ///
+    /// Specifically, the returned set contains all flags present in
+    /// `self`, except for the ones present in `other`.
+    ///
+    /// It is also conceptually equivalent to the "bit-clear" operation:
+    /// `flags & !other` (and this syntax is also supported).
+    ///
+    /// This is equivalent to using the `-` operator (e.g.
+    /// [`ops::Sub`]), as in `flags - other`.
+    ///
+    /// [`ops::Sub`]: https://doc.rust-lang.org/std/ops/trait.Sub.html
+    #[inline]
+    #[must_use]
+    pub const fn difference(self, other: Self) -> Self {
+        Self {
+            bits: self.bits & !other.bits,
+        }
+    }
+}
+
+impl std::ops::BitOr for GlyphKeyedFlags {
+    type Output = Self;
+
+    /// Returns the union of the two sets of flags.
+    #[inline]
+    fn bitor(self, other: GlyphKeyedFlags) -> Self {
+        Self {
+            bits: self.bits | other.bits,
+        }
+    }
+}
+
+impl std::ops::BitOrAssign for GlyphKeyedFlags {
+    /// Adds the set of flags.
+    #[inline]
+    fn bitor_assign(&mut self, other: Self) {
+        self.bits |= other.bits;
+    }
+}
+
+impl std::ops::BitXor for GlyphKeyedFlags {
+    type Output = Self;
+
+    /// Returns the left flags, but with all the right flags toggled.
+    #[inline]
+    fn bitxor(self, other: Self) -> Self {
+        Self {
+            bits: self.bits ^ other.bits,
+        }
+    }
+}
+
+impl std::ops::BitXorAssign for GlyphKeyedFlags {
+    /// Toggles the set of flags.
+    #[inline]
+    fn bitxor_assign(&mut self, other: Self) {
+        self.bits ^= other.bits;
+    }
+}
+
+impl std::ops::BitAnd for GlyphKeyedFlags {
+    type Output = Self;
+
+    /// Returns the intersection between the two sets of flags.
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        Self {
+            bits: self.bits & other.bits,
+        }
+    }
+}
+
+impl std::ops::BitAndAssign for GlyphKeyedFlags {
+    /// Disables all flags disabled in the set.
+    #[inline]
+    fn bitand_assign(&mut self, other: Self) {
+        self.bits &= other.bits;
+    }
+}
+
+impl std::ops::Sub for GlyphKeyedFlags {
+    type Output = Self;
+
+    /// Returns the set difference of the two sets of flags.
+    #[inline]
+    fn sub(self, other: Self) -> Self {
+        Self {
+            bits: self.bits & !other.bits,
+        }
+    }
+}
+
+impl std::ops::SubAssign for GlyphKeyedFlags {
+    /// Disables all flags enabled in the set.
+    #[inline]
+    fn sub_assign(&mut self, other: Self) {
+        self.bits &= !other.bits;
+    }
+}
+
+impl std::ops::Not for GlyphKeyedFlags {
+    type Output = Self;
+
+    /// Returns the complement of this set of flags.
+    #[inline]
+    fn not(self) -> Self {
+        Self { bits: !self.bits } & Self::all()
+    }
+}
+
+impl std::fmt::Debug for GlyphKeyedFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let members: &[(&str, Self)] = &[
+            ("NONE", Self::NONE),
+            ("WIDE_GLYPH_IDS", Self::WIDE_GLYPH_IDS),
+        ];
+        let mut first = true;
+        for (name, value) in members {
+            if self.contains(*value) {
+                if !first {
+                    f.write_str(" | ")?;
+                }
+                first = false;
+                f.write_str(name)?;
+            }
+        }
+        if first {
+            f.write_str("(empty)")?;
+        }
+        Ok(())
+    }
+}
+
+impl std::fmt::Binary for GlyphKeyedFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::Binary::fmt(&self.bits, f)
+    }
+}
+
+impl std::fmt::Octal for GlyphKeyedFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::Octal::fmt(&self.bits, f)
+    }
+}
+
+impl std::fmt::LowerHex for GlyphKeyedFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::LowerHex::fmt(&self.bits, f)
+    }
+}
+
+impl std::fmt::UpperHex for GlyphKeyedFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::UpperHex::fmt(&self.bits, f)
+    }
+}
+
+impl font_types::Scalar for GlyphKeyedFlags {
+    type Raw = <u8 as font_types::Scalar>::Raw;
+    fn to_raw(self) -> Self::Raw {
+        self.bits().to_raw()
+    }
+    fn from_raw(raw: Self::Raw) -> Self {
+        let t = <u8>::from_raw(raw);
+        Self::from_bits_truncate(t)
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> From<GlyphKeyedFlags> for FieldType<'a> {
+    fn from(src: GlyphKeyedFlags) -> FieldType<'a> {
+        src.bits().into()
+    }
+}
+
+/// [GlyphPatches](https://w3c.github.io/IFT/Overview.html#glyphpatches)
+#[derive(Debug, Clone, Copy)]
+#[doc(hidden)]
+pub struct GlyphPatchesMarker {
+    flags: GlyphKeyedFlags,
+    glyph_ids_byte_len: usize,
+    tables_byte_len: usize,
+    glyph_data_offsets_byte_len: usize,
+}
+
+impl GlyphPatchesMarker {
+    fn glyph_count_byte_range(&self) -> Range<usize> {
+        let start = 0;
+        start..start + u32::RAW_BYTE_LEN
+    }
+    fn table_count_byte_range(&self) -> Range<usize> {
+        let start = self.glyph_count_byte_range().end;
+        start..start + u8::RAW_BYTE_LEN
+    }
+    fn glyph_ids_byte_range(&self) -> Range<usize> {
+        let start = self.table_count_byte_range().end;
+        start..start + self.glyph_ids_byte_len
+    }
+    fn tables_byte_range(&self) -> Range<usize> {
+        let start = self.glyph_ids_byte_range().end;
+        start..start + self.tables_byte_len
+    }
+    fn glyph_data_offsets_byte_range(&self) -> Range<usize> {
+        let start = self.tables_byte_range().end;
+        start..start + self.glyph_data_offsets_byte_len
+    }
+}
+
+impl ReadArgs for GlyphPatches<'_> {
+    type Args = GlyphKeyedFlags;
+}
+
+impl<'a> FontReadWithArgs<'a> for GlyphPatches<'a> {
+    fn read_with_args(data: FontData<'a>, args: &GlyphKeyedFlags) -> Result<Self, ReadError> {
+        let flags = *args;
+        let mut cursor = data.cursor();
+        let glyph_count: u32 = cursor.read()?;
+        let table_count: u8 = cursor.read()?;
+        let glyph_ids_byte_len = (glyph_count as usize)
+            .checked_mul(<U16Or24 as ComputeSize>::compute_size(&flags)?)
+            .ok_or(ReadError::OutOfBounds)?;
+        cursor.advance_by(glyph_ids_byte_len);
+        let tables_byte_len = (table_count as usize)
+            .checked_mul(Tag::RAW_BYTE_LEN)
+            .ok_or(ReadError::OutOfBounds)?;
+        cursor.advance_by(tables_byte_len);
+        let glyph_data_offsets_byte_len =
+            (transforms::multiply_add(glyph_count, table_count, 1_usize))
+                .checked_mul(Offset32::RAW_BYTE_LEN)
+                .ok_or(ReadError::OutOfBounds)?;
+        cursor.advance_by(glyph_data_offsets_byte_len);
+        cursor.finish(GlyphPatchesMarker {
+            flags,
+            glyph_ids_byte_len,
+            tables_byte_len,
+            glyph_data_offsets_byte_len,
+        })
+    }
+}
+
+impl<'a> GlyphPatches<'a> {
+    /// A constructor that requires additional arguments.
+    ///
+    /// This type requires some external state in order to be
+    /// parsed.
+    pub fn read(data: FontData<'a>, flags: GlyphKeyedFlags) -> Result<Self, ReadError> {
+        let args = flags;
+        Self::read_with_args(data, &args)
+    }
+}
+
+/// [GlyphPatches](https://w3c.github.io/IFT/Overview.html#glyphpatches)
+pub type GlyphPatches<'a> = TableRef<'a, GlyphPatchesMarker>;
+
+impl<'a> GlyphPatches<'a> {
+    pub fn glyph_count(&self) -> u32 {
+        let range = self.shape.glyph_count_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn table_count(&self) -> u8 {
+        let range = self.shape.table_count_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    pub fn glyph_ids(&self) -> ComputedArray<'a, U16Or24> {
+        let range = self.shape.glyph_ids_byte_range();
+        self.data.read_with_args(range, &self.flags()).unwrap()
+    }
+
+    pub fn tables(&self) -> &'a [BigEndian<Tag>] {
+        let range = self.shape.tables_byte_range();
+        self.data.read_array(range).unwrap()
+    }
+
+    pub fn glyph_data_offsets(&self) -> &'a [BigEndian<Offset32>] {
+        let range = self.shape.glyph_data_offsets_byte_range();
+        self.data.read_array(range).unwrap()
+    }
+
+    /// A dynamically resolving wrapper for [`glyph_data_offsets`][Self::glyph_data_offsets].
+    pub fn glyph_data(&self) -> ArrayOfOffsets<'a, GlyphData<'a>, Offset32> {
+        let data = self.data;
+        let offsets = self.glyph_data_offsets();
+        ArrayOfOffsets::new(offsets, data, ())
+    }
+
+    pub(crate) fn flags(&self) -> GlyphKeyedFlags {
+        self.shape.flags
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeTable<'a> for GlyphPatches<'a> {
+    fn type_name(&self) -> &str {
+        "GlyphPatches"
+    }
+    fn get_field(&self, idx: usize) -> Option<Field<'a>> {
+        match idx {
+            0usize => Some(Field::new("glyph_count", self.glyph_count())),
+            1usize => Some(Field::new("table_count", self.table_count())),
+            2usize => Some(Field::new("glyph_ids", traversal::FieldType::Unknown)),
+            3usize => Some(Field::new("tables", self.tables())),
+            4usize => Some({
+                let data = self.data;
+                Field::new(
+                    "glyph_data_offsets",
+                    FieldType::array_of_offsets(
+                        better_type_name::<GlyphData>(),
+                        self.glyph_data_offsets(),
+                        move |off| {
+                            let target = off.get().resolve::<GlyphData>(data);
+                            FieldType::offset(off.get(), target)
+                        },
+                    ),
+                )
+            }),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> std::fmt::Debug for GlyphPatches<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        (self as &dyn SomeTable<'a>).fmt(f)
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+#[doc(hidden)]
+pub struct GlyphDataMarker {
+    data_byte_len: usize,
+}
+
+impl GlyphDataMarker {
+    fn data_byte_range(&self) -> Range<usize> {
+        let start = 0;
+        start..start + self.data_byte_len
+    }
+}
+
+impl<'a> FontRead<'a> for GlyphData<'a> {
+    fn read(data: FontData<'a>) -> Result<Self, ReadError> {
+        let mut cursor = data.cursor();
+        let data_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
+        cursor.advance_by(data_byte_len);
+        cursor.finish(GlyphDataMarker { data_byte_len })
+    }
+}
+
+pub type GlyphData<'a> = TableRef<'a, GlyphDataMarker>;
+
+impl<'a> GlyphData<'a> {
+    pub fn data(&self) -> &'a [u8] {
+        let range = self.shape.data_byte_range();
+        self.data.read_array(range).unwrap()
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeTable<'a> for GlyphData<'a> {
+    fn type_name(&self) -> &str {
+        "GlyphData"
+    }
+    fn get_field(&self, idx: usize) -> Option<Field<'a>> {
+        match idx {
+            0usize => Some(Field::new("data", self.data())),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> std::fmt::Debug for GlyphData<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         (self as &dyn SomeTable<'a>).fmt(f)
     }

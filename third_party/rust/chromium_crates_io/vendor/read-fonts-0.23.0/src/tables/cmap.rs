@@ -164,7 +164,16 @@ impl<'a> Iterator for Cmap4Iter<'a> {
                 return Some((codepoint, glyph_id));
             } else {
                 self.cur_range_ix += 1;
-                self.cur_range = self.subtable.code_range(self.cur_range_ix)?;
+                let next_range = self.subtable.code_range(self.cur_range_ix)?;
+                // Groups should be in order and non-overlapping so make sure
+                // that the start code of next group is at least current_end + 1.
+                // Also avoid start sliding backwards if we see data where end < start by taking the max
+                // of next.end and curr.end as the new end.
+                // This prevents timeout and bizarre results in the face of numerous overlapping ranges
+                // https://github.com/googlefonts/fontations/issues/1100
+                // cmap4 ranges are u16 so no need to stress about values past char::MAX
+                self.cur_range = next_range.start.max(self.cur_range.end)
+                    ..next_range.end.max(self.cur_range.end);
                 self.cur_start_code = self.cur_range.start as u16;
             }
         }
@@ -515,7 +524,9 @@ impl<'a> Iterator for NonDefaultUvsIter<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{test_helpers::BeBuffer, FontRef, GlyphId, TableProvider};
+    use crate::{
+        be_buffer, be_buffer_add, test_helpers::BeBuffer, FontRef, GlyphId, TableProvider,
+    };
 
     #[test]
     fn map_codepoints() {
@@ -640,22 +651,27 @@ mod tests {
         assert_eq!(count, 10);
     }
 
+    // reconstructed cmap from <https://oss-fuzz.com/testcase-detail/5141969742397440>
+    fn cmap12_overflow_data() -> BeBuffer {
+        be_buffer! {
+            12u16,      // format
+            0u16,       // reserved, set to 0
+            0u32,       // length, ignored
+            0u32,       // language, ignored
+            2u32,       // numGroups
+            // groups: [startCode, endCode, startGlyphID]
+            [0u32, 16777215, 0], // group 0
+            [255u32, 0xFFFFFFFF, 0] // group 1
+        }
+    }
+
     // oss-fuzz: detected integer addition overflow in Cmap12::group()
     // ref: https://oss-fuzz.com/testcase-detail/5141969742397440
     // and https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=69547
     #[test]
     fn cmap12_iter_avoid_overflow() {
-        let test_case = &[
-            79, 84, 84, 79, 0, 5, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
-            32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 10, 32, 32, 32, 32, 32, 32, 32,
-            99, 109, 97, 112, 32, 32, 32, 32, 0, 0, 0, 33, 0, 0, 0, 84, 32, 32, 32, 32, 32, 32, 0,
-            12, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 0, 0, 2, 32, 32, 32, 32, 32, 32, 32, 32,
-            32, 32, 32, 32, 32, 32, 32, 32, 255, 255, 255, 255, 255, 255, 255, 32, 32, 32, 32, 0,
-            0, 32, 32, 0, 0, 0, 33,
-        ];
-        let font = FontRef::new(test_case).unwrap();
-        let cmap = font.cmap().unwrap();
-        let cmap12 = find_cmap12(&cmap).unwrap();
+        let data = cmap12_overflow_data();
+        let cmap12 = Cmap12::read(data.font_data()).unwrap();
         let _ = cmap12.iter().count();
     }
 
@@ -664,39 +680,24 @@ mod tests {
     // and https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=69540
     #[test]
     fn cmap12_iter_avoid_timeout() {
-        let test_case = &[
-            0, 1, 0, 0, 0, 5, 0, 1, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 48, 0, 93, 0, 0, 3, 8, 0, 0,
-            151, 3, 0, 0, 0, 0, 0, 0, 0, 64, 255, 103, 5, 7, 221, 0, 99, 109, 97, 112, 0, 0, 3, 0,
-            0, 0, 0, 2, 0, 0, 0, 97, 97, 97, 159, 158, 158, 149, 0, 12, 255, 255, 249, 2, 0, 1, 0,
-            0, 0, 23, 0, 0, 0, 1, 0, 0, 0, 170, 79, 84, 84, 79, 0, 5, 5, 0, 1, 0, 0, 5, 5, 5, 5,
-            48, 5, 5, 5, 5, 0, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 33, 0, 5,
-            3, 5, 5, 5, 5, 74, 5, 255, 255, 32, 1, 5, 44, 0, 0, 10, 116, 0, 33, 0, 0, 0, 102, 0, 0,
-            0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 87, 250, 181, 250, 250, 159,
-            0, 4, 0, 0, 0, 0, 0, 99, 109, 97, 112, 4, 64, 138, 0, 0, 0, 0, 33, 0, 0, 3, 0, 0, 0,
-            102, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 255, 255, 96, 0, 0, 0, 12, 32, 0, 1, 0,
-            0, 5, 5, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 149, 97, 0, 0, 4, 0, 0,
-            128, 5, 53, 37, 5, 5, 44, 5, 5, 0, 3, 5,
-        ];
-        let font = FontRef::new(test_case).unwrap();
-        let cmap = font.cmap().unwrap();
         // ranges: [SequentialMapGroup { start_char_code: 170, end_char_code: 1330926671, start_glyph_id: 328960 }]
-        let cmap12 = find_cmap12(&cmap).unwrap();
+        let cmap12_data = be_buffer! {
+            12u16,      // format
+            0u16,       // reserved, set to 0
+            0u32,       // length, ignored
+            0u32,       // language, ignored
+            1u32,       // numGroups
+            // groups: [startCode, endCode, startGlyphID]
+            [170u32, 1330926671, 328960] // group 0
+        };
+        let cmap12 = Cmap12::read(cmap12_data.font_data()).unwrap();
         assert!(cmap12.iter().count() <= char::MAX as usize + 1);
     }
 
     #[test]
     fn cmap12_iter_range_clamping() {
-        let test_case = &[
-            79, 84, 84, 79, 0, 5, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
-            32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 10, 32, 32, 32, 32, 32, 32, 32,
-            99, 109, 97, 112, 32, 32, 32, 32, 0, 0, 0, 33, 0, 0, 0, 84, 32, 32, 32, 32, 32, 32, 0,
-            12, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 0, 0, 2, 0, 0, 0, 0, 0, 255, 255, 255,
-            32, 32, 32, 32, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 32, 32, 32, 32, 0, 0,
-            32, 32, 0, 0, 0, 33,
-        ];
-        let font = FontRef::new(test_case).unwrap();
-        let cmap = font.cmap().unwrap();
-        let cmap12 = find_cmap12(&cmap).unwrap();
+        let data = cmap12_overflow_data();
+        let cmap12 = Cmap12::read(data.font_data()).unwrap();
         let ranges = cmap12
             .groups()
             .iter()
@@ -748,5 +749,21 @@ mod tests {
                 CmapSubtable::Format14(cmap14) => Some(cmap14),
                 _ => None,
             })
+    }
+
+    /// <https://github.com/googlefonts/fontations/issues/1100>
+    ///
+    /// Note that this doesn't demonstrate the timeout, merely that we've eliminated the underlying
+    /// enthusiasm for non-ascending ranges that enabled it
+    #[test]
+    fn cmap4_bad_data() {
+        let buf = font_test_data::cmap::repetitive_cmap4();
+        let cmap4 = Cmap4::read(FontData::new(buf.as_slice())).unwrap();
+
+        // we should have unique, ascending codepoints, not duplicates and overlaps
+        assert_eq!(
+            (6..=64).collect::<Vec<_>>(),
+            cmap4.iter().map(|(cp, _)| cp).collect::<Vec<_>>()
+        );
     }
 }

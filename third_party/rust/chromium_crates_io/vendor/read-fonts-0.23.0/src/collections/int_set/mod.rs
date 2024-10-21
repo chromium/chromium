@@ -164,26 +164,50 @@ impl<T: Domain> IntSet<T> {
 
     /// Returns an iterator over all disjoint ranges of values within the set in sorted ascending order.
     pub fn iter_ranges(&self) -> impl Iterator<Item = RangeInclusive<T>> + '_ {
-        let u32_iter = match &self.0 {
-            Membership::Inclusive(s) if T::is_continuous() => RangeIter::Inclusive::<_, _, T> {
-                ranges: s.iter_ranges(),
-            },
-            Membership::Inclusive(s) => RangeIter::InclusiveDiscontinuous::<_, _, T> {
-                ranges: s.iter_ranges(),
-                current_range: None,
-                phantom: PhantomData::<T>,
-            },
-            Membership::Exclusive(s) if T::is_continuous() => RangeIter::Exclusive::<_, _, T> {
-                ranges: s.iter_ranges(),
-                min: T::ordered_values().next().unwrap(),
-                max: T::ordered_values().next_back().unwrap(),
-                done: false,
-            },
-            Membership::Exclusive(s) => RangeIter::ExclusiveDiscontinuous::<_, _, T> {
-                all_values: Some(T::ordered_values()),
-                set: s,
-                next_value: None,
-            },
+        self.iter_ranges_invertible(false)
+    }
+
+    /// Returns an iterator over all disjoint ranges of values not within the set in sorted ascending order.
+    pub fn iter_excluded_ranges(&self) -> impl Iterator<Item = RangeInclusive<T>> + '_ {
+        self.iter_ranges_invertible(true)
+    }
+
+    fn iter_ranges_invertible(
+        &self,
+        inverted: bool,
+    ) -> impl Iterator<Item = RangeInclusive<T>> + '_ {
+        let u32_iter = match (&self.0, inverted) {
+            (Membership::Inclusive(s), false) | (Membership::Exclusive(s), true)
+                if T::is_continuous() =>
+            {
+                RangeIter::Inclusive::<_, _, T> {
+                    ranges: s.iter_ranges(),
+                }
+            }
+            (Membership::Inclusive(s), false) | (Membership::Exclusive(s), true) => {
+                RangeIter::InclusiveDiscontinuous::<_, _, T> {
+                    ranges: s.iter_ranges(),
+                    current_range: None,
+                    phantom: PhantomData::<T>,
+                }
+            }
+            (Membership::Exclusive(s), false) | (Membership::Inclusive(s), true)
+                if T::is_continuous() =>
+            {
+                RangeIter::Exclusive::<_, _, T> {
+                    ranges: s.iter_ranges(),
+                    min: T::ordered_values().next().unwrap(),
+                    max: T::ordered_values().next_back().unwrap(),
+                    done: false,
+                }
+            }
+            (Membership::Exclusive(s), false) | (Membership::Inclusive(s), true) => {
+                RangeIter::ExclusiveDiscontinuous::<_, _, T> {
+                    all_values: Some(T::ordered_values()),
+                    set: s,
+                    next_value: None,
+                }
+            }
         };
 
         u32_iter.map(|r| T::from_u32(InDomain(*r.start()))..=T::from_u32(InDomain(*r.end())))
@@ -314,7 +338,7 @@ impl<T: Domain> IntSet<T> {
         };
 
         // If next is <= end then there is at least one value in the input range.
-        return next.to_u32() <= range.end().to_u32();
+        next.to_u32() <= range.end().to_u32()
     }
 
     /// Returns true if this set contains at least one element in 'other'.
@@ -1095,7 +1119,7 @@ mod test {
 
     use super::*;
 
-    #[derive(PartialEq, Eq, Debug, PartialOrd, Ord)]
+    #[derive(PartialEq, Eq, Debug, PartialOrd, Ord, Clone)]
     struct EvenInts(u16);
 
     impl Domain for EvenInts {
@@ -1129,7 +1153,7 @@ mod test {
         }
     }
 
-    #[derive(PartialEq, Eq, Debug, PartialOrd, Ord, Hash)]
+    #[derive(PartialEq, Eq, Debug, PartialOrd, Ord, Hash, Clone)]
     struct TwoParts(u16);
 
     impl Domain for TwoParts {
@@ -1526,6 +1550,13 @@ mod test {
         set.insert_range(u32::MAX - 5..=u32::MAX);
         let items: Vec<_> = set.iter_ranges().collect();
         assert_eq!(items, vec![0..=5, u32::MAX - 5..=u32::MAX]);
+
+        let mut inverted = set.clone();
+        inverted.invert();
+        assert_eq!(
+            set.iter_ranges().collect::<Vec<_>>(),
+            inverted.iter_excluded_ranges().collect::<Vec<_>>()
+        );
     }
 
     #[test]
@@ -1542,6 +1573,13 @@ mod test {
             items,
             vec![EvenInts(4)..=EvenInts(12), EvenInts(16)..=EvenInts(16)]
         );
+
+        let mut inverted = set.clone();
+        inverted.invert();
+        assert_eq!(
+            set.iter_ranges().collect::<Vec<_>>(),
+            inverted.iter_excluded_ranges().collect::<Vec<_>>()
+        );
     }
 
     #[test]
@@ -1556,6 +1594,13 @@ mod test {
         set.remove_range(0..=700);
         let items: Vec<_> = set.iter_ranges().collect();
         assert_eq!(items, vec![701..=u32::MAX]);
+
+        let mut inverted = set.clone();
+        inverted.invert();
+        assert_eq!(
+            set.iter_ranges().collect::<Vec<_>>(),
+            inverted.iter_excluded_ranges().collect::<Vec<_>>()
+        );
 
         let mut set = IntSet::<u32>::all();
         set.remove_range(u32::MAX - 10..=u32::MAX);
@@ -1596,6 +1641,13 @@ mod test {
         assert_eq!(
             items,
             vec![TwoParts(2)..=TwoParts(10), TwoParts(14)..=TwoParts(16),]
+        );
+
+        let mut inverted = set.clone();
+        inverted.invert();
+        assert_eq!(
+            set.iter_ranges().collect::<Vec<_>>(),
+            inverted.iter_excluded_ranges().collect::<Vec<_>>()
         );
 
         let mut set = IntSet::<TwoParts>::all();

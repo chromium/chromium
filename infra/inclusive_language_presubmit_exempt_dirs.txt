@@ -459,6 +459,7 @@ third_party/blink/web_tests/external/wpt/payment-request/PaymentValidationErrors
 third_party/blink/web_tests/external/wpt/resources 2 2
 third_party/blink/web_tests/external/wpt/resources/chromium 1 1
 third_party/blink/web_tests/external/wpt/resource-timing 1 1
+third_party/blink/web_tests/external/wpt/sanitizer-api/support 3 1
 third_party/blink/web_tests/external/wpt/wai-aria/scripts 1 1
 third_party/blink/web_tests/external/wpt/webaudio/js 1 1
 third_party/blink/web_tests/external/wpt/webcodecs 1 1
@@ -692,6 +693,7 @@ third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/read-fonts-0.22.3/src/tables 3 2
+third_party/rust/chromium_crates_io/vendor/read-fonts-0.23.0/src/tables 3 2
 third_party/rust/chromium_crates_io/vendor/regex-1.11.0 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.0/src 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.0/tests 7 6

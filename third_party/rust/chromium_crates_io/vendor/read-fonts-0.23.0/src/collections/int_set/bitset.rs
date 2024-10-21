@@ -539,7 +539,7 @@ impl BitSet {
     /// Insert a new page if it doesn't exist.
     fn page_for_mut(&mut self, value: u32) -> Option<&mut BitPage> {
         let major_value = Self::get_major_value(value);
-        return self.page_for_major_mut(major_value);
+        self.page_for_major_mut(major_value)
     }
 
     /// Return a mutable reference to the page with major value equal to `major_value`.
