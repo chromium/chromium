@@ -4427,12 +4427,6 @@ const char kConvertTrackpadEventsToMouseName[] =
 const char kConvertTrackpadEventsToMouseDescription[] =
     "Convert trackpad events to mouse events to improve gesture support";
 
-const char kDefaultViewportIsDeviceWidthName[] =
-    "Default viewport width is device width";
-const char kDefaultViewportIsDeviceWidthDescription[] =
-    "Sets the default viewport layout width to be equivalent to "
-    "width=device-width";
-
 const char kDeprecatedExternalPickerFunctionName[] =
     "Use deprecated External Picker method";
 const char kDeprecatedExternalPickerFunctionDescription[] =

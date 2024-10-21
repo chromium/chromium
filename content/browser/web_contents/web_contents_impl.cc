@@ -3328,8 +3328,6 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   int min_width_in_dp =
       static_cast<int>(min_width / display.device_scale_factor());
   if (prefs.viewport_enabled &&
-      base::FeatureList::IsEnabled(
-          blink::features::kDefaultViewportIsDeviceWidth) &&
       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE ||
        (min_width_in_dp >= kAndroidMinimumTabletWidthDp &&
         ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TV))) {
