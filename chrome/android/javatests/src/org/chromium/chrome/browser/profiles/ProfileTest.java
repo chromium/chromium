@@ -308,7 +308,7 @@ public class ProfileTest {
     public void testGetOffTheRecordProfile() throws Exception {
         OtrProfileId profileId = new OtrProfileId("test::OtrProfile");
 
-        // Ask for a non-existing profile with createIfNeeded set to false, and exepct null.
+        // Ask for a non-existing profile with createIfNeeded set to false, and expect null.
         Profile profile1 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -351,7 +351,7 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testGetPrimaryOtrProfile() throws Exception {
-        // Ask for a non-existing profile with createIfNeeded set to false, and exepct null.
+        // Ask for a non-existing profile with createIfNeeded set to false, and expect null.
         Profile profile1 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ false));

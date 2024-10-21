@@ -63,7 +63,7 @@ public class HeaderIphScrollListener implements ScrollListener {
         if (verticalOffset == 0) return;
 
         // Negate the vertical offset because it is inversely proportional to the scroll offset.
-        // For example, a header verical offset of -50px corresponds to a scroll offset of 50px.
+        // For example, a header vertical offset of -50px corresponds to a scroll offset of 50px.
         maybeTriggerIPH(-verticalOffset);
     }
 

@@ -25,7 +25,7 @@ public class ChromeNavigationUIData {
     }
 
     @NativeMethods
-    interface Navites {
+    interface Natives {
         long createUnownedNativeCopy(ChromeNavigationUIData caller, long bookmarkId);
     }
 }
