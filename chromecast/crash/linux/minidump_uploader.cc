@@ -178,9 +178,8 @@ bool MinidumpUploader::DoWork() {
 
     LOG(INFO) << "OptInStats is true, uploading crash dump";
 
-    std::optional<int64_t> size;
     if (!dump_path.empty()) {
-      size = base::GetFileSize(dump_path);
+      std::optional<int64_t> size = base::GetFileSize(dump_path);
       if (!size.has_value()) {
         // either the file does not exist, or there was an error logging its
         // path, or settings its permission; regardless, we can't upload it.
