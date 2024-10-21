@@ -5571,6 +5571,13 @@ crbug.com/1511354 virtual/customizable-select-disabled/external/wpt/html/semanti
 
 
 
+### Tests failing with CSSGapDecorations Enabled:
+crbug.com/357648037 virtual/css-gap-decorations/animations/interpolation/webkit-column-rule-color-interpolation.html [ Failure ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-animations/responsive/column-rule-color-001.html [ Failure ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/animation/column-rule-color-interpolation.html [ Failure ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-valid.html [ Failure ]
+### End of tests failing with CSSGapDecorations Enabled
+
 # Position-try-fallbacks UA stylesheet parsing problem:
 # WPT reference image infra problem:
 crbug.com/364669904 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right.tentative.html [ Failure ]

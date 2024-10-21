@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
@@ -3381,6 +3382,72 @@ CSSValue* ComputedStyleUtils::ValueForSVGResource(
         CSSUrlData(resource->Url()));
   }
   return CSSIdentifierValue::Create(CSSValueID::kNone);
+}
+
+namespace {
+
+void PopulateNonRepeaterGapColorData(CSSValueList* list,
+                                     const GapColorData& gap_data,
+                                     const ComputedStyle& style,
+                                     CSSValuePhase value_phase) {
+  const CSSValue* color = ComputedStyleUtils::CurrentColorOrValidColor(
+      style, gap_data.GetGapColor(), value_phase);
+  list->Append(*color);
+}
+
+void PopulateRepeaterGapColorData(CSSValueList* list,
+                                  const GapColorData& gap_data,
+                                  const ComputedStyle& style,
+                                  CSSValuePhase value_phase) {
+  CSSPrimitiveValue* repetitions = nullptr;
+
+  if (!gap_data.GetColorRepeater()->IsAutoRepeater()) {
+    repetitions = CSSNumericLiteralValue::Create(
+        gap_data.GetColorRepeater()->RepeatCount(),
+        CSSPrimitiveValue::UnitType::kNumber);
+  }
+
+  CSSValueList* repeated_colors = CSSValueList::CreateSpaceSeparated();
+
+  for (const auto& gap_color : gap_data.GetColorRepeater()->RepeatedColors()) {
+    const CSSValue* color_value = ComputedStyleUtils::CurrentColorOrValidColor(
+        style, gap_color, value_phase);
+    repeated_colors->Append(*color_value);
+  }
+
+  CSSValue* repeater_value = MakeGarbageCollected<cssvalue::CSSRepeatValue>(
+      repetitions, *repeated_colors);
+
+  list->Append(*repeater_value);
+}
+
+}  // namespace
+
+const CSSValue* ComputedStyleUtils::ValueForGapColorDataList(
+    const GapColorDataList& gap_color_list,
+    const ComputedStyle& style,
+    CSSValuePhase value_phase) {
+  // The CSS Gap Decorations API [1] can take more than one color. When
+  // that feature is enabled, create a space separated list to hold the
+  // values. Otherwise, return a single color value, as is supported in
+  // the legacy `column-rule-color` property.
+  // [1]: https://chromestatus.com/feature/5157805733183488
+  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+    StyleColor color = gap_color_list.GetLegacyGapColor();
+    return ComputedStyleUtils::CurrentColorOrValidColor(style, color,
+                                                        value_phase);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+
+  for (const auto& gap_data : gap_color_list.GetGapColorList()) {
+    if (gap_data.IsRepeaterData()) {
+      PopulateRepeaterGapColorData(list, gap_data, style, value_phase);
+    } else {
+      PopulateNonRepeaterGapColorData(list, gap_data, style, value_phase);
+    }
+  }
+  return list;
 }
 
 CSSValue* ComputedStyleUtils::ValueForShadowData(const ShadowData& shadow,

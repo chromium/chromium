@@ -2309,7 +2309,8 @@ const blink::Color ColumnRuleColor::ColorIncludingFallback(
     const ComputedStyle& style,
     bool* is_current_color) const {
   DCHECK(!visited_link);
-  const StyleColor& column_rule_color = style.ColumnRuleColor();
+  const StyleColor& column_rule_color =
+      style.ColumnRuleColor().GetLegacyGapColor();
   if (style.ShouldForceColor(column_rule_color)) {
     return style.GetInternalForcedCurrentColor(is_current_color);
   }
@@ -2322,10 +2323,16 @@ const CSSValue* ColumnRuleColor::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return allow_visited_style
-             ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
-             : ComputedStyleUtils::CurrentColorOrValidColor(
-                   style, style.ColumnRuleColor(), value_phase);
+  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+    if (allow_visited_style) {
+      return cssvalue::CSSColor::Create(style.VisitedDependentColor(*this));
+    }
+  }
+
+  // TODO(crbug.com/357648037): Add UseCounter to  measure the use of
+  // column-rule-color in :visited style rules.
+  return ComputedStyleUtils::ValueForGapColorDataList(style.ColumnRuleColor(),
+                                                      style, value_phase);
 }
 
 const CSSValue* ColumnRuleStyle::CSSValueFromComputedStyleInternal(
@@ -5151,7 +5158,7 @@ const blink::Color InternalVisitedColumnRuleColor::ColorIncludingFallback(
     bool* is_current_color) const {
   DCHECK(visited_link);
   const StyleColor& visited_column_rule_color =
-      style.InternalVisitedColumnRuleColor();
+      style.InternalVisitedColumnRuleColor().GetLegacyGapColor();
   if (style.ShouldForceColor(visited_column_rule_color)) {
     return style.GetInternalForcedVisitedCurrentColor(is_current_color);
   }

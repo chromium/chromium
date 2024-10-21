@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
@@ -2254,6 +2255,61 @@ LengthSize StyleBuilderConverter::ConvertRadius(StyleResolverState& state,
       To<CSSPrimitiveValue>(pair.Second())
           .ConvertToLength(state.CssToLengthConversionData());
   return LengthSize(radius_width, radius_height);
+}
+
+GapColorDataList StyleBuilderConverter::ConvertGapColorDataList(
+    StyleResolverState& state,
+    const CSSValue& value,
+    bool for_visited_link) {
+  // The `value` will not be a list in two scenarios:
+  // 1. When using the legacy 'column-rule-color'.
+  // 2. When the fast parse path is taken (see
+  // CSSParserFastPaths::MaybeParseValue). In these cases, construct a
+  // GapColorDataList with a single StyleColor.
+  if (!DynamicTo<CSSValueList>(value)) {
+    return GapColorDataList(ConvertStyleColor(state, value, for_visited_link));
+  }
+  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
+
+  // The CSS Gap Decorations API accepts a space separated list of values.
+  // These values can be an auto repeater, an integer repeater, or a single
+  // color.
+  // See: https://kbabbitt.github.io/css-gap-decorations/#column-row-rule-color
+  const auto& values = To<CSSValueList>(value);
+  GapDataVector gap_data_list;
+  gap_data_list.ReserveInitialCapacity(values.length());
+
+  for (const auto& curr_value : values) {
+    GapColorData gap_data;
+    if (auto* gap_repeat_value =
+            DynamicTo<cssvalue::CSSRepeatValue>(curr_value.Get())) {
+      StyleColorVector gap_colors;
+      gap_colors.ReserveInitialCapacity(gap_repeat_value->Values().length());
+      for (const auto& color : gap_repeat_value->Values()) {
+        gap_colors.push_back(
+            ConvertStyleColor(state, *color, for_visited_link));
+      }
+
+      StyleColorRepeater* color_repeater;
+      if (gap_repeat_value->IsAutoRepeatValue()) {
+        color_repeater =
+            MakeGarbageCollected<StyleColorRepeater>(std::move(gap_colors));
+      } else {
+        int repeat_count = gap_repeat_value->Repetitions()->ComputeInteger(
+            state.CssToLengthConversionData());
+        color_repeater = MakeGarbageCollected<StyleColorRepeater>(
+            std::move(gap_colors), repeat_count);
+      }
+      gap_data = GapColorData(color_repeater);
+    } else {
+      gap_data = GapColorData(
+          ConvertStyleColor(state, *curr_value.Get(), for_visited_link));
+    }
+
+    gap_data_list.push_back(gap_data);
+  }
+
+  return GapColorDataList(std::move(gap_data_list));
 }
 
 ShadowData StyleBuilderConverter::ConvertShadow(

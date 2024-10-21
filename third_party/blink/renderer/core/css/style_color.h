@@ -345,4 +345,5 @@ CORE_EXPORT std::ostream& operator<<(
 
 }  // namespace blink
 
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::StyleColor)
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_COLOR_H_
