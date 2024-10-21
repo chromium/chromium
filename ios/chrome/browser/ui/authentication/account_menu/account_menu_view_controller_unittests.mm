@@ -121,8 +121,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
     AddPrimaryIdentity();
     AddSecondaryIdentity();
 
-    view_controller_ = [[AccountMenuViewController alloc]
-        initWithStyle:UITableViewStyleInsetGrouped];
+    view_controller_ = [[AccountMenuViewController alloc] init];
     mutator_ = OCMStrictProtocolMock(@protocol(AccountMenuMutator));
 
     view_controller_.dataSource = data_source_;
@@ -162,7 +161,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
   }
 
   // The UITableView* of the account menu view controller.
-  UITableView* TableView() { return view_controller_.tableView; }
+  UITableView* TableView() { return view_controller_.view.subviews[0]; }
 
   //  Returns the cell at `path`.
   UITableViewCell* GetCell(NSIndexPath* path) {
@@ -183,7 +182,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
   // Expects that the cell at `path` is a `TableViewTextCell` whose label’s text
   // is `text`.
   void SelectCell(NSIndexPath* path) {
-    [view_controller_ tableView:TableView() didSelectRowAtIndexPath:path];
+    [TableView().delegate tableView:TableView() didSelectRowAtIndexPath:path];
   }
 
  private:

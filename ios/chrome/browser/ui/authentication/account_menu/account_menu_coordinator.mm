@@ -120,8 +120,7 @@
   _applicationHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                            ApplicationCommands);
 
-  _viewController = [[AccountMenuViewController alloc]
-      initWithStyle:UITableViewStyleInsetGrouped];
+  _viewController = [[AccountMenuViewController alloc] init];
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
