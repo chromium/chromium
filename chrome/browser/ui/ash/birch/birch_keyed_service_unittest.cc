@@ -536,6 +536,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
       case SecondaryIconType::kTabFromTablet:
       case SecondaryIconType::kTabFromPhone:
       case SecondaryIconType::kTabFromUnknown:
+      case SecondaryIconType::kSelfShareIcon:
       case SecondaryIconType::kNoIcon:
         state = media_session::mojom::MediaAudioVideoState::kDeprecatedUnknown;
         break;

@@ -39,6 +39,14 @@ enum class BirchItemType {
   kMaxValue = kCoral,
 };
 
+// These values are used to determine the style of the primary icon.
+enum class PrimaryIconType {
+  kIcon,
+  kIllustration,
+  kWeatherImage,
+  kCoralGroupIcon,
+};
+
 // These values are used to determine which secondary icon to load for the items
 // that contain secondary icons.
 enum class SecondaryIconType {
@@ -49,6 +57,7 @@ enum class SecondaryIconType {
   kLostMediaAudio,            // Type that links to audio icon.
   kLostMediaVideo,            // Type that links to media icon.
   kLostMediaVideoConference,  // Type that links to video conference icon.
+  kSelfShareIcon,             // Type that links to self share icon.
   kNoIcon,                    // Type where we will not load a secondary icon.
   kMaxValue = kNoIcon,
 };
@@ -91,8 +100,8 @@ class ASH_EXPORT BirchItem {
   // (e.g. with a local icon) or there may be a delay for a network fetch.
   // The `SecondaryIconType` passed to `BirchChipButton` allows the view to set
   // a corresponding secondary icon image.
-  using LoadIconCallback =
-      base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>;
+  using LoadIconCallback = base::OnceCallback<
+      void(PrimaryIconType, SecondaryIconType, const ui::ImageModel&)>;
   virtual void LoadIcon(LoadIconCallback callback) const = 0;
 
   // Records metrics when the user takes an action on the item (e.g. clicks or

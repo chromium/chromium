@@ -18,7 +18,6 @@ namespace views {
 class AnimatedImageView;
 class BoxLayoutView;
 class FlexLayout;
-class ImageView;
 class Label;
 }  // namespace views
 
@@ -65,17 +64,10 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
 
   void SetAddon(std::unique_ptr<views::View> addon_view);
 
-  // Stylizes the icon based on the type of the item, the type of the item's
-  // secondary icon, and whether the icon image needs to be minified.
-  // `use_smaller_dimension` will only be true for icons loaded via
-  // `DownloadImageFromUrl` in `BirchItem`.
-  void StylizeIconForItemType(BirchItemType type,
-                              SecondaryIconType secondary_icon_type,
-                              bool use_smaller_dimension);
-
   // Sets the item icon.
-  void SetIconImage(const ui::ImageModel& icon_image,
-                    SecondaryIconType secondary_icon_image);
+  void SetIconImage(PrimaryIconType primary_icon_type,
+                    SecondaryIconType secondary_icon_type,
+                    const ui::ImageModel& icon_image);
 
   // Callback for the coral addon button. Should only be clicked for a coral
   // item.
@@ -93,8 +85,6 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   // The components owned by the chip view.
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
   raw_ptr<views::View> icon_parent_view_ = nullptr;
-  raw_ptr<views::ImageView> primary_icon_view_ = nullptr;
-  raw_ptr<views::ImageView> secondary_icon_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> titles_container_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::AnimatedImageView> title_loading_animated_image_ = nullptr;

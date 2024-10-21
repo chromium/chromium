@@ -101,8 +101,10 @@ TEST_F(BirchWeatherProviderTest, GetWeather) {
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+      [](PrimaryIconType primary_icon_type,
+         SecondaryIconType secondary_icon_type, const ui::ImageModel& icon) {
         EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(primary_icon_type, PrimaryIconType::kWeatherImage);
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 }
@@ -155,8 +157,10 @@ TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+      [](PrimaryIconType primary_icon_type,
+         SecondaryIconType secondary_icon_type, const ui::ImageModel& icon) {
         EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(primary_icon_type, PrimaryIconType::kWeatherImage);
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
@@ -356,8 +360,10 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+      [](PrimaryIconType primary_icon_type,
+         SecondaryIconType secondary_icon_type, const ui::ImageModel& icon) {
         EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(primary_icon_type, PrimaryIconType::kWeatherImage);
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
@@ -381,8 +387,10 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   EXPECT_EQ(u"Sunny", updated_weather_items[0].title());
   EXPECT_FLOAT_EQ(73.f, updated_weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+      [](PrimaryIconType primary_icon_type,
+         SecondaryIconType secondary_icon_type, const ui::ImageModel& icon) {
         EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(primary_icon_type, PrimaryIconType::kWeatherImage);
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 }
@@ -451,8 +459,10 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+      [](PrimaryIconType primary_icon_type,
+         SecondaryIconType secondary_icon_type, const ui::ImageModel& icon) {
         EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(primary_icon_type, PrimaryIconType::kWeatherImage);
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 

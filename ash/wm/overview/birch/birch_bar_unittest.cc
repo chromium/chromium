@@ -98,8 +98,8 @@ class TestBirchItem : public BirchItem {
   void PerformAction(bool is_post_login) override {}
   void LoadIcon(LoadIconCallback callback) const override {
     std::move(callback).Run(
-        ui::ImageModel::FromVectorIcon(kSettingsIcon, SK_ColorBLACK, 20),
-        SecondaryIconType::kNoIcon);
+        PrimaryIconType::kIcon, SecondaryIconType::kNoIcon,
+        ui::ImageModel::FromVectorIcon(kSettingsIcon, SK_ColorBLACK, 20));
   }
 };
 
@@ -465,9 +465,9 @@ TEST_F(BirchBarTest, NoCrashOnSettingIconAfterShutdown) {
 
   // Create a set icon callback to simulate the case of setting icon after
   // shutting down the chip.
-  auto set_icon = base::BindOnce(&BirchChipButton::SetIconImage,
-                                 chip->weak_factory_.GetWeakPtr(),
-                                 ui::ImageModel(), SecondaryIconType::kNoIcon);
+  auto set_icon = base::BindOnce(
+      &BirchChipButton::SetIconImage, chip->weak_factory_.GetWeakPtr(),
+      PrimaryIconType::kIcon, SecondaryIconType::kNoIcon, ui::ImageModel());
 
   ExitOverview();
 

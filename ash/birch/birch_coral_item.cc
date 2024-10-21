@@ -57,8 +57,7 @@ void OnGotAppIconCoral(
 // Draws the Coral grouped icon image with the loaded icons, and passes the
 // final result to `BirchChipButton`.
 void OnAllFaviconsRetrievedCoral(
-    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
-        final_callback,
+    base::OnceCallback<void(const ui::ImageModel&)> final_callback,
     int extra_number,
     const std::vector<ui::ImageModel>& loaded_icons) {
   std::vector<gfx::ImageSkia> resized_icons;
@@ -79,8 +78,7 @@ void OnAllFaviconsRetrievedCoral(
       CoralGroupedIconImage::DrawCoralGroupedIconImage(
           /*icons_images=*/resized_icons, extra_number);
 
-  std::move(final_callback)
-      .Run(std::move(composed_image), SecondaryIconType::kNoIcon);
+  std::move(final_callback).Run(std::move(composed_image));
 }
 
 }  // namespace
@@ -155,7 +153,10 @@ void BirchCoralItem::LoadIcon(LoadIconCallback original_callback) const {
   const auto barrier_callback = base::BarrierCallback<const ui::ImageModel&>(
       /*num_callbacks=*/icon_requests,
       /*done_callback=*/base::BindOnce(
-          OnAllFaviconsRetrievedCoral, std::move(original_callback),
+          OnAllFaviconsRetrievedCoral,
+          base::BindOnce(std::move(original_callback),
+                         PrimaryIconType::kCoralGroupIcon,
+                         SecondaryIconType::kNoIcon),
           /*extra_number=*/total_count > icon_requests
               ? total_count - icon_requests
               : 0));
