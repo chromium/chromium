@@ -86,4 +86,21 @@ public class TabCardViewBinderUtilsUnitTest {
         assertEquals(View.GONE, mContainerView.getVisibility());
         assertEquals(0, mContainerView.getChildCount());
     }
+
+    @Test
+    public void testUpdateTabGroupColorView_RebindColorView() {
+        TabCardViewBinderUtils.updateTabGroupColorView(mContainerView, mTabGroupColorViewProvider);
+        assertEquals(View.VISIBLE, mContainerView.getVisibility());
+        assertEquals(mTabGroupColorViewProvider.getLazyView(), mContainerView.getChildAt(0));
+
+        FrameLayout newContainerView = new FrameLayout(mContext);
+        newContainerView.setVisibility(View.GONE);
+        TabCardViewBinderUtils.updateTabGroupColorView(
+                newContainerView, mTabGroupColorViewProvider);
+
+        assertEquals(View.GONE, mContainerView.getVisibility());
+        assertEquals(0, mContainerView.getChildCount());
+        assertEquals(View.VISIBLE, newContainerView.getVisibility());
+        assertEquals(mTabGroupColorViewProvider.getLazyView(), newContainerView.getChildAt(0));
+    }
 }

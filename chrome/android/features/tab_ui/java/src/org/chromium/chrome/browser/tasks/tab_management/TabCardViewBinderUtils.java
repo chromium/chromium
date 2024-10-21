@@ -57,15 +57,21 @@ class TabCardViewBinderUtils {
             ViewGroup parentView = (ViewGroup) colorView.getParent();
             if (parentView == containerView) return;
 
+            // If the parent view is non-null and is the the expected container view we need to
+            // remove it from the old view and attach it to the new view. In-the-wild there appear
+            // to be codepaths that rebind all the RV items to new parent view without recycling,
+            // but since the color view is not recreated we end up hitting an
+            // IllegalStateException.
+            if (parentView != null) {
+                parentView.removeView(colorView);
+                parentView.setVisibility(View.GONE);
+            }
+
             var layoutParams =
                     new FrameLayout.LayoutParams(
                             FrameLayout.LayoutParams.WRAP_CONTENT,
                             FrameLayout.LayoutParams.WRAP_CONTENT);
             layoutParams.gravity = Gravity.CENTER;
-            // If the parent view is null, attaching it will work. If the parent view is non-null
-            // and not the same as the containerView, as checked above, this will throw an
-            // exception. This is intended as we want to enforce an invariant that the provided
-            // views are eagerly detached from the view hierarchy.
             containerView.addView(colorView, layoutParams);
         }
     }
