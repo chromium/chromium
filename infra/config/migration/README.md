@@ -32,6 +32,16 @@ Commands assume the working directory is //infra/config.
     related via parent-child triggering or try-builder mirroring must be migrated
     in one CL.
 
+    This script will assume the starlark file for the builder group is located
+    in either //infra/config/subprojects/ci/{builder_group}.star or
+    //infra/config/subprojects/try/{builder_group}.star (groups prefixed with
+    `tryserver` will fall in the latter category). If a builder group's
+    starlark file location does not match these patterns, instead run
+
+    ```sh
+    ./migration/migrate-targets.py $BUILDER_GROUP --star-file $STARLARK_FILE_PATH
+    ```
+
     Executing this script may fail at the `./main.star` command because there is a
     test modification or removal for a test not present in any of the bundles
     within a builder, for example:
