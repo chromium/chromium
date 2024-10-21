@@ -33,6 +33,18 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
       return kAuthenticationErrorCategoryUnknownIdentityErrors;
     }
   }
+  if ([error.domain isEqualToString:kSystemIdentityManagerErrorDomain]) {
+    SystemIdentityManagerErrorCode error_code =
+        static_cast<SystemIdentityManagerErrorCode>(error.code);
+    switch (error_code) {
+      case SystemIdentityManagerErrorCode::kNoAuthenticatedIdentity:
+        return kAuthenticationErrorCategoryUnknownIdentityErrors;
+      case SystemIdentityManagerErrorCode::kClientIDMismatch:
+        return kAuthenticationErrorCategoryUnknownIdentityErrors;
+      case SystemIdentityManagerErrorCode::kInvalidTokenIdentity:
+        return kAuthenticationErrorCategoryAuthorizationErrors;
+    }
+  }
 
   SystemIdentityManager* system_identity_manager =
       GetApplicationContext()->GetSystemIdentityManager();

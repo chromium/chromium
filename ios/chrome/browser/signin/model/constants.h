@@ -11,15 +11,25 @@
 
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 
-// Error domain for authentication error.
-extern NSString* kAuthenticationErrorDomain;
-
 // The key in the user info dictionary containing the GoogleServiceAuthError
 // code.
-extern NSString* kGoogleServiceAuthErrorState;
+extern NSString* const kGoogleServiceAuthErrorState;
 
+// Error domain for SystemIdentityManager errors.
+extern NSString* const kSystemIdentityManagerErrorDomain;
+
+// Error code for `kSystemIdentityManagerErrorDomain`.
+enum class SystemIdentityManagerErrorCode : NSInteger {
+  kNoAuthenticatedIdentity = 0,
+  kClientIDMismatch = 1,
+  kInvalidTokenIdentity = 2,
+};
+
+// Error domain for authentication error.
+extern NSString* const kAuthenticationErrorDomain;
+
+// Error code for `kAuthenticationErrorDomain`.
 typedef enum {
-  // The error is wrapping a GoogleServiceAuthError.
   GOOGLE_SERVICE_AUTH_ERROR = -200,
   NO_AUTHENTICATED_USER = -201,
   CLIENT_ID_MISMATCH = -203,
