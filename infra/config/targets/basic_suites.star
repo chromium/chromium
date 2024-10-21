@@ -3846,7 +3846,6 @@ targets.legacy_basic_suite(
         "browser_tests": targets.legacy_test_config(
             args = [
                 "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
-                "--run-manual",
                 "--ui-test-action-max-timeout=300000",
                 "--test-launcher-timeout=350000",
                 "--test-launcher-jobs=1",
@@ -3858,7 +3857,6 @@ targets.legacy_basic_suite(
         # "browser_tests_apprtc": targets.legacy_test_config(
         #     args = [
         #         "--gtest_filter=WebRtcApprtcBrowserTest.*",
-        #         "--run-manual",
         #         "--test-launcher-jobs=1",
         #     ],
         # ),

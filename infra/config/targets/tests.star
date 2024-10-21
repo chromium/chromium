@@ -336,7 +336,6 @@ targets.tests.gtest_test(
     name = "browser_tests_functional",
     args = [
         "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter",
-        "--run-manual",
         "--test-launcher-jobs=1",
     ],
     binary = "browser_tests",
@@ -686,7 +685,6 @@ targets.tests.gtest_test(
     name = "content_browsertests_sequential",
     args = [
         "--gtest_filter=UsingRealWebcam*",
-        "--run-manual",
         "--test-launcher-jobs=1",
     ],
     binary = "content_browsertests",
@@ -695,8 +693,7 @@ targets.tests.gtest_test(
 targets.tests.gtest_test(
     name = "content_browsertests_stress",
     args = [
-        "--gtest_filter=WebRtc*MANUAL*:-UsingRealWebcam*",
-        "--run-manual",
+        "--gtest_filter=WebRtc*:-UsingRealWebcam*",
         "--ui-test-action-max-timeout=110000",
         "--test-launcher-timeout=120000",
     ],
