@@ -21,8 +21,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventLevelEpsilon {
   static base::expected<EventLevelEpsilon, mojom::SourceRegistrationError>
   Parse(const base::Value::Dict&);
 
-  static double max();
-
   // Creates an epsilon with the maximum allowed value.
   EventLevelEpsilon();
 
