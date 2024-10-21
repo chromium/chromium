@@ -4155,6 +4155,16 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         self.WaitForCondition(
             lambda: len(self._driver.GetWindowHandles()) == 1))
 
+  def testCloseLastWindow(self):
+      def sessionIsOver():
+          try:
+              self._driver.GetWindowHandles()
+              return False
+          except chromedriver.InvalidSessionId:
+              return True
+      self._driver.CloseWindow()
+      self.WaitForCondition(sessionIsOver)
+
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
     self._driver1 = self.CreateDriver()
@@ -8929,6 +8939,17 @@ if __name__ == '__main__':
            'This parameter is intended for debugging purposes only. Don\'t '
            'use it in production as it does not clean up resources properly')
 
+  parser.add_argument(
+      '--repeat',
+      type=int,
+      default=1,
+      help='Amount of attempts to detect any flakes')
+  parser.add_argument(
+      '--retry-limit',
+      type=int,
+      default=3,
+      help='Maximum amount of failed attempts until the test is deemed failed')
+
   ##############################################################################
   # Note for other Chromium based browsers!!!
   # Path inference works only for Chrome and chrome-headless-shell.
@@ -9056,8 +9077,7 @@ Delegating this task to ChromeDriver'''
 
   all_tests_suite = unittest.defaultTestLoader.loadTestsFromModule(
       sys.modules[__name__])
-  test_suite = unittest_util.FilterTestSuite(all_tests_suite, options.filter)
-  test_suites = [list(map(lambda t: t.id(),  test_suite))]
+  test_suites = []
 
   ChromeDriverBaseTestWithWebServer.GlobalSetUp()
 
@@ -9065,23 +9085,37 @@ Delegating this task to ChromeDriver'''
       stream=sys.stdout, descriptions=False, verbosity=2,
       failfast=options.failfast,
       resultclass=unittest_util.AddSuccessTextTestResult)
-  result = runner.run(test_suite)
-  results = [result]
 
-  num_failed = len(result.failures) + len(result.errors)
+  results = [];
+
+  invocation_count = options.repeat
+  has_failures = False
+  for _ in range(0, invocation_count):
+      test_suite = unittest_util.FilterTestSuite(
+              all_tests_suite,
+              options.filter)
+      test_suites.append(list(map(lambda t: t.id(),  test_suite)))
+      result = runner.run(test_suite)
+      results.append(result)
+      num_failed = len(result.failures) + len(result.errors)
+      has_failures = has_failures or (num_failed > 0)
+
+  retry_limit = options.retry_limit
+
   # Limit fail tests to 10 to avoid real bug causing many tests to fail
   # Only enable retry for automated bot test
-  if (num_failed > 0 and num_failed <= 10
-      and options.test_type == 'integration'):
+  while retry_limit > 0 and has_failures:
+    retry_limit -= 1
     retry_test_suite = unittest.TestSuite()
-    for f in result.failures:
+    for f in results[-1].failures:
       retry_test_suite.addTest(f[0])
-    for e in result.errors:
+    for e in results[-1].errors:
       retry_test_suite.addTest(e[0])
     test_suites.append(list(map(lambda t: t.id(),  retry_test_suite)))
     print('\nRetrying failed tests\n')
     retry_result = runner.run(retry_test_suite)
     results.append(retry_result)
+    has_failures = len(retry_result.failures) + len(retry_result.errors) > 0
 
   ChromeDriverBaseTestWithWebServer.GlobalTearDown()
 
@@ -9089,4 +9123,6 @@ Delegating this task to ChromeDriver'''
     util.WriteResultToJSONFile(test_suites, results,
                                options.isolated_script_test_output)
   util.TryUploadingResultToResultSink(results)
-  sys.exit(len(results[-1].failures) + len(results[-1].errors))
+
+
+  sys.exit(1 if has_failures else 0)
