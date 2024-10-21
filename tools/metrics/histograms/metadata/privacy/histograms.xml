@@ -508,7 +508,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseSize" units="KB"
-    expires_after="2024-11-03">
+    expires_after="2025-10-21">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
