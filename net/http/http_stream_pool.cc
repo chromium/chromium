@@ -60,8 +60,6 @@ constexpr base::FeatureParam<bool> kEnableConsistencyCheck{
     &features::kHappyEyeballsV3,
     HttpStreamPool::kEnableConsistencyCheckParamName.data(), false};
 
-#if DCHECK_IS_ON()
-
 // Represents total stream counts in the pool. Only used for consistency check.
 struct StreamCounts {
   size_t handed_out = 0;
@@ -84,8 +82,6 @@ std::ostream& operator<<(std::ostream& os, const StreamCounts& counts) {
             << ", idle: " << counts.idle
             << ", connecting: " << counts.connecting << " }";
 }
-
-#endif  // DCHECK_IS_ON()
 
 }  // namespace
 
@@ -601,7 +597,6 @@ void HttpStreamPool::OnPooledStreamRequestComplete(
 }
 
 void HttpStreamPool::CheckConsistency() {
-#if DCHECK_IS_ON()
   CHECK(kEnableConsistencyCheck.Get());
 
   const StreamCounts pool_total_counts = {
@@ -642,8 +637,6 @@ void HttpStreamPool::CheckConsistency() {
       base::BindOnce(&HttpStreamPool::CheckConsistency,
                      weak_ptr_factory_.GetWeakPtr()),
       base::Seconds(3));
-
-#endif  // DCHECK_IS_ON()
 }
 
 }  // namespace net
