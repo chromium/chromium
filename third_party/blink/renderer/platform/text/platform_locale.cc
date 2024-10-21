@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 #include <memory>
@@ -206,19 +201,19 @@ void Locale::ResetDefaultLocale() {
 Locale::~Locale() = default;
 
 String Locale::QueryString(int resource_id) {
-  // FIXME: Returns a string locazlied for this locale.
+  // FIXME: Returns a string localized for this locale.
   return Platform::Current()->QueryLocalizedString(resource_id);
 }
 
 String Locale::QueryString(int resource_id, const String& parameter) {
-  // FIXME: Returns a string locazlied for this locale.
+  // FIXME: Returns a string localized for this locale.
   return Platform::Current()->QueryLocalizedString(resource_id, parameter);
 }
 
 String Locale::QueryString(int resource_id,
                            const String& parameter1,
                            const String& parameter2) {
-  // FIXME: Returns a string locazlied for this locale.
+  // FIXME: Returns a string localized for this locale.
   return Platform::Current()->QueryLocalizedString(resource_id, parameter1,
                                                    parameter2);
 }
@@ -284,7 +279,7 @@ void Locale::SetLocaleData(const Vector<String, kDecimalSymbolsSize>& symbols,
 
   StringBuilder builder;
   for (size_t i = 0; i < kDecimalSymbolsSize; ++i) {
-    // We don't accept group separatros.
+    // We don't accept group separators.
     if (i != kGroupSeparatorIndex)
       builder.Append(decimal_symbols_[i]);
   }
@@ -505,7 +500,7 @@ bool Locale::HasSignNotAfterE(const String& str) {
 }
 
 bool Locale::IsDigit(UChar ch) {
-  // Alwoays allow 0 - 9
+  // Always allow 0 - 9.
   if (ch >= '0' && ch <= '9')
     return true;
   // Check each digit otherwise
