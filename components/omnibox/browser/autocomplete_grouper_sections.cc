@@ -184,8 +184,8 @@ void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
 
 AndroidHubZPSSection::AndroidHubZPSSection(
     omnibox::GroupConfigMap& group_configs)
-    : Section(10,
-              {{10, omnibox::GROUP_MOBILE_OPEN_TABS}},
+    : Section(5,
+              {{5, omnibox::GROUP_MOBILE_OPEN_TABS}},
               group_configs,
               omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
 
