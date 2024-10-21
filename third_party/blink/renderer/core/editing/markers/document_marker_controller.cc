@@ -118,13 +118,15 @@ DocumentMarkerList* CreateListForType(DocumentMarker::MarkerType type) {
 
 void InvalidateVisualOverflowForNode(const Node& node,
                                      DocumentMarker::MarkerType type) {
-  if (!node.GetLayoutObject() ||
+  LayoutObject* layout_object = node.GetLayoutObject();
+  if (!layout_object ||
       !DocumentMarker::MarkerTypes::HighlightPseudos().Intersects(
           DocumentMarker::MarkerTypes(type))) {
     return;
   }
-  if (HighlightStyleUtils::ShouldInvalidateVisualOverflow(node, type)) {
-    node.GetLayoutObject()->InvalidateVisualOverflow();
+  if (HighlightStyleUtils::ShouldInvalidateVisualOverflow(*layout_object,
+                                                          type)) {
+    layout_object->InvalidateVisualOverflow();
   }
 }
 

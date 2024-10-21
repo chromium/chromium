@@ -623,12 +623,10 @@ void HighlightStyleUtils::ResolveColorsFromPreviousLayer(
 }
 
 bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
-    const Node& node,
+    const LayoutObject& layout_object,
     DocumentMarker::MarkerType type) {
   // Custom highlights and selection are handled separately. Here we just need
-  // to handle spelling, grammar and target-text. Note that we assume
-  // RuntimeEnabledFeatures::HighlightInheritanceEnabled() is true to avoid
-  // needing a non-const node.
+  // to handle spelling, grammar and target-text.
   if (type == DocumentMarker::kSpelling || type == DocumentMarker::kGrammar) {
     return true;
   }
@@ -636,11 +634,8 @@ bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
   if (type != DocumentMarker::kTextFragment) {
     return false;
   }
-  const ComputedStyle* style = node.GetComputedStyleForElementOrLayoutObject();
-  if (!style) {
-    return false;
-  }
-  const ComputedStyle* pseudo_style = style->HighlightData().TargetText();
+  const ComputedStyle* pseudo_style =
+      layout_object.StyleRef().HighlightData().TargetText();
   if (!pseudo_style) {
     return false;
   }
@@ -649,14 +644,15 @@ bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
 }
 
 bool HighlightStyleUtils::CustomHighlightHasVisualOverflow(
-    const Node& node,
+    const Text& text_node,
     const AtomicString& pseudo_argument) {
-  const ComputedStyle* style = node.GetComputedStyleForElementOrLayoutObject();
-  if (!style) {
+  LayoutObject* layout_object = text_node.GetLayoutObject();
+  if (!layout_object) {
     return false;
   }
   const ComputedStyle* pseudo_style =
-      style->HighlightData().CustomHighlight(pseudo_argument);
+      layout_object->StyleRef().HighlightData().CustomHighlight(
+          pseudo_argument);
   if (!pseudo_style) {
     return false;
   }

@@ -23,7 +23,9 @@ class Color;
 class CSSProperty;
 class Document;
 class ComputedStyle;
+class LayoutObject;
 class Node;
+class Text;
 struct PaintInfo;
 
 enum class SearchTextIsCurrent : bool {
@@ -111,11 +113,11 @@ class CORE_EXPORT HighlightStyleUtils {
       HighlightTextPaintStyle& text_style,
       const HighlightTextPaintStyle& previous_layer_style);
 
-  static bool ShouldInvalidateVisualOverflow(const Node& node,
+  static bool ShouldInvalidateVisualOverflow(const LayoutObject& layout_object,
                                              DocumentMarker::MarkerType type);
 
   static bool CustomHighlightHasVisualOverflow(
-      const Node& node,
+      const Text& text_node,
       const AtomicString& pseudo_argument = g_null_atom);
 };
 
