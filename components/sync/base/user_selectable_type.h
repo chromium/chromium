@@ -15,10 +15,6 @@
 
 namespace syncer {
 
-// TODO(crbug.com/40210838): once it's impossible to launch Ash-browser only
-// UserSelectableOsType will be relevant for Ash, guard UserSelectableType with
-// #if !BUILDFLAG(IS_CHROMEOS_ASH) and remove lower level Ash-specific code.
-//
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
 //
@@ -56,7 +52,7 @@ DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type);
 
 DataType UserSelectableTypeToCanonicalDataType(UserSelectableType type);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Chrome OS provides a separate UI with sync controls for OS data types. Note
 // that wallpaper is a special case due to its reliance on apps, so while it
 // appears in the UI, it is not included in this enum.
@@ -82,7 +78,7 @@ DataType UserSelectableOsTypeToCanonicalDataType(UserSelectableOsType type);
 // Returns the type if the string matches a known OS type.
 std::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
     const std::string& type);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // For GTest.
 std::ostream& operator<<(std::ostream& stream, const UserSelectableType& type);
