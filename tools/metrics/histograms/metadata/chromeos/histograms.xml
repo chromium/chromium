@@ -4421,9 +4421,11 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SwapManagement.SwapStart.Status" enum="AbslErrorCode"
-    expires_after="2025-02-10">
-  <owner>ctshao@google.com</owner>
+    expires_after="never">
+<!-- expires-never: Used to identify if swap starts correctly. -->
+
   <owner>bgeffon@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
   <summary>
     An enum value indicates whether or not swap_management started swap
     successfully. The value is absl error code.
@@ -4431,9 +4433,11 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SwapManagement.SwapStop.Status" enum="AbslErrorCode"
-    expires_after="2025-02-10">
-  <owner>ctshao@google.com</owner>
+    expires_after="never">
+<!-- expires-never: Used to identify if swap stops correctly. -->
+
   <owner>bgeffon@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
   <summary>
     An enum value indicates whether or not swap_management stopped swap
     successfully. The value is absl error code.
@@ -4861,8 +4865,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Zram.{CountMetric}" units="count"
-    expires_after="2025-04-13">
-  <owner>ctshao@google.com</owner>
+    expires_after="never">
+<!-- expires-never: Used to monitor zram key metrics in number. -->
+
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -4897,8 +4902,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Zram.{HugePageActivityMetric}" units="pages"
-    expires_after="2024-11-24">
-  <owner>ctshao@google.com</owner>
+    expires_after="never">
+<!-- expires-never: Used to identify zram hugepage activity. -->
+
   <owner>raging@google.com</owner>
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
@@ -4914,9 +4920,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </token>
 </histogram>
 
-<histogram name="ChromeOS.Zram.{PctMetric}" units="%"
-    expires_after="2025-03-23">
-  <owner>ctshao@google.com</owner>
+<histogram name="ChromeOS.Zram.{PctMetric}" units="%" expires_after="never">
+<!-- expires-never: Used to identify zram key metrics in percentage. -->
+
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -4933,9 +4939,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </token>
 </histogram>
 
-<histogram name="ChromeOS.Zram.{SizeMetric}" units="MB"
-    expires_after="2025-04-13">
-  <owner>ctshao@google.com</owner>
+<histogram name="ChromeOS.Zram.{SizeMetric}" units="MB" expires_after="never">
+<!-- expires-never: Used to identify zram key metrics in size. -->
+
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
