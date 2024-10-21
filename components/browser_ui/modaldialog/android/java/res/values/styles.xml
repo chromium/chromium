@@ -19,11 +19,11 @@ found in the LICENSE file.
     <style name="ThemeOverlay.BrowserUI.ModalDialog" parent="Base.ThemeOverlay.BrowserUI.ModalDialog" />
 
     <style name="FilledButton.Tonal">
-      <item name="buttonColor">?attr/colorPrimaryContainer</item>
-      <item name="buttonTextColor">@macro/default_text_color_on_accent1_container</item>
-      <item name="verticalInset">@dimen/button_group_button_inset</item>
-      <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick.Secondary</item>
-      <item name="textAllCaps">false</item>
+        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
+        <item name="buttonColor">?attr/colorPrimaryContainer</item>
+        <item name="buttonTextColor">@macro/default_text_color_on_accent1_container</item>
+        <item name="verticalInset">@dimen/button_group_button_inset</item>
+        <item name="textAllCaps">false</item>
     </style>
 
     <style name="FilledButton.Tonal.SingleButton">
