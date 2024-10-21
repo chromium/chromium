@@ -2179,7 +2179,7 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
-<histogram name="Navigation.Throttles.PolicyBlocklist.DeferDurationTime"
+<histogram name="Navigation.Throttles.PolicyBlocklist.DeferDurationTime2"
     units="ms" expires_after="2025-04-06">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -2202,7 +2202,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.Throttles.PolicyBlocklist.RequestToResponseTime"
+<histogram name="Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2"
     units="ms" expires_after="2025-04-06">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
