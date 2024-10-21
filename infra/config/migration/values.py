@@ -153,8 +153,11 @@ def convert_swarming(swarming: dict[str, typing.Any]) -> Value:
 
   for key, value in swarming.items():
     match key:
-      case 'dimensions' | 'idempotent' | 'shards':
+      case 'dimensions' | 'idempotent' | 'service_account' | 'shards':
         value_builder[key] = convert_direct(value)
+
+      case 'expiration':
+        value_builder['expiration_sec'] = convert_direct(value)
 
       case 'hard_timeout':
         value_builder['hard_timeout_sec'] = convert_direct(value)
