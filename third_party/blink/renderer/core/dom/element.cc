@@ -2769,13 +2769,6 @@ SpecificTrustedType Element::ExpectedTrustedTypeForAttribute(
   return SpecificTrustedType::kNone;
 }
 
-void Element::setAttribute(const QualifiedName& name,
-                           const String& string,
-                           ExceptionState& exception_state) {
-  // TODO(lyf): Removes |exception_state| because this function never throws.
-  setAttribute(name, AtomicString(string));
-}
-
 DISABLE_CFI_PERF
 void Element::AttributeChanged(const AttributeModificationParams& params) {
   ParseAttribute(params);
@@ -10231,16 +10224,16 @@ Element::ValidateAttributeIndex(wtf_size_t index,
   return FindAttributeIndex(qname);
 }
 
-void Element::setAttribute(const QualifiedName& name,
-                           const AtomicString& value) {
+void Element::SetAttributeWithoutValidation(const QualifiedName& name,
+                                            const AtomicString& value) {
   SynchronizeAttribute(name);
   SetAttributeInternal(FindAttributeIndex(name), name, value,
                        AttributeModificationReason::kDirectly);
 }
 
-void Element::setAttribute(const QualifiedName& name,
-                           const AtomicString& value,
-                           ExceptionState& exception_state) {
+void Element::SetAttributeWithValidation(const QualifiedName& name,
+                                         const AtomicString& value,
+                                         ExceptionState& exception_state) {
   SynchronizeAttribute(name);
 
   AtomicString trusted_value(TrustedTypesCheckFor(

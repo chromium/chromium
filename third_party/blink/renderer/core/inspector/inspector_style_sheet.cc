@@ -2483,8 +2483,8 @@ bool InspectorStyleSheetForInlineStyle::SetText(
   {
     InspectorCSSAgent::InlineStyleOverrideScope override_scope(
         element_->GetExecutionContext());
-    element_->setAttribute(html_names::kStyleAttr, AtomicString(text),
-                           exception_state);
+    element_->SetAttributeWithValidation(html_names::kStyleAttr,
+                                         AtomicString(text), exception_state);
   }
   if (!exception_state.HadException())
     OnStyleSheetTextChanged();

@@ -25,10 +25,8 @@ TEST(MathMLTableCellElementTest, colSpan_parsing) {
   auto* cell = MakeGarbageCollected<MathMLTableCellElement>(*document);
 
   for (unsigned colSpan : {1, 2, 16, 256, 999, 1000}) {
-    StringBuilder attributeValue;
-    attributeValue.AppendNumber(colSpan);
-    cell->setAttribute(mathml_names::kColumnspanAttr, attributeValue.ToString(),
-                       ASSERT_NO_EXCEPTION);
+    cell->setAttribute(mathml_names::kColumnspanAttr,
+                       AtomicString::Number(colSpan));
     EXPECT_EQ(colSpan, cell->colSpan())
         << "valid columnspan value '" << colSpan << "' is properly parsed";
   }
@@ -59,10 +57,8 @@ TEST(MathMLTableCellElementTest, rowspan_parsing) {
   auto* cell = MakeGarbageCollected<MathMLTableCellElement>(*document);
 
   for (unsigned rowspan : {0, 1, 16, 256, 4096, 65533, 65534}) {
-    StringBuilder attributeValue;
-    attributeValue.AppendNumber(rowspan);
-    cell->setAttribute(mathml_names::kRowspanAttr, attributeValue.ToString(),
-                       ASSERT_NO_EXCEPTION);
+    cell->setAttribute(mathml_names::kRowspanAttr,
+                       AtomicString::Number(rowspan));
     EXPECT_EQ(rowspan, cell->rowSpan())
         << "valid rowspan value '" << rowspan << "' is properly parsed";
   }
