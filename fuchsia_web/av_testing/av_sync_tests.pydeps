@@ -9,6 +9,7 @@
 ../../build/fuchsia/test/modification_waiter.py
 ../../build/fuchsia/test/run_webpage_test.py
 ../../build/fuchsia/test/test_runner.py
+../../build/fuchsia/test/version.py
 av_sync_tests.py
 camera.py
 server.py

@@ -24,6 +24,7 @@ TEST_SCRIPTS_ROOT = os.path.join(os.path.dirname(__file__), '..', '..',
                                  'build', 'fuchsia', 'test')
 sys.path.append(TEST_SCRIPTS_ROOT)
 
+import version
 from browser_runner import BrowserRunner
 from chrome_driver_wrapper import ChromeDriverWrapper
 from common import get_ffx_isolate_dir, get_free_local_port
@@ -124,6 +125,11 @@ if __name__ == '__main__':
     # managed docker image, the FUCHSIA_NODENAME environment is not set.
     if 'FUCHSIA_NODENAME' not in os.environ:
         os.environ['FUCHSIA_NODENAME'] = 'fuchsia-ac67-8475-ee82'
+    if running_unattended():
+        # The version is not available without explicitly sending in the
+        # command line flags.
+        logging.warning('Chrome version %s %s', version.chrome_version_str(),
+                        version.git_revision())
     # Setting a temporary isolate daemon dir and share it with the webpage
     # runner.
     with StartProcess(server.start, [HTTP_SERVER_PORT], True), \
