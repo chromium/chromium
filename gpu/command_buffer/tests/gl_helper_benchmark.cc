@@ -86,32 +86,6 @@ class GLHelperBenchmark : public testing::Test {
     context_.reset(nullptr);
   }
 
-  void LoadPngFileToSkBitmap(const base::FilePath& filename, SkBitmap* bitmap) {
-    std::string compressed;
-    base::ReadFileToString(base::MakeAbsoluteFilePath(filename), &compressed);
-    ASSERT_TRUE(compressed.size());
-    ASSERT_TRUE(gfx::PNGCodec::Decode(
-        reinterpret_cast<const unsigned char*>(compressed.data()),
-        compressed.size(), bitmap));
-  }
-
-  // Save the image to a png file. Used to create the initial test files.
-  void SaveToFile(SkBitmap* bitmap, const base::FilePath& filename) {
-    std::vector<unsigned char> compressed;
-    ASSERT_TRUE(gfx::PNGCodec::Encode(
-        static_cast<unsigned char*>(bitmap->getPixels()),
-        gfx::PNGCodec::FORMAT_BGRA,
-        gfx::Size(bitmap->width(), bitmap->height()),
-        static_cast<int>(bitmap->rowBytes()), true,
-        std::vector<gfx::PNGCodec::Comment>(), &compressed));
-    ASSERT_TRUE(compressed.size());
-    FILE* f = base::OpenFile(filename, "wb");
-    ASSERT_TRUE(f);
-    ASSERT_EQ(fwrite(&*compressed.begin(), 1, compressed.size(), f),
-              compressed.size());
-    base::CloseFile(f);
-  }
-
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<GLInProcessContext> context_;
   raw_ptr<gles2::GLES2Interface> gl_;  // This is owned by |context_|.
