@@ -37,13 +37,17 @@ export class BubbleController {
 
   resetBubble(): void {
     this.baseText_ = [];
-    const {paused, scrollModeActive} = this.getState_();
+    const {paused, scrollModeActive, longClickActive} = this.getState_();
     if (paused) {
       this.baseText_.push(chrome.i18n.getMessage('facegaze_state_paused'));
     }
     if (scrollModeActive) {
       this.baseText_.push(
           chrome.i18n.getMessage('facegaze_state_scroll_active'));
+    }
+    if (longClickActive) {
+      this.baseText_.push(
+          chrome.i18n.getMessage('facegaze_state_long_click_active'));
     }
 
     chrome.accessibilityPrivate.updateFaceGazeBubble(this.baseText_.join(', '));
@@ -154,6 +158,7 @@ export namespace BubbleController {
   export interface GetStateResult {
     paused: boolean;
     scrollModeActive: boolean;
+    longClickActive: boolean;
   }
 }
 

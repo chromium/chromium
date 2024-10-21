@@ -1782,6 +1782,42 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateMessages', async function() {
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
 
+AX_TEST_F('FaceGazeTest', 'BubbleTextLongClickStateMessage', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(0);
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Trigger a long click.
+  const result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result, false);
+
+  assertEquals(
+      'Drag and drop (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // FaceGaze should display important messages about the state after the
+  // timeout has elapsed.
+  this.triggerBubbleControllerTimeout();
+  assertTrue(this.getFaceGaze().mouseController_.isLongClickActive());
+  assertEquals(
+      'Drag and drop in progress',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Finish drag and drop action.
+  this.processFaceLandmarkerResult(result);
+  this.triggerBubbleControllerTimeout();
+  assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+});
+
 AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
   const gestureToMacroName =
       new Map()

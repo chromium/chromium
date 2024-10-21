@@ -37,6 +37,7 @@ export class FaceGaze {
       return {
         paused: this.gestureHandler_.isPaused(),
         scrollModeActive: this.mouseController_.isScrollModeActive(),
+        longClickActive: this.mouseController_.isLongClickActive(),
       };
     });
 
