@@ -1993,7 +1993,10 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
 
   content::SiteInstance* site_instance =
       inspected_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
-  if (site_instance->GetSiteURL().SchemeIs(extensions::kExtensionScheme)) {
+  const GURL& site_url = site_instance->GetSiteURL();
+  if (site_url.SchemeIs(extensions::kExtensionScheme) ||
+      site_url.SchemeIs(content::kChromeDevToolsScheme) ||
+      site_url.SchemeIs(content::kChromeUIScheme)) {
     return;
   }
 
