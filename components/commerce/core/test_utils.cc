@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -159,4 +160,18 @@ DiscountInfo CreateValidDiscountInfo(const std::string& detail,
   return discount_info;
 }
 
+void EnableProductSpecificationsDataFetch(MockAccountChecker* account_checker,
+                                          TestingPrefServiceSimple* prefs) {
+  ON_CALL(*account_checker, IsSyncTypeEnabled)
+      .WillByDefault(testing::Return(true));
+  account_checker->SetAnonymizedUrlDataCollectionEnabled(true);
+  account_checker->SetSignedIn(true);
+  account_checker->SetIsSubjectToParentalControls(false);
+  account_checker->SetCanUseModelExecutionFeatures(true);
+
+  // 0 is the enabled enterprise state for the feature.
+  prefs->SetManagedPref(
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
+      base::Value(0));
+}
 }  // namespace commerce
