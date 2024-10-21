@@ -28,6 +28,13 @@ class LensPermissionBubbleInteractiveUiTest : public InteractiveBrowserTest {
 
   auto* GetPrefService() { return browser()->profile()->GetPrefs(); }
 
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {lens::features::kLensOverlay},
+        {lens::features::kLensOverlayContextualSearchbox});
+    InteractiveBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
     controller_ = std::make_unique<lens::LensPermissionBubbleController>(
@@ -97,7 +104,7 @@ class LensPermissionBubbleInteractiveUiTest : public InteractiveBrowserTest {
   base::HistogramTester histogram_tester;
 
  private:
-  base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<LensPermissionBubbleController> controller_;
   bool request_permission_callback_called_;
 };

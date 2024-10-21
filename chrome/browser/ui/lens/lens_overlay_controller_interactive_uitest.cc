@@ -181,10 +181,11 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
   ~LensOverlayControllerCUJTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({lens::features::kLensOverlay,
-                                    lens::features::kLensOverlayTranslateButton,
-                                    media::kContextMenuSearchForVideoFrame},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {lens::features::kLensOverlay,
+         lens::features::kLensOverlayTranslateButton,
+         media::kContextMenuSearchForVideoFrame},
+        {lens::features::kLensOverlayContextualSearchbox});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InteractiveFeaturePromoTest::SetUp();
   }
