@@ -59,6 +59,7 @@ source_set("unit_tests") {
   sources = [
     "tips_magic_stack_mediator_unittest.mm",
     "tips_module_view_unittest.mm",
+    "tips_passwords_coordinator_unittest.mm",
   ]
   deps = [
     ":tips",
@@ -71,12 +72,14 @@ source_set("unit_tests") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
   frameworks = [ "Foundation.framework" ]
 }

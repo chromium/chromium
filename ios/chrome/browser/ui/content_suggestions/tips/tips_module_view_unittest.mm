@@ -9,6 +9,7 @@
 #import "base/test/task_environment.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/icon_detail_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/icon_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
 #import "testing/platform_test.h"
 
@@ -115,4 +116,66 @@ TEST_F(TipsModuleViewTest, DisplaysModuleWithDefaultState) {
   ExpectSubview(@"kTipsModuleViewID", true);
   ExpectSubview(@"kLensTranslateAccessibilityID", true);
   ExpectSubview(@"kLensShopAccessibilityID", false);
+}
+
+// Tests that the module displays the correct accessibility identifier for
+// each tip type.
+TEST_F(TipsModuleViewTest, DisplaysCorrectAccessibilityIdentifier) {
+  std::vector<TipIdentifier> tips = {
+      TipIdentifier::kLensSearch,           TipIdentifier::kLensShop,
+      TipIdentifier::kLensTranslate,        TipIdentifier::kAddressBarPosition,
+      TipIdentifier::kSavePasswords,        TipIdentifier::kAutofillPasswords,
+      TipIdentifier::kEnhancedSafeBrowsing,
+  };
+
+  std::vector<NSString*> identifiers = {
+      @"kLensSearchAccessibilityID",
+      @"kLensShopAccessibilityID",
+      @"kLensTranslateAccessibilityID",
+      @"kAddressBarPositionAccessibilityID",
+      @"kSavePasswordsAccessibilityID",
+      @"kAutofillPasswordsAccessibilityID",
+      @"kEnhancedSafeBrowsingAccessibilityID",
+  };
+
+  ASSERT_EQ(tips.size(), identifiers.size());
+
+  for (size_t i = 0; i < tips.size(); ++i) {
+    TipsModuleState* state =
+        [[TipsModuleState alloc] initWithIdentifier:tips[i]];
+
+    TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
+
+    [_superview addSubview:view];
+
+    ExpectSubview(identifiers[i], true);
+  }
+}
+
+// Tests that the module displays the correct number of subviews for each tip
+// type.
+TEST_F(TipsModuleViewTest, DisplaysCorrectNumberOfSubviews) {
+  // Currently, all tips display one item, i.e. the hero-cell default layout
+  // item. If a new tip is added with more than one item, this test should be
+  // updated.
+  std::vector<TipIdentifier> tips = {
+      TipIdentifier::kLensSearch,           TipIdentifier::kLensShop,
+      TipIdentifier::kLensTranslate,        TipIdentifier::kAddressBarPosition,
+      TipIdentifier::kSavePasswords,        TipIdentifier::kAutofillPasswords,
+      TipIdentifier::kEnhancedSafeBrowsing,
+  };
+
+  for (TipIdentifier tip : tips) {
+    TipsModuleState* state = [[TipsModuleState alloc] initWithIdentifier:tip];
+
+    TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
+
+    [_superview addSubview:view];
+
+    ExpectSubviewCount(1, [IconDetailView class]);
+    ExpectSubviewCount(1, [IconView class]);
+    ExpectSubviewCount(1, [TipsModuleView class]);
+
+    [view removeFromSuperview];
+  }
 }
