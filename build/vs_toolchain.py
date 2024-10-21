@@ -18,38 +18,56 @@ import sys
 from gn_helpers import ToGNString
 
 # VS 2022 17.9.2 with 10.0.26100.1742 SDK with ARM64 libraries and UWP support.
-# See go/chromium-msvc-toolchain for instructions about how to update the
+# See go/win-toolchain-reference for instructions about how to update the
 # toolchain.
 #
 # When updating the toolchain, consider the following areas impacted by the
 # toolchain version:
 #
-# * //base/win/windows_version.cc NTDDI preprocessor check
-#   Triggers a compiler error if the available SDK is older than the minimum.
-# * SDK_VERSION in this file
-#   Must match the packaged/required SDK version.
-# * SDK_VERSION in build/toolchain/win/setup_toolchain.py.
-# * //build/config/win/BUILD.gn NTDDI_VERSION value
-#   Affects the availability of APIs in the toolchain headers.
-# * //docs/windows_build_instructions.md mentions of VS or Windows SDK.
-#   Keeps the document consistent with the toolchain version.
-# * //tools/win/setenv.py
+# * This file -- SDK_VERSION and TOOLCHAIN_HASH
+#   Determines which version of the toolchain is used by gclient. The hash
+#   is the name of the toolchain package (minus the zip) in gcloud, and
+#   SDK_VERSION should match the SDK version in that package.
+#
+# * This file -- MSVS_VERSIONS
+#   Records the supported versions of Visual Studio, in priority order.
+#
+# * This file -- MSVC_TOOLSET_VERSION
+#   Determines the expected MSVC toolset for each version of Visual Studio.
+#   The packaged toolset version can be seen at <package>/VC/redist/MSVC;
+#   there will be a folder named `v143` or similar.
+#
+# * build/toolchain/win/setup_toolchain.py -- SDK_VERSION
+#   Secondary specification of the SDK Version, to make sure we're loading the
+#   right one. Should always match SDK_VERSION in this file.
+#
+# * base/win/windows_version.cc -- NTDDI preprocessor check
+#   Forces developers to have a specific SDK version (or newer). Triggers a
+#   compiler error if the available SDK is older than the minimum.
+#
+# * build/config/win/BUILD.gn -- NTDDI_VERSION
+#   Specifies which SDK/WDK version is installed. Some of the toolchain headers
+#   check this macro to conditionally compile code.
+#
+# * build/config/win/BUILD.gn -- WINVER and _WIN32_WINNT
+#   Specify the minimum supported Windows version. These very rarely need to
+#   be changed.
+#
+# * tools/win/setenv.py -- list of accepted `vs_version`s
 #   Add/remove VS versions when upgrading to a new VS version.
-# * MSVC_TOOLSET_VERSION in this file
-#   Maps between Visual Studio version and MSVC toolset
-# * MSVS_VERSIONS in this file
-#   Records the packaged and default version of Visual Studio
+#
+# * docs/windows_build_instructions.md
+#   Make sure any version numbers in the documentation match the code.
+#
 TOOLCHAIN_HASH = '698eb5635a'
 SDK_VERSION = '10.0.26100.0'
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
-json_data_file = os.path.join(script_dir, 'win_toolchain.json')
-
-# VS versions are listed in descending order of priority (highest first).
+# Visual Studio versions are listed in descending order of priority.
 # The first version is assumed by this script to be the one that is packaged,
 # which makes a difference for the arm64 runtime.
+# The second number is an alternate version number, only used in an error string
 MSVS_VERSIONS = collections.OrderedDict([
-    ('2022', '17.0'),  # Default and packaged version of Visual Studio.
+    ('2022', '17.0'),  # The VS version in our packaged toolchain.
     ('2019', '16.0'),
     ('2017', '15.0'),
 ])
@@ -61,6 +79,10 @@ MSVC_TOOLSET_VERSION = {
     '2019': 'VC142',
     '2017': 'VC141',
 }
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
+json_data_file = os.path.join(script_dir, 'win_toolchain.json')
+
 
 def _HostIsWindows():
   """Returns True if running on a Windows host (including under cygwin)."""
