@@ -44,6 +44,7 @@
   BOOL isStarting = recognizer.state == UIGestureRecognizerStateBegan;
   if (isStarting) {
     _isPanning = YES;
+    [_delegate onPanGestureStarted:self];
     return;
   }
 
@@ -52,6 +53,7 @@
 
   if (isEnding || isCancelled) {
     _isPanning = NO;
+    [_delegate onPanGestureEnded:self];
     return;
   }
 }

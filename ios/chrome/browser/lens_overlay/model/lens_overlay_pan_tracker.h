@@ -7,11 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol LensOverlayPanTrackerDelegate;
+
 // Utility class that tracks whether the user pans a given UIView.
 //
 // Does not strongly retain the view.
 @interface LensOverlayPanTracker : NSObject <UIGestureRecognizerDelegate>
 
+@property(nonatomic, weak) id<LensOverlayPanTrackerDelegate> delegate;
 // Whether the user pans the view.
 @property(nonatomic, assign, readonly) BOOL isPanning;
 
@@ -23,6 +26,17 @@
 
 // Stops tracking pan gestures on the given view.
 - (void)stopTracking;
+
+@end
+
+// Delegate for starting and stopping tracking pan gesture.
+@protocol LensOverlayPanTrackerDelegate
+
+// The tracker started tracking a pan gesture.
+- (void)onPanGestureStarted:(LensOverlayPanTracker*)panTracker;
+
+// The tracker ended tracking the pan gesture.
+- (void)onPanGestureEnded:(LensOverlayPanTracker*)panTracker;
 
 @end
 

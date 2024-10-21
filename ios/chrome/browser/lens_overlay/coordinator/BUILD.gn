@@ -54,6 +54,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/lens_overlay/model:detents_manager",
     "//ios/chrome/browser/lens_overlay/model:entrypoint",
     "//ios/chrome/browser/lens_overlay/ui:protocols",
     "//ios/chrome/browser/lens_overlay/ui:view_controller",

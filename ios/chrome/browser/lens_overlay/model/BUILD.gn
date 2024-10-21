@@ -30,6 +30,18 @@ source_set("model") {
   public_deps = [ "//base" ]
 }
 
+source_set("detents_manager") {
+  sources = [
+    "lens_overlay_detents_manager.h",
+    "lens_overlay_detents_manager.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/lens_overlay/ui:protocols",
+    "//ui/base",
+  ]
+}
+
 source_set("entrypoint") {
   sources = [
     "lens_overlay_entrypoint.h",

@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
@@ -93,32 +94,18 @@ const int kExpectedExitAnimationCount = 2;
 // The duration of the dismiss animation when exiting the selection UI.
 const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
-NSString* const kCustomConsentSheetDetentIdentifier =
-    @"kCustomConsentSheetDetentIdentifier";
-
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 const CGFloat kMenuSymbolSize = 18;
 #endif
 
 }  // namespace
 
-// Indicates the state of the bottom sheet
-typedef NS_ENUM(NSUInteger, SheetDetentState) {
-  // The bottom sheet is locked in large detent.
-  SheetStateLockedInLargeDetent,
-  // The bottom sheet is free to oscilate between medium and large.
-  SheetStateUnrestrictedMovement,
-  // The bottom sheet is presenting the consent dialog sheet.
-  SheetStateConsentDialog,
-};
-
-@interface LensOverlayCoordinator () <
-    LensOverlayCommands,
-    UISheetPresentationControllerDelegate,
-    LensOverlayMediatorDelegate,
-    LensOverlayResultConsumer,
-    LensOverlayBottomSheetPresentationDelegate,
-    LensOverlayConsentViewControllerDelegate>
+@interface LensOverlayCoordinator () <LensOverlayCommands,
+                                      UISheetPresentationControllerDelegate,
+                                      LensOverlayMediatorDelegate,
+                                      LensOverlayResultConsumer,
+                                      LensOverlayConsentViewControllerDelegate,
+                                      LensOverlayPanTrackerDelegate>
 
 @end
 
@@ -173,6 +160,8 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   LensOverlayPanTracker* _windowPanTracker;
   /// Used to monitor the results sheet position relative to the container.
   CADisplayLink* _displayLink;
+
+  LensOverlayDetentsManager* _detentsManager;
 }
 
 #pragma mark - public
@@ -543,6 +532,20 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
                          }];
 }
 
+#pragma mark - LensOverlayPanTrackerDelegate
+
+- (void)onPanGestureStarted:(LensOverlayPanTracker*)tracker {
+  // NO-OP
+}
+
+- (void)onPanGestureEnded:(LensOverlayPanTracker*)tracker {
+  if (tracker == _windowPanTracker) {
+    if (_detentsManager.isPeaking) {
+      [_detentsManager adjustDetentsForState:SheetStateUnrestrictedMovement];
+    }
+  }
+}
+
 #pragma mark - UISheetPresentationControllerDelegate
 
 - (BOOL)presentationControllerShouldDismiss:
@@ -554,33 +557,24 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
     return YES;
   }
 
-  CHECK_EQ(presentedViewController, _resultViewController);
-  // Only allow swiping down to dismiss when not at the largest detent.
-  UISheetPresentationController* sheet =
-      base::apple::ObjCCastStrict<UISheetPresentationController>(
-          presentationController);
-  BOOL isInLargestDetent = [sheet.selectedDetentIdentifier
-      isEqualToString:UISheetPresentationControllerDetentIdentifierLarge];
-
   // If the user is actively adjusting a selection (by moving the selection
   // frame), it means the sheet dismissal was incidental and shouldn't be
   // processed. Only when the sheet is directly dragged downwards should the
   // dismissal intent be considered.
   BOOL isSelecting = _selectionViewController.isPanningSelectionUI;
-
-  if (isSelecting || isInLargestDetent) {
+  if (isSelecting) {
+    // Instead, when a touch collision is detected, go into the peak state.
+    [_detentsManager adjustDetentsForState:SheetStatePeakEnabled];
     return NO;
   }
 
-  return YES;
+  // Only allow swiping down to dismiss when not at the largest detent.
+  return ![_detentsManager isInLargestDetent];
 }
 
 - (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
     (UISheetPresentationController*)presentationController {
-  BOOL isInLargestDetent = [presentationController.selectedDetentIdentifier
-      isEqualToString:UISheetPresentationControllerDetentIdentifierLarge];
-
-  [self disableSelectionInteraction:isInLargestDetent];
+  [self disableSelectionInteraction:[_detentsManager isInLargestDetent]];
 }
 
 - (void)presentationControllerDidDismiss:
@@ -690,46 +684,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
       openURLInNewTab:command];
 }
 
-#pragma mark - LensOverlayBottomSheetPresentationDelegate
-
-- (void)requestMaximizeBottomSheet {
-  CHECK(_containerViewController.presentedViewController ==
-        _resultViewController);
-  UISheetPresentationController* sheet =
-      _resultViewController.sheetPresentationController;
-
-  [sheet animateChanges:^{
-    sheet.selectedDetentIdentifier =
-        [UISheetPresentationControllerDetent largeDetent].identifier;
-  }];
-}
-
-- (void)requestMinimizeBottomSheet {
-  CHECK(_containerViewController.presentedViewController ==
-        _resultViewController);
-  UISheetPresentationController* sheet =
-      _resultViewController.sheetPresentationController;
-
-  [sheet animateChanges:^{
-    sheet.selectedDetentIdentifier =
-        [UISheetPresentationControllerDetent mediumDetent].identifier;
-  }];
-}
-
-- (void)restrictSheetToLargeDetent:(BOOL)restrictToLargeDetent {
-  UISheetPresentationController* sheet =
-      _resultViewController.sheetPresentationController;
-
-  if (restrictToLargeDetent) {
-    [self requestMaximizeBottomSheet];
-    [self adjustDetentsOfBottomSheet:sheet
-                            forState:SheetStateLockedInLargeDetent];
-  } else {
-    [self adjustDetentsOfBottomSheet:sheet
-                            forState:SheetStateUnrestrictedMovement];
-  }
-}
-
 #pragma mark - private
 
 - (void)showNoInternetAlert {
@@ -757,42 +711,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   [_containerViewController presentViewController:alert
                                          animated:YES
                                        completion:nil];
-}
-
-// Adjust the detents of the given sheet based on the sheet state.
-- (void)adjustDetentsOfBottomSheet:(UISheetPresentationController*)sheet
-                          forState:(SheetDetentState)state {
-  if (!sheet) {
-    return;
-  }
-
-  UISheetPresentationControllerDetent* largeDetent =
-      [UISheetPresentationControllerDetent largeDetent];
-  UISheetPresentationControllerDetent* mediumDetent =
-      [UISheetPresentationControllerDetent mediumDetent];
-
-  switch (state) {
-    case SheetStateUnrestrictedMovement:
-      sheet.detents = @[ mediumDetent, largeDetent ];
-      break;
-    case SheetStateLockedInLargeDetent:
-      sheet.detents = @[ largeDetent ];
-      break;
-    case SheetStateConsentDialog:
-      __weak UIViewController* weakConsentController = _consentViewController;
-      auto preferredHeightForContent = ^CGFloat(
-          id<UISheetPresentationControllerDetentResolutionContext> context) {
-        return weakConsentController.preferredContentSize.height;
-      };
-      UISheetPresentationControllerDetent* consentDialogDetent =
-          [UISheetPresentationControllerDetent
-              customDetentWithIdentifier:kCustomConsentSheetDetentIdentifier
-                                resolver:preferredHeightForContent];
-      sheet.detents = @[ consentDialogDetent ];
-      break;
-  }
-
-  sheet.largestUndimmedDetentIdentifier = largeDetent.identifier;
 }
 
 // Lens needs to have visibility into the user's identity and whether the search
@@ -845,7 +763,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   _resultMediator.snackbarHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
   _resultMediator.delegate = _mediator;
-  _resultMediator.presentationDelegate = self;
   _mediator.resultConsumer = _resultMediator;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
@@ -896,7 +813,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 
   _mediator.omniboxCoordinator = _omniboxCoordinator;
   _mediator.toolbarConsumer = _resultViewController;
-  _mediator.presentationDelegate = self;
   _omniboxCoordinator.focusDelegate = _mediator;
 }
 
@@ -1055,7 +971,9 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
       _consentViewController.sheetPresentationController;
   sheet.delegate = self;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
-  [self adjustDetentsOfBottomSheet:sheet forState:SheetStateConsentDialog];
+  _detentsManager =
+      [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet];
+  [_detentsManager adjustDetentsForState:SheetStateConsentDialog];
 
   [_containerViewController presentViewController:_consentViewController
                                          animated:YES
@@ -1099,8 +1017,11 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   sheet.prefersEdgeAttachedInCompactHeight = YES;
   sheet.prefersGrabberVisible = YES;
   sheet.preferredCornerRadius = 14;
-  [self adjustDetentsOfBottomSheet:sheet
-                          forState:SheetStateUnrestrictedMovement];
+  _detentsManager =
+      [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet];
+  [_detentsManager adjustDetentsForState:SheetStateUnrestrictedMovement];
+  _resultMediator.presentationDelegate = _detentsManager;
+  _mediator.presentationDelegate = _detentsManager;
 
   // Adjust the occlusion insets so that selections in the bottom half of the
   // screen are repositioned, to avoid being hidden by the bottom sheet.
@@ -1144,6 +1065,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
                      forMode:NSRunLoopCommonModes];
 
   _windowPanTracker = [[LensOverlayPanTracker alloc] initWithView:sceneWindow];
+  _windowPanTracker.delegate = self;
   [_windowPanTracker startTracking];
 }
 
