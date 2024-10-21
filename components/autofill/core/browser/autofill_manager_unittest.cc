@@ -31,7 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #endif
 
 namespace autofill {
@@ -67,16 +67,16 @@ class MockAutofillDriver : public TestAutofillDriver {
 };
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-class MockAutofillMlPredictionModelHandler
-    : public AutofillMlPredictionModelHandler {
+class MockFieldClassificationModelHandler
+    : public FieldClassificationModelHandler {
  public:
-  explicit MockAutofillMlPredictionModelHandler(
+  explicit MockFieldClassificationModelHandler(
       optimization_guide::OptimizationGuideModelProvider* provider)
-      : AutofillMlPredictionModelHandler(
+      : FieldClassificationModelHandler(
             provider,
             optimization_guide::proto::OptimizationTarget::
                 OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION) {}
-  ~MockAutofillMlPredictionModelHandler() override = default;
+  ~MockFieldClassificationModelHandler() override = default;
 
   MOCK_METHOD(
       void,
@@ -494,7 +494,7 @@ TEST_F(AutofillManagerTest, TriggerFormExtractionInAllFrames) {
   manager().TriggerFormExtractionInAllFrames(base::DoNothing());
 }
 
-// Ensure that `AutofillMlPredictionModelHandler` is called when parsing the
+// Ensure that `FieldClassificationModelHandler` is called when parsing the
 // form in `ParseFormsAsync()`
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 TEST_F(AutofillManagerTest, GetMlModelPredictionsForForm) {
@@ -503,7 +503,7 @@ TEST_F(AutofillManagerTest, GetMlModelPredictionsForForm) {
   auto provider = std::make_unique<
       optimization_guide::TestOptimizationGuideModelProvider>();
   auto mock_handler =
-      std::make_unique<MockAutofillMlPredictionModelHandler>(provider.get());
+      std::make_unique<MockFieldClassificationModelHandler>(provider.get());
   // This test intentionally doesn't associate predictions to the
   // `FormStructure`, it only expects that `GetModelPredictionsForForms` gets
   // called.

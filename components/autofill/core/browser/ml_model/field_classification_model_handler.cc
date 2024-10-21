@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 
 #include <algorithm>
 #include <vector>
@@ -35,14 +35,14 @@ std::optional<optimization_guide::proto::Any> CreateModelMetadata() {
   optimization_guide::proto::AutofillFieldClassificationModelMetadata
       model_metadata;
   model_metadata.set_input_version(
-      AutofillMlPredictionModelHandler::kAutofillModelInputVersion);
+      FieldClassificationModelHandler::kAutofillModelInputVersion);
   model_metadata.SerializeToString(any_metadata.mutable_value());
   return any_metadata;
 }
 
 }  // anonymous namespace
 
-AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
+FieldClassificationModelHandler::FieldClassificationModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     optimization_guide::proto::OptimizationTarget optimization_target)
     : optimization_guide::ModelHandler<
@@ -63,9 +63,9 @@ AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
   SetShouldPreloadModel(true);
   SetShouldUnloadModelOnComplete(false);
 }
-AutofillMlPredictionModelHandler::~AutofillMlPredictionModelHandler() = default;
+FieldClassificationModelHandler::~FieldClassificationModelHandler() = default;
 
-void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
+void FieldClassificationModelHandler::GetModelPredictionsForForm(
     std::unique_ptr<FormStructure> form_structure,
     base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback) {
   if (!ModelAvailable() || !state_) {
@@ -77,7 +77,7 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
       state_->encoder.EncodeForm(*form_structure);
   ExecuteModelWithInput(
       base::BindOnce(
-          [](base::WeakPtr<AutofillMlPredictionModelHandler> self,
+          [](base::WeakPtr<FieldClassificationModelHandler> self,
              std::unique_ptr<FormStructure> form_structure,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
              const std::optional<FieldClassificationModelEncoder::ModelOutput>&
@@ -92,7 +92,7 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
       std::move(encoded_input));
 }
 
-void AutofillMlPredictionModelHandler::GetModelPredictionsForForms(
+void FieldClassificationModelHandler::GetModelPredictionsForForms(
     std::vector<std::unique_ptr<FormStructure>> forms,
     base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
         callback) {
@@ -103,7 +103,7 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForms(
   }
 }
 
-void AutofillMlPredictionModelHandler::OnModelUpdated(
+void FieldClassificationModelHandler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   CHECK_EQ(optimization_target, optimization_target_);
@@ -130,7 +130,7 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
   state_.emplace(std::move(state));
 }
 
-void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(
+void FieldClassificationModelHandler::AssignMostLikelyTypes(
     FormStructure& form,
     const FieldClassificationModelEncoder::ModelOutput& output) const {
   // The ML model can process at most
@@ -142,7 +142,7 @@ void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(
   }
 }
 
-FieldType AutofillMlPredictionModelHandler::GetMostLikelyType(
+FieldType FieldClassificationModelHandler::GetMostLikelyType(
     const std::vector<float>& model_output) const {
   CHECK(state_);
   int max_index =

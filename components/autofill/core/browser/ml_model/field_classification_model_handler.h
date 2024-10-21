@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_ML_PREDICTION_MODEL_HANDLER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_ML_PREDICTION_MODEL_HANDLER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_FIELD_CLASSIFICATION_MODEL_HANDLER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_FIELD_CLASSIFICATION_MODEL_HANDLER_H_
 
 #include <optional>
 #include <vector>
@@ -25,7 +25,7 @@ namespace autofill {
 // `FieldClassificationModelExecutor`. It retrieves the model from the server,
 // load it into memory, execute it with FormStructure as input and associate the
 // model FieldType predictions with the FormStructure.
-class AutofillMlPredictionModelHandler
+class FieldClassificationModelHandler
     : public optimization_guide::ModelHandler<
           FieldClassificationModelEncoder::ModelOutput,
           const FieldClassificationModelEncoder::ModelInput&>,
@@ -35,10 +35,10 @@ class AutofillMlPredictionModelHandler
   // version will be used by the server.
   static constexpr int64_t kAutofillModelInputVersion = 3;
 
-  AutofillMlPredictionModelHandler(
+  FieldClassificationModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::proto::OptimizationTarget optimization_target);
-  ~AutofillMlPredictionModelHandler() override;
+  ~FieldClassificationModelHandler() override;
 
   // This function asynchronously queries predictions for the `form_structure`
   // from the model and sets the model predictions with the FormStructure
@@ -89,10 +89,9 @@ class AutofillMlPredictionModelHandler
   // Specifies the model to load and execute.
   const optimization_guide::proto::OptimizationTarget optimization_target_;
 
-  base::WeakPtrFactory<AutofillMlPredictionModelHandler> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<FieldClassificationModelHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_ML_PREDICTION_MODEL_HANDLER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_FIELD_CLASSIFICATION_MODEL_HANDLER_H_

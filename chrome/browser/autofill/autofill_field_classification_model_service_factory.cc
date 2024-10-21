@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/autofill_ml_prediction_model_service_factory.h"
+#include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
 
 #include <memory>
 
@@ -16,35 +16,36 @@
 namespace autofill {
 
 // static
-AutofillMlPredictionModelServiceFactory*
-AutofillMlPredictionModelServiceFactory::GetInstance() {
-  static base::NoDestructor<AutofillMlPredictionModelServiceFactory> instance;
+AutofillFieldClassificationModelServiceFactory*
+AutofillFieldClassificationModelServiceFactory::GetInstance() {
+  static base::NoDestructor<AutofillFieldClassificationModelServiceFactory>
+      instance;
   return instance.get();
 }
 
 // static
-AutofillMlPredictionModelHandler*
-AutofillMlPredictionModelServiceFactory::GetForBrowserContext(
+FieldClassificationModelHandler*
+AutofillFieldClassificationModelServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<AutofillMlPredictionModelHandler*>(
+  return static_cast<FieldClassificationModelHandler*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
-AutofillMlPredictionModelServiceFactory::
-    AutofillMlPredictionModelServiceFactory()
+AutofillFieldClassificationModelServiceFactory::
+    AutofillFieldClassificationModelServiceFactory()
     : BrowserContextKeyedServiceFactory(
-          "AutofillMlPredictionModelHandler",
+          "FieldClassificationModelHandler",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
-AutofillMlPredictionModelServiceFactory::
-    ~AutofillMlPredictionModelServiceFactory() = default;
+AutofillFieldClassificationModelServiceFactory::
+    ~AutofillFieldClassificationModelServiceFactory() = default;
 
 content::BrowserContext*
-AutofillMlPredictionModelServiceFactory::GetBrowserContextToUse(
+AutofillFieldClassificationModelServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  // `AutofillMlPredictionModelHandler` is not supported without an
+  // `FieldClassificationModelHandler` is not supported without an
   // `OptimizationGuideKeyedService`.
   return OptimizationGuideKeyedServiceFactory::GetForProfile(
              Profile::FromBrowserContext(context))
@@ -52,13 +53,13 @@ AutofillMlPredictionModelServiceFactory::GetBrowserContextToUse(
              : nullptr;
 }
 
-std::unique_ptr<KeyedService>
-AutofillMlPredictionModelServiceFactory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> AutofillFieldClassificationModelServiceFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
-  return std::make_unique<AutofillMlPredictionModelHandler>(
+  return std::make_unique<FieldClassificationModelHandler>(
       optimization_guide,
       optimization_guide::proto::OptimizationTarget::
           OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);

@@ -64,8 +64,8 @@ AutofillOptimizationGuide* AutofillClient::GetAutofillOptimizationGuide()
   return nullptr;
 }
 
-AutofillMlPredictionModelHandler*
-AutofillClient::GetAutofillMlPredictionModelHandler() {
+FieldClassificationModelHandler*
+AutofillClient::GetAutofillFieldClassificationModelHandler() {
   return nullptr;
 }
 

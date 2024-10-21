@@ -46,7 +46,7 @@ class FieldClassificationModelEncoder {
   // representing the confidence in that type. The confidences don't have any
   // meaning, but higher means more confidence. Since the model might not
   // support all FieldTypes, the indices don't map to field types directly. See
-  // `AutofillMlPredictionModelHandler`.
+  // `FieldClassificationModelHandler`.
   // Dimensionality: (maximum_number_of_fields, len(output_type))
   // where output_type is an attribute of the
   // `AutofillFieldClassificationModelMetadata`.

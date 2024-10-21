@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 
 #include <optional>
 #include <vector>
@@ -40,7 +40,7 @@ MATCHER(MlTypeEq, "") {
          std::get<1>(arg);
 }
 
-class AutofillMlPredictionModelHandlerTest : public testing::Test {
+class FieldClassificationModelHandlerTest : public testing::Test {
  public:
   void SetUp() override {
     base::FilePath source_root_dir;
@@ -52,7 +52,7 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
                          .AppendASCII("ml_model");
     model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
-    model_handler_ = std::make_unique<AutofillMlPredictionModelHandler>(
+    model_handler_ = std::make_unique<FieldClassificationModelHandler>(
         model_provider_.get(),
         optimization_guide::proto::OptimizationTarget::
             OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
@@ -64,7 +64,7 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  AutofillMlPredictionModelHandler& model_handler() { return *model_handler_; }
+  FieldClassificationModelHandler& model_handler() { return *model_handler_; }
 
   // The overfitted model is overtrained on this form. Which is the only form
   // that can be used for unittests. The model that is
@@ -143,13 +143,13 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
   base::test::ScopedFeatureList features_{features::kAutofillModelPredictions};
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       model_provider_;
-  std::unique_ptr<AutofillMlPredictionModelHandler> model_handler_;
+  std::unique_ptr<FieldClassificationModelHandler> model_handler_;
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_environment_;
   base::FilePath test_data_dir_;
 };
 
-TEST_F(AutofillMlPredictionModelHandlerTest, GetModelPredictionsForForm) {
+TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForm) {
   SimulateRetrieveModelFromServer();
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
@@ -161,7 +161,7 @@ TEST_F(AutofillMlPredictionModelHandlerTest, GetModelPredictionsForForm) {
 
 // Tests that predictions with a confidence below the threshold are reported as
 // UNKNOWN_TYPE.
-TEST_F(AutofillMlPredictionModelHandlerTest,
+TEST_F(FieldClassificationModelHandlerTest,
        GetModelPredictionsForForm_Threshold) {
   // Set a really high threshold and expect that all predictions are suppressed.
   SimulateRetrieveModelFromServer(/*confidence_threshold=*/100);
@@ -175,7 +175,7 @@ TEST_F(AutofillMlPredictionModelHandlerTest,
                                   future.Get()->field_count(), UNKNOWN_TYPE)));
 }
 
-TEST_F(AutofillMlPredictionModelHandlerTest, GetModelPredictionsForForms) {
+TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForms) {
   SimulateRetrieveModelFromServer();
   std::vector<std::unique_ptr<FormStructure>> forms;
   forms.push_back(CreateOverfittedForm());

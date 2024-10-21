@@ -146,7 +146,7 @@
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -436,7 +436,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     base::Value::Dict& site,
     const GeoIpCountryCode& client_country,
     LanguageCode page_language,
-    AutofillMlPredictionModelHandler* ml_predictions_handler,
+    FieldClassificationModelHandler* ml_predictions_handler,
     ResultAnalyzer& result_analyzer,
     LogManager* log_manager) {
   const std::string* site_url = site.FindString("site_url");
@@ -532,7 +532,7 @@ class HeuristicClassificationTests
 
   // Infrastructure for ML classifications.
   optimization_guide::TestOptimizationGuideModelProvider model_provider_;
-  AutofillMlPredictionModelHandler ml_predictions_handler_{
+  FieldClassificationModelHandler ml_predictions_handler_{
       &model_provider_, optimization_guide::proto::OptimizationTarget::
                             OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION};
 };

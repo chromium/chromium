@@ -160,8 +160,8 @@
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "chrome/browser/autofill/autofill_ml_prediction_model_service_factory.h"
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #endif
 
 namespace autofill {
@@ -260,11 +260,11 @@ AutofillOptimizationGuide* ChromeAutofillClient::GetAutofillOptimizationGuide()
              : AutofillOptimizationGuideFactory::GetForProfile(profile);
 }
 
-AutofillMlPredictionModelHandler*
-ChromeAutofillClient::GetAutofillMlPredictionModelHandler() {
+FieldClassificationModelHandler*
+ChromeAutofillClient::GetAutofillFieldClassificationModelHandler() {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
-    return AutofillMlPredictionModelServiceFactory::GetForBrowserContext(
+    return AutofillFieldClassificationModelServiceFactory::GetForBrowserContext(
         web_contents()->GetBrowserContext());
   }
 #endif

@@ -33,7 +33,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #endif
 
 namespace autofill {
@@ -664,7 +664,8 @@ void AutofillManager::ParseFormsAsync(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Run ML Model before running heuristics to ensure that
   // rationalization and sectioning are done.
-  if (auto* ml_handler = client().GetAutofillMlPredictionModelHandler()) {
+  if (auto* ml_handler =
+          client().GetAutofillFieldClassificationModelHandler()) {
     ml_handler->GetModelPredictionsForForms(
         std::move(form_structures), std::move(run_heuristics_and_update_cache));
     return;
@@ -796,7 +797,8 @@ void AutofillManager::ParseFormAsync(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Run ML Model before running heuristics to ensure that
   // rationalization and sectioning are done.
-  if (auto* ml_handler = client().GetAutofillMlPredictionModelHandler()) {
+  if (auto* ml_handler =
+          client().GetAutofillFieldClassificationModelHandler()) {
     ml_handler->GetModelPredictionsForForm(
         std::move(form_structure), std::move(run_heuristics_and_update_cache));
     return;

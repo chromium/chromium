@@ -65,7 +65,7 @@
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #endif
 
 using ::autofill::test::AutofillTestingPrefService;
@@ -212,13 +212,13 @@ class TestAutofillClientTemplate : public T {
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  AutofillMlPredictionModelHandler* GetAutofillMlPredictionModelHandler()
+  FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
       override {
     return ml_prediction_model_handler_.get();
   }
 
   void set_ml_prediction_model_handler(
-      std::unique_ptr<AutofillMlPredictionModelHandler> handler) {
+      std::unique_ptr<FieldClassificationModelHandler> handler) {
     ml_prediction_model_handler_ = std::move(handler);
   }
 #endif
@@ -514,8 +514,7 @@ class TestAutofillClientTemplate : public T {
       device_authenticator_ = nullptr;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  std::unique_ptr<AutofillMlPredictionModelHandler>
-      ml_prediction_model_handler_;
+  std::unique_ptr<FieldClassificationModelHandler> ml_prediction_model_handler_;
 #endif
 
   // NULL by default.

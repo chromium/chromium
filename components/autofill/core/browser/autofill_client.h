@@ -76,7 +76,6 @@ class AutofillAblationStudy;
 class AutofillComposeDelegate;
 class AutofillCrowdsourcingManager;
 class AutofillDriverFactory;
-class AutofillMlPredictionModelHandler;
 class AutofillOptimizationGuide;
 #if BUILDFLAG(IS_ANDROID)
 class AutofillSnackbarControllerImpl;
@@ -85,6 +84,7 @@ class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
 class AutofillPredictionImprovementsDelegate;
 class AutofillProfile;
+class FieldClassificationModelHandler;
 class FormDataImporter;
 class LogManager;
 class PersonalDataManager;
@@ -247,10 +247,10 @@ class AutofillClient {
   // if the AutofillOptimizationGuide's dependencies are not present.
   virtual AutofillOptimizationGuide* GetAutofillOptimizationGuide() const;
 
-  // Gets the AutofillModelHandler instance for autofill machine learning
-  // predictions associated with the client.
-  virtual AutofillMlPredictionModelHandler*
-  GetAutofillMlPredictionModelHandler();
+  // Gets the FieldClassificationModelHandler instance for autofill machine
+  // learning predictions associated with the client.
+  virtual FieldClassificationModelHandler*
+  GetAutofillFieldClassificationModelHandler();
 
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;

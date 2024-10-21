@@ -424,7 +424,7 @@
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
 #include "chrome/browser/autocomplete/on_device_tail_model_service_factory.h"
-#include "chrome/browser/autofill/autofill_ml_prediction_model_service_factory.h"
+#include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #endif
 
@@ -659,7 +659,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   autofill::AutofillImageFetcherFactory::GetInstance();
   autofill::AutofillLogRouterFactory::GetInstance();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  autofill::AutofillMlPredictionModelServiceFactory::GetInstance();
+  autofill::AutofillFieldClassificationModelServiceFactory::GetInstance();
 #endif
   autofill::AutofillOfferManagerFactory::GetInstance();
   autofill::AutofillOptimizationGuideFactory::GetInstance();

@@ -116,8 +116,8 @@ static_library("autofill") {
 
   if (build_with_tflite_lib) {
     sources += [
-      "autofill_ml_prediction_model_service_factory.cc",
-      "autofill_ml_prediction_model_service_factory.h",
+      "autofill_field_classification_model_service_factory.cc",
+      "autofill_field_classification_model_service_factory.h",
     ]
   }
 }
