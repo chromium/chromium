@@ -5,9 +5,8 @@
 #include "base/functional/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
+#include "chrome/elevation_service/service_main.h"
 #include "chrome/install_static/test/scoped_install_details.h"
-#include "chrome/windows_services/service_program/process_wrl_module.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -15,7 +14,9 @@ class DefaultEnvironment final : public ::testing::Environment {
  public:
   DefaultEnvironment() = default;
 
-  void SetUp() override { CreateWrlModule(); }
+  void SetUp() override {
+    elevation_service::ServiceMain::GetInstance()->CreateWRLModule();
+  }
 };
 
 }  // namespace

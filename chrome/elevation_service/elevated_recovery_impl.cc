@@ -23,8 +23,7 @@
 #include "base/version.h"
 #include "base/win/scoped_process_information.h"
 #include "chrome/install_static/install_util.h"
-#include "chrome/windows_services/service_program/scoped_client_impersonation.h"
-#include "components/crx_file/crx_verifier.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace elevation_service {
@@ -72,10 +71,11 @@ HRESULT OpenCallingProcess(uint32_t proc_id, base::Process* process) {
   DCHECK(proc_id);
   DCHECK(process);
 
-  ScopedClientImpersonation impersonate_client;
-  if (!impersonate_client.is_valid()) {
-    return impersonate_client.result();
-  }
+  HRESULT hr = ::CoImpersonateClient();
+  if (FAILED(hr))
+    return hr;
+
+  absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
 
   *process = base::Process::OpenWithAccess(proc_id, PROCESS_DUP_HANDLE);
   return process->IsValid() ? S_OK : HRESULTFromLastError();
@@ -89,10 +89,11 @@ HRESULT OpenFileImpersonated(const base::FilePath& file_path,
                              base::File* file) {
   DCHECK(file);
 
-  ScopedClientImpersonation impersonate_client;
-  if (!impersonate_client.is_valid()) {
-    return impersonate_client.result();
-  }
+  HRESULT hr = ::CoImpersonateClient();
+  if (FAILED(hr))
+    return hr;
+
+  absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
 
   file->Initialize(file_path, flags);
   if (!file->IsValid())
@@ -184,13 +185,9 @@ HRESULT ValidateAndUnpackCRX(const base::FilePath& from_crx_path,
   if (!zip::Unzip(to_crx_path, to_dir.GetPath()))
     return E_UNEXPECTED;
 
-  if (!base::DeleteFile(to_crx_path)) {
-    PLOG(WARNING) << "Failed to delete " << to_crx_path;
-  }
+  LOG_IF(WARNING, !base::DeleteFile(to_crx_path));
 
-  if (!unpacked_crx_dir->Set(to_dir.Take())) {
-    LOG(WARNING) << "Failed to transfer ownership of " << to_dir.GetPath();
-  }
+  LOG_IF(WARNING, !unpacked_crx_dir->Set(to_dir.Take()));
   return S_OK;
 }
 
