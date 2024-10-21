@@ -213,7 +213,7 @@ VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
     case VcEffectId::kFaceRetouch:
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kStudioLook:
-      return {"ml-core-internal"};
+      return {"ml-core-dlc"};
     case VcEffectId::kTestEffect:
     case VcEffectId::kNoiseCancellation:
     case VcEffectId::kStyleTransfer:
