@@ -1236,7 +1236,7 @@ LensOverlayController::OverlayInitializationData::OverlayInitializationData(
     const SkBitmap& screenshot,
     SkBitmap rgb_screenshot,
     lens::PaletteId color_palette,
-    std::optional<GURL> page_url,
+    GURL page_url,
     std::optional<std::string> page_title)
     : current_screenshot_(screenshot),
       current_rgb_screenshot_(std::move(rgb_screenshot)),
@@ -1437,11 +1437,6 @@ void LensOverlayController::ContinueCreateInitializationData(
 
   content::WebContents* active_web_contents = tab_->GetContents();
 
-  std::optional<GURL> page_url;
-  if (lens::CanSharePageURLWithLensOverlay(pref_service_)) {
-    page_url = std::make_optional<GURL>(active_web_contents->GetVisibleURL());
-  }
-
   std::optional<std::string> page_title;
   if (lens::CanSharePageTitleWithLensOverlay(sync_service_, pref_service_)) {
     page_title = std::make_optional<std::string>(
@@ -1449,7 +1444,7 @@ void LensOverlayController::ContinueCreateInitializationData(
   }
 
   auto initialization_data = std::make_unique<OverlayInitializationData>(
-      screenshot, std::move(rgb_screenshot), color_palette, page_url,
+      screenshot, std::move(rgb_screenshot), color_palette, GetPageURL(),
       page_title);
   AddBoundingBoxesToInitializationData(initialization_data.get(), all_bounds);
 
@@ -1602,8 +1597,8 @@ void LensOverlayController::TryUpdatePageContextualization() {
 void LensOverlayController::UpdatePageContextualization(
     std::vector<uint8_t> bytes,
     lens::PageContentMimeType content_type) {
-  lens_overlay_query_controller_->SendPageContentUpdateRequest(bytes,
-                                                               content_type);
+  lens_overlay_query_controller_->SendPageContentUpdateRequest(
+      bytes, content_type, GetPageURL());
 }
 
 void LensOverlayController::SetLiveBlur(bool enabled) {
@@ -2455,7 +2450,8 @@ void LensOverlayController::IssueSearchBoxRequest(
       GetPageClassification() !=
           metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) {
     IssueSearchBoxRequestPart2(search_box_text, match_type,
-                          is_zero_prefix_suggestion, additional_query_params);
+                               is_zero_prefix_suggestion,
+                               additional_query_params);
     return;
   }
 
