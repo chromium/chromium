@@ -115,10 +115,6 @@ AddressAccessoryControllerImpl::GetSheetData() const {
   }
   std::u16string user_info_title, plus_address_title;
   if (profiles.empty()) {
-    // User info title is not empty if and only if the list of addresses is
-    // empty.
-    user_info_title =
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_EMPTY_MESSAGE);
     auto* client = ContentAutofillClient::FromWebContents(&GetWebContents());
     if (client && !plus_profiles.empty()) {
       const std::u16string elided_url =
@@ -127,6 +123,11 @@ AddressAccessoryControllerImpl::GetSheetData() const {
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
       plus_address_title = l10n_util::GetStringFUTF16(
           IDS_PLUS_ADDRESS_FALLBACK_MANUAL_FILLING_SHEET_TITLE, elided_url);
+    } else {
+      // User info title is not empty if and only if the list of addresses is
+      // empty and there're no plus addresses available.
+      user_info_title =
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_EMPTY_MESSAGE);
     }
   }
   AccessorySheetData sheet_data = autofill::CreateAccessorySheetData(

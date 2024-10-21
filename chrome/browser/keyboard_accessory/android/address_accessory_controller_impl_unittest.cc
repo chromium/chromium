@@ -414,7 +414,7 @@ TEST_F(AddressAccessoryControllerTest,
   // plus address for the current domain. The "Create plus address" action
   // should not be displayed.
   EXPECT_EQ(controller()->GetSheetData(),
-            AddressAccessorySheetDataBuilder(addresses_empty_str(),
+            AddressAccessorySheetDataBuilder(/*userInfoTitle=*/std::u16string(),
                                              plus_addresses_title())
                 .AddPlusAddressInfo("https://foo.com", u"plus+foo@plus.plus")
                 .AppendFooterCommand(
@@ -437,7 +437,7 @@ TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesSection) {
   controller()->RefreshSuggestions();
 
   EXPECT_EQ(controller()->GetSheetData(),
-            AddressAccessorySheetDataBuilder(addresses_empty_str(),
+            AddressAccessorySheetDataBuilder(/*userInfoTitle=*/std::u16string(),
                                              plus_addresses_title())
                 .AddPlusAddressInfo("https://foo.com", u"plus+foo@plus.plus")
                 .AppendFooterCommand(
