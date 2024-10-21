@@ -159,7 +159,7 @@ void HeartbeatSender::OnSignalStrategyStateChange(SignalStrategy::State state) {
       break;
     case SignalStrategy::State::DISCONNECTED:
       service_client_->CancelPendingRequests();
-      heartbeat_timer_.AbandonAndStop();
+      heartbeat_timer_.Stop();
       break;
     default:
       // Do nothing
@@ -187,7 +187,7 @@ void HeartbeatSender::OnHostOfflineReasonAck() {
   }
 
   DCHECK(host_offline_reason_timeout_timer_.IsRunning());
-  host_offline_reason_timeout_timer_.AbandonAndStop();
+  host_offline_reason_timeout_timer_.Stop();
 
   std::move(host_offline_reason_ack_callback_).Run(true);
 }
@@ -196,7 +196,7 @@ void HeartbeatSender::ClearHeartbeatTimer() {
   // Drop previous heartbeat and timer so that it doesn't interfere with the
   // current one.
   service_client_->CancelPendingRequests();
-  heartbeat_timer_.AbandonAndStop();
+  heartbeat_timer_.Stop();
 }
 
 void HeartbeatSender::SendFullHeartbeat() {

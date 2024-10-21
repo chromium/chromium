@@ -97,7 +97,7 @@ void FtlSignalingConnector::OnSignalStrategyStateChange(
   } else if (state == SignalStrategy::DISCONNECTED) {
     HOST_LOG << "Signaling disconnected. error="
              << SignalStrategyErrorToString(signal_strategy_->GetError());
-    backoff_reset_timer_.AbandonAndStop();
+    backoff_reset_timer_.Stop();
     backoff_.InformOfRequest(false);
     if (signal_strategy_->IsSignInError() &&
         signal_strategy_->GetError() == SignalStrategy::AUTHENTICATION_FAILED) {
