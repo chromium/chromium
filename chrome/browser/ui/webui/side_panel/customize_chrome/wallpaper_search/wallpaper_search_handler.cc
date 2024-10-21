@@ -977,8 +977,8 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     quality->set_request_latency_ms(request_timer.Elapsed().InMilliseconds());
   }
 
-  if (!result.has_value()) {
-    if (result.error().error() ==
+  if (!result.response.has_value()) {
+    if (result.response.error().error() ==
         optimization_guide::OptimizationGuideModelExecutionError::
             ModelExecutionError::kRequestThrottled) {
       std::move(callback).Run(WallpaperSearchStatus::kRequestThrottled,
@@ -987,7 +987,8 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     return;
   }
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::WallpaperSearchResponse>(result.value());
+      optimization_guide::proto::WallpaperSearchResponse>(
+      result.response.value());
   if (response->images().empty()) {
     return;
   }

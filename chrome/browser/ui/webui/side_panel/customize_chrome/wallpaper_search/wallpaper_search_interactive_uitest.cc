@@ -307,7 +307,11 @@ class WallpaperSearchOptimizationGuideInteractiveTest
                 result.set_type_url("type.googleapis.com/" +
                                     response.GetTypeName());
 
-                std::move(done_callback_arg).Run(base::ok(result), nullptr);
+                std::move(done_callback_arg)
+                    .Run(optimization_guide::
+                             OptimizationGuideModelExecutionResult(
+                                 base::ok(result), nullptr),
+                         nullptr);
               }));
     });
   }

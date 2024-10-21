@@ -37,6 +37,9 @@ class ResponseHolder {
     return provided_by_on_device_;
   }
   ModelQualityLogEntry* log_entry() { return log_entry_received_.get(); }
+  proto::ModelExecutionInfo* model_execution_info() {
+    return model_execution_info_received_.get();
+  }
   const auto& logged_executions() {
     return log_entry()
         ->log_ai_data_request()
@@ -45,7 +48,10 @@ class ResponseHolder {
         .execution_infos();
   }
 
-  void ClearLogEntry() { log_entry_received_.reset(); }
+  void ClearLogEntry() {
+    log_entry_received_.reset();
+    model_execution_info_received_.reset();
+  }
 
  private:
   void Clear();
@@ -59,6 +65,7 @@ class ResponseHolder {
   std::optional<std::string> response_received_;
   std::optional<bool> provided_by_on_device_;
   std::unique_ptr<ModelQualityLogEntry> log_entry_received_;
+  std::unique_ptr<proto::ModelExecutionInfo> model_execution_info_received_;
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
       response_error_;
   base::WeakPtrFactory<ResponseHolder> weak_ptr_factory_;

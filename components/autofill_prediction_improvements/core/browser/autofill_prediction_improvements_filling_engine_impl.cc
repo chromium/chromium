@@ -101,7 +101,7 @@ void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
   const std::optional<std::string> execution_id =
       log_entry ? log_entry->model_execution_id()
                 : std::optional<std::string>();
-  if (!execution_result.has_value()) {
+  if (!execution_result.response.has_value()) {
     std::move(callback).Run(base::unexpected(false), execution_id);
     return;
   }
@@ -109,7 +109,7 @@ void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
   std::optional<optimization_guide::proto::FormsPredictionsResponse>
       maybe_response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::FormsPredictionsResponse>(
-          execution_result.value());
+          execution_result.response.value());
   if (!maybe_response) {
     std::move(callback).Run(base::unexpected(false), execution_id);
     return;

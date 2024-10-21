@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 
 #include <optional>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
@@ -55,12 +56,18 @@ void InvokeStreamingCallbackWithRemoteResult(
     OptimizationGuideModelExecutionResult result,
     std::unique_ptr<ModelQualityLogEntry> log_entry) {
   OptimizationGuideModelStreamingExecutionResult streaming_result;
+  if (log_entry && log_entry->log_ai_data_request() &&
+      log_entry->log_ai_data_request()->has_model_execution_info()) {
+    streaming_result.execution_info =
+        std::make_unique<proto::ModelExecutionInfo>(
+            log_entry->log_ai_data_request()->model_execution_info());
+  }
   streaming_result.log_entry = std::move(log_entry);
-  if (result.has_value()) {
-    streaming_result.response =
-        base::ok(StreamingResponse{.response = *result, .is_complete = true});
+  if (result.response.has_value()) {
+    streaming_result.response = base::ok(
+        StreamingResponse{.response = *result.response, .is_complete = true});
   } else {
-    streaming_result.response = base::unexpected(result.error());
+    streaming_result.response = base::unexpected(result.response.error());
   }
   callback.Run(std::move(streaming_result));
 }
@@ -646,16 +653,23 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
   if (callback) {
     OptimizationGuideModelExecutionError og_error =
         OptimizationGuideModelExecutionError::FromModelExecutionError(error);
-    std::unique_ptr<ModelQualityLogEntry> log_entry = nullptr;
+    std::unique_ptr<ModelQualityLogEntry> log_entry;
+    std::unique_ptr<proto::ModelExecutionInfo> model_execution_info;
     if (og_error.ShouldLogModelQuality()) {
       log_entry = std::make_unique<ModelQualityLogEntry>(
           model_quality_uploader_service_);
       log_entry->log_ai_data_request()->MergeFrom(*log_ai_data_request);
-      log_entry->set_model_execution_id(GenerateExecutionId());
+      std::string model_execution_id = GenerateExecutionId();
+      log_entry->set_model_execution_id(model_execution_id);
+      model_execution_info = std::make_unique<proto::ModelExecutionInfo>(
+          log_entry->log_ai_data_request()->model_execution_info());
+      model_execution_info->set_execution_id(model_execution_id);
+      model_execution_info->set_model_execution_error_enum(
+          static_cast<uint32_t>(og_error.error()));
     }
     callback.Run(OptimizationGuideModelStreamingExecutionResult(
         base::unexpected(og_error), /*provided_by_on_device=*/true,
-        std::move(log_entry)));
+        std::move(log_entry), std::move(model_execution_info)));
   }
 }
 
@@ -758,16 +772,21 @@ void SessionImpl::SendSuccessCompletionCallback(
     const proto::Any& success_response_metadata) {
   // Complete the log entry and promise it to the ModelQualityUploaderService.
   std::unique_ptr<ModelQualityLogEntry> log_entry;
+  std::unique_ptr<proto::ModelExecutionInfo> model_execution_info;
   if (on_device_state_->log_ai_data_request) {
     SetExecutionResponse(feature_, *(on_device_state_->log_ai_data_request),
                          success_response_metadata);
     on_device_state_->MutableLoggedResponse()->set_status(
         proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
-    log_entry =
-        std::make_unique<ModelQualityLogEntry>(model_quality_uploader_service_);
+    log_entry = std::make_unique<ModelQualityLogEntry>(
+        model_quality_uploader_service_);
     log_entry->log_ai_data_request()->MergeFrom(
         *on_device_state_->log_ai_data_request);
-    log_entry->set_model_execution_id(GenerateExecutionId());
+    std::string model_execution_id = GenerateExecutionId();
+    log_entry->set_model_execution_id(model_execution_id);
+    model_execution_info = std::make_unique<proto::ModelExecutionInfo>(
+        on_device_state_->log_ai_data_request->model_execution_info());
+    model_execution_info->set_execution_id(model_execution_id);
     on_device_state_->log_ai_data_request.reset();
   }
 
@@ -775,7 +794,8 @@ void SessionImpl::SendSuccessCompletionCallback(
   on_device_state_->callback.Run(OptimizationGuideModelStreamingExecutionResult(
       base::ok(StreamingResponse{.response = success_response_metadata,
                                  .is_complete = true}),
-      /*provided_by_on_device=*/true, std::move(log_entry)));
+      /*provided_by_on_device=*/true, std::move(log_entry),
+      std::move(model_execution_info)));
 
   on_device_state_->ResetRequestState();
 }
@@ -855,8 +875,8 @@ void SessionImpl::OnTextSafetyRemoteResponse(
     OptimizationGuideModelExecutionResult result,
     std::unique_ptr<ModelQualityLogEntry> remote_log_entry) {
   bool is_unsafe =
-      !result.has_value() &&
-      result.error().error() ==
+      !result.response.has_value() &&
+      result.response.error().error() ==
           OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered;
   if (on_device_state_->log_ai_data_request) {
     if (remote_log_entry) {
@@ -877,7 +897,7 @@ void SessionImpl::OnTextSafetyRemoteResponse(
     return;
   }
 
-  if (!result.has_value()) {
+  if (!result.response.has_value()) {
     CancelPendingResponse(ExecuteModelResult::kTextSafetyRemoteRequestFailed,
                           ModelExecutionError::kGenericFailure);
     return;

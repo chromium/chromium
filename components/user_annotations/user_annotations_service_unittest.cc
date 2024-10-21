@@ -265,7 +265,9 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
             An<optimization_guide::
                    OptimizationGuideModelExecutionResultCallback>()))
         .WillOnce(base::test::RunOnceCallback<3>(
-            test_request.forms_annotations_response, CreateLogEntry()));
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                test_request.forms_annotations_response, nullptr),
+            CreateLogEntry()));
 
     EXPECT_FALSE(
         AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
@@ -298,7 +300,10 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
             _,
             An<optimization_guide::
                    OptimizationGuideModelExecutionResultCallback>()))
-        .WillOnce(base::test::RunOnceCallback<3>(any, CreateLogEntry()));
+        .WillOnce(base::test::RunOnceCallback<3>(
+            optimization_guide::OptimizationGuideModelExecutionResult(any,
+                                                                      nullptr),
+            CreateLogEntry()));
 
     autofill::FormData empty_form_data;
     optimization_guide::proto::AXTreeUpdate ax_tree;
@@ -330,11 +335,14 @@ TEST_P(UserAnnotationsServiceTest, ExecuteFailed) {
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<3>(
-          base::unexpected(
-              optimization_guide::OptimizationGuideModelExecutionError::
-                  FromModelExecutionError(
-                      optimization_guide::OptimizationGuideModelExecutionError::
-                          ModelExecutionError::kGenericFailure)),
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  optimization_guide::OptimizationGuideModelExecutionError::
+                      FromModelExecutionError(
+                          optimization_guide::
+                              OptimizationGuideModelExecutionError::
+                                  ModelExecutionError::kGenericFailure)),
+              nullptr),
           CreateLogEntry()));
 
   autofill::FormFieldData form_field_data;
@@ -366,7 +374,10 @@ TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
           optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<3>(any, CreateLogEntry()));
+      .WillOnce(base::test::RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(any,
+                                                                    nullptr),
+          CreateLogEntry()));
 
   autofill::FormFieldData form_field_data;
   form_field_data.set_label(u"label");
@@ -396,7 +407,9 @@ TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<3>(
-          test_request.forms_annotations_response, CreateLogEntry()));
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              test_request.forms_annotations_response, nullptr),
+          CreateLogEntry()));
 
   EXPECT_FALSE(
       AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
@@ -434,7 +447,9 @@ TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<3>(
-          test_request.forms_annotations_response, CreateLogEntry()));
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              test_request.forms_annotations_response, nullptr),
+          CreateLogEntry()));
 
   EXPECT_FALSE(
       AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
@@ -461,7 +476,9 @@ TEST_P(UserAnnotationsServiceTest, FormNotImported) {
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<3>(
-          test_request.forms_annotations_response, CreateLogEntry()));
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              test_request.forms_annotations_response, nullptr),
+          CreateLogEntry()));
 
   service()->AddFormSubmission(
       test_request.url, test_request.title, test_request.ax_tree,
@@ -535,7 +552,9 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
   EXPECT_TRUE(first_execute_callback);
   EXPECT_FALSE(second_execute_callback);
   std::move(first_execute_callback)
-      .Run(first_test_request.forms_annotations_response, CreateLogEntry());
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               first_test_request.forms_annotations_response, nullptr),
+           CreateLogEntry());
 
   // Only the first prompt acceptance call should happen.
   task_environment_.RunUntilIdle();
@@ -557,7 +576,9 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
   // Now the second form submission should happen.
   task_environment_.RunUntilIdle();
   std::move(second_execute_callback)
-      .Run(second_test_request.forms_annotations_response, CreateLogEntry());
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               second_test_request.forms_annotations_response, nullptr),
+           CreateLogEntry());
   task_environment_.RunUntilIdle();
   std::move(second_prompt_acceptance_callback)
       .Run({/*prompt_was_accepted=*/true, /*did_user_interact=*/true});

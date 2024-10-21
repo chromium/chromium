@@ -67,7 +67,7 @@ void FormSubmissionHandler::ExecuteModelWithEntries(
 void FormSubmissionHandler::OnModelExecuted(
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  if (!result.has_value()) {
+  if (!result.response.has_value()) {
     SendFormSubmissionResult(
         base::unexpected(UserAnnotationsExecutionResult::kResponseError),
         std::move(log_entry));
@@ -76,7 +76,8 @@ void FormSubmissionHandler::OnModelExecuted(
 
   std::optional<optimization_guide::proto::FormsAnnotationsResponse>
       maybe_response = optimization_guide::ParsedAnyMetadata<
-          optimization_guide::proto::FormsAnnotationsResponse>(result.value());
+          optimization_guide::proto::FormsAnnotationsResponse>(
+          result.response.value());
   if (!maybe_response) {
     SendFormSubmissionResult(
         base::unexpected(UserAnnotationsExecutionResult::kResponseMalformed),

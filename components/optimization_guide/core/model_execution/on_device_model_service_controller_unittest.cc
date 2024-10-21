@@ -82,8 +82,11 @@ void FailRemote(ModelBasedCapabilityKey key,
                 OptimizationGuideModelExecutionResultCallback callback) {
   EXPECT_TRUE(false) << "Unexpected use of remote fallback";
   std::move(callback).Run(
-      base::unexpected(OptimizationGuideModelExecutionError::FromHttpStatusCode(
-          net::HTTP_BAD_REQUEST)),
+      OptimizationGuideModelExecutionResult(
+          base::unexpected(
+              OptimizationGuideModelExecutionError::FromHttpStatusCode(
+                  net::HTTP_BAD_REQUEST)),
+          nullptr),
       nullptr);
 }
 
@@ -373,14 +376,31 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   EXPECT_TRUE(*response_.provided_by_on_device());
   EXPECT_THAT(response_.streamed(), ElementsAre(expected_response));
   EXPECT_TRUE(response_.log_entry());
-  const auto logged_on_device_model_execution_info =
+  auto logged_on_device_model_execution_info =
       response_.log_entry()
           ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
-  const auto& model_version =
-      logged_on_device_model_execution_info.model_versions()
-          .on_device_model_service_version();
+  auto model_version = logged_on_device_model_execution_info.model_versions()
+                           .on_device_model_service_version();
+  EXPECT_EQ(model_version.component_version(), "0.0.1");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
+            "Test");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
+            "0.0.1");
+  EXPECT_FALSE(model_version.model_adaptation_version());
+  EXPECT_GT(logged_on_device_model_execution_info.execution_infos_size(), 0);
+  EXPECT_EQ(logged_on_device_model_execution_info.execution_infos(0)
+                .response()
+                .on_device_model_service_response()
+                .status(),
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
+
+  EXPECT_TRUE(response_.model_execution_info());
+  logged_on_device_model_execution_info =
+      response_.model_execution_info()->on_device_model_execution_info();
+  model_version = logged_on_device_model_execution_info.model_versions()
+                      .on_device_model_service_version();
   EXPECT_EQ(model_version.component_version(), "0.0.1");
   EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
             "Test");
@@ -472,14 +492,25 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_TRUE(*response_.provided_by_on_device());
 
   EXPECT_TRUE(response_.log_entry());
-  const auto logged_on_device_model_execution_info =
+  auto logged_on_device_model_execution_info =
       response_.log_entry()
           ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
-  const auto& model_version =
-      logged_on_device_model_execution_info.model_versions()
-          .on_device_model_service_version();
+  auto model_version = logged_on_device_model_execution_info.model_versions()
+                           .on_device_model_service_version();
+  EXPECT_EQ(model_version.component_version(), "0.0.1");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
+            "Test");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
+            "0.0.1");
+  EXPECT_EQ(model_version.model_adaptation_version(), compose_asset.version());
+
+  EXPECT_TRUE(response_.model_execution_info());
+  logged_on_device_model_execution_info =
+      response_.model_execution_info()->on_device_model_execution_info();
+  model_version = logged_on_device_model_execution_info.model_versions()
+                      .on_device_model_service_version();
   EXPECT_EQ(model_version.component_version(), "0.0.1");
   EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
             "Test");
@@ -1192,6 +1223,16 @@ TEST_F(OnDeviceModelServiceControllerTest, SucceedsWithPassingSafetyChecks) {
                                    "request_check: safe_url"),
                           ResultOf("check text", &GetCheckText,
                                    "raw_output_check: safe_output")));
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: safe_url"),
+                          ResultOf("check text", &GetCheckText,
+                                   "raw_output_check: safe_output")));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1236,6 +1277,16 @@ TEST_F(OnDeviceModelServiceControllerTest,
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
   ASSERT_TRUE(response_.log_entry());
   EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: unsafe_url")
+                          // Raw output check not done.
+                          ));
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
               ElementsAre(testing::_,  // Base Model Execution
                           ResultOf("check text", &GetCheckText,
                                    "request_check: unsafe_url")
@@ -1289,11 +1340,14 @@ TEST_F(OnDeviceModelServiceControllerTest,
                   ));
   EXPECT_EQ(fallback_call.feature, ModelBasedCapabilityKey::kCompose);
   std::move(fallback_call.callback)
-      .Run(base::ok(fallback.ComposeResponse("remote response")), nullptr);
+      .Run(OptimizationGuideModelExecutionResult(
+               base::ok(fallback.ComposeResponse("remote response")), nullptr),
+           nullptr);
 
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(), "remote response");
   EXPECT_FALSE(response_.log_entry());
+  ASSERT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1338,6 +1392,16 @@ TEST_F(OnDeviceModelServiceControllerTest,
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
   ASSERT_TRUE(response_.log_entry());
   EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: safe_url"),
+                          ResultOf("check text", &GetCheckText,
+                                   "raw_output_check: unsafe_output")));
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
               ElementsAre(testing::_,  // Base Model Execution
                           ResultOf("check text", &GetCheckText,
                                    "request_check: safe_url"),
@@ -1391,11 +1455,14 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackWithInvalidRawOutputChecks) {
                           ));
   EXPECT_EQ(fallback_call.feature, ModelBasedCapabilityKey::kCompose);
   std::move(fallback_call.callback)
-      .Run(base::ok(fallback.ComposeResponse("remote response")), nullptr);
+      .Run(OptimizationGuideModelExecutionResult(
+               base::ok(fallback.ComposeResponse("remote response")), nullptr),
+           nullptr);
 
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(), "remote response");
   EXPECT_FALSE(response_.log_entry());
+  EXPECT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1438,6 +1505,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
   ASSERT_TRUE(response_.GetFinalStatus());
   ASSERT_TRUE(response_.log_entry());
   EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "response_check: url_very_safe_output")));
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
               ElementsAre(testing::_,  // Base Model Execution
                           ResultOf("check text", &GetCheckText,
                                    "response_check: url_very_safe_output")));
@@ -1486,6 +1560,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
   ASSERT_TRUE(response_.log_entry());
   EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "response_check: url_unsafe_output")));
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
               ElementsAre(testing::_,  // Base Model Execution
                           ResultOf("check text", &GetCheckText,
                                    "response_check: url_unsafe_output")));
@@ -1538,11 +1619,14 @@ TEST_F(OnDeviceModelServiceControllerTest,
                   ));
   EXPECT_EQ(fallback_call.feature, ModelBasedCapabilityKey::kCompose);
   std::move(fallback_call.callback)
-      .Run(base::ok(fallback.ComposeResponse("remote response")), nullptr);
+      .Run(OptimizationGuideModelExecutionResult(
+               base::ok(fallback.ComposeResponse("remote response")), nullptr),
+           nullptr);
 
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(), "remote response");
   EXPECT_FALSE(response_.log_entry());
+  EXPECT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, NoRetractUnsafeContent) {
@@ -1584,6 +1668,15 @@ TEST_F(OnDeviceModelServiceControllerTest, NoRetractUnsafeContent) {
   // Make sure T&S logged.
   ASSERT_TRUE(response_.log_entry());
   EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: unsafe_url"),
+                          ResultOf("check text", &GetCheckText,
+                                   "raw_output_check: unsafe_output")));
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
               ElementsAre(testing::_,  // Base Model Execution
                           ResultOf("check text", &GetCheckText,
                                    "request_check: unsafe_url"),
@@ -1667,6 +1760,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
       *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
   ASSERT_FALSE(response_.log_entry());
+  ASSERT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
@@ -1896,6 +1990,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(response_.value());
   ASSERT_FALSE(response_.log_entry());
+  ASSERT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
@@ -2268,6 +2363,19 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
                 .on_device_model_service_response()
                 .status(),
             proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_EQ(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos(0)
+                .response()
+                .on_device_model_service_response()
+                .status(),
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
@@ -2359,6 +2467,18 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
                   .response()
                   .on_device_model_service_response()
                   .has_repeats());
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
       true, 1);
@@ -2403,6 +2523,18 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
                   ->log_ai_data_request()
                   ->model_execution_info()
                   .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(response_.model_execution_info()
+                  ->on_device_model_execution_info()
                   .execution_infos(0)
                   .response()
                   .on_device_model_service_response()
@@ -2461,6 +2593,18 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
                   .on_device_model_service_response()
                   .has_repeats());
 
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
       true, 1);
@@ -2507,6 +2651,18 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
                    ->log_ai_data_request()
                    ->model_execution_info()
                    .on_device_model_execution_info()
+                   .execution_infos(0)
+                   .response()
+                   .on_device_model_service_response()
+                   .has_repeats());
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_FALSE(response_.model_execution_info()
+                   ->on_device_model_execution_info()
                    .execution_infos(0)
                    .response()
                    .on_device_model_service_response()
@@ -2592,13 +2748,16 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
 
   // Invoke T&S callback.
   proto::Any ts_any;
+  proto::LogAiDataRequest remote_log_ai_data_request;
+  remote_log_ai_data_request.mutable_model_execution_info()->set_execution_id(
+      "serverexecid");
   auto remote_log_entry = std::make_unique<ModelQualityLogEntry>(
       /*model_quality_uploader_service=*/nullptr);
-  remote_log_entry->log_ai_data_request()
-      ->mutable_model_execution_info()
-      ->set_execution_id("serverexecid");
+  remote_log_entry->log_ai_data_request()->MergeFrom(
+      remote_log_ai_data_request);
   std::move(last_remote_ts_callback_)
-      .Run(base::ok(ts_any), std::move(remote_log_entry));
+      .Run(OptimizationGuideModelExecutionResult(base::ok(ts_any), nullptr),
+           std::move(remote_log_entry));
 
   EXPECT_TRUE(response_.streamed().empty());
   EXPECT_EQ(*response_.value(), expected_responses.back());
@@ -2615,15 +2774,32 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             2);
-  auto& ts_exec_info = response_.log_entry()
-                           ->log_ai_data_request()
-                           ->model_execution_info()
-                           .on_device_model_execution_info()
-                           .execution_infos(1);
-  auto& ts_req_log = ts_exec_info.request().text_safety_model_request();
+  auto ts_exec_info = response_.log_entry()
+                          ->log_ai_data_request()
+                          ->model_execution_info()
+                          .on_device_model_execution_info()
+                          .execution_infos(1);
+  auto ts_req_log = ts_exec_info.request().text_safety_model_request();
   EXPECT_EQ(expected_responses.back(), ts_req_log.text());
   EXPECT_EQ("foo", ts_req_log.url());
-  auto& ts_resp_log = ts_exec_info.response().text_safety_model_response();
+  auto ts_resp_log = ts_exec_info.response().text_safety_model_response();
+  EXPECT_EQ("serverexecid", ts_resp_log.server_execution_id());
+  EXPECT_FALSE(ts_resp_log.is_unsafe());
+
+  // Verify model execution info.
+  ASSERT_TRUE(response_.model_execution_info());
+  // Should have 2 infos: one for text generation, one for safety fallback.
+  EXPECT_EQ(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            2);
+  ts_exec_info = response_.model_execution_info()
+                     ->on_device_model_execution_info()
+                     .execution_infos(1);
+  ts_req_log = ts_exec_info.request().text_safety_model_request();
+  EXPECT_EQ(expected_responses.back(), ts_req_log.text());
+  EXPECT_EQ("foo", ts_req_log.url());
+  ts_resp_log = ts_exec_info.response().text_safety_model_response();
   EXPECT_EQ("serverexecid", ts_resp_log.server_execution_id());
   EXPECT_FALSE(ts_resp_log.is_unsafe());
 }
@@ -2670,18 +2846,22 @@ TEST_F(OnDeviceModelServiceControllerTest,
   ASSERT_TRUE(last_remote_ts_callback_);
 
   // Invoke T&S callback.
-  auto remote_log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
+  auto model_execution_info = std::make_unique<proto::ModelExecutionInfo>();
+  model_execution_info->set_execution_id("serverexecid");
   auto remote_log_entry = std::make_unique<ModelQualityLogEntry>(
       /*model_quality_uploader_service=*/nullptr);
   remote_log_entry->log_ai_data_request()
       ->mutable_model_execution_info()
       ->set_execution_id("serverexecid");
   std::move(last_remote_ts_callback_)
-      .Run(base::unexpected(
-               OptimizationGuideModelExecutionError::FromModelExecutionError(
-                   OptimizationGuideModelExecutionError::ModelExecutionError::
-                       kFiltered)),
-           std::move(remote_log_entry));
+      .Run(
+          OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  OptimizationGuideModelExecutionError::FromModelExecutionError(
+                      OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kFiltered)),
+              std::move(model_execution_info)),
+          std::move(remote_log_entry));
 
   EXPECT_TRUE(response_.streamed().empty());
   EXPECT_FALSE(response_.value());
@@ -2698,14 +2878,29 @@ TEST_F(OnDeviceModelServiceControllerTest,
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             2);
-  auto& ts_exec_info = response_.log_entry()
-                           ->log_ai_data_request()
-                           ->model_execution_info()
-                           .on_device_model_execution_info()
-                           .execution_infos(1);
-  auto& ts_req_log = ts_exec_info.request().text_safety_model_request();
+  auto ts_exec_info = response_.log_entry()
+                          ->log_ai_data_request()
+                          ->model_execution_info()
+                          .on_device_model_execution_info()
+                          .execution_infos(1);
+  auto ts_req_log = ts_exec_info.request().text_safety_model_request();
   EXPECT_EQ(expected_responses.back(), ts_req_log.text());
-  auto& ts_resp_log = ts_exec_info.response().text_safety_model_response();
+  auto ts_resp_log = ts_exec_info.response().text_safety_model_response();
+  EXPECT_EQ("serverexecid", ts_resp_log.server_execution_id());
+  EXPECT_TRUE(ts_resp_log.is_unsafe());
+
+  // Verify model execution info.
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_EQ(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            2);
+  ts_exec_info = response_.model_execution_info()
+                     ->on_device_model_execution_info()
+                     .execution_infos(1);
+  ts_req_log = ts_exec_info.request().text_safety_model_request();
+  EXPECT_EQ(expected_responses.back(), ts_req_log.text());
+  ts_resp_log = ts_exec_info.response().text_safety_model_response();
   EXPECT_EQ("serverexecid", ts_resp_log.server_execution_id());
   EXPECT_TRUE(ts_resp_log.is_unsafe());
 }
@@ -2753,11 +2948,14 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   // Invoke T&S callback.
   std::move(last_remote_ts_callback_)
-      .Run(base::unexpected(
-               OptimizationGuideModelExecutionError::FromModelExecutionError(
-                   OptimizationGuideModelExecutionError::ModelExecutionError::
-                       kRequestThrottled)),
-           nullptr);
+      .Run(
+          OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  OptimizationGuideModelExecutionError::FromModelExecutionError(
+                      OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kRequestThrottled)),
+              nullptr),
+          nullptr);
 
   ASSERT_TRUE(response_.error());
   EXPECT_EQ(*response_.error(), OptimizationGuideModelExecutionError::
@@ -2826,10 +3024,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
     base::HistogramTester histogram_tester;
     // Invoke T&S callback and make sure nothing crashes.
     std::move(last_remote_ts_callback_)
-        .Run(base::unexpected(
-                 OptimizationGuideModelExecutionError::FromModelExecutionError(
-                     OptimizationGuideModelExecutionError::ModelExecutionError::
-                         kRequestThrottled)),
+        .Run(OptimizationGuideModelExecutionResult(
+                 base::unexpected(
+                     OptimizationGuideModelExecutionError::
+                         FromModelExecutionError(
+                             OptimizationGuideModelExecutionError::
+                                 ModelExecutionError::kRequestThrottled)),
+                 nullptr),
              nullptr);
     // Request should have been cancelled and we shouldn't receive anything
     // back.
@@ -3115,6 +3316,18 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
                   ->log_ai_data_request()
                   ->model_execution_info()
                   .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(response_.model_execution_info()
+                  ->on_device_model_execution_info()
                   .execution_infos(0)
                   .response()
                   .on_device_model_service_response()
@@ -3590,6 +3803,7 @@ TEST_F(OnDeviceModelServiceControllerTest, LoggingModeDefault) {
                         response_holder.GetStreamingCallback());
   EXPECT_TRUE(response_holder.GetFinalStatus());
   EXPECT_TRUE(response_holder.log_entry());
+  EXPECT_TRUE(response_holder.model_execution_info());
   response_holder.ClearLogEntry();
   EXPECT_EQ(1u, test_uploader.uploaded_logs().size());
 }

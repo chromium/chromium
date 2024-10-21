@@ -66,7 +66,7 @@ void OnTabOrganizationModelExecutionResult(
     TabOrganizationRequest::BackendFailureCallback on_failure,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  if (!result.has_value()) {
+  if (!result.response.has_value()) {
     // TODO(b/322206302): remove this when this is fixed in the
     // ModelQualityLogEntry API
     optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
@@ -75,7 +75,8 @@ void OnTabOrganizationModelExecutionResult(
   }
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::TabOrganizationResponse>(result.value());
+      optimization_guide::proto::TabOrganizationResponse>(
+      result.response.value());
 
   if (!response) {
     optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
