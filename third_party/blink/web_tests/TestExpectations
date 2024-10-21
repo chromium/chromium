@@ -1301,9 +1301,6 @@ crbug.com/958381 [ Win ] virtual/text-antialias/hyphen-min-preferred-width.html 
 
 # ====== MathMLCore-only tests from here ======
 
-# These tests fail because we don't parse math display values according to the spec.
-crbug.com/1127222 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-elements-001.html [ Failure ]
-
 # This test fails on windows. It should really be made more reliable and take
 # into account fallback parameters.
 crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/fractions/frac-1.html [ Failure ]
