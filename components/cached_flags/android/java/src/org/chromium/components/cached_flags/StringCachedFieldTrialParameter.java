@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
-import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 

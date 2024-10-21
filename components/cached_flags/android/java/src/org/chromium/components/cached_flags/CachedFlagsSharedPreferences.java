@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.base.cached_flags;
+package org.chromium.components.cached_flags;
 
 import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.base.shared_preferences.PreferenceKeyRegistry;
@@ -14,8 +14,6 @@ import java.util.List;
 
 /** Shared preferences used by org.chromium.base.cached_flags */
 public class CachedFlagsSharedPreferences {
-    private static final String TAG = "CachedFlags";
-
     /** CachedFlags store flag values for the next run with this prefix. */
     public static final KeyPrefix FLAGS_CACHED = new KeyPrefix("Chrome.Flags.CachedFlag.*");
 
@@ -47,18 +45,5 @@ public class CachedFlagsSharedPreferences {
 
     public static SharedPreferencesManager getInstance() {
         return SharedPreferencesManager.getInstanceForRegistry(REGISTRY);
-    }
-
-    /**
-     * @return A human-readable string uniquely identifying the field trial parameter.
-     */
-    private static String generateParamFullName(String featureName, String parameterName) {
-        return featureName + ":" + parameterName;
-    }
-
-    public static String generateParamSharedPreferenceKey(
-            String featureName, String parameterName) {
-        return FLAGS_FIELD_TRIAL_PARAM_CACHED.createKey(
-                generateParamFullName(featureName, parameterName));
     }
 }

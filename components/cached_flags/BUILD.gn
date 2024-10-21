@@ -20,6 +20,7 @@ android_library("java") {
     "android/java/src/org/chromium/components/cached_flags/CachedFlag.java",
     "android/java/src/org/chromium/components/cached_flags/CachedFlagUtils.java",
     "android/java/src/org/chromium/components/cached_flags/CachedFlagsSafeMode.java",
+    "android/java/src/org/chromium/components/cached_flags/CachedFlagsSharedPreferences.java",
     "android/java/src/org/chromium/components/cached_flags/DoubleCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/components/cached_flags/IntCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/components/cached_flags/StringCachedFieldTrialParameter.java",

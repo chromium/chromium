@@ -4954,7 +4954,6 @@ if (is_android) {
     ]
 
     sources = [
-      "android/java/src/org/chromium/base/cached_flags/CachedFlagsSharedPreferences.java",
       "android/java/src/org/chromium/base/cached_flags/ValuesReturned.java",
     ]
   }

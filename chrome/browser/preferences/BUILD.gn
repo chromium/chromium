@@ -24,6 +24,7 @@ android_library("java") {
     "//components/browser_ui/accessibility/android:constants_java",
     "//components/browser_ui/share/android:constants_java",
     "//components/browser_ui/site_settings/android:constants_java",
+    "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]

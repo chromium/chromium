@@ -6,8 +6,6 @@ package org.chromium.components.cached_flags;
 
 import android.content.SharedPreferences;
 
-import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
-
 import java.util.List;
 
 /**

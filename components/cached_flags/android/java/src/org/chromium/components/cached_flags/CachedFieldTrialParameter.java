@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.base.FeatureParam;
-import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
 
@@ -26,7 +25,6 @@ import java.util.Set;
  * @param <T> the type of the parameter
  */
 public abstract class CachedFieldTrialParameter<T> extends FeatureParam<T> {
-
     /** Data types of field trial parameters. */
     @IntDef({
         FieldTrialParameterType.STRING,
@@ -89,8 +87,8 @@ public abstract class CachedFieldTrialParameter<T> extends FeatureParam<T> {
      * @return The SharedPreferences key to cache the field trial parameter.
      */
     String getSharedPreferenceKey() {
-        return CachedFlagsSharedPreferences.generateParamSharedPreferenceKey(
-                getFeatureName(), getName());
+        return CachedFlagsSharedPreferences.FLAGS_FIELD_TRIAL_PARAM_CACHED.createKey(
+                getFeatureName() + ":" + getName());
     }
 
     /**
