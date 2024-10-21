@@ -4,6 +4,7 @@
 
 #include "base/threading/scoped_thread_priority.h"
 
+#include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -40,6 +41,8 @@ class ScopedThreadPriorityTest : public testing::Test {
               PlatformThread::GetCurrentThreadPriorityForTest());
   }
 };
+
+using ScopedThreadPriorityDeathTest = ScopedThreadPriorityTest;
 
 #if BUILDFLAG(IS_WIN)
 void FunctionThatBoostsPriorityOnFirstInvoke(
@@ -90,6 +93,12 @@ TEST_F(ScopedThreadPriorityTest, BasicTest) {
               from, to));
     }
   }
+}
+
+TEST_F(ScopedThreadPriorityDeathTest, NoRealTime) {
+  EXPECT_CHECK_DEATH({
+    ScopedBoostPriority scoped_boost_priority(ThreadType::kRealtimeAudio);
+  });
 }
 
 TEST_F(ScopedThreadPriorityTest, WithoutPriorityBoost) {
