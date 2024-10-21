@@ -11,4 +11,9 @@ BASE_FEATURE(kDeprecateMediaGalleriesApis,
              "DeprecateMediaGalleriesApis",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Deprecates the syncFileSystem Chrome App APIs.
+BASE_FEATURE(kDeprecateSyncFileSystemApis,
+             "kDeprecateSyncFileSystemApis",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace chrome_apps::features

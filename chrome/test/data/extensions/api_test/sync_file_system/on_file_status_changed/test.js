@@ -5,6 +5,16 @@
 function setupListener() {
   chrome.syncFileSystem.onFileStatusChanged.addListener(fileInfoReceived);
   chrome.syncFileSystem.requestFileSystem(function() {});
+  chrome.test.getConfig(function(config) {
+    setTimeout(function() {
+      // Expect timeout when syncFileSystem is disabled.
+      if (config.customArg == "disabled") {
+        chrome.test.succeed();
+      } else {
+        chrome.test.fail();
+      }
+    }, 10000);
+  });
 }
 
 function fileInfoReceived(fileInfo) {

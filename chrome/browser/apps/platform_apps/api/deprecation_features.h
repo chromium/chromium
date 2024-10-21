@@ -10,6 +10,7 @@
 namespace chrome_apps::features {
 
 BASE_DECLARE_FEATURE(kDeprecateMediaGalleriesApis);
+BASE_DECLARE_FEATURE(kDeprecateSyncFileSystemApis);
 
 }  // namespace chrome_apps::features
 
