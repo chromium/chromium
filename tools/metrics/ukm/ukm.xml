@@ -16275,11 +16275,86 @@ be describing additional metrics about the same event.
 
 <event name="PasswordForm">
   <owner>battre@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     Metrics about password forms on websites and the user's interactions with
     them. A separate event is generated for each password form discovered on a
     site.
   </summary>
+  <metric name="ClassificationCorrectness.ConfirmationPassword"
+      enum="PasswordManagerClassificationCorrectness">
+    <summary>
+      Records the correctness of a confirmation password field classification
+      produced on the page load. Is recorded for successfully submitted password
+      forms containing a confirmation password field. The classification is
+      considered correct iff values in the new and in the confirmation password
+      fields match. Recorded on the corresponding form manager destruction.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ClassificationCorrectness.CurrentPassword"
+      enum="PasswordManagerClassificationCorrectness">
+    <summary>
+      Records the correctness of a current password field classification
+      produced on the page load. Is recorded for successfully submitted password
+      forms containing a current password field, for which the user had saved
+      passwords. The classification is considered correct, if the field
+      contained a previously saved password at the moment of submisison, and
+      incorrect, if any other fields in the form contained a previosuly saved
+      password. Recorded on the corresponding form manager destruction.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ClassificationCorrectness.NewPassword"
+      enum="PasswordManagerClassificationCorrectness">
+    <summary>
+      Records the correctness of a new password field classification produced on
+      the page load. Is recorded for successfully submitted password forms
+      containing a new password field. The correctness is estimated based on
+      previosuly saved credentials (if the field value was saved before, it's
+      not a new password), and on whether the confirmation password field is
+      present and validates form classification. Recorded on the corresponding
+      form manager destruction.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ClassificationCorrectness.Username"
+      enum="PasswordManagerClassificationCorrectness">
+    <summary>
+      Records the correctness of a username field classification produced on the
+      page load. Is recorded for successfully submitted password forms
+      containing a username field, for which the user had saved usernames. The
+      classification is considered correct, if the field contained a previously
+      saved username at the moment of submisison, and incorrect, if any other
+      fields in the form contained a previosuly saved username. Recorded on the
+      corresponding form manager destruction.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Context.FormSignature">
     <summary>
       Records a low entropy hash of the form signature in order to be able to

@@ -467,6 +467,24 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
           base::StrCat({"PasswordManager.ClassificationCorrectness.",
                         PasswordFieldTypeToString(field_type)}),
           correctness);
+      switch (field_type) {
+        case (PasswordFieldType::kUsername):
+          ukm_entry_builder_.SetClassificationCorrectness_Username(
+              static_cast<int64_t>(correctness));
+          break;
+        case (PasswordFieldType::kCurrentPassword):
+          ukm_entry_builder_.SetClassificationCorrectness_CurrentPassword(
+              static_cast<int64_t>(correctness));
+          break;
+        case (PasswordFieldType::kNewPassword):
+          ukm_entry_builder_.SetClassificationCorrectness_NewPassword(
+              static_cast<int64_t>(correctness));
+          break;
+        case (PasswordFieldType::kConfirmationPassword):
+          ukm_entry_builder_.SetClassificationCorrectness_ConfirmationPassword(
+              static_cast<int64_t>(correctness));
+          break;
+      }
     }
   }
 

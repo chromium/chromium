@@ -2115,6 +2115,7 @@ void CheckClassificationCorrectnessTestCase(
   SCOPED_TRACE(testing::Message("Test description: ")
                << test_case.description_for_logging);
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   sync_preferences::TestingPrefServiceSyncable pref_service;
   PasswordManager::RegisterProfilePrefs(pref_service.registry());
 
@@ -2152,12 +2153,21 @@ void CheckClassificationCorrectnessTestCase(
        {"Username", "CurrentPassword", "NewPassword", "ConfirmationPassword"}) {
     const std::string metric_name = base::StrCat(
         {"PasswordManager.ClassificationCorrectness.", field_type});
+    const std::string ukm_entry_name =
+        base::StrCat({"ClassificationCorrectness.", field_type});
+
     if (test_case.expectation.find(field_type) != test_case.expectation.end()) {
       histogram_tester.ExpectUniqueSample(
           metric_name, static_cast<int>(test_case.expectation.at(field_type)),
           1);
+      ExpectUkmEntryRecorded(
+          &test_ukm_recorder, ukm_entry_name.c_str(),
+          static_cast<int>(test_case.expectation.at(field_type)));
+
     } else {
       histogram_tester.ExpectTotalCount(metric_name, 0);
+      ExpectUkmEntryRecorded(&test_ukm_recorder, ukm_entry_name.c_str(),
+                             std::nullopt);
     }
   }
 }
