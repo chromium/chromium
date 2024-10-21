@@ -56,6 +56,8 @@ static_library("app_mode") {
     "kiosk_profile_load_failed_observer.h",
     "kiosk_system_session.cc",
     "kiosk_system_session.h",
+    "kiosk_web_app_launcher_base.cc",
+    "kiosk_web_app_launcher_base.h",
     "load_profile.cc",
     "load_profile.h",
     "pref_names.cc",
