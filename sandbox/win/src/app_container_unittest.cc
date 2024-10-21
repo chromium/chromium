@@ -105,7 +105,7 @@ bool ProfileExist(const std::wstring& package_name) {
   return base::PathExists(profile_path);
 }
 
-bool FindAce(const std::optional<base::win::AccessControlList>& acl,
+bool FindAce(std::optional<base::win::AccessControlList>& acl,
              DWORD ace_type,
              const base::win::Sid& sid,
              DWORD flags,

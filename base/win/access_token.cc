@@ -18,6 +18,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/access_control_list.h"
 
 namespace base::win {
 
@@ -449,8 +450,12 @@ std::optional<AccessControlList> AccessToken::DefaultDacl() const {
 }
 
 bool AccessToken::SetDefaultDacl(const AccessControlList& default_dacl) {
+  // TOKEN_DEFAULT_DACL contains a non-const-qualified pointer to DACL, which we
+  // cannot obtain from const-qualified `default_dacl`. Let's make a copy and
+  // use it instead.
+  AccessControlList dacl = default_dacl.Clone();
   TOKEN_DEFAULT_DACL set_default_dacl = {};
-  set_default_dacl.DefaultDacl = default_dacl.get();
+  set_default_dacl.DefaultDacl = dacl.get();
   return Set(token_, TokenDefaultDacl, set_default_dacl);
 }
 
