@@ -399,8 +399,6 @@ public abstract class ChromeFeatureList {
     public static final String PLUS_ADDRESSES_ENABLED = "PlusAddressesEnabled";
     public static final String PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE =
             "PlusAddressAndroidOpenGmsCoreManagementPage";
-    public static final String PLUS_ADDRESS_ANDROID_SETTINGS_ENTRY =
-            "PlusAddressAndroidSettingsEntry";
     public static final String PREFETCH_BROWSER_INITIATED_TRIGGERS =
             "PrefetchBrowserInitiatedTriggers";
     public static final String PRERENDER2 = "Prerender2";

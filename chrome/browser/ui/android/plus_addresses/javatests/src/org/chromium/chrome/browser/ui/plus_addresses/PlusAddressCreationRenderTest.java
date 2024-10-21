@@ -59,8 +59,8 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({
+    ChromeFeatureList.PLUS_ADDRESSES_ENABLED,
     ChromeFeatureList.PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE,
-    ChromeFeatureList.PLUS_ADDRESS_ANDROID_SETTINGS_ENTRY
 })
 public class PlusAddressCreationRenderTest {
     private static final String MANAGE_PLUS_ADDRESSES_DESCRIPTION = "For example@gmail.com.";

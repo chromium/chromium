@@ -67,7 +67,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({
     ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE,
-    ChromeFeatureList.PLUS_ADDRESS_ANDROID_SETTINGS_ENTRY
+    ChromeFeatureList.PLUS_ADDRESSES_ENABLED
 })
 // TODO(crbug.com/344657376): Failing when batched, batch this again.
 public class AutofillProfilesFragmentTest {

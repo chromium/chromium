@@ -212,7 +212,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             getPreferenceScreen().addPreference(pref);
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_ANDROID_SETTINGS_ENTRY)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)) {
             AutofillProfileEditorPreference pref =
                     new AutofillProfileEditorPreference(getStyledContext());
             pref.setTitle(R.string.plus_address_settings_entry_title);
