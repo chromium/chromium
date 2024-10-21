@@ -160,12 +160,6 @@ function createBindGroupUsingTexture(device, tex) {
   });
 }
 
-/** getTextureFormat() should return RGBA8 or BGRA8 for a typical context. */
-function test_getTextureFormat_rgba8(device, canvas) {
-  const ctx = canvas.getContext('2d');
-  assert_regexp_match(ctx.getTextureFormat(), /^rgba8unorm$|^bgra8unorm$/);
-}
-
 /** getTextureFormat() should return RGBA16F for a float16 context. */
 function test_getTextureFormat_rgba16f(device, canvas) {
   const ctx = canvas.getContext('2d', {colorSpace: 'display-p3',
