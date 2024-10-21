@@ -31,11 +31,16 @@ import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 import type {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener} from './password_manager_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
+
 import type {Route} from './router.js';
 import {RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './settings_section.html.js';
 import {SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
+
+// <if expr="not is_chromeos">
+import {PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
+// </if>
 
 export interface SettingsSectionElement {
   $: {
@@ -384,6 +389,15 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   private onMovePasswordsClicked_(e: Event) {
     e.preventDefault();
+    // <if expr="not is_chromeos">
+    if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
+      // TODO(crbug.com/374742872): Use SyncHandler instead to open the batch
+      // upload dialog.
+      PromoCardsProxyImpl.getInstance().openBatchUpload();
+      return;
+    }
+    // </if>
+
     this.showMovePasswordsDialog_ = true;
   }
 
