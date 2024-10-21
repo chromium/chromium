@@ -22,7 +22,6 @@
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 
 namespace content {
@@ -108,32 +107,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
-
-  // Attempts to get the |StorageKey|, using a |RenderFrameHostImpl|, which is
-  // obtained from the associated |FrameTreeNode|, if it exists. This allows to
-  // correctly account for extension URLs.
-  std::optional<blink::StorageKey> GetStorageKeyFromRenderFrameHost(
-      const url::Origin& origin,
-      const base::UnguessableToken* nonce);
-
-  // Attempts to get the |StorageKey| from the Dedicated or Shared WorkerHost,
-  // retrieving the host based on |process_id_| and |worker_token_|. If a
-  // storage key is returned, it will have its origin replaced by |origin|. This
-  // would mean that the origin of the WorkerHost and the origin as used by the
-  // service worker code don't match, however in cases where these wouldn't
-  // match the load will be aborted later anyway.
-  std::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
-      const url::Origin& origin);
-
-  std::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
-      content::StoragePartition* storage_partition,
-      blink::DedicatedWorkerToken dedicated_worker_token,
-      const url::Origin& origin);
-
-  std::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
-      content::StoragePartition* storage_partition,
-      blink::SharedWorkerToken shared_worker_token,
-      const url::Origin& origin);
 
   // For navigations, |handle_| outlives |this|. It's owned by
   // NavigationRequest which outlives NavigationURLLoaderImpl which owns |this|.
