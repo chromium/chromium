@@ -2085,7 +2085,7 @@ String StylePropertySerializer::GetShorthandValueForGridArea(
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
 
   // `grid-row-end` depends on `grid-row-start`, and `grid-column-end` depends
-  // on on `grid-column-start`, but what's not consistent is that
+  // on `grid-column-start`, but what's not consistent is that
   // `grid-column-start` has a dependency on `grid-row-start`. For more details,
   // see https://www.w3.org/TR/css-grid-2/#placement-shorthands
   const bool include_column_start =

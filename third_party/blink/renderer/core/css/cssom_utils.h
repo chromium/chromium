@@ -29,6 +29,8 @@ class CSSOMUtils {
 
   static bool IsEmptyValueList(const CSSValue* value);
 
+  static bool HasGridRepeatValue(const CSSValueList* value_list);
+
   // Returns the name of a grid area based on the position (`row`, `column`).
   // e.g. with the following grid definition:
   // grid-template-areas: "a a a"
