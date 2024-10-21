@@ -13964,24 +13964,44 @@
             "experiments": [
                 {
                     "name": "DisableAll",
+                    "enable_features": [
+                        "ForwardMemoryPressureToBlinkIsolates",
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ],
                     "disable_features": [
                         "MemoryPurgeInBackground"
                     ]
                 },
                 {
                     "name": "DisableGC",
+                    "enable_features": [
+                        "MemoryPurgeInBackground",
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ],
                     "disable_features": [
                         "ForwardMemoryPressureToBlinkIsolates"
                     ]
                 },
                 {
                     "name": "DisableStrongReferences",
+                    "enable_features": [
+                        "ForwardMemoryPressureToBlinkIsolates",
+                        "MemoryPurgeInBackground",
+                        "ReleaseResourceDecodedDataOnMemoryPressure"
+                    ],
                     "disable_features": [
                         "ReleaseResourceStrongReferencesOnMemoryPressure"
                     ]
                 },
                 {
                     "name": "DisableDecodedData",
+                    "enable_features": [
+                        "ForwardMemoryPressureToBlinkIsolates",
+                        "MemoryPurgeInBackground",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ],
                     "disable_features": [
                         "ReleaseResourceDecodedDataOnMemoryPressure"
                     ]
