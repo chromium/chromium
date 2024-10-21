@@ -39,16 +39,7 @@ SharingIconView::SharingIconView(
   SetVisible(false);
   SetUpForInOutAnimation();
 
-  auto* controller = GetController();
-  if (controller && !controller->HasAccessibleUi()) {
-    // This should rarely be true. One example where it is true is the
-    // SmsRemoteFetcherUiController: crrev.com/c/2964059 stopped all UI
-    // from being shown and removed the accessible name. Setting the state
-    // to ignored is needed to stop the UI from being shown to assistive
-    // technologies.
-    GetViewAccessibility().SetIsIgnored(true);
-    return;
-  }
+  SetAccessibleIsIgnoredIfNeeded();
 }
 
 SharingIconView::~SharingIconView() = default;
@@ -180,12 +171,17 @@ const gfx::VectorIcon& SharingIconView::GetVectorIcon() const {
   return controller ? controller->GetVectorIcon() : gfx::kNoneIcon;
 }
 
-void SharingIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void SharingIconView::SetAccessibleIsIgnoredIfNeeded() {
   auto* controller = GetController();
   if (controller && !controller->HasAccessibleUi()) {
+    // This should rarely be true. One example where it is true is the
+    // SmsRemoteFetcherUiController: crrev.com/c/2964059 stopped all UI
+    // from being shown and removed the accessible name. Setting the state
+    // to ignored is needed to stop the UI from being shown to assistive
+    // technologies.
+    GetViewAccessibility().SetIsIgnored(true);
     return;
   }
-  PageActionIconView::GetAccessibleNodeData(node_data);
 }
 
 BEGIN_METADATA(SharingIconView)
