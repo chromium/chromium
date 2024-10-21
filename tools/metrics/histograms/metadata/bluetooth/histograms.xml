@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Bluetooth.BlueZ.DBus.{MethodName}.Latency" units="ms"
-    expires_after="2024-12-15">
+    expires_after="2025-04-13">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Tracks the latency of the BlueZ {MethodName} DBus method.</summary>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.BlueZ.DBus.{MethodName}.Result" enum="DBusResult"
-    expires_after="2025-01-26">
+    expires_after="2025-04-13">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Tracks the result for BlueZ {MethodName} DBus method calls.</summary>
@@ -1857,7 +1857,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Linux.ConnectToService.Bonded.FailureReason"
     enum="BluetoothDeviceConnectToServiceFailureReason"
-    expires_after="2024-12-01">
+    expires_after="2025-04-13">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1869,7 +1869,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Linux.ConnectToService.FailureReason"
     enum="BluetoothDeviceConnectToServiceFailureReason"
-    expires_after="2024-12-01">
+    expires_after="2025-04-13">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1880,7 +1880,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Linux.ConnectToServiceInsecurelyResult"
     enum="BluetoothAdapterConnectToServiceInsecurelyResult"
-    expires_after="2025-04-06">
+    expires_after="2025-04-13">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1890,19 +1890,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Mojo.PendingConnectAtShutdown.DurationWaiting"
-    units="ms" expires_after="2024-07-07">
+    units="ms" expires_after="2025-04-13">
   <owner>jonmann@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
     Records the number of milliseconds a pending connect request has been
     waiting on/for the experimental bluetooth::mojom::Adapter implementation.
     This metric is only recorded when the class is destroyed.
+
+    Warning: This histogram was expired from 2024-07-07 to 2024-10-21; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Bluetooth.Mojo.PendingConnectAtShutdown.NumberOfServiceDiscoveriesInProgress"
-    units="count" expires_after="2024-05-05">
+    units="count" expires_after="2025-04-13">
   <owner>jonmann@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -1912,6 +1915,9 @@ chromium-metrics-reviews@google.com.
     active when the Mojo Adapter is being torn down, so significant counts of
     values other than 0 in this metric are a strong signal of incorrect behavior
     and should be investigated.
+
+    Warning: This histogram was expired from 2024-05-05 to 2024-10-21; data may
+    be missing.
   </summary>
 </histogram>
 
