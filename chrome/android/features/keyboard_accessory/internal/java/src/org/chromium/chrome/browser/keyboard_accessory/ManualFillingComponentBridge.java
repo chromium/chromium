@@ -177,6 +177,7 @@ class ManualFillingComponentBridge {
     private void addFieldToUserInfo(
             UserInfo userInfo,
             @AccessoryTabType int sheetType,
+            @AccessorySuggestionType int suggestionType,
             @JniType("std::u16string") String displayText,
             @JniType("std::u16string") String textToFill,
             @JniType("std::u16string") String a11yDescription,
@@ -202,6 +203,7 @@ class ManualFillingComponentBridge {
         userInfo.getFields()
                 .add(
                         new UserInfoField.Builder()
+                                .setSuggestionType(suggestionType)
                                 .setDisplayText(displayText)
                                 .setTextToFill(textToFill)
                                 .setA11yDescription(a11yDescription)
@@ -216,6 +218,7 @@ class ManualFillingComponentBridge {
     private void addPlusAddressInfoToAccessorySheetData(
             AccessorySheetData accessorySheetData,
             @AccessoryTabType int sheetType,
+            @AccessorySuggestionType int suggestionType,
             @JniType("std::string") String origin,
             @JniType("std::u16string") String plusAddress) {
         Callback<UserInfoField> callback =
@@ -227,6 +230,7 @@ class ManualFillingComponentBridge {
                 };
         UserInfoField field =
                 new UserInfoField.Builder()
+                        .setSuggestionType(suggestionType)
                         .setDisplayText(plusAddress)
                         .setTextToFill(plusAddress)
                         .setA11yDescription(plusAddress)
@@ -265,6 +269,7 @@ class ManualFillingComponentBridge {
     private void addPromoCodeInfoToAccessorySheetData(
             AccessorySheetData accessorySheetData,
             @AccessoryTabType int sheetType,
+            @AccessorySuggestionType int suggestionType,
             @JniType("std::u16string") String displayText,
             @JniType("std::u16string") String textToFill,
             @JniType("std::u16string") String a11yDescription,
@@ -289,6 +294,7 @@ class ManualFillingComponentBridge {
         ((PromoCodeInfo) promoCodeInfo)
                 .setPromoCode(
                         new UserInfoField.Builder()
+                                .setSuggestionType(suggestionType)
                                 .setDisplayText(displayText)
                                 .setTextToFill(textToFill)
                                 .setA11yDescription(a11yDescription)
@@ -303,6 +309,7 @@ class ManualFillingComponentBridge {
     private void addIbanInfoToAccessorySheetData(
             AccessorySheetData accessorySheetData,
             @AccessoryTabType int sheetType,
+            @AccessorySuggestionType int suggestionType,
             @JniType("std::string") String guid,
             @JniType("std::u16string") String value,
             @JniType("std::u16string") String textToFill) {
@@ -318,6 +325,7 @@ class ManualFillingComponentBridge {
         ((IbanInfo) ibanInfo)
                 .setValue(
                         new UserInfoField.Builder()
+                                .setSuggestionType(suggestionType)
                                 .setDisplayText(value)
                                 .setTextToFill(textToFill)
                                 .setA11yDescription(value)

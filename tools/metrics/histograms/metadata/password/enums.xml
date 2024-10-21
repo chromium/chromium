@@ -56,6 +56,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="PAYMENT_INFO"/>
   <int value="3" label="ADDRESS_INFO"/>
   <int value="4" label="(obsolete) TOUCH_TO_FILL_INFO"/>
+  <int value="5" label="PLUS_ADDRESS"/>
 </enum>
 
 <enum name="AccessoryToggleType">

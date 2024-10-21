@@ -34,6 +34,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
@@ -157,6 +158,7 @@ public class AddressAccessorySheetControllerTest {
                         new PlusAddressInfo(
                                 "google.com",
                                 new UserInfoField.Builder()
+                                        .setSuggestionType(AccessorySuggestionType.PLUS_ADDRESS)
                                         .setDisplayText("example@gmail.com")
                                         .setA11yDescription("example@gmail.com")
                                         .setCallback(field -> {})
@@ -166,6 +168,7 @@ public class AddressAccessorySheetControllerTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
+                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
                                 .setDisplayText("Name")
                                 .setA11yDescription("Name")
                                 .build());
@@ -173,6 +176,7 @@ public class AddressAccessorySheetControllerTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
+                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
                                 .setDisplayText("Street")
                                 .setA11yDescription("Street")
                                 .setIsObfuscated(true)

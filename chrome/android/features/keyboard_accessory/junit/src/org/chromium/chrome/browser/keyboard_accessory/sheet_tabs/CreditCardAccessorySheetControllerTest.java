@@ -35,6 +35,7 @@ import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
@@ -158,6 +159,7 @@ public class CreditCardAccessorySheetControllerTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
+                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
                                 .setDisplayText("Todd")
                                 .setA11yDescription("Todd")
                                 .setCallback(field -> {})
@@ -166,6 +168,7 @@ public class CreditCardAccessorySheetControllerTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
+                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
                                 .setDisplayText("**** 9219")
                                 .setA11yDescription("**** 9219")
                                 .setIsObfuscated(true)
@@ -176,6 +179,7 @@ public class CreditCardAccessorySheetControllerTest {
                 .get(0)
                 .setPromoCode(
                         new UserInfoField.Builder()
+                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
                                 .setCallback(field -> {})
@@ -229,6 +233,7 @@ public class CreditCardAccessorySheetControllerTest {
                 .get(0)
                 .setPromoCode(
                         new UserInfoField.Builder()
+                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
                                 .setCallback(field -> {})

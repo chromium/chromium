@@ -237,11 +237,13 @@ public class ManualFillingControllerTest {
             UserInfo userInfo = new UserInfo("", false);
             userInfo.addField(
                     new UserInfoField.Builder()
+                            .setSuggestionType(AccessorySuggestionType.USERNAME)
                             .setDisplayText("(No username)")
                             .setA11yDescription("No username")
                             .build());
             userInfo.addField(
                     new UserInfoField.Builder()
+                            .setSuggestionType(AccessorySuggestionType.PASSWORD)
                             .setDisplayText(passwordString)
                             .setA11yDescription("Password")
                             .setIsObfuscated(true)

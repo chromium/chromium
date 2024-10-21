@@ -57,10 +57,12 @@ std::u16string GetTitle(bool has_suggestions) {
 }
 
 void AddSimpleField(std::u16string data, UserInfo* user_info, bool enabled) {
-  user_info->add_field(AccessorySheetField::Builder()
-                           .SetDisplayText(std::move(data))
-                           .SetSelectable(enabled)
-                           .Build());
+  user_info->add_field(
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
+          .SetDisplayText(std::move(data))
+          .SetSelectable(enabled)
+          .Build());
 }
 
 void AddCardDetailsToUserInfo(const CreditCard& card,
@@ -93,11 +95,13 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   // The `text_to_fill` field is set to an empty string as we're populating the
   // `id` of the `UserInfoField` which would be used to determine the type of
   // the card and fill the form accordingly.
-  user_info.add_field(AccessorySheetField::Builder()
-                          .SetDisplayText(obfuscated_number)
-                          .SetId(data->guid())
-                          .SetSelectable(enabled)
-                          .Build());
+  user_info.add_field(
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
+          .SetDisplayText(obfuscated_number)
+          .SetId(data->guid())
+          .SetSelectable(enabled)
+          .Build());
   AddCardDetailsToUserInfo(*data, &user_info, std::u16string(), enabled);
 
   return user_info;
@@ -109,12 +113,14 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
   const CreditCard& card = data->card;
   UserInfo user_info(card.network(), GetCardArtUrl(card));
   std::u16string card_number = card.GetRawInfo(CREDIT_CARD_NUMBER);
-  user_info.add_field(AccessorySheetField::Builder()
-                          .SetDisplayText(card.FullDigitsForDisplay())
-                          .SetTextToFill(card_number)
-                          .SetA11yDescription(card_number)
-                          .SetSelectable(enabled)
-                          .Build());
+  user_info.add_field(
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
+          .SetDisplayText(card.FullDigitsForDisplay())
+          .SetTextToFill(card_number)
+          .SetA11yDescription(card_number)
+          .SetSelectable(enabled)
+          .Build());
   AddCardDetailsToUserInfo(card, &user_info, data->cvc, enabled);
 
   return user_info;

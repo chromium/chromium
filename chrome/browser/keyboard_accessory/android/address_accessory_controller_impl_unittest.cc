@@ -238,18 +238,28 @@ TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {
       AddressAccessorySheetDataBuilder(/*userInfoTitle=*/std::u16string(),
                                        /*plusAddressTitle=*/std::u16string())
           .AddUserInfo()
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::NAME_FULL))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::COMPANY_NAME))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_LINE1))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_LINE2))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_ZIP))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_CITY))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_STATE))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::NAME_FULL))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::COMPANY_NAME))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::ADDRESS_HOME_LINE1))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::ADDRESS_HOME_LINE2))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::ADDRESS_HOME_ZIP))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::ADDRESS_HOME_CITY))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::ADDRESS_HOME_STATE))
           .AppendSimpleField(
+              AccessorySuggestionType::ADDRESS_INFO,
               canadian.GetRawInfo(FieldType::ADDRESS_HOME_COUNTRY))
           .AppendSimpleField(
+              AccessorySuggestionType::ADDRESS_INFO,
               canadian.GetRawInfo(FieldType::PHONE_HOME_WHOLE_NUMBER))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::EMAIL_ADDRESS))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::EMAIL_ADDRESS))
           .Build());
 }
 
@@ -275,23 +285,34 @@ TEST_F(AddressAccessoryControllerTest, TriggersRefreshWhenDataChanges) {
                                        /*plusAddressTitle=*/std::u16string())
           .AddUserInfo()
           /*name full:*/
-          .AppendSimpleField(std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             std::u16string())
           /*company name:*/
-          .AppendSimpleField(std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             std::u16string())
           /*address line1:*/
-          .AppendSimpleField(std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             std::u16string())
           /*address line2:*/
-          .AppendSimpleField(std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             std::u16string())
           /*address zip:*/
-          .AppendSimpleField(std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             std::u16string())
           /*address city:*/
-          .AppendSimpleField(std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             std::u16string())
           /*address state:*/
-          .AppendSimpleField(std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             std::u16string())
           /*address country:*/
-          .AppendSimpleField(std::u16string())
-          /*phone number:*/.AppendSimpleField(std::u16string())
-          .AppendSimpleField(email.GetRawInfo(FieldType::EMAIL_ADDRESS))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             std::u16string())
+          /*phone number:*/
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             email.GetRawInfo(FieldType::EMAIL_ADDRESS))
           .Build());
 }
 
@@ -448,18 +469,28 @@ TEST_F(AddressAccessoryControllerTest,
                                        /*plusAddressTitle=*/std::u16string())
           .AddPlusAddressInfo("https://foo.com", u"plus+foo@plus.plus")
           .AddUserInfo()
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::NAME_FULL))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::COMPANY_NAME))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_LINE1))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_LINE2))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_ZIP))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_CITY))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_STATE))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::NAME_FULL))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::COMPANY_NAME))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::ADDRESS_HOME_LINE1))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::ADDRESS_HOME_LINE2))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::ADDRESS_HOME_ZIP))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::ADDRESS_HOME_CITY))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::ADDRESS_HOME_STATE))
           .AppendSimpleField(
+              AccessorySuggestionType::ADDRESS_INFO,
               canadian.GetRawInfo(FieldType::ADDRESS_HOME_COUNTRY))
           .AppendSimpleField(
+              AccessorySuggestionType::ADDRESS_INFO,
               canadian.GetRawInfo(FieldType::PHONE_HOME_WHOLE_NUMBER))
-          .AppendSimpleField(canadian.GetRawInfo(FieldType::EMAIL_ADDRESS))
+          .AppendSimpleField(AccessorySuggestionType::ADDRESS_INFO,
+                             canadian.GetRawInfo(FieldType::EMAIL_ADDRESS))
           .AppendFooterCommand(
               l10n_util::GetStringUTF16(
                   IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),

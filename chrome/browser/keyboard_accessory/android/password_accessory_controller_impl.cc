@@ -95,14 +95,17 @@ autofill::UserInfo TranslateCredentials(const UiCredential& credential,
                    password_manager_util::GetLoginMatchType::kExact));
 
   std::u16string username = GetDisplayUsername(credential);
-  user_info.add_field(AccessorySheetField::Builder()
-                          .SetDisplayText(username)
-                          .SetSelectable(!credential.username().empty())
-                          .SetIconId(username_icon_id)
-                          .Build());
+  user_info.add_field(
+      AccessorySheetField::Builder()
+          .SetSuggestionType(autofill::AccessorySuggestionType::USERNAME)
+          .SetDisplayText(username)
+          .SetSelectable(!credential.username().empty())
+          .SetIconId(username_icon_id)
+          .Build());
 
   user_info.add_field(
       AccessorySheetField::Builder()
+          .SetSuggestionType(autofill::AccessorySuggestionType::PASSWORD)
           .SetDisplayText(credential.password())
           .SetA11yDescription(l10n_util::GetStringFUTF16(
               IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, username))

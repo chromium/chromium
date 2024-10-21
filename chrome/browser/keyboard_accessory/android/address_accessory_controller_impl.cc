@@ -59,6 +59,7 @@ void AddProfileInfoAsSelectableField(UserInfo* info,
     field = profile->GetRawInfo(FieldType::NAME_MIDDLE_INITIAL);
   }
   info->add_field(AccessorySheetField::Builder()
+                      .SetSuggestionType(AccessorySuggestionType::ADDRESS_INFO)
                       .SetDisplayText(std::move(field))
                       .SetSelectable(true)
                       .Build());

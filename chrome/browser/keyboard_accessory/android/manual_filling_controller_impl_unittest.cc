@@ -30,6 +30,7 @@
 namespace {
 using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
+using autofill::AccessorySuggestionType;
 using autofill::AccessoryTabType;
 using autofill::TestAutofillClientInjector;
 using autofill::TestContentAutofillClient;
@@ -50,8 +51,10 @@ AccessorySheetData filled_passwords_sheet() {
   return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds",
                                      /*plus_address_title=*/std::u16string())
       .AddUserInfo("example.com", autofill::UserInfo::IsExactMatch(true))
-      .AppendField(u"Ben", u"Ben", false, true)
-      .AppendField(u"S3cur3", u"Ben's PW", true, false)
+      .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben", false,
+                   true)
+      .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3", u"Ben's PW",
+                   true, false)
       .Build();
 }
 

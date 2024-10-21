@@ -44,6 +44,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -162,12 +163,14 @@ public class PasswordAccessorySheetViewTest {
         UserInfo testInfo = new UserInfo("", false);
         testInfo.addField(
                 new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.USERNAME)
                         .setDisplayText("Name Suggestion")
                         .setA11yDescription("Name Suggestion")
                         .setCallback(item -> clicked.set(true))
                         .build());
         testInfo.addField(
                 new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.PASSWORD)
                         .setDisplayText("Password Suggestion")
                         .setA11yDescription("Password Suggestion")
                         .setIsObfuscated(true)
@@ -239,6 +242,8 @@ public class PasswordAccessorySheetViewTest {
                                     new PlusAddressInfo(
                                             /* origin= */ "google.com",
                                             new UserInfoField.Builder()
+                                                    .setSuggestionType(
+                                                            AccessorySuggestionType.PLUS_ADDRESS)
                                                     .setDisplayText("example@gmail.com")
                                                     .setTextToFill("example@gmail.com")
                                                     .setIsObfuscated(false)
@@ -267,12 +272,14 @@ public class PasswordAccessorySheetViewTest {
         UserInfo usernameEnabled = new UserInfo("", false);
         usernameEnabled.addField(
                 new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.USERNAME)
                         .setDisplayText("username1")
                         .setA11yDescription("username1")
                         .setCallback(item -> clicked.set(true))
                         .build());
         usernameEnabled.addField(
                 new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.PASSWORD)
                         .setDisplayText("pa55w0rd")
                         .setA11yDescription("Password for username1")
                         .setIsObfuscated(true)
@@ -305,6 +312,7 @@ public class PasswordAccessorySheetViewTest {
         assertThat(mView.get().getChildCount(), is(0));
         final UserInfoField kUnusedInfoField =
                 new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.USERNAME)
                         .setDisplayText("Unused Name")
                         .setA11yDescription("Unused Password")
                         .setCallback(cb -> {})

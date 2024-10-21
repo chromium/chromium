@@ -171,16 +171,21 @@ TEST_F(PaymentMethodAccessoryControllerTest, RefreshSuggestions) {
   EXPECT_EQ(controller()->GetSheetData(),
             PaymentMethodAccessorySheetDataBuilder()
                 .AddUserInfo(kVisaCard)
-                .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                .AppendField(AccessorySuggestionType::PAYMENT_INFO,
+                             card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              /*text_to_fill=*/std::u16string(),
                              card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              card.guid(),
                              /*is_obfuscated=*/false,
                              /*selectable=*/true)
-                .AppendSimpleField(card.Expiration2DigitMonthAsString())
-                .AppendSimpleField(card.Expiration4DigitYearAsString())
-                .AppendSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL))
-                .AppendSimpleField(std::u16string())
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   card.Expiration2DigitMonthAsString())
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   card.Expiration4DigitYearAsString())
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   std::u16string())
                 .Build());
 }
 
@@ -199,25 +204,30 @@ TEST_F(PaymentMethodAccessoryControllerTest, PreventsFillingInsecureContexts) {
                 .SetWarning(l10n_util::GetStringUTF16(
                     IDS_AUTOFILL_WARNING_INSECURE_CONNECTION))
                 .AddUserInfo(kVisaCard)
-                .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                .AppendField(AccessorySuggestionType::PAYMENT_INFO,
+                             card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              /*text_to_fill=*/std::u16string(),
                              card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              card.guid(),
                              /*is_obfuscated=*/false,
                              /*selectable=*/false)
-                .AppendField(card.Expiration2DigitMonthAsString(),
+                .AppendField(AccessorySuggestionType::PAYMENT_INFO,
+                             card.Expiration2DigitMonthAsString(),
                              card.Expiration2DigitMonthAsString(),
                              /*is_obfuscated=*/false,
                              /*selectable=*/false)
-                .AppendField(card.Expiration4DigitYearAsString(),
+                .AppendField(AccessorySuggestionType::PAYMENT_INFO,
+                             card.Expiration4DigitYearAsString(),
                              card.Expiration4DigitYearAsString(),
                              /*is_obfuscated=*/false,
                              /*selectable=*/false)
-                .AppendField(card.GetRawInfo(CREDIT_CARD_NAME_FULL),
+                .AppendField(AccessorySuggestionType::PAYMENT_INFO,
+                             card.GetRawInfo(CREDIT_CARD_NAME_FULL),
                              card.GetRawInfo(CREDIT_CARD_NAME_FULL),
                              /*is_obfuscated=*/false,
                              /*selectable=*/false)
-                .AppendField(std::u16string(), std::u16string(),
+                .AppendField(AccessorySuggestionType::PAYMENT_INFO,
+                             std::u16string(), std::u16string(),
                              /*is_obfuscated=*/false,
                              /*selectable=*/false)
                 .Build());
@@ -265,6 +275,7 @@ TEST_P(PaymentMethodAccessoryControllerCardUnmaskTest, CardUnmask) {
 
   AccessorySheetField field =
       AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
           .SetDisplayText(card.ObfuscatedNumberWithVisibleLastFourDigits())
           .SetId(card.guid())
           .SetSelectable(true)
@@ -320,28 +331,38 @@ TEST_F(PaymentMethodAccessoryControllerTest,
       controller()->GetSheetData(),
       PaymentMethodAccessorySheetDataBuilder()
           .AddUserInfo(kVisaCard)
-          .AppendField(/*display_text=*/card_number_for_display,
-                       /*text_to_fill=*/card_number_for_fill,
-                       /*a11y_description=*/card_number_for_fill,
-                       /*id=*/std::string(),
-                       /*is_obfuscated=*/false,
-                       /*selectable=*/true)
-          .AppendSimpleField(unmasked_card.Expiration2DigitMonthAsString())
-          .AppendSimpleField(unmasked_card.Expiration4DigitYearAsString())
-          .AppendSimpleField(unmasked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
-          .AppendSimpleField(cvc)
+          .AppendField(
+              /*suggestion_type=*/AccessorySuggestionType::PAYMENT_INFO,
+              /*display_text=*/card_number_for_display,
+              /*text_to_fill=*/card_number_for_fill,
+              /*a11y_description=*/card_number_for_fill,
+              /*id=*/std::string(),
+              /*is_obfuscated=*/false,
+              /*selectable=*/true)
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             unmasked_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             unmasked_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             unmasked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO, cvc)
           .AddUserInfo(kVisaCard)
           .AppendField(
+              AccessorySuggestionType::PAYMENT_INFO,
               unmasked_card.ObfuscatedNumberWithVisibleLastFourDigits(),
               /*text_to_fill=*/std::u16string(),
               unmasked_card.ObfuscatedNumberWithVisibleLastFourDigits(),
               unmasked_card.guid(),
               /*is_obfuscated=*/false,
               /*selectable=*/true)
-          .AppendSimpleField(unmasked_card.Expiration2DigitMonthAsString())
-          .AppendSimpleField(unmasked_card.Expiration4DigitYearAsString())
-          .AppendSimpleField(unmasked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
-          .AppendSimpleField(std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             unmasked_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             unmasked_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             unmasked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             std::u16string())
           .Build());
 }
 
@@ -367,25 +388,35 @@ TEST_F(
       controller()->GetSheetData(),
       PaymentMethodAccessorySheetDataBuilder()
           .AddUserInfo(kMasterCard)
-          .AppendField(virtual_card_label, /*text_to_fill*/ std::u16string(),
+          .AppendField(AccessorySuggestionType::PAYMENT_INFO,
+                       virtual_card_label, /*text_to_fill*/ std::u16string(),
                        virtual_card_label, masked_card.guid() + "_vcn",
                        /*is_obfuscated=*/false,
                        /*selectable=*/true)
-          .AppendSimpleField(masked_card.Expiration2DigitMonthAsString())
-          .AppendSimpleField(masked_card.Expiration4DigitYearAsString())
-          .AppendSimpleField(masked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
-          .AppendSimpleField(std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             masked_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             masked_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             masked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             std::u16string())
           .AddUserInfo(kMasterCard)
-          .AppendField(masked_card.ObfuscatedNumberWithVisibleLastFourDigits(),
+          .AppendField(AccessorySuggestionType::PAYMENT_INFO,
+                       masked_card.ObfuscatedNumberWithVisibleLastFourDigits(),
                        /*text_to_fill*/ std::u16string(),
                        masked_card.ObfuscatedNumberWithVisibleLastFourDigits(),
                        masked_card.guid(),
                        /*is_obfuscated=*/false,
                        /*selectable=*/true)
-          .AppendSimpleField(masked_card.Expiration2DigitMonthAsString())
-          .AppendSimpleField(masked_card.Expiration4DigitYearAsString())
-          .AppendSimpleField(masked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
-          .AppendSimpleField(std::u16string())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             masked_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             masked_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             masked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                             std::u16string())
           .Build());
 }
 
@@ -484,16 +515,21 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   EXPECT_EQ(controller()->GetSheetData(),
             PaymentMethodAccessorySheetDataBuilder()
                 .AddUserInfo(kVisaCard)
-                .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                .AppendField(AccessorySuggestionType::PAYMENT_INFO,
+                             card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              /*text_to_fill=*/std::u16string(),
                              card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              card.guid(),
                              /*is_obfuscated=*/false,
                              /*selectable=*/true)
-                .AppendSimpleField(card.Expiration2DigitMonthAsString())
-                .AppendSimpleField(card.Expiration4DigitYearAsString())
-                .AppendSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL))
-                .AppendSimpleField(std::u16string())
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   card.Expiration2DigitMonthAsString())
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   card.Expiration4DigitYearAsString())
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   std::u16string())
                 .AddPromoCodeInfo(
                     base::ASCIIToUTF16(promo_code_valid.GetPromoCode()),
                     base::ASCIIToUTF16(
@@ -520,16 +556,21 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   EXPECT_EQ(controller()->GetSheetData(),
             PaymentMethodAccessorySheetDataBuilder()
                 .AddUserInfo(kVisaCard)
-                .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                .AppendField(AccessorySuggestionType::PAYMENT_INFO,
+                             card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              /*text_to_fill=*/std::u16string(),
                              card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              card.guid(),
                              /*is_obfuscated=*/false,
                              /*selectable=*/true)
-                .AppendSimpleField(card.Expiration2DigitMonthAsString())
-                .AppendSimpleField(card.Expiration4DigitYearAsString())
-                .AppendSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL))
-                .AppendSimpleField(std::u16string())
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   card.Expiration2DigitMonthAsString())
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   card.Expiration4DigitYearAsString())
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+                .AppendSimpleField(AccessorySuggestionType::PAYMENT_INFO,
+                                   std::u16string())
                 .AddIbanInfo(iban.GetIdentifierStringForAutofillDisplay(),
                              iban.value(), /*id=*/"")
                 .Build());
@@ -547,6 +588,7 @@ TEST_F(PaymentMethodAccessoryControllerTest, FetchLocalIban) {
 
   AccessorySheetField field =
       AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
           .SetDisplayText(iban.GetIdentifierStringForAutofillDisplay())
           .SetTextToFill(iban.value())
           .SetSelectable(true)
@@ -575,6 +617,7 @@ TEST_F(PaymentMethodAccessoryControllerTest, FetchServerIban) {
 
   AccessorySheetField field =
       AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
           .SetDisplayText(iban.GetIdentifierStringForAutofillDisplay())
           .SetTextToFill(iban.value())
           .SetId(base::NumberToString(iban.instrument_id()))
