@@ -297,11 +297,15 @@ def main(argv: list[str]):
           if builders is not None and builder_name not in builders:
             continue
 
-          edits_by_builder[builder_name] = _compute_edits(
-              builder_name,
-              builder_config,
-              test_suite_exceptions,
-          )
+          try:
+            edits_by_builder[builder_name] = _compute_edits(
+                builder_name,
+                builder_config,
+                test_suite_exceptions,
+            )
+          except SkylabSuite:
+            if builders is not None:
+              raise
 
           if builders is not None:
             builders.remove(builder_name)
