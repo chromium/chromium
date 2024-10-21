@@ -60,6 +60,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/SharedDataPreview.java",
       "android/java/src/org/chromium/components/data_sharing/SharedEntity.java",
       "android/java/src/org/chromium/components/data_sharing/configs/AvatarConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingAvatarBitmapConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingCreateUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingJoinUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingManageUiConfig.java",

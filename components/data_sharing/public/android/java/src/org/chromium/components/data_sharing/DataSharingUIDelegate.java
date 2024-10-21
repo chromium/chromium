@@ -15,6 +15,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Callback;
 import org.chromium.components.data_sharing.configs.AvatarConfig;
+import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
@@ -135,4 +136,11 @@ public interface DataSharingUIDelegate {
      * @param sessionId Used to identify the flow to be destroyed.
      */
     default void destroyFlow(String sessionId) {}
+
+    /**
+     * Method to get bitmap for an avatar.
+     *
+     * @param avatarBitmapConfig Used to set properties for getting bitmap for an avatar.
+     */
+    default void getAvatarBitmap(DataSharingAvatarBitmapConfig avatarBitmapConfig) {}
 }
