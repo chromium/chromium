@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -13,7 +14,9 @@
 #include "ash/scanner/scanner_command_delegate.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
+#include "components/manta/proto/scanner.pb.h"
 
 namespace ash {
 
@@ -31,8 +34,16 @@ ScannerActionViewModel& ScannerActionViewModel::operator=(
 ScannerActionViewModel::~ScannerActionViewModel() = default;
 
 std::u16string ScannerActionViewModel::GetText() const {
-  // TODO(b/369470078): Replace this placeholder.
-  return u"Placeholder action";
+  // TODO(b/369470078): Replace this with finalised translated strings.
+  return std::visit(
+      base::Overloaded{
+          [](const manta::proto::NewEventAction&) { return u"New event"; },
+          [](const manta::proto::NewContactAction&) { return u"New contact"; },
+          [](const NewGoogleDocAction&) { return u"New Google Doc"; },
+          [](const NewGoogleSheetAction&) { return u"New Google Sheet"; },
+          [](const CopyToClipboardAction&) { return u"Copy to clipboard"; },
+      },
+      action_);
 }
 
 const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
