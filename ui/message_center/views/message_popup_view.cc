@@ -48,6 +48,12 @@ MessagePopupView::MessagePopupView(MessageView* message_view,
   SetNotifyEnterExitOnChild(true);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
+  GetViewAccessibility().SetRoleDescription(
+      message_view_->GetViewAccessibility().GetRoleDescription());
+  UpdateAccessibleName(message_view_->GetViewAccessibility().GetCachedName());
+  message_view_->SetUpdatedNameCallback(
+      base::BindRepeating(&MessagePopupView::OnMessageViewNameUpdated,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 MessagePopupView::MessagePopupView(MessagePopupCollection* popup_collection)
@@ -66,30 +72,36 @@ MessagePopupView::~MessagePopupView() {
     focus_manager_->RemoveFocusChangeListener(this);
 }
 
+void MessagePopupView::UpdateAccessibleName(
+    const std::u16string& new_name) const {
+  if (new_name.empty()) {
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(new_name);
+  }
+}
+
+void MessagePopupView::OnMessageViewNameUpdated(
+    bool should_make_spoken_feedback_for_popup_updates) {
+  const std::u16string old_name = GetViewAccessibility().GetCachedName();
+  const std::u16string new_name =
+      message_view_->GetViewAccessibility().GetCachedName();
+  UpdateAccessibleName(new_name);
+
+  if (should_make_spoken_feedback_for_popup_updates) {
+    if (!new_name.empty() && old_name != new_name) {
+      NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    }
+  }
+}
+
 void MessagePopupView::UpdateContents(const Notification& notification) {
-  if (!IsWidgetValid())
+  if (!IsWidgetValid()) {
     return;
-  ui::AXNodeData old_data;
-  message_view_->GetAccessibleNodeData(&old_data);
+  }
   message_view_->UpdateWithNotification(notification);
   popup_collection_->NotifyPopupResized();
-  if (notification.rich_notification_data()
-          .should_make_spoken_feedback_for_popup_updates) {
-    ui::AXNodeData new_data;
-    message_view_->GetAccessibleNodeData(&new_data);
-
-    const std::string& new_name =
-        new_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
-    const std::string& old_name =
-        old_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
-    if (new_name.empty()) {
-      new_data.SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-      return;
-    }
-
-    if (old_name != new_name)
-      NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-  }
 }
 
 void MessagePopupView::UpdateContentsForChildNotification(
@@ -213,13 +225,6 @@ void MessagePopupView::OnMouseExited(const ui::MouseEvent& event) {
 
 void MessagePopupView::ChildPreferredSizeChanged(views::View* child) {
   popup_collection_->NotifyPopupResized();
-}
-
-void MessagePopupView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // TODO(pbos): Consider removing the test-only constructor that has
-  // `message_view_` as nullptr.
-  if (message_view_)
-    message_view_->GetAccessibleNodeData(node_data);
 }
 
 void MessagePopupView::OnDisplayChanged() {

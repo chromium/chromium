@@ -48,6 +48,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   METADATA_HEADER(MessageView, views::View)
 
  public:
+  using UpdatedNameCallback = base::RepeatingCallback<void(bool)>;
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnSlideStarted(const std::string& notification_id) {}
@@ -234,6 +236,8 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
 
+  void SetUpdatedNameCallback(UpdatedNameCallback callback);
+
   bool inline_settings_enabled() const { return inline_settings_enabled_; }
   void set_inline_settings_enabled(bool inline_settings_enabled) {
     inline_settings_enabled_ = inline_settings_enabled;
@@ -323,6 +327,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   // shape of the notification.
   int top_radius_ = 0;
   int bottom_radius_ = 0;
+
+  UpdatedNameCallback updated_name_callback_;
 
  public:
   base::WeakPtrFactory<MessageView> weak_factory_{this};

@@ -69,7 +69,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void ChildPreferredSizeChanged(views::View* child) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnDisplayChanged() override;
   void OnWorkAreaChanged() override;
   void OnFocus() override;
@@ -90,6 +89,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
  private:
   // True if the view has a widget and the widget is not closed.
   bool IsWidgetValid() const;
+  void UpdateAccessibleName(const std::u16string& new_name) const;
+
+  void OnMessageViewNameUpdated(
+      bool should_make_spoken_feedback_for_popup_updates);
 
   // Owned by views hierarchy.
   raw_ptr<MessageView> message_view_;
@@ -107,6 +110,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
 
   // Owned by the widget associated with this view.
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;
+
+  base::WeakPtrFactory<MessagePopupView> weak_ptr_factory_{this};
 };
 
 }  // namespace message_center

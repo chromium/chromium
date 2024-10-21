@@ -513,6 +513,11 @@ void ViewAccessibility::SetRoleDescription(
   SetRoleDescription(base::UTF8ToUTF16(role_description));
 }
 
+std::u16string ViewAccessibility::GetRoleDescription() const {
+  return data_.GetString16Attribute(
+      ax::mojom::StringAttribute::kRoleDescription);
+}
+
 void ViewAccessibility::RemoveRoleDescription() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kRoleDescription);
 }

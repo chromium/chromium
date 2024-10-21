@@ -181,6 +181,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetRoleDescription(const std::u16string& role_description);
   void SetRoleDescription(const std::string& role_description);
+
+  std::u16string GetRoleDescription() const;
+
   void RemoveRoleDescription();
 
   // For the same reasons as GetCachedRole, this function cannot
