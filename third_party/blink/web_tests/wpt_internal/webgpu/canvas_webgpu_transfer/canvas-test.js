@@ -21,6 +21,15 @@
  * canvas as parameter and returning a promise that resolves on test completion.
  */
 function canvasPromiseTest(testBody, description) {
+  setup(() => {
+    const currentScript = document.currentScript;
+    assert_true(
+        currentScript.classList.contains('runCanvasTestsInWorkerInvoked'),
+        'runCanvasTestsInWorker() must be called in the current script ' +
+        'before calling canvasPromiseTest or else the test won\'t have ' +
+        'worker coverage.');
+  });
+
   promise_test(() => testBody(document.createElement('canvas')),
               'HTMLCanvasElement: ' + description);
 
@@ -34,7 +43,18 @@ function canvasPromiseTest(testBody, description) {
  * via the `dependencies` parameter so that the worker could load them.
  */
 function runCanvasTestsInWorker({dependencies = []} = {}) {
-  const canvasTests = document.currentScript.textContent;
+  const currentScript = document.currentScript;
+  // Keep track of whether runCanvasTestsInWorker was invoked on the current
+  // script. `canvasPromiseTest` will fail if `runCanvasTestsInWorker` hasn't
+  // been called, to prevent accidentally omitting worker coverage.
+  setup(() => {
+    assert_false(
+        currentScript.classList.contains('runCanvasTestsInWorkerInvoked'),
+        'runCanvasTestsInWorker() can\'t be invoked twice on the same script.');
+    currentScript.classList.add('runCanvasTestsInWorkerInvoked');
+  });
+
+  const canvasTests = currentScript.textContent;
 
   promise_setup(async () => {
     const allDeps = [
