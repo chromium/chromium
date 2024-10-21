@@ -254,7 +254,7 @@ inline constexpr char kCmdLinePrefersUser[] = "prefers-user";
 // Environment variables. Defined in the .cc file so that the updater branding
 // constants don't leak in this public header.
 extern const char kUsageStatsEnabled[];
-extern const char kUsageStatsEnabledValueEnabled[];
+inline constexpr char kUsageStatsEnabledValueEnabled[] = "1";
 
 // File system paths.
 //

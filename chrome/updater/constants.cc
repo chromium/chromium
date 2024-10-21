@@ -16,7 +16,6 @@ const char kQualificationAppId[] = QUALIFICATION_APPID;
 // Environment variables.
 const char kUsageStatsEnabled[] =
     COMPANY_SHORTNAME_UPPERCASE_STRING "_USAGE_STATS_ENABLED";
-const char kUsageStatsEnabledValueEnabled[] = "1";
 
 const char kSetupMutex[] = SETUP_MUTEX;
 
