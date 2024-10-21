@@ -2,6 +2,7 @@ include_rules = [
   "+ash/constants",
   "+base",
   "+chromeos/ash/components/demo_mode",
+  "+chromeos/ash/components/channel",
   "+components/feature_engagement/public",
   "+components/prefs",
   "+components/user_manager",

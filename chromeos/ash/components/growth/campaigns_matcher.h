@@ -81,6 +81,7 @@ class CampaignsMatcher {
                              int campaign_id,
                              std::optional<int> group_id) const;
   bool MatchBoard(const StringListTargeting* board_targeting) const;
+  bool MatchChannel(const StringListTargeting* targeting) const;
   bool MatchDeviceAge(
       const std::unique_ptr<NumberRangeTargeting>& device_age_in_hours) const;
   bool MatchEvents(std::unique_ptr<EventsTargeting> config,

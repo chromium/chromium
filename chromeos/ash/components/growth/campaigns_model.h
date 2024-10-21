@@ -308,6 +308,7 @@ class DeviceTargeting : public TargetingBase {
   const std::optional<bool> GetFeatureAwareDevice() const;
   std::unique_ptr<TimeWindowTargeting> GetRegisteredTime() const;
   const std::unique_ptr<NumberRangeTargeting> GetDeviceAge() const;
+  const std::unique_ptr<StringListTargeting> GetChannels() const;
 };
 
 // Wrapper around session targeting dictionary.

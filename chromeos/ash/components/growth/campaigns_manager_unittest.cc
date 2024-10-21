@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -1587,6 +1588,54 @@ TEST_F(CampaignsManagerTest, GetCampaignTargetDeviceAgeEndOnlyMismatch) {
           "end": 35040
         }
       })"));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithMatchedIncludedChannelTargeting) {
+  constexpr char kLsbRelease[] = "CHROMEOS_RELEASE_TRACK=stable-channel";
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
+
+  LoadComponentWithDeviceTargeting(R"({
+              "channels": {"includes": ["unknown", "stable"]}
+          })");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignWithMismatchedIncludedChannelTargeting) {
+  constexpr char kLsbRelease[] = "CHROMEOS_RELEASE_TRACK=stable-channel";
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
+
+  LoadComponentWithDeviceTargeting(R"({
+              "channels": {"includes": ["canary", "dev", "beta"]}
+          })");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithMatchedExcludedChannelTargeting) {
+  constexpr char kLsbRelease[] = "CHROMEOS_RELEASE_TRACK=stable-channel";
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
+
+  LoadComponentWithDeviceTargeting(R"({
+              "channels": {"excludes": ["canary", "dev", "beta"]}
+          })");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignWithMismatchedExcludedChannelTargeting) {
+  constexpr char kLsbRelease[] = "CHROMEOS_RELEASE_TRACK=stable-channel";
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
+
+  LoadComponentWithDeviceTargeting(R"({
+              "channels": {"excludes": ["unknown", "stable"]}
+          })");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

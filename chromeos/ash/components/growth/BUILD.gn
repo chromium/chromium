@@ -27,6 +27,7 @@ component("growth") {
     "//ash/constants",
     "//base",
     "//build:branding_buildflags",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/resources",
     "//chromeos/ui/vector_icons",

@@ -22,7 +22,9 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "base/version_info/channel.h"
 #include "base/version_info/version_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
@@ -44,6 +46,9 @@ namespace {
 
 constexpr char kEventKey[] = "event_to_be_checked";
 constexpr char kInternalLogLineSeparator[] = "--------------------------------";
+
+inline constexpr char kBoards[] = "boards";
+inline constexpr char kChannels[] = "channels";
 
 base::Time GetDeviceCurrentTimeForScheduling() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -315,6 +320,27 @@ bool MatchVersion(const base::Version& current_version,
   }
 
   if (max_version && max_version->CompareTo(current_version) == -1) {
+    return false;
+  }
+
+  return true;
+}
+
+bool MatchStringList(const StringListTargeting& string_list_targeting,
+                     const std::string& value,
+                     const std::string_view& target_name) {
+  const auto* includes = string_list_targeting.GetIncludes();
+
+  // If the `includes` is empty, then it will not match.
+  if (includes && !Contains(*includes, value)) {
+    CAMPAIGNS_LOG(DEBUG) << "Value is not in the includes list of "
+                         << target_name;
+    return false;
+  }
+
+  const auto* excludes = string_list_targeting.GetExcludes();
+  if (excludes && Contains(*excludes, value)) {
+    CAMPAIGNS_LOG(DEBUG) << "Value is in the excludes list of " << target_name;
     return false;
   }
 
@@ -609,7 +635,8 @@ bool CampaignsMatcher::MatchDeviceTargeting(
     return false;
   }
 
-  return MatchMilestone(targeting) && MatchMilestoneVersion(targeting);
+  return MatchChannel(targeting.GetChannels().get()) &&
+         MatchMilestone(targeting) && MatchMilestoneVersion(targeting);
 }
 
 bool CampaignsMatcher::MatchRegisteredTime(
@@ -652,21 +679,17 @@ bool CampaignsMatcher::MatchBoard(
     board = board_info[0];
   }
 
-  const auto* includes = boards_targeting->GetIncludes();
+  return MatchStringList(*boards_targeting, board, kBoards);
+}
 
-  // If the `includes` is empty, then it will not match.
-  if (includes && !Contains(*includes, board)) {
-    CAMPAIGNS_LOG(DEBUG) << "Board is not in the includes list " << board;
-    return false;
+bool CampaignsMatcher::MatchChannel(
+    const StringListTargeting* channels_targeting) const {
+  if (!channels_targeting) {
+    // Match campaign if there is no channel targeting.
+    return true;
   }
-
-  const auto* excludes = boards_targeting->GetExcludes();
-  if (excludes && Contains(*excludes, board)) {
-    CAMPAIGNS_LOG(DEBUG) << "Board is in the excludes list " << board;
-    return false;
-  }
-
-  return true;
+  auto channel = version_info::GetChannelString(ash::GetChannel());
+  return MatchStringList(*channels_targeting, std::string(channel), kChannels);
 }
 
 bool CampaignsMatcher::MatchDeviceAge(

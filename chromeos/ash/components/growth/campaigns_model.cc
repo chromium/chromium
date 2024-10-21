@@ -71,6 +71,7 @@ inline constexpr char kMaxVersion[] = "version.max";
 inline constexpr char kFeatureAware[] = "isFeatureAwareDevice";
 inline constexpr char kRegisteredTime[] = "registeredTime";
 inline constexpr char kDeviceAgeInHours[] = "deviceAgeInHours";
+inline constexpr char kChannels[] = "channels";
 
 // Session Targeting paths.
 inline constexpr char kSessionTargeting[] = "session";
@@ -493,6 +494,16 @@ const std::unique_ptr<NumberRangeTargeting> DeviceTargeting::GetDeviceAge()
   }
 
   return std::make_unique<NumberRangeTargeting>(number_range_dict);
+}
+
+const std::unique_ptr<StringListTargeting> DeviceTargeting::GetChannels()
+    const {
+  auto* string_list_dict = GetDictCriteria(kChannels);
+  if (!string_list_dict) {
+    return nullptr;
+  }
+
+  return std::make_unique<StringListTargeting>(string_list_dict);
 }
 
 // Apps Targeting.
