@@ -92,7 +92,7 @@
             "cpu": "x86-64",
             "gce": "1",
             "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -113,7 +113,7 @@
             "cpu": "x86-64",
             "gce": "1",
             "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -134,7 +134,7 @@
             "cpu": "x86-64",
             "gce": "1",
             "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -155,7 +155,7 @@
             "cpu": "x86-64",
             "gpu": "10de:2184",
             "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -176,7 +176,7 @@
             "cpu": "x86-64",
             "gce": "1",
             "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -207,7 +207,7 @@
             "cpu": "x86-64",
             "gce": "1",
             "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -232,7 +232,7 @@
             "cpu": "x86-64",
             "gce": "1",
             "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -260,7 +260,7 @@
             "cpu": "x86-64",
             "gpu": "10de:2184",
             "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -285,7 +285,7 @@
             "cpu": "x86-64",
             "gpu": "10de:2184",
             "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
+            "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

@@ -3981,7 +3981,7 @@
       },
       'optimization_guide-linux': {
         'mixins': [
-          'chrome-swarming-pool',
+          'chrome-intelligence-swarming-pool',
           'linux-jammy',
           'x86-64',
         ],
