@@ -146,9 +146,8 @@ void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (message == WM_SETTINGCHANGE && wparam == SPI_SETCLIENTAREAANIMATION) {
     gfx::Animation::UpdatePrefersReducedMotion();
-    for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
-      wc->OnWebPreferencesChanged();
-    }
+    BrowserAccessibilityStateImpl::GetInstance()
+        ->NotifyWebContentsPreferencesChanged();
   }
 }
 

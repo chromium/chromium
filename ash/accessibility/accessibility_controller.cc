@@ -3651,8 +3651,7 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       focus_highlight().UpdateFromPref();
       break;
     case FeatureType::kReducedAnimations:
-      gfx::Animation::SetPrefersReducedMotionForA11y(
-          reduced_animations().enabled());
+      // Handled in AccessibilityManager.
       break;
     case FeatureType::kAlwaysShowScrollbar:
       ui::NativeTheme::SetPrefersAlwaysShowScrollbar(

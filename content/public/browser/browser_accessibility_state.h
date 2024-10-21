@@ -126,6 +126,9 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   virtual void SetAXModeChangeAllowed(bool allow) = 0;
   virtual bool IsAXModeChangeAllowed() const = 0;
 
+  // Notifies web contents that preferences have changed.
+  virtual void NotifyWebContentsPreferencesChanged() const = 0;
+
   using FocusChangedCallback =
       base::RepeatingCallback<void(const FocusedNodeDetails&)>;
 
