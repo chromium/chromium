@@ -603,6 +603,11 @@ builder.
   Location filters:
   * [`//infra/config/generated/builders/[^/]+/[^/]+/targets/.+\.json`](https://cs.chromium.org/search?q=+file:infra/config/generated/builders/[^/]+/[^/]+/targets/.+\.json)
 
+* [targets-config-verifier-dev](https://ci.chromium.org/p/chromium/builders/try/targets-config-verifier-dev) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""targets-config-verifier-dev""))
+
+  Location filters:
+  * [`//infra/config/generated/builders-dev/[^/]+/[^/]+/targets/.+\.json`](https://cs.chromium.org/search?q=+file:infra/config/generated/builders-dev/[^/]+/[^/]+/targets/.+\.json)
+
 * [win-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/win-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-arm64-rel""))
 
   Location filters:
