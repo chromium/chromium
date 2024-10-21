@@ -28,6 +28,7 @@
 <translation id="1330562121671411446">Registrer sprog</translation>
 <translation id="1342274909142618978">Slet også data fra Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Panelet er fastgjort. Du kan tilgå billedsøgning igen via den nye knap på værktøjslinjen</translation>
+<translation id="1356661055722410047">Nyhed! Du kan oversætte både tekst og billeder på din skærm</translation>
 <translation id="1414495520565016063">Du er logget ind på Chromium.</translation>
 <translation id="1478370723027452770">Få hjælp til Chrome for Testing</translation>
 <translation id="1497802159252041924">Installationsfejl: <ph name="INSTALL_ERROR" /></translation>
@@ -129,8 +130,10 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2738871930057338499">Der kan ikke oprettes forbindelse til internettet. HTTP 403 (forbudt). Tjek din proxykonfiguration.</translation>
 <translation id="2753623023919742414">Klik for at søge</translation>
 <translation id="2770231113462710648">Skift standardbrowser til:</translation>
+<translation id="277338894894732084">Senere spørger Chromium dig, om du vil bruge gemte oplysninger til automatisk at udfylde formularer</translation>
 <translation id="2785438272836277133">Denne udvidelse indeholder malware og er ikke sikker. Fjern den fra Chromium, så den ikke længere kan se og ændre dine data på de websites, du besøger, bl.a. dine personlige oplysninger.</translation>
 <translation id="2799223571221894425">Genstart</translation>
+<translation id="2806241689335397269">Chromium spørger, om du vil gemme formularoplysninger som f.eks. din fødselsdag, din alder og dit pasnummer</translation>
 <translation id="2837693172913560447">Denne handling vil oprette en ny Chromium-profil til <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Oversæt fra</translation>
 <translation id="2846251086934905009">Installationsfejl: Installationen blev ikke gennemført. Installationen er blevet annulleret.</translation>
@@ -231,6 +234,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4148957013307229264">Installerer...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Login på netværk – Chromium</translation>
 <translation id="421369550622382712">Find fantastiske apps, spil, udvidelser og temaer til Chromium.</translation>
+<translation id="4217972271355023382">Du kan skifte til din Chromium-profil, hvor du allerede er logget ind som <ph name="USER_EMAIL_ADDRESS" />, for at beskytte dig selv bedre på nettet med dine forældres valg</translation>
 <translation id="4222932583846282852">Annullerer…</translation>
 <translation id="4224210481850767180">Installationen er blevet annulleret.</translation>
 <translation id="4230135487732243613">Vil du linke dine Chromium-data til denne konto?</translation>
@@ -438,6 +442,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="6843464627590537736">Søgeboble for billedsøgning</translation>
 <translation id="6847869444787758381">Chromium giver dig besked, hvis dine adgangskoder kompromitteres</translation>
 <translation id="684888714667046800">Der kunne ikke oprettes forbindelse til internettet. Hvis du bruger en firewall, skal du angive <ph name="PRODUCT_EXE_NAME" /> på tilladelseslisten.</translation>
+<translation id="685279860330610299">Chromium kan forstå flere typer oplysninger og hurtigere udfylde dine formularer automatisk. Få flere oplysninger om <ph name="BEGIN_LINK" />autofyld i Chrome<ph name="END_LINK" /></translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium har registreret malware i "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6896758677409633944">Kopiér</translation>
@@ -549,6 +554,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8397248745433792218">Chromium anbefaler, at du fjerner den. <ph name="BEGIN_LINK" />Få flere oplysninger om understøttede udvidelser<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Udgivelsen af denne udvidelse blev fjernet af dens udvikler og er muligvis ikke sikker. Fjern den fra Chromium, så den ikke længere kan se og ændre dine data på de websites, du besøger, bl.a. dine personlige oplysninger.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Genstart Chromium inden for en dag}one{Genstart Chromium inden for # dag}other{Genstart Chromium inden for # dag}}</translation>
+<translation id="8438543370129609977">Når du bruger Billedsøgning, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, til serveren. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Installationsarkivet er beskadiget eller ugyldigt. Download Chromium igen.</translation>
 <translation id="8458614432758743027">Chromium kræver Windows 10 eller nyere.</translation>
 <translation id="8463672209299734063">Valgfrit: Vær med til at forbedre funktioner og ydeevne i Chromium OS ved automatisk at sende diagnostik og brugsdata til Google.</translation>
@@ -560,6 +566,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8568283329061645092">Chromium kan tjekke dine adgangskoder, når du er logget ind med din Google-konto</translation>
 <translation id="8576826849825683917">Flere organisationer administrerer Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
+<translation id="8601359445272098721">Nyhed! Du kan oversætte både tekst og billeder på din skærm ved at vælge knappen "Oversæt skærmen"</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Websites kan gemme oplysninger med Chromium om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
 <translation id="8619360774459241877">Starter Chromium...</translation>
 <translation id="8621669128220841554">Installationen mislykkedes på grund af en uspecificeret fejl. Download Chromium igen.</translation>

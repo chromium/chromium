@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="100421257800558142">Tryk på højrepil</translation>
 <translation id="100506692671054486">der er ingen tidligere kommando</translation>
 <translation id="1009046985747440431">Tryk på pil op eller pil ned for at navigere, og tryk på Enter for at aktivere</translation>
 <translation id="1011903154582639569">Find en tast, og løft fingeren for at skrive</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Skydeknap</translation>
 <translation id="1299774449519412690">Lys himmelblå</translation>
 <translation id="1303806948938513162">Tryk med fire fingre for at åbne ChromeVox-menuerne</translation>
+<translation id="1304162325618937178">Tryk på mellemrumstasten</translation>
 <translation id="1313373992684326101">Gå til forrige sektion. Det kan f.eks. være statusbakken eller Appliste.</translation>
 <translation id="1315077335264761176">Retning for berøring</translation>
 <translation id="1325363694295259631">Alternativknappen <ph name="NAME" /> til menupunktet er ikke valgt</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Strågul</translation>
 <translation id="1618597272655350600">Angiver en komplet beskrivelse af den aktuelle position</translation>
 <translation id="1627222324347828322">Spøgelseshvid</translation>
+<translation id="1632810692616643246">Aktivér eller afslut rulletilstand</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{større end}one{# større end-tegn}other{# større end-tegn}}</translation>
 <translation id="1653266918374749391">Forrige niveau 3-overskrift</translation>
 <translation id="1657616855184033958">Vis filtre for begivenhedsstreaming</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Der er ingen forrige styringselementer</translation>
 <translation id="2045606329038304310">Styring af formularfelt</translation>
 <translation id="2063539687800151747">Motto</translation>
+<translation id="2067158561093481039">Udfør en tilpasset tastekombination</translation>
 <translation id="2086961585857038472">Næste ord</translation>
 <translation id="2087981446621639008">oplysn i bskrvlst</translation>
 <translation id="2089387485033699258">da</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Sadelbrun</translation>
 <translation id="2199994615414171367">Forrige matematiske udtryk</translation>
 <translation id="2203046366315513658">Sænk værdien</translation>
+<translation id="2206580811360135054">Vis eller skjul oversigt over vinduer</translation>
 <translation id="2216790501338699346">Webadresse til link: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Gå ét tegn tilbage</translation>
 <translation id="2220529011494928058">Rapportér et problem</translation>
+<translation id="2239819015858077439">Tryk på pil ned</translation>
 <translation id="2243633977138166243">Tryk på venstre- eller højrepil for at navigere, og tryk på Enter for at aktivere</translation>
 <translation id="224426591676115802">Der er ingen stemme tilgængelig for sproget: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Indlæringstilstand stoppes</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Murstensrød</translation>
 <translation id="4432896207833262240">Markeret indhold</translation>
 <translation id="4437615272777527928">Skriv for at søge i menuerne. Brug pil op og pil ned for at gennemse resultaterne. Brug venstre- og højrepilen for at justere tekstmarkøren og vælge menuer.</translation>
+<translation id="4441677939526091190">Tryk på pil op</translation>
 <translation id="4453530046591759283">Hvis du vil gå til andre områder på skærmen, f.eks. værktøjslinjer eller systembakken, skal du trykke på Ctrl+F1. F1 er den første tast til højre for Esc-tasten.</translation>
 <translation id="4457472090507035117">Vælg den aktuelle stemme:</translation>
 <translation id="4476183483923481720">ny linje</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Brug hjælpefunktioner til touchskærm på Chromebook</translation>
 <translation id="5655682562155942719">Hopkommandoer</translation>
 <translation id="56637627897541303">Tekstområde</translation>
+<translation id="5666746275818170484">Tryk på venstrepil</translation>
 <translation id="5669637233317991674">Tryk på søgetasten+højrepil eller søgetasten+venstrepil for at navigere i denne lektion</translation>
 <translation id="5677240841070992068">Aktuel placering</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Pop op-knap</translation>
 <translation id="7167657087543110">tegnekko</translation>
 <translation id="7173102181852295013">Midnatsblå</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Udvidet</translation>
 <translation id="7209751026933045237">Der er ikke flere skydere</translation>
 <translation id="7218782500591078391">Gyldenris</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Autofuldførelse på linje og på liste</translation>
 <translation id="8394908167088220973">Medie: Afspil/Pause</translation>
+<translation id="8409502156784390079">Rulletilstand er aktiveret</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8428603554127842284">niveau <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8989104346085848538">Tryk på Ctrl-tasten for at stoppe oplæsning i ChromeVox.</translation>
 <translation id="9014206344398081366">ChromeVox-vejledning</translation>
+<translation id="9034592733577768445">Ansigtsstyring er sat på pause</translation>
 <translation id="9040132695316389094">Overskrift 1</translation>
 <translation id="9061884144798498064">Vælg en 8-punkts brailletabel:</translation>
 <translation id="9063946545000394379">gå til forrige tegn</translation>

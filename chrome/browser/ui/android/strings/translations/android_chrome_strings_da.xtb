@@ -419,6 +419,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2942036813789421260">Fanen forhåndsvisning er lukket</translation>
 <translation id="2946420957526726953">Chrome opdateres for at oprette forbindelse til andre enheder</translation>
 <translation id="2951071800649516099">Føj sider til din læseliste, så du kan læse dem senere</translation>
+<translation id="2954586176076923855">Flyt adresselinjen til toppen</translation>
 <translation id="2956070106555335453">Oversigt</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulæst side}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæst side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæste sider}}</translation>
 <translation id="2972109037780336501">Fjern tilladelser automatisk</translation>
@@ -653,6 +654,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4095425503313512126">Browsing og søgning er hurtigere</translation>
 <translation id="4096227151372679484">Flow til lagring af bogmærker er åbnet i halv højde</translation>
 <translation id="4101475238162928417">Synkroniser for at få dine adgangskoder, bogmærker og meget mere på dine andre enheder</translation>
+<translation id="4105527135143631701">Opdateringen af Google Adgangskodeadministrator blev åbnet</translation>
 <translation id="4108314971463891922">Følg</translation>
 <translation id="4113030288477039509">Administreres af din administrator</translation>
 <translation id="4116038641877404294">Download sider for at bruge dem, når du er offline</translation>
@@ -1257,6 +1259,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6813446258015311409">Log ind i Chrome, åben.</translation>
 <translation id="6817747507826986771">Del hurtigt denne side. Hold fingeren på genvejen for at redigere.</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Opdateringen af Google Adgangskodeadministrator blev lukket</translation>
 <translation id="6822587385560699678">Når denne indstilling er aktiveret, gemmes adgangskoder på <ph name="ACCOUNT" />. Når indstillingen er deaktiveret, gemmes adgangskoder kun på denne enhed.</translation>
 <translation id="6823561724060793716">I adresselinjen kan du åbne sideoplysningerne for at se yderligere oplysninger om den side, du besøger</translation>
 <translation id="6828070228333235514">Stop med at holde øje med prisen</translation>
@@ -1458,6 +1461,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7612619742409846846">Du er logget ind på Google som</translation>
 <translation id="7612989789287281429">Logger dig ind…</translation>
 <translation id="7619072057915878432">Download af <ph name="FILE_NAME" /> mislykkedes på grund af netværksfejl.</translation>
+<translation id="762537095495606755">Du mister snart adgangen til dine gemte adgangskoder på denne enhed</translation>
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
 <translation id="7628417132421583481">Gå til Adgangs­kode­admin­istrator</translation>
 <translation id="7630202231528827509">Udbyderens webadresse</translation>
@@ -1550,6 +1554,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8015452622527143194">Nulstil alt på siden til standardstørrelsen</translation>
 <translation id="8017431260099661477">Invitationslinket kunne ikke åbnes</translation>
 <translation id="8026238112629815203">Vi har ændret, hvordan adgangskoder gemmes på denne enhed</translation>
+<translation id="8027395186860110042">Dine gemte adgangskoder stopper muligvis snart med at fungere</translation>
 <translation id="8027863900915310177">Vælg, hvor downloadfilen skal gemmes</translation>
 <translation id="8030852056903932865">Godkend</translation>
 <translation id="8032569120109842252">Følger</translation>
@@ -1620,7 +1625,9 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8282297628636750033">Anvend Mørkt tema på websites</translation>
 <translation id="8282950411412455249">Gå til sikkerhedsindstillingerne</translation>
 <translation id="829672787777123339">Opretter forbindelse til din enhed…</translation>
+<translation id="8306751933352925837">Du mister snart adgangen til dine gemte adgangskoder på denne enhed. Opdater Google Play-tjenester, hvis du fortsat vil kunne bruge dine adgangskoder. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> har fjernet fanen "<ph name="TAB_NAME" />"</translation>
+<translation id="8310451567823644042">Du mister snart adgangen til dine gemte adgangskoder</translation>
 <translation id="831192587911042850">Føjer det aktuelle website til den liste over websites, du følger.</translation>
 <translation id="8342727528718219152">Chrome giver dig besked om websites, der muligvis sender for mange notifikationer</translation>
 <translation id="834313815369870491">Oversæt aldrig websites</translation>
@@ -1687,6 +1694,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8570677896027847510">Filen kan ikke downloades sikkert</translation>
 <translation id="8571213806525832805">Seneste 4 uger</translation>
 <translation id="8582529315803410153">Her kan du se dine faner fra andre enheder</translation>
+<translation id="8585103689515290060">Tjenester til autofyld</translation>
 <translation id="859046281437143747">Hold øje med prisen ved hjælp af knappen Flere valgmuligheder</translation>
 <translation id="859064343657890103">Fanegruppen <ph name="TAB_GROUP_TITLE" /> er slettet</translation>
 <translation id="860043288473659153">Kortholderens navn</translation>
@@ -1755,6 +1763,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8963117664422609631">Gå til indstillingerne for websitet</translation>
 <translation id="8965591936373831584">afventer</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_ONE" /> anden fane lukkes}one{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> anden fane lukkes}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> andre faner lukkes}}</translation>
+<translation id="897061774231912216">Du mister snart adgangen til dine gemte adgangskoder, fordi Google Play-tjenester ikke længere er tilgængelige. Hvis du vil bruge adgangskoder, der er gemt på din Google-konto, skal du logge ind på en anden enhed eller gå til passwords.google.com.</translation>
 <translation id="8970887620466824814">Noget gik galt.</translation>
 <translation id="8972098258593396643">Vil du downloade til standardmappen?</translation>
 <translation id="8982113230057126145">Hvis du giver et dislike, indsendes der feedback om, at du ikke kan lide denne oversigt</translation>
@@ -1804,6 +1813,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9157212632995922070">Vælg en konto for at fortsætte på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Del kun indhold</translation>
+<translation id="9168847423516963845">Flyt adresselinjen til bunden</translation>
 <translation id="9169507124922466868">Navigationshistorikken er åbnet halvt</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>
