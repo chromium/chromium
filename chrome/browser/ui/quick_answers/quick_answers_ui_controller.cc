@@ -6,6 +6,9 @@
 
 #include <optional>
 
+#include "ash/public/cpp/new_window_delegate.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -20,6 +23,7 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
@@ -33,16 +37,6 @@
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
-
-#include "ash/public/cpp/new_window_delegate.h"
-//
-// TODO(crbug.com/374253370): Check whether it is possible to clean up the
-// inclusions below.
-//
-// gn --check is not aware of conditional includes, add nogncheck.
-#include "ash/webui/settings/public/constants/routes.mojom-forward.h"  // nogncheck
-#include "ash/webui/settings/public/constants/setting.mojom-shared.h"  // nogncheck
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 
 namespace {
 
