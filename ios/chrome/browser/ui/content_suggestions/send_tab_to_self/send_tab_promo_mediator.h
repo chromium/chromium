@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/content_suggestions/send_tab_to_self/send_tab_promo_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/standalone_module_delegate.h"
 
 class FaviconLoader;
 @protocol NotificationsModuleDelegate;
@@ -25,7 +25,7 @@ class PrefService;
 
 // Mediator for managing the state of the Send Tab to Self Promo Magic Stack
 // module.
-@interface SendTabPromoMediator : NSObject <SendTabPromoDelegate>
+@interface SendTabPromoMediator : NSObject <StandaloneModuleDelegate>
 
 // Delegate used to communicate events back to the owner of this
 // class.

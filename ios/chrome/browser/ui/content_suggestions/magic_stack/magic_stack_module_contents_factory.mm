@@ -22,12 +22,14 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/send_tab_to_self/send_tab_promo_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/standalone_module_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_audience.h"
@@ -77,6 +79,10 @@
       PriceTrackingPromoItem* item =
           static_cast<PriceTrackingPromoItem*>(config);
       return [self priceTrackingPromoViewForConfig:item];
+    }
+    case ContentSuggestionsModuleType::kSendTabPromo: {
+      SendTabPromoItem* item = static_cast<SendTabPromoItem*>(config);
+      return [self sendTabPromoViewForConfig:item];
     }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
@@ -165,6 +171,14 @@
   safetyCheckView.audience = state.audience;
   [state.safetyCheckConsumerSource addConsumer:safetyCheckView];
   return safetyCheckView;
+}
+
+- (UIView*)sendTabPromoViewForConfig:(SendTabPromoItem*)sendTabPromoItem {
+  StandaloneModuleView* view =
+      [[StandaloneModuleView alloc] initWithFrame:CGRectZero];
+  view.delegate = sendTabPromoItem.standaloneDelegate;
+  [view configureView:sendTabPromoItem];
+  return view;
 }
 
 - (UIView*)setUpListViewForConfig:(SetUpListConfig*)config {

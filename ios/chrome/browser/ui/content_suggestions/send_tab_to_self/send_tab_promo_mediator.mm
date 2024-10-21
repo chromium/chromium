@@ -49,11 +49,11 @@
   }
 }
 
-#pragma mark - SendTabPromoDelegate
+#pragma mark - StandaloneModuleDelegate
 
-- (void)allowSendTabNotifications {
-  [self.notificationsDelegate
-      enableNotifications:ContentSuggestionsModuleType::kSendTabPromo];
+- (void)buttonTappedForModuleType:(ContentSuggestionsModuleType)moduleType {
+  CHECK(moduleType == ContentSuggestionsModuleType::kSendTabPromo);
+  [self.notificationsDelegate enableNotifications:moduleType];
 }
 
 #pragma mark - Private
@@ -82,6 +82,7 @@
   if (!attributes.usesDefaultImage) {
     _sendTabPromoItem.faviconImage = attributes.faviconImage;
   }
+  _sendTabPromoItem.standaloneDelegate = self;
   [_delegate sentTabReceived];
 }
 

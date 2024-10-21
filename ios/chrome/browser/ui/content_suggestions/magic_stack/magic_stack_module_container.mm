@@ -375,7 +375,8 @@ const CGFloat kSeparatorHeight = 0.5;
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE);
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
-      // Price Tracking Promo design does not use title.
+    case ContentSuggestionsModuleType::kSendTabPromo:
+      // Send Tab and Price Tracking Promo design do not use title.
       return @"";
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:

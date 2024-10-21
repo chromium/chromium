@@ -17,6 +17,7 @@ source_set("content_suggestions") {
     ":content_suggestions_constant",
     ":content_suggestions_ui",
     ":metrics",
+    ":promo_module_ui",
     ":public",
     "//base",
     "//components/commerce/core:feature_list",
@@ -196,7 +197,6 @@ source_set("content_suggestions_ui") {
     "magic_stack_half_sheet_model_delegate.h",
     "magic_stack_half_sheet_table_view_controller.h",
     "magic_stack_half_sheet_table_view_controller.mm",
-    "notifications_module_delegate.h",
     "user_account_image_update_delegate.h",
   ]
   deps = [
@@ -297,6 +297,26 @@ source_set("content_suggestions_ui_util") {
     "//ios/components/ui_util",
     "//ios/web/common",
     "//ui/base",
+  ]
+}
+
+source_set("promo_module_ui") {
+  sources = [
+    "standalone_module_delegate.h",
+    "standalone_module_item.h",
+    "standalone_module_item.mm",
+    "standalone_module_view.h",
+    "standalone_module_view.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
   ]
 }
 
