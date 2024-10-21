@@ -1239,4 +1239,37 @@ TEST_F(ElementTest, ColumnPseudoElements) {
   EXPECT_EQ(element->GetColumnPseudoElements()->size(), 0u);
 }
 
+TEST_F(ElementTest, TheCheckPseudoElement) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #a-div::check {
+        content: "*";
+      }
+
+      #target::check {
+        content: "*";
+      }
+    </style>
+
+    <div id="a-div"></div>
+
+    <select id="target">
+      <option id="target-option" value="the only option"></option>
+    </select
+    )HTML");
+
+  // GetPseudoElement() relies on style recalc.
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  Element* div = GetElementById("a-div");
+  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdCheck));
+
+  Element* target = GetElementById("target");
+  EXPECT_EQ(nullptr, target->GetPseudoElement(kPseudoIdCheck));
+
+  // The `::check` pseudo element should only be created for option elements.
+  Element* target_option = GetElementById("target-option");
+  EXPECT_NE(nullptr, target_option->GetPseudoElement(kPseudoIdCheck));
+}
+
 }  // namespace blink

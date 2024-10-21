@@ -1731,6 +1731,12 @@ namespace {
 
 bool HasAttributeDependentGeneratedContent(const Element& element) {
   DCHECK(!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
+  if (PseudoElement* check = element.GetPseudoElement(kPseudoIdCheck)) {
+    const ComputedStyle* style = check->GetComputedStyle();
+    if (style && style->HasAttrFunction()) {
+      return true;
+    }
+  }
   if (PseudoElement* before = element.GetPseudoElement(kPseudoIdBefore)) {
     const ComputedStyle* style = before->GetComputedStyle();
     if (style && style->HasAttrFunction()) {

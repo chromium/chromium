@@ -116,8 +116,8 @@ const UChar kEllipsisUChar[] = {0x2026, 0};
 
 template <typename Functor>
 void ForEachSupportedPseudo(const Element* element, Functor& func) {
-  for (PseudoId pseudo_id :
-       {kPseudoIdBefore, kPseudoIdAfter, kPseudoIdMarker, kPseudoIdBackdrop}) {
+  for (PseudoId pseudo_id : {kPseudoIdCheck, kPseudoIdBefore, kPseudoIdAfter,
+                             kPseudoIdMarker, kPseudoIdBackdrop}) {
     if (!PseudoElement::IsWebExposed(pseudo_id, element))
       continue;
     if (PseudoElement* pseudo_element = element->GetPseudoElement(pseudo_id))
@@ -196,8 +196,7 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
     case kPseudoIdFirstLetter:
       return protocol::DOM::PseudoTypeEnum::FirstLetter;
     case kPseudoIdCheck:
-      // To be added in a followup CL
-      NOTREACHED_NORETURN();
+      return protocol::DOM::PseudoTypeEnum::Check;
     case kPseudoIdBefore:
       return protocol::DOM::PseudoTypeEnum::Before;
     case kPseudoIdAfter:

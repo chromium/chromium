@@ -2677,6 +2677,7 @@ domain DOM
     enum
       first-line
       first-letter
+      check
       before
       after
       marker

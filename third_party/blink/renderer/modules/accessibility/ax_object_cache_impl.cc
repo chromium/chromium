@@ -1234,6 +1234,14 @@ bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
 // static
 bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
   DCHECK(node.IsPseudoElement());
+
+  // The ::check element doesn't need to be in the a11y tree because it is only
+  // used to display the selected state, which is already exposed on the
+  // accessibility node.
+  if (node.IsCheckPseudoElement()) {
+    return false;
+  }
+
   if (!node.GetLayoutObject())
     return false;
 

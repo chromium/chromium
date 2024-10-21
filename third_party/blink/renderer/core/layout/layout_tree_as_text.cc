@@ -756,6 +756,10 @@ String CounterValueForElement(Element* element) {
   if (LayoutObject* before =
           element->PseudoElementLayoutObject(kPseudoIdBefore))
     WriteCounterValuesFromChildren(stream, before, is_first_counter);
+  if (LayoutObject* check =
+          element->PseudoElementLayoutObject(kPseudoIdCheck)) {
+    WriteCounterValuesFromChildren(stream, check, is_first_counter);
+  }
   if (LayoutObject* after = element->PseudoElementLayoutObject(kPseudoIdAfter))
     WriteCounterValuesFromChildren(stream, after, is_first_counter);
   return stream.ReleaseString();

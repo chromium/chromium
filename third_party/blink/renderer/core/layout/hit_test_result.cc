@@ -225,6 +225,11 @@ PositionWithAffinity HitTestResult::GetPosition() const {
         MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
   }
 
+  if (node->IsPseudoElement() && node->GetPseudoId() == kPseudoIdCheck) {
+    return PositionWithAffinity(
+        MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
+  }
+
   return layout_object->PositionForPoint(LocalPoint());
 }
 

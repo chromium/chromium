@@ -52,6 +52,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   bool HasPseudoElements() const;
   void ClearPseudoElements();
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(generated_check_);
     visitor->Trace(generated_before_);
     visitor->Trace(generated_after_);
     visitor->Trace(generated_marker_);
@@ -68,6 +69,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   }
 
  private:
+  Member<PseudoElement> generated_check_;
   Member<PseudoElement> generated_before_;
   Member<PseudoElement> generated_after_;
   Member<PseudoElement> generated_marker_;
@@ -89,15 +91,16 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
 };
 
 inline bool PseudoElementData::HasPseudoElements() const {
-  return generated_before_ || generated_after_ || generated_marker_ ||
-         backdrop_ || generated_first_letter_ || transition_data_ ||
-         generated_scroll_marker_group_before_ ||
+  return generated_check_ || generated_before_ || generated_after_ ||
+         generated_marker_ || backdrop_ || generated_first_letter_ ||
+         transition_data_ || generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
          generated_scroll_next_button_ || generated_scroll_prev_button_ ||
          (column_pseudo_elements_ && !column_pseudo_elements_->empty());
 }
 
 inline void PseudoElementData::ClearPseudoElements() {
+  SetPseudoElement(kPseudoIdCheck, nullptr);
   SetPseudoElement(kPseudoIdBefore, nullptr);
   SetPseudoElement(kPseudoIdAfter, nullptr);
   SetPseudoElement(kPseudoIdMarker, nullptr);
@@ -123,6 +126,10 @@ inline void PseudoElementData::SetPseudoElement(
     const AtomicString& view_transition_name) {
   PseudoElement* previous_element = nullptr;
   switch (pseudo_id) {
+    case kPseudoIdCheck:
+      previous_element = generated_check_;
+      generated_check_ = element;
+      break;
     case kPseudoIdBefore:
       previous_element = generated_before_;
       generated_before_ = element;
@@ -188,6 +195,9 @@ inline void PseudoElementData::SetPseudoElement(
 inline PseudoElement* PseudoElementData::GetPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {
+  if (kPseudoIdCheck == pseudo_id) {
+    return generated_check_.Get();
+  }
   if (kPseudoIdBefore == pseudo_id)
     return generated_before_.Get();
   if (kPseudoIdAfter == pseudo_id)
@@ -229,6 +239,9 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
 inline PseudoElementData::PseudoElementVector
 PseudoElementData::GetPseudoElements() const {
   PseudoElementData::PseudoElementVector result;
+  if (generated_check_) {
+    result.push_back(generated_check_);
+  }
   if (generated_before_)
     result.push_back(generated_before_);
   if (generated_after_)

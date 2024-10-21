@@ -1213,7 +1213,8 @@ void ElementRuleCollector::DidMatchRule(
     if (dynamic_pseudo > kLastTrackedPublicPseudoId) {
       return;
     }
-    if ((dynamic_pseudo == kPseudoIdBefore ||
+    if ((dynamic_pseudo == kPseudoIdCheck ||
+         dynamic_pseudo == kPseudoIdBefore ||
          dynamic_pseudo == kPseudoIdAfter) &&
         !rule_data->Rule()->Properties().HasProperty(CSSPropertyID::kContent)) {
       return;

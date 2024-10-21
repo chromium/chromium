@@ -62,6 +62,7 @@ namespace {
 bool CanBeHitTestTargetPseudoNodeStyle(const ComputedStyle& style) {
   switch (style.StyleType()) {
     case kPseudoIdBefore:
+    case kPseudoIdCheck:
     case kPseudoIdAfter:
     case kPseudoIdFirstLetter:
       return true;

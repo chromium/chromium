@@ -175,10 +175,10 @@ Tests DOMSnapshot.getSnapshot method returning input values.
         }
         [12] : {
             backendNodeId : <number>
-            nodeName : ::before
+            nodeName : ::check
             nodeType : 1
             nodeValue : 
-            pseudoType : before
+            pseudoType : check
         }
         [13] : {
             backendNodeId : <number>
@@ -217,10 +217,10 @@ Tests DOMSnapshot.getSnapshot method returning input values.
         }
         [16] : {
             backendNodeId : <number>
-            nodeName : ::before
+            nodeName : ::check
             nodeType : 1
             nodeValue : 
-            pseudoType : before
+            pseudoType : check
         }
         [17] : {
             backendNodeId : <number>

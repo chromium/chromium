@@ -422,6 +422,11 @@ Node* Node::PseudoAwarePreviousSibling() const {
         return previous;
       [[fallthrough]];
     case kPseudoIdBefore:
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdCheck)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdCheck:
       if (Node* previous = parent->GetPseudoElement(kPseudoIdScrollMarker)) {
         return previous;
       }
@@ -501,6 +506,11 @@ Node* Node::PseudoAwareNextSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdScrollMarker:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdCheck)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdCheck:
       if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))
         return next;
       [[fallthrough]];
@@ -601,6 +611,9 @@ Node* Node::PseudoAwareFirstChild() const {
             current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
       return first;
     }
+    if (Node* first = current_element->GetPseudoElement(kPseudoIdCheck)) {
+      return first;
+    }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
       return first;
     if (Node* first = current_element->firstChild())
@@ -669,6 +682,9 @@ Node* Node::PseudoAwareLastChild() const {
       return last;
     if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))
       return last;
+    if (Node* last = current_element->GetPseudoElement(kPseudoIdCheck)) {
+      return last;
+    }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
       return last;
     }
@@ -2667,6 +2683,10 @@ static void AppendMarkedTree(const String& base_indent,
                          marked_node2, marked_label2, builder);
       }
       if (Element* pseudo = element->GetPseudoElement(kPseudoIdScrollMarker)) {
+        AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
+                         marked_node2, marked_label2, builder);
+      }
+      if (Element* pseudo = element->GetPseudoElement(kPseudoIdCheck)) {
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);
       }

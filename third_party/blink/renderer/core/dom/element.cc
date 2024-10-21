@@ -3829,6 +3829,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
                         child_recalc_context);
+
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      if (DynamicTo<HTMLOptionElement>(this)) {
+        UpdatePseudoElement(kPseudoIdCheck, child_change, child_recalc_context);
+      }
+    }
+
     UpdatePseudoElement(kPseudoIdBefore, child_change, child_recalc_context);
   }
 
@@ -4374,6 +4381,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     } else {
       RebuildChildrenLayoutTrees(*child_attacher);
     }
+    RebuildPseudoElementLayoutTree(kPseudoIdCheck, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdMarker, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupBefore,
@@ -7594,6 +7602,7 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
            type == CSSSelector::kPseudoDetailsContent ||
+           type == CSSSelector::kPseudoCheck ||
            id == shadow_element_names::kPickerSelect)
         << "type: " << type << ", id: " << id;
   }
@@ -8406,10 +8415,11 @@ const ComputedStyle* Element::StyleForPseudoElement(
     const StyleRequest& request) {
   GetDocument().GetStyleEngine().UpdateViewportSize();
 
-  const bool is_before_or_after = request.pseudo_id == kPseudoIdBefore ||
-                                  request.pseudo_id == kPseudoIdAfter;
+  const bool is_before_or_after_like = request.pseudo_id == kPseudoIdCheck ||
+                                       request.pseudo_id == kPseudoIdBefore ||
+                                       request.pseudo_id == kPseudoIdAfter;
 
-  if (is_before_or_after) {
+  if (is_before_or_after_like) {
     DCHECK(request.parent_override);
     DCHECK(request.layout_parent_override);
 
@@ -10537,6 +10547,7 @@ Element* Element::ImplicitAnchorElement() const {
   }
   if (const PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
     switch (pseudo_element->GetPseudoId()) {
+      case kPseudoIdCheck:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
       case kPseudoIdBackdrop:

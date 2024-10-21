@@ -2634,6 +2634,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
   NOT_DESTROYED();
   const ComputedStyle* pseudo_style = owner.Style();
   DCHECK(pseudo_style->StyleType() == kPseudoIdBefore ||
+         pseudo_style->StyleType() == kPseudoIdCheck ||
          pseudo_style->StyleType() == kPseudoIdAfter ||
          pseudo_style->StyleType() == kPseudoIdMarker ||
          pseudo_style->StyleType() == kPseudoIdFirstLetter ||
@@ -4286,6 +4287,7 @@ const ComputedStyle* LayoutObject::GetCachedPseudoElementStyle(
     PseudoId pseudo) const {
   NOT_DESTROYED();
   DCHECK_NE(pseudo, kPseudoIdBefore);
+  DCHECK_NE(pseudo, kPseudoIdCheck);
   DCHECK_NE(pseudo, kPseudoIdAfter);
   if (!GetNode())
     return nullptr;
@@ -4301,6 +4303,7 @@ const ComputedStyle* LayoutObject::GetUncachedPseudoElementStyle(
     const StyleRequest& request) const {
   NOT_DESTROYED();
   DCHECK_NE(request.pseudo_id, kPseudoIdBefore);
+  DCHECK_NE(request.pseudo_id, kPseudoIdCheck);
   DCHECK_NE(request.pseudo_id, kPseudoIdAfter);
   if (!GetNode())
     return nullptr;
