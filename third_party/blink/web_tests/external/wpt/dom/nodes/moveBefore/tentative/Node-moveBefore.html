@@ -179,7 +179,29 @@ test(t => {
 
   document.body.moveBefore(childElement, null);
   assert_equals(document.body.lastChild, childElement);
-}, "moveBefore with an Element or CharacterData succeeds")
+
+  document.body.moveBefore(text, null);
+  assert_equals(document.body.lastChild, text);
+}, "moveBefore with an Element or CharacterData succeeds");
+test(t => {
+  const p = document.createElement('p');
+  p.textContent = "Some content";
+  document.body.prepend(p);
+
+  const text_node = p.firstChild;
+
+  // The Text node is *inside* the paragraph.
+  assert_equals(text_node.textContent, "Some content");
+  assert_not_equals(document.body.lastChild, text_node);
+
+  t.add_cleanup(() => {
+    text_node.remove();
+    p.remove();
+  });
+
+  document.body.moveBefore(p.firstChild, null);
+  assert_equals(document.body.lastChild, text_node);
+}, "moveBefore on a paragraph's Text node child");
 
 // Pre-move validity, step 6:
 // "If child is non-null and its parent is not parent, then throw a

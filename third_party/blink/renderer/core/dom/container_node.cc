@@ -1436,11 +1436,7 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
     return;
   if (Element* element = DynamicTo<Element>(this)) {
     if (GetDocument().StatePreservingAtomicMoveInProgress()) {
-      if (inserted_node->IsElementNode()) {
-        inserted_node->FlatTreeParentChanged();
-      } else {
-        DCHECK(inserted_node->IsCharacterDataNode());
-      }
+      inserted_node->FlatTreeParentChanged();
     }
     if (!element->GetComputedStyle()) {
       // There is no need to mark for style recalc if the parent element does
