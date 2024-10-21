@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.ui.messages.R;
@@ -261,10 +262,10 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     }
 
     /**
-     * Sends an accessibility event to mMessageView announcing that this window was added so that
-     * the mMessageView content description is read aloud if accessibility is enabled.
+     * Updates the accessibility pane title for mMessageView which will be read aloud if a screen
+     * reader is enabled.
      */
-    public void announceforAccessibility() {
+    public void updateAccessibilityPaneTitle() {
         StringBuilder accessibilityText = new StringBuilder(mMessageView.getContentDescription());
         if (mActionButtonView.getContentDescription() != null) {
             accessibilityText
@@ -277,12 +278,12 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                                     .getString(R.string.bottom_bar_screen_position));
         }
 
-        mMessageView.announceForAccessibility(accessibilityText);
+        ViewCompat.setAccessibilityPaneTitle(mMessageView, accessibilityText);
     }
 
     /**
      * Sends an accessibility event to mContainerView announcing that an action was taken based on
-     * the action button being pressed.  May do nothing if no announcement was specified.
+     * the action button being pressed. May do nothing if no announcement was specified.
      */
     public void announceActionForAccessibility() {
         if (TextUtils.isEmpty(mSnackbar.getActionAccessibilityAnnouncement())) return;

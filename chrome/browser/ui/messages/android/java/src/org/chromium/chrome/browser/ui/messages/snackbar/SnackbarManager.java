@@ -171,7 +171,7 @@ public class SnackbarManager
 
         mSnackbars.add(snackbar);
         updateView();
-        mView.announceforAccessibility();
+        mView.updateAccessibilityPaneTitle();
     }
 
     /** Dismisses all snackbars. */
@@ -341,7 +341,7 @@ public class SnackbarManager
                     int durationMs = getDuration(currentSnackbar);
                     mUIThreadHandler.postDelayed(mHideRunnable, durationMs);
                 }
-                mView.announceforAccessibility();
+                mView.updateAccessibilityPaneTitle();
             }
         }
 
