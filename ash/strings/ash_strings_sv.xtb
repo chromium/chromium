@@ -445,6 +445,7 @@ Annars aktiveras den inbyggda styrplattan igen om 30 sekunder.</translation>
 <translation id="2530896289327917474">Aktivera eller inaktivera textmarkörläge</translation>
 <translation id="2531025035050312891">långsam enhet</translation>
 <translation id="2531107890083353124">Tryck på <ph name="KEY_ONE" /> medan du drar fliken</translation>
+<translation id="2545334090614121435">Försöker du använda Home-tangenten? Använd</translation>
 <translation id="254900897760075745">Kopiera markerat innehåll till Urklipp</translation>
 <translation id="2549711466868162843">Bättre ljus</translation>
 <translation id="2549985041256363841">Börja spela in</translation>
@@ -563,6 +564,7 @@ Annars aktiveras den inbyggda styrplattan igen om 30 sekunder.</translation>
 <translation id="2985148236010982088">Visa alla appar</translation>
 <translation id="2992272421330787632">Dölj alla medieförslag</translation>
 <translation id="2992327365391326550">Enhetens mikrofon är avstängd.</translation>
+<translation id="2993956882370897557">Försöker du använda End-tangenten? Använd</translation>
 <translation id="3000461861112256445">Monoljud</translation>
 <translation id="3001391739687111021">Redigera skärmstorlek</translation>
 <translation id="3009178788565917040">Utgång</translation>
@@ -615,6 +617,7 @@ Annars aktiveras den inbyggda styrplattan igen om 30 sekunder.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> återställer din <ph name="DEVICE_TYPE" /> till en tidigare version. Enheten återställs och all data raderas.</translation>
 <translation id="316798519864381606">Google-presentation</translation>
 <translation id="3171170659304083361">Inmatningsinställningar</translation>
+<translation id="3174897399179348329">Försöker du använda Page Up-tangenten? Använd</translation>
 <translation id="3176221688814061633">En äldre version av Bluetooth används av Chromebook eller Bluetooth-enheten. Aktivera Bluetooth Super Resolution eller använd den interna mikrofonen för bättre ljudkvalitet.</translation>
 <translation id="3181441307743005334">Det kan ta en stund att starta om</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ansluten till en enhet}other{Ansluten till # enheter}}</translation>
@@ -1261,6 +1264,7 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="5297704307811127955">Av</translation>
 <translation id="5300589172476337783">Visa</translation>
 <translation id="5302048478445481009">Språk</translation>
+<translation id="5302531370473608800">Uppdatera <ph name="DEVICE_TYPE" /> för att använda YouTube Music</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" /> % av batteriet återstår.
 Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5308380583665731573">Anslut</translation>
@@ -1820,6 +1824,7 @@ Nyligen installerad</translation>
 <translation id="7144942256906679589">Batteristatus</translation>
 <translation id="7145639536026937076">Batterinivån är på <ph name="PERCENTAGE" /> % och batteriet laddas. Batterisparläget är aktiverat.</translation>
 <translation id="7147587499155271409">Ingen webbhistorik</translation>
+<translation id="7147657298465433425">Tryck på fn-tangenten + tangenterna på översta raden för att komma åt F-tangenterna</translation>
 <translation id="7149149900052329230">Hantera dina lokala filer och Google Drive-filer i appen Filer.</translation>
 <translation id="7165278925115064263">Alt + Skift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1929,6 +1934,7 @@ Annars aktiveras den inbyggda styrplattan igen om 30 sekunder.</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> använder just nu mikrofonen</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
 <translation id="7564874036684306347">Om du flyttar fönster till ett annat skrivbord kan det leda till oväntat beteende. Efterföljande meddelanden, fönster och dialogrutor kan delas upp mellan skrivborden.</translation>
+<translation id="7568154670718626683">Försöker du använda Delete-tangenten? Använd</translation>
 <translation id="7568790562536448087">Uppdaterar</translation>
 <translation id="7569509451529460200">Punktskrift och ChromeVox har aktiverats</translation>
 <translation id="7569886975397378678">Ställ in visning av aviseringar och appar på telefonen</translation>
@@ -2131,6 +2137,7 @@ Annars aktiveras den inbyggda styrplattan igen om 30 sekunder.</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Du har precis fokuserat i <ph name="FOCUSED_TIME" />. Öppna Snabbinställningar om du vill aktivera Fokus igen.</translation>
 <translation id="8203224998425013577">Visa fler emojis och giffar</translation>
 <translation id="8203795194971602413">Högerklicka</translation>
+<translation id="8205469348819768313">Försöker du använda Page Down-tangenten? Använd</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Chromebook måste vara på och ansluten till en strömkälla under den tiden. Se till att kabeln på laddaren eller adaptern är ordentligt ansluten till Chromebook och eluttaget. Stäng inte av Chromebook.</translation>
 <translation id="8220076512072059941">Lägg till <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2323,6 +2330,7 @@ Annars aktiveras den inbyggda styrplattan igen om 30 sekunder.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistent talar inte det här språket.</translation>
 <translation id="8926951137623668982">Hyllan döljs alltid</translation>
+<translation id="8929566928381252430">Försöker du använda Caps Lock-tangenten? Använd</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fil}other{# filer}}</translation>
 <translation id="8936501819958976551">inaktiverad</translation>
 <translation id="8938800817013097409">USB-C-enhet (högra porten på baksidan)</translation>
