@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/subresource_filter/core/mojom",
+  "+mojo/public/mojom/base",
+]

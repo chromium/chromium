@@ -11,7 +11,7 @@ source_set("common") {
   ]
   public_deps = [
     "//base",
-    "//components/subresource_filter/core/browser",
+    "//components/subresource_filter/core/common",
   ]
 }
 
