@@ -1791,6 +1791,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   StyleAdjuster::AdjustComputedStyle(
       state, style_request.IsPseudoStyleRequest() ? nullptr : element);
+
+  ApplyAnchorData(state);
 }
 
 // In the normal case, just a forwarder to ApplyBaseStyleNoCache(); see that
@@ -1883,6 +1885,8 @@ void StyleResolver::ApplyBaseStyle(
     // (we'll be loading pending resources later), but not doing so would
     // currently create diffs below.
     state.LoadPendingResources();
+
+    ApplyAnchorData(state);
 
 #if DCHECK_IS_ON()
     // Verify that we got the right answer.
