@@ -14,6 +14,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -89,9 +90,7 @@ bool FileExists(const base::FilePath& path) {
 }
 
 int64_t GetLocalFileSize(const base::FilePath& path) {
-  int64_t size;
-  EXPECT_TRUE(base::GetFileSize(path, &size));
-  return size;
+  return base::GetFileSize(path).value_or(0);
 }
 
 // After a move, the dest exists and the source doesn't.
