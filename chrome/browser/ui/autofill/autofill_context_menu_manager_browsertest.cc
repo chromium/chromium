@@ -553,8 +553,9 @@ class AutocompleteUnrecognizedFieldsTest
     : public BaseAutofillContextMenuManagerTest {
  public:
   AutocompleteUnrecognizedFieldsTest() {
-    feature_.InitAndDisableFeature(
-        features::kAutofillForUnclassifiedFieldsAvailable);
+    feature_.InitWithFeatures(
+        {}, {features::kAutofillForUnclassifiedFieldsAvailable,
+             password_manager::features::kPasswordManualFallbackAvailable});
   }
 
  private:
@@ -683,9 +684,15 @@ IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
 }
 
 class UnclassifiedFieldsTest : public BaseAutofillContextMenuManagerTest {
+ public:
+  UnclassifiedFieldsTest() {
+    feature_.InitWithFeatures(
+        {features::kAutofillForUnclassifiedFieldsAvailable},
+        {password_manager::features::kPasswordManualFallbackAvailable});
+  }
+
  private:
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillForUnclassifiedFieldsAvailable};
+  base::test::ScopedFeatureList feature_;
 };
 
 // Tests that when triggering the context menu on an unclassified form the

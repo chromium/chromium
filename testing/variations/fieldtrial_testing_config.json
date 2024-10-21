@@ -16609,6 +16609,24 @@
             ]
         }
     ],
+    "PasswordManualFallbackAvailable": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordManualFallbackAvailable"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordSuggestionBottomSheetV2": [
         {
             "platforms": [
