@@ -128,12 +128,12 @@ test suites to the CQ builders is to:
      `'experiment_percentage': 100` line to the test's definition in the pyl
      files here.
      ([Example.](https://chromium.googlesource.com/chromium/src/+/79ed7956/testing/buildbot/test_suite_exceptions.pyl#888))
-1. After about one day's worth of builds have passed, examine the results of the
-   the test on the affected post-submit builders. If they're green with little
-   to no flakes, it can be promoted out of experimental. If there's more than
-   a handful of flakes (e.g. 1 or more per day), then the test needs to be
-   de-flaked before moving on. Once that's done, it can then be moved out of
-   experimental and you can proceed to the next step.
+1. After a few day's worth of builds have passed, examine the results of the
+   the test on the affected post-submit builders. If they're green with
+   near-zero flakes in all recent runs, it can be promoted out of experimental.
+   If there's more than a handful of flakes (e.g. 1 or more per day), then the
+   test needs to be de-flaked before moving on. Once that's done, it can then be
+   moved out of experimental and you can proceed to the next step.
 1. After a sufficient amount of time (suggest 2 weeks), examine the results of
    the test on the affected post-submit builders to determine the amount of
    regressions they're catching. Note: unless the new test is providing unique
