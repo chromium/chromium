@@ -2052,6 +2052,36 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, GetImage) {
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
+       NoRegenerationOfTransferableResourceWhenAlreadyInCcLayer) {
+  CreateContext(kNonOpaque);
+
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
+      RasterModeHint::kPreferGPU));
+
+  // Invoking PrepareTransferableResource() has a precondition that a CC layer
+  // is present.
+  ASSERT_TRUE(CanvasElement().GetOrCreateCcLayerIfNeeded());
+
+  Context2D()->fillRect(3, 3, 1, 1);
+
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+                                                          &release_callback));
+
+  // Put the resource in the Cc layer and then make a second call to prepare a
+  // TransferableResource without modifying the canvas in between. This new call
+  // should not generate a new TransferableResource as the canvas' resource is
+  // already present in the CC layer.
+  CanvasElement().CcLayer()->SetTransferableResource(
+      resource, std::move(release_callback));
+  viz::ReleaseCallback release_callback2;
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+                                                           &release_callback2));
+  EXPECT_FALSE(release_callback2);
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        GetResourceProviderAfterContextLoss) {
   CreateContext(kNonOpaque);
 
