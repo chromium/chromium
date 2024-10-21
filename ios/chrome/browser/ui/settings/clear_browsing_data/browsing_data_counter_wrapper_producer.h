@@ -11,7 +11,8 @@
 #import <string_view>
 
 #import "ios/chrome/browser/browsing_data/model/browsing_data_counter_wrapper.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 // ClearBrowsingDataManager's dependency on creating BrowsingDataCounterWrapper
 @interface BrowsingDataCounterWrapperProducer : NSObject
