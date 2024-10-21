@@ -477,6 +477,82 @@ linux_memory_builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
+linux_memory_builder(
+    name = "Linux UBSan Builder",
+    description_html = "Compiles a linux build with ubsan.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_msan",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-memory-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ubsan_no_recover",
+            "fail_on_san_warnings",
+            "release_builder",
+            "remoteexec",
+            "linux",
+            "x64",
+        ],
+    ),
+    builderless = True,
+    cores = 32,
+    # TODO (crbug.com/40248746): Once green builds have been established,
+    # add this to the gardener rotation, and make tree closing.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|ubsan",
+        short_name = "bld",
+    ),
+)
+
+linux_memory_builder(
+    name = "Linux UBSan Tests",
+    description_html = "Runs tests against a linux ubsan build.",
+    triggered_by = ["ci/Linux UBSan Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-memory-archive",
+    ),
+    # TODO (crbug.com/40248746): Once green builds have been established,
+    # add this to the gardener rotation, and make tree closing.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|ubsan",
+        short_name = "tst",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
+)
+
 ci.builder(
     name = "Mac ASan 64 Tests (1)",
     triggered_by = ["Mac ASan 64 Builder"],
@@ -646,45 +722,6 @@ ci.builder(
         category = "android",
         short_name = "asn",
     ),
-)
-
-ci.builder(
-    name = "linux-ubsan-vptr",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        build_gs_bucket = "chromium-memory-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "ubsan_vptr",
-            "ubsan_vptr_no_recover_hack",
-            "release_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    builderless = 1,
-    cores = 32,
-    tree_closing = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux|ubsan",
-        short_name = "vpt",
-    ),
-    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(

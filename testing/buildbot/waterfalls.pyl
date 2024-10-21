@@ -2661,6 +2661,15 @@
           '--test-launcher-print-test-stdio=always',
         ],
       },
+      'Linux UBSan Tests': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-jammy',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_gtests',
+        },
+      },
       'Mac ASan 64 Tests (1)': {
         'mixins': [
           'mac_default_x64',
@@ -2727,16 +2736,6 @@
           'isolated_scripts': 'ios_asan_tests',
         }
       },
-      'linux-ubsan-vptr': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          # no "_and_gl":gl_unittests doesn't pass yet,
-          # https://crbug.com/815183
-          'gtest_tests': 'chromium_linux_gtests',
-        },
-      },
       'win-asan': {
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -2751,15 +2750,6 @@
     'name': 'chromium.memory.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'linux-ubsan-fyi-rel': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-        },
-      },
       'mac-lsan-fyi-rel': {
         'mixins': [
           'mac_default_x64',

@@ -30,46 +30,6 @@ consoles.console_view(
     name = "chromium.memory.fyi",
 )
 
-# TODO(crbug.com/40248746): Remove this builder after burning down failures
-# and measuring performance to see if we can roll UBSan into ASan.
-ci.builder(
-    name = "linux-ubsan-fyi-rel",
-    schedule = "with 12h interval",
-    triggered_by = [],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "ubsan_no_recover",
-            "fail_on_san_warnings",
-            "release_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    builderless = 1,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux|ubsan",
-        short_name = "fyi",
-    ),
-    execution_timeout = 6 * time.hour,
-    health_spec = modified_default({
-        "Low Value": blank_low_value_thresholds,
-    }),
-    siso_remote_jobs = siso.remote_jobs.DEFAULT,
-)
-
 # TODO(crbug.com/40223516): Remove this builder after burning down failures
 # and measuring performance to see if we can roll LSan into ASan.
 ci.builder(

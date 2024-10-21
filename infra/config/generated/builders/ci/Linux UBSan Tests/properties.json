@@ -1,20 +1,42 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
-      "additional_exclusions": [
-        "infra/config/generated/builders/ci/linux-ubsan-fyi-rel/gn-args.json"
-      ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-ubsan-fyi-rel",
+              "builder": "Linux UBSan Builder",
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.memory.fyi",
+              "build_gs_bucket": "chromium-memory-archive",
+              "builder_group": "chromium.memory",
               "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium_msan",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Linux UBSan Tests",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-memory-archive",
+              "builder_group": "chromium.memory",
+              "execution_mode": "TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
                   "mb"
@@ -26,6 +48,11 @@
               },
               "legacy_gclient_config": {
                 "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Linux UBSan Builder",
+                "project": "chromium"
               }
             }
           }
@@ -34,16 +61,17 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "linux-ubsan-fyi-rel",
+          "builder": "Linux UBSan Tests",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "linux-ubsan-fyi-rel",
+          "builder": "linux_chromium_ubsan_rel_ng",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {
@@ -59,7 +87,7 @@
     "enable_cloud_trace": true,
     "experiments": [],
     "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "remote_jobs": 80
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -68,6 +96,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.memory.fyi",
+  "builder_group": "chromium.memory",
   "recipe": "chromium"
 }

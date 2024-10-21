@@ -88,7 +88,6 @@ ci/linux-perfetto-rel
 ci/linux-rel-no-external-ip
 ci/linux-rust-x64-dbg
 ci/linux-rust-x64-rel
-ci/linux-ubsan-fyi-rel
 ci/linux-updater-builder-dbg
 ci/linux-updater-builder-rel
 ci/linux-updater-tester-dbg
@@ -322,9 +321,7 @@ try/linux-swangle-try-x64
 try/linux-swangle-try-x64-exp
 try/linux-tsan-dbg
 try/linux-tsan-rel
-try/linux-ubsan-fyi-rel
 try/linux-ubsan-rel
-try/linux-ubsan-vptr
 try/linux-ubsan-vptr-rel
 try/linux-updater-try-builder-dbg
 try/linux-updater-try-builder-rel

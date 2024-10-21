@@ -364,6 +364,11 @@
           'shards': 23,
         },
       },
+      'Linux UBSan Tests': {
+        'swarming': {
+          'shards': 20,
+        }
+      },
       'Mac ASan 64 Tests (1)': {
         'swarming': {
           'shards': 30,
@@ -416,11 +421,6 @@
             'kvm': '1',
           },
         },
-      },
-      'linux-ubsan-fyi-rel': {
-        'swarming': {
-          'shards': 20,
-        }
       },
       'mac-osxbeta-rel': {
         'swarming': {
@@ -604,6 +604,11 @@
           'shards': 30,
         },
       },
+      'Linux UBSan Tests': {
+        'swarming': {
+          'shards': 16,
+        }
+      },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
         'experiment_percentage': 100,
       },
@@ -652,11 +657,6 @@
         'swarming': {
           'shards': 6,
         },
-      },
-      'linux-ubsan-fyi-rel': {
-        'swarming': {
-          'shards': 16,
-        }
       },
       # https://crbug.com/1255940
       'mac-rel-dev': {
@@ -1308,6 +1308,11 @@
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
       },
+      'Linux UBSan Tests': {
+        'swarming': {
+          'shards': 6,
+        }
+      },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
         'experiment_percentage': 100,
       },
@@ -1344,11 +1349,6 @@
         'swarming': {
           'shards': 5,
         },
-      },
-      'linux-ubsan-fyi-rel': {
-        'swarming': {
-          'shards': 6,
-        }
       },
       # TODO (crbug.com/1278617) Re-enable once fixed
       'mac-osxbeta-rel': {
@@ -1892,6 +1892,11 @@
           'shards': 2,
         },
       },
+      'Linux UBSan Tests': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
       'Mac ASan 64 Tests (1)': {
         'swarming': {
           'shards': 2,
@@ -1939,11 +1944,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      'linux-ubsan-fyi-rel': {
-        'swarming': {
-          'shards': 2,
-        }
       },
       'win-asan': {
         'swarming': {
@@ -2399,7 +2399,7 @@
           'shards': 2,
         },
       },
-      'linux-ubsan-fyi-rel': {
+      'Linux UBSan Tests': {
         'swarming': {
           'shards': 2,
         }

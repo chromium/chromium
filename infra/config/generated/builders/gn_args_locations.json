@@ -412,17 +412,16 @@
     "Linux ChromiumOS MSan Builder": "ci/Linux ChromiumOS MSan Builder/gn-args.json",
     "Linux MSan Builder": "ci/Linux MSan Builder/gn-args.json",
     "Linux TSan Builder": "ci/Linux TSan Builder/gn-args.json",
+    "Linux UBSan Builder": "ci/Linux UBSan Builder/gn-args.json",
     "Mac ASan 64 Builder": "ci/Mac ASan 64 Builder/gn-args.json",
     "WebKit Linux ASAN": "ci/WebKit Linux ASAN/gn-args.json",
     "WebKit Linux Leak": "ci/WebKit Linux Leak/gn-args.json",
     "WebKit Linux MSAN": "ci/WebKit Linux MSAN/gn-args.json",
     "android-asan": "ci/android-asan/gn-args.json",
     "ios-asan": "ci/ios-asan/gn-args.json",
-    "linux-ubsan-vptr": "ci/linux-ubsan-vptr/gn-args.json",
     "win-asan": "ci/win-asan/gn-args.json"
   },
   "chromium.memory.fyi": {
-    "linux-ubsan-fyi-rel": "ci/linux-ubsan-fyi-rel/gn-args.json",
     "mac-lsan-fyi-rel": "ci/mac-lsan-fyi-rel/gn-args.json",
     "mac-ubsan-fyi-rel": "ci/mac-ubsan-fyi-rel/gn-args.json"
   },
@@ -823,8 +822,6 @@
     "linux-multiscreen-fyi-rel": "try/linux-multiscreen-fyi-rel/gn-args.json",
     "linux-perfetto-rel": "try/linux-perfetto-rel/gn-args.json",
     "linux-rel": "try/linux-rel/gn-args.json",
-    "linux-ubsan-fyi-rel": "try/linux-ubsan-fyi-rel/gn-args.json",
-    "linux-ubsan-vptr": "try/linux-ubsan-vptr/gn-args.json",
     "linux-v4l2-codec-rel": "try/linux-v4l2-codec-rel/gn-args.json",
     "linux-viz-rel": "try/linux-viz-rel/gn-args.json",
     "linux-wayland-rel": "try/linux-wayland-rel/gn-args.json",
@@ -841,6 +838,7 @@
     "linux_chromium_dbg_ng": "try/linux_chromium_dbg_ng/gn-args.json",
     "linux_chromium_msan_rel_ng": "try/linux_chromium_msan_rel_ng/gn-args.json",
     "linux_chromium_tsan_rel_ng": "try/linux_chromium_tsan_rel_ng/gn-args.json",
+    "linux_chromium_ubsan_rel_ng": "try/linux_chromium_ubsan_rel_ng/gn-args.json",
     "linux_optional_gpu_tests_rel": "try/linux_optional_gpu_tests_rel/gn-args.json",
     "linux_upload_clang": "try/linux_upload_clang/gn-args.json",
     "network_service_linux": "try/network_service_linux/gn-args.json"

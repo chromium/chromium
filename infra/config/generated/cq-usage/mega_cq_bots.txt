@@ -111,7 +111,6 @@ chromium/try/linux-rel
 chromium/try/linux-tsan-dbg
 chromium/try/linux-tsan-rel
 chromium/try/linux-ubsan-rel
-chromium/try/linux-ubsan-vptr
 chromium/try/linux-ubsan-vptr-rel
 chromium/try/linux-v4l2-codec-rel
 chromium/try/linux-wayland-rel

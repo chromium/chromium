@@ -419,17 +419,6 @@ try_.compilator_builder(
     contact_team_email = "chrome-build-team@google.com",
 )
 
-# TODO(crbug.com/40248746): Remove this builder after burning down failures
-# and measuring performance to see if we can roll UBSan into ASan.
-try_.builder(
-    name = "linux-ubsan-fyi-rel",
-    mirrors = [
-        "ci/linux-ubsan-fyi-rel",
-    ],
-    gn_args = "ci/linux-ubsan-fyi-rel",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
 try_.builder(
     name = "linux-wayland-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
@@ -791,14 +780,14 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "linux-ubsan-vptr",
+    name = "linux_chromium_ubsan_rel_ng",
     mirrors = [
-        "ci/linux-ubsan-vptr",
+        "ci/Linux UBSan Builder",
+        "ci/Linux UBSan Tests",
     ],
-    # This is intentionally a release_bot and not a release_trybot to match
-    # the CI configuration, where no debug builder exists.
-    gn_args = "ci/linux-ubsan-vptr",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    gn_args = "ci/Linux UBSan Builder",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    main_list_view = "try",
 )
 
 try_.builder(
