@@ -332,7 +332,7 @@ public class PlusAddressCreationModuleTest {
         assertEquals(firstTimeNotice.getVisibility(), View.GONE);
         assertEquals(loadingView.getVisibility(), View.VISIBLE);
         assertEquals(modalConfirmButton.getVisibility(), View.GONE);
-        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(modalCancelButton.getVisibility(), View.GONE);
         assertTrue(modalCancelButton.isEnabled());
 
         // Hide the loading indicator and resurface the buttons if we show an error.

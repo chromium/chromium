@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.SHOW_ONBOARDING_NOTICE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import android.content.Context;
@@ -171,8 +172,10 @@ import org.chromium.url.GURL;
         mModel.set(CONFIRM_BUTTON_VISIBLE, false);
         mModel.set(
                 CANCEL_BUTTON_VISIBLE,
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED));
+                mModel.get(SHOW_ONBOARDING_NOTICE)
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED));
         mModel.set(LOADING_INDICATOR_VISIBLE, true);
         mBridge.onConfirmRequested();
     }
