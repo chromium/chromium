@@ -211,7 +211,9 @@ public class IncognitoNewTabPage extends BasicNativePage
             @Override
             public boolean shouldShowTrackingProtectionNtp() {
                 return UserPrefs.get(mProfile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
-                        || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
+                        || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO);
             }
 
             @Override
