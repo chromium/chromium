@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/boca/on_task/on_task_extensions_manager_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -87,6 +88,13 @@ void OnTaskExtensionsManagerImpl::ReEnableExtensions() {
 bool OnTaskExtensionsManagerImpl::CanDisableExtension(
     const Extension* extension) {
   CHECK(extension);
+
+  // TODO (b/374827023): Remove feature flag for user installed extension.
+  if (features::IsBocaExtensionConsumerEnabled() &&
+      extension->location() == extensions::mojom::ManifestLocation::kUnpacked) {
+    return false;
+  }
+
   bool is_component_extension =
       extensions::Manifest::IsComponentLocation(extension->location());
   const ManagementPolicy* const policy =
