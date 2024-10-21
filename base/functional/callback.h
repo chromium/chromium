@@ -144,7 +144,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
   //
   // May not be called on a null callback.
   R Run(Args... args) && {
-    CHECK(!holder_.is_null());
+    CHECK(!is_null());
 
     // Move the callback instance into a local variable before the invocation,
     // that ensures the internal state is cleared after the invocation.
@@ -333,7 +333,7 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   //
   // May not be called on a null callback.
   R Run(Args... args) const& {
-    CHECK(!holder_.is_null());
+    CHECK(!is_null());
 
     // Keep `bind_state` alive at least until after the invocation to ensure all
     // bound `Unretained` arguments remain protected by MiraclePtr.
