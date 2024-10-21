@@ -22,8 +22,11 @@ import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {
   settings,
   SpeakerLabelEnableState,
-  TranscriptionEnableState,
 } from '../core/state/settings.js';
+import {
+  disableTranscription,
+  enableTranscription,
+} from '../core/state/transcription.js';
 import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
 
 import {CraButton} from './cra/cra-button.js';
@@ -234,11 +237,8 @@ export class OnboardingDialog extends ReactiveLitElement {
         );
       }
       case 1: {
-        const enableTranscription = () => {
-          settings.mutate((s) => {
-            s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-          });
-          this.platformHandler.installSoda();
+        const turnOnTranscription = () => {
+          enableTranscription();
           if (!this.platformHandler.canUseSpeakerLabel.value) {
             // Speaker label isn't supported on this platform.
             this.close();
@@ -246,10 +246,8 @@ export class OnboardingDialog extends ReactiveLitElement {
           }
           this.step = 2;
         };
-        const disableTranscription = () => {
-          settings.mutate((s) => {
-            s.transcriptionEnabled = TranscriptionEnableState.DISABLED_FIRST;
-          });
+        const turnOffTranscription = () => {
+          disableTranscription(/* firstTime= */ true);
           this.close();
         };
         return this.renderDialog(
@@ -266,11 +264,11 @@ export class OnboardingDialog extends ReactiveLitElement {
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionCancelButton}
-              @click=${disableTranscription}
+              @click=${turnOffTranscription}
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionTurnOnButton}
-              @click=${enableTranscription}
+              @click=${turnOnTranscription}
             ></cra-button>
           `,
         );

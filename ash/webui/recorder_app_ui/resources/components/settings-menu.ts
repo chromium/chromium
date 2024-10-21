@@ -35,6 +35,10 @@ import {
   SummaryEnableState,
   TranscriptionEnableState,
 } from '../core/state/settings.js';
+import {
+  enableTranscription,
+  toggleTranscriptionEnabled,
+} from '../core/state/transcription.js';
 import {HELP_URL} from '../core/url_constants.js';
 import {
   assertExhaustive,
@@ -355,51 +359,21 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private onTranscriptionToggle() {
-    // TODO(pihsun): This is the same as in toggleTranscriptionEnabled in
-    // record-page.ts, consider how to centralize the logic for all
-    // transcription enable/available state transitions.
-    switch (settings.value.transcriptionEnabled) {
-      case TranscriptionEnableState.ENABLED:
-        settings.mutate((s) => {
-          s.transcriptionEnabled = TranscriptionEnableState.DISABLED;
-        });
-        return;
-      case TranscriptionEnableState.DISABLED:
-        settings.mutate((s) => {
-          s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-        });
-        return;
-      case TranscriptionEnableState.UNKNOWN:
-      case TranscriptionEnableState.DISABLED_FIRST:
-        this.transcriptionConsentDialog.value?.show();
-        // This force the switch to be re-rendered so it'll catch the "live"
-        // value and set selected back to false.
-        this.requestUpdate();
-        return;
-      default:
-        assertExhaustive(settings.value.transcriptionEnabled);
+    if (!toggleTranscriptionEnabled()) {
+      this.transcriptionConsentDialog.value?.show();
+      // This force the switch to be re-rendered so it'll catch the "live"
+      // value and set selected back to false.
+      this.requestUpdate();
     }
   }
 
   private onInstallSodaClick() {
-    // TODO(pihsun): This is the same as in toggleTranscriptionEnabled in
-    // record-page.ts, consider how to centralize the logic for all
-    // transcription enable/available state transitions.
-    switch (settings.value.transcriptionEnabled) {
-      case TranscriptionEnableState.ENABLED:
-      case TranscriptionEnableState.DISABLED:
-        settings.mutate((s) => {
-          s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-        });
-        this.platformHandler.installSoda();
-        return;
-      case TranscriptionEnableState.UNKNOWN:
-      case TranscriptionEnableState.DISABLED_FIRST:
-        this.transcriptionConsentDialog.value?.show();
-        return;
-      default:
-        assertExhaustive(settings.value.transcriptionEnabled);
+    if (!toggleTranscriptionEnabled()) {
+      this.transcriptionConsentDialog.value?.show();
+      return;
     }
+    // Forces transcription to be enabled.
+    enableTranscription();
   }
 
   private get transcriptionEnabled() {

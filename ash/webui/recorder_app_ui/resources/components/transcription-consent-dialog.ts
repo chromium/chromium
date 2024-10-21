@@ -11,7 +11,10 @@ import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {settings, TranscriptionEnableState} from '../core/state/settings.js';
+import {
+  disableTranscription,
+  enableTranscription,
+} from '../core/state/transcription.js';
 
 import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
 import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
@@ -61,17 +64,12 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
   }
 
   private disableTranscription() {
-    settings.mutate((s) => {
-      s.transcriptionEnabled = TranscriptionEnableState.DISABLED_FIRST;
-    });
+    disableTranscription(/* firstTime= */ true);
     this.hide();
   }
 
   private enableTranscription() {
-    settings.mutate((s) => {
-      s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-    });
-    this.platformHandler.installSoda();
+    enableTranscription();
     if (this.platformHandler.canUseSpeakerLabel.value) {
       this.speakerLabelConsentDialog.value?.show();
     }

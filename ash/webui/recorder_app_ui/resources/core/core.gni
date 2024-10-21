@@ -28,6 +28,7 @@ core_files = [
   "soda/types.ts",
   "state/route.ts",
   "state/settings.ts",
+  "state/transcription.ts",
   "test_helper.ts",
   "url_constants.ts",
   "utils/animation_frame_controller.ts",

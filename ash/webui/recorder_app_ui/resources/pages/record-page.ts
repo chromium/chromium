@@ -53,6 +53,10 @@ import {
   TranscriptionLanguage,
 } from '../core/state/settings.js';
 import {
+  disableTranscription,
+  toggleTranscriptionEnabled,
+} from '../core/state/transcription.js';
+import {
   assertExhaustive,
   assertExists,
   assertInstanceof,
@@ -612,24 +616,8 @@ export class RecordPage extends ReactiveLitElement {
   }
 
   private toggleTranscriptionEnabled() {
-    switch (settings.value.transcriptionEnabled) {
-      case TranscriptionEnableState.ENABLED:
-        settings.mutate((s) => {
-          s.transcriptionEnabled = TranscriptionEnableState.DISABLED;
-        });
-        return;
-      case TranscriptionEnableState.DISABLED:
-        settings.mutate((s) => {
-          s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-        });
-        this.platformHandler.installSoda();
-        return;
-      case TranscriptionEnableState.UNKNOWN:
-      case TranscriptionEnableState.DISABLED_FIRST:
-        this.transcriptionConsentDialog.value?.show();
-        return;
-      default:
-        assertExhaustive(settings.value.transcriptionEnabled);
+    if (!toggleTranscriptionEnabled()) {
+      this.transcriptionConsentDialog.value?.show();
     }
   }
 
@@ -729,11 +717,6 @@ export class RecordPage extends ReactiveLitElement {
         `;
       }
       case TranscriptionEnableState.UNKNOWN: {
-        function disableTranscription() {
-          settings.mutate((s) => {
-            s.transcriptionEnabled = TranscriptionEnableState.DISABLED_FIRST;
-          });
-        }
         return html`
           <div id="transcription-consent">
             <cra-image name="transcription_enable"></cra-image>
@@ -747,7 +730,7 @@ export class RecordPage extends ReactiveLitElement {
               <cra-button
                 .label=${i18n.recordTranscriptionEntryPointDisableButton}
                 button-style="secondary"
-                @click=${disableTranscription}
+                @click=${disableTranscription(/* firstTime= */ true)}
               ></cra-button>
               <cra-button
                 .label=${i18n.recordTranscriptionEntryPointEnableButton}
