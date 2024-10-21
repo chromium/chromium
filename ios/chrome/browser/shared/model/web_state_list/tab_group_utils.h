@@ -7,10 +7,9 @@
 
 #import <set>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
-
 class Browser;
 class BrowserList;
+class ProfileIOS;
 class TabGroup;
 
 namespace web {
