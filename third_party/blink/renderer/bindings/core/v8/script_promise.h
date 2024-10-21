@@ -282,6 +282,15 @@ class ScriptPromise : public ScriptPromiseUntyped {
         script_state->GetIsolate(), v8_promise);
   }
 
+  template <typename ResolveClass>
+  void React(ScriptState* script_state,
+             ThenCallable<IDLResolvedType, ResolveClass, IDLUndefined>*
+                 on_fulfilled) const {
+    ThenRaw(script_state,
+            MakeGarbageCollected<ScriptFunction>(script_state, on_fulfilled),
+            nullptr);
+  }
+
   template <typename ResolveClass, typename RejectClass>
   void React(
       ScriptState* script_state,

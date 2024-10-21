@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_reader.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream_default_writer.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
@@ -182,30 +183,16 @@ TEST(TransferableStreamsTest, SmokeTest) {
   writer->write(script_state, ScriptValue::CreateNull(scope.GetIsolate()),
                 ASSERT_NO_EXCEPTION);
 
-  class ExpectNullResponse : public ScriptFunction::Callable {
+  class ExpectNullResponse
+      : public ThenCallable<ReadableStreamReadResult, ExpectNullResponse> {
    public:
     explicit ExpectNullResponse(bool* got_response)
         : got_response_(got_response) {}
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    void React(ScriptState* script_state, ReadableStreamReadResult* result) {
       *got_response_ = true;
-      if (!value.IsObject()) {
-        ADD_FAILURE() << "iterator must be an object";
-        return ScriptValue();
-      }
-      v8::Local<v8::Value> chunk;
-      bool done = false;
-      if (!V8UnpackIterationResult(script_state,
-                                   value.V8Value()
-                                       ->ToObject(script_state->GetContext())
-                                       .ToLocalChecked(),
-                                   &chunk, &done)) {
-        ADD_FAILURE() << "V8UnpackIterationResult failed";
-        return ScriptValue();
-      }
-      EXPECT_FALSE(done);
-      EXPECT_TRUE(chunk->IsNull());
-      return ScriptValue();
+      EXPECT_FALSE(result->done());
+      EXPECT_TRUE(result->value().IsNull());
     }
 
     bool* got_response_;
@@ -213,23 +200,20 @@ TEST(TransferableStreamsTest, SmokeTest) {
 
   // TODO(ricea): This is copy-and-pasted from transform_stream_test.cc. Put it
   // in a shared location.
-  class ExpectNotReached : public ScriptFunction::Callable {
+  class ExpectNotReached : public ThenCallable<IDLAny, ExpectNotReached> {
    public:
     ExpectNotReached() = default;
 
-    ScriptValue Call(ScriptState*, ScriptValue) override {
+    void React(ScriptState*, ScriptValue) {
       ADD_FAILURE() << "ExpectNotReached was reached";
-      return ScriptValue();
     }
   };
 
   bool got_response = false;
   reader->read(script_state, ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<ScriptFunction>(
-                script_state,
-                MakeGarbageCollected<ExpectNullResponse>(&got_response)),
-            MakeGarbageCollected<ScriptFunction>(
-                script_state, MakeGarbageCollected<ExpectNotReached>()));
+      .React(script_state,
+             MakeGarbageCollected<ExpectNullResponse>(&got_response),
+             MakeGarbageCollected<ExpectNotReached>());
 
   // Need to run the event loop to pass messages through the MessagePort.
   test::RunPendingTasks();

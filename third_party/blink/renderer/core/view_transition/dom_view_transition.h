@@ -74,21 +74,10 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   void HandlePromise(ViewTransition::PromiseResponse response,
                      PromiseProperty* property);
 
-  void NotifyDOMCallbackFinished(bool success, ScriptValue value);
-
-  // Invoked when ViewTransitionCallback finishes running.
-  class DOMChangeFinishedCallback : public ScriptFunction::Callable {
-   public:
-    explicit DOMChangeFinishedCallback(DOMViewTransition&, bool success);
-    ~DOMChangeFinishedCallback() override;
-
-    ScriptValue Call(ScriptState*, ScriptValue) override;
-    void Trace(Visitor*) const override;
-
-   private:
-    Member<DOMViewTransition> dom_view_transition_;
-    const bool success_;
-  };
+  friend class DOMChangeFinishedCallback;
+  friend class DOMChangeRejectedCallback;
+  void NotifyDOMCallbackFinished();
+  void NotifyDOMCallbackRejected(ScriptValue value);
 
   // Cleared when the context is destroyed.
   Member<ExecutionContext> execution_context_;

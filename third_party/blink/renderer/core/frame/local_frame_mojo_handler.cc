@@ -209,24 +209,23 @@ v8::Local<v8::String> ErrorToString(ScriptState* script_state,
 class JavaScriptExecuteRequestForTestsHandler
     : public GarbageCollected<JavaScriptExecuteRequestForTestsHandler> {
  public:
-  class PromiseCallback : public ScriptFunction::Callable {
+  class PromiseCallback : public ThenCallable<IDLAny, PromiseCallback> {
    public:
     PromiseCallback(JavaScriptExecuteRequestForTestsHandler& handler,
                     mojom::blink::JavaScriptExecutionResultType type)
         : handler_(handler), type_(type) {}
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    void React(ScriptState* script_state, ScriptValue value) {
       DCHECK(script_state);
       if (type_ == mojom::blink::JavaScriptExecutionResultType::kSuccess)
         handler_->SendSuccess(script_state, value.V8Value());
       else
         handler_->SendException(script_state, value.V8Value());
-      return {};
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(handler_);
-      ScriptFunction::Callable::Trace(visitor);
+      ThenCallable<IDLAny, PromiseCallback>::Trace(visitor);
     }
 
    private:
@@ -249,20 +248,16 @@ class JavaScriptExecuteRequestForTestsHandler
     }
   }
 
-  ScriptFunction* CreateResolveCallback(ScriptState* script_state,
-                                        LocalFrame* frame) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<PromiseCallback>(
-            *this, mojom::blink::JavaScriptExecutionResultType::kSuccess));
+  PromiseCallback* CreateResolveCallback(ScriptState* script_state,
+                                         LocalFrame* frame) {
+    return MakeGarbageCollected<PromiseCallback>(
+        *this, mojom::blink::JavaScriptExecutionResultType::kSuccess);
   }
 
-  ScriptFunction* CreateRejectCallback(ScriptState* script_state,
-                                       LocalFrame* frame) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<PromiseCallback>(
-            *this, mojom::blink::JavaScriptExecutionResultType::kException));
+  PromiseCallback* CreateRejectCallback(ScriptState* script_state,
+                                        LocalFrame* frame) {
+    return MakeGarbageCollected<PromiseCallback>(
+        *this, mojom::blink::JavaScriptExecutionResultType::kException);
   }
 
   void SendSuccess(ScriptState* script_state, v8::Local<v8::Value> value) {
@@ -913,8 +908,9 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
       if (resolve_promises && !value.IsEmpty() && value->IsPromise()) {
         auto promise = ScriptPromise<IDLAny>::FromV8Promise(
             script_state->GetIsolate(), value.As<v8::Promise>());
-        promise.Then(handler->CreateResolveCallback(script_state, frame_),
-                     handler->CreateRejectCallback(script_state, frame_));
+        promise.React(script_state,
+                      handler->CreateResolveCallback(script_state, frame_),
+                      handler->CreateRejectCallback(script_state, frame_));
       } else {
         handler->SendSuccess(script_state, value);
       }

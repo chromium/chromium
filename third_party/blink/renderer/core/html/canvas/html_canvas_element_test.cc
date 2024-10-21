@@ -329,16 +329,12 @@ INSTANTIATE_TEST_SUITE_P(
          )JS",
                            "OffscreenCanvas.convertToBlob")}));
 
-class Resolve final : public ScriptFunction::Callable {
+class Resolve final : public ThenCallable<IDLAny, Resolve> {
  public:
   explicit Resolve(base::RepeatingClosure callback)
       : callback_(std::move(callback)) {}
 
-  ScriptValue Call(ScriptState*, ScriptValue) override {
-    callback_.Run();
-    return ScriptValue();
-  }
-  int Length() const override { return 1; }
+  void React(ScriptState*, ScriptValue) { callback_.Run(); }
 
  private:
   base::RepeatingClosure callback_;
@@ -361,8 +357,7 @@ TEST_P(HTMLCanvasElementWithTracingAsyncTest,
   ScriptState::Scope script_state_scope(script_state);
 
   base::RunLoop run_loop;
-  ScriptFunction* fn = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<Resolve>(run_loop.QuitClosure()));
+  auto* resolve = MakeGarbageCollected<Resolve>(run_loop.QuitClosure());
 
   ClassicScript* script = ClassicScript::CreateUnspecifiedScript(
       GetParam().first, ScriptSourceLocationType::kUnknown,
@@ -373,7 +368,7 @@ TEST_P(HTMLCanvasElementWithTracingAsyncTest,
 
   auto promise =
       ToResolvedPromise<IDLAny>(script_state, script_result.GetSuccessValue());
-  promise.Then(fn, fn);
+  promise.React(script_state, resolve, resolve);
 
   // Avoid the NOTREACHED in CanvasPerformanceMonitor::WillProcessTask().
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();

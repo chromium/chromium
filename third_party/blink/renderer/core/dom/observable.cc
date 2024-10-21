@@ -668,21 +668,18 @@ class OperatorForEachInternalObserver final
 class OperatorFromPromiseSubscribeDelegate final
     : public Observable::SubscribeDelegate {
  public:
-  explicit OperatorFromPromiseSubscribeDelegate(ScriptPromiseUntyped promise)
+  explicit OperatorFromPromiseSubscribeDelegate(ScriptPromise<IDLAny> promise)
       : promise_(promise) {}
 
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
-    ScriptFunction* on_fulfilled = MakeGarbageCollected<ScriptFunction>(
+    promise_.React(
         script_state,
         MakeGarbageCollected<ObservablePromiseResolverFunction>(
             subscriber,
-            ObservablePromiseResolverFunction::ResolveType::kFulfill));
-    ScriptFunction* on_rejected = MakeGarbageCollected<ScriptFunction>(
-        script_state,
+            ObservablePromiseResolverFunction::ResolveType::kFulfill),
         MakeGarbageCollected<ObservablePromiseResolverFunction>(
             subscriber,
             ObservablePromiseResolverFunction::ResolveType::kReject));
-    promise_.Then(on_fulfilled, on_rejected);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -693,7 +690,7 @@ class OperatorFromPromiseSubscribeDelegate final
 
  private:
   class ObservablePromiseResolverFunction final
-      : public ScriptFunction::Callable {
+      : public ThenCallable<IDLAny, ObservablePromiseResolverFunction> {
    public:
     enum class ResolveType { kFulfill, kReject };
 
@@ -702,21 +699,19 @@ class OperatorFromPromiseSubscribeDelegate final
       CHECK(subscriber_);
     }
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+    void React(ScriptState* script_state, ScriptValue value) {
       if (type_ == ResolveType::kFulfill) {
         subscriber_->next(value);
         subscriber_->complete(script_state);
       } else {
         subscriber_->error(script_state, value);
       }
-
-      return ScriptValue();
     }
 
     void Trace(Visitor* visitor) const final {
       visitor->Trace(subscriber_);
 
-      ScriptFunction::Callable::Trace(visitor);
+      ThenCallable<IDLAny, ObservablePromiseResolverFunction>::Trace(visitor);
     }
 
    private:
@@ -724,7 +719,7 @@ class OperatorFromPromiseSubscribeDelegate final
     ResolveType type_;
   };
 
-  ScriptPromiseUntyped promise_;
+  ScriptPromise<IDLAny> promise_;
 };
 
 // This is the subscribe delegate for the `catch()` operator. It allows one to
@@ -1741,17 +1736,14 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       //
       // See continued documentation in
       // `AsyncIteratorNextResolverFunction::Call()`.
-      ScriptFunction* on_fulfilled = MakeGarbageCollected<ScriptFunction>(
+      next_promise_.React(
           script_state,
           MakeGarbageCollected<AsyncIteratorNextResolverFunction>(
               this, subscriber,
-              AsyncIteratorNextResolverFunction::ResolveType::kFulfill));
-      ScriptFunction* on_rejected = MakeGarbageCollected<ScriptFunction>(
-          script_state,
+              AsyncIteratorNextResolverFunction::ResolveType::kFulfill),
           MakeGarbageCollected<AsyncIteratorNextResolverFunction>(
               this, subscriber,
               AsyncIteratorNextResolverFunction::ResolveType::kReject));
-      next_promise_.Then(on_fulfilled, on_rejected);
     }
 
     void ClearAbortAlgorithm() {
@@ -1819,11 +1811,11 @@ class OperatorFromAsyncIterableSubscribeDelegate final
     //
     // [1]:
     // https://wicg.github.io/observable/#observable-convert-to-an-observable.
-    ScriptPromiseUntyped next_promise_;
+    ScriptPromise<IDLAny> next_promise_;
   };
 
   class AsyncIteratorNextResolverFunction final
-      : public ScriptFunction::Callable {
+      : public ThenCallable<IDLAny, AsyncIteratorNextResolverFunction> {
    public:
     enum class ResolveType { kFulfill, kReject };
 
@@ -1835,7 +1827,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       CHECK(subscriber_);
     }
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+    void React(ScriptState* script_state, ScriptValue value) {
       v8::Local<v8::Value> iterator_result = value.V8Value();
       v8::Isolate* isolate = script_state->GetIsolate();
       v8::Local<v8::Context> context = script_state->GetContext();
@@ -1849,7 +1841,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
               isolate, "Expected next() Promise to resolve to an Object");
           delegate_->ClearAbortAlgorithm();
           subscriber_->error(script_state, ScriptValue(isolate, type_error));
-          return ScriptValue();
+          return;
         }
 
         v8::TryCatch try_catch(isolate);
@@ -1867,7 +1859,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
                                 try_catch.Exception());
           delegate_->ClearAbortAlgorithm();
           subscriber_->error(script_state, exception);
-          return ScriptValue();
+          return;
         }
 
         // "Otherwise, if done's [[Value]] is true, then run subscriber's
@@ -1880,7 +1872,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         if (done) {
           delegate_->ClearAbortAlgorithm();
           subscriber_->complete(script_state);
-          return ScriptValue();
+          return;
         }
 
         // "Let value be IteratorValue(|iteratorResult|)."
@@ -1894,7 +1886,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
                                 try_catch.Exception());
           delegate_->ClearAbortAlgorithm();
           subscriber_->error(script_state, exception);
-          return ScriptValue();
+          return;
         }
 
         // "Run subscriber’s next() method, given value's [[Value]]."
@@ -1911,15 +1903,12 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         delegate_->ClearAbortAlgorithm();
         subscriber_->error(script_state, value);
       }
-
-      return ScriptValue();
     }
 
     void Trace(Visitor* visitor) const final {
       visitor->Trace(delegate_);
       visitor->Trace(subscriber_);
-
-      ScriptFunction::Callable::Trace(visitor);
+      ThenCallable<IDLAny, AsyncIteratorNextResolverFunction>::Trace(visitor);
     }
 
    private:
@@ -2746,8 +2735,8 @@ Observable* Observable::from(ScriptState* script_state,
   // "From Promise: If IsPromise(value) is true, then:". See the continued
   // documentation in the below classes.
   if (v8_value->IsPromise()) {
-    ScriptPromiseUntyped promise(script_state->GetIsolate(),
-                                 v8_value.As<v8::Promise>());
+    ScriptPromise<IDLAny> promise = ScriptPromise<IDLAny>::FromV8Promise(
+        script_state->GetIsolate(), v8_value.As<v8::Promise>());
     return MakeGarbageCollected<Observable>(
         ExecutionContext::From(script_state),
         MakeGarbageCollected<OperatorFromPromiseSubscribeDelegate>(promise));

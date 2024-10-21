@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_init_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_profiler_trace.h"
 #include "third_party/blink/renderer/core/timing/profiler.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -195,12 +196,12 @@ TEST_F(ProfilerGroupTest, OverflowSamplingInterval) {
 }
 
 TEST_F(ProfilerGroupTest, Bug1119865) {
-  class ExpectNoCallFunction : public ScriptFunction::Callable {
+  class ExpectNoCallFunction
+      : public ThenCallable<ProfilerTrace, ExpectNoCallFunction> {
    public:
-    ScriptValue Call(ScriptState*, ScriptValue) override {
+    void React(ScriptState*, ProfilerTrace*) {
       EXPECT_FALSE(true)
           << "Promise should not resolve without dispatching a task";
-      return ScriptValue();
     }
   };
 
@@ -216,9 +217,9 @@ TEST_F(ProfilerGroupTest, Bug1119865) {
       scope.GetScriptState(), *init_options, base::TimeTicks(),
       scope.GetExceptionState());
 
-  auto* function = MakeGarbageCollected<ScriptFunction>(
-      scope.GetScriptState(), MakeGarbageCollected<ExpectNoCallFunction>());
-  profiler->stop(scope.GetScriptState()).Then(function);
+  profiler->stop(scope.GetScriptState())
+      .React(scope.GetScriptState(),
+             MakeGarbageCollected<ExpectNoCallFunction>());
 }
 
 /*
