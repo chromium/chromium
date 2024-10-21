@@ -7,7 +7,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/download/public/background_service/client.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace download {
 struct CompletionInfo;
