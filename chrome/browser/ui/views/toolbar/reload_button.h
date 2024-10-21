@@ -55,7 +55,6 @@ class ReloadButton : public ToolbarButton,
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool ShouldShowMenu() override;
   void ShowDropDownMenu(ui::mojom::MenuSourceType source_type) override;
 
@@ -80,6 +79,7 @@ class ReloadButton : public ToolbarButton,
 
   void OnDoubleClickTimer();
   void OnStopToReloadTimer();
+  void UpdateAccessibleHasPopup();
 
   base::OneShotTimer double_click_timer_;
 

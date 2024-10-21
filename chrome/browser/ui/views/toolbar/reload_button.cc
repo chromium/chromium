@@ -52,6 +52,7 @@ ReloadButton::ReloadButton(CommandUpdater* command_updater)
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
+  UpdateAccessibleHasPopup();
   SetProperty(views::kElementIdentifierKey, kReloadButtonElementId);
   SetID(VIEW_ID_RELOAD_BUTTON);
 }
@@ -113,6 +114,7 @@ bool ReloadButton::GetMenuEnabled() const {
 
 void ReloadButton::SetMenuEnabled(bool enable) {
   menu_enabled_ = enable;
+  UpdateAccessibleHasPopup();
 }
 
 void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
@@ -126,13 +128,6 @@ std::u16string ReloadButton::GetTooltipText(const gfx::Point& p) const {
       IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
   return l10n_util::GetStringUTF16(
       visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP);
-}
-
-void ReloadButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (menu_enabled_)
-    ToolbarButton::GetAccessibleNodeData(node_data);
-  else
-    Button::GetAccessibleNodeData(node_data);
 }
 
 bool ReloadButton::ShouldShowMenu() {
@@ -253,6 +248,14 @@ void ReloadButton::OnDoubleClickTimer() {
 void ReloadButton::OnStopToReloadTimer() {
   DCHECK(!IsMenuShowing());
   ChangeMode(intended_mode_, true);
+}
+
+void ReloadButton::UpdateAccessibleHasPopup() {
+  if (menu_enabled_ && menu_model()) {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
+  } else {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kNone);
+  }
 }
 
 BEGIN_METADATA(ReloadButton)
