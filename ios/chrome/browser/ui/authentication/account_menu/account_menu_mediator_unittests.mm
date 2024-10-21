@@ -307,6 +307,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
                      return true;
                    }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]);
+  OCMExpect([consumer_ switchingStarted]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -314,6 +315,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
                                          gaiaIDsToRemove:@[]]);
   OCMExpect([delegate_ unblockOtherScenesIfPossible]);
+  OCMExpect([consumer_ switchingStopped]);
   // Simulate a sign-out failure
   onSignoutSuccess(false);
 }
@@ -340,6 +342,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
                      return true;
                    }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]);
+  OCMExpect([consumer_ switchingStarted]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -365,6 +368,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
                                          gaiaIDsToRemove:@[]]);
   OCMExpect([consumer_ updatePrimaryAccount]);
+  OCMExpect([consumer_ switchingStopped]);
   onSigninSuccess(SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
 
   // Checks the user is signed-back in.
@@ -392,6 +396,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
                      return true;
                    }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]);
+  OCMExpect([consumer_ switchingStarted]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();

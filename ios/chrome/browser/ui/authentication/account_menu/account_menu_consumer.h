@@ -21,6 +21,12 @@
 // Updates the primary account details.
 - (void)updatePrimaryAccount;
 
+// Called wthen the account switch starts.
+- (void)switchingStarted;
+
+// Tells the consumer the switch is no longer in progress.
+- (void)switchingStopped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_CONSUMER_H_

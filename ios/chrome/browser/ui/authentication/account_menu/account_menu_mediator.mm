@@ -277,6 +277,7 @@
   if (_blockUserInteractions) {
     return;
   }
+  [self.consumer switchingStarted];
   [self.delegate blockOtherScenesIfPossible];
   _blockUpdates = YES;
   _blockUserInteractions = YES;
@@ -487,6 +488,7 @@
     // The mediator was disconnected. Don’t restart updates.
     return;
   }
+  [self.consumer switchingStopped];
   _blockUpdates = NO;
   [self updateIdentities];
   [self onSyncStateChanged];
