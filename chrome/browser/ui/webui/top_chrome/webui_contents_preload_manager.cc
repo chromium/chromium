@@ -35,6 +35,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/models/menu_model.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -70,7 +71,8 @@ class FixedCandidateSelector : public webui::PreloadCandidateSelector {
   }
   std::optional<GURL> GetURLToPreload(
       const webui::PreloadContext& context) const override {
-    return webui_url_;
+    return IsUrlExcludedByFlag(webui_url_) ? std::nullopt
+                                           : std::make_optional(webui_url_);
   }
 
  private:
