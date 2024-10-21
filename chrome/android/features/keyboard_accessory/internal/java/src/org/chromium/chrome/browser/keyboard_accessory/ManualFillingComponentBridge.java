@@ -191,7 +191,7 @@ class ManualFillingComponentBridge {
                     (field) -> {
                         assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
                         ManualFillingMetricsRecorder.recordSuggestionSelected(
-                                sheetType, field.isObfuscated());
+                                sheetType, suggestionType);
                         ManualFillingComponentBridgeJni.get()
                                 .onFillingTriggered(
                                         mNativeView,
@@ -224,7 +224,8 @@ class ManualFillingComponentBridge {
         Callback<UserInfoField> callback =
                 (field) -> {
                     assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
-                    // TODO: crbug.com/327838324 - Record that the suggestion was accepted.
+                    ManualFillingMetricsRecorder.recordSuggestionSelected(
+                            sheetType, suggestionType);
                     ManualFillingComponentBridgeJni.get()
                             .onFillingTriggered(mNativeView, this, sheetType, field);
                 };
@@ -283,7 +284,7 @@ class ManualFillingComponentBridge {
                 (field) -> {
                     assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
                     ManualFillingMetricsRecorder.recordSuggestionSelected(
-                            sheetType, field.isObfuscated());
+                            sheetType, suggestionType);
                     ManualFillingComponentBridgeJni.get()
                             .onFillingTriggered(
                                     mNativeView,
