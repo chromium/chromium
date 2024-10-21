@@ -1695,11 +1695,6 @@
     "expiry_milestone": 134
   },
   {
-    "name": "cormorant",
-    "owners": [ "jeffreycohen@chromium.org", "markeh@chromium.org", "wissemgamra@chromium.org", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 119
-  },
-  {
     "name": "cpe-performance-improvements",
     "owners": ["sebsg@chromium.org", "bling-transactions-eng@google.com"],
     "expiry_milestone": 135
