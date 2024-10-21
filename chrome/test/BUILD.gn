@@ -290,6 +290,8 @@ static_library("test_support") {
 
   if (enable_desktop_android_extensions) {
     sources += [
+      "../browser/extensions/extension_platform_apitest.cc",
+      "../browser/extensions/extension_platform_apitest.h",
       "../browser/extensions/extension_platform_browsertest.cc",
       "../browser/extensions/extension_platform_browsertest.h",
       "../browser/extensions/platform_test_extension_loader.cc",
