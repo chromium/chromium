@@ -657,6 +657,18 @@ try_.builder(
         "ci/android-cronet-x64-dbg",
         "ci/android-cronet-x64-dbg-14-tests",
     ],
+    gn_args = "ci/android-cronet-x64-dbg",
+    contact_team_email = "cronet-team@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x64-dbg-15-tests",
+    description_html = "Tests Cronet against Android 15",
+    mirrors = [
+        "ci/android-cronet-x64-dbg",
+        "ci/android-cronet-x64-dbg-15-tests",
+    ],
     # Replicates "ci/android-cronet-x64-dbg", with code coverage related
     # arguments appended.
     gn_args = gn_args.config(
@@ -681,18 +693,6 @@ try_.builder(
     ),
     use_clang_coverage = True,
     use_java_coverage = True,
-)
-
-try_.builder(
-    name = "android-cronet-x64-dbg-15-tests",
-    description_html = "Tests Cronet against Android 15",
-    mirrors = [
-        "ci/android-cronet-x64-dbg",
-        "ci/android-cronet-x64-dbg-15-tests",
-    ],
-    gn_args = "ci/android-cronet-x64-dbg",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
