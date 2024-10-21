@@ -112,8 +112,10 @@ Suggestion::AutofillProfilePayload::~AutofillProfilePayload() = default;
 Suggestion::PaymentsPayload::PaymentsPayload() = default;
 
 Suggestion::PaymentsPayload::PaymentsPayload(
+    std::u16string main_text_content_description,
     bool should_display_terms_available)
-    : should_display_terms_available(should_display_terms_available) {}
+    : main_text_content_description(main_text_content_description),
+      should_display_terms_available(should_display_terms_available) {}
 
 Suggestion::PaymentsPayload::PaymentsPayload(const PaymentsPayload&) = default;
 

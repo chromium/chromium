@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -1257,10 +1258,22 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
   suggestions.reserve(credit_cards.size());
   for (const CreditCard& credit_card : credit_cards) {
     Suggestion suggestion;
-    std::u16string nickname = GetDisplayNicknameForCreditCard(
+    bool should_display_terms_available = false;
+    std::u16string display_name = GetDisplayNicknameForCreditCard(
         credit_card, client.GetPersonalDataManager()->payments_data_manager());
-    suggestion.main_text.value =
-        credit_card.CardNameForAutofillDisplay(nickname);
+    std::u16string card_name =
+        credit_card.CardNameForAutofillDisplay(display_name);
+    std::u16string network = base::UTF8ToUTF16(
+        data_util::GetPaymentRequestData(credit_card.network())
+            .basic_card_issuer_network);
+    // If a card has a nickname, the network name should also be announced,
+    // otherwise the name of the card will be the network name and it will be
+    // announced.
+    std::u16string main_text_content_description =
+        base::i18n::ToLower(card_name) == base::i18n::ToLower(network)
+            ? card_name
+            : base::StrCat({card_name, u" ", network});
+    suggestion.main_text.value = card_name;
     suggestion.minor_text.value =
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits();
     std::optional<Suggestion::Text> benefit_label =
@@ -1269,9 +1282,10 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
                              ->payments_data_manager()
                              .IsCardEligibleForBenefits(credit_card)) {
       suggestion.labels.push_back({*benefit_label});
-      suggestion.payload = Suggestion::PaymentsPayload(
-          /* should_display_terms_available= */ true);
+      should_display_terms_available = true;
     }
+    suggestion.payload = Suggestion::PaymentsPayload(
+        main_text_content_description, should_display_terms_available);
     if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
       suggestion.type = SuggestionType::kVirtualCreditCardEntry;
       suggestion.apply_deactivated_style = !IsCardSuggestionAcceptable(

@@ -107,7 +107,8 @@ struct Suggestion {
 
   struct PaymentsPayload final {
     PaymentsPayload();
-    explicit PaymentsPayload(bool should_display_terms_available);
+    PaymentsPayload(std::u16string main_text_content_description,
+                    bool should_display_terms_available);
     PaymentsPayload(const PaymentsPayload&);
     PaymentsPayload(PaymentsPayload&&);
     PaymentsPayload& operator=(const PaymentsPayload&);
@@ -116,6 +117,9 @@ struct Suggestion {
 
     friend bool operator==(const PaymentsPayload&,
                            const PaymentsPayload&) = default;
+
+    // Value to be announced for the suggestion's `main_text`.
+    std::u16string main_text_content_description;
 
     // If true, the user will be presented with a "Terms apply for card
     // benefits" message below the suggestions list on TTF for mobile.

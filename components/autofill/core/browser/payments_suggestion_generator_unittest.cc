@@ -3477,5 +3477,45 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
                   CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale())}}));
 }
 
+// Verify that the suggestion's `main_text_content_description` appends the
+// network name if the card name and network name differ.
+TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
+       GetCreditCardSuggestionsForTTF_MainTextDescriptionWithNetwork) {
+  CreditCard server_card = CreateServerCard();
+  server_card.SetNickname(u"NickName");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  std::vector<CreditCard> cards = {server_card};
+  base::span<const CreditCard> credit_cards_span(cards);
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      credit_cards_span, *autofill_client());
+
+  ASSERT_EQ(suggestions.size(), 1U);
+  EXPECT_EQ(
+      suggestions[0]
+          .GetPayload<Suggestion::PaymentsPayload>()
+          .main_text_content_description,
+      base::StrCat({server_card.CardNameForAutofillDisplay(), u" ", u"visa"}));
+}
+
+// Verify that the suggestion's `main_text_content_description` does not include
+// the network name if it is identical to the card name.
+TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
+       GetCreditCardSuggestionsForTTF_MainTextDescriptionWithoutNetwork) {
+  CreditCard server_card = CreateServerCard();
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  std::vector<CreditCard> cards = {server_card};
+  base::span<const CreditCard> credit_cards_span(cards);
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      credit_cards_span, *autofill_client());
+
+  ASSERT_EQ(suggestions.size(), 1U);
+  EXPECT_EQ(suggestions[0]
+                .GetPayload<Suggestion::PaymentsPayload>()
+                .main_text_content_description,
+            server_card.CardNameForAutofillDisplay());
+}
+
 }  // namespace
 }  // namespace autofill

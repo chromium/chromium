@@ -469,6 +469,7 @@ public class AutofillTestHelper {
             String secondaryLabel,
             String subLabel,
             String secondarySubLabel,
+            String labelContentDescription,
             boolean applyDeactivatedStyle,
             boolean shouldDisplayTermsAvailable) {
         return new AutofillSuggestion.Builder()
@@ -476,6 +477,7 @@ public class AutofillTestHelper {
                 .setSecondaryLabel(secondaryLabel)
                 .setSubLabel(subLabel)
                 .setSecondarySubLabel(secondarySubLabel)
+                .setLabelContentDescription(labelContentDescription)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
                 .setShouldDisplayTermsAvailable(shouldDisplayTermsAvailable)
                 .build();

@@ -22,6 +22,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     @Nullable private final String mSecondaryLabel;
     private final String mSublabel;
     @Nullable private final String mSecondarySublabel;
+    @Nullable private final String mLabelContentDescription;
     @Nullable private final String mItemTag;
     private final int mIconId;
     private final boolean mIsIconAtStart;
@@ -66,6 +67,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             @Nullable String secondaryLabel,
             String sublabel,
             @Nullable String secondarySublabel,
+            @Nullable String labelContentDescription,
             @Nullable String itemTag,
             int iconId,
             boolean isIconAtStart,
@@ -83,6 +85,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
         mSecondarySublabel = secondarySublabel;
+        mLabelContentDescription = labelContentDescription;
         mItemTag = itemTag;
         mIconId = iconId;
         mIsIconAtStart = isIconAtStart;
@@ -169,6 +172,11 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mIconDrawable;
     }
 
+    @Nullable
+    public String getLabelContentDescription() {
+        return mLabelContentDescription;
+    }
+
     public int getSuggestionType() {
         return mSuggestionType;
     }
@@ -212,6 +220,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && Objects.equals(this.mSecondaryLabel, other.mSecondaryLabel)
                 && this.mSublabel.equals(other.mSublabel)
                 && Objects.equals(this.mSecondarySublabel, other.mSecondarySublabel)
+                && Objects.equals(this.mLabelContentDescription, other.mLabelContentDescription)
                 && Objects.equals(this.mItemTag, other.mItemTag)
                 && this.mIconId == other.mIconId
                 && this.mIsIconAtStart == other.mIsIconAtStart
@@ -233,6 +242,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 .setSecondaryLabel(mSecondaryLabel)
                 .setSubLabel(mSublabel)
                 .setSecondarySubLabel(mSecondarySublabel)
+                .setLabelContentDescription(mLabelContentDescription)
                 .setItemTag(mItemTag)
                 .setIconId(mIconId)
                 .setIsIconAtStart(mIsIconAtStart)
@@ -266,6 +276,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         private String mSecondaryLabel;
         private String mSubLabel;
         private String mSecondarySubLabel;
+        private String mLabelContentDescription;
         private int mSuggestionType;
 
         public Builder setIconId(int iconId) {
@@ -348,6 +359,11 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
+        public Builder setLabelContentDescription(String labelContentDescription) {
+            this.mLabelContentDescription = labelContentDescription;
+            return this;
+        }
+
         public Builder setSuggestionType(int popupItemId) {
             this.mSuggestionType = popupItemId;
             return this;
@@ -363,6 +379,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mSecondaryLabel,
                     mSubLabel,
                     mSecondarySubLabel,
+                    mLabelContentDescription,
                     mItemTag,
                     mIconId,
                     mIsIconAtStart,
