@@ -41,9 +41,9 @@ enum class CollaborationStatus {
 };
 
 struct ServiceStatus {
-  SigninStatus signin_status;
-  SyncStatus sync_status;
-  CollaborationStatus collaboration_status;
+  SigninStatus signin_status = SigninStatus::kNotSignedIn;
+  SyncStatus sync_status = SyncStatus::kNotSyncing;
+  CollaborationStatus collaboration_status = CollaborationStatus::kDisabled;
 
   // Helper functions for checking DataSharingService's status.
 
