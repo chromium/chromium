@@ -476,6 +476,16 @@ constexpr CGFloat kSpace = 8;
   __weak TabGroupViewController* weakSelf = self;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
+  if (_shared) {
+    CHECK(IsTabGroupSyncEnabled());
+
+    // TODO(crbug.com/358533115): Add an entry point to the management UI.
+
+    [menuElements addObject:[actionFactory actionToShowRecentActivity:^{
+                    [weakSelf showRecentActivity];
+                  }]];
+  }
+
   [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
                   [weakSelf displayEditionMenu];
                 }]];
@@ -484,17 +494,11 @@ constexpr CGFloat kSpace = 8;
                   [weakSelf openNewTab];
                 }]];
 
-  if (_shared) {
-    [menuElements addObject:[actionFactory actionToShowRecentActivity:^{
-                    [weakSelf showRecentActivity];
+  if (!_shared) {
+    [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
+                    [weakSelf ungroup];
                   }]];
-
-    // TODO(crbug.com/358533115): Add an entry point to the management UI.
   }
-
-  [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                  [weakSelf ungroup];
-                }]];
 
   if (IsTabGroupSyncEnabled()) {
     [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
