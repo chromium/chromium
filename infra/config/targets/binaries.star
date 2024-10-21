@@ -1867,6 +1867,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.generated_script(
     name = "test_env_py_unittests",
     label = "//testing:test_env_py_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     resultdb = targets.resultdb(
         enable = True,
     ),
@@ -2331,6 +2333,8 @@ targets.binaries.windowed_test_launcher(
 targets.binaries.generated_script(
     name = "xvfb_py_unittests",
     label = "//testing:xvfb_py_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     resultdb = targets.resultdb(
         enable = True,
     ),

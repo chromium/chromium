@@ -24,6 +24,11 @@
   #   chromium.gpu
   #   chromium.mac
   #   chromium.win
+  #
+  # The following builder group has been migrated to set their targets in the
+  # builders' declarations in
+  # //infra/config/subprojects/build/build.fyi.star
+  #   chromium.build.fyi
   {
     'name': 'chrome',
     'mixins': ['chrome-tester-service-account'],
@@ -442,30 +447,6 @@
         },
         'test_suites': {
           'gtest_tests': 'linux_chromeos_gtests',
-        },
-      },
-    },
-  },
-  {
-    'name': 'chromium.build.fyi',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'Mac Builder': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'scripts': 'chromium_mac_scripts',
-        },
-      },
-      'Mac Tests Siso FYI': {
-        'mixins': [
-            'mac_default_x64',
-            'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts_once',
         },
       },
     },

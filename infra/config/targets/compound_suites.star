@@ -200,24 +200,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-# Like chromium_mac_rel_isolated_scripts above, but should only
-# include test suites that aren't affected by things like extra GN args
-# (e.g. is_debug) or OS versions (e.g. Mac-12 vs Mac-13). Note: use
-# chromium_mac_rel_isolated_scripts if you're setting up a new builder.
-# This group should only be used across ~3 builders.
-targets.legacy_compound_suite(
-    name = "chromium_mac_rel_isolated_scripts_once",
-    basic_suites = [
-        "chromedriver_py_tests_isolated_scripts",
-        "components_perftests_isolated_scripts",
-        "desktop_chromium_isolated_scripts",
-        "desktop_once_isolated_scripts",
-        "mac_specific_isolated_scripts",
-        "mojo_python_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts",
-    ],
-)
-
 # Multiscreen tests for desktop platforms. See: crbug.com/346565331.
 targets.legacy_compound_suite(
     name = "chromium_multiscreen_gtests_fyi",

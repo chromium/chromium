@@ -60,14 +60,6 @@
   },
   'blink_web_tests': {
     'modifications': {
-      'Mac Tests Siso FYI': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 12,
-        },
-      },
       'V8 Blink Linux Future': {
         'args': [
           '--flag-specific=future-js',
@@ -199,14 +191,6 @@
       'devtools_frontend_linux_blink_light_rel_fastbuild',
     ],
     'modifications': {
-      'Mac Tests Siso FYI': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 18,
-        },
-      },
       'V8 Blink Linux Future': {
         'args': [
           '--flag-specific=future-js',
@@ -384,12 +368,6 @@
           'shards': 20,  # crbug.com/1419045
         },
       },
-      'Mac Tests Siso FYI': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,  # crbug.com/1361887
-        },
-      },
       'linux-chromeos-chrome': {
         # TODO(crbug.com/40614042): Promote out of experiment when the
         # tests are green.
@@ -471,15 +449,6 @@
         'swarming': {
           'shards': 3,
         },
-      },
-    },
-  },
-  'check_static_initializers': {
-    'modifications': {
-      'Mac Builder': {
-        'args': [
-          '--allow-coverage-initializer',
-        ],
       },
     },
   },
@@ -611,15 +580,6 @@
       },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
         'experiment_percentage': 100,
-      },
-      'Mac Tests Siso FYI': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1475852
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 12,
-        },
       },
       'WebRTC Chromium FYI Android Tests (dbg)': {
         'args': [
@@ -1321,11 +1281,6 @@
           'shards': 7,
         },
       },
-      'Mac Tests Siso FYI': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
       # TODO(crbug.com/40630654): Remove these filters.
       'linux-chromeos-chrome': {
         'args': [
@@ -1768,12 +1723,6 @@
           'shards': 3,
           },
       },
-      'Mac Tests Siso FYI': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 4,
-        },
-      },
       'linux-chromeos-rel': {
         'swarming': {
           'shards': 2,
@@ -1898,11 +1847,6 @@
         }
       },
       'Mac ASan 64 Tests (1)': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'Mac Tests Siso FYI': {
         'swarming': {
           'shards': 2,
         },

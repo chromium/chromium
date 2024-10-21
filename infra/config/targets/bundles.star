@@ -1193,6 +1193,23 @@ targets.bundle(
     # TODO(crbug.com/40249801): Enable gpu_dawn_webgpu_blink_web_tests
 )
 
+# Like chromium_mac_rel_isolated_scripts above, but should only
+# include test suites that aren't affected by things like extra GN args
+# (e.g. is_debug) or OS versions (e.g. Mac-12 vs Mac-13). Note: use
+# chromium_mac_rel_isolated_scripts if you're setting up a new builder.
+targets.bundle(
+    name = "chromium_mac_rel_isolated_scripts_once",
+    targets = [
+        "chromedriver_py_tests_isolated_scripts",
+        "components_perftests_isolated_scripts",
+        "desktop_chromium_isolated_scripts",
+        "desktop_once_isolated_scripts",
+        "mac_specific_isolated_scripts",
+        "mojo_python_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
 # On some bots we don't have capacity to run all standard tests (for example
 # Android Pie), however there are tracing integration tests we want to
 # ensure are still working.
@@ -1422,6 +1439,15 @@ targets.bundle(
             ],
         ),
     },
+)
+
+# Script tests that only need to run on one builder per desktop platform.
+targets.bundle(
+    name = "desktop_once_isolated_scripts",
+    targets = [
+        "test_env_py_unittests",
+        "xvfb_py_unittests",
+    ],
 )
 
 targets.bundle(

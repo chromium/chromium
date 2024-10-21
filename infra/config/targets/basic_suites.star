@@ -1138,15 +1138,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# Script tests that only need to run on one builder per desktop platform.
-targets.legacy_basic_suite(
-    name = "desktop_once_isolated_scripts",
-    tests = {
-        "test_env_py_unittests": targets.legacy_test_config(),
-        "xvfb_py_unittests": targets.legacy_test_config(),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "desktop_chromium_mac_osxbeta_scripts",
     tests = {

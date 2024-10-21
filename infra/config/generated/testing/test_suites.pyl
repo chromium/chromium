@@ -1494,23 +1494,6 @@
       },
     },
 
-    'desktop_once_isolated_scripts': {
-      'test_env_py_unittests': {
-        'test_common': {
-          'resultdb': {
-            'enable': True,
-          },
-        },
-      },
-      'xvfb_py_unittests': {
-        'test_common': {
-          'resultdb': {
-            'enable': True,
-          },
-        },
-      },
-    },
-
     'devtools_browser_tests_suite': {
       'devtools_browser_tests': {
         'test_common': {
@@ -5149,16 +5132,6 @@
       'chromedriver_py_tests_isolated_scripts',
       'components_perftests_isolated_scripts',
       'desktop_chromium_isolated_scripts',
-      'mac_specific_isolated_scripts',
-      'mojo_python_unittests_isolated_scripts',
-      'telemetry_perf_unittests_isolated_scripts',
-    ],
-
-    'chromium_mac_rel_isolated_scripts_once': [
-      'chromedriver_py_tests_isolated_scripts',
-      'components_perftests_isolated_scripts',
-      'desktop_chromium_isolated_scripts',
-      'desktop_once_isolated_scripts',
       'mac_specific_isolated_scripts',
       'mojo_python_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',

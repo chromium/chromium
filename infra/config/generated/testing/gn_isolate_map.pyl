@@ -1692,6 +1692,7 @@
   "test_env_py_unittests": {
     "label": "//testing:test_env_py_unittests",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "test_serde_json_lenient": {
     "label": "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
@@ -2110,6 +2111,7 @@
   "xvfb_py_unittests": {
     "label": "//testing:xvfb_py_unittests",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "zlib_unittests": {
     "label": "//third_party/zlib:zlib_unittests",
