@@ -264,6 +264,8 @@ source_set("browser_tests") {
     ":test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/app_mode/test:test_support",
+    "//chrome/browser/ash/app_mode/test:test_support",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/login/app_mode/test:test_support",

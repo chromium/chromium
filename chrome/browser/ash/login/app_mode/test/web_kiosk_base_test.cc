@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 
 #include <memory>
-#include <string>
 #include <string_view>
 #include <vector>
 
@@ -14,7 +13,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
-#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"  // IWYU pragma: keep
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -66,9 +64,7 @@ void WebKioskBaseTest::TearDownOnMainThread() {
 }
 
 void WebKioskBaseTest::SetOnline(bool online) {
-  network_portal_detector_.SimulateDefaultNetworkState(
-      online ? NetworkPortalDetectorMixin::NetworkStatus::kOnline
-             : NetworkPortalDetectorMixin::NetworkStatus::kOffline);
+  online ? network_mixin_.SimulateOnline() : network_mixin_.SimulateOffline();
 }
 
 void WebKioskBaseTest::PrepareAppLaunch() {

@@ -4,24 +4,28 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_network_state_observer.h"
 
+#include <cstddef>
+#include <optional>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
+#include "chromeos/ash/components/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -68,17 +72,10 @@ class KioskNetworkStateObserverTest : public WebKioskBaseTest {
       const KioskNetworkStateObserverTest&) = delete;
 
   void SetUpOnMainThread() override {
-    network_helper_ = std::make_unique<NetworkStateTestHelper>(
-        /*use_default_devices_and_services=*/false);
     WebKioskBaseTest::SetUpOnMainThread();
-
-    network_helper_->device_test()->AddDevice(kDevicePath, shill::kTypeWifi,
-                                              kDeviceName);
-  }
-
-  void TearDownOnMainThread() override {
-    network_helper_.reset();
-    WebKioskBaseTest::TearDownOnMainThread();
+    SetAppInstallUrl(server_mixin_.GetUrl("/title3.html"));
+    network_state_test_helper().device_test()->AddDevice(
+        kDevicePath, shill::kTypeWifi, kDeviceName);
   }
 
   void UpdateActiveWiFiCredentialsScopeChangePolicy(bool enable) {
@@ -91,34 +88,34 @@ class KioskNetworkStateObserverTest : public WebKioskBaseTest {
   }
 
   void SetUpWifi(WifiInfo wifi_info) {
-    network_helper_->service_test()->AddService(
+    network_state_test_helper().service_test()->AddService(
         wifi_info.service_path, wifi_info.wifi_guid, wifi_info.wifi_name,
         shill::kTypeWifi,
         (wifi_info.is_active ? shill::kStateOnline : shill::kStateIdle), true);
-    network_helper_->service_test()->SetServiceProperty(
+    network_state_test_helper().service_test()->SetServiceProperty(
         wifi_info.service_path, shill::kConnectableProperty, base::Value(true));
-    network_helper_->service_test()->SetServiceProperty(
+    network_state_test_helper().service_test()->SetServiceProperty(
         wifi_info.service_path, shill::kProfileProperty,
-        base::Value(network_helper_->ProfilePathUser()));
+        base::Value(network_state_test_helper().ProfilePathUser()));
 
     if (wifi_info.passphrase.has_value()) {
-      network_helper_->service_test()->SetServiceProperty(
+      network_state_test_helper().service_test()->SetServiceProperty(
           wifi_info.service_path, shill::kPassphraseProperty,
           base::Value(wifi_info.passphrase.value()));
-      network_helper_->service_test()->SetServiceProperty(
+      network_state_test_helper().service_test()->SetServiceProperty(
           kActiveWifi.service_path, shill::kSecurityClassProperty,
           base::Value(shill::kSecurityClassPsk));
     }
-    network_helper_->service_test()->SetServiceProperty(
+    network_state_test_helper().service_test()->SetServiceProperty(
         kActiveWifi.service_path, shill::kAutoConnectProperty,
         base::Value(kActiveWifi.auto_connect));
-    network_helper_->service_test()->SetServiceProperty(
+    network_state_test_helper().service_test()->SetServiceProperty(
         kActiveWifi.service_path, shill::kSaveCredentialsProperty,
         base::Value(kActiveWifi.save_credentials));
   }
 
   void InitializeKiosk() {
-    InitializeRegularOnlineKiosk(/*initialize_network=*/false);
+    InitializeRegularOnlineKiosk(/*simulate_online=*/false);
     network_state_observer().SetWifiExposureAttemptCallbackForTesting(
         wifi_exposure_attempt_callback_.GetRepeatingCallback());
   }
@@ -130,7 +127,7 @@ class KioskNetworkStateObserverTest : public WebKioskBaseTest {
       return false;
     }
     const base::Value::Dict* service_properties =
-        network_helper_->service_test()->GetServiceProperties(
+        network_state_test_helper().service_test()->GetServiceProperties(
             wifi.service_path);
     if (!service_properties) {
       return false;
@@ -197,8 +194,12 @@ class KioskNetworkStateObserverTest : public WebKioskBaseTest {
   }
 
  protected:
-  std::unique_ptr<NetworkStateTestHelper> network_helper_;
   base::test::TestFuture<bool> wifi_exposure_attempt_callback_;
+
+  FakeOriginTestServerMixin server_mixin_{
+      &mixin_host_,
+      /*origin=*/GURL("https://app.foo.com/"),
+      /*path_to_be_served=*/FILE_PATH_LITERAL("chrome/test/data")};
 };
 
 IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, DefaultDisabled) {
@@ -210,6 +211,11 @@ IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, DefaultDisabled) {
   EXPECT_FALSE(network_state_observer().IsPolicyEnabled());
   EXPECT_FALSE(NetworkHandler::Get()->network_state_handler()->HasObserver(
       &network_state_observer()));
+}
+
+IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, PRE_NoActiveWiFi) {
+  SetUpWifi(kActiveWifi);
+  InitializeKiosk();
 }
 
 IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, NoActiveWiFi) {
@@ -228,6 +234,12 @@ IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, ExposeWiFi) {
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
   EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
+}
+
+IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
+                       PRE_ObserveNetworkChange) {
+  SetUpWifi(kActiveWifi);
+  InitializeKiosk();
 }
 
 IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, ObserveNetworkChange) {
@@ -252,6 +264,12 @@ IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, ObserveNetworkChange) {
       &network_state_observer()));
 }
 
+IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
+                       PRE_ExposeOnlyActiveWiFi) {
+  SetUpWifi(kActiveWifi);
+  InitializeKiosk();
+}
+
 IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, ExposeOnlyActiveWiFi) {
   SetUpWifi(kInactiveWifi);
   InitializeKiosk();
@@ -259,12 +277,13 @@ IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, ExposeOnlyActiveWiFi) {
 
   EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
   const base::Value::Dict* service_properties =
-      network_helper_->service_test()->GetServiceProperties(
+      network_state_test_helper().service_test()->GetServiceProperties(
           kInactiveWifi.service_path);
-  CHECK(!!service_properties);
+  ASSERT_NE(service_properties, nullptr);
   // Check that we didn't change the profile for the inactive WiFi.
   EXPECT_TRUE(IsPropertyValueEqualsTo(
-      shill::kProfileProperty, base::Value(network_helper_->ProfilePathUser()),
+      shill::kProfileProperty,
+      base::Value(network_state_test_helper().ProfilePathUser()),
       service_properties));
 
   SetUpWifi(kActiveWifi);
@@ -290,9 +309,9 @@ IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
                        TemporaryServiceConfiguredButNotUsable) {
   // On real devices we treat the error callback with
   // `kTemporaryServiceConfiguredButNotUsable` message as success.
-  network_helper_->manager_test()->SetSimulateConfigurationResult(
+  network_state_test_helper().manager_test()->SetSimulateConfigurationResult(
       FakeShillSimulatedResult::kFailure);
-  network_helper_->manager_test()->SetSimulateConfigurationError(
+  network_state_test_helper().manager_test()->SetSimulateConfigurationError(
       shill::kErrorResultNotFound, kTemporaryServiceConfiguredButNotUsable);
 
   SetUpWifi(kActiveWifi);
@@ -311,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
 
 IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
                        ConfigFailureMaxWifiExposureAttempts) {
-  network_helper_->manager_test()->SetSimulateConfigurationResult(
+  network_state_test_helper().manager_test()->SetSimulateConfigurationResult(
       FakeShillSimulatedResult::kFailure);
   SetUpWifi(kActiveWifi);
   InitializeKiosk();
@@ -321,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, SuccessfulSecondAttempt) {
-  network_helper_->manager_test()->SetSimulateConfigurationResult(
+  network_state_test_helper().manager_test()->SetSimulateConfigurationResult(
       FakeShillSimulatedResult::kFailure);
   SetUpWifi(kActiveWifi);
   InitializeKiosk();
@@ -329,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, SuccessfulSecondAttempt) {
 
   EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
 
-  network_helper_->manager_test()->SetSimulateConfigurationResult(
+  network_state_test_helper().manager_test()->SetSimulateConfigurationResult(
       FakeShillSimulatedResult::kSuccess);
 
   CreateWifiToTriggerObservers("first");
