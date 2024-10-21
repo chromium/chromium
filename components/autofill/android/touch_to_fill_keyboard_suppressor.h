@@ -10,8 +10,13 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#error "Android-only header"
+#endif
 
 namespace autofill {
 
