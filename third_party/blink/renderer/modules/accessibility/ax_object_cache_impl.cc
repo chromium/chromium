@@ -2595,8 +2595,8 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
       << node->GetDocument().Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  if (AXObject::ElementFromAttribute(element,
-                                     html_names::kAriaActivedescendantAttr)) {
+  if (AXObject::ElementFromAttributeOrInternals(
+          element, html_names::kAriaActivedescendantAttr)) {
     HandleActiveDescendantChangedWithCleanLayout(element);
   }
 
@@ -4386,12 +4386,10 @@ AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid() {
       bool was_validation_message_already_created = validation_message_axid_;
       if (was_validation_message_already_created ||
           form_control->IsValidationMessageVisible()) {
-        HeapVector<Member<Element>> error_messages;
         // Create the validation message unless the focused form control is
         // overriding it with a different message via aria-errormessage.
-        if (!AXObject::ElementsFromAttribute(
-                focused_element, error_messages,
-                html_names::kAriaErrormessageAttr)) {
+        if (!AXObject::ElementsFromAttributeOrInternals(
+                focused_element, html_names::kAriaErrormessageAttr)) {
           AXObject* message = GetOrCreateValidationMessageObject();
           CHECK(message);
           CHECK(!message->IsDetached());

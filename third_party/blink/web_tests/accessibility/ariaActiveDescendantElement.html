@@ -70,14 +70,14 @@ function testExpectations(t, widgetId, textboxId, listboxId) {
         let axSelected = accessibilityController.accessibleElementById(selectedId);
         assert_true(axSelected.isSelectable, selectedId + '.isSelectable');
         assert_false(axSelected.isSelected,
-             selectedId + '.isSelected before ariaActiveDesecendantElement set');
+                     selectedId + '.isSelected before ariaActiveDesecendantElement set');
         textbox.ariaActiveDescendantElement = selected;
         assert_true(axSelected.isSelected,
-            selectedId + '.isSelected after ariaActiveDesecendantElement set');
+                    selectedId + '.isSelected after ariaActiveDesecendantElement set');
         assert_true(axTextbox.isFocused, widgetId + '.isFocused');
         textbox.ariaActiveDescendantElement = null;
         assert_false(axSelected.isSelected,
-            selectedId + '.isSelected after ariaActiveDesecendantElement removed');
+                    selectedId + '.isSelected after ariaActiveDesecendantElement removed');
     }
     testNext(t);
 }

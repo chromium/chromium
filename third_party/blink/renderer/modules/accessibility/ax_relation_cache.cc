@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
+#include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
@@ -324,17 +325,30 @@ void AXRelationCache::UpdateReverseTextRelations(
       relation_source.GetDocument().GetExplicitlySetAttrElementsMap(
           &relation_source);
   auto it = element_attribute_map->find(attr_name);
-  if (it == element_attribute_map->end()) {
-    return;
+  if (it != element_attribute_map->end()) {
+    HeapLinkedHashSet<WeakMember<Element>>* explicitly_set_target_elements =
+        it->value;
+    for (Element* target : *explicitly_set_target_elements) {
+      explicitly_set_text_relations_.insert(target);
+      // Mark root of label dirty so that we can change inclusion states as
+      // necessary (label subtrees are included in the tree even if hidden).
+      object_cache_->MarkElementDirty(target);
+    }
   }
 
-  HeapLinkedHashSet<WeakMember<Element>>* explicitly_set_target_elements =
-      it->value;
-  for (Element* target : *explicitly_set_target_elements) {
-    explicitly_set_text_relations_from_element_attributes_.insert(target);
-    // Mark root of label dirty so that we can change inclusion states as
-    // necessary (label subtrees are included in the tree even if hidden).
-    object_cache_->MarkElementDirty(target);
+  // Also check ElementInternals relations
+  if (const ElementInternals* element_internals =
+          relation_source.GetElementInternals()) {
+    const FrozenArray<Element>* element_internals_target_elements =
+        element_internals->GetElementArrayAttribute(attr_name);
+    if (element_internals_target_elements) {
+      for (Element* target : *element_internals_target_elements) {
+        explicitly_set_text_relations_.insert(target);
+        // Mark root of label dirty so that we can change inclusion states as
+        // necessary (label subtrees are included in the tree even if hidden).
+        object_cache_->MarkElementDirty(target);
+      }
+    }
   }
 }
 
@@ -727,6 +741,7 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
                   << owner;
   } else if (element && element->HasExplicitlySetAttrAssociatedElements(
                             html_names::kAriaOwnsAttr)) {
+    // TODO (crbug.com/41469336): Also check ElementInternals here.
     UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
         owner,
         // TODO (crbug.com/353750122): Set resolve_reference_target to false.
@@ -887,8 +902,8 @@ bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(
 bool AXRelationCache::IsARIALabelOrDescription(Element& element) {
   // Labels and descriptions set by ariaLabelledByElements,
   // ariaDescribedByElements.
-  if (explicitly_set_text_relations_from_element_attributes_.find(&element) !=
-      explicitly_set_text_relations_from_element_attributes_.end()) {
+  if (explicitly_set_text_relations_.find(&element) !=
+      explicitly_set_text_relations_.end()) {
     return true;
   }
 
@@ -1009,8 +1024,8 @@ void AXRelationCache::UpdateRelatedTreeForIdChange(Element& element) {
                                     id_attr_to_active_descendant_mapping_);
   Element* focused_element = element.GetDocument().FocusedElement();
   if (AXObject* ax_focus = Get(focused_element)) {
-    if (AXObject::ElementFromAttribute(focused_element,
-                                       html_names::kAriaActivedescendantAttr) ==
+    if (AXObject::ElementFromAttributeOrInternals(
+            focused_element, html_names::kAriaActivedescendantAttr) ==
         &element) {
       ax_focus->HandleActiveDescendantChanged();
     }
@@ -1290,7 +1305,7 @@ void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXID removed_child_axid) {
 }
 
 void AXRelationCache::Trace(Visitor* visitor) const {
-  visitor->Trace(explicitly_set_text_relations_from_element_attributes_);
+  visitor->Trace(explicitly_set_text_relations_);
   visitor->Trace(object_cache_);
 }
 

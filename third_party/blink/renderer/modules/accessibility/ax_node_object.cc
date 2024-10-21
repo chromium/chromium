@@ -653,12 +653,12 @@ AXObject* AXNodeObject::ActiveDescendant() const {
     }
   }
 
-  Element* activedescendant_element =
-      ElementFromAttribute(element, html_names::kAriaActivedescendantAttr);
-  if (!activedescendant_element) {
+  const Element* descendant = ElementFromAttributeOrInternals(
+      element, html_names::kAriaActivedescendantAttr);
+  if (!descendant) {
     return nullptr;
   }
-  AXObject* ax_descendant = AXObjectCache().Get(activedescendant_element);
+  AXObject* ax_descendant = AXObjectCache().Get(descendant);
   return ax_descendant && ax_descendant->IsVisible() ? ax_descendant : nullptr;
 }
 
@@ -2881,13 +2881,14 @@ bool AXNodeObject::IsTabItemSelected() const {
     return false;
 
   DCHECK(GetElement());
-  HeapVector<Member<Element>> elements;
-  if (!AXObject::ElementsFromAttribute(GetElement(), elements,
-                                       html_names::kAriaControlsAttr)) {
+  const HeapVector<Member<Element>>* elements =
+      AXObject::ElementsFromAttributeOrInternals(GetElement(),
+                                                 html_names::kAriaControlsAttr);
+  if (!elements) {
     return false;
   }
 
-  for (const auto& element : elements) {
+  for (const auto& element : *elements) {
     AXObject* tab_panel = AXObjectCache().Get(element);
 
     // A tab item should only control tab panels.
@@ -6255,13 +6256,14 @@ AXObject::AXObjectVector AXNodeObject::RelationVectorFromAria(
     return AXObjectVector();
   }
 
-  HeapVector<Member<Element>> elements_from_attribute;
-  if (!ElementsFromAttribute(el, elements_from_attribute, attr_name)) {
+  const HeapVector<Member<Element>>* elements_from_attribute =
+      ElementsFromAttributeOrInternals(el, attr_name);
+  if (!elements_from_attribute) {
     return AXObjectVector();
   }
 
   AXObjectVector objects;
-  for (Element* element : elements_from_attribute) {
+  for (Element* element : *elements_from_attribute) {
     AXObject* obj = AXObjectCache().Get(element);
     if (obj && !obj->IsIgnored()) {
       objects.push_back(obj);
@@ -7084,9 +7086,10 @@ String AXNodeObject::Description(
   if (!element)
     return String();
 
-  HeapVector<Member<Element>> elements_from_attribute;
-  if (ElementsFromAttribute(element, elements_from_attribute,
-                            html_names::kAriaDescribedbyAttr)) {
+  const HeapVector<Member<Element>>* elements_from_attribute =
+      ElementsFromAttributeOrInternals(element,
+                                       html_names::kAriaDescribedbyAttr);
+  if (elements_from_attribute) {
     // TODO(meredithl): Determine description sources when |aria_describedby| is
     // the empty string, in order to make devtools work with attr-associated
     // elements.
@@ -7095,7 +7098,7 @@ String AXNodeObject::Description(
           AriaAttribute(html_names::kAriaDescribedbyAttr);
     }
     AXObjectSet visited;
-    description = TextFromElements(true, visited, elements_from_attribute,
+    description = TextFromElements(true, visited, *elements_from_attribute,
                                    related_objects);
 
     if (!description.IsNull()) {

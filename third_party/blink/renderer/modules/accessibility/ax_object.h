@@ -336,12 +336,12 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // or the equivalent ARIA attribute, in that order.
   virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
 
-  // Returns true if |attribute| was present on |from|.
-  static bool ElementsFromAttribute(const Element* from,
-                                    HeapVector<Member<Element>>& elements,
-                                    const QualifiedName& attribute);
-  static Element* ElementFromAttribute(const Element* from,
-                                       const QualifiedName& attribute);
+  static const HeapVector<Member<Element>>* ElementsFromAttributeOrInternals(
+      const Element* from,
+      const QualifiedName& attribute);
+  static Element* ElementFromAttributeOrInternals(
+      const Element* from,
+      const QualifiedName& attribute);
 
   // Serialize the properties of this node into |node_data|.
   void Serialize(ui::AXNodeData* node_data,
@@ -1520,11 +1520,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                              bool* found_text_alternative) const;
   String TextFromElements(bool in_aria_labelledby_traversal,
                           AXObjectSet& visited,
-                          HeapVector<Member<Element>>& elements,
+                          const HeapVector<Member<Element>>& elements,
                           AXRelatedObjectVector* related_objects) const;
-  static bool AriaLabelledbyElementVector(
-      Element* from,
-      HeapVector<Member<Element>>& elements);
+  static bool HasAriaLabelledbyElements(Element* from);
+
   // Return true if the ame is from @aria-label / @aria-labelledby.
   static bool IsNameFromAriaAttribute(Element* element);
   // Return true if the name is from @aria-label / @aria-labelledby / @title.

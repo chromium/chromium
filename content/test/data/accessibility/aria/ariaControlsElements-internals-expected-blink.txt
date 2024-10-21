@@ -1,0 +1,24 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++menuBar horizontal
+++++++++menuItem name='File' controlsIds=menu
+++++++++++staticText name='File'
+++++++++++++inlineTextBox name='File'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++menuItem name='Edit'
+++++++++++staticText name='Edit'
+++++++++++++inlineTextBox name='Edit'
+++++++menu name='File'
+++++++++menuItem name='New'
+++++++++++staticText name='New'
+++++++++++++inlineTextBox name='New'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++menuItem name='Open'
+++++++++++staticText name='Open'
+++++++++++++inlineTextBox name='Open'
+++++++genericContainer
+++++++++staticText name='Done'
+++++++++++inlineTextBox name='Done'

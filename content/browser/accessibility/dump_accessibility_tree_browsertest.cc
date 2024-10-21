@@ -840,6 +840,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaControlsElementsInternals) {
+  RunAriaTest(FILE_PATH_LITERAL("ariaControlsElements-internals.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaControlsTargetIdChange) {
   RunAriaTest(FILE_PATH_LITERAL("aria-controls-target-id-change.html"));
 }

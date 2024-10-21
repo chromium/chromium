@@ -2727,13 +2727,12 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() const {
   // normal purpose because a textfield cannot have children. This code allows
   // the textfield's invalid aria-owns to be remapped to aria-controls.
   DCHECK(GetElement());
-  HeapVector<Member<Element>> owned_elements;
+  const HeapVector<Member<Element>>* owned_elements =
+      ElementsFromAttributeOrInternals(GetElement(), html_names::kAriaOwnsAttr);
   AXObject* listbox_candidate = nullptr;
-  if (ElementsFromAttribute(GetElement(), owned_elements,
-                            html_names::kAriaOwnsAttr) &&
-      owned_elements.size() > 0) {
-    DCHECK(owned_elements[0]);
-    listbox_candidate = AXObjectCache().Get(owned_elements[0]);
+  if (owned_elements && owned_elements->size() > 0) {
+    DCHECK(owned_elements->at(0));
+    listbox_candidate = AXObjectCache().Get(owned_elements->at(0));
   }
 
   // Combobox grouping <div role="combobox"><input><div role="listbox"></div>.
@@ -2749,8 +2748,8 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() const {
   if (!listbox_candidate &&
       RoleValue() == ax::mojom::blink::Role::kTextFieldWithComboBox) {
     // Require an aria-activedescendant on the <input>.
-    if (!ElementFromAttribute(GetElement(),
-                              html_names::kAriaActivedescendantAttr)) {
+    if (!ElementFromAttributeOrInternals(
+            GetElement(), html_names::kAriaActivedescendantAttr)) {
       return nullptr;
     }
     listbox_candidate = UnignoredNextSibling();
@@ -4959,6 +4958,7 @@ String AXObject::AriaTextAlternative(
     NameSources* name_sources,
     bool* found_text_alternative) const {
   String text_alternative;
+
   bool already_visited = visited.Contains(this);
   visited.insert(this);
 
@@ -4978,6 +4978,7 @@ String AXObject::AriaTextAlternative(
   // If you change this logic, update AXObject::IsNameFromAriaAttribute, too.
   if (!aria_label_or_description_root && !already_visited) {
     name_from = ax::mojom::blink::NameFrom::kRelatedElement;
+    String text_from_aria_labelledby;
 
     // Check ARIA attributes.
     const QualifiedName& attr =
@@ -4993,27 +4994,32 @@ String AXObject::AriaTextAlternative(
 
     Element* element = GetElement();
     if (element) {
-      HeapVector<Member<Element>> elements_from_attribute;
-      ElementsFromAttribute(element, elements_from_attribute, attr);
+      const HeapVector<Member<Element>>* elements_from_attribute =
+          ElementsFromAttributeOrInternals(element, attr);
 
       const AtomicString& aria_labelledby = AriaAttribute(attr);
 
       if (!aria_labelledby.IsNull()) {
-        if (name_sources)
+        if (name_sources) {
           name_sources->back().attribute_value = aria_labelledby;
+        }
 
-        text_alternative = TextFromElements(
-            true, visited, elements_from_attribute, related_objects);
-        if (!text_alternative.ContainsOnlyWhitespaceOrEmpty()) {
+        // TODO(crbug/41469336): Show ElementInternals name sources in
+        // DevTools
+        if (elements_from_attribute) {
+          text_from_aria_labelledby = TextFromElements(
+              true, visited, *elements_from_attribute, related_objects);
+        }
+        if (!text_from_aria_labelledby.ContainsOnlyWhitespaceOrEmpty()) {
           if (name_sources) {
             NameSource& source = name_sources->back();
             source.type = name_from;
             source.related_objects = *related_objects;
-            source.text = text_alternative;
+            source.text = text_alternative = text_from_aria_labelledby;
             *found_text_alternative = true;
           } else {
             *found_text_alternative = true;
-            return text_alternative;
+            return text_from_aria_labelledby;
           }
         } else if (name_sources) {
           name_sources->back().invalid = true;
@@ -5032,16 +5038,16 @@ String AXObject::AriaTextAlternative(
   }
   const AtomicString& aria_label = AriaAttribute(html_names::kAriaLabelAttr);
   if (!aria_label.GetString().ContainsOnlyWhitespaceOrEmpty()) {
-    text_alternative = aria_label;
+    String text_from_aria_label = aria_label;
 
     if (name_sources) {
       NameSource& source = name_sources->back();
-      source.text = text_alternative;
+      source.text = text_alternative = text_from_aria_label;
       source.attribute_value = aria_label;
       *found_text_alternative = true;
     } else {
       *found_text_alternative = true;
-      return text_alternative;
+      return text_from_aria_label;
     }
   }
 
@@ -5093,7 +5099,7 @@ void AXObject::CheckSubtreeIsForLabelOrDescription(const AXObject* obj) const {
 String AXObject::TextFromElements(
     bool in_aria_labelledby_traversal,
     AXObjectSet& visited,
-    HeapVector<Member<Element>>& elements,
+    const HeapVector<Member<Element>>& elements,
     AXRelatedObjectVector* related_objects) const {
   StringBuilder accumulated_text;
   bool found_valid_element = false;
@@ -5129,57 +5135,73 @@ String AXObject::TextFromElements(
 }
 
 // static
-bool AXObject::ElementsFromAttribute(const Element* from,
-                                     HeapVector<Member<Element>>& elements,
-                                     const QualifiedName& attribute) {
+const HeapVector<Member<Element>>* AXObject::ElementsFromAttributeOrInternals(
+    const Element* from,
+    const QualifiedName& attribute) {
   if (!from)
-    return false;
+    return nullptr;
 
-  HeapVector<Member<Element>>* attr_associated_elements =
+  const HeapVector<Member<Element>>* attr_associated_elements =
       from->GetAttrAssociatedElements(attribute,
                                       /*resolve_reference_target=*/true);
-  if (!attr_associated_elements)
-    return false;
+  if (attr_associated_elements) {
+    if (attr_associated_elements->empty()) {
+      return nullptr;
+    }
+    return attr_associated_elements;
+  }
 
-  for (const auto& element : *attr_associated_elements)
-    elements.push_back(element);
+  const ElementInternals* element_internals = from->GetElementInternals();
+  if (!element_internals) {
+    return nullptr;
+  }
 
-  return !elements.empty();
+  const FrozenArray<Element>* element_internals_attr_elements =
+      element_internals->GetElementArrayAttribute(attribute);
+
+  if (!element_internals_attr_elements ||
+      element_internals_attr_elements->empty()) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<HeapVector<Member<Element>>>(
+      element_internals_attr_elements->AsVector());
 }
 
 // static
-Element* AXObject::ElementFromAttribute(const Element* from,
-                                        const QualifiedName& attribute) {
+Element* AXObject::ElementFromAttributeOrInternals(
+    const Element* from,
+    const QualifiedName& attribute) {
   // This method only makes sense for aria-activedescendant, so make sure nobody
-  // has made a typo trying to use ElementsFromAttribute.
+  // has made a typo trying to use ElementsFromAttributeOrInternals.
   DCHECK(attribute == html_names::kAriaActivedescendantAttr);
 
   if (!from) {
     return nullptr;
   }
 
-  HeapVector<Member<Element>> vector;
-  if (!ElementsFromAttribute(from, vector, attribute)) {
+  const HeapVector<Member<Element>>* vector =
+      ElementsFromAttributeOrInternals(from, attribute);
+  if (!vector) {
     return nullptr;
   }
 
-  DCHECK_EQ(vector.size(), 1u);
-  return vector[0].Get();
+  DCHECK_EQ(vector->size(), 1u);
+  return vector->at(0).Get();
 }
 
 // static
-bool AXObject::AriaLabelledbyElementVector(
-    Element* from,
-    HeapVector<Member<Element>>& elements) {
+bool AXObject::HasAriaLabelledbyElements(Element* from) {
   // Try both spellings, but prefer aria-labelledby, which is the official spec.
-  if (ElementsFromAttribute(from, elements, html_names::kAriaLabelledbyAttr) &&
-      elements.size() > 0) {
+  const HeapVector<Member<Element>>* aria_labelledby_elements =
+      ElementsFromAttributeOrInternals(from, html_names::kAriaLabelledbyAttr);
+  if (aria_labelledby_elements && aria_labelledby_elements->size() > 0) {
     return true;
   }
 
-  return ElementsFromAttribute(from, elements,
-                               html_names::kAriaLabeledbyAttr) &&
-         elements.size() > 0;
+  const HeapVector<Member<Element>>* aria_labeledby_elements =
+      ElementsFromAttributeOrInternals(from, html_names::kAriaLabeledbyAttr);
+  return aria_labeledby_elements && aria_labeledby_elements->size() > 0;
 }
 
 // static
@@ -5187,8 +5209,7 @@ bool AXObject::IsNameFromAriaAttribute(Element* element) {
   if (!element)
     return false;
 
-  HeapVector<Member<Element>> elements_from_attribute;
-  if (AriaLabelledbyElementVector(element, elements_from_attribute)) {
+  if (HasAriaLabelledbyElements(element)) {
     return true;
   }
 
@@ -7913,8 +7934,8 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         // Built-in UI must have correct accessibility without needing repairs.
         result = false;
       } else if (IsEditable() ||
-                 ElementFromAttribute(GetElement(),
-                                      html_names::kAriaActivedescendantAttr)) {
+                 ElementFromAttributeOrInternals(
+                     GetElement(), html_names::kAriaActivedescendantAttr)) {
         // Handle exceptions:
         // 1.Elements with contenteditable, where using the contents as a name
         //   would cause them to be double-announced.
@@ -8205,7 +8226,7 @@ String AXObject::ToString(bool verbose) const {
           GetElement()->FastGetAttribute(html_names::kAriaOwnsAttr);
     }
 
-    if (Element* active_descendant = ElementFromAttribute(
+    if (Element* active_descendant = ElementFromAttributeOrInternals(
             GetElement(), html_names::kAriaActivedescendantAttr)) {
       string_builder = string_builder + " aria-activedescendant=" +
                        GetNodeString(active_descendant);

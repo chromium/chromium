@@ -256,8 +256,7 @@ class AXRelationCache : public GarbageCollected<AXRelationCache> {
 
   // Labels and descriptions set by ariaLabelledByElements,
   // ariaDescribedByElements as opposed to aria-labelledby.describedy="[id]".
-  HeapLinkedHashSet<WeakMember<Element>>
-      explicitly_set_text_relations_from_element_attributes_;
+  HeapLinkedHashSet<WeakMember<Element>> explicitly_set_text_relations_;
 
   // A set of IDs that need to be update when layout is clean.
   // For each of these, the new set of owned children

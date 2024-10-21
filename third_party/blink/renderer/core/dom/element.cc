@@ -427,19 +427,6 @@ bool IsElementReflectionAttribute(const QualifiedName& name) {
   return false;
 }
 
-HeapLinkedHashSet<WeakMember<Element>>* GetExplicitlySetElementsForAttr(
-    const Element* element,
-    const QualifiedName& name) {
-  ExplicitlySetAttrElementsMap* element_attribute_map =
-      element->GetDocument().GetExplicitlySetAttrElementsMap(element);
-  auto it = element_attribute_map->find(name);
-  if (it == element_attribute_map->end()) {
-    return nullptr;
-  }
-  const auto& elements = it->value;
-  return elements->size() ? elements : nullptr;
-}
-
 // Checks that the given element |candidate| is a descendant of
 // |attribute_element|'s  shadow including ancestors.
 bool ElementIsDescendantOfShadowIncludingAncestor(
@@ -852,8 +839,20 @@ void Element::SetBooleanAttribute(const QualifiedName& name, bool value) {
 }
 
 bool Element::HasExplicitlySetAttrAssociatedElements(
-    const QualifiedName& name) const {
-  return GetExplicitlySetElementsForAttr(this, name);
+    const QualifiedName& name) {
+  return GetExplicitlySetElementsForAttr(name);
+}
+
+HeapLinkedHashSet<WeakMember<Element>>*
+Element::GetExplicitlySetElementsForAttr(const QualifiedName& name) const {
+  ExplicitlySetAttrElementsMap* element_attribute_map =
+      GetDocument().GetExplicitlySetAttrElementsMap(this);
+  auto it = element_attribute_map->find(name);
+  if (it == element_attribute_map->end()) {
+    return nullptr;
+  }
+  const auto& elements = it->value;
+  return elements->size() ? elements : nullptr;
 }
 
 void Element::SynchronizeContentAttributeAndElementReference(
@@ -955,7 +954,7 @@ Element* Element::getElementByIdIncludingDisconnected(
 
 Element* Element::GetElementAttribute(const QualifiedName& name) const {
   HeapLinkedHashSet<WeakMember<Element>>* element_attribute_vector =
-      GetExplicitlySetElementsForAttr(this, name);
+      GetExplicitlySetElementsForAttr(name);
   if (element_attribute_vector) {
     DCHECK_EQ(element_attribute_vector->size(), 1u);
     Element* explicitly_set_element = *(element_attribute_vector->begin());
@@ -998,7 +997,7 @@ HeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
   HeapVector<Member<Element>>* result_elements =
       MakeGarbageCollected<HeapVector<Member<Element>>>();
   HeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
-      GetExplicitlySetElementsForAttr(this, name);
+      GetExplicitlySetElementsForAttr(name);
   if (explicitly_set_elements) {
     // 3. If reflectedTarget's explicitly set attr-elements is not null:
     for (auto attr_element : *explicitly_set_elements) {

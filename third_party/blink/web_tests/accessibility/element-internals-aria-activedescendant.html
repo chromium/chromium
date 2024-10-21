@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script>
+  class CustomCombobox extends HTMLElement {
+      constructor() {
+          super();
+          this.i = this.attachInternals();
+          let i = this.i;
+          i.role = "combobox";
+          i.ariaHasPopup = "menu";
+          i.ariaAutoComplete = "list";
+      }
+  }
+  customElements.define('custom-combobox', CustomCombobox);
+</script>
+
+<custom-combobox id="contenteditable-combobox" tabindex="0"
+                 contenteditable="true">
+    <ul id="list1" role="listbox">
+        <li id="list1-option1" role="option">Option 1</li>
+        <li id="list1-option2" role="option">Option 2</li>
+        <li id="list1-option3" role="option">Option 3</li>
+    </ul>
+</div>
+
+<script>
+  test((t) => {
+      const combobox = document.getElementById('contenteditable-combobox');
+      combobox.focus();
+
+      const axCombobox = accessibilityController.accessibleElementById(combobox.id);
+      assert_true(axCombobox.isFocused, 'combobox is focused');
+
+      const list = document.getElementById('list1');
+      for (let option = list.firstElementChild;
+           option = option.nextElementSibling;
+           option != null) {
+          let axOption = accessibilityController.accessibleElementById(option.id);
+          assert_false(axOption.isSelected, 'option is selected before activedescendant set on internals');
+      }
+
+      combobox.i.ariaExpanded = 'true';
+      assert_true(axCombobox.isExpanded);
+
+      for (let selected = list.firstElementChild;
+           selected = selected.nextElementSibling;
+           selected != null) {
+          combobox.i.ariaActiveDescendantElement = selected;
+          axOption = accessibilityController.accessibleElementById(selected.id);
+          assert_true(axOption.isSelected, 'option is selected after activedescendant set on internals');
+
+          for (let unselected = list.firstElementChild;
+               unselected = unselected.nextElementSibling;
+               unselected != null) {
+              if (unselected == selected)
+                  continue;
+              let axUnselected = accessibilityController.accessibleElementById(unselected.id);
+              assert_false(axUnselected.isSelected, 'unselected option is unselected after activedescendant set on internals');
+
+              combobox.ariaActiveDescendantElement = unselected;
+              assert_equals(combobox.i.ariaActiveDescendantElement, selected,
+                            "setting ariaActiveDescendantElement attribute on combobox " +
+                            "doesn't affect internals");
+              assert_false(axOption.isSelected,
+                           "ariaActiveDescendantElement on internals is overridden by ariaActiveDescendantElement attribute on element");
+              assert_true(axUnselected.isSelected,
+                          "ariaActiveDescendantElement on internals is overridden by ariaActiveDescendantElement attribute on element");
+
+              combobox.ariaActiveDescendantElement = null;
+              assert_equals(combobox.i.ariaActiveDescendantElement, selected,
+                            "setting ariaActiveDescendantElement attribute on combobox " +
+                            "doesn't affect internals");
+              assert_true(axOption.isSelected,
+                          "removing ariaActiveDescendantElement attribute reinstates value computed form internals");
+          }
+      }      
+  });
+</script>
+
