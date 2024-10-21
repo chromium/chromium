@@ -119,6 +119,8 @@ const webui::LocalizedString kLocalizedStrings[] = {
     {"playbackSpeedNormalOption", IDS_RECORDER_PLAYBACK_SPEED_NORMAL_OPTION},
     {"playbackTranscriptLandmarkAriaLabel",
      IDS_RECORDER_PLAYBACK_TRANSCRIPT_LANDMARK_ARIA_LABEL},
+    {"playbackUnmuteButtonTooltip",
+     IDS_RECORDER_PLAYBACK_UNMUTE_BUTTON_TOOLTIP},
     {"playbackVolumeAriaLabel", IDS_RECORDER_PLAYBACK_VOLUME_ARIA_LABEL},
     {"recordDeleteButtonTooltip", IDS_RECORDER_RECORD_DELETE_BUTTON_TOOLTIP},
     {"recordDeleteDialogCancelButton",

@@ -41,6 +41,7 @@ import {
 } from '../core/utils/assert.js';
 
 import {CraIconButton} from './cra/cra-icon-button.js';
+import {withTooltip} from './directives/with-tooltip.js';
 
 /**
  * The title suggestion popup in playback page of Recorder App.
@@ -282,6 +283,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
           @click=${this.onCloseClick}
           aria-label=${i18n.closeDialogButtonTooltip}
           ${ref(this.closeButtonRef)}
+          ${withTooltip()}
         >
           <cra-icon slot="icon" name="close"></cra-icon>
         </cra-icon-button>

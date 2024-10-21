@@ -174,8 +174,8 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Label of the menu item to show recording details in playback page." name="IDS_RECORDER_PLAYBACK_MENU_SHOW_DETAIL_OPTION">
     More details
   </message>
-  <message desc="Tooltip of the button to toggle mute on and off for the playback." meaning="Toggle mute for recording playback." name="IDS_RECORDER_PLAYBACK_MUTE_BUTTON_TOOLTIP">
-    Toggle mute
+  <message desc="Tooltip of the button to mute the playback." name="IDS_RECORDER_PLAYBACK_MUTE_BUTTON_TOOLTIP">
+    Turn off volume
   </message>
   <message desc="Tooltip of the button to pause the recording playback." meaning="Pause the audio recording playback." name="IDS_RECORDER_PLAYBACK_PAUSE_BUTTON_TOOLTIP">
     Pause
@@ -197,6 +197,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Accessibility label of the landmark for recording transcript in playback page." meaning="Transcript of the audio recording." name="IDS_RECORDER_PLAYBACK_TRANSCRIPT_LANDMARK_ARIA_LABEL">
     Transcript
+  </message>
+  <message desc="Tooltip of the button to unmute the playback." name="IDS_RECORDER_PLAYBACK_UNMUTE_BUTTON_TOOLTIP">
+    Turn on volume
   </message>
   <message desc="Accessibility label of the volume slider for the playback." meaning="Set the playback volume." name="IDS_RECORDER_PLAYBACK_VOLUME_ARIA_LABEL">
     Volume

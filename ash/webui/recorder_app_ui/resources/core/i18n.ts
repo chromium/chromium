@@ -80,6 +80,7 @@ const noArgStringNames = [
   'playbackSpeedButtonTooltip',
   'playbackSpeedNormalOption',
   'playbackTranscriptLandmarkAriaLabel',
+  'playbackUnmuteButtonTooltip',
   'playbackVolumeAriaLabel',
   'recordDeleteButtonTooltip',
   'recordDeleteDialogCancelButton',

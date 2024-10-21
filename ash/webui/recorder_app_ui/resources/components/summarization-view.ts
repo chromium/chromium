@@ -322,6 +322,8 @@ export class SummarizationView extends ReactiveLitElement {
     >
       ${i18n.summaryDownloadFinishedStatusMessage}
     </spoken-message>`;
+    // TODO(hsuanling): add tooltip to arrow button once `cros-accordion`
+    // exposes an anchor slot.
     return html`
       <cros-accordion variant="compact">
         <cros-accordion-item
