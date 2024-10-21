@@ -36,6 +36,8 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, HistogramsAreEmitted);
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, SurveyIsTriggered);
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, SurveyIsTriggeredWithOverride);
+  FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest,
+                           SurveyIsNotTriggeredForPreviouslyUsedEdition);
 
   void RecordTimeToLoadContent(base::Time time) override;
   void RecordVersionPageLoaded(bool is_auto_open) override;
@@ -77,10 +79,6 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
   // Reference to the WhatsNewRegistry global singleton. This is
   // required to outlive the WhatsNewHanlder instance.
   const raw_ref<const whats_new::WhatsNewRegistry> whats_new_registry_;
-
-  // When an edition is shown, it may contain a survey that should
-  // override the default. In all other cases, this should be nullopt.
-  std::optional<std::string> survey_override_ = std::nullopt;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

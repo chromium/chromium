@@ -217,15 +217,34 @@ const std::vector<std::string> WhatsNewRegistry::GetCustomizations() const {
   return customizations;
 }
 
-const std::optional<std::string> WhatsNewRegistry::GetEditionSurvey(
-    std::string_view edition_name) const {
-  auto edition = std::find_if(editions_.begin(), editions_.end(),
-                              [&edition_name](WhatsNewEdition const& edition) {
-                                return edition.GetFeatureName() == edition_name;
-                              });
-  if (edition != editions_.end()) {
-    return edition->GetSurvey();
+const std::optional<std::string> WhatsNewRegistry::GetActiveEditionSurvey()
+    const {
+  // Check if the current version is used for an edition.
+  const auto current_edition_name =
+      storage_service_->FindEditionForCurrentVersion();
+  if (current_edition_name.has_value()) {
+    auto edition =
+        std::find_if(editions_.begin(), editions_.end(),
+                     [&current_edition_name](WhatsNewEdition const& edition) {
+                       return edition.GetFeatureName() == current_edition_name;
+                     });
+    if (edition != editions_.end()) {
+      return edition->GetSurvey();
+    }
+  } else {
+    // Only request other unused editions if there was not one shown during
+    // this version.
+    for (const WhatsNewEdition& edition : editions_) {
+      if (edition.IsFeatureEnabled() &&
+          !storage_service_->IsUsedEdition(edition.GetFeatureName())) {
+        const auto survey = edition.GetSurvey();
+        if (survey.has_value()) {
+          return survey;
+        }
+      }
+    }
   }
+
   return std::nullopt;
 }
 

@@ -184,8 +184,7 @@ TEST_F(WhatsNewRegistryFeatureParamTest, FeatureWithoutSurvey) {
       kTestEditionEnabled, whats_new::kSurveyParam);
   EXPECT_EQ("", survey_param);
 
-  auto survey_from_registry =
-      whats_new_registry_->GetEditionSurvey(kTestEditionEnabled.name);
+  auto survey_from_registry = whats_new_registry_->GetActiveEditionSurvey();
   EXPECT_FALSE(survey_from_registry.has_value());
 }
 
@@ -202,8 +201,7 @@ TEST_F(WhatsNewRegistryFeatureParamTest, FeatureWithSurvey) {
       kTestEditionEnabled, whats_new::kSurveyParam);
   EXPECT_EQ("hello", survey_param);
 
-  auto survey_from_registry =
-      whats_new_registry_->GetEditionSurvey(kTestEditionEnabled.name);
+  auto survey_from_registry = whats_new_registry_->GetActiveEditionSurvey();
   EXPECT_TRUE(survey_from_registry.has_value());
   EXPECT_EQ("hello", survey_from_registry.value());
 }
