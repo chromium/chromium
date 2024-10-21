@@ -244,12 +244,21 @@ class GPU_EXPORT GpuControlList {
   struct GPU_EXPORT Entry {
     uint32_t id;
     const char* description;
-    base::span<const int> features;
-    base::span<const char* const> disabled_extensions;
-    base::span<const char* const> disabled_webgl_extensions;
-    base::span<const uint32_t> cr_bugs;
+    // `Entry` is used extensively in
+    // `gpu/config/gpu_driver_bug_list_autogen.cc`, where making these
+    // `raw_span` would cause the
+    //
+    // > declaration requires an exit-time destructor
+    //
+    // error. At a glance, these tend to point at static constant
+    // `std::array`s, though, so there should be no harm in leaving them as
+    // `base::span`.
+    RAW_PTR_EXCLUSION base::span<const int> features;
+    RAW_PTR_EXCLUSION base::span<const char* const> disabled_extensions;
+    RAW_PTR_EXCLUSION base::span<const char* const> disabled_webgl_extensions;
+    RAW_PTR_EXCLUSION base::span<const uint32_t> cr_bugs;
     Conditions conditions;
-    base::span<const Conditions> exceptions;
+    RAW_PTR_EXCLUSION base::span<const Conditions> exceptions;
 
     bool Contains(OsType os_type,
                   const std::string& os_version,

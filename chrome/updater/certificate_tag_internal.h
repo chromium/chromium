@@ -16,6 +16,7 @@
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_span.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
@@ -277,7 +278,9 @@ bool CopyASN1(CBB* out, CBS* in);
 
 struct ParseResult {
   bool success = false;
-  std::optional<base::span<const uint8_t>> tag;
+  // TODO(crbug.com/372311617): strip this exclusion if possible, or
+  // rewrite surrounding code to accommodate.
+  RAW_PTR_EXCLUSION std::optional<base::span<const uint8_t>> tag;
 };
 
 // Parses the `signed_data` PKCS7 object to find the final certificate in the
