@@ -13,6 +13,9 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
 
+import dagger.hilt.internal.GeneratedComponentManager;
+import dagger.hilt.internal.GeneratedComponentManagerHolder;
+
 import org.chromium.base.BundleUtils;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.TraceEvent;
@@ -20,14 +23,14 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.IdentifierNameString;
 
 /**
- * Application class to use for Chrome when //chrome code is in an isolated split. This class will
- * perform any necessary initialization for non-browser processes without loading code from the
- * chrome split. In the browser process, the necessary logic is loaded from the chrome split using
+ * Application class for Chrome that knows how to deal with isolated splits. This class will perform
+ * any necessary initialization for non-browser processes without loading code from the chrome
+ * split. In the browser process, the necessary logic is loaded from the chrome split using
  * reflection.
- *
- * This class will be used when isolated splits are enabled.
  */
-public class SplitChromeApplication extends SplitCompatApplication {
+public class SplitChromeApplication extends SplitCompatApplication
+        implements GeneratedComponentManagerHolder {
+
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.ChromeApplicationImpl";
 
@@ -35,8 +38,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
     private static SplitPreloader sSplitPreloader;
 
     private String mChromeApplicationClassName;
-
     private Resources mResources;
+    private GeneratedComponentManager<?> mHiltComponentManager;
 
     public SplitChromeApplication() {
         this(sImplClassName);
@@ -174,5 +177,23 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     protected Impl createNonBrowserApplication() {
         return new Impl();
+    }
+
+    /** Initializes Hilt. */
+    public void setHiltComponentManager(GeneratedComponentManager<?> componentManager) {
+        mHiltComponentManager = componentManager;
+    }
+
+    @Override
+    public GeneratedComponentManager<?> componentManager() {
+        if (mHiltComponentManager != null) {
+            return mHiltComponentManager;
+        }
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public Object generatedComponent() {
+        return componentManager().generatedComponent();
     }
 }
