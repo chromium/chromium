@@ -1508,7 +1508,7 @@ TEST_P(ParkableStringTestLessAggressiveMode, NoParkingWhileLoading) {
   EXPECT_FALSE(parkable.Impl()->is_parked());
   CheckOnlyCpuCostTaskRemains();
 
-  manager.OnRAILModeChanged(RAILMode::kIdle);
+  manager.OnRAILModeChanged(RAILMode::kDefault);
   // A tick task has been posted.
   EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
   // Aging restarts.
@@ -1524,7 +1524,7 @@ TEST_P(ParkableStringTestLessAggressiveMode, NoParkingWhileLoading) {
   CheckOnlyCpuCostTaskRemains();
 
   // Back to idle, pick up where we left off.
-  manager.OnRAILModeChanged(RAILMode::kIdle);
+  manager.OnRAILModeChanged(RAILMode::kDefault);
   EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
   WaitForAging();
   EXPECT_TRUE(parkable.Impl()->is_parked());
@@ -1553,19 +1553,13 @@ TEST_P(ParkableStringTestLessAggressiveMode,
   EXPECT_FALSE(parkable.Impl()->is_parked());
   CheckOnlyCpuCostTaskRemains();
 
-  // Idle in foreground, no parking.
+  // Not loading in foreground, no parking.
   manager.SetRendererBackgrounded(false);
-  manager.OnRAILModeChanged(RAILMode::kIdle);
-  CheckOnlyCpuCostTaskRemains();
-
-  // Animation in foreground, no parking.
-  manager.SetRendererBackgrounded(false);
-  manager.OnRAILModeChanged(RAILMode::kAnimation);
+  manager.OnRAILModeChanged(RAILMode::kDefault);
   CheckOnlyCpuCostTaskRemains();
 
   // Not loading in background, restarting the tick.
   manager.SetRendererBackgrounded(true);
-  manager.OnRAILModeChanged(RAILMode::kAnimation);
   // A tick task has been posted.
   EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
   WaitForDelayedParking();

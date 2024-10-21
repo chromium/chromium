@@ -390,8 +390,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     main_thread_only().current_use_case = use_case;
   }
 
-  void SetHaveSeenABlockingGestureForTesting(bool status);
-
   virtual void PerformMicrotaskCheckpoint();
 
  private:
@@ -462,7 +460,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     DISALLOW_NEW();
 
    public:
-    RAILMode rail_mode = RAILMode::kAnimation;
+    RAILMode rail_mode = RAILMode::kDefault;
     bool should_freeze_compositor_task_queue = false;
     bool should_pause_task_queues = false;
     bool should_pause_task_queues_for_android_webview = false;

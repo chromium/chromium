@@ -88,41 +88,27 @@ constexpr int kDefaultPrioritizeCompositingAfterDelayMs = 100;
 
 v8::RAILMode RAILModeToV8RAILMode(RAILMode rail_mode) {
   switch (rail_mode) {
-    case RAILMode::kResponse:
-      return v8::RAILMode::PERFORMANCE_RESPONSE;
-    case RAILMode::kAnimation:
-      return v8::RAILMode::PERFORMANCE_ANIMATION;
-    case RAILMode::kIdle:
+    case RAILMode::kDefault:
       return v8::RAILMode::PERFORMANCE_IDLE;
     case RAILMode::kLoad:
       return v8::RAILMode::PERFORMANCE_LOAD;
-    default:
-      NOTREACHED_IN_MIGRATION();
   }
+  NOTREACHED();
 }
 
 void AddRAILModeToProto(perfetto::protos::pbzero::TrackEvent* event,
                         RAILMode mode) {
-  perfetto::protos::pbzero::ChromeRAILMode proto_mode;
+  using perfetto::protos::pbzero::ChromeRAILMode;
+  auto* scheduler_state = event->set_chrome_renderer_scheduler_state();
   switch (mode) {
-    case RAILMode::kResponse:
-      proto_mode = perfetto::protos::pbzero::ChromeRAILMode::RAIL_MODE_RESPONSE;
-      break;
-    case RAILMode::kAnimation:
-      proto_mode =
-          perfetto::protos::pbzero::ChromeRAILMode::RAIL_MODE_ANIMATION;
-      break;
-    case RAILMode::kIdle:
-      proto_mode = perfetto::protos::pbzero::ChromeRAILMode::RAIL_MODE_IDLE;
-      break;
+    case RAILMode::kDefault:
+      scheduler_state->set_rail_mode(ChromeRAILMode::RAIL_MODE_IDLE);
+      return;
     case RAILMode::kLoad:
-      proto_mode = perfetto::protos::pbzero::ChromeRAILMode::RAIL_MODE_LOAD;
-      break;
-    default:
-      proto_mode = perfetto::protos::pbzero::ChromeRAILMode::RAIL_MODE_NONE;
-      break;
+      scheduler_state->set_rail_mode(ChromeRAILMode::RAIL_MODE_LOAD);
+      return;
   }
-  event->set_chrome_renderer_scheduler_state()->set_rail_mode(proto_mode);
+  NOTREACHED();
 }
 
 void AddBackgroundedToProto(perfetto::protos::pbzero::TrackEvent* event,
@@ -1107,12 +1093,6 @@ bool MainThreadSchedulerImpl::PolicyNeedsUpdateForTesting() {
   return policy_may_need_update_.IsSet();
 }
 
-void MainThreadSchedulerImpl::SetHaveSeenABlockingGestureForTesting(
-    bool status) {
-  base::AutoLock lock(any_thread_lock_);
-  any_thread().have_seen_a_blocking_gesture = status;
-}
-
 void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
   TRACE_EVENT("toplevel", "BlinkScheduler_PerformMicrotaskCheckpoint");
 
@@ -1538,49 +1518,28 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
 
 RAILMode MainThreadSchedulerImpl::ComputeCurrentRAILMode(
     UseCase use_case) const {
-  // TODO(skyostil): Add an idle state for foreground tabs too.
-  if (main_thread_only().renderer_hidden.get()) {
-    return RAILMode::kIdle;
-  }
-
   switch (use_case) {
-    case UseCase::kTouchstart:
-      return RAILMode::kResponse;
-
     case UseCase::kDiscreteInputResponse:
-      // TODO(crbug.com/350540984): This really should be `RAILMode::kResponse`,
+      // TODO(crbug.com/350540984): This really should be `RAILMode::kDefault`,
       // but switching out of the loading mode affects GC and causes some
       // benchmark regressions. For now, don't change the `RAILMode` for this
       // experimental `UseCase`.
       return main_thread_only().current_policy.rail_mode;
 
+    case UseCase::kTouchstart:
     case UseCase::kCompositorGesture:
     case UseCase::kSynchronizedGesture:
     case UseCase::kMainThreadGesture:
-      if (main_thread_only().blocking_input_expected_soon) {
-        return RAILMode::kResponse;
-      }
-      break;
-
     case UseCase::kNone:
-      // It's only safe to block tasks if we are expecting a compositor
-      // driven gesture.
-      if (main_thread_only().blocking_input_expected_soon &&
-          any_thread().last_gesture_was_compositor_driven) {
-        return RAILMode::kResponse;
-      }
-      break;
-
     case UseCase::kMainThreadCustomInputHandling:
-      break;
+      return RAILMode::kDefault;
 
     case UseCase::kEarlyLoading:
     case UseCase::kLoading:
-      // TODO(skyostil): Experiment with throttling rendering frame rate.
-      return RAILMode::kLoad;
+      return main_thread_only().renderer_hidden.get() ? RAILMode::kDefault
+                                                      : RAILMode::kLoad;
   }
-
-  return RAILMode::kAnimation;
+  NOTREACHED();
 }
 
 void MainThreadSchedulerImpl::UpdateStateForAllTaskQueues(
@@ -2855,18 +2814,12 @@ bool MainThreadSchedulerImpl::AllPagesFrozen() const {
 // static
 const char* MainThreadSchedulerImpl::RAILModeToString(RAILMode rail_mode) {
   switch (rail_mode) {
-    case RAILMode::kResponse:
-      return "response";
-    case RAILMode::kAnimation:
-      return "animation";
-    case RAILMode::kIdle:
+    case RAILMode::kDefault:
       return "idle";
     case RAILMode::kLoad:
       return "load";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
   }
+  NOTREACHED();
 }
 
 // static

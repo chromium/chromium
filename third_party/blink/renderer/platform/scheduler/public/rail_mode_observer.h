@@ -7,12 +7,11 @@
 
 namespace blink {
 
-// RAIL mode as defined in [1].
+// A subset of RAIL mode as defined in [1].
 // [1] https://developers.google.com/web/fundamentals/performance/rail
 enum class RAILMode {
-  kResponse,
-  kAnimation,
-  kIdle,
+  // Covers all modes except Load.
+  kDefault,
   kLoad,
 };
 
