@@ -11,6 +11,7 @@
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -177,16 +178,10 @@ CreateModelExecutionMock(const std::string& expected_input,
         EXPECT_EQ(request.options().output_length(), expected_output_length);
         optimization_guide::proto::StringValue summary_str;
         summary_str.set_value(output);
-        std::string serialized_metadata;
-        summary_str.SerializeToString(&serialized_metadata);
-        optimization_guide::proto::Any any;
-        any.set_value(serialized_metadata);
-        any.set_type_url(
-            AITestUtils::GetTypeURLForProto(summary_str.GetTypeName()));
         callback.Run(
             optimization_guide::OptimizationGuideModelStreamingExecutionResult(
                 optimization_guide::StreamingResponse{
-                    .response = any,
+                    .response = optimization_guide::AnyWrapProto(summary_str),
                     .is_complete = true,
                 },
                 /*provided_by_on_device=*/true));

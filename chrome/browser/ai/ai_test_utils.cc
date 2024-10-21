@@ -84,11 +84,6 @@ void AITestUtils::AITestBase::ResetMockHost() {
 }
 
 // static
-std::string AITestUtils::GetTypeURLForProto(std::string type_name) {
-  return "type.googleapis.com/" + type_name;
-}
-
-// static
 const optimization_guide::TokenLimits& AITestUtils::GetFakeTokenLimits() {
   static const optimization_guide::TokenLimits limits{
       .max_tokens = 4096,

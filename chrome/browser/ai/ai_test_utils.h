@@ -90,7 +90,6 @@ class AITestUtils {
     std::unique_ptr<MockSupportsUserData> mock_host_;
   };
 
-  static std::string GetTypeURLForProto(std::string type_name);
   static const optimization_guide::TokenLimits& GetFakeTokenLimits();
   static const optimization_guide::proto::Any& GetFakeFeatureMetadata();
 };

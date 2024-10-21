@@ -14,6 +14,7 @@
 #include "chrome/browser/ai/features.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
@@ -131,10 +132,7 @@ const optimization_guide::proto::Any& GetPromptApiMetadata() {
   static base::NoDestructor<optimization_guide::proto::Any> data([]() {
     optimization_guide::proto::PromptApiMetadata metadata;
     metadata.set_version(1);
-    optimization_guide::proto::Any any;
-    any.set_type_url("type.googleapis.com/" + metadata.GetTypeName());
-    any.set_value(metadata.SerializeAsString());
-    return any;
+    return optimization_guide::AnyWrapProto(metadata);
   }());
   return *data;
 }
@@ -293,14 +291,9 @@ class AIAssistantTest : public AITestUtils::AITestBase {
   CreateExecutionResult(const std::string& output, bool is_complete) {
     optimization_guide::proto::StringValue response;
     response.set_value(output);
-    std::string serialized_metadata;
-    response.SerializeToString(&serialized_metadata);
-    optimization_guide::proto::Any any;
-    any.set_value(serialized_metadata);
-    any.set_type_url(AITestUtils::GetTypeURLForProto(response.GetTypeName()));
     return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
         optimization_guide::StreamingResponse{
-            .response = any,
+            .response = optimization_guide::AnyWrapProto(response),
             .is_complete = is_complete,
         },
         /*provided_by_on_device=*/true);
