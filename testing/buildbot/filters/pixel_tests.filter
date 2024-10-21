@@ -29,6 +29,7 @@ OldCookieControlsBubbleViewTest.*
 *CreatePopupRowViewWithNoUserEducationRateLimitTest.*
 CryptoModulePasswordDialogTest.*
 *DataControlsDialogUiTest.*
+*DataSharingChromeNativeUiPixelTest*
 DeepScanningFailureModalDialogTest.*
 *DiceWebSigninInterceptionBubblePixelTest.InvokeUi_*
 *DiceWebSigninInterceptionBubbleV1SyncPromoPixelTest.InvokeUi_*

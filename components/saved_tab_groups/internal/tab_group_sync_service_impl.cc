@@ -399,6 +399,13 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   model_->MakeTabGroupShared(local_group_id, std::string(collaboration_id));
 }
 
+void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(
+    const LocalTabGroupID& local_group_id,
+    std::string_view collaboration_id) {
+  model_->MakeTabGroupSharedForTesting(local_group_id,
+                                       std::string(collaboration_id));
+}
+
 std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() {
   VLOG(2) << __func__;
   std::unordered_set<base::Uuid, base::UuidHash> tab_groups_to_skip;

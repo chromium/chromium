@@ -87,6 +87,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                           std::string_view collaboration_id) override;
+  void MakeTabGroupSharedForTesting(const LocalTabGroupID& local_group_id,
+                                    std::string_view collaboration_id);
 
   std::vector<SavedTabGroup> GetAllGroups() override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) override;

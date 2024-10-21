@@ -241,6 +241,13 @@ void SavedTabGroupModel::MakeTabGroupShared(
   // the existing methods which should notify observers.
 }
 
+void SavedTabGroupModel::MakeTabGroupSharedForTesting(
+    const LocalTabGroupID& local_group_id,
+    std::string collaboration_id) {
+  SavedTabGroup* const group = GetMutableGroup(local_group_id);
+  group->SetCollaborationId(collaboration_id);
+}
+
 void SavedTabGroupModel::AddedFromSync(SavedTabGroup saved_group) {
   base::Uuid group_guid = saved_group.saved_guid();
   if (Contains(group_guid)) {
