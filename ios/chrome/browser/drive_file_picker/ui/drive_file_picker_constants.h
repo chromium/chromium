@@ -11,6 +11,8 @@
 extern NSString* const kDriveFilePickerAccessibilityIdentifier;
 // Accessibility identifier of the confirm button.
 extern NSString* const kDriveFilePickerConfirmButtonIdentifier;
+// Accessibility identifier of the search bar.
+extern NSString* const kDriveFilePickerSearchBarIdentifier;
 // Accessibility identifier of the filter button.
 extern NSString* const kDriveFilePickerFilterButtonIdentifier;
 // Accessibility identifier of the sort button.
