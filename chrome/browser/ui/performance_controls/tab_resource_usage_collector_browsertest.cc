@@ -58,8 +58,15 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
   EXPECT_NE(bytes_used, second_tab_helper->GetMemoryUsageInBytes());
 }
 
+// TODO - crbug.com/368862390: flaky on Mac builds
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RefreshMemoryForOneWebContents \
+  DISABLED_RefreshMemoryForOneWebContents
+#else
+#define MAYBE_RefreshMemoryForOneWebContents RefreshMemoryForOneWebContents
+#endif
 IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
-                       RefreshMemoryForOneWebContents) {
+                       MAYBE_RefreshMemoryForOneWebContents) {
   AddAndWaitForTabReady();
   AddAndWaitForTabReady();
   TabStripModel* const model = GetTabStripModel();
