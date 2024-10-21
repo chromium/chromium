@@ -279,7 +279,6 @@ CreateCompressionSession(VideoCodec codec,
       /*compressedDataAllocator=*/nullptr, output_callback,
       reinterpret_cast<void*>(accelerator), session.InitializeInto());
   if (status != noErr) {
-#if BUILDFLAG(IS_MAC)
     if (@available(macOS 13, iOS 16, *)) {
       // No extra steps required.
     } else {
@@ -290,7 +289,6 @@ CreateCompressionSession(VideoCodec codec,
       // VTCompressionSessionInvalidate() on a not fully created session.
       std::ignore = session.release();
     }
-#endif  // BUILDFLAG(IS_MAC)
     return base::unexpected(status);
   }
   DVLOG(3) << " VTCompressionSession created with input size="
