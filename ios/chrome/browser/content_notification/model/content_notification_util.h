@@ -7,9 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
-
 class PrefService;
+class ProfileIOS;
 
 // True if any type of content notification is enabled with user visible UI.
 // This method is a util function for classes which own a profile object
