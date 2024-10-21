@@ -1118,6 +1118,15 @@ const char kMoveMigrationResumeCountPref[] =
     "ash.browser_data_migrator.move_migration_resume_count";
 const char kLacrosSecondaryProfilesAllowed[] =
     "lacros_secondary_profiles_allowed";
+constexpr char kDataVerPref[] = "lacros.data_version";
+constexpr char kMigrationAttemptCountPref[] =
+    "ash.browser_data_migrator.migration_attempt_count";
+constexpr char kProfileMigrationCompletedForUserPref[] =
+    "lacros.profile_migration_completed_for_user";
+constexpr char kProfileMoveMigrationCompletedForUserPref[] =
+    "lacros.profile_move_migration_completed_for_user";
+constexpr char kProfileMigrationCompletedForNewUserPref[] =
+    "lacros.profile_migration_completed_for_new_user";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1239,6 +1248,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kMigrationStep, 0);
   registry->RegisterDictionaryPref(kMoveMigrationResumeStepPref);
   registry->RegisterDictionaryPref(kMoveMigrationResumeCountPref);
+  registry->RegisterDictionaryPref(kDataVerPref);
+  registry->RegisterDictionaryPref(kMigrationAttemptCountPref);
+  registry->RegisterDictionaryPref(kProfileMigrationCompletedForUserPref);
+  registry->RegisterDictionaryPref(kProfileMoveMigrationCompletedForUserPref);
+  registry->RegisterDictionaryPref(kProfileMigrationCompletedForNewUserPref);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1823,7 +1837,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::SchedulerConfigurationManager::RegisterLocalStatePrefs(registry);
   ash::SecureDnsManager::RegisterLocalStatePrefs(registry);
   ash::ServicesCustomizationDocument::RegisterPrefs(registry);
-  ash::standalone_browser::migrator_util::RegisterLocalStatePrefs(registry);
   ash::StartupUtils::RegisterPrefs(registry);
   ash::StatsReportingController::RegisterLocalStatePrefs(registry);
   ash::system::AutomaticRebootManager::RegisterPrefs(registry);
@@ -2537,6 +2550,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kMigrationStep);
   local_state->ClearPref(kMoveMigrationResumeStepPref);
   local_state->ClearPref(kMoveMigrationResumeCountPref);
+  local_state->ClearPref(kDataVerPref);
+  local_state->ClearPref(kMigrationAttemptCountPref);
+  local_state->ClearPref(kProfileMigrationCompletedForUserPref);
+  local_state->ClearPref(kProfileMoveMigrationCompletedForUserPref);
+  local_state->ClearPref(kProfileMigrationCompletedForNewUserPref);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

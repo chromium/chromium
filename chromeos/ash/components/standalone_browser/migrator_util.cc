@@ -67,14 +67,6 @@ bool IsMigrationCompletedForUserForMode(PrefService* local_state,
 
 }  // namespace
 
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kDataVerPref);
-  registry->RegisterDictionaryPref(kMigrationAttemptCountPref);
-  registry->RegisterDictionaryPref(kProfileMigrationCompletedForUserPref);
-  registry->RegisterDictionaryPref(kProfileMoveMigrationCompletedForUserPref);
-  registry->RegisterDictionaryPref(kProfileMigrationCompletedForNewUserPref);
-}
-
 bool IsMigrationAttemptLimitReachedForUser(PrefService* local_state,
                                            std::string_view user_id_hash) {
   const int attempts =

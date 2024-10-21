@@ -35,10 +35,6 @@ enum class PolicyInitState {
 // after reaching this limit with this many failed/skipped attempts.
 constexpr int kMaxMigrationAttemptCount = 3;
 
-// Registers prefs used via local state PrefService.
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
 // Checks whether the number of profile migration attempts have reached its
 // limit for the user.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)

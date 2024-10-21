@@ -49,7 +49,6 @@ source_set("unit_tests") {
     "channel_util_unittest.cc",
     "lacros_availability_unittest.cc",
     "lacros_selection_unittest.cc",
-    "migrator_util_unittest.cc",
     "test_util_unittest.cc",
   ]
 
