@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/device_form_factor.h"
 
 @interface RootDriveFilePickerCoordinator () <
     UIAdaptivePresentationControllerDelegate,
@@ -114,15 +115,24 @@
 
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   _navigationController.presentationController.delegate = self;
-  _navigationController.sheetPresentationController.prefersGrabberVisible = YES;
-  _navigationController.sheetPresentationController.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
-  _navigationController.sheetPresentationController.selectedDetentIdentifier =
-      IsCompactWidth(self.baseViewController.traitCollection)
-          ? [UISheetPresentationControllerDetent mediumDetent].identifier
-          : [UISheetPresentationControllerDetent largeDetent].identifier;
+  if (ui::GetDeviceFormFactor() ==
+      ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE) {
+    _navigationController.sheetPresentationController.prefersGrabberVisible =
+        YES;
+    _navigationController.sheetPresentationController.detents = @[
+      [UISheetPresentationControllerDetent mediumDetent],
+      [UISheetPresentationControllerDetent largeDetent],
+    ];
+    _navigationController.sheetPresentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierMedium;
+  } else {
+    _navigationController.sheetPresentationController.prefersGrabberVisible =
+        NO;
+    _navigationController.sheetPresentationController.detents =
+        @[ [UISheetPresentationControllerDetent largeDetent] ];
+    _navigationController.sheetPresentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierLarge;
+  }
 
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
@@ -261,7 +271,8 @@
 - (void)mediator:(DriveFilePickerMediator*)mediator
     didActivateSearch:(BOOL)searchActivated {
   _navigationController.sheetPresentationController.prefersGrabberVisible =
-      !searchActivated;
+      !searchActivated &&
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE);
 }
 
 #pragma mark - BrowseDriveFilePickerCoordinatorDelegate
