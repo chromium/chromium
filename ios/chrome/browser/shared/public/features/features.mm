@@ -61,6 +61,8 @@ BASE_FEATURE(kOmahaServiceRefactor,
 
 const char kTipsLensShopExperimentType[] = "TipsLensShopExperimentType";
 
+const char kTipsSafeBrowsingExperimentType[] = "TipsSafeBrowsingExperimentType";
+
 const char kSafetyCheckNotificationsExperimentType[] =
     "SafetyCheckNotificationsExperimentType";
 
@@ -393,6 +395,15 @@ TipsLensShopExperimentType TipsLensShopExperimentTypeEnabled() {
       kTipsLensShopExperimentType,
       /*default_value=*/
       (int)TipsLensShopExperimentType::kWithProductImage));
+}
+
+TipsSafeBrowsingExperimentType TipsSafeBrowsingExperimentTypeEnabled() {
+  return static_cast<
+      TipsSafeBrowsingExperimentType>(base::GetFieldTrialParamByFeatureAsInt(
+      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard,
+      kTipsSafeBrowsingExperimentType,
+      /*default_value=*/
+      (int)TipsSafeBrowsingExperimentType::kShowEnhancedSafeBrowsingPromo));
 }
 
 BASE_FEATURE(kIOSChooseFromDrive,

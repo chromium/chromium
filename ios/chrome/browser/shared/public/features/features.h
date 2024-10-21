@@ -135,6 +135,19 @@ enum class TipsLensShopExperimentType {
   kWithoutProductImage = 1,
 };
 
+// Name of the parameter that controls the experiment type for the Enhanced Safe
+// Browsing tip, determining whether to show the animated, instructional promo
+// or the Safe Browsing settings page.
+extern const char kTipsSafeBrowsingExperimentType[];
+
+// Defines the different experiment arms for the Enhanced Safe Browsing tip.
+enum class TipsSafeBrowsingExperimentType {
+  // Shows the animated, instructional Enhanced Safe Browsing promo.
+  kShowEnhancedSafeBrowsingPromo = 0,
+  // Shows the Safe Browsing settings page.
+  kShowSafeBrowsingSettingsPage = 1,
+};
+
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
@@ -399,6 +412,11 @@ bool IsTipsMagicStackEnabled();
 // Returns the experiment type for the Lens Shop tip, which determines
 // whether or not a product image is displayed (if available).
 TipsLensShopExperimentType TipsLensShopExperimentTypeEnabled();
+
+// Returns the experiment type for the Enhanced Safe Browsing tip, which
+// determines whether to show the animated, instructional promo or the Safe
+// Browsing settings page.
+TipsSafeBrowsingExperimentType TipsSafeBrowsingExperimentTypeEnabled();
 
 // Whether the refactored implementation of the `OmahaService` is enabled.
 bool IsOmahaServiceRefactorEnabled();
