@@ -9,5 +9,5 @@ interface AILanguageDetectorCapabilities {
   ]
   readonly attribute AICapabilityAvailability available;
 
-  AICapabilityAvailability canDetect(DOMString languageTag);
+  AICapabilityAvailability languageAvailable(DOMString languageTag);
 };

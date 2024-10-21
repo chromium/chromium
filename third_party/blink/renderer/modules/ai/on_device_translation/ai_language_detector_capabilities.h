@@ -22,7 +22,7 @@ class AILanguageDetectorCapabilities final : public ScriptWrappable {
 
   V8AICapabilityAvailability available(ScriptState* script_state,
                                        ExceptionState& exception_state) const;
-  V8AICapabilityAvailability canDetect(const WTF::String& languageTag);
+  V8AICapabilityAvailability languageAvailable(const WTF::String& languageTag);
 };
 
 }  // namespace blink

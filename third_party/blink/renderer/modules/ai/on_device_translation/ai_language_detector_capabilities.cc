@@ -19,7 +19,7 @@ V8AICapabilityAvailability AILanguageDetectorCapabilities::available(
   return V8AICapabilityAvailability(V8AICapabilityAvailability::Enum::kReadily);
 }
 
-V8AICapabilityAvailability AILanguageDetectorCapabilities::canDetect(
+V8AICapabilityAvailability AILanguageDetectorCapabilities::languageAvailable(
     const WTF::String& languageTag) {
   // TODO(crbug.com/349927087): Implement actual check for availability.
   return V8AICapabilityAvailability(V8AICapabilityAvailability::Enum::kReadily);

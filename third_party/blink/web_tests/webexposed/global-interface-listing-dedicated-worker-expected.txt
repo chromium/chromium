@@ -46,8 +46,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface AILanguageDetectorCapabilities
 [Worker]     attribute @@toStringTag
 [Worker]     getter available
-[Worker]     method canDetect
 [Worker]     method constructor
+[Worker]     method languageAvailable
 [Worker] interface AILanguageDetectorFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method capabilities

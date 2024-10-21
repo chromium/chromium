@@ -41,8 +41,8 @@ interface AILanguageDetector
 interface AILanguageDetectorCapabilities
     attribute @@toStringTag
     getter available
-    method canDetect
     method constructor
+    method languageAvailable
 interface AILanguageDetectorFactory
     attribute @@toStringTag
     method capabilities
