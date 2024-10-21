@@ -10,6 +10,11 @@ namespace manta::features {
 
 BASE_FEATURE(kMantaService, "MantaService", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Anchovy Prod Server
+BASE_FEATURE(kAnchovyUseProdServer,
+             "AnchovyUseProdServer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables Orca Prod Server
 BASE_FEATURE(kOrcaUseProdServer,
              "OrcaUseProdServer",
@@ -37,6 +42,10 @@ BASE_FEATURE(kWalrusUseProdServer,
 
 bool IsMantaServiceEnabled() {
   return base::FeatureList::IsEnabled(kMantaService);
+}
+
+bool IsAnchovyUseProdServerEnabled() {
+  return base::FeatureList::IsEnabled(kAnchovyUseProdServer);
 }
 
 bool IsOrcaUseProdServerEnabled() {
