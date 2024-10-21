@@ -22,6 +22,10 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     gardener_rotations = gardener_rotations.ANDROID,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
     health_spec = health_spec.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
@@ -638,10 +642,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "clank-engprod@google.com",
-    experiments = {
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
 )
 
 ci.builder(
@@ -1536,10 +1536,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "cronet-team@google.com",
-    experiments = {
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
     notifies = ["cronet"],
 )
 
@@ -3088,10 +3084,6 @@ ci.builder(
     ),
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = 4 * time.hour,
-    experiments = {
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
 )
 
 ci.thin_tester(
@@ -3346,10 +3338,6 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = 4 * time.hour,
-    experiments = {
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
 )
 
 ci.builder(
@@ -4004,10 +3992,6 @@ ci.builder(
         short_name = "13",
     ),
     contact_team_email = "clank-engprod@google.com",
-    experiments = {
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
 )
 
 ci.builder(
