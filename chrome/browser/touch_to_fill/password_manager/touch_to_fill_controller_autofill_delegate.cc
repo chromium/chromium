@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -47,8 +48,12 @@ bool ContainsNonEmptyUsername(
 }
 
 std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
-CreateAcknowledgeGroupedCredentialSheetController() {
-  return std::make_unique<AcknowledgeGroupedCredentialSheetController>();
+CreateAcknowledgeGroupedCredentialSheetController(
+    content::WebContents* web_contents) {
+  auto bridge = std::make_unique<AcknowledgeGroupedCredentialSheetBridge>(
+      web_contents->GetTopLevelNativeWindow());
+  return std::make_unique<AcknowledgeGroupedCredentialSheetController>(
+      std::move(bridge));
 }
 
 }  // namespace
@@ -109,7 +114,7 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       access_loss_warning_bridge_(
           std::make_unique<PasswordAccessLossWarningBridgeImpl>()),
       grouped_credential_sheet_controller_(
-          CreateAcknowledgeGroupedCredentialSheetController()),
+          CreateAcknowledgeGroupedCredentialSheetController(web_contents_)),
       source_id_(password_client->web_contents()
                      ->GetPrimaryMainFrame()
                      ->GetPageUkmSourceId()) {}
@@ -329,6 +334,12 @@ void TouchToFillControllerAutofillDelegate::VerifyBeforeFilling(
         [](TouchToFillControllerAutofillDelegate* delegate,
            const UiCredential& credential, bool accepted) {
           if (!accepted) {
+            // TODO(crbug.com/372635361): Introduce new bucket to report grouped
+            // credential filling metric.
+            delegate->CleanUpFillerAndReportOutcome(
+                TouchToFillOutcome::kSheetDismissed,
+                /*show_virtual_keyboard=*/false);
+            std::move(delegate->action_complete_).Run();
             return;
           }
           delegate->FillCredential(credential);

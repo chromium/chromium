@@ -1,0 +1,85 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
+
+#include <memory>
+
+#include "base/android/jni_android.h"
+#include "base/functional/callback_forward.h"
+#include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/password_manager/android/grouped_affiliations/jni_headers/AcknowledgeGroupedCredentialSheetBridge_jni.h"
+
+namespace {
+
+using JniDelegate = AcknowledgeGroupedCredentialSheetBridge::JniDelegate;
+
+class JniDelegateImpl : public JniDelegate {
+ public:
+  JniDelegateImpl() = default;
+  JniDelegateImpl(const JniDelegateImpl&) = delete;
+  JniDelegateImpl& operator=(const JniDelegateImpl&) = delete;
+  ~JniDelegateImpl() override = default;
+
+  void Create(const gfx::NativeWindow window_android,
+              AcknowledgeGroupedCredentialSheetBridge* bridge) override {
+    if (!window_android) {
+      return;
+    }
+
+    java_bridge_.Reset(Java_AcknowledgeGroupedCredentialSheetBridge_Constructor(
+        base::android::AttachCurrentThread(),
+        reinterpret_cast<intptr_t>(bridge), window_android->GetJavaObject()));
+  }
+
+  void Show() override {
+    Java_AcknowledgeGroupedCredentialSheetBridge_show(
+        base::android::AttachCurrentThread(), java_bridge_);
+  }
+
+  void Dismiss() override {
+    Java_AcknowledgeGroupedCredentialSheetBridge_dismiss(
+        base::android::AttachCurrentThread(), java_bridge_);
+  }
+
+ private:
+  // The corresponding Java GroupedCredentialAcknowledgeSheetBridge.
+  base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
+};
+}  // namespace
+
+AcknowledgeGroupedCredentialSheetBridge::JniDelegate::JniDelegate() = default;
+AcknowledgeGroupedCredentialSheetBridge::JniDelegate::~JniDelegate() = default;
+
+AcknowledgeGroupedCredentialSheetBridge::
+    AcknowledgeGroupedCredentialSheetBridge(const gfx::NativeWindow window)
+    : jni_delegate_(std::make_unique<JniDelegateImpl>()) {
+  jni_delegate_->Create(window, this);
+}
+
+AcknowledgeGroupedCredentialSheetBridge::
+    AcknowledgeGroupedCredentialSheetBridge(
+        base::PassKey<class TouchToFillControllerAutofillTest>,
+        std::unique_ptr<JniDelegate> jni_delegate)
+    : jni_delegate_(std::move(jni_delegate)) {}
+
+AcknowledgeGroupedCredentialSheetBridge::
+    AcknowledgeGroupedCredentialSheetBridge(
+        base::PassKey<class AcknowledgeGroupedCredentialSheetControllerTest>,
+        std::unique_ptr<JniDelegate> jni_delegate)
+    : jni_delegate_(std::move(jni_delegate)) {}
+
+AcknowledgeGroupedCredentialSheetBridge::
+    ~AcknowledgeGroupedCredentialSheetBridge() {
+  jni_delegate_->Dismiss();
+}
+
+void AcknowledgeGroupedCredentialSheetBridge::Show(
+    base::OnceCallback<void(bool)> closure_callback) {
+  closure_callback_ = std::move(closure_callback);
+
+  jni_delegate_->Show();
+}

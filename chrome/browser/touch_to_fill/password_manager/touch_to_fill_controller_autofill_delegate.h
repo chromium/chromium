@@ -14,6 +14,7 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"

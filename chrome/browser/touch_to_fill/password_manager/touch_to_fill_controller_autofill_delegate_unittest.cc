@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/access_loss/mock_password_access_loss_warning_bridge.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -103,6 +104,21 @@ struct MockTouchToFillView : TouchToFillView {
               (override));
   MOCK_METHOD(void, OnCredentialSelected, (const UiCredential&));
   MOCK_METHOD(void, OnDismiss, ());
+};
+
+class MockAckGroupedCredentialJniDelegate
+    : public AcknowledgeGroupedCredentialSheetBridge::JniDelegate {
+ public:
+  MockAckGroupedCredentialJniDelegate() = default;
+  ~MockAckGroupedCredentialJniDelegate() override = default;
+
+  MOCK_METHOD((void),
+              Create,
+              (const gfx::NativeWindow,
+               AcknowledgeGroupedCredentialSheetBridge*),
+              (override));
+  MOCK_METHOD((void), Show, (), (override));
+  MOCK_METHOD((void), Dismiss, (), (override));
 };
 
 struct MakeUiCredentialParams {
@@ -194,10 +210,15 @@ class TouchToFillControllerAutofillTest
     std::unique_ptr<MockPasswordAccessLossWarningBridge> mock_bridge =
         std::make_unique<MockPasswordAccessLossWarningBridge>();
     mock_access_loss_warning_bridge_ = mock_bridge.get();
+
+    auto mock_jni_bridge =
+        std::make_unique<MockAckGroupedCredentialJniDelegate>();
+    grouped_credential_sheet_bridge_ = mock_jni_bridge.get();
     auto grouped_credential_sheet_controller =
-        std::make_unique<AcknowledgeGroupedCredentialSheetController>();
-    grouped_credential_sheet_controller_ =
-        grouped_credential_sheet_controller.get();
+        std::make_unique<AcknowledgeGroupedCredentialSheetController>(
+            std::make_unique<AcknowledgeGroupedCredentialSheetBridge>(
+                base::PassKey<class TouchToFillControllerAutofillTest>(),
+                std::move(mock_jni_bridge)));
     return std::make_unique<TouchToFillControllerAutofillDelegate>(
         base::PassKey<TouchToFillControllerAutofillTest>(), &client_,
         web_contents(), std::move(authenticator_),
@@ -229,9 +250,8 @@ class TouchToFillControllerAutofillTest
     return mock_access_loss_warning_bridge_;
   }
 
-  AcknowledgeGroupedCredentialSheetController*
-  grouped_credential_sheet_controller() {
-    return grouped_credential_sheet_controller_;
+  MockAckGroupedCredentialJniDelegate* grouped_credential_sheet_bridge() {
+    return grouped_credential_sheet_bridge_;
   }
 
   void SetUp() override {
@@ -269,8 +289,7 @@ class TouchToFillControllerAutofillTest
   raw_ptr<MockPasswordAccessLossWarningBridge> mock_access_loss_warning_bridge_;
   raw_ptr<MockPasswordCredentialFiller> weak_filler_;
   password_manager::PasswordForm form_to_fill_;
-  raw_ptr<AcknowledgeGroupedCredentialSheetController>
-      grouped_credential_sheet_controller_;
+  raw_ptr<MockAckGroupedCredentialJniDelegate> grouped_credential_sheet_bridge_;
 };
 
 TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Submit) {
@@ -970,11 +989,8 @@ TEST_F(TouchToFillControllerAutofillTest,
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
 
-  // TODO(crbug.com/372635361): After implementing the bridge, expect the call
-  // to show the actual sheet. Now only check, that FillUsernameAndPassword will
-  // not be called because there is a stub, which simulates that sheet was
-  // declined.
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword).Times(0);
+  EXPECT_CALL(*grouped_credential_sheet_bridge(), Show);
   ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
