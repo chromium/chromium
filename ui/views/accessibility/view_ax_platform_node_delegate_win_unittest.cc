@@ -20,6 +20,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_constants.mojom.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/views/accessibility/test_list_grid_view.h"
@@ -743,6 +744,11 @@ class ViewAXPlatformNodeDelegateWinInnerTextRangeTest
     ViewsTestBase::TearDown();
   }
 
+  void MockAXModeAdded() {
+    ui::AXMode mode = ui::AXPlatformForTest::GetInstance().GetProcessMode();
+    widget_->OnAXModeAdded(mode);
+  }
+
   ViewAXPlatformNodeDelegate* textfield_delegate() {
     return static_cast<ViewAXPlatformNodeDelegate*>(
         &textfield_->GetViewAccessibility());
@@ -936,6 +942,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_LTR) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -958,6 +967,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_LTR) {
       label_->display_text_.get());
   render_text_test_api.SetGlyphWidth(kGlyphWidth);
   render_text_test_api.SetGlyphHeight(kGlyphHeight);
+  // Since we are force setting the render text's glyph size manually, we need
+  // to make sure to refresh the accessible text offsets manually too.
+  label_->RefreshAccessibleTextOffsetsIfNeeded();
 
   // TODO(crbug.com/40924888): This is not obvious, but we need to call
   // `GetData` to refresh the text offsets and accessible name. This won't be
@@ -1087,6 +1099,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_RTL) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_RTL) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -1113,6 +1128,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_RTL) {
       label_->display_text_.get());
   render_text_test_api.SetGlyphWidth(kGlyphWidth);
   render_text_test_api.SetGlyphHeight(kGlyphHeight);
+  // Since we are force setting the render text's glyph size manually, we need
+  // to make sure to refresh the accessible text offsets manually too.
+  label_->RefreshAccessibleTextOffsetsIfNeeded();
 
   // TODO(crbug.com/40924888): This is not obvious, but we need to call
   // `GetData` to refresh the text offsets and accessible name. This won't be

@@ -322,6 +322,10 @@ class VIEWS_EXPORT Label : public View,
   [[nodiscard]] base::CallbackListSubscription AddTextChangedCallback(
       views::PropertyChangedCallback callback);
 
+  [[nodiscard]] base::CallbackListSubscription
+  AddAccessibleTextOffsetsChangedCallback(
+      views::PropertyChangedCallback callback);
+
   [[nodiscard]] base::CallbackListSubscription AddTextContextChangedCallback(
       PropertyChangedCallback callback);
 
@@ -335,7 +339,9 @@ class VIEWS_EXPORT Label : public View,
   bool GetCanProcessEventsWithinSubtree() const override;
   WordLookupClient* GetWordLookupClient() override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  void OnAccessibilityInitializing(ui::AXNodeData* data) override;
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -475,13 +481,15 @@ class VIEWS_EXPORT Label : public View,
   void UpdateFullTextElideBehavior();
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  void MaybeRefreshAccessibleTextOffsets() const;
+
   // Calculate widths for each grapheme and word starts and ends. Used for
   // accessibility. Currently only on Windows when UIA is enabled.
-  bool RefreshAccessibleTextOffsets();
+  bool RefreshAccessibleTextOffsetsIfNeeded() const;
 
   // The string used to compute the text offsets for accessibility. This is used
   // to determine if the offsets need to be recomputed.
-  std::u16string ax_name_used_to_compute_offsets_;
+  mutable std::u16string ax_name_used_to_compute_offsets_;
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
   int text_context_;
@@ -538,6 +546,8 @@ class VIEWS_EXPORT Label : public View,
   // Context menu related members.
   ui::SimpleMenuModel context_menu_contents_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
+
+  base::CallbackListSubscription full_text_changed_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)
