@@ -157,6 +157,55 @@ TEST_P(DragHandleTest, AccessibleName) {
   EXPECT_FALSE(drag_handle()->GetEnabled());
 }
 
+TEST_P(DragHandleTest, AccessiblePreviousAndNextFocus) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  UpdateDisplay("800x700");
+  // Create a widget to transition to the in-app shelf.
+  TestWidgetBuilder()
+      .SetTestWidgetDelegate()
+      .SetBounds(gfx::Rect(0, 0, 800, 800))
+      .BuildOwnedByNativeWidget();
+
+  // If a11y feature is enabled, the drag handle button should behave like a
+  // button.
+  SetTestA11yFeatureEnabled(true /*enabled*/);
+  EXPECT_TRUE(drag_handle()->GetEnabled());
+
+  ui::AXNodeData data;
+  EXPECT_EQ(HotseatState::kHidden,
+            GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
+  EXPECT_EQ(drag_handle()->GetViewAccessibility().GetNextWindowFocus(),
+            GetPrimaryShelf()->GetStatusAreaWidget());
+  EXPECT_EQ(drag_handle()->GetViewAccessibility().GetPreviousWindowFocus(),
+            GetPrimaryShelf()->shelf_widget()->navigation_widget());
+
+  // Click on the drag handle should extend the hotseat.
+  ClickDragHandle();
+  data = ui::AXNodeData();
+  drag_handle()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(HotseatState::kExtended,
+            GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
+  EXPECT_EQ(drag_handle()->GetViewAccessibility().GetNextWindowFocus(),
+            GetPrimaryShelf()->hotseat_widget());
+  EXPECT_EQ(drag_handle()->GetViewAccessibility().GetPreviousWindowFocus(),
+            GetPrimaryShelf()->hotseat_widget());
+
+  // Click again should hide the hotseat.
+  ClickDragHandle();
+  data = ui::AXNodeData();
+  drag_handle()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(HotseatState::kHidden,
+            GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
+  EXPECT_EQ(drag_handle()->GetViewAccessibility().GetNextWindowFocus(),
+            GetPrimaryShelf()->GetStatusAreaWidget());
+  EXPECT_EQ(drag_handle()->GetViewAccessibility().GetPreviousWindowFocus(),
+            GetPrimaryShelf()->shelf_widget()->navigation_widget());
+
+  // Exit a11y feature should disable drag handle.
+  SetTestA11yFeatureEnabled(false /*enabled*/);
+  EXPECT_FALSE(drag_handle()->GetEnabled());
+}
+
 TEST_P(DragHandleTest, AccessibilityFeaturesEnabled) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   UpdateDisplay("800x700");
