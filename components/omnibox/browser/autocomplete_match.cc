@@ -343,6 +343,8 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       iph_link_url(match.iph_link_url),
       history_embeddings_answer_header_text(
           match.history_embeddings_answer_header_text),
+      history_embeddings_answer_header_loading(
+          match.history_embeddings_answer_header_loading),
       feedback_type(match.feedback_type) {}
 
 AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept {
@@ -408,6 +410,8 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   iph_link_url = std::move(match.iph_link_url);
   history_embeddings_answer_header_text =
       std::move(match.history_embeddings_answer_header_text);
+  history_embeddings_answer_header_loading =
+      std::move(match.history_embeddings_answer_header_loading);
   feedback_type = std::move(match.feedback_type);
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
@@ -491,6 +495,8 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   iph_link_url = match.iph_link_url;
   history_embeddings_answer_header_text =
       match.history_embeddings_answer_header_text;
+  history_embeddings_answer_header_loading =
+      match.history_embeddings_answer_header_loading;
   feedback_type = match.feedback_type;
 
 #if BUILDFLAG(IS_ANDROID)
