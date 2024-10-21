@@ -20,14 +20,14 @@ import './assistant_common_styles.css.js';
 import './assistant_icons.html.js';
 import './setting_zippy.js';
 
-import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeDialogHostMixin} from '../components/mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
+import {getTemplate} from './assistant_related_info.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {AssistantNativeIconType, webviewStripLinksContentScript} from './utils.js';
-
 
 /**
  * Name of the screen.
@@ -51,7 +51,7 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

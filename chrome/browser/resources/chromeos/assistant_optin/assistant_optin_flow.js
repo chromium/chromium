@@ -18,14 +18,14 @@ import './assistant_value_prop.js';
 import './setting_zippy.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiStepMixin} from '../components/mixins/multi_step_mixin.js';
 import {OobeDialogHostMixin} from '../components/mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
+import {getTemplate} from './assistant_optin_flow.html.js';
 import {AssistantOptinFlowType, BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
-
 
 /**
  * UI mode for the dialog.
@@ -54,7 +54,7 @@ export class AssistantOptInFlow extends AssistantOptInFlowBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   constructor() {

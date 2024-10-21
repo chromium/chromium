@@ -22,14 +22,14 @@ import './assistant_icons.html.js';
 import './setting_zippy.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeDialogHostMixin} from '../components/mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
+import {getTemplate} from './assistant_value_prop.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {HtmlSanitizer, webviewStripLinksContentScript} from './utils.js';
-
 
 /**
  * Name of the screen.
@@ -53,7 +53,7 @@ class AssistantValueProp extends AssistantValuePropBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

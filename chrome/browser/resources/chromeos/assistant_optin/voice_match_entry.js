@@ -8,10 +8,11 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../components/common_styles/oobe_common_styles.css.js';
 import './assistant_common_styles.css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
+import {getTemplate} from './voice_match_entry.html.js';
 
 /**
  * @constructor
@@ -28,7 +29,7 @@ class VoiceMatchEntry extends VoiceMatchEntryBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

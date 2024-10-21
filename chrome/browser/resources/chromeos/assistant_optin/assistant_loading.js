@@ -18,13 +18,13 @@ import '../components/dialogs/oobe_content_dialog.js';
 import './assistant_icons.html.js';
 import './assistant_common_styles.css.js';
 
-import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiStepMixin} from '../components/mixins/multi_step_mixin.js';
 import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
+import {getTemplate} from './assistant_loading.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-
 
 const AssistantLoadingUIState = {
   LOADING: 'loading',
@@ -47,7 +47,7 @@ class AssistantLoading extends AssistantLoadingBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -21,13 +21,13 @@ import './voice_match_entry.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {announceAccessibleMessage} from '//resources/ash/common/util.js';
-import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiStepMixin} from '../components/mixins/multi_step_mixin.js';
 import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
+import {getTemplate} from './assistant_voice_match.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-
 
 /** Maximum recording index. */
 const MAX_INDEX = 4;
@@ -61,7 +61,7 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

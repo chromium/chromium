@@ -7,7 +7,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -78,9 +77,9 @@ preprocess_if_expr("preprocess") {
 preprocess_if_expr("preprocess_gen_js_files") {
   defines = chrome_grit_defines
   deps = [
+    ":copy_js",
     ":css_wrapper_files",
     ":html_wrapper_files",
-    ":web_components",
   ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocessed_folder"
@@ -89,6 +88,13 @@ preprocess_if_expr("preprocess_gen_js_files") {
   in_files = [
     "assistant_common_styles.css.js",
     "assistant_icons.html.js",
+    "assistant_loading.html.js",
+    "assistant_optin_flow.html.js",
+    "assistant_related_info.html.js",
+    "assistant_value_prop.html.js",
+    "assistant_voice_match.html.js",
+    "setting_zippy.html.js",
+    "voice_match_entry.html.js",
     "assistant_loading.js",
     "assistant_optin_flow.js",
     "assistant_related_info.js",
@@ -97,6 +103,19 @@ preprocess_if_expr("preprocess_gen_js_files") {
     "setting_zippy.js",
     "voice_match_entry.js",
   ]
+}
+
+copy("copy_js") {
+  sources = [
+    "assistant_loading.js",
+    "assistant_optin_flow.js",
+    "assistant_related_info.js",
+    "assistant_value_prop.js",
+    "assistant_voice_match.js",
+    "setting_zippy.js",
+    "voice_match_entry.js",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 #############################
@@ -135,7 +154,10 @@ js_library("voice_match_entry") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":web_components" ]
+  extra_deps = [
+    ":copy_js",
+    ":html_wrapper_files",
+  ]
 }
 
 js_library("browser_proxy") {
@@ -146,24 +168,21 @@ js_library("browser_proxy") {
 #### POLYMER3 MODULES ####
 ##########################
 
-html_to_js("web_components") {
-  js_files = [
-    "assistant_loading.js",
-    "assistant_optin_flow.js",
-    "assistant_related_info.js",
-    "assistant_value_prop.js",
-    "assistant_voice_match.js",
-    "setting_zippy.js",
-    "voice_match_entry.js",
-  ]
-}
-
 css_to_wrapper("css_wrapper_files") {
   in_files = [ "assistant_common_styles.css" ]
   use_js = true
 }
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = [ "assistant_icons.html" ]
+  in_files = [
+    "assistant_icons.html",
+    "assistant_loading.html",
+    "assistant_optin_flow.html",
+    "assistant_related_info.html",
+    "assistant_value_prop.html",
+    "assistant_voice_match.html",
+    "setting_zippy.html",
+    "voice_match_entry.html",
+  ]
   use_js = true
 }
