@@ -2973,11 +2973,6 @@ const char kPasswordParsingOnSaveUsesPredictionsDescription[] =
     "Take server prediction into account when parsing password forms "
     "during saving.";
 
-const char kPdfOcrName[] = "Performs OCR on inaccessible PDFs";
-const char kPdfOcrDescription[] =
-    "Enables a feature whereby inaccessible (i.e. untagged) PDFs are made "
-    "accessible using an optical character recognition service.";
-
 const char kPdfSearchifyName[] = "Make the text in PDF images interactable";
 const char kPdfSearchifyDescription[] =
     "Enables a feature which runs OCR on PDF images and makes the recognized "

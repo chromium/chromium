@@ -224,17 +224,6 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
   ~PDFExtensionAccessibilityTest() override = default;
 
  protected:
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    std::vector<base::test::FeatureRef> disabled =
-        PDFExtensionTestBase::GetDisabledFeatures();
-    // PDF OCR should not be enabled in `PDFExtensionAccessibilityTest`. If a
-    // new test class is derived from this class and needs to test PDF OCR,
-    // make sure that `GetDisabledFeatures()` is overridden to exclude
-    // `::features::kPdfOcr` from a list of disabled features.
-    disabled.push_back(::features::kPdfOcr);
-    return disabled;
-  }
-
   ui::AXTreeUpdate GetAccessibilityTreeSnapshotForPdf(
       content::WebContents* web_contents) {
     content::FindAccessibilityNodeCriteria find_criteria;
@@ -1205,7 +1194,6 @@ class PdfOcrUmaTest : public PDFExtensionAccessibilityTest,
       const override {
     std::vector<base::test::FeatureRefAndParams> enabled =
         PDFExtensionAccessibilityTest::GetEnabledFeatures();
-    enabled.push_back({::features::kPdfOcr, {}});
     if (UseOopif()) {
       enabled.push_back({chrome_pdf::features::kPdfOopif, {}});
     }
@@ -1213,10 +1201,6 @@ class PdfOcrUmaTest : public PDFExtensionAccessibilityTest,
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    // `PDFExtensionAccessibilityTest` has
-    // `::features::kPdfOcr` in a list of disabled features. Now that
-    // `::features::kPdfOcr` is used in this test, don't include it in the
-    // disabled list.
     std::vector<base::test::FeatureRef> disabled;
     if (!UseOopif()) {
       disabled.push_back(chrome_pdf::features::kPdfOopif);
@@ -1407,7 +1391,6 @@ class PdfOcrIntegrationTest
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
     auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
-    enabled.push_back({::features::kPdfOcr, {}});
     enabled.push_back({::features::kScreenAITestMode, {}});
     if (IsOcrServiceEnabled()) {
       enabled.push_back({ax::mojom::features::kScreenAIOCREnabled, {}});
@@ -1422,9 +1405,6 @@ class PdfOcrIntegrationTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    // `PDFExtensionAccessibilityTest` has `::features::kPdfOcr` in a list of
-    // disabled features. Now that `::features::kPdfOcr` is used in this test,
-    // parent disabled features should not be used.
     std::vector<base::test::FeatureRef> disabled;
     if (!IsOcrServiceEnabled()) {
       disabled.push_back(ax::mojom::features::kScreenAIOCREnabled);

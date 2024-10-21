@@ -2485,7 +2485,7 @@ class PdfOcrHelperTest : public PdfAccessibilityTreeTest,
                              /* is_ocr_helper_started_before_pdf_loads */ bool,
                              PdfOcrHelperTestBatchData>> {
  public:
-  PdfOcrHelperTest() : feature_list_(::features::kPdfOcr) {}
+  PdfOcrHelperTest() = default;
   PdfOcrHelperTest(const PdfOcrHelperTest&) = delete;
   PdfOcrHelperTest& operator=(const PdfOcrHelperTest&) = delete;
   ~PdfOcrHelperTest() override = default;
@@ -2578,9 +2578,6 @@ class PdfOcrHelperTest : public PdfAccessibilityTreeTest,
   uint32_t GetExpectedBatchSize() const {
     return std::get<1>(GetParam()).expected_batch_size;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(PdfOcrHelperTest, PageBatching) {
@@ -2913,16 +2910,7 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug.com/40267312): Add test for end result on a non-synthetic
 // multi-page PDF.
 
-class PdfOcrTest : public PdfAccessibilityTreeTest {
- public:
-  PdfOcrTest() : feature_list_(::features::kPdfOcr) {}
-  PdfOcrTest(const PdfOcrTest&) = delete;
-  PdfOcrTest& operator=(const PdfOcrTest&) = delete;
-  ~PdfOcrTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using PdfOcrTest = PdfAccessibilityTreeTest;
 
 TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {
   CreatePdfAccessibilityTree();

@@ -21287,7 +21287,6 @@ from previous Chrome versions.
   <int value="482232604" label="PercentBasedScrolling:enabled"/>
   <int value="482429100"
       label="OmniboxClobberIsZeroSuggestEntrypoint:disabled"/>
-  <int value="482577697" label="PdfOcr:enabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
   <int value="483173979" label="SecurePaymentConfirmationExtensions:disabled"/>
   <int value="483473934" label="HelpAppOnboardingRevamp:enabled"/>
@@ -23936,7 +23935,6 @@ from previous Chrome versions.
   <int value="1563267770"
       label="FencedFramesReportingAttestationsChanges:disabled"/>
   <int value="1565467134" label="AccessibilityShakeToLocate:enabled"/>
-  <int value="1566945988" label="PdfOcr:disabled"/>
   <int value="1567695310" label="CrostiniBullseyeUpgrade:disabled"/>
   <int value="1567839560"
       label="ChromeHomePersonalizedOmniboxSuggestions:disabled"/>

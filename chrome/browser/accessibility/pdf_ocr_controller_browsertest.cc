@@ -130,7 +130,6 @@ class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
     auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
-    enabled.push_back({features::kPdfOcr, {}});
 #if BUILDFLAG(IS_CHROMEOS)
     enabled.push_back({features::kAccessibilityPdfOcrForSelectToSpeak, {}});
 #endif  // BUILDFLAG(IS_CHROMEOS)

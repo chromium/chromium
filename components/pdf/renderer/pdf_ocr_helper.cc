@@ -8,8 +8,8 @@
 #include "base/time/time.h"
 #include "content/public/renderer/render_frame.h"
 #include "pdf/pdf_accessibility_image_fetcher.h"
+#include "pdf/pdf_features.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
-#include "ui/accessibility/accessibility_features.h"
 
 namespace pdf {
 
@@ -54,7 +54,8 @@ PdfOcrHelper::PdfOcrHelper(
       remaining_page_count_(page_count),
       root_node_id_(root_node_id),
       on_ocr_data_received_callback_(std::move(callback)) {
-  CHECK(features::IsPdfOcrEnabled());
+  // When PDF searchify is enabled, PDF OCR is not needed.
+  CHECK(!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify));
 }
 
 PdfOcrHelper::~PdfOcrHelper() {

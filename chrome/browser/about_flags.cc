@@ -8945,11 +8945,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-    {"pdf-ocr", flag_descriptions::kPdfOcrName,
-     flag_descriptions::kPdfOcrDescription,
-     kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(features::kPdfOcr)},
-
     {"pdf-searchify", flag_descriptions::kPdfSearchifyName,
      flag_descriptions::kPdfSearchifyDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfSearchify)},

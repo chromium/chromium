@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
@@ -33,7 +32,6 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -549,8 +547,7 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageTest, testing::Bool());
 
 class PDFiumPageImageForOcrTest : public PDFiumPageImageTest {
  public:
-  PDFiumPageImageForOcrTest() : enable_pdf_ocr_({features::kPdfOcr}) {}
-
+  PDFiumPageImageForOcrTest() = default;
   PDFiumPageImageForOcrTest(const PDFiumPageImageForOcrTest&) = delete;
   PDFiumPageImageForOcrTest& operator=(const PDFiumPageImageForOcrTest&) =
       delete;
@@ -568,7 +565,6 @@ class PDFiumPageImageForOcrTest : public PDFiumPageImageTest {
   }
 
  private:
-  base::test::ScopedFeatureList enable_pdf_ocr_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 };
 

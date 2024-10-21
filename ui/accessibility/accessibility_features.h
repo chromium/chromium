@@ -252,12 +252,6 @@ AX_BASE_EXPORT bool IsDataCollectionModeForScreen2xEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMainNodeAnnotations);
 AX_BASE_EXPORT bool IsMainNodeAnnotationsEnabled();
 
-// Use OCR to make inaccessible (i.e. untagged) PDFs
-// accessibility. (Note: Due to the size of the OCR component, this feature
-// targets only desktop versions of Chrome for now.)
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kPdfOcr);
-AX_BASE_EXPORT bool IsPdfOcrEnabled();
-
 // Show the Read Aloud feature in Read Anything.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloud);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();

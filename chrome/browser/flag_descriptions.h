@@ -1697,9 +1697,6 @@ extern const char kPasswordManualFallbackAvailableDescription[];
 extern const char kPasswordParsingOnSaveUsesPredictionsName[];
 extern const char kPasswordParsingOnSaveUsesPredictionsDescription[];
 
-extern const char kPdfOcrName[];
-extern const char kPdfOcrDescription[];
-
 extern const char kPdfSearchifyName[];
 extern const char kPdfSearchifyDescription[];
 

@@ -951,10 +951,8 @@ void PopulateChromeFrameBinders(
         base::BindRepeating(&web_app::SubAppsServiceImpl::CreateIfAllowed));
   }
 
-  if (features::IsPdfOcrEnabled()) {
-    map->Add<screen_ai::mojom::ScreenAIAnnotator>(
-        base::BindRepeating(&BindScreenAIAnnotator));
-  }
+  map->Add<screen_ai::mojom::ScreenAIAnnotator>(
+      base::BindRepeating(&BindScreenAIAnnotator));
 
   if (features::IsReadAnythingWithScreen2xEnabled()) {
     map->Add<screen_ai::mojom::Screen2xMainContentExtractor>(

@@ -184,7 +184,6 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           net::features::kTpcdTrialSettings,
           net::features::kTopLevelTpcdTrialSettings,
           features::kMainNodeAnnotations,
-          features::kPdfOcr,
           features::kPersistentOriginTrials,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           omnibox::kOnDeviceTailModel,
