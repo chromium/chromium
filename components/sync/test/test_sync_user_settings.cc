@@ -29,7 +29,7 @@ DataTypeSet UserSelectableTypesToDataTypes(
   return preferred_types;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 DataTypeSet UserSelectableOsTypesToDataTypes(
     UserSelectableOsTypeSet selected_types) {
   DataTypeSet preferred_types;
@@ -38,7 +38,7 @@ DataTypeSet UserSelectableOsTypesToDataTypes(
   }
   return preferred_types;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TestSyncUserSettings::TestSyncUserSettings(TestSyncService* service)
     : service_(service) {}
@@ -49,12 +49,12 @@ bool TestSyncUserSettings::IsInitialSyncFeatureSetupComplete() const {
   return initial_sync_feature_setup_complete_;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete(
     SyncFirstSetupCompleteSource source) {
   SetInitialSyncFeatureSetupComplete();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 bool TestSyncUserSettings::IsSyncEverythingEnabled() const {
   return sync_everything_enabled_;
@@ -121,7 +121,7 @@ DataTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
   DataTypeSet types = UserSelectableTypesToDataTypes(GetSelectedTypes());
   types.PutAll(AlwaysPreferredUserTypes());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   types.PutAll(UserSelectableOsTypesToDataTypes(GetSelectedOsTypes()));
 #endif
   types.PutAll(ControlTypes());
@@ -133,7 +133,7 @@ UserSelectableTypeSet TestSyncUserSettings::GetRegisteredSelectableTypes()
   return registered_selectable_types_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool TestSyncUserSettings::IsSyncFeatureDisabledViaDashboard() const {
   return sync_feature_disabled_via_dashboard_;
 }
@@ -178,20 +178,6 @@ void TestSyncUserSettings::SetSelectedOsTypes(bool sync_all_os_types,
 UserSelectableOsTypeSet TestSyncUserSettings::GetRegisteredSelectableOsTypes()
     const {
   return UserSelectableOsTypeSet::All();
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void TestSyncUserSettings::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
-  UserSelectableTypeSet selected_types = GetSelectedTypes();
-  if (apps_sync_enabled) {
-    selected_types.Put(UserSelectableType::kApps);
-  } else {
-    selected_types.Remove(UserSelectableType::kApps);
-  }
-  SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/selected_types);
 }
 #endif
 
@@ -300,7 +286,7 @@ void TestSyncUserSettings::SetTypeIsManaged(UserSelectableType type,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void TestSyncUserSettings::SetOsTypeIsManaged(UserSelectableOsType type,
                                               bool managed) {
   if (managed) {

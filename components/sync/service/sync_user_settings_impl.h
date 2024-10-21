@@ -49,17 +49,17 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   std::string GetEncryptionBootstrapToken() const;
   void SetEncryptionBootstrapToken(const std::string& token);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetSyncFeatureDisabledViaDashboard();
   void ClearSyncFeatureDisabledViaDashboard();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // SyncUserSettings implementation.
   bool IsInitialSyncFeatureSetupComplete() const override;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void SetInitialSyncFeatureSetupComplete(
       SyncFirstSetupCompleteSource source) override;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   bool IsSyncEverythingEnabled() const override;
   // TODO(b/321217859): On Android, temporarily remove kPasswords from the
   // selected types while the local UPM migration is ongoing. This was
@@ -79,7 +79,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids) override;
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool IsSyncFeatureDisabledViaDashboard() const override;
   bool IsSyncAllOsTypesEnabled() const override;
   UserSelectableOsTypeSet GetSelectedOsTypes() const override;
@@ -87,10 +87,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet types) override;
   UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const override;
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetAppsSyncEnabledByOs(bool apps_sync_enabled) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
   DataTypeSet GetAllEncryptedDataTypes() const override;

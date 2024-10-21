@@ -31,7 +31,7 @@ namespace {
 
 DataTypeSet GetUserTypes() {
   DataTypeSet user_types = UserTypes();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Ignore all Chrome OS types on non-Chrome OS platforms.
   user_types.RemoveAll(
       {APP_LIST, ARC_PACKAGE, OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS,
@@ -137,21 +137,9 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   UserSelectableTypeSet all_registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Apps sync is controlled by a dedicated preference on Lacros,
-  // corresponding to the Apps toggle in OS Sync settings. That pref
-  // isn't set up in this test.
-  if (base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing)) {
-    ASSERT_TRUE(all_registered_types.Has(UserSelectableType::kApps));
-    ASSERT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
-    expected_types.RemoveAll({APPS, APP_SETTINGS, WEB_APPS, WEB_APKS});
-    all_registered_types.Remove(UserSelectableType::kApps);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   expected_types.RemoveAll({WEB_APKS});
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_TRUE(sync_user_settings->IsSyncEverythingEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
@@ -237,17 +225,6 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInFullSyncMode) {
   UserSelectableTypeSet registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing)) {
-    // Apps sync is controlled by a dedicated preference on Lacros,
-    // corresponding to the Apps toggle in OS Sync settings. That pref
-    // isn't set up in this test.
-    ASSERT_TRUE(registered_types.Has(UserSelectableType::kApps));
-    ASSERT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
-    registered_types.Remove(UserSelectableType::kApps);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   const UserSelectableTypeSet registered_types_except_passwords =
       base::Difference(registered_types,
                        UserSelectableTypeSet({UserSelectableType::kPasswords}));
@@ -270,7 +247,7 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInFullSyncMode) {
   EXPECT_EQ(sync_user_settings->GetSelectedTypes(), registered_types);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
@@ -286,7 +263,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
     EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
@@ -295,13 +272,13 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/UserSelectableTypeSet());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // GetPreferredUserTypes() returns DataTypes, which includes both browser
   // and OS types. However, this test exercises browser UserSelectableTypes,
   // so disable OS selectable types.
   sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
                                          UserSelectableOsTypeSet());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   // No user selectable types are enabled, so only the "always preferred" types
   // are preferred.
   ASSERT_EQ(AlwaysPreferredUserTypes(),
@@ -309,17 +286,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
 
   UserSelectableTypeSet all_registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing)) {
-    // Apps sync is controlled by a dedicated preference on Lacros,
-    // corresponding to the Apps toggle in OS Sync settings. That pref
-    // isn't set up in this test.
-    ASSERT_TRUE(all_registered_types.Has(UserSelectableType::kApps));
-    ASSERT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
-    all_registered_types.Remove(UserSelectableType::kApps);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   for (UserSelectableType type : all_registered_types) {
     DataTypeSet expected_preferred_types =
@@ -332,7 +298,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncUserSettingsImplTest, PreferredTypesNotAllOsTypesSynced) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
@@ -358,7 +324,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotAllOsTypesSynced) {
               GetPreferredUserTypes(*sync_user_settings));
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Device info should always be enabled.
 TEST_F(SyncUserSettingsImplTest, DeviceInfo) {
@@ -410,7 +376,7 @@ TEST_F(SyncUserSettingsImplTest, UserConsents) {
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(USER_CONSENTS));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncUserSettingsImplTest, AlwaysPreferredTypes_ChromeOS) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
@@ -469,43 +435,7 @@ TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
   EXPECT_FALSE(settings->GetPreferredDataTypes().Has(ARC_PACKAGE));
   EXPECT_FALSE(settings->GetPreferredDataTypes().Has(WEB_APPS));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSyncChromeOSAppsToggleSharing);
-
-  std::unique_ptr<SyncUserSettingsImpl> settings =
-      MakeSyncUserSettings(GetUserTypes());
-
-  ASSERT_TRUE(settings->IsSyncEverythingEnabled());
-
-  // App data types are disabled by default, even though "Sync everything" is
-  // on.
-  EXPECT_FALSE(settings->GetPreferredDataTypes().Has(APP_SETTINGS));
-  EXPECT_FALSE(settings->GetPreferredDataTypes().Has(APPS));
-  EXPECT_FALSE(settings->GetPreferredDataTypes().Has(WEB_APPS));
-
-  // Mimic apps toggle enabled in the OS.
-  settings->SetAppsSyncEnabledByOs(true);
-
-  // App data types should become enabled.
-  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APP_SETTINGS));
-  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APPS));
-  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(WEB_APPS));
-
-  // Mimic "Sync everything" and all individual types toggle are disabled, app
-  // data types should stay enabled.
-  settings->SetSelectedTypes(/*sync_everything=*/false,
-                             UserSelectableTypeSet());
-  ASSERT_FALSE(settings->IsSyncEverythingEnabled());
-
-  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APP_SETTINGS));
-  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APPS));
-  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(WEB_APPS));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
   ASSERT_FALSE(AlwaysPreferredUserTypes().Has(HISTORY));
@@ -515,13 +445,13 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // GetPreferredUserTypes() returns DataTypes, which includes both browser
   // and OS types. However, this test exercises browser UserSelectableTypes,
   // so disable OS selectable types.
   sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
                                          UserSelectableOsTypeSet());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // History and OpenTabs enabled: All the history-related DataTypes should be
   // enabled.
