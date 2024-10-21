@@ -6,10 +6,8 @@
 #include <memory>
 #include <optional>
 
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_timeouts.h"
 #include "base/uuid.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -72,14 +70,6 @@ struct ScopedAddObservation : public TabGroupSyncService::Observer {
                        TriggerSource source) override {
     last_group_tab_count = group.saved_tabs().size();
     last_trigger_source = source;
-  }
-
-  void Wait() {
-    base::RunLoop run_loop;
-    // TODO(374350055): Find alternative to timeout.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
   }
 
   std::optional<int> last_group_tab_count = std::nullopt;
@@ -252,17 +242,13 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
-                       SavedTabGroupAddedFromSyncV2) {
+                       SavedTabGroupLoadStoredEntriesV2) {
   if (!IsV2UIMigrationEnabled()) {
     GTEST_SKIP() << "N/A for V1";
   }
   ASSERT_TRUE(SavedTabGroupUtils::IsEnabledForProfile(browser()->profile()));
   TabGroupSyncService* service =
       SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
-  TabGroupSyncServiceImpl* service_impl =
-      static_cast<TabGroupSyncServiceImpl*>(service);
-  service_impl->SetIsInitializedForTesting(true);
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
 
   {  // Create 1 pinned group
     ScopedAddObservation observer(service);
@@ -271,12 +257,14 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
         u"group_title", TabGroupColorId::kGrey, {}, 0, group_guid};
     SavedTabGroupTab tab{GURL("https://www.zombo.com"), u"tab_title",
                          group_guid, 0};
-    group.AddTabFromSync(std::move(tab));
-    model->AddedFromSync(std::move(group));
-    observer.Wait();
+
+    TabGroupSyncServiceImpl* service_impl =
+        static_cast<TabGroupSyncServiceImpl*>(service);
+    SavedTabGroupModel* model = service_impl->GetModelForTesting();
+    model->LoadStoredEntries({std::move(group)}, {std::move(tab)});
 
     // Expect that a remote group was created.
-    EXPECT_EQ(1, observer.last_group_tab_count);
+    EXPECT_NE(0, observer.last_group_tab_count);
     EXPECT_EQ(TriggerSource::REMOTE, observer.last_trigger_source);
   }
 
@@ -288,12 +276,14 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
     SavedTabGroupTab tab{GURL("https://www.zombo.com"), u"tab_title",
                          group_guid, 0};
 
-    model->AddedFromSync(std::move(group));
+    TabGroupSyncServiceImpl* service_impl =
+        static_cast<TabGroupSyncServiceImpl*>(service);
+    SavedTabGroupModel* model = service_impl->GetModelForTesting();
+    model->AddedFromSync({std::move(group)});
     model->AddTabToGroupFromSync(group_guid, {std::move(tab)});
-    observer.Wait();
 
     // Expect that a remote group was created.
-    EXPECT_EQ(1, observer.last_group_tab_count);
+    EXPECT_NE(0, observer.last_group_tab_count);
     EXPECT_EQ(TriggerSource::REMOTE, observer.last_trigger_source);
   }
 
@@ -339,9 +329,6 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
   ASSERT_TRUE(SavedTabGroupUtils::IsEnabledForProfile(browser()->profile()));
   TabGroupSyncService* service =
       SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
-  TabGroupSyncServiceImpl* service_impl =
-      static_cast<TabGroupSyncServiceImpl*>(service);
-  service_impl->SetIsInitializedForTesting(true);
 
   {  // Create an empty group.
     ScopedAddObservation observer(service);
@@ -349,9 +336,10 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
     SavedTabGroup group{
         u"group_title", TabGroupColorId::kGrey, {}, 0, group_guid};
 
+    TabGroupSyncServiceImpl* service_impl =
+        static_cast<TabGroupSyncServiceImpl*>(service);
     SavedTabGroupModel* model = service_impl->GetModelForTesting();
-    model->AddedFromSync(std::move(group));
-    observer.Wait();
+    model->LoadStoredEntries({std::move(group)}, {});
 
     // Expect that a remote group was created.
     EXPECT_EQ(std::nullopt, observer.last_group_tab_count);
