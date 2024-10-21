@@ -18,9 +18,6 @@ class ReadingListDownloadService;
 class ReadingListDownloadServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static ReadingListDownloadService* GetForBrowserState(ProfileIOS* profile);
-
   static ReadingListDownloadService* GetForProfile(ProfileIOS* profile);
   static ReadingListDownloadServiceFactory* GetInstance();
 

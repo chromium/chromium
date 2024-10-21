@@ -14,12 +14,6 @@
 #import "ios/public/provider/chrome/browser/mailto_handler/mailto_handler_api.h"
 
 // static
-MailtoHandlerService* MailtoHandlerServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 MailtoHandlerService* MailtoHandlerServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<MailtoHandlerService*>(

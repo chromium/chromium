@@ -13,12 +13,6 @@
 #import "ios/public/provider/chrome/browser/content_notification/content_notification_api.h"
 
 // static
-ContentNotificationService*
-ContentNotificationServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 ContentNotificationService* ContentNotificationServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<ContentNotificationService*>(

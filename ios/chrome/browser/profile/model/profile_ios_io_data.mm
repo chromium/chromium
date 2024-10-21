@@ -88,7 +88,7 @@ void ProfileIOSIOData::InitializeOnUIThread(ProfileIOS* profile) {
 
   params->cookie_settings = ios::CookieSettingsFactory::GetForProfile(profile);
   params->host_content_settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(profile);
+      ios::HostContentSettingsMapFactory::GetForProfile(profile);
 
   params->proxy_config_service = ProxyServiceFactory::CreateProxyConfigService(
       profile->GetProxyConfigTracker());

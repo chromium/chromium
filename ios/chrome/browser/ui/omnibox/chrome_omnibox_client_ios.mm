@@ -108,7 +108,7 @@ ChromeOmniboxClientIOS::GetAutocompleteControllerEmitter() {
 }
 
 TemplateURLService* ChromeOmniboxClientIOS::GetTemplateURLService() {
-  return ios::TemplateURLServiceFactory::GetForBrowserState(profile_);
+  return ios::TemplateURLServiceFactory::GetForProfile(profile_);
 }
 
 const AutocompleteSchemeClassifier&

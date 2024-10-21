@@ -14,12 +14,6 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
-GoogleLogoService* GoogleLogoServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 GoogleLogoService* GoogleLogoServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<GoogleLogoService*>(

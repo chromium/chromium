@@ -20,9 +20,6 @@ class ProfileIOS;
 class BringAndroidTabsToIOSServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358299863): Remove when fully migrated.
-  static BringAndroidTabsToIOSService* GetForBrowserState(ProfileIOS* profile);
-
   static BringAndroidTabsToIOSService* GetForProfile(ProfileIOS* profile);
   static BringAndroidTabsToIOSService* GetForProfileIfExists(
       ProfileIOS* profile);

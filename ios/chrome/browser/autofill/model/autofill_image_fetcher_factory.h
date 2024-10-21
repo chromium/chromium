@@ -20,9 +20,6 @@ class AutofillImageFetcherImpl;
 // profiles.
 class AutofillImageFetcherFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static AutofillImageFetcherImpl* GetForBrowserState(ProfileIOS* profile);
-
   static AutofillImageFetcherImpl* GetForProfile(ProfileIOS* profile);
   static AutofillImageFetcherFactory* GetInstance();
 

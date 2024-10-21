@@ -25,10 +25,6 @@ class ShoppingServiceFactory : public BrowserStateKeyedServiceFactory {
   static ShoppingService* GetForProfile(ProfileIOS* profile);
   static ShoppingService* GetForProfileIfExists(ProfileIOS* profile);
 
-  // Deprecated: use GetForProfile(...)/GetForProfileIfExists(...).
-  static ShoppingService* GetForBrowserState(ProfileIOS* profile);
-  static ShoppingService* GetForBrowserStateIfExists(ProfileIOS* profile);
-
  private:
   friend class base::NoDestructor<ShoppingServiceFactory>;
 

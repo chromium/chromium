@@ -18,9 +18,6 @@ namespace ios {
 class HostContentSettingsMapFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static HostContentSettingsMap* GetForBrowserState(ProfileIOS* profile);
-
   static HostContentSettingsMap* GetForProfile(ProfileIOS* profile);
   static HostContentSettingsMapFactory* GetInstance();
 

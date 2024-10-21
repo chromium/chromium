@@ -14,12 +14,6 @@
 namespace ios {
 
 // static
-HostContentSettingsMap* HostContentSettingsMapFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 HostContentSettingsMap* HostContentSettingsMapFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<HostContentSettingsMap*>(

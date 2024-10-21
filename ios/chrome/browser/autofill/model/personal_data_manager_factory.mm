@@ -44,12 +44,6 @@ const std::string GetCountryCodeFromVariations() {
 }  // namespace
 
 // static
-PersonalDataManager* PersonalDataManagerFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 PersonalDataManager* PersonalDataManagerFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<PersonalDataManager*>(

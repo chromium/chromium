@@ -123,7 +123,7 @@ CommercePushNotificationClient::RegisterActionableNotifications() {
 
 commerce::ShoppingService*
 CommercePushNotificationClient::GetShoppingService() {
-  return commerce::ShoppingServiceFactory::GetForBrowserState(GetAnyProfile());
+  return commerce::ShoppingServiceFactory::GetForProfile(GetAnyProfile());
 }
 
 bookmarks::BookmarkModel* CommercePushNotificationClient::GetBookmarkModel() {

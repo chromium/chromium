@@ -21,9 +21,6 @@ namespace ios {
 // profiles.
 class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static history::WebHistoryService* GetForBrowserState(ProfileIOS* profile);
-
   static history::WebHistoryService* GetForProfile(ProfileIOS* profile);
   static WebHistoryServiceFactory* GetInstance();
 

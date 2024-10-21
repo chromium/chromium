@@ -19,9 +19,6 @@ class ProfileIOS;
 class IOSChromeSafetyCheckManagerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static IOSChromeSafetyCheckManager* GetForBrowserState(ProfileIOS* profile);
-
   static IOSChromeSafetyCheckManager* GetForProfile(ProfileIOS* profile);
   static IOSChromeSafetyCheckManagerFactory* GetInstance();
   static TestingFactory GetDefaultFactory();

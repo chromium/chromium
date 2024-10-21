@@ -35,12 +35,6 @@ std::unique_ptr<KeyedService> BuildServiceInstance(web::BrowserState* context) {
 }  // namespace
 
 // static
-IOSChromeSafetyCheckManager*
-IOSChromeSafetyCheckManagerFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 IOSChromeSafetyCheckManager* IOSChromeSafetyCheckManagerFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<IOSChromeSafetyCheckManager*>(

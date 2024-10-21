@@ -32,10 +32,10 @@ std::unique_ptr<KeyedService> BuildInMemoryURLIndex(
 
   // Do not force creation of the HistoryService if saving history is disabled.
   std::unique_ptr<InMemoryURLIndex> in_memory_url_index(new InMemoryURLIndex(
-      ios::BookmarkModelFactory::GetForBrowserState(profile),
+      ios::BookmarkModelFactory::GetForProfile(profile),
       ios::HistoryServiceFactory::GetForBrowserState(
           profile, ServiceAccessType::IMPLICIT_ACCESS),
-      ios::TemplateURLServiceFactory::GetForBrowserState(profile),
+      ios::TemplateURLServiceFactory::GetForProfile(profile),
       profile->GetStatePath(), allowed_schemes));
   in_memory_url_index->Init();
   return in_memory_url_index;

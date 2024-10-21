@@ -50,18 +50,6 @@ ShoppingService* ShoppingServiceFactory::GetForProfileIfExists(
       GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
-// static
-ShoppingService* ShoppingServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-ShoppingService* ShoppingServiceFactory::GetForBrowserStateIfExists(
-    ProfileIOS* profile) {
-  return GetForProfileIfExists(profile);
-}
-
 ShoppingServiceFactory::ShoppingServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "ShoppingService",

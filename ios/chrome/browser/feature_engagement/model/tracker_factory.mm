@@ -20,12 +20,6 @@ TrackerFactory* TrackerFactory::GetInstance() {
 }
 
 // static
-feature_engagement::Tracker* TrackerFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 feature_engagement::Tracker* TrackerFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<feature_engagement::Tracker*>(

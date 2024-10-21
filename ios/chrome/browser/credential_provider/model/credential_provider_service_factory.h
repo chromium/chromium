@@ -16,9 +16,6 @@ class ProfileIOS;
 class CredentialProviderServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static CredentialProviderService* GetForBrowserState(ProfileIOS* profile);
-
   static CredentialProviderService* GetForProfile(ProfileIOS* profile);
   static CredentialProviderServiceFactory* GetInstance();
 

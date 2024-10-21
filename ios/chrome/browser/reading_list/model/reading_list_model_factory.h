@@ -21,9 +21,6 @@ class DualReadingListModel;
 // a profile.
 class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static ReadingListModel* GetForBrowserState(ProfileIOS* profile);
-
   static ReadingListModel* GetForProfile(ProfileIOS* profile);
   static reading_list::DualReadingListModel*
   GetAsDualReadingListModelForProfile(ProfileIOS* profile);

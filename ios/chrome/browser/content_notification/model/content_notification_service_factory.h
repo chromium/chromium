@@ -16,9 +16,6 @@ class ProfileIOS;
 class ContentNotificationServiceFactory final
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static ContentNotificationService* GetForBrowserState(ProfileIOS* profile);
-
   static ContentNotificationService* GetForProfile(ProfileIOS* profile);
   static ContentNotificationServiceFactory* GetInstance();
 

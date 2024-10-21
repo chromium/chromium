@@ -20,12 +20,6 @@
 namespace autofill {
 
 // static
-AutocompleteHistoryManager*
-AutocompleteHistoryManagerFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 AutocompleteHistoryManager* AutocompleteHistoryManagerFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<AutocompleteHistoryManager*>(

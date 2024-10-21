@@ -282,7 +282,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                     OverlayModality::kWebContentArea);
   self.steadyViewMediator.consumer = self;
   self.steadyViewMediator.tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
+      feature_engagement::TrackerFactory::GetForProfile(
           self.browser->GetProfile());
 
   _omniboxFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(

@@ -21,8 +21,6 @@ class DriveService;
 class DriveServiceFactory final : public BrowserStateKeyedServiceFactory {
  public:
   static DriveService* GetForProfile(ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static DriveService* GetForBrowserState(ProfileIOS* profile);
   static DriveServiceFactory* GetInstance();
 
  private:

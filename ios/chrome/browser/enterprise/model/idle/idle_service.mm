@@ -166,7 +166,7 @@ void IdleService::RunActionsForStateForTesting(LastState last_state) {
 void IdleService::MaybeRunActionsForState(LastState last_state) {
   last_action_set_ =
       GetActionSet(profile_->GetPrefs(),
-                   AuthenticationServiceFactory::GetForBrowserState(profile_));
+                   AuthenticationServiceFactory::GetForProfile(profile_));
 
   if (!IsAnyActionNeededToRun()) {
     PostCheckIdleTask(GetTimeout());

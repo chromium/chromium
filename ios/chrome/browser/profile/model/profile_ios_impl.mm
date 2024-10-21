@@ -229,9 +229,9 @@ ProfileIOSImpl::ProfileIOSImpl(
       std::make_unique<supervised_user::SupervisedUserContentSettingsProvider>(
           supervised_user_settings);
 
-  ios::HostContentSettingsMapFactory::GetForBrowserState(this)
-      ->RegisterProvider(content_settings::ProviderType::kSupervisedProvider,
-                         std::move(supervised_provider));
+  ios::HostContentSettingsMapFactory::GetForProfile(this)->RegisterProvider(
+      content_settings::ProviderType::kSupervisedProvider,
+      std::move(supervised_provider));
 
   base::FilePath cookie_path = state_path.Append(kIOSChromeCookieFilename);
   base::FilePath cache_path = directories_creation_result.cache_path;

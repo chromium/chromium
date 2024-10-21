@@ -12,12 +12,6 @@
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-LargeIconCache* IOSChromeLargeIconCacheFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 LargeIconCache* IOSChromeLargeIconCacheFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<LargeIconCache*>(

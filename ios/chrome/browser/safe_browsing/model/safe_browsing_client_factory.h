@@ -18,9 +18,6 @@ class SafeBrowsingClient;
 class SafeBrowsingClientFactory : public BrowserStateKeyedServiceFactory {
  public:
   static SafeBrowsingClient* GetForProfile(ProfileIOS* profile);
-
-  // Deprecated: use GetForProfile(...).
-  static SafeBrowsingClient* GetForBrowserState(ProfileIOS* profile);
   static SafeBrowsingClientFactory* GetInstance();
 
   SafeBrowsingClientFactory(const SafeBrowsingClientFactory&) = delete;

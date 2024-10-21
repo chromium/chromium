@@ -70,7 +70,7 @@ void RecordPriceTrackableSiteVisit(web::WebState* web_state) {
 PriceNotificationsTabHelper::PriceNotificationsTabHelper(
     web::WebState* web_state) {
   web_state_observation_.Observe(web_state);
-  shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
+  shopping_service_ = commerce::ShoppingServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
 }
 

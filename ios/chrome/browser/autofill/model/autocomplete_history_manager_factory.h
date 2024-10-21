@@ -21,9 +21,6 @@ class AutocompleteHistoryManager;
 class AutocompleteHistoryManagerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static AutocompleteHistoryManager* GetForBrowserState(ProfileIOS* profile);
-
   static AutocompleteHistoryManager* GetForProfile(ProfileIOS* profile);
   static AutocompleteHistoryManagerFactory* GetInstance();
 

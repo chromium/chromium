@@ -14,12 +14,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-ExternalFileRemover* ExternalFileRemoverFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 ExternalFileRemover* ExternalFileRemoverFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<ExternalFileRemover*>(

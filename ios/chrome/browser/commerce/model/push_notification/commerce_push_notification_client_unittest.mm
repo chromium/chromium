@@ -199,7 +199,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
     ios::AccountBookmarkSyncServiceFactory::GetForProfile(profile_.get())
         ->SetIsTrackingMetadataForTesting();
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetForBrowserState(profile_.get()));
+        commerce::ShoppingServiceFactory::GetForProfile(profile_.get()));
     application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_

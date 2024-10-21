@@ -19,9 +19,6 @@ namespace ios {
 // profile.
 class PasswordManagerLogRouterFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static autofill::LogRouter* GetForBrowserState(ProfileIOS* profile);
-
   static autofill::LogRouter* GetForProfile(ProfileIOS* profile);
   static PasswordManagerLogRouterFactory* GetInstance();
 

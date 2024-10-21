@@ -31,12 +31,6 @@
 namespace tab_groups {
 
 // static
-TabGroupSyncService* TabGroupSyncServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 TabGroupSyncService* TabGroupSyncServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<TabGroupSyncService*>(

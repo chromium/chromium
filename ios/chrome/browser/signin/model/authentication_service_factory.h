@@ -24,9 +24,6 @@ class AuthenticationServiceDelegate;
 // cleans up the associated `AuthenticationService`.
 class AuthenticationServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static AuthenticationService* GetForBrowserState(ProfileIOS* profile);
-
   static AuthenticationService* GetForProfile(ProfileIOS* profile);
   static AuthenticationServiceFactory* GetInstance();
 

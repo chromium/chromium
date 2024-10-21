@@ -17,12 +17,6 @@ namespace ios {
 using autofill::LogRouter;
 
 // static
-LogRouter* PasswordManagerLogRouterFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 LogRouter* PasswordManagerLogRouterFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<LogRouter*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

@@ -26,11 +26,6 @@ DriveService* DriveServiceFactory::GetForProfile(ProfileIOS* profile) {
 }
 
 // static
-DriveService* DriveServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 DriveServiceFactory* DriveServiceFactory::GetInstance() {
   static base::NoDestructor<DriveServiceFactory> instance;
   return instance.get();

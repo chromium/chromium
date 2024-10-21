@@ -18,9 +18,6 @@ class ProfileIOS;
 // profiles.
 class GoogleLogoServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static GoogleLogoService* GetForBrowserState(ProfileIOS* profile);
-
   static GoogleLogoService* GetForProfile(ProfileIOS* profile);
   static GoogleLogoServiceFactory* GetInstance();
 

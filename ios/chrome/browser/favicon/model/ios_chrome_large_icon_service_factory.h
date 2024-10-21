@@ -22,9 +22,6 @@ class LargeIconService;
 class IOSChromeLargeIconServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static favicon::LargeIconService* GetForBrowserState(ProfileIOS* profile);
-
   static favicon::LargeIconService* GetForProfile(ProfileIOS* profile);
 
   static IOSChromeLargeIconServiceFactory* GetInstance();

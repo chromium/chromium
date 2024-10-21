@@ -17,9 +17,6 @@ class TabGroupSyncService;
 // Factory for the Tab Group Sync service.
 class TabGroupSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static TabGroupSyncService* GetForBrowserState(ProfileIOS* profile);
-
   static TabGroupSyncService* GetForProfile(ProfileIOS* profile);
   static TabGroupSyncServiceFactory* GetInstance();
 

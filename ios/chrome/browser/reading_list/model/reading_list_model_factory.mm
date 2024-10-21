@@ -41,12 +41,6 @@ GetWipeModelUponSyncDisabledBehaviorForSyncableModel() {
 }  // namespace
 
 // static
-ReadingListModel* ReadingListModelFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 ReadingListModel* ReadingListModelFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<ReadingListModel*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

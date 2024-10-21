@@ -22,7 +22,7 @@ bool IsPriceTrackingEnabled(ProfileIOS* profile) {
   DCHECK(profile);
   // May be null during testing or if profile is off-the-record.
   commerce::ShoppingService* service =
-      commerce::ShoppingServiceFactory::GetForBrowserState(profile);
+      commerce::ShoppingServiceFactory::GetForProfile(profile);
 
   return service && service->IsShoppingListEligible();
 }

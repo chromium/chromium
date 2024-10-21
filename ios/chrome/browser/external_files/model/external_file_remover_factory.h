@@ -18,9 +18,6 @@ class ProfileIOS;
 // cleans up the associated `ExternalFileRemover`.
 class ExternalFileRemoverFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static ExternalFileRemover* GetForBrowserState(ProfileIOS* profile);
-
   static ExternalFileRemover* GetForProfile(ProfileIOS* profile);
   static ExternalFileRemoverFactory* GetInstance();
 

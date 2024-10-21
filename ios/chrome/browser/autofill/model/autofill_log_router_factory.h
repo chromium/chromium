@@ -18,9 +18,6 @@ class LogRouter;
 // profiles. This returns nullptr for off-the-record profiles.
 class AutofillLogRouterFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static autofill::LogRouter* GetForBrowserState(ProfileIOS* profile);
-
   static autofill::LogRouter* GetForProfile(ProfileIOS* profile);
   static AutofillLogRouterFactory* GetInstance();
 

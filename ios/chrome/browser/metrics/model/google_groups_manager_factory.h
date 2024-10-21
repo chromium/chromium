@@ -14,9 +14,6 @@ class ProfileIOS;
 class GoogleGroupsManagerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static GoogleGroupsManager* GetForBrowserState(ProfileIOS* profile);
-
   static GoogleGroupsManager* GetForProfile(ProfileIOS* profile);
   static GoogleGroupsManagerFactory* GetInstance();
 

@@ -17,9 +17,6 @@ class ProfileIOS;
 // ProfileIOS.
 class IOSChromeFaviconLoaderFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static FaviconLoader* GetForBrowserState(ProfileIOS* profile);
-
   static FaviconLoader* GetForProfile(ProfileIOS* profile);
   static FaviconLoader* GetForProfileIfExists(ProfileIOS* profile);
 

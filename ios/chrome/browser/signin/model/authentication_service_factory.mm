@@ -31,12 +31,6 @@ std::unique_ptr<KeyedService> BuildAuthenticationService(
 }  // namespace
 
 // static
-AuthenticationService* AuthenticationServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 AuthenticationService* AuthenticationServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   AuthenticationService* service = static_cast<AuthenticationService*>(

@@ -26,12 +26,6 @@ SafeBrowsingClient* SafeBrowsingClientFactory::GetForProfile(
 }
 
 // static
-SafeBrowsingClient* SafeBrowsingClientFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SafeBrowsingClientFactory* SafeBrowsingClientFactory::GetInstance() {
   static base::NoDestructor<SafeBrowsingClientFactory> instance;
   return instance.get();

@@ -15,9 +15,6 @@ class SamplePanelModel;
 // profiles.
 class SamplePanelModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static SamplePanelModel* GetForBrowserState(ProfileIOS* profile);
-
   static SamplePanelModel* GetForProfile(ProfileIOS* profile);
   static SamplePanelModelFactory* GetInstance();
 

@@ -2913,7 +2913,7 @@ enum class ToolbarKind {
 
 - (void)showTrackingForParcels:(NSArray<CustomTextCheckingResult*>*)parcels {
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForBrowserState(
+      commerce::ShoppingServiceFactory::GetForProfile(
           self.browser->GetProfile());
   if (!shoppingService) {
     return;
@@ -2928,7 +2928,7 @@ enum class ToolbarKind {
 - (void)showTrackingForFilteredParcels:
     (NSArray<CustomTextCheckingResult*>*)parcels {
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForBrowserState(
+      commerce::ShoppingServiceFactory::GetForProfile(
           self.browser->GetProfile());
   if (!shoppingService) {
     return;
@@ -2949,7 +2949,7 @@ enum class ToolbarKind {
     return;
   }
   ProfileIOS* profile = self.browser->GetProfile();
-  if (!commerce::ShoppingServiceFactory::GetForBrowserState(profile)
+  if (!commerce::ShoppingServiceFactory::GetForProfile(profile)
            ->IsParcelTrackingEligible()) {
     return;
   }
@@ -2992,7 +2992,7 @@ enum class ToolbarKind {
         return;
       }
       commerce::ShoppingService* shoppingService =
-          commerce::ShoppingServiceFactory::GetForBrowserState(
+          commerce::ShoppingServiceFactory::GetForProfile(
               ProfileIOS::FromBrowserState(activeWebState->GetBrowserState()));
       // Track parcels and display infobar if successful.
       TrackParcels(

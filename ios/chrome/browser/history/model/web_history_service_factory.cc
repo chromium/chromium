@@ -30,12 +30,6 @@ bool IsHistorySyncEnabled(ProfileIOS* profile) {
 }  // namespace
 
 // static
-history::WebHistoryService* WebHistoryServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 history::WebHistoryService* WebHistoryServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   // Ensure that the service is not instantiated or used if the user is not

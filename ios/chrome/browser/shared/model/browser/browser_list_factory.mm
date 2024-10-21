@@ -13,11 +13,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-BrowserList* BrowserListFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 BrowserList* BrowserListFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<BrowserList*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

@@ -61,8 +61,6 @@ class SessionProtoDBFactory : public BrowserStateKeyedServiceFactory {
 
   static SessionProtoDBFactory<T>* GetInstance();
   static SessionProtoDB<T>* GetForProfile(ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static SessionProtoDB<T>* GetForBrowserState(ProfileIOS* profile);
 
   static TestingFactory GetDefaultFactory();
 
@@ -82,13 +80,6 @@ SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<SessionProtoDB<T>*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
-}
-
-// static
-template <typename T>
-SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
 }
 
 template <typename T>
