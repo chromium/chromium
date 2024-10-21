@@ -84,7 +84,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       base::WeakPtr<ServiceWorkerContextCore> context,
       std::string fetch_event_client_id,
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      network::mojom::RequestDestination destination,
       bool skip_service_worker,
       FrameTreeNodeId frame_tree_node_id,
       ServiceWorkerAccessedCallback service_worker_accessed_callback);
@@ -173,7 +172,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   const std::string fetch_event_client_id_;
 
   const base::WeakPtr<ServiceWorkerClient> service_worker_client_;
-  const network::mojom::RequestDestination destination_;
 
   // If true, service workers are bypassed for request interception.
   const bool skip_service_worker_;

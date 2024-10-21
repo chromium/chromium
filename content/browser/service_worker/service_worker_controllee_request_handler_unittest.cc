@@ -86,7 +86,6 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
               test->context()->AsWeakPtr(),
               /*fetch_event_client_id=*/"",
               test->service_worker_client_,
-              destination,
               /*skip_service_worker=*/false,
               FrameTreeNodeId(),
               base::DoNothing())) {}
@@ -492,7 +491,6 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, SkipServiceWorker) {
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
           context()->AsWeakPtr(),
           /*fetch_event_client_id=*/"", service_worker_client_,
-          network::mojom::RequestDestination::kDocument,
           /*skip_service_worker=*/true, FrameTreeNodeId(), base::DoNothing()));
 
   // Conduct a main resource load.
@@ -533,8 +531,8 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
   test_resources.SetHandler(
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
           context()->AsWeakPtr(), /*fetch_event_client_id=*/"",
-          service_worker_client_, network::mojom::RequestDestination::kDocument,
-          /*skip_service_worker=*/false, FrameTreeNodeId(), base::DoNothing()));
+          service_worker_client_, /*skip_service_worker=*/false,
+          FrameTreeNodeId(), base::DoNothing()));
 
   // Destroy the context and make a new one.
   DeleteAndStartOverWaiter delete_and_start_over_waiter(

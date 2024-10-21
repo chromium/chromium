@@ -93,7 +93,6 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle),
-      request_info.common_params->request_destination,
       request_info.begin_params->skip_service_worker,
       request_info.frame_tree_node_id, request_info.isolation_info));
 }
@@ -139,8 +138,8 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
   }
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
-      std::move(navigation_handle), resource_request.destination,
-      resource_request.skip_service_worker, FrameTreeNodeId(), isolation_info));
+      std::move(navigation_handle), resource_request.skip_service_worker,
+      FrameTreeNodeId(), isolation_info));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -164,10 +163,11 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     return;
   }
 
-  if ((request_destination_ ==
+  if ((tentative_resource_request.destination ==
            network::mojom::RequestDestination::kSharedWorker &&
        base::FeatureList::IsEnabled(kSharedWorkerBlobURLFix)) ||
-      request_destination_ == network::mojom::RequestDestination::kWorker) {
+      tentative_resource_request.destination ==
+          network::mojom::RequestDestination::kWorker) {
     // For the blob worker case, inherit the controller from the worker's
     // parent. See
     // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
@@ -219,9 +219,8 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   // callback or fallback callback.
   request_handler_ = std::make_unique<ServiceWorkerControlleeRequestHandler>(
       context_core->AsWeakPtr(), handle_->fetch_event_client_id(),
-      handle_->service_worker_client(), request_destination_,
-      skip_service_worker, frame_tree_node_id_,
-      handle_->service_worker_accessed_callback());
+      handle_->service_worker_client(), skip_service_worker,
+      frame_tree_node_id_, handle_->service_worker_accessed_callback());
 
   request_handler_->MaybeCreateLoader(
       tentative_resource_request, storage_key, browser_context,
@@ -244,12 +243,10 @@ void ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
 ServiceWorkerMainResourceLoaderInterceptor::
     ServiceWorkerMainResourceLoaderInterceptor(
         base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
-        network::mojom::RequestDestination request_destination,
         bool skip_service_worker,
         FrameTreeNodeId frame_tree_node_id,
         const net::IsolationInfo& isolation_info)
     : handle_(std::move(handle)),
-      request_destination_(request_destination),
       skip_service_worker_(skip_service_worker),
       isolation_info_(isolation_info),
       frame_tree_node_id_(frame_tree_node_id) {

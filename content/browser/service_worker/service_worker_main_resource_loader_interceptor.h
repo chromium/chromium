@@ -86,7 +86,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   ServiceWorkerMainResourceLoaderInterceptor(
       base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
-      network::mojom::RequestDestination request_destination,
       bool skip_service_worker,
       FrameTreeNodeId frame_tree_node_id,
       const net::IsolationInfo& isolation_info);
@@ -114,7 +113,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   const base::WeakPtr<ServiceWorkerMainResourceHandle> handle_;
 
   // For all clients:
-  const network::mojom::RequestDestination request_destination_;
   const bool skip_service_worker_;
 
   // Updated on redirects.
