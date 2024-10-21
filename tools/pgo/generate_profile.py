@@ -43,7 +43,7 @@ from telemetry.internal.backends import android_browser_backend_settings
 _ANDROID_SETTINGS = android_browser_backend_settings.ANDROID_BACKEND_SETTINGS
 
 # See https://crbug.com/373822787 for how this value was calculated.
-_ANDROID_64_BLOCK_COUNT_THRESHOLD = 1300000000
+_ANDROID_64_BLOCK_COUNT_THRESHOLD = 2200000000
 
 _EXE_EXT = '.exe' if sys.platform == 'win32' else ''
 _THIS_DIR = os.path.dirname(__file__)
