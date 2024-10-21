@@ -326,7 +326,9 @@
 - (void)resetOmniboxToCurrentLensResult {
   [self.omniboxCoordinator updateOmniboxState];
   [self.omniboxCoordinator
-      setThumbnailImage:_currentLensResult.selectionPreviewImage];
+      setThumbnailImage:_currentLensResult.isTextSelection
+                            ? nil
+                            : _currentLensResult.selectionPreviewImage];
 }
 
 /// Whether the navigation to `URL` with the `_currentLensResult` should be
