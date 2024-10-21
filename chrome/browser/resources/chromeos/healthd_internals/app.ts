@@ -7,6 +7,7 @@ import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/ash/common/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
