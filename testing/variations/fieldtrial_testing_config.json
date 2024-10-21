@@ -22648,6 +22648,12 @@
                     ]
                 },
                 {
+                    "name": "Enabled_OnlySessionCookieCleanup",
+                    "enable_features": [
+                        "DeleteStaleSessionCookiesOnStartup"
+                    ]
+                },
+                {
                     "name": "Opt_In_Dogfood",
                     "enable_features": [
                         "DeleteOrphanLocalStorageOnStartup",
