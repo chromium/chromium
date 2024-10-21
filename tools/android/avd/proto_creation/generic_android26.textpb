@@ -7,19 +7,16 @@
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
   version: "XS__KK27esI_4qZkc_Ybb_ooYjPfcIQ7DDOPUZGYW5wC"  # 35.1.21 (Stable)
-  dest_path: "generic_android26"
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-26/google_apis/x86"
   version: "A4mvHrkteW1JJiKg_wQlkwFDR2hD3VKuCGUmiPa2sjkC"  # r16
-  dest_path: "generic_android26"
 }
 system_image_name: "system-images;android-26;google_apis;x86"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-26/google_apis/x86"
-  dest_path: "generic_android26"
 }
 avd_name: "android_26_google_apis_x86"
 
@@ -62,5 +59,4 @@ min_sdk: 26
 additional_apk {
   package_name: "chrome_internal/third_party/google3/apks/gmscore/x86"
   version: "-rCzVFgS21dIKhLDnLwcldFij4xnnS0scaKnB44WlfoC" # 24.26.32
-  dest_path: "generic_android26/gmscore_apks"
 }
