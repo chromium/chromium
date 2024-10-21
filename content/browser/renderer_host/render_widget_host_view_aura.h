@@ -707,6 +707,11 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Forwards `proximate_bounds` to the TextInputManager for caching.
   void UpdateProximateCharacterBounds(
       blink::mojom::ProximateCharacterRangeBoundsPtr proximate_bounds);
+
+  // Invoked on Shell Handwriting API request to update the element's focus
+  // based on the provided rect and the distance tolerance.
+  void OnFocusHandwritingTarget(const gfx::Rect& rect_in_screen,
+                                const gfx::Size& distance_tolerance);
 #endif  // BUILDFLAG(IS_WIN)
 
   raw_ptr<aura::Window> window_;

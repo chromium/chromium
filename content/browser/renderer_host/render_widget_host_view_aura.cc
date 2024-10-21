@@ -109,6 +109,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/time/time.h"
+#include "content/browser/renderer_host/input/stylus_handwriting_controller_win.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
@@ -2220,28 +2221,44 @@ void RenderWidgetHostViewAura::FocusedNodeChanged(
 
 #if BUILDFLAG(IS_WIN)
 bool RenderWidgetHostViewAura::ShouldInitiateStylusWriting() {
-  // TODO(crbug.com/355578906): Check whether Windows Text Services Framework
-  // Shell Handwriting API is available or supported by the OS.
-  // return stylus_handwriting::win::IsStylusHandwritingWinEnabled();
-  return false;
+  return StylusHandwritingControllerWin::IsHandwritingAPIAvailable();
 }
 
 void RenderWidgetHostViewAura::OnStartStylusWriting() {
-  // TODO(crbug.com/355578906): Call Windows Text Services Framework Shell
-  // Handwriting API. Will call ITfHandwriting::RequestHandwritingForPointer to
+  StylusHandwritingControllerWin* handwriting_controller =
+      StylusHandwritingControllerWin::GetInstance();
+  if (!handwriting_controller) {
+    mojo::ReportBadMessage(
+        "OnStartStylusWriting(): unexpected state. "
+        "StylusHandwritingControllerWin instance is nullptr");
+    return;
+  }
+  // Call Windows Text Services Framework Shell Handwriting API.
+  // Will call ITfHandwriting::RequestHandwritingForPointer to
   // display ink, then ITfHandwritingRequest::SetInputEvaluation to confirm
   // intent. RequestHandwritingForPointer is an asynchronous request, however
   // this method will be called after GestureScrollBegin, so intent can be
-  // confirmed immediately. After intent is confirmed, the API will request that
-  // focus is updated by calling ITfHandwritingSink::FocusHandwritingTarget.
+  // confirmed immediately. After intent is confirmed, the API will request
+  // that the focus is updated by calling
+  // ITfHandwritingSink::FocusHandwritingTarget.
   //
   // To handle ITfHandwritingSink::FocusHandwritingTarget, the browser will
   // request that focus be updated in the renderer based on the RECT from
-  // ITfFocusHandwritingTargetArgs::GetPointerTargetInfo, which will be handled
-  // via mojom::blink::FrameWidget::OnStartStylusWriting. Focus will only be set
-  // on content eligible for handwriting. If focus cannot be set on content
-  // eligible for handwriting with the RECT provided by GetPointerTargetInfo,
-  // then focus will fallback to the eligible element that was initially tapped.
+  // ITfFocusHandwritingTargetArgs::GetPointerTargetInfo, which will be
+  // handled via mojom::blink::FrameWidget::OnStartStylusWriting. Focus will
+  // only be set on content eligible for handwriting. If focus cannot be set
+  // on content eligible for handwriting with the RECT provided by
+  // GetPointerTargetInfo, then focus will fallback to the eligible element
+  // that was initially tapped.
+  // TODO(crbug.com/355578906): Propagate valid pointer and stroke ids.
+  // TODO(crbug.com/355578906): Pass and save the identifier of the currently
+  // focused RWHA in case the views focus is changed while we waiting for the
+  // callback response from the renderer process. This will be used to discard
+  // responses in OnFocusHandled()/OnFocusFailed() later for such cases.
+  handwriting_controller->OnStartStylusWriting(
+      base::BindRepeating(&RenderWidgetHostViewAura::OnFocusHandwritingTarget,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*pointer_id=*/0, /*stroke_id=*/0, *this);
 }
 
 void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
@@ -2270,15 +2287,32 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
   // in the inability of Shell Handwriting to perform gestures (selection,
   // scratch out, split/join word, new-line) and may result in text being
   // inserted instead.
-  if (!focus_result) {
-    // TODO(crbug.com/355578906): Notify Windows Text Services Framework (TSF)
-    // Shell Handwriting API [1] to cancel the inking session, causing ink to
-    // disappear without making any modifications.
-    // [1]
-    // `ITfFocusHandwritingTargetArgs::SetResponse(TF_NO_HANDWRITING_TARGET)`
+  StylusHandwritingControllerWin* handwriting_controller =
+      StylusHandwritingControllerWin::GetInstance();
+  if (!handwriting_controller) {
+    mojo::ReportBadMessage(
+        "OnEditElementFocusedForStylusWriting(): Unexpected state. "
+        "StylusHandwritingControllerWin instance is nullptr");
     return;
   }
+
+  if (!focus_result) {
+    handwriting_controller->OnFocusFailed(*this);
+    return;
+  }
+
   UpdateProximateCharacterBounds(std::move(focus_result->proximate_bounds));
+  handwriting_controller->OnFocusHandled(*this);
+}
+
+void RenderWidgetHostViewAura::OnFocusHandwritingTarget(
+    const gfx::Rect& rect_in_screen,
+    const gfx::Size& distance_tolerance) {
+  // TODO(crbug.com/355578906): Propagate `rect_in_screen`.
+  // TODO(crbug.com/355578906): Consider `distance_tolerance`.
+  if (host()) {
+    host()->UpdateElementFocusForStylusWriting();
+  }
 }
 #endif  // BUILDFLAG(IS_WIN)
 

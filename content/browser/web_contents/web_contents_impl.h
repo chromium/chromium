@@ -1356,9 +1356,11 @@ class CONTENT_EXPORT WebContentsImpl
   // Sets the spatial navigation state.
   void SetSpatialNavigationDisabled(bool disabled);
 
+#if BUILDFLAG(IS_ANDROID)
   // Sets the Stylus handwriting feature status. This status is updated to web
   // preferences.
   void SetStylusHandwritingEnabled(bool enabled);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Called when a file selection is to be done.
   void RunFileChooser(
@@ -2426,9 +2428,8 @@ class CONTENT_EXPORT WebContentsImpl
 
   bool is_spatial_navigation_disabled_ = false;
 
-  bool stylus_handwriting_enabled_ = false;
-
 #if BUILDFLAG(IS_ANDROID)
+  bool stylus_handwriting_enabled_ = false;
   bool long_press_link_select_text_ = false;
 #endif
 

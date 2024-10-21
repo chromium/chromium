@@ -200,5 +200,14 @@ specific_include_rules = {
   ],
   "render_widget_host_view_aura.cc": [
     "+components/stylus_handwriting/win/features.h"
-  ]
+  ],
+  "web_contents_impl.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
+  "stylus_handwriting_controller_win.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
+  "stylus_handwriting_controller_win_browsertest.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
 }
