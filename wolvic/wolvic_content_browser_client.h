@@ -62,6 +62,10 @@ class WolvicContentBrowserClient : public content::ContentBrowserClient {
 #endif
   void BindMediaServiceReceiver(content::RenderFrameHost* render_frame_host,
                                 mojo::GenericPendingReceiver receiver) override;
+  void OpenURL(
+      content::SiteInstance* site_instance,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::WebContents*)> callback) override;
   void RegisterAssociatedInterfaceBindersForRenderFrameHost(
       content::RenderFrameHost& render_frame_host,
       blink::AssociatedInterfaceRegistry& associated_registry) override;

@@ -17,9 +17,10 @@
 #include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#include "wolvic/browser/wolvic_browser_interface_binders.h"
 #include "wolvic/browser/dialogs/http_auth_manager.h"
+#include "wolvic/browser/service_tab_launcher.h"
 #include "wolvic/browser/session_settings.h"
+#include "wolvic/browser/wolvic_browser_interface_binders.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_main_delegate.h"
 #include "wolvic/wolvic_main_parts.h"
@@ -187,6 +188,17 @@ void WolvicContentBrowserClient::BindMediaServiceReceiver(
   if (auto r = receiver.As<media::mojom::MediaDrmStorage>()) {
     CreateMediaDrmStorage(render_frame_host, std::move(r));
   }
+}
+
+void WolvicContentBrowserClient::OpenURL(
+    content::SiteInstance* site_instance,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::WebContents*)> callback) {
+  content::BrowserContext* browser_context = site_instance->GetBrowserContext();
+  // TODO (jfernandez): Explose an alternate approach based on the
+  // TabModelJniBridge::HandlePopupNavigation
+  ServiceTabLauncher::GetInstance()->LaunchTab(browser_context, params,
+                                               std::move(callback));
 }
 
 void WolvicContentBrowserClient::

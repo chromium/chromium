@@ -92,6 +92,8 @@ shared_library("libcontent_native") {
     "browser/wolvic_contents.h",
     "browser/wolvic_web_contents_delegate.cc",
     "browser/wolvic_web_contents_delegate.h",
+    "browser/service_tab_launcher.cc",
+    "browser/service_tab_launcher.h",
     "renderer/browser_exposed_renderer_interfaces.cc",
     "renderer/browser_exposed_renderer_interfaces.h",
     "renderer/wolvic_content_renderer_client.cc",
@@ -317,6 +319,7 @@ generate_jni("jni_headers") {
     "java/org/chromium/wolvic/WolvicWebContentsDelegate.java",
     "java/org/chromium/wolvic/WolvicWebContentsFactory.java",
     "java/org/chromium/wolvic/mojo/WolvicInterfaceRegistrar.java",
+    "java/org/chromium/wolvic/ServiceTabLauncher.java",
   ]
 }
 
@@ -342,6 +345,7 @@ android_library("wolvic_java") {
     "java/org/chromium/wolvic/WolvicWebContentsFactory.java",
     "java/org/chromium/wolvic/installedapp/WolvicInstalledAppProviderFactory.java",
     "java/org/chromium/wolvic/mojo/WolvicInterfaceRegistrar.java",
+    "java/org/chromium/wolvic/ServiceTabLauncher.java",
   ]
   srcjar_deps = [ ":jni_headers" ]
   deps = [
@@ -363,6 +367,7 @@ android_library("wolvic_java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
   ]
 }
