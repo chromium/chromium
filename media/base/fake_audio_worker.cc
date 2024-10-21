@@ -191,10 +191,13 @@ void FakeAudioWorker::Worker::DoRead() {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"), "Worker post",
                "next_read_time",
                (next_read_time - base::TimeTicks()).InMilliseconds());
-  worker_task_runner_->PostDelayedTaskAt(base::subtle::PostDelayedTaskPassKey(),
-                                         FROM_HERE, worker_task_cb_.callback(),
-                                         next_read_time,
-                                         base::subtle::DelayPolicy::kPrecise);
+  bool posted = worker_task_runner_->PostDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+      worker_task_cb_.callback(), next_read_time,
+      base::subtle::DelayPolicy::kPrecise);
+  // TODO(crbug.com/366102594): Revert this once we have data on when
+  // FakeAudioWorker fails.
+  CHECK(posted, base::NotFatalUntil::M134);
   TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"), "Worker::DoRead",
                    "read_time",
                    (read_time - base::TimeTicks()).InMilliseconds(), "now",
