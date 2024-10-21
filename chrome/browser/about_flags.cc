@@ -2804,13 +2804,6 @@ const FeatureEntry::FeatureVariation kSCTAuditingVariations[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const FeatureEntry::FeatureParam kProductivityLauncher_WithoutContinue[] = {
-    {"enable_continue", "false"}};
-
-const FeatureEntry::FeatureVariation kProductivityLauncherVariations[] = {
-    {"without Continue", kProductivityLauncher_WithoutContinue,
-     std::size(kProductivityLauncher_WithoutContinue), nullptr}};
-
 const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay10Mins[] = {
     {"long_delay_minutes", "10"}};
 const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay12Hours[] = {
@@ -8640,11 +8633,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"productivity-launcher", flag_descriptions::kProductivityLauncherName,
-     flag_descriptions::kProductivityLauncherDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kProductivityLauncher,
-                                    kProductivityLauncherVariations,
-                                    "ProductivityLauncher")},
     {"launcher-continue-section-with-recents",
      flag_descriptions::kLauncherContinueSectionWithRecentsName,
      flag_descriptions::kLauncherContinueSectionWithRecentsDescription, kOsCrOS,

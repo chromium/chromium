@@ -98,9 +98,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         kMaxAppShortcutResults, profile, list_controller));
   }
 
-  if (ash::features::IsLauncherContinueSectionWithRecentsEnabled() ||
-      base::GetFieldTrialParamByFeatureAsBool(
-          ash::features::kProductivityLauncher, "enable_continue", false)) {
+  if (ash::features::IsLauncherContinueSectionWithRecentsEnabled()) {
     controller->AddProvider(std::make_unique<ZeroStateFileProvider>(profile));
 
     controller->AddProvider(std::make_unique<ZeroStateDriveProvider>(

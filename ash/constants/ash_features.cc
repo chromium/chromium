@@ -2555,14 +2555,6 @@ BASE_FEATURE(kPrintPreviewCrosApp,
              "PrintPreviewCrosApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a bubble-based launcher in clamshell mode. Changes the suggestions
-// that appear in the launcher in both clamshell and tablet modes. Removes pages
-// from the apps grid. This feature was previously named "AppListBubble".
-// https://crbug.com/1204551
-BASE_FEATURE(kProductivityLauncher,
-             "ProductivityLauncher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable Projector for managed users.
 BASE_FEATURE(kProjectorManagedUser,
              "ProjectorManagedUser",
@@ -4577,10 +4569,6 @@ bool IsPipTuckEnabled() {
 
 bool IsPrinterPreviewCrosAppEnabled() {
   return base::FeatureList::IsEnabled(kPrintPreviewCrosApp);
-}
-
-bool IsProductivityLauncherEnabled() {
-  return base::FeatureList::IsEnabled(kProductivityLauncher);
 }
 
 bool IsProjectorManagedUserEnabled() {

@@ -4215,9 +4215,6 @@ extern const char kPrintingPpdChannelDescription[];
 extern const char kPrintPreviewCrosAppName[];
 extern const char kPrintPreviewCrosAppDescription[];
 
-extern const char kProductivityLauncherName[];
-extern const char kProductivityLauncherDescription[];
-
 extern const char kProductivityLauncherImageSearchName[];
 extern const char kProductivityLauncherImageSearchDescription[];
 

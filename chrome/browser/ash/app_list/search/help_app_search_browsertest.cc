@@ -38,9 +38,7 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
   HelpAppSearchBrowserTestBase() {
     // TODO: Remove parameterization on kProductivityLauncher.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{ash::features::kProductivityLauncher, {{"enable_continue", "true"}}},
-         {{ash::features::kHelpAppLauncherSearch}, {}}},
-        {});
+        {{}, {{ash::features::kHelpAppLauncherSearch}, {}}}, {});
   }
 
   ~HelpAppSearchBrowserTestBase() override = default;

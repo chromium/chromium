@@ -333,8 +333,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // view.
   std::optional<ui::AXPlatformNodeId> a11y_active_descendant_;
 
-  // Owned by SearchResultPageView (for fullscreen launcher) or
-  // ProductivityLauncherSearchPage (for bubble launcher).
+  // Owned by AppListSearchView.
   raw_ptr<ResultSelectionController, DanglingUntriaged>
       result_selection_controller_ = nullptr;
 
