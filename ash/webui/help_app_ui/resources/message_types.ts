@@ -25,4 +25,7 @@ export enum Message {
   OPEN_SETTINGS = 'open-settings',
   OPEN_URL_IN_BROWSER_AND_TRIGGER_INSTALL_DIALOG =
       'open-url-in-browser-and-trigger-install-dialog',
+  SET_HAS_COMPLETED_NEW_DEVICE_CHECKLIST =
+      'set-has-completed-new-device-checklist',
+  SET_HAS_VISITED_HOW_TO_PAGE = 'set-has-visited-how-to-page',
 }

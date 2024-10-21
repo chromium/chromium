@@ -116,4 +116,12 @@ interface PageHandler {
   // component is not available on a device, e.g., a trackpad settings specified
   // while a device does not have it, it is handled as no-op.
   OpenSettings(SettingsComponent component);
+
+  // Sets the HasCompletedNewDeviceChecklist pref to true. Call this after the
+  // user completes the checklist.
+  SetHasCompletedNewDeviceChecklist();
+
+  // Sets the HasVisitedHowToPage pref to true. Call this after the user visits
+  // the how to page.
+  SetHasVisitedHowToPage();
 };

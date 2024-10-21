@@ -7,23 +7,27 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui_delegate.h"
 #include "base/feature_list.h"
+#include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
 namespace ash {
 
 HelpAppPageHandler::HelpAppPageHandler(
     HelpAppUI* help_app_ui,
-    mojo::PendingReceiver<help_app::mojom::PageHandler> receiver)
+    mojo::PendingReceiver<help_app::mojom::PageHandler> receiver,
+    base::raw_ref<PrefService> pref_service)
     : receiver_(this, std::move(receiver)),
       help_app_ui_(help_app_ui),
       is_lss_enabled_(
           base::FeatureList::IsEnabled(features::kEnableLocalSearchService)),
       is_launcher_search_enabled_(
           base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch) &&
-          base::FeatureList::IsEnabled(features::kEnableLocalSearchService)) {}
+          base::FeatureList::IsEnabled(features::kEnableLocalSearchService)),
+      pref_service_(pref_service) {}
 
 HelpAppPageHandler::~HelpAppPageHandler() = default;
 
@@ -79,6 +83,15 @@ void HelpAppPageHandler::OpenUrlInBrowserAndTriggerInstallDialog(
 void HelpAppPageHandler::OpenSettings(
     help_app::mojom::SettingsComponent component) {
   help_app_ui_->delegate()->OpenSettings(component);
+}
+
+void HelpAppPageHandler::SetHasCompletedNewDeviceChecklist() {
+  pref_service_->SetBoolean(
+      help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist, true);
+}
+
+void HelpAppPageHandler::SetHasVisitedHowToPage() {
+  pref_service_->SetBoolean(help_app::prefs::kHelpAppHasVisitedHowToPage, true);
 }
 
 }  // namespace ash

@@ -190,6 +190,16 @@ declare interface ClientApiDelegate {
    * process to crash.
    */
   openUrlInBrowserAndTriggerInstallDialog: (url: string) => Promise<void>;
+  /**
+   * Sets the HasCompletedNewDeviceChecklist pref to true. Call this after the
+   * user completes the checklist.
+   */
+  setHasCompletedNewDeviceChecklist: () => undefined;
+  /**
+   * Sets the HasVisitedHowToPage pref to true. Call this after the user visits
+   * the how to page.
+   */
+  setHasVisitedHowToPage: () => undefined;
 }
 
 /** Launch data that can be read by the app when it first loads. */

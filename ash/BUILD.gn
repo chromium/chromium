@@ -3370,6 +3370,7 @@ component("ash") {
     "//ash/webui/eche_app_ui:eche_connection_status",
     "//ash/webui/eche_app_ui:system_info_provider",
     "//ash/webui/eche_app_ui/mojom:mojom",
+    "//ash/webui/help_app_ui:help_app_ui_pref",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
     "//ash/webui/projector_app/public/cpp",

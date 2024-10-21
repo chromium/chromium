@@ -90,6 +90,7 @@
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
+#include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/tablet_mode_tuck_education.h"
@@ -152,6 +153,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   GeolocationController::RegisterProfilePrefs(registry);
   GlanceablesController::RegisterUserProfilePrefs(registry);
   graduation_prefs::RegisterProfilePrefs(registry);
+  help_app::prefs::RegisterProfilePrefs(registry);
   holding_space_prefs::RegisterProfilePrefs(registry);
   HotspotInfoCache::RegisterProfilePrefs(registry);
   InputDeviceSettingsControllerImpl::RegisterProfilePrefs(registry);

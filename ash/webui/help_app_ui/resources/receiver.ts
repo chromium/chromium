@@ -72,6 +72,13 @@ const DELEGATE: ClientApiDelegate = {
     return parentMessagePipe.sendMessage(
         Message.OPEN_URL_IN_BROWSER_AND_TRIGGER_INSTALL_DIALOG, url);
   },
+  setHasCompletedNewDeviceChecklist() {
+    parentMessagePipe.sendMessage(
+        Message.SET_HAS_COMPLETED_NEW_DEVICE_CHECKLIST);
+  },
+  setHasVisitedHowToPage() {
+    parentMessagePipe.sendMessage(Message.SET_HAS_VISITED_HOW_TO_PAGE);
+  },
 };
 
 window.customLaunchData = {

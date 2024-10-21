@@ -295,6 +295,14 @@ guestMessagePipe.registerHandler(
   },
 );
 
+guestMessagePipe.registerHandler(
+    Message.SET_HAS_COMPLETED_NEW_DEVICE_CHECKLIST,
+    () => void helpApp.handler.setHasCompletedNewDeviceChecklist());
+
+guestMessagePipe.registerHandler(
+    Message.SET_HAS_VISITED_HOW_TO_PAGE,
+    () => void helpApp.handler.setHasVisitedHowToPage());
+
 /** Compare two positions by their start index. Use for sorting. */
 function compareByStart(a: Position, b: Position): number {
   return a.start - b.start;
