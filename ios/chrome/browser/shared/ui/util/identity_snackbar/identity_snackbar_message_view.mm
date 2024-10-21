@@ -29,6 +29,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #endif
 }
 
+// Whether the information that the account is managed is on its own line.
+bool showManagedOnItsOwnLine() {
+  return UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone;
+}
+
 // Returns a tinted version of the enterprise building icon.
 UIImage* GetEnterpriseIcon() {
   UIColor* color = [UIColor colorNamed:kInvertedTextSecondaryColor];
@@ -173,17 +178,14 @@ const CGFloat kTextOffset = 2.;
       _emailView.numberOfLines = 2;
     }
 
-    if (managementText) {
-      // Show the management message on a separate line.
-      _managementView = CreateSingleLineLabel(
-          managementText, UIFontTextStyleFootnote, kInvertedTextSecondaryColor);
-    }
+    // Show the management message on a separate line.
+    _managementView = CreateSingleLineLabel(
+        managementText, UIFontTextStyleFootnote, kInvertedTextSecondaryColor);
+    _managementView.hidden = showManagedOnItsOwnLine();
 
     _textViews = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _signedInAsView, _emailView ]];
-    if (_managementView) {
       [_textViews addArrangedSubview:_managementView];
-    }
     _textViews.axis = UILayoutConstraintAxisVertical;
     _textViews.distribution = UIStackViewDistributionEqualSpacing;
     _textViews.alignment = UIStackViewAlignmentLeading;
@@ -193,10 +195,8 @@ const CGFloat kTextOffset = 2.;
                               LayoutSides::kLeading | LayoutSides::kTrailing);
     AddSameConstraintsToSides(_emailView, _textViews,
                               LayoutSides::kLeading | LayoutSides::kTrailing);
-    if (_managementView) {
       AddSameConstraintsToSides(_emailView, _managementView,
                                 LayoutSides::kLeading | LayoutSides::kTrailing);
-    }
 
     [self addSubview:_textViews];
 
@@ -210,7 +210,6 @@ const CGFloat kTextOffset = 2.;
     _accountBadgeView.isAccessibilityElement = NO;
     [self addSubview:_accountBadgeView];
 
-    UILabel* lastLabel = _managementView ? _managementView : _emailView;
     [NSLayoutConstraint activateConstraints:@[
       // Size constraints
 
@@ -225,7 +224,7 @@ const CGFloat kTextOffset = 2.;
           constraintEqualToConstant:[_signedInAsView intrinsicContentSize]
                                         .height],
 
-      // Vertical counstraints from top to bottom.
+      // Vertical constraints from top to bottom.
       [_avatarView.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.topAnchor
                                       constant:kVerticalPadding],
@@ -237,7 +236,8 @@ const CGFloat kTextOffset = 2.;
       [_signedInAsView.topAnchor constraintEqualToAnchor:_textViews.topAnchor],
       [_emailView.topAnchor constraintEqualToAnchor:_signedInAsView.bottomAnchor
                                            constant:kTextOffset],
-      [_textViews.bottomAnchor constraintEqualToAnchor:lastLabel.bottomAnchor],
+      [_textViews.bottomAnchor
+          constraintEqualToAnchor:_managementView.bottomAnchor],
       [self.bottomAnchor constraintEqualToAnchor:_textViews.bottomAnchor
                                         constant:kVerticalPadding],
       [self.bottomAnchor
@@ -246,7 +246,8 @@ const CGFloat kTextOffset = 2.;
       [self.bottomAnchor
           constraintGreaterThanOrEqualToAnchor:_accountBadgeView.bottomAnchor
                                       constant:kVerticalPadding],
-
+      [_managementView.topAnchor constraintEqualToAnchor:_emailView.bottomAnchor
+                                                constant:kTextOffset],
       // Horizontal constraints from left to right.
 
       [_avatarView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
@@ -263,11 +264,6 @@ const CGFloat kTextOffset = 2.;
           constraintEqualToAnchor:_accountBadgeView.trailingAnchor
                          constant:kHorizontalPadding],
     ]];
-    if (_managementView) {
-      [_managementView.topAnchor constraintEqualToAnchor:_emailView.bottomAnchor
-                                                constant:kTextOffset]
-          .active = YES;
-    }
 
     AddSameCenterYConstraint(self, _avatarView);
     AddSameCenterYConstraint(self, _accountBadgeView);
