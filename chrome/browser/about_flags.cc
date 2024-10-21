@@ -5941,15 +5941,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImmersiveFullscreenName,
      flag_descriptions::kImmersiveFullscreenDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kImmersiveFullscreen)},
-    {"enable-fullscreen-animate-tabs",
-     flag_descriptions::kMacFullscreenAnimateTabsName,
-     flag_descriptions::kMacFullscreenAnimateTabsDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kFullscreenAnimateTabs)},
-    {"enable-fullscreen-always-show-traffic-lights",
-     flag_descriptions::kFullscreenAlwaysShowTrafficLightsName,
-     flag_descriptions::kFullscreenAlwaysShowTrafficLightsDescription, kOsMac,
-     FEATURE_VALUE_TYPE(
-         remote_cocoa::features::kFullscreenAlwaysShowTrafficLights)},
 #endif  // BUILDFLAG(IS_MAC)
     {"enable-web-payments-experimental-features",
      flag_descriptions::kWebPaymentsExperimentalFeaturesName,
