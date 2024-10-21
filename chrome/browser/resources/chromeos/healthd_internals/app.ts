@@ -45,6 +45,7 @@ export interface HealthdInternalsAppElement {
     cpuUsageChart: HealthdInternalsGenericChartElement,
     memoryChart: HealthdInternalsGenericChartElement,
     thermalChart: HealthdInternalsGenericChartElement,
+    zramChart: HealthdInternalsGenericChartElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
     appContainer: HTMLElement,
     sidebar: HTMLElement,
@@ -87,6 +88,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
           cpuUsage: this.$.cpuUsageChart,
           memory: this.$.memoryChart,
           thermal: this.$.thermalChart,
+          zram: this.$.zramChart
         });
 
     this.$.settingsDialog.addEventListener('ui-update-interval-updated', () => {
@@ -144,6 +146,11 @@ export class HealthdInternalsAppElement extends PolymerElement {
               path: PagePath.THERMAL,
               obj: this.$.thermalChart,
             },
+            {
+              name: 'Zram Chart',
+              path: PagePath.ZRAM,
+              obj: this.$.zramChart,
+            },
           ];
 
           // `currentPath` will be set when chrome://healthd-internals is open.
@@ -191,6 +198,9 @@ export class HealthdInternalsAppElement extends PolymerElement {
 
     this.$.thermalChart.setupChartHeader('Thermal');
     this.$.thermalChart.initCanvasDrawer(['C'], 1);
+
+    this.$.zramChart.setupChartHeader('Zram');
+    this.$.zramChart.initCanvasDrawer(['B', 'KiB', 'MiB', 'GiB'], 1024);
   }
 
   // Handle path changes caused by popstate events (back/forward navigation).

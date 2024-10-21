@@ -6,7 +6,7 @@ import './info_card.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HealthdApiMemoryResult, HealthdApiTelemetryResult} from '../externs.js';
+import {HealthdApiMemoryResult, HealthdApiTelemetryResult, SystemZramInfo} from '../externs.js';
 
 import type {HealthdInternalsInfoCardElement} from './info_card.js';
 import {getTemplate} from './memory_card.html.js';
@@ -48,6 +48,7 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
 
     this.$.infoCard.appendCardRow('INFO', true);
     this.$.infoCard.appendCardRow('SWAP', true);
+    this.$.infoCard.appendCardRow('ZRAM', true);
     this.$.infoCard.appendCardRow('DETAILS');
   }
 
@@ -56,9 +57,15 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
 
   // The latest memory data to display.
   private latestMemoryInfo?: HealthdApiMemoryResult;
+  private latestZramInfo?: SystemZramInfo;
 
   updateTelemetryData(data: HealthdApiTelemetryResult) {
     this.latestMemoryInfo = data.memory;
+    this.refreshMemoryCard();
+  }
+
+  updateZramData(zram: SystemZramInfo) {
+    this.latestZramInfo = zram;
     this.refreshMemoryCard();
   }
 
@@ -79,6 +86,9 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
             parseInt(memory.freeSwapMemoryKib));
       }
       this.updateDetailsRow(memory);
+    }
+    if (this.latestZramInfo !== undefined) {
+      this.updateZramRow(this.latestZramInfo)
     }
   }
 
@@ -108,8 +118,28 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
     });
   }
 
-  private updateDetailsRow(memory: HealthdApiMemoryResult) {
+  private updateZramRow(zram: SystemZramInfo) {
+    const totalUsedMemoryKib = parseInt(zram.totalUsedMemory) / 1024;
+    const originalDataSizeKib = parseInt(zram.originalDataSize) / 1024;
+    const compressedDataSizeKib = parseInt(zram.compressedDataSize) / 1024;
+
+    // In general, higher compression ratio means better compression.
+    const compressionRatio = originalDataSizeKib / compressedDataSizeKib;
+    const spaceReductionPercentage =
+        (originalDataSizeKib - compressedDataSizeKib) / originalDataSizeKib *
+        100;
+
     this.$.infoCard.updateDisplayedInfo(2, {
+      'Total Used': this.getFormattedMemory(totalUsedMemoryKib),
+      'Original Size': this.getFormattedMemory(originalDataSizeKib),
+      'Compressed Size': this.getFormattedMemory(compressedDataSizeKib),
+      'Compression Ratio': compressionRatio.toFixed(2),
+      'Space Reduction': `${spaceReductionPercentage.toFixed(2)}%`,
+    });
+  }
+
+  private updateDetailsRow(memory: HealthdApiMemoryResult) {
+    this.$.infoCard.updateDisplayedInfo(3, {
       'Buffers': this.getFormattedMemoryFromRaw(memory.buffersKib),
       'Page Cache': this.getFormattedMemoryFromRaw(memory.pageCacheKib),
       'Shared': this.getFormattedMemoryFromRaw(memory.sharedMemoryKib),

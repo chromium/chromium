@@ -40,4 +40,5 @@ export enum PagePath {
   CPU_USAGE = '/cpu_usage',
   MEMORY = '/memory',
   THERMAL = '/thermal',
+  ZRAM = '/zram',
 }

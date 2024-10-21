@@ -137,3 +137,19 @@ export interface HealthdApiProcessInfo {
 export interface HealthdInternalsFeatureFlagResult {
   tabsDisplayed: boolean;
 }
+
+/**
+ * `getCrosSystemInfo` api result.
+ */
+export interface CrosSystemResult {
+  zram?: SystemZramInfo;
+}
+
+/**
+ * `getCrosSystemInfo` zram result.
+ */
+export interface SystemZramInfo {
+  totalUsedMemory: string;
+  originalDataSize: string;
+  compressedDataSize: string;
+}

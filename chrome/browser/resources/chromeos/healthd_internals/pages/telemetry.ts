@@ -12,7 +12,7 @@ import '../info_card/thermal_card.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CpuUsage} from '../cpu_usage_helper.js';
-import {HealthdApiTelemetryResult} from '../externs.js';
+import {HealthdApiTelemetryResult, SystemZramInfo} from '../externs.js';
 import type {HealthdInternalsCpuCardElement} from '../info_card/cpu_card.js';
 import type {HealthdInternalsFanCardElement} from '../info_card/fan_card.js';
 import type {HealthdInternalsMemoryCardElement} from '../info_card/memory_card.js';
@@ -79,6 +79,10 @@ export class HealthdInternalsTelemetryElement extends PolymerElement implements
 
   updateCpuUsageData(physcialCpuUsage: (CpuUsage|null)[][]) {
     this.$.cpuCard.updateCpuUsageData(physcialCpuUsage);
+  }
+
+  updateZramData(zram: SystemZramInfo) {
+    this.$.memoryCard.updateZramData(zram);
   }
 
   updateVisibility(isVisible: boolean) {
