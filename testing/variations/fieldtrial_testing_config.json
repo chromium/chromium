@@ -14092,7 +14092,7 @@
             ]
         }
     ],
-    "MigrateSyncingUserToSignedIn": [
+    "MigrateSyncingUserToSignedInAndroid": [
         {
             "platforms": [
                 "android"
