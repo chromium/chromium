@@ -373,32 +373,6 @@ function test_transferToGPUTexture_two_canvases(device, canvas1, canvas2,
 }
 
 /**
- * transferBackFromGPUTexture() should preserve texture changes on the 2D
- * canvas.
- */
-function test_transferBackFromGPUTexture_canvas_readback(adapterInfo, device,
-                                                     canvas, canvasFormat) {
-  // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
-  if (isMacSwiftShader(adapterInfo)) {
-    return;
-  }
-
-  // Convert the canvas to a texture.
-  const ctx = canvas.getContext('2d', canvasFormat);
-  const tex = ctx.transferToGPUTexture({device: device});
-
-  // Fill the texture with a color containing distinct values in each channel.
-  clearTextureToColor(device, tex,
-                      { r: 64 / 255, g: 128 / 255, b: 192 / 255, a: 1.0 });
-
-  // Finish our WebGPU pass and restore the canvas.
-  ctx.transferBackFromGPUTexture(tex);
-
-  // Verify that the canvas contains our chosen color across every pixel.
-  checkCanvasColor(ctx, [0x40, 0x80, 0xC0, 0xFF]);
-}
-
-/**
  * transferBackFromGPUTexture() should be a no-op if the canvas context is lost.
  */
 function test_transferBackFromGPUTexture_context_lost(device, canvas) {
