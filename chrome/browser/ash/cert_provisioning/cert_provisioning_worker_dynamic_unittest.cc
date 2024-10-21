@@ -174,8 +174,8 @@ constexpr char kSignatureBase64[] = "AQIDBAU=";
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 constexpr char kEcNamedCurve[] = "P-256";
 
-// TODO(b/289983352): This should be an exponential backoff instead.
-constexpr base::TimeDelta kDefaultTryLaterDelay = base::Seconds(30);
+constexpr base::TimeDelta kInitialFetchInstructionRetryDelay =
+    base::Seconds(30);
 
 const std::string& GetPublicKey(KeyType key_type) {
   static base::NoDestructor<base::flat_map<KeyType, std::string>> public_key;
@@ -478,6 +478,61 @@ class CertProvisioningWorkerDynamicTest : public ::testing::Test {
 
   void FastForwardBy(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
+  }
+
+  // Jump the mock time by `delta`, then run all scheduled tasks that should
+  // have started by then.
+  //
+  // This can be useful if scheduled tasks happen in sequence, each scheduling
+  // the next task when executed, and a test is verifying the delays between
+  // them.
+  //
+  // Example:
+  // 1. Delayed Task TaskA has been posted to run in 10s.
+  //    When executed, the task will post TaskB with a delay of 10s.
+  // 2. FastForwardBy(base::Seconds(15))
+  // Now TaskB is scheduled to run after 5 mock seconds.
+  //
+  // 1. Delayed Task TaskA has been posted to run in 10s.
+  //    When executed, the task will post TaskB with a delay of 10s.
+  // 2. AdvanceClockAndRunTasks(base::Seconds(15)
+  // Now TaskB is scheduled to run after 10 mock seconds.
+  void AdvanceClockAndRunTasks(base::TimeDelta delta) {
+    task_environment_.AdvanceClock(delta);
+    task_environment_.RunUntilIdle();
+  }
+
+  // Checks that after `backoff_max_delay` the `worker` tries to fetch the next
+  // instruction and that it doesn't try to do it too early.
+  void VerifyWorkerTriesFetchingNextInstruction(
+      const CertProvisioningClient::ProvisioningProcess& provisioning_process,
+      const CertProvisioningWorkerDynamic& worker,
+      base::TimeDelta backoff_max_delay) {
+    const base::TimeDelta kSmallDelay = base::Milliseconds(500);
+    // The jitter comes from the backoff policy in the worker. It will reduce
+    // the actual waiting time by up to 10% compared to the max delay.
+    const double kEffectiveJitterFactor = 0.9;
+    const base::TimeDelta backoff_min_delay =
+        backoff_max_delay * kEffectiveJitterFactor;
+
+    testing::InSequence seq;
+
+    // Verify that nothing happens until the backoff time is reached.
+    AdvanceClockAndRunTasks(backoff_min_delay - kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
+    // Advance the time to the moment after <this method begins> +
+    // backoff_max_delay + kSmallDelay.
+    AdvanceClockAndRunTasks(backoff_max_delay - backoff_min_delay +
+                            2 * kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kReadyForNextOperation);
   }
 
   // Replaces next result of TpmChallengeKeySubtleFactory and return pointer to
@@ -2728,7 +2783,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitRsaKeys) {
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
         base::unexpected(InstructionNotYetAvailable()));
 
-    FastForwardBy(kDefaultTryLaterDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -2754,7 +2809,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitRsaKeys) {
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
         base::unexpected(InstructionNotYetAvailable()));
 
-    FastForwardBy(kDefaultTryLaterDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -2769,7 +2824,92 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitRsaKeys) {
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
 
-    FastForwardBy(kDefaultTryLaterDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
+    EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
+
+    EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+    EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+              CertProvisioningWorkerState::kSucceeded);
+  }
+}
+
+// Checks that when the server returns INSTRUCTION_NOT_YET_AVAILABLE, the worker
+// will keep retrying the request with a progressively increasing delay.
+TEST_F(CertProvisioningWorkerDynamicTest, FetchNextInstructionWithBackOff) {
+  const CertProfile cert_profile(
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
+      /*is_va_enabled=*/false, kCertProfileRenewalPeriod,
+      ProtocolVersion::kDynamic);
+  const std::string process_id = GenerateCertProvisioningId();
+  const CertProvisioningClient::ProvisioningProcess provisioning_process(
+      process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
+      GetPublicKeyBin(KeyType::kRsa));
+
+  CertProvisioningWorkerDynamic worker(
+      process_id, CertScope::kUser, GetProfile(), &testing_pref_service_,
+      cert_profile, &cert_provisioning_client_, MakeInvalidator(),
+      GetStateChangeCallback(), GetResultCallback());
+
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
+  {
+    testing::InSequence seq;
+
+    EXPECT_CALL(*platform_keys_service_,
+                GenerateRSAKey(TokenId::kUser, kNonVaKeyModulusLengthBits,
+                               /*sw_backed=*/false,
+                               /*callback=*/_))
+        .Times(1)
+        .WillOnce(RunOnceCallback<3>(GetPublicKeyBin(KeyType::kRsa),
+                                     Status::kSuccess));
+
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin(KeyType::kRsa)));
+
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKeyBin(KeyType::kRsa),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
+
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kReadyForNextOperation);
+  }
+
+  const base::TimeDelta kSmallDelay = base::Milliseconds(500);
+  constexpr base::TimeDelta kMaxDelay = base::Hours(8);
+  // The configured jitter is 10%, it is always subtracted.
+
+  // Simulate 4 attempts to fetch the next instruction and check that the worker
+  // waits the correct amount of time between them.
+  VerifyWorkerTriesFetchingNextInstruction(provisioning_process, worker,
+                                           kInitialFetchInstructionRetryDelay);
+  VerifyWorkerTriesFetchingNextInstruction(
+      provisioning_process, worker, kInitialFetchInstructionRetryDelay * 4);
+  VerifyWorkerTriesFetchingNextInstruction(
+      provisioning_process, worker, kInitialFetchInstructionRetryDelay * 16);
+  VerifyWorkerTriesFetchingNextInstruction(provisioning_process, worker,
+                                           kMaxDelay);
+
+  {
+    testing::InSequence seq;
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeRsaCertificate));
+
+    EXPECT_IMPORT_CERTIFICATE_OK(
+        ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
+
+    FastForwardBy(kMaxDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
 
     EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
@@ -2856,7 +2996,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitEcKeys) {
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
         base::unexpected(InstructionNotYetAvailable()));
 
-    FastForwardBy(kDefaultTryLaterDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -2883,7 +3023,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitEcKeys) {
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
         base::unexpected(InstructionNotYetAvailable()));
 
-    FastForwardBy(kDefaultTryLaterDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -2898,7 +3038,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitEcKeys) {
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
 
-    FastForwardBy(kDefaultTryLaterDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
 
     EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);

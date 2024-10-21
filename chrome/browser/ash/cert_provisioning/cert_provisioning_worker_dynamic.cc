@@ -64,6 +64,7 @@ constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 constexpr char kEcNamedCurve[] = "P-256";
 
 constexpr base::TimeDelta kMinumumTryAgainLaterDelay = base::Seconds(10);
+constexpr base::TimeDelta kMaximumFetchInstructionDelay = base::Hours(8);
 
 const net::BackoffEntry::Policy kBackoffPolicy{
     /*num_errors_to_ignore=*/0,
@@ -72,6 +73,19 @@ const net::BackoffEntry::Policy kBackoffPolicy{
     /*multiply_factor=*/2.0,
     /*jitter_factor=*/0.15,
     /*maximum_backoff_ms=*/base::Hours(12).InMilliseconds(),
+    /*entry_lifetime_ms=*/-1,
+    /*always_use_initial_delay=*/false};
+
+// Used only for the first 3 attempts, after which
+// `kMaximumFetchInstructionDelay` is used. So the approximate waiting times
+// (ignoring the jitter) are: 30 sec, 2 min, 8 min, 8 hours, 8 hours, ...
+const net::BackoffEntry::Policy kFetchInstructionBackoffPolicy{
+    /*num_errors_to_ignore=*/0,
+    /*initial_delay_ms=*/
+    base::checked_cast<int>(base::Seconds(30).InMilliseconds()),
+    /*multiply_factor=*/4.0,
+    /*jitter_factor=*/0.10,
+    /*maximum_backoff_ms=*/kMaximumFetchInstructionDelay.InMilliseconds(),
     /*entry_lifetime_ms=*/-1,
     /*always_use_initial_delay=*/false};
 
@@ -185,6 +199,7 @@ CertProvisioningWorkerDynamic::CertProvisioningWorkerDynamic(
       state_change_callback_(std::move(state_change_callback)),
       result_callback_(std::move(result_callback)),
       request_backoff_(&kBackoffPolicy),
+      fetch_instruction_backoff_(&kFetchInstructionBackoffPolicy),
       cert_provisioning_client_(cert_provisioning_client),
       invalidator_(std::move(invalidator)) {
   CHECK(profile || cert_scope == CertScope::kDevice);
@@ -911,6 +926,8 @@ bool CertProvisioningWorkerDynamic::ProcessResponseErrors(
 
   if (response.has_value()) {
     last_backend_server_error_ = std::nullopt;
+    request_backoff_.InformOfRequest(true);
+    fetch_instruction_backoff_.InformOfRequest(true);
     return true;
   }
 
@@ -959,14 +976,22 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
     LOG(WARNING) << "No instruction available yet "
                  << " for profile ID: " << cert_profile_.profile_id
                  << GetLogInfoBlock();
+
+    fetch_instruction_backoff_.InformOfRequest(false);
+    if (fetch_instruction_backoff_.failure_count() > 3) {
+      fetch_instruction_backoff_.SetCustomReleaseTime(
+          base::TimeTicks::Now() + kMaximumFetchInstructionDelay);
+    }
+
     // Don't change state, just retry the operation in this state in a delay (or
     // when an invalidation is triggered).
-    // TODO(b/289983352): Use a backoff strategy for the delay.
     ScheduleNextStep(
-        base::Seconds(30),
+        fetch_instruction_backoff_.GetTimeUntilRelease(),
         /*try_provisioning_on_timeout=*/!ShouldOnlyUseInvalidations());
     return;
   }
+
+  fetch_instruction_backoff_.InformOfRequest(true);
 
   if (backend_error.error() == em::CertProvBackendError::INCONSISTENT_DATA ||
       backend_error.error() == em::CertProvBackendError::PROFILE_NOT_FOUND) {
