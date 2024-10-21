@@ -95,7 +95,14 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
 
 void HistoryEmbeddingsProvider::Stop(bool clear_cached_results,
                                      bool due_to_user_inactivity) {
-  done_ = true;
+  // TODO(crbug.com/364303536): Ignore the stop timer since we know answers take
+  //   longer than 1500ms to generate. This inadvertently also ignores stops
+  //   caused by user action. A real fix is for providers to inform the
+  //   controller that they expect a slow response and the controller to
+  //   accommodate it by updating its stop, debounce, and cache timers'
+  //   behaviors.
+  // done_ = true;
+
   // TODO(b/333770460): Once `HistoryEmbeddingsService` has a stop API, we
   //   should call it here.
 }
