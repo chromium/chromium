@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
@@ -120,8 +121,9 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   void AddAndRunPendingTask(
       base::OnceCallback<void(base::OnceClosure finish_callback)> task,
       base::WeakPtr<SessionWrapper> session = nullptr) {
-    base::ScopedClosureRunner task_finished(base::BindOnce(
-        &ModelWrapper::TaskFinished, weak_ptr_factory_.GetWeakPtr()));
+    base::ScopedClosureRunner task_finished(
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &ModelWrapper::TaskFinished, weak_ptr_factory_.GetWeakPtr())));
     pending_tasks_.push(PendingTask{
         .session = session,
         .task = base::BindOnce(std::move(task),
