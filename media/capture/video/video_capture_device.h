@@ -44,10 +44,6 @@ namespace base {
 class Location;
 }  // namespace base
 
-namespace gpu {
-class ClientSharedImage;
-}
-
 namespace media {
 
 class CAPTURE_EXPORT VideoFrameConsumerFeedbackObserver {
@@ -213,15 +209,15 @@ class CAPTURE_EXPORT VideoCaptureDevice
         std::optional<base::TimeTicks> capture_begin_timestamp);
 
     // Captured a new video frame, data for which is stored in the
-    // shared image pointed to by |shared_image|.  The format of the frame is
-    // described by |frame_format|.  Since the shared image pointed to by
-    // |shared_image| may be allocated with some size/address alignment
-    // requirement, this method takes into consideration the size and offset of
-    // each plane in |shared_image| when creating the content of the output
-    // buffer. |clockwise_rotation|, |reference_time|, |timestamp|, and
+    // GpuMemoryBuffer pointed to by |buffer|.  The format of the frame is
+    // described by |frame_format|.  Since the memory buffer pointed to by
+    // |buffer| may be allocated with some size/address alignment requirement,
+    // this method takes into consideration the size and offset of each plane in
+    // |buffer| when creating the content of the output buffer.
+    // |clockwise_rotation|, |reference_time|, |timestamp|, and
     // |frame_feedback_id| serve the same purposes as in OnIncomingCapturedData.
-    virtual void OnIncomingCapturedImage(
-        scoped_refptr<gpu::ClientSharedImage> shared_image,
+    virtual void OnIncomingCapturedGfxBuffer(
+        gfx::GpuMemoryBuffer* buffer,
         const VideoCaptureFormat& frame_format,
         int clockwise_rotation,
         base::TimeTicks reference_time,
@@ -229,8 +225,8 @@ class CAPTURE_EXPORT VideoCaptureDevice
         std::optional<base::TimeTicks> capture_begin_timestamp,
         int frame_feedback_id) = 0;
     // Convenience wrapper that passes in 0 as |frame_feedback_id|.
-    void OnIncomingCapturedImage(
-        scoped_refptr<gpu::ClientSharedImage> shared_image,
+    void OnIncomingCapturedGfxBuffer(
+        gfx::GpuMemoryBuffer* buffer,
         const VideoCaptureFormat& frame_format,
         int clockwise_rotation,
         base::TimeTicks reference_time,

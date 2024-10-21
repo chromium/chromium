@@ -16,7 +16,4 @@ specific_include_rules = {
   "camera_hal_delegate_unittest.cc": [
     "+components/viz/test/test_context_provider.h",
   ],
-  "request_manager_unittest.cc": [
-    "+components/viz/test/test_context_provider.h",
-  ],
 }
