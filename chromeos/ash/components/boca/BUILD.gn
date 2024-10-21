@@ -48,6 +48,7 @@ static_library("invalidations") {
     "//components/gcm_driver",
     "//components/keyed_service/core",
     "//google_apis/common:common",
+    "//net",
   ]
 }
 
@@ -92,6 +93,7 @@ source_set("unit_tests") {
     "//components/user_manager:test_support",
     "//content/test:test_support",
     "//google_apis/common",
+    "//net",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
