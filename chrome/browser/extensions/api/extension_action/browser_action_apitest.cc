@@ -137,6 +137,10 @@ class BrowserActionApiTest : public ExtensionApiTest {
                : nullptr;
   }
 
+  ExtensionsToolbarContainer* extensions_container() {
+    return browser()->GetBrowserView().toolbar()->extensions_container();
+  }
+
  private:
   std::unique_ptr<ExtensionActionTestHelper> browser_action_test_util_;
 };
@@ -173,7 +177,7 @@ class BrowserActionApiTestWithContextType
         LoadExtension(test_data_dir_.AppendASCII(path));
     ASSERT_TRUE(extension) << message_;
     // Test that there is a browser action in the toolbar.
-    ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+    ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
     ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
     ExtensionAction* action = GetBrowserAction(browser(), *extension);
@@ -212,7 +216,7 @@ class BrowserActionApiTestWithContextType
         LoadExtension(test_data_dir_.AppendASCII(path));
     ASSERT_TRUE(extension) << message_;
     // Test that there is a browser action in the toolbar.
-    ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+    ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
     ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
     ExtensionAction* action = GetBrowserAction(browser(), *extension);
@@ -243,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Basic) {
   ASSERT_TRUE(extension) << message_;
 
   // Test that there is a browser action in the toolbar.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -302,9 +306,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ExtensionActionIconFactory icon_factory(
       extension, GetBrowserAction(browser(), *extension), nullptr);
   // Test that there is a browser action in the toolbar.
-  ExtensionsToolbarContainer* extensions_container =
-      browser()->GetBrowserView().toolbar()->extensions_container();
-  ASSERT_EQ(1, extensions_container->GetNumberOfActionsForTesting());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
   gfx::Image action_icon = icon_factory.GetIcon(0);
   uint32_t action_icon_last_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -314,9 +316,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
             icon_factory.GetIcon(0).ToSkBitmap()->getGenerationID());
 
   ToolbarActionView* action_view =
-      extensions_container->GetViewForId(extension->id());
+      extensions_container()->GetViewForId(extension->id());
   ToolbarActionViewController* action_controller =
-      extensions_container->GetActionForId(extension->id());
+      extensions_container()->GetActionForId(extension->id());
   ASSERT_TRUE(action_view);
   ASSERT_TRUE(action_controller);
 
@@ -493,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
   ASSERT_TRUE(extension) << message_;
 
   // Test there is a browser action in the toolbar.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
   gfx::Image initial_bar_icon =
       GetBrowserActionsBar()->GetIcon(extension->id());
 
@@ -690,14 +692,14 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
   ASSERT_TRUE(extension) << message_;
 
   // Test that there is a browser action in the toolbar.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
   // Open an incognito window and test that the browser action isn't there by
   // default.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-
-  ASSERT_EQ(0, ExtensionActionTestHelper::Create(incognito_browser)
-                   ->NumberOfBrowserActions());
+  ExtensionsToolbarContainer* extensions_container_incognito =
+      incognito_browser->GetBrowserView().toolbar()->extensions_container();
+  ASSERT_EQ(0, extensions_container_incognito->GetNumberOfActionsForTesting());
 
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -712,8 +714,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
       extension->id(), browser()->profile(), true);
   extension = registry_observer.WaitForExtensionLoaded();
 
-  ASSERT_EQ(1, ExtensionActionTestHelper::Create(incognito_browser)
-                   ->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container_incognito->GetNumberOfActionsForTesting());
 
   ASSERT_TRUE(incognito_ready_listener.WaitUntilSatisfied());
 
@@ -745,15 +746,16 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
       LoadExtension(test_data_dir_.AppendASCII("browser_action/update"));
   ASSERT_TRUE(extension) << message_;
   ASSERT_TRUE(incognito_not_allowed_listener.WaitUntilSatisfied());
+
   // Test that there is a browser action in the toolbar.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
   // Open an incognito window and test that the browser action isn't there by
   // default.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-
-  ASSERT_EQ(0, ExtensionActionTestHelper::Create(incognito_browser)
-                   ->NumberOfBrowserActions());
+  ExtensionsToolbarContainer* extensions_container_incognito =
+      incognito_browser->GetBrowserView().toolbar()->extensions_container();
+  ASSERT_EQ(0, extensions_container_incognito->GetNumberOfActionsForTesting());
 
   // Set up a listener so we can reply for the extension to do the update.
   // This listener also adds a sequence point between the browser and the
@@ -773,8 +775,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
                                           true);
   extension = registry_observer.WaitForExtensionLoaded();
   ASSERT_TRUE(extension);
-  ASSERT_EQ(1, ExtensionActionTestHelper::Create(incognito_browser)
-                   ->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
   ASSERT_TRUE(incognito_allowed_listener.WaitUntilSatisfied());
   ExtensionAction* action = GetBrowserAction(incognito_browser, *extension);
@@ -815,8 +816,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoSplit) {
                     {.allow_in_incognito = true});
   ASSERT_TRUE(extension) << message_;
 
-  ASSERT_EQ(1, ExtensionActionTestHelper::Create(incognito_browser)
-                   ->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
   // NOTE: It is necessary to ensure that browser.onClicked listener was
   // registered from the extension. Otherwise SW based extension occasionally
@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   ASSERT_TRUE(extension) << message_;
 
   // Test that there is a browser action in the toolbar.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
   // Test that CSS values (#FF0000) set color correctly.
   ExtensionAction* action = GetBrowserAction(browser(), *extension);
@@ -922,7 +922,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Getters) {
   ASSERT_TRUE(extension) << message_;
 
   // Test that there is a browser action in the toolbar.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
   // Test the getters for defaults.
   ResultCatcher catcher;
@@ -946,7 +946,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   ASSERT_TRUE(extension) << message_;
 
   // Test that there is a browser action in the toolbar.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/simple.html")));
@@ -1012,7 +1012,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest,
   ASSERT_TRUE(extension) << message_;
 
   // Test that there is a browser action in the toolbar.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+  ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
 
   ExtensionAction* browser_action = GetBrowserAction(browser(), *extension);
   EXPECT_TRUE(browser_action);
