@@ -108,10 +108,35 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   // as much as possible.  If the object is too large, this may return
   // `false`, meaning that quarantine request has failed (and freed
   // immediately). Otherwise, returns `true`.
-  bool Quarantine(void* object,
-                  SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-                  uintptr_t slot_start,
-                  size_t usable_size);
+  PA_ALWAYS_INLINE bool Quarantine(
+      void* object,
+      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+      uintptr_t slot_start,
+      size_t usable_size) {
+    return lock_required_ ? QuarantineWithAcquiringLock(object, slot_span,
+                                                        slot_start, usable_size)
+                          : QuarantineWithoutAcquiringLock(
+                                object, slot_span, slot_start, usable_size);
+  }
+  // Despite that LightweightQuarantineBranchConfig::lock_required_ is already
+  // specified, we provide two versions `With/WithoutAcquiringLock` so that we
+  // can avoid the overhead of runtime conditional branches.
+  PA_ALWAYS_INLINE bool QuarantineWithAcquiringLock(
+      void* object,
+      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+      uintptr_t slot_start,
+      size_t usable_size) {
+    PA_MUSTTAIL return QuarantineInternal<LockRequired::kRequired>(
+        object, slot_span, slot_start, usable_size);
+  }
+  PA_ALWAYS_INLINE bool QuarantineWithoutAcquiringLock(
+      void* object,
+      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+      uintptr_t slot_start,
+      size_t usable_size) {
+    PA_MUSTTAIL return QuarantineInternal<LockRequired::kNotRequired>(
+        object, slot_span, slot_start, usable_size);
+  }
 
   // Dequarantine all entries **held by this branch**.
   // It is possible that another branch with entries and it remains untouched.
@@ -130,8 +155,19 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   void SetCapacityInBytes(size_t capacity_in_bytes);
 
  private:
+  enum class LockRequired { kNotRequired, kRequired };
+  template <LockRequired lock_required>
+  class PA_SCOPED_LOCKABLE CompileTimeConditionalScopedGuard;
+  class PA_SCOPED_LOCKABLE RuntimeConditionalScopedGuard;
+
   LightweightQuarantineBranch(Root& root,
                               const LightweightQuarantineBranchConfig& config);
+
+  template <LockRequired lock_required>
+  bool QuarantineInternal(void* object,
+                          SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+                          uintptr_t slot_start,
+                          size_t usable_size);
 
   // Try to dequarantine entries to satisfy below:
   //   root_.size_in_bytes_ <=  target_size_in_bytes
@@ -163,6 +199,21 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
 
   friend class LightweightQuarantineRoot;
 };
+
+extern template PA_COMPONENT_EXPORT(
+    PARTITION_ALLOC) bool LightweightQuarantineBranch::
+    QuarantineInternal<LightweightQuarantineBranch::LockRequired::kNotRequired>(
+        void* object,
+        SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+        uintptr_t slot_start,
+        size_t usable_size);
+extern template PA_COMPONENT_EXPORT(
+    PARTITION_ALLOC) bool LightweightQuarantineBranch::
+    QuarantineInternal<LightweightQuarantineBranch::LockRequired::kRequired>(
+        void* object,
+        SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+        uintptr_t slot_start,
+        size_t usable_size);
 
 }  // namespace internal
 

@@ -9,19 +9,48 @@
 #include "partition_alloc/partition_root.h"
 
 namespace partition_alloc::internal {
-namespace {
 
-// An utility to lock only if a condition is met.
-class PA_SCOPED_LOCKABLE ConditionalScopedGuard {
+// Utility classes to lock only if a condition is met.
+
+template <>
+class PA_SCOPED_LOCKABLE
+    LightweightQuarantineBranch::CompileTimeConditionalScopedGuard<
+        LightweightQuarantineBranch::LockRequired::kNotRequired> {
  public:
-  PA_ALWAYS_INLINE ConditionalScopedGuard(bool condition, Lock& lock)
+  PA_ALWAYS_INLINE explicit CompileTimeConditionalScopedGuard(Lock& lock)
+      PA_EXCLUSIVE_LOCK_FUNCTION(lock) {}
+  PA_ALWAYS_INLINE ~CompileTimeConditionalScopedGuard() PA_UNLOCK_FUNCTION() {}
+};
+
+template <>
+class PA_SCOPED_LOCKABLE
+    LightweightQuarantineBranch::CompileTimeConditionalScopedGuard<
+        LightweightQuarantineBranch::LockRequired::kRequired> {
+ public:
+  PA_ALWAYS_INLINE explicit CompileTimeConditionalScopedGuard(Lock& lock)
+      PA_EXCLUSIVE_LOCK_FUNCTION(lock)
+      : lock_(lock) {
+    lock_.Acquire();
+  }
+  PA_ALWAYS_INLINE ~CompileTimeConditionalScopedGuard() PA_UNLOCK_FUNCTION() {
+    lock_.Release();
+  }
+
+ private:
+  Lock& lock_;
+};
+
+class PA_SCOPED_LOCKABLE
+    LightweightQuarantineBranch::RuntimeConditionalScopedGuard {
+ public:
+  PA_ALWAYS_INLINE RuntimeConditionalScopedGuard(bool condition, Lock& lock)
       PA_EXCLUSIVE_LOCK_FUNCTION(lock)
       : condition_(condition), lock_(lock) {
     if (condition_) {
       lock_.Acquire();
     }
   }
-  PA_ALWAYS_INLINE ~ConditionalScopedGuard() PA_UNLOCK_FUNCTION() {
+  PA_ALWAYS_INLINE ~RuntimeConditionalScopedGuard() PA_UNLOCK_FUNCTION() {
     if (condition_) {
       lock_.Release();
     }
@@ -31,8 +60,6 @@ class PA_SCOPED_LOCKABLE ConditionalScopedGuard {
   const bool condition_;
   Lock& lock_;
 };
-
-}  // namespace
 
 LightweightQuarantineBranch LightweightQuarantineRoot::CreateBranch(
     const LightweightQuarantineBranchConfig& config) {
@@ -61,16 +88,40 @@ LightweightQuarantineBranch::~LightweightQuarantineBranch() {
   Purge();
 }
 
-bool LightweightQuarantineBranch::Quarantine(
+bool LightweightQuarantineBranch::IsQuarantinedForTesting(void* object) {
+  RuntimeConditionalScopedGuard guard(lock_required_, lock_);
+  uintptr_t slot_start =
+      root_.allocator_root_.ObjectToSlotStartUnchecked(object);
+  for (const auto& slot : slots_) {
+    if (slot.slot_start == slot_start) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void LightweightQuarantineBranch::SetCapacityInBytes(size_t capacity_in_bytes) {
+  branch_capacity_in_bytes_.store(capacity_in_bytes, std::memory_order_relaxed);
+}
+
+void LightweightQuarantineBranch::Purge() {
+  RuntimeConditionalScopedGuard guard(lock_required_, lock_);
+  PurgeInternal(0);
+  slots_.shrink_to_fit();
+}
+
+template <LightweightQuarantineBranch::LockRequired lock_required>
+bool LightweightQuarantineBranch::QuarantineInternal(
     void* object,
     SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
     uintptr_t slot_start,
     size_t usable_size) {
+  PA_DCHECK(lock_required_ ? lock_required == LockRequired::kRequired
+                           : lock_required == LockRequired::kNotRequired);
   PA_DCHECK(usable_size == root_.allocator_root_.GetSlotUsableSize(slot_span));
 
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
-
   if (capacity_in_bytes < usable_size) [[unlikely]] {
     // Even if this branch dequarantines all entries held by it, this entry
     // cannot fit within the capacity.
@@ -80,7 +131,7 @@ bool LightweightQuarantineBranch::Quarantine(
   }
 
   {
-    ConditionalScopedGuard guard(lock_required_, lock_);
+    CompileTimeConditionalScopedGuard<lock_required> guard(lock_);
 
     // Dequarantine some entries as required.
     PurgeInternal(capacity_in_bytes - usable_size);
@@ -104,28 +155,19 @@ bool LightweightQuarantineBranch::Quarantine(
   return true;
 }
 
-bool LightweightQuarantineBranch::IsQuarantinedForTesting(void* object) {
-  ConditionalScopedGuard guard(lock_required_, lock_);
-  uintptr_t slot_start =
-      root_.allocator_root_.ObjectToSlotStartUnchecked(object);
-  for (const auto& slot : slots_) {
-    if (slot.slot_start == slot_start) {
-      return true;
-    }
-  }
-  return false;
-}
+template bool LightweightQuarantineBranch::QuarantineInternal<
+    LightweightQuarantineBranch::LockRequired::kNotRequired>(
+    void* object,
+    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+    uintptr_t slot_start,
+    size_t usable_size);
 
-void LightweightQuarantineBranch::SetCapacityInBytes(size_t capacity_in_bytes) {
-  branch_capacity_in_bytes_.store(capacity_in_bytes, std::memory_order_relaxed);
-}
-
-void LightweightQuarantineBranch::Purge() {
-  ConditionalScopedGuard guard(lock_required_, lock_);
-  PurgeInternal(0);
-  PA_DCHECK(slots_.empty());
-  slots_.shrink_to_fit();
-}
+template bool LightweightQuarantineBranch::QuarantineInternal<
+    LightweightQuarantineBranch::LockRequired::kRequired>(
+    void* object,
+    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+    uintptr_t slot_start,
+    size_t usable_size);
 
 PA_ALWAYS_INLINE void LightweightQuarantineBranch::PurgeInternal(
     size_t target_size_in_bytes) {
