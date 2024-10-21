@@ -40,8 +40,8 @@ UIColor* BackgroundColor() {
 }
 
 @interface CredentialProviderViewController () <ConfirmationAlertActionHandler,
-                                                SuccessfulReauthTimeAccessor,
-                                                CredentialResponseHandler>
+                                                CredentialResponseHandler,
+                                                SuccessfulReauthTimeAccessor>
 
 // Interface for the persistent credential store.
 @property(nonatomic, strong) id<CredentialStore> credentialStore;
@@ -293,6 +293,69 @@ UIColor* BackgroundColor() {
          navigationController:nil];
   }
   return _passkeyKeychainProviderBridge;
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertDismissAction {
+  // Finish the extension. There is no recovery from the stale credentials
+  // state.
+  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+}
+
+- (void)confirmationAlertPrimaryAction {
+  // No-op.
+}
+
+#pragma mark - CredentialResponseHandler
+
+- (void)userSelectedPassword:(ASPasswordCredential*)credential {
+  [self completeRequestWithSelectedCredential:credential];
+}
+
+- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
+    API_AVAILABLE(ios(17.0)) {
+  if (credential) {
+    [self completeAssertionRequestWithSelectedPasskeyCredential:credential];
+  } else {
+    [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
+  }
+}
+
+- (void)userSelectedPasskey:(id<Credential>)credential
+             clientDataHash:(NSData*)clientDataHash
+         allowedCredentials:(NSArray<NSData*>*)allowedCredentials
+                 allowRetry:(BOOL)allowRetry API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  auto completion = ^(NSData* securityDomainSecret) {
+    [weakSelf passkeyAssertionWithCredential:credential
+                              clientDataHash:clientDataHash
+                          allowedCredentials:allowedCredentials
+                        securityDomainSecret:securityDomainSecret
+                                  allowRetry:allowRetry];
+  };
+
+  [self fetchSecurityDomainSecretForGaia:credential.gaia
+                                 purpose:PasskeyKeychainProvider::
+                                             ReauthenticatePurpose::kDecrypt
+                              completion:completion];
+}
+
+- (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {
+  [self exitWithErrorCode:errorCode];
+}
+
+- (void)completeExtensionConfigurationRequest {
+  [self.consentCoordinator stop];
+  self.consentCoordinator = nil;
+  [self.extensionContext completeExtensionConfigurationRequest];
+}
+
+#pragma mark - SuccessfulReauthTimeAccessor
+
+- (void)updateSuccessfulReauthTime {
+  self.lastSuccessfulReauthTime = [[NSDate alloc] init];
+  UpdateUMACountForKey(app_group::kCredentialExtensionReauthCount);
 }
 
 #pragma mark - Private
@@ -623,69 +686,6 @@ UIColor* BackgroundColor() {
   // If it is not set, metrics are disabled.
   return [app_group::GetGroupUserDefaults()
              objectForKey:@(app_group::kChromeAppClientID)] != nil;
-}
-
-#pragma mark - SuccessfulReauthTimeAccessor
-
-- (void)updateSuccessfulReauthTime {
-  self.lastSuccessfulReauthTime = [[NSDate alloc] init];
-  UpdateUMACountForKey(app_group::kCredentialExtensionReauthCount);
-}
-
-#pragma mark - ConfirmationAlertActionHandler
-
-- (void)confirmationAlertDismissAction {
-  // Finish the extension. There is no recovery from the stale credentials
-  // state.
-  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
-}
-
-- (void)confirmationAlertPrimaryAction {
-  // No-op.
-}
-
-#pragma mark - CredentialResponseHandler
-
-- (void)userSelectedPassword:(ASPasswordCredential*)credential {
-  [self completeRequestWithSelectedCredential:credential];
-}
-
-- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
-    API_AVAILABLE(ios(17.0)) {
-  if (credential) {
-    [self completeAssertionRequestWithSelectedPasskeyCredential:credential];
-  } else {
-    [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
-  }
-}
-
-- (void)userSelectedPasskey:(id<Credential>)credential
-             clientDataHash:(NSData*)clientDataHash
-         allowedCredentials:(NSArray<NSData*>*)allowedCredentials
-                 allowRetry:(BOOL)allowRetry API_AVAILABLE(ios(17.0)) {
-  __weak __typeof(self) weakSelf = self;
-  auto completion = ^(NSData* securityDomainSecret) {
-    [weakSelf passkeyAssertionWithCredential:credential
-                              clientDataHash:clientDataHash
-                          allowedCredentials:allowedCredentials
-                        securityDomainSecret:securityDomainSecret
-                                  allowRetry:allowRetry];
-  };
-
-  [self fetchSecurityDomainSecretForGaia:credential.gaia
-                                 purpose:PasskeyKeychainProvider::
-                                             ReauthenticatePurpose::kDecrypt
-                              completion:completion];
-}
-
-- (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {
-  [self exitWithErrorCode:errorCode];
-}
-
-- (void)completeExtensionConfigurationRequest {
-  [self.consentCoordinator stop];
-  self.consentCoordinator = nil;
-  [self.extensionContext completeExtensionConfigurationRequest];
 }
 
 @end
