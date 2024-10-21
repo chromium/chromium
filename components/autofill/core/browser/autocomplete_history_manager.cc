@@ -71,7 +71,7 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
 bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     const FormFieldData& field,
     const AutofillClient& client,
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback&
         on_suggestions_returned) {
   if (!field.should_autocomplete()) {
     return false;

@@ -23,7 +23,7 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
        const FormFieldData& field,
        const AutofillField& autofill_field,
        const AutofillClient& client,
-       SingleFieldFormFillRouter::OnSuggestionsReturnedCallback callback),
+       SingleFieldFormFillRouter::OnSuggestionsReturnedCallback& callback),
       (override));
   MOCK_METHOD(void,
               OnWillSubmitFormWithFields,

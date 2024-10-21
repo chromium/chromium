@@ -24,7 +24,7 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
     const FormFieldData& field,
     const AutofillField& autofill_field,
     const AutofillClient& client,
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback&
         on_suggestions_returned) {
   // The field is eligible only if it's focused on a merchant promo code.
   if (autofill_field.Type().GetStorableType() != MERCHANT_PROMO_CODE) {

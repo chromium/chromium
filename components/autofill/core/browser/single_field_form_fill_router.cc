@@ -84,7 +84,7 @@ bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
     return true;
   }
   return autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-      field, client, std::move(on_suggestions_returned));
+      field, client, on_suggestions_returned);
 }
 
 void SingleFieldFormFillRouter::OnWillSubmitFormWithFields(

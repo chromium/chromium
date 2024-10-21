@@ -31,7 +31,7 @@ bool IbanManager::OnGetSingleFieldSuggestions(
     const FormFieldData& field,
     const AutofillField& autofill_field,
     const AutofillClient& client,
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback&
         on_suggestions_returned) {
   // The field is eligible only if it's focused on an IBAN field.
   if (autofill_field.Type().GetStorableType() != IBAN_VALUE) {

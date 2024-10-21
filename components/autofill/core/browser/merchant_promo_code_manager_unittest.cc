@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
 
+#include <list>
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
@@ -31,13 +32,32 @@
 namespace autofill {
 namespace {
 
-using MockSuggestionsReturnedCallback = base::MockCallback<
-    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback>;
-using test::CreateTestFormField;
+using OnSuggestionsReturnedCallback =
+    SingleFieldFormFillRouter::OnSuggestionsReturnedCallback;
+using ::autofill::test::CreateTestFormField;
 using ::testing::_;
 using ::testing::Field;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
+
+// Extends base::MockCallback to get references to the underlying callback.
+//
+// This is convenient because the functions we test take mutable references to
+// the callbacks, which can't bind to the result of
+// base::MockCallback<T>::Get().
+class MockSuggestionsReturnedCallback
+    : public base::MockCallback<OnSuggestionsReturnedCallback> {
+ public:
+  OnSuggestionsReturnedCallback& GetNewRef() {
+    callbacks_.push_back(Get());
+    return callbacks_.back();
+  }
+
+ private:
+  using base::MockCallback<OnSuggestionsReturnedCallback>::Get;
+
+  std::list<OnSuggestionsReturnedCallback> callbacks_;
+};
 
 }  // namespace
 // The anonymous namespace needs to end here because of `friend`ships between
@@ -80,6 +100,14 @@ class MerchantPromoCodeManagerTest : public testing::Test {
     return testPromoCodeOfferData.GetPromoCode();
   }
 
+  // Returns a mutable reference, which is valid until the next DoNothing()
+  // call. This is needed because OnGetSingleFieldSuggestions() takes a mutable
+  // reference to a non-null callback and consumes that callback.
+  OnSuggestionsReturnedCallback& DoNothing() {
+    do_nothing_ = base::DoNothing();
+    return do_nothing_;
+  }
+
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
@@ -88,6 +116,9 @@ class MerchantPromoCodeManagerTest : public testing::Test {
   std::unique_ptr<FormStructure> form_structure_;
   // Owned by `form_structure_`.
   raw_ptr<AutofillField> autofill_field_;
+
+ private:
+  OnSuggestionsReturnedCallback do_nothing_ = base::DoNothing();
 };
 
 TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
@@ -115,13 +146,13 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   // suggestions.
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.Get()));
+      mock_callback.GetNewRef()));
 
   // Trigger offers suggestions popup again to be able to test that we do not
   // log metrics twice for the same field.
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.Get()));
+      mock_callback.GetNewRef()));
 
   // Trigger offers suggestions popup again to be able to test that we log
   // metrics more than once if it is a different field.
@@ -130,7 +161,7 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
                           FormControlType::kInputTelephone);
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, other_field, *autofill_field_, autofill_client_,
-      mock_callback.Get()));
+      mock_callback.GetNewRef()));
 
   histogram_tester.ExpectBucketCount(
       "Autofill.Offer.SuggestionsPopupShown2",
@@ -162,7 +193,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.Get()));
+      mock_callback.GetNewRef()));
 
   // Ensure that no metrics were logged.
   histogram_tester.ExpectBucketCount(
@@ -198,7 +229,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.Get()));
+      mock_callback.GetNewRef()));
 
   // Ensure that no metrics were logged.
   histogram_tester.ExpectBucketCount(
@@ -232,7 +263,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.Get()));
+      mock_callback.GetNewRef()));
 
   // Ensure that no metrics were logged.
   histogram_tester.ExpectBucketCount(
@@ -264,7 +295,7 @@ TEST_F(MerchantPromoCodeManagerTest, NoPromoCodeOffers) {
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.Get()));
+      mock_callback.GetNewRef()));
 
   // Ensure that no metrics were logged.
   histogram_tester.ExpectBucketCount(
@@ -301,9 +332,11 @@ TEST_F(MerchantPromoCodeManagerTest, AutofillWalletImportDisabled) {
   EXPECT_CALL(mock_callback, Run).Times(0);
 
   // Simulate request for suggestions.
-  EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-      *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.Get()));
+  {
+    EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+        *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
+        mock_callback.GetNewRef()));
+  }
 
   // Ensure that no metrics were logged.
   histogram_tester.ExpectBucketCount(
@@ -342,7 +375,7 @@ TEST_F(MerchantPromoCodeManagerTest, AutofillCreditCardDisabled) {
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.Get()));
+      mock_callback.GetNewRef()));
 
   // Ensure that no metrics were logged.
   histogram_tester.ExpectBucketCount(
@@ -383,7 +416,7 @@ TEST_F(MerchantPromoCodeManagerTest, PrefixMatched) {
   // Simulate request for suggestions.
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.Get()));
+      mock_callback.GetNewRef()));
 
   // No metrics should be logged because no suggestions were shown.
   histogram_tester.ExpectBucketCount(
@@ -425,7 +458,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate showing the promo code offers suggestions popup.
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      base::DoNothing()));
+      DoNothing()));
 
   // Simulate selecting a promo code offer suggestion.
   Suggestion merchant_promo_suggestion(test_promo_code,
@@ -445,7 +478,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate showing the promo code offers suggestions popup.
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      base::DoNothing()));
+      DoNothing()));
 
   // Simulate selecting a promo code offer suggestion.
   merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(
@@ -484,7 +517,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate showing the promo code offers suggestions popup.
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      base::DoNothing()));
+      DoNothing()));
 
   // Simulate selecting a promo code offer suggestion.
   Suggestion promo_code_suggestion(test_promo_code,
@@ -507,7 +540,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate showing the promo code offers suggestions popup.
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       *form_structure_, *autofill_field_, *autofill_field_, autofill_client_,
-      base::DoNothing()));
+      DoNothing()));
 
   // Simulate selecting a promo code offer suggestion.
   merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(

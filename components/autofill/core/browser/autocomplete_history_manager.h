@@ -38,10 +38,11 @@ class AutocompleteHistoryManager : public KeyedService,
 
   ~AutocompleteHistoryManager() override;
 
+  // Returns true iff it consumes `on_suggestions_returned`.
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
       const FormFieldData& field,
       const AutofillClient& client,
-      SingleFieldFormFillRouter::OnSuggestionsReturnedCallback
+      SingleFieldFormFillRouter::OnSuggestionsReturnedCallback&
           on_suggestions_returned);
   virtual void OnWillSubmitFormWithFields(
       const std::vector<FormFieldData>& fields,

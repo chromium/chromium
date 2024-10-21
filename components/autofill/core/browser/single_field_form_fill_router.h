@@ -32,14 +32,8 @@ class SingleFieldFormFillRouter {
   // callback is used to eventually return suggestions. `field_id` identifies
   // the field the query refer to. `suggestions` is the list of fetched
   // suggestions.
-  // TODO(crbug.com/374266445): This should be a `base::OnceCallback<>`. It is
-  // currently a repeating callback, because the `SingleFieldFormFillRouter`
-  // asks all available fillers using `OnGetSingleFieldSuggestions()`, until the
-  // first one returns true. This requires passing the callback to all
-  // fillers (even though only one of them will end up calling it).
   using OnSuggestionsReturnedCallback =
-      base::RepeatingCallback<void(FieldGlobalId,
-                                   const std::vector<Suggestion>&)>;
+      base::OnceCallback<void(FieldGlobalId, const std::vector<Suggestion>&)>;
 
   explicit SingleFieldFormFillRouter(
       AutocompleteHistoryManager* autocomplete_history_manager,
