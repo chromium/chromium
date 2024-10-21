@@ -83,6 +83,12 @@ export class GraduationApp extends PolymerElement {
     });
 
     this.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
+      // An error caused by an offline event can surface after the offline
+      // screen is already shown. Don't show the error screen so the app has a
+      // chance to reload when it comes online.
+      if (this.currentScreen === Screens.OFFLINE) {
+        return;
+      }
       this.switchToScreen(Screens.ERROR);
     });
 

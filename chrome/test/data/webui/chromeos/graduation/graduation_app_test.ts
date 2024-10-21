@@ -37,7 +37,7 @@ suite('GraduationAppTest', function() {
     resetGraduationHandlerForTesting();
   });
 
-  test('NavigateBetweenWelcomeAndTakeoutScreens', function() {
+  test('Navigate between Welcome and Takeout screens', function() {
     assertEquals(graduationApp.getCurrentScreenForTest(), Screens.WELCOME);
     assertEquals(handler.getLastScreen(), GraduationScreen.kWelcome);
 
@@ -52,7 +52,7 @@ suite('GraduationAppTest', function() {
     assertEquals(handler.getLastScreen(), GraduationScreen.kWelcome);
   });
 
-  test('ShowErrorScreenPermanently', function() {
+  test('Error screen is terminal', function() {
     assertEquals(graduationApp.getCurrentScreenForTest(), Screens.WELCOME);
 
     graduationApp.dispatchEvent(new CustomEvent(ScreenSwitchEvents.SHOW_ERROR));
@@ -75,7 +75,17 @@ suite('GraduationAppTest', function() {
     assertEquals(graduationApp.getCurrentScreenForTest(), Screens.ERROR);
   });
 
-  test('ShowOfflineScreenUntilBackOnline', function() {
+  test('Error screen is not shown when app is offline', function() {
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.WELCOME);
+
+    window.dispatchEvent(new Event(ScreenSwitchEvents.OFFLINE));
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.OFFLINE);
+
+    graduationApp.dispatchEvent(new CustomEvent(ScreenSwitchEvents.SHOW_ERROR));
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.OFFLINE);
+  });
+
+  test('Offline screen is shown until app is online', function() {
     assertEquals(graduationApp.getCurrentScreenForTest(), Screens.WELCOME);
 
     window.dispatchEvent(new Event(ScreenSwitchEvents.OFFLINE));
