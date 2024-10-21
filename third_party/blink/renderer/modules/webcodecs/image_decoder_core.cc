@@ -350,7 +350,6 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
       media::CreateFromSkImage(sk_image, gfx::Rect(coded_size), coded_size,
                                GetTimestampForFrame(frame_index));
   if (!frame) {
-    NOTREACHED_IN_MIGRATION() << "Failed to create VideoFrame from SkImage.";
     result->status = Status::kDecodeError;
     return result;
   }
