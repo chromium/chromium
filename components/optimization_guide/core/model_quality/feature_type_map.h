@@ -134,6 +134,8 @@ class ProductSpecificationsFeatureTypeMap {
 class FormsAnnotationsFeatureTypeMap {
  public:
   using LoggingData = proto::FormsAnnotationsLoggingData;
+  using Request = proto::FormsAnnotationsRequest;
+  using Response = proto::FormsAnnotationsResponse;
   using Quality = proto::FormsAnnotationsQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
@@ -146,6 +148,9 @@ class FormsAnnotationsFeatureTypeMap {
 class FormsPredictionsFeatureTypeMap {
  public:
   using LoggingData = proto::FormsPredictionsLoggingData;
+  using Request = proto::FormsPredictionsRequest;
+  using Response = proto::FormsPredictionsResponse;
+  using Quality = proto::FormsPredictionsQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_forms_predictions();
