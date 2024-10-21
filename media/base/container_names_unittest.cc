@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/container_names.h"
+
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/files/file_util.h"
-#include "media/base/container_names.h"
 #include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -137,9 +140,10 @@ void TestFile(MediaContainerName expected, const base::FilePath& filename) {
   // Windows implementation of ReadFile fails if file smaller than desired size,
   // so use file length if file less than 8192 bytes (http://crbug.com/243885).
   int read_size = sizeof(buffer);
-  int64_t actual_size;
-  if (base::GetFileSize(filename, &actual_size) && actual_size < read_size)
-    read_size = actual_size;
+  std::optional<int64_t> actual_size = base::GetFileSize(filename);
+  if (actual_size.has_value() && actual_size.value() < read_size) {
+    read_size = actual_size.value();
+  }
   int read = base::ReadFile(filename, buffer, read_size);
 
   // Now verify the type.

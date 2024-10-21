@@ -10,6 +10,8 @@
 #include "media/base/test_data_util.h"
 
 #include <stdint.h>
+
+#include <optional>
 #include <ostream>
 
 #include "base/check_op.h"
@@ -233,11 +235,10 @@ std::string GetURLQueryString(const base::StringPairs& query_params) {
 scoped_refptr<DecoderBuffer> ReadTestDataFile(std::string_view name) {
   base::FilePath file_path = GetTestDataFilePath(name);
 
-  int64_t tmp = 0;
-  CHECK(base::GetFileSize(file_path, &tmp))
-      << "Failed to get file size for '" << name << "'";
+  std::optional<int64_t> tmp = base::GetFileSize(file_path);
+  CHECK(tmp) << "Failed to get file size for '" << name << "'";
 
-  int file_size = base::checked_cast<int>(tmp);
+  int file_size = base::checked_cast<int>(tmp.value());
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(file_size));
   auto* data = reinterpret_cast<char*>(buffer->writable_data());

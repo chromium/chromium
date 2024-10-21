@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/extend.h"
@@ -473,16 +474,16 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
 
   const char kSrcFileName[] = "bali_640x360_P420.yuv";
   base::FilePath src_file = GetTestDataFilePath(kSrcFileName);
-  int64_t src_file_size = 0;
-  ASSERT_TRUE(base::GetFileSize(src_file, &src_file_size));
+  std::optional<int64_t> src_file_size = base::GetFileSize(src_file);
+  ASSERT_TRUE(src_file_size);
 
   const VideoPixelFormat kInputFormat = PIXEL_FORMAT_I420;
   const int frame_size = static_cast<int>(
       VideoFrame::AllocationSize(kInputFormat, gfx::Size(width, height)));
   ASSERT_TRUE(frame_size > 0);
-  ASSERT_TRUE(src_file_size % frame_size == 0U);
+  ASSERT_TRUE(src_file_size.value() % frame_size == 0U);
 
-  const int num_frames = src_file_size / frame_size;
+  const int num_frames = src_file_size.value() / frame_size;
   base::File src(src_file, base::File::FLAG_OPEN | base::File::FLAG_READ);
   std::unique_ptr<uint8_t[]> frame_data =
       std::make_unique<uint8_t[]>(frame_size);
