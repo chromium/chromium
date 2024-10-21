@@ -27,12 +27,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
 #include <utility>
@@ -720,11 +714,11 @@ base::span<const Attribute> GetAttributes(const Element& element,
                                           bool need_style_synchronized) {
   if (need_style_synchronized) {
     const AttributeCollection collection = element.Attributes();
-    return {collection.data(), collection.size()};
+    return base::span(collection);
   } else {
     const AttributeCollection collection =
         element.AttributesWithoutStyleUpdate();
-    return {collection.data(), collection.size()};
+    return base::span(collection);
   }
 }
 
@@ -906,7 +900,7 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
       }
 
       const AttributeCollection collection = element.AttributesWithoutUpdate();
-      attributes = {collection.data(), collection.size()};
+      attributes = base::span(collection);
     }
   }
 
