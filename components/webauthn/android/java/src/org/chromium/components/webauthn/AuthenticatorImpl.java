@@ -172,7 +172,6 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
         mPendingFido2CredentialRequest.handleMakeCredentialRequest(
                 options,
-                /* maybeClientDataHash= */ null,
                 maybeCreateBrowserOptions(),
                 mOrigin,
                 mTopOrigin,
@@ -213,7 +212,6 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
         mPendingFido2CredentialRequest.handleGetAssertionRequest(
                 options,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mTopOrigin,
                 mPayment,

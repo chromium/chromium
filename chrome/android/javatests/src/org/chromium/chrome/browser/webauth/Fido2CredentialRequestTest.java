@@ -565,7 +565,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -588,7 +587,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -616,7 +614,6 @@ public class Fido2CredentialRequestTest {
     public void testMakeCredential_unsuccessfulAttemptToShowCancelableIntent() {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -637,7 +634,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -658,7 +654,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -678,7 +673,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -702,7 +696,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -726,7 +719,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 customOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -760,7 +752,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 customOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -784,7 +775,6 @@ public class Fido2CredentialRequestTest {
         customOptions.excludeCredentials = new PublicKeyCredentialDescriptor[0];
         mRequest.handleMakeCredentialRequest(
                 customOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -980,7 +970,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1013,7 +1002,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 creationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1046,7 +1034,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 creationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1077,7 +1064,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 creationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1100,7 +1086,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1122,7 +1107,6 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.extensions.userVerificationMethods = true;
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1145,7 +1129,6 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.extensions.userVerificationMethods = true;
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1168,7 +1151,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1186,7 +1168,6 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertion_unsuccessfulAttemptToShowCancelableIntent() {
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1207,7 +1188,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1228,7 +1208,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1248,7 +1227,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1272,7 +1250,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1294,7 +1271,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1320,7 +1296,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1479,7 +1454,6 @@ public class Fido2CredentialRequestTest {
         customOptions.attestation = org.chromium.blink.mojom.AttestationConveyancePreference.NONE;
         mRequest.handleMakeCredentialRequest(
                 customOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1504,7 +1478,6 @@ public class Fido2CredentialRequestTest {
                 org.chromium.blink.mojom.AttestationConveyancePreference.INDIRECT;
         mRequest.handleMakeCredentialRequest(
                 customOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1528,7 +1501,6 @@ public class Fido2CredentialRequestTest {
         customOptions.attestation = org.chromium.blink.mojom.AttestationConveyancePreference.DIRECT;
         mRequest.handleMakeCredentialRequest(
                 customOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1553,7 +1525,6 @@ public class Fido2CredentialRequestTest {
                 org.chromium.blink.mojom.AttestationConveyancePreference.ENTERPRISE;
         mRequest.handleMakeCredentialRequest(
                 customOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1576,7 +1547,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1603,7 +1573,6 @@ public class Fido2CredentialRequestTest {
         Assert.assertFalse(mFrameHost.mIsPaymentCredentialCreation);
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1633,7 +1602,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1670,7 +1638,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1694,7 +1661,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1719,7 +1685,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1744,7 +1709,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1765,7 +1729,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1786,7 +1749,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
@@ -1807,7 +1769,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1834,7 +1795,6 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.challenge = new byte[3];
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 payment,
@@ -1865,7 +1825,6 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.challenge = new byte[3];
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 payment,
@@ -1896,7 +1855,6 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.challenge = new byte[3];
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 topOrigin,
                 payment,
@@ -1938,7 +1896,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1968,7 +1925,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -1998,7 +1954,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2030,7 +1985,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2062,7 +2016,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2086,7 +2039,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2122,7 +2074,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2154,7 +2105,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2190,7 +2140,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2224,7 +2173,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2254,7 +2202,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2290,7 +2237,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2322,7 +2268,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2439,7 +2384,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2580,7 +2524,6 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.challenge = new byte[3];
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
-                /* maybeClientDataHash= */ null,
                 mOrigin,
                 mOrigin,
                 /* payment= */ null,
@@ -2610,7 +2553,6 @@ public class Fido2CredentialRequestTest {
 
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
-                /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
