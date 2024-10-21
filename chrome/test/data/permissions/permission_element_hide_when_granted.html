@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<body>
+  <style>
+    permission:granted {
+      display:none
+    }
+  </style>
+  <permission id="geolocation" type="geolocation">
+  <permission id="camera" type="camera">
+  <permission id="microphone" type="microphone">
+
+  <script>
+    function clickById(element_id) {
+      let el = document.getElementById(element_id);
+      if (el.checkVisibility()) {
+        el.click();
+      } else {
+        setTimeout(clickById, 100, element_id);
+      }
+    }
+  </script>
+</body>
+</html>
