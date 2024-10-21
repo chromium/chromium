@@ -17,8 +17,7 @@ class TestShareKitService : public ShareKitService {
 
   // ShareKitService.
   bool IsSupported() const override;
-  void ShareGroup(const TabGroup* group,
-                  UIViewController* base_view_controller) override;
+  void ShareGroup(ShareKitShareGroupConfiguration* config) override;
   void ShareGroup(const TabGroup* group,
                   UIViewController* base_view_controller,
                   id<ApplicationCommands> commandsHandler) override;

@@ -12,6 +12,7 @@
 
 @protocol ApplicationCommands;
 @class ShareKitFacePileConfiguration;
+@class ShareKitShareGroupConfiguration;
 class TabGroup;
 
 // Service for ShareKit, allowing to manage tab groups sharing.
@@ -26,13 +27,10 @@ class ShareKitService : public KeyedService {
   // execution of the application.
   virtual bool IsSupported() const = 0;
 
-  // TODO(crbug.com/373825718): Remove this API.
-  // Initiates the share of `group`, presenting a view controller on top of
-  // `base_view_controller`.
-  virtual void ShareGroup(const TabGroup* group,
-                          UIViewController* base_view_controller);
-
   // TODO(crbug.com/373825718): Make the API pure virtual.
+  // Initiates the share group flow for the given `config`.
+  virtual void ShareGroup(ShareKitShareGroupConfiguration* config);
+  // TODO(crbug.com/373825718): Remove this API.
   // Initiates the share of `group`, presenting a view controller on top of
   // `base_view_controller`. `commandsHandler` is used to open new tabs.
   virtual void ShareGroup(const TabGroup* group,

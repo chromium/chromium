@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -362,10 +363,13 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   if (!_tabGroup || !shareKitService) {
     return;
   }
-  id<ApplicationCommands> commandsHandler = HandlerForProtocol(
+  ShareKitShareGroupConfiguration* config =
+      [[ShareKitShareGroupConfiguration alloc] init];
+  config.tabGroup = _tabGroup;
+  config.baseViewController = self.baseViewController;
+  config.applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ShareGroup(_tabGroup, self.baseViewController,
-                              commandsHandler);
+  shareKitService->ShareGroup(config);
 }
 
 @end

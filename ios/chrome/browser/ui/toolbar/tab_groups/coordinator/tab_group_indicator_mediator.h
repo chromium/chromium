@@ -30,7 +30,7 @@ class WebStateList;
 @property(nonatomic, strong) UIViewController* baseViewController;
 
 // Application commands handler.
-@property(nonatomic, weak) id<ApplicationCommands> commandsHandler;
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 // Creates an instance of the mediator.
 - (instancetype)initWithTabGroupSyncService:

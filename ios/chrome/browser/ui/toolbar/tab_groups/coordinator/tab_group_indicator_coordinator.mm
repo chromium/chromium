@@ -65,7 +65,7 @@
                         incognito:incognito];
   _mediator.delegate = self;
   _mediator.baseViewController = self.baseViewController;
-  _mediator.commandsHandler = HandlerForProtocol(
+  _mediator.applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   _view.mutator = _mediator;
 }

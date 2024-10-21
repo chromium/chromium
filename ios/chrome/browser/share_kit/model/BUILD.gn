@@ -10,6 +10,8 @@ source_set("model") {
     "share_kit_service.mm",
     "share_kit_service_configuration.h",
     "share_kit_service_configuration.mm",
+    "share_kit_share_group_configuration.h",
+    "share_kit_share_group_configuration.mm",
   ]
   deps = [
     "//components/keyed_service/core",

@@ -9,6 +9,7 @@
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -104,8 +105,13 @@
   if (!tabGroup || !_shareKitService) {
     return;
   }
-  _shareKitService->ShareGroup(tabGroup, self.baseViewController,
-                               self.commandsHandler);
+
+  ShareKitShareGroupConfiguration* config =
+      [[ShareKitShareGroupConfiguration alloc] init];
+  config.tabGroup = tabGroup;
+  config.baseViewController = self.baseViewController;
+  config.applicationHandler = self.applicationHandler;
+  _shareKitService->ShareGroup(config);
 }
 
 - (void)showTabGroupEdition {
