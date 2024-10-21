@@ -131,13 +131,6 @@ class AutocompleteHistoryManager : public KeyedService,
   // Must outlive this object.
   scoped_refptr<AutofillWebDataService> profile_database_;
 
-  // Map used to store WebDataService response callbacks, associating a
-  // response's WDResultType to the appropriate callback.
-  std::map<WDResultType,
-           base::RepeatingCallback<void(WebDataServiceBase::Handle,
-                                        std::unique_ptr<WDTypedResult>)>>
-      request_callbacks_;
-
   // The PrefService that this instance uses. Must outlive this instance.
   raw_ptr<PrefService> pref_service_;
 

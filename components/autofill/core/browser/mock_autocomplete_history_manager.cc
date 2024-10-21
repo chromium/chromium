@@ -7,6 +7,7 @@
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 
 namespace autofill {
+
 MockAutocompleteHistoryManager::MockAutocompleteHistoryManager() = default;
 
 MockAutocompleteHistoryManager::~MockAutocompleteHistoryManager() = default;
