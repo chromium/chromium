@@ -84,7 +84,6 @@ std::string GetAudioProcesingPropertiesLogString(
       "disable_hw_ns: %s, "
       "goog_audio_mirroring: %s, "
       "goog_auto_gain_control: %s, "
-      "goog_experimental_echo_cancellation: %s, "
       "goog_noise_suppression: %s, "
       "goog_experimental_noise_suppression: %s, "
       "goog_highpass_filter: %s, ",
@@ -92,7 +91,6 @@ std::string GetAudioProcesingPropertiesLogString(
       bool_to_string(properties.disable_hw_noise_suppression),
       bool_to_string(properties.goog_audio_mirroring),
       bool_to_string(properties.goog_auto_gain_control),
-      bool_to_string(properties.goog_experimental_echo_cancellation),
       bool_to_string(properties.goog_noise_suppression),
       bool_to_string(properties.goog_experimental_noise_suppression),
       bool_to_string(properties.goog_highpass_filter));

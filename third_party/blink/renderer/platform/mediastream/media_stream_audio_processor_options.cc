@@ -9,7 +9,6 @@ namespace blink {
 void AudioProcessingProperties::DisableDefaultProperties() {
   echo_cancellation_type = EchoCancellationType::kEchoCancellationDisabled;
   goog_auto_gain_control = false;
-  goog_experimental_echo_cancellation = false;
   goog_noise_suppression = false;
   goog_experimental_noise_suppression = false;
   goog_highpass_filter = false;
@@ -35,8 +34,6 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
   return disable_hw_noise_suppression == other.disable_hw_noise_suppression &&
          goog_audio_mirroring == other.goog_audio_mirroring &&
          goog_auto_gain_control == other.goog_auto_gain_control &&
-         goog_experimental_echo_cancellation ==
-             other.goog_experimental_echo_cancellation &&
          goog_noise_suppression == other.goog_noise_suppression &&
          goog_experimental_noise_suppression ==
              other.goog_experimental_noise_suppression &&
@@ -66,9 +63,6 @@ AudioProcessingProperties::ToAudioProcessingSettings(
   out.high_pass_filter = goog_highpass_filter;
   out.multi_channel_capture_processing = multi_channel_capture_processing;
   out.stereo_mirroring = goog_audio_mirroring;
-  // TODO(https://crbug.com/1215061): Deprecate this behavior. The constraint is
-  // no longer meaningful, but sees significant usage, so some care is required.
-  out.force_apm_creation = goog_experimental_echo_cancellation;
   return out;
 }
 }  // namespace blink

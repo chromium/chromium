@@ -19,7 +19,6 @@ std::string AudioProcessingSettings::ToString() const {
        ", high pass filter: ", bool_to_yes_no(high_pass_filter),
        ", multichannel capture processing: ",
        bool_to_yes_no(multi_channel_capture_processing),
-       ", force apm creation: ", bool_to_yes_no(force_apm_creation),
        ", stereo mirroring: ", bool_to_yes_no(stereo_mirroring)});
 }
 

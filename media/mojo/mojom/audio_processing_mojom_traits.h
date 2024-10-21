@@ -62,9 +62,6 @@ struct StructTraits<media::mojom::AudioProcessingSettingsDataView,
   static bool stereo_mirroring(const media::AudioProcessingSettings& s) {
     return s.stereo_mirroring;
   }
-  static bool force_apm_creation(const media::AudioProcessingSettings& s) {
-    return s.force_apm_creation;
-  }
   static bool Read(media::mojom::AudioProcessingSettingsDataView input,
                    media::AudioProcessingSettings* out_settings);
 };

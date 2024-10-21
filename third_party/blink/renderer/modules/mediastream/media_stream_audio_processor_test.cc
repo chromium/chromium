@@ -827,42 +827,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
   EXPECT_TRUE(audio_processor->has_webrtc_audio_processing());
 }
 
-#if BUILDFLAG(IS_IOS)
-// TODO(https://crbug.com/1417474): Remove legacy iOS case in
-// AudioProcessingSettings::NeedWebrtcAudioProcessing().
-#define MAYBE_TrueWhenExperimentalEchoCancellationIsEnabled \
-  DISABLED_TrueWhenExperimentalEchoCancellationIsEnabled
-#else
-#define MAYBE_TrueWhenExperimentalEchoCancellationIsEnabled \
-  TrueWhenExperimentalEchoCancellationIsEnabled
-#endif  // BUILDFLAG(IS_IOS)
-// "Experimental echo cancellation" does not map to any real effect, but still
-// enables audio processing.
-// TODO(https://crbug.com/1269723): Remove the experimental AEC option. This
-// test documents *current* behavior, not *desired* behavior.
-TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
-     MAYBE_TrueWhenExperimentalEchoCancellationIsEnabled) {
-  test::TaskEnvironment task_environment_;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
-  properties.goog_experimental_echo_cancellation = true;
-  // WouldModifyAudio overrides this effect on iOS and Android.
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(MediaStreamAudioProcessor::WouldModifyAudio(properties));
-#else
-  EXPECT_FALSE(MediaStreamAudioProcessor::WouldModifyAudio(properties));
-#endif
-
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor =
-      CreateAudioProcessorWithProperties(properties);
-  // WouldModifyAudio overrides this effect on iOS and Android.
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(audio_processor->has_webrtc_audio_processing());
-#else
-  EXPECT_FALSE(audio_processor->has_webrtc_audio_processing());
-#endif
-}
-
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      TrueWhenNoiseSuppressionIsEnabled) {
   test::TaskEnvironment task_environment_;

@@ -37,7 +37,6 @@ bool StructTraits<media::mojom::AudioProcessingSettingsDataView,
   out_settings->multi_channel_capture_processing =
       input.multi_channel_capture_processing();
   out_settings->stereo_mirroring = input.stereo_mirroring();
-  out_settings->force_apm_creation = input.force_apm_creation();
   return true;
 }
 

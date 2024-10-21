@@ -105,7 +105,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   static AudioPropertiesBoolMembers GetAudioProcessingProperties() {
     return {&AudioProcessingProperties::goog_audio_mirroring,
             &AudioProcessingProperties::goog_auto_gain_control,
-            &AudioProcessingProperties::goog_experimental_echo_cancellation,
             &AudioProcessingProperties::goog_noise_suppression,
             &AudioProcessingProperties::goog_experimental_noise_suppression,
             &AudioProcessingProperties::goog_highpass_filter};
@@ -200,19 +199,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
         /*should_disable_hardware_noise_suppression=*/false, is_reconfigurable);
   }
 
-  // When googExperimentalEchoCancellation is not explicitly set, its default
-  // value is always false on Android. On other platforms it behaves like other
-  // audio-processing properties.
-  void CheckGoogExperimentalEchoCancellationDefault(
-      const AudioProcessingProperties& properties,
-      bool value) {
-#if BUILDFLAG(IS_ANDROID)
-    EXPECT_FALSE(properties.goog_experimental_echo_cancellation);
-#else
-    EXPECT_EQ(value, properties.goog_experimental_echo_cancellation);
-#endif
-  }
-
   void CheckBoolDefaultsDeviceCapture(
       const AudioSettingsBoolMembers& exclude_main_settings,
       const AudioPropertiesBoolMembers& exclude_audio_properties,
@@ -234,11 +220,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     if (!Contains(exclude_audio_properties,
                   &AudioProcessingProperties::goog_auto_gain_control)) {
       EXPECT_TRUE(properties.goog_auto_gain_control);
-    }
-    if (!Contains(
-            exclude_audio_properties,
-            &AudioProcessingProperties::goog_experimental_echo_cancellation)) {
-      CheckGoogExperimentalEchoCancellationDefault(properties, true);
     }
     if (!Contains(exclude_audio_properties,
                   &AudioProcessingProperties::goog_noise_suppression)) {
@@ -277,11 +258,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     if (!Contains(exclude_audio_properties,
                   &AudioProcessingProperties::goog_auto_gain_control)) {
       EXPECT_FALSE(properties.goog_auto_gain_control);
-    }
-    if (!Contains(
-            exclude_audio_properties,
-            &AudioProcessingProperties::goog_experimental_echo_cancellation)) {
-      EXPECT_FALSE(properties.goog_experimental_echo_cancellation);
     }
     if (!Contains(exclude_audio_properties,
                   &AudioProcessingProperties::goog_noise_suppression)) {
@@ -377,7 +353,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     EXPECT_EQ(EchoCancellationType::kEchoCancellationSystem,
               properties.echo_cancellation_type);
     EXPECT_TRUE(properties.goog_auto_gain_control);
-    CheckGoogExperimentalEchoCancellationDefault(properties, true);
     EXPECT_TRUE(properties.goog_noise_suppression);
     EXPECT_TRUE(properties.goog_experimental_noise_suppression);
     EXPECT_TRUE(properties.goog_highpass_filter);
@@ -676,7 +651,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SingleBoolConstraint) {
       kAudioProcessingConstraints = {
           &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
           &MediaTrackConstraintSetPlatform::goog_auto_gain_control,
-          &MediaTrackConstraintSetPlatform::goog_experimental_echo_cancellation,
           &MediaTrackConstraintSetPlatform::goog_noise_suppression,
           &MediaTrackConstraintSetPlatform::goog_experimental_noise_suppression,
           &MediaTrackConstraintSetPlatform::goog_highpass_filter,
@@ -1387,8 +1361,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithWebRtc) {
             IsDeviceCapture() ? value : false;
         EXPECT_EQ(enable_webrtc_audio_processing,
                   properties.goog_auto_gain_control);
-        CheckGoogExperimentalEchoCancellationDefault(
-            properties, enable_webrtc_audio_processing);
         EXPECT_EQ(enable_webrtc_audio_processing,
                   properties.goog_noise_suppression);
         EXPECT_EQ(enable_webrtc_audio_processing,
@@ -1449,7 +1421,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithSystem) {
         EXPECT_EQ(expected_echo_cancellation_type,
                   properties.echo_cancellation_type);
         EXPECT_EQ(value, properties.goog_auto_gain_control);
-        CheckGoogExperimentalEchoCancellationDefault(properties, value);
         EXPECT_EQ(value, properties.goog_noise_suppression);
         EXPECT_EQ(value, properties.goog_experimental_noise_suppression);
         EXPECT_EQ(value, properties.goog_highpass_filter);
@@ -1572,7 +1543,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
       kAudioProcessingConstraints = {
           &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
           &MediaTrackConstraintSetPlatform::goog_auto_gain_control,
-          &MediaTrackConstraintSetPlatform::goog_experimental_echo_cancellation,
           &MediaTrackConstraintSetPlatform::goog_noise_suppression,
           &MediaTrackConstraintSetPlatform::goog_experimental_noise_suppression,
           &MediaTrackConstraintSetPlatform::goog_highpass_filter,
@@ -1829,8 +1799,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
           EchoCancellationType::kEchoCancellationDisabled;
       properties.goog_audio_mirroring = !properties.goog_audio_mirroring;
       properties.goog_auto_gain_control = !properties.goog_auto_gain_control;
-      properties.goog_experimental_echo_cancellation =
-          !properties.goog_experimental_echo_cancellation;
       properties.goog_noise_suppression = !properties.goog_noise_suppression;
       properties.goog_experimental_noise_suppression =
           !properties.goog_experimental_noise_suppression;
@@ -1846,8 +1814,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
         kAudioProcessingConstraints = {
             &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
             &MediaTrackConstraintSetPlatform::goog_auto_gain_control,
-            &MediaTrackConstraintSetPlatform::
-                goog_experimental_echo_cancellation,
             &MediaTrackConstraintSetPlatform::goog_noise_suppression,
             &MediaTrackConstraintSetPlatform::
                 goog_experimental_noise_suppression,

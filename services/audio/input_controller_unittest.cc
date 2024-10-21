@@ -454,7 +454,6 @@ class TimeSourceInputControllerTestWithDeviceListener
     settings.high_pass_filter = false;
     settings.multi_channel_capture_processing = false;
     settings.stereo_mirroring = false;
-    settings.force_apm_creation = false;
     switch (audio_processing_type) {
       case AudioProcessingType::kNone:
         break;

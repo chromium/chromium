@@ -73,15 +73,6 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
 
   bool goog_audio_mirroring = false;
   bool goog_auto_gain_control = true;
-  // TODO(https://crbug.com/1269723): Deprecate this constraint. The flag no
-  // longer toggles meaningful processing effects, but it still forces the audio
-  // processing module to be created and used.
-  bool goog_experimental_echo_cancellation =
-#if BUILDFLAG(IS_ANDROID)
-      false;
-#else
-      true;
-#endif
   bool goog_noise_suppression = true;
   // Experimental noise suppression maps to transient suppression (keytap
   // removal).

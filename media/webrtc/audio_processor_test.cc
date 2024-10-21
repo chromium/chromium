@@ -85,7 +85,6 @@ void DisableDefaultSettings(AudioProcessingSettings& settings) {
   settings.high_pass_filter = false;
   settings.multi_channel_capture_processing = false;
   settings.stereo_mirroring = false;
-  settings.force_apm_creation = false;
 }
 
 }  // namespace

@@ -31,7 +31,6 @@ TEST(AudioProcessingMojomTraitsTest, AudioProcessingSettings) {
   settings_in.multi_channel_capture_processing =
       !settings_in.multi_channel_capture_processing;
   settings_in.stereo_mirroring = !settings_in.stereo_mirroring;
-  settings_in.force_apm_creation = !settings_in.force_apm_creation;
 
   mojo::test::SerializeAndDeserialize<media::mojom::AudioProcessingSettings>(
       settings_in, settings_out);

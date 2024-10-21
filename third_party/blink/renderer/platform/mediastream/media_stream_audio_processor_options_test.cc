@@ -31,7 +31,6 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
   EXPECT_FALSE(settings.automatic_gain_control);
   EXPECT_FALSE(settings.high_pass_filter);
   EXPECT_FALSE(settings.stereo_mirroring);
-  EXPECT_FALSE(settings.force_apm_creation);
 
   EXPECT_EQ(
       properties.voice_isolation,
@@ -45,7 +44,6 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
           EchoCancellationType::kEchoCancellationAec3,
       .goog_audio_mirroring = true,
       .goog_auto_gain_control = true,
-      .goog_experimental_echo_cancellation = true,
       .goog_noise_suppression = true,
       .goog_experimental_noise_suppression = true,
       .goog_highpass_filter = true};
@@ -58,7 +56,6 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
   EXPECT_TRUE(settings.automatic_gain_control);
   EXPECT_TRUE(settings.high_pass_filter);
   EXPECT_TRUE(settings.stereo_mirroring);
-  EXPECT_TRUE(settings.force_apm_creation);
 }
 
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
