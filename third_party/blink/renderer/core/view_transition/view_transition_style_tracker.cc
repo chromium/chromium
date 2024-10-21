@@ -89,6 +89,7 @@ CSSPropertyID kLayeredCaptureProperties[] = {
     CSSPropertyID::kBoxShadow,
     CSSPropertyID::kOutline,
     CSSPropertyID::kBorderImage,
+    CSSPropertyID::kPadding,
 };
 
 CSSPropertyID kPropertiesToAnimate[] = {
@@ -97,7 +98,7 @@ CSSPropertyID kPropertiesToAnimate[] = {
     CSSPropertyID::kMask,           CSSPropertyID::kBorder,
     CSSPropertyID::kBackground,     CSSPropertyID::kBorderRadius,
     CSSPropertyID::kBoxShadow,      CSSPropertyID::kOutline,
-    CSSPropertyID::kBorderImage,
+    CSSPropertyID::kBorderImage,    CSSPropertyID::kPadding,
 };
 
 template <typename K, typename V>
