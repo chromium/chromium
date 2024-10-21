@@ -163,7 +163,7 @@
                                       appendTo:OpenPosition::kCurrentTab];
     [self.applicationHandler openURLInNewTab:command];
     [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
-    [self resetOmniboxToCurrentLensResult];
+    [self updateForLensResult:_currentLensResult];
   } else {
     // Setting the query text generates new results.
     NSString* nsText = base::SysUTF16ToNSString(text);
@@ -242,17 +242,7 @@
     _isReloading = NO;
   }
   [self.resultConsumer loadResultsURL:result.searchResultURL];
-
-  if (result.isTextSelection) {
-    [self.omniboxCoordinator setThumbnailImage:nil];
-  } else {
-    [self.omniboxCoordinator setThumbnailImage:result.selectionPreviewImage];
-  }
-  if (self.omniboxClient) {
-    self.omniboxClient->SetLensOverlaySuggestInputs(std::nullopt);
-    self.omniboxClient->SetLensResultHasThumbnail(!result.isTextSelection);
-  }
-  [self updateOmniboxText:result.queryText];
+  [self updateForLensResult:result];
 }
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {
@@ -266,30 +256,7 @@
   if (result != _currentLensResult) {
     return;
   }
-
-  // Push the suggest signals to the client.
-  if (!self.omniboxClient) {
-    return;
-  }
-
-  NSData* data = result.suggestSignals;
-  if (!data.length) {
-    self.omniboxClient->SetLensOverlaySuggestInputs(std::nullopt);
-    return;
-  }
-  std::string encodedString;
-  base::span<const uint8_t> signals = base::span<const uint8_t>(
-      static_cast<const uint8_t*>(result.suggestSignals.bytes),
-      result.suggestSignals.length);
-
-  Base64UrlEncode(signals, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                  &encodedString);
-
-  if (encodedString.size() > 0) {
-    lens::proto::LensOverlaySuggestInputs response;
-    response.set_encoded_image_signals(encodedString);
-    self.omniboxClient->SetLensOverlaySuggestInputs(response);
-  }
+  [self setOmniboxSuggestSignals:result];
 }
 
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
@@ -320,13 +287,16 @@
 
 #pragma mark - Private
 
-/// Resets the omnibox state to the `_currentLensResult` text and thumbnail.
-- (void)resetOmniboxToCurrentLensResult {
-  [self updateOmniboxText:_currentLensResult.queryText];
+/// Updates the UI for lens `result`.
+- (void)updateForLensResult:(id<ChromeLensOverlayResult>)result {
   [self.omniboxCoordinator
-      setThumbnailImage:_currentLensResult.isTextSelection
-                            ? nil
-                            : _currentLensResult.selectionPreviewImage];
+      setThumbnailImage:result.isTextSelection ? nil
+                                               : result.selectionPreviewImage];
+  if (self.omniboxClient) {
+    [self setOmniboxSuggestSignals:result];
+    self.omniboxClient->SetLensResultHasThumbnail(!result.isTextSelection);
+  }
+  [self updateOmniboxText:result.queryText];
 }
 
 /// Updates the steady state omnibox text.
@@ -335,6 +305,32 @@
     self.omniboxClient->SetOmniboxSteadyStateText(text);
   }
   [self.omniboxCoordinator updateOmniboxState];
+}
+
+/// Sets the omnibox suggest signals with `result`.
+- (void)setOmniboxSuggestSignals:(id<ChromeLensOverlayResult>)result {
+  if (!self.omniboxClient) {
+    return;
+  }
+
+  NSData* data = result.suggestSignals;
+  if (!data.length) {
+    self.omniboxClient->SetLensOverlaySuggestInputs(std::nullopt);
+    return;
+  }
+  std::string encodedString;
+  base::span<const uint8_t> signals = base::span<const uint8_t>(
+      static_cast<const uint8_t*>(result.suggestSignals.bytes),
+      result.suggestSignals.length);
+
+  Base64UrlEncode(signals, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                  &encodedString);
+
+  if (!encodedString.empty()) {
+    lens::proto::LensOverlaySuggestInputs response;
+    response.set_encoded_image_signals(encodedString);
+    self.omniboxClient->SetLensOverlaySuggestInputs(response);
+  }
 }
 
 /// Whether the navigation to `URL` with the `_currentLensResult` should be
