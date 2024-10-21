@@ -242,8 +242,10 @@ CreateTestCrOSVariationsFieldTrialCreator(
 
   auto safe_seed =
       std::make_unique<VariationsSafeSeedStoreLocalState>(local_state);
-  auto seed_store =
-      std::make_unique<VariationsSeedStore>(local_state, std::move(safe_seed));
+  auto seed_store = std::make_unique<VariationsSeedStore>(
+      local_state, /*initial_seed=*/nullptr,
+      /*signature_verification_enabled=*/true, std::move(safe_seed),
+      client->GetChannelForVariations(), client->GetVariationsSeedFileDir());
   return std::make_unique<TestCrOSVariationsFieldTrialCreator>(
       client, std::move(seed_store));
 }

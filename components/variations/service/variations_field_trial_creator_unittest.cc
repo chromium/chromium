@@ -98,8 +98,11 @@ struct FetchAndLaunchTimeTestParams {
 
 std::unique_ptr<VariationsSeedStore> CreateSeedStore(PrefService* local_state) {
   return std::make_unique<VariationsSeedStore>(
-      local_state,
-      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state));
+      local_state, /*initial_seed=*/nullptr,
+      /*signature_verification_enabled=*/true,
+      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state),
+      version_info::Channel::UNKNOWN,
+      /*seed_file_dir=*/base::FilePath());
 }
 
 // Returns a seed with simple test data. The seed has a single study,
@@ -358,7 +361,11 @@ class TestVariationsSeedStore : public VariationsSeedStore {
   explicit TestVariationsSeedStore(PrefService* local_state)
       : VariationsSeedStore(
             local_state,
-            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)) {}
+            /*initial_seed=*/nullptr,
+            /*signature_verification_enabled=*/true,
+            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state),
+            version_info::Channel::UNKNOWN,
+            /*seed_file_dir=*/base::FilePath()) {}
 
   TestVariationsSeedStore(const TestVariationsSeedStore&) = delete;
   TestVariationsSeedStore& operator=(const TestVariationsSeedStore&) = delete;

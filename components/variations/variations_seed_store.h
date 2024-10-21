@@ -58,13 +58,6 @@ struct ValidatedSeed {
 // seed from Local State.
 class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
  public:
-  // Standard constructor. Enables signature verification.
-  // |safe_seed_store| controls how to load and store the safe seed data.
-  // TODO(crbug.com/40935052): Remove this constructor and migrate
-  // callers to the more-verbose version.
-  VariationsSeedStore(PrefService* local_state,
-                      std::unique_ptr<VariationsSafeSeedStore> safe_seed_store);
-
   // |local_state| provides access to Local State prefs. Must not be null.
   // |initial_seed|, if not null, is stored in this seed store. It is used (A)
   // by Android Chrome and iOS to supply a first-run seed and (B) by Android

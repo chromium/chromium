@@ -164,16 +164,6 @@ ValidatedSeed& ValidatedSeed::operator=(ValidatedSeed&& other) = default;
 
 VariationsSeedStore::VariationsSeedStore(
     PrefService* local_state,
-    std::unique_ptr<VariationsSafeSeedStore> safe_seed_store)
-    : VariationsSeedStore(local_state,
-                          /*initial_seed=*/nullptr,
-                          /*signature_verification_enabled=*/true,
-                          std::move(safe_seed_store),
-                          version_info::Channel::UNKNOWN,
-                          /*seed_file_dir=*/base::FilePath()) {}
-
-VariationsSeedStore::VariationsSeedStore(
-    PrefService* local_state,
     std::unique_ptr<SeedResponse> initial_seed,
     bool signature_verification_enabled,
     std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,

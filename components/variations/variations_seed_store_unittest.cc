@@ -59,42 +59,24 @@ constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
 // File used by SeedReaderWriter to store a latest seed.
 const base::FilePath::CharType kSeedFilename[] = FILE_PATH_LITERAL("TestSeed");
 
-// TODO(crbug.com/40764723): Consider consolidating TestVariationsSeedStore and
-// SignatureVerifyingVariationsSeedStore. Outside of tests, signature
-// verification is enabled although prior to crrev.com/c/2181564, signature
-// verification was not done on iOS or Android.
 class TestVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit TestVariationsSeedStore(
       PrefService* local_state,
       version_info::Channel channel = version_info::Channel::UNKNOWN,
       base::FilePath seed_file_dir = base::FilePath(),
+      bool signature_verification_needed = false,
       std::unique_ptr<SeedResponse> initial_seed = nullptr,
       bool use_first_run_prefs = true)
       : VariationsSeedStore(
             local_state,
             std::move(initial_seed),
-            /*signature_verification_enabled=*/false,
+            signature_verification_needed,
             std::make_unique<VariationsSafeSeedStoreLocalState>(local_state),
             channel,
             seed_file_dir,
             use_first_run_prefs) {}
   ~TestVariationsSeedStore() override = default;
-};
-
-class SignatureVerifyingVariationsSeedStore : public VariationsSeedStore {
- public:
-  explicit SignatureVerifyingVariationsSeedStore(PrefService* local_state)
-      : VariationsSeedStore(
-            local_state,
-            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)) {}
-
-  SignatureVerifyingVariationsSeedStore(
-      const SignatureVerifyingVariationsSeedStore&) = delete;
-  SignatureVerifyingVariationsSeedStore& operator=(
-      const SignatureVerifyingVariationsSeedStore&) = delete;
-
-  ~SignatureVerifyingVariationsSeedStore() override = default;
 };
 
 // Creates a base::Time object from the corresponding raw value. The specific
@@ -359,7 +341,9 @@ TEST_F(VariationsSeedStoreTest, LoadSeed_InvalidSignature) {
 
   // Loading a valid seed with an invalid signature should return false and
   // clear all associated prefs when signature verification is enabled.
-  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/true);
   base::HistogramTester histogram_tester;
   VariationsSeed loaded_seed;
   std::string loaded_seed_data;
@@ -412,7 +396,9 @@ TEST_F(VariationsSeedStoreTest, LoadSeed_RejectEmptySignature) {
 
   // Loading a valid seed with an empty signature should fail and clear all
   // associated prefs when signature verification is enabled.
-  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/true);
   base::HistogramTester histogram_tester;
   VariationsSeed loaded_seed;
   std::string loaded_seed_data;
@@ -444,7 +430,9 @@ TEST_F(VariationsSeedStoreTest, LoadSeed_AcceptEmptySignature) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kAcceptEmptySeedSignatureForTesting);
 
-  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/true);
   base::HistogramTester histogram_tester;
   VariationsSeed loaded_seed;
   std::string loaded_seed_data;
@@ -948,7 +936,9 @@ TEST_F(VariationsSeedStoreTest, LoadSafeSeed_InvalidSignature) {
 
   // Attempt to load a valid safe seed with an invalid signature while signature
   // verification is enabled.
-  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/true);
   base::HistogramTester histogram_tester;
   VariationsSeed loaded_seed;
   std::unique_ptr<ClientFilterableState> client_state =
@@ -1075,7 +1065,9 @@ TEST_P(StoreInvalidSafeSeedTest, StoreSafeSeed) {
   client_state->reference_date = now - base::Days(1);
   prefs.SetTime(prefs::kVariationsSafeSeedDate, expected_date);
 
-  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/true);
   base::HistogramTester histogram_tester;
 
   // Verify that attempting to store an invalid seed fails.
@@ -1134,7 +1126,9 @@ TEST_F(VariationsSeedStoreTest, StoreSafeSeed_ValidSignature) {
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
-  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/true);
   base::HistogramTester histogram_tester;
 
   // Verify that storing the safe seed succeeded.
@@ -1302,7 +1296,9 @@ TEST_F(VariationsSeedStoreTest, VerifySeedSignature) {
   {
     prefs.SetString(prefs::kVariationsCompressedSeed, base64_seed_data);
     prefs.SetString(prefs::kVariationsSeedSignature, base64_seed_signature);
-    SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+    TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                       /*seed_file_dir=*/base::FilePath(),
+                                       /*signature_verification_needed=*/true);
 
     base::HistogramTester histogram_tester;
     VariationsSeed seed;
@@ -1320,7 +1316,9 @@ TEST_F(VariationsSeedStoreTest, VerifySeedSignature) {
   {
     prefs.SetString(prefs::kVariationsCompressedSeed, base64_seed_data);
     prefs.SetString(prefs::kVariationsSeedSignature, std::string());
-    SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+    TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                       /*seed_file_dir=*/base::FilePath(),
+                                       /*signature_verification_needed=*/true);
 
     base::HistogramTester histogram_tester;
     VariationsSeed seed;
@@ -1339,7 +1337,9 @@ TEST_F(VariationsSeedStoreTest, VerifySeedSignature) {
     prefs.SetString(prefs::kVariationsCompressedSeed, base64_seed_data);
     prefs.SetString(prefs::kVariationsSeedSignature,
                     "not a base64-encoded string");
-    SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+    TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                       /*seed_file_dir=*/base::FilePath(),
+                                       /*signature_verification_needed=*/true);
 
     base::HistogramTester histogram_tester;
     VariationsSeed seed;
@@ -1359,7 +1359,9 @@ TEST_F(VariationsSeedStoreTest, VerifySeedSignature) {
   {
     prefs.SetString(prefs::kVariationsCompressedSeed, base64_seed_data);
     prefs.SetString(prefs::kVariationsSeedSignature, base64_seed_data);
-    SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+    TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                       /*seed_file_dir=*/base::FilePath(),
+                                       /*signature_verification_needed=*/true);
 
     base::HistogramTester histogram_tester;
     VariationsSeed seed;
@@ -1384,7 +1386,9 @@ TEST_F(VariationsSeedStoreTest, VerifySeedSignature) {
 
     prefs.SetString(prefs::kVariationsCompressedSeed, base64_wrong_seed_data);
     prefs.SetString(prefs::kVariationsSeedSignature, base64_seed_signature);
-    SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+    TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                       /*seed_file_dir=*/base::FilePath(),
+                                       /*signature_verification_needed=*/true);
 
     base::HistogramTester histogram_tester;
     VariationsSeed seed;
@@ -1613,9 +1617,11 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
-  TestVariationsSeedStore seed_store(
-      &prefs, version_info::Channel::UNKNOWN, base::FilePath(),
-      /*initial_seed=*/std::move(seed), use_first_run_prefs);
+  TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/false,
+                                     /*initial_seed=*/std::move(seed),
+                                     use_first_run_prefs);
 
   seed = android::GetVariationsFirstRunSeed();
 
@@ -1712,7 +1718,9 @@ void ExpectSafeSeed(const featured::SeedDetails& platform,
 TEST_F(VariationsSeedStoreTest, SendSafeSeedToPlatform_SucceedFirstAttempt) {
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
-  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/true);
 
   ash::featured::FeaturedClient::InitializeFake();
   ash::featured::FakeFeaturedClient* client =
@@ -1744,7 +1752,9 @@ TEST_F(VariationsSeedStoreTest, SendSafeSeedToPlatform_SucceedFirstAttempt) {
 TEST_F(VariationsSeedStoreTest, SendSafeSeedToPlatform_FailFirstAttempt) {
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
-  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/true);
 
   ash::featured::FeaturedClient::InitializeFake();
   ash::featured::FakeFeaturedClient* client =
@@ -1777,7 +1787,9 @@ TEST_F(VariationsSeedStoreTest, SendSafeSeedToPlatform_FailFirstAttempt) {
 TEST_F(VariationsSeedStoreTest, SendSafeSeedToPlatform_FailTwoAttempts) {
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
-  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
+  TestVariationsSeedStore seed_store(&prefs, version_info::Channel::UNKNOWN,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/true);
 
   ash::featured::FeaturedClient::InitializeFake();
   ash::featured::FakeFeaturedClient* client =
