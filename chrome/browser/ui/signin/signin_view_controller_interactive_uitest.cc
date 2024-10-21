@@ -362,7 +362,8 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserOIDCAccountTest,
       base::BindLambdaForTesting(
           [&user_choice_run_loop, &result](
               signin::SigninChoice choice,
-              signin::SigninChoiceOperationDoneCallback callback) {
+              signin::SigninChoiceOperationDoneCallback callback,
+              signin::SigninChoiceOperationRetryCallback) {
             result = choice;
             std::move(callback).Run(
                 signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
@@ -370,7 +371,8 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserOIDCAccountTest,
           }),
       /*done_callback=*/
       base::BindOnce(&SigninViewController::CloseModalSignin,
-                     browser()->signin_view_controller()->AsWeakPtr()));
+                     browser()->signin_view_controller()->AsWeakPtr()),
+      /*retry_callback=*/base::DoNothing());
   EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
   content_observer.Wait();
 

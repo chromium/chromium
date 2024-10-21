@@ -187,6 +187,9 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
     return;
   }
 
+  // TODO(374765466): Simplify this logic by creating a function that can call
+  // one of the following callbacks according to an argument, then passing
+  // this single callback instead of three separate callbacks.
   interception_bubble_handle_ = delegate_->ShowOidcInterceptionDialog(
       web_contents_.get(), bubble_parameters,
       base::BindOnce(
@@ -195,7 +198,7 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
       base::BindOnce(
           &OidcAuthenticationSigninInterceptor::FinalizeSigninInterception,
           base::Unretained(this)),
-      base::BindOnce(
+      base::BindRepeating(
           &OidcAuthenticationSigninInterceptor::StartOidcRegistration,
           base::Unretained(this)));
 }
@@ -227,24 +230,26 @@ void OidcAuthenticationSigninInterceptor::Reset() {
   preset_profile_id_.clear();
   new_profile_.reset();
   user_choice_handling_done_callback_.Reset();
+  user_choice_handling_retry_callback_.Reset();
 }
 
+// TODO(374766082): Create a separate function for error logging and calls to
+// `RecordOidcProfileCreationResult`, to simplify the logic of this function.
 void OidcAuthenticationSigninInterceptor::HandleError(
     std::variant<OidcInterceptionResult, OidcProfileCreationResult> result,
     std::optional<bool> is_dasher_based) {
   auto operation_result = signin::SigninChoiceOperationResult::SIGNIN_ERROR;
   if (std::holds_alternative<OidcInterceptionResult>(result)) {
     CHECK(is_dasher_based == std::nullopt);
-    RecordOidcInterceptionResult(std::get<OidcInterceptionResult>(result));
-  } else {
-    CHECK(is_dasher_based != std::nullopt);
-    auto profile_creation_result = std::get<OidcProfileCreationResult>(result);
-    RecordOidcProfileCreationResult(profile_creation_result,
-                                    is_dasher_based.value());
-    if (profile_creation_result ==
-        OidcProfileCreationResult::kFailedToFetchPolicy) {
+    auto interception_result = std::get<OidcInterceptionResult>(result);
+    RecordOidcInterceptionResult(interception_result);
+    if (interception_result == OidcInterceptionResult::kRegistrationTimeout) {
       operation_result = signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT;
     }
+  } else {
+    CHECK(is_dasher_based != std::nullopt);
+    RecordOidcProfileCreationResult(std::get<OidcProfileCreationResult>(result),
+                                    is_dasher_based.value());
   }
 
   // Display the error dialog for profile creation case only
@@ -253,7 +258,13 @@ void OidcAuthenticationSigninInterceptor::HandleError(
     return;
   }
 
-  if (interception_bubble_handle_ && user_choice_handling_done_callback_) {
+  if (interception_bubble_handle_ && user_choice_handling_done_callback_ &&
+      user_choice_handling_retry_callback_) {
+    if (operation_result ==
+        signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT) {
+      user_choice_handling_retry_callback_.Run(operation_result);
+      return;
+    }
     std::move(user_choice_handling_done_callback_).Run(operation_result);
     return;
   }
@@ -337,7 +348,15 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
   if (kOidcAuthForceErrorUi.Get()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "OIDC client registration failure "
                                           "enforced by feature flag parameter.";
+
     return HandleError(OidcInterceptionResult::kFailedToRegisterProfile);
+  }
+
+  if (kOidcAuthForceTimeoutUi.Get()) {
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "OIDC client registration timeout "
+                                          "enforced by feature flag parameter.";
+
+    return HandleError(OidcInterceptionResult::kRegistrationTimeout);
   }
 
   if (client->last_dm_status() != policy::DM_STATUS_SUCCESS) {
@@ -349,7 +368,9 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "OIDC client registration failed with DM Status: "
         << client->last_dm_status() << ". Enrollment process interrupted.";
-    HandleError(OidcInterceptionResult::kFailedToRegisterProfile);
+    HandleError((result.GetNetError() == net::ERR_TIMED_OUT)
+                    ? OidcInterceptionResult::kRegistrationTimeout
+                    : OidcInterceptionResult::kFailedToRegisterProfile);
     return;
   }
 
@@ -413,8 +434,10 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
 
 void OidcAuthenticationSigninInterceptor::OnProfileCreationChoice(
     signin::SigninChoice choice,
-    signin::SigninChoiceOperationDoneCallback callback) {
-  user_choice_handling_done_callback_ = std::move(callback);
+    signin::SigninChoiceOperationDoneCallback confirm_callback,
+    signin::SigninChoiceOperationRetryCallback retry_callback) {
+  user_choice_handling_done_callback_ = std::move(confirm_callback);
+  user_choice_handling_retry_callback_ = std::move(retry_callback);
 
   if (choice == signin::SIGNIN_CHOICE_CANCEL) {
     RecordOidcInterceptionResult(OidcInterceptionResult::kConsetDialogRejected);
@@ -554,9 +577,7 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
 
   if (user_choice_handling_done_callback_) {
     std::move(user_choice_handling_done_callback_)
-        .Run((kOidcAuthForceTimeoutUi.Get())
-                 ? signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT
-                 : signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS);
+        .Run(signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS);
   } else {
     FinalizeSigninInterception();
   }

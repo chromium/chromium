@@ -38,7 +38,7 @@ EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
     bool show_link_data_option,
     SigninChoiceCallbackVariant process_user_choice_callback,
     base::OnceClosure done_callback,
-    base::OnceClosure retry_callback)
+    base::RepeatingClosure retry_callback)
     : account_info(account_info),
       is_oidc_account(is_oidc_account),
       profile_creation_required_by_policy(profile_creation_required_by_policy),

@@ -292,7 +292,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertFalse(
           isChildVisible(app, '#proceed-button'),
           'Processing State: #proceed-button');
-      assertFalse(
+      assertTrue(
           isChildVisible(app, '#cancel-button'),
           'Processing State: #cancel-button');
 
@@ -336,11 +336,11 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertTrue(
           isChildVisible(app, '#proceed-button'),
           'Timeout State: #proceed-button');
-      assertFalse(
+      assertTrue(
           isChildVisible(app, '#cancel-button'),
           'Timeout State: #cancel-button');
       assertEquals(
-          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          app.i18n('retryLabel'), proceedButton.textContent!.trim(),
           'Timeout State: Proceed label');
 
       webUIListenerCallback('on-state-changed', State.SUCCESS);

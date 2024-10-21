@@ -662,7 +662,13 @@
       Now you can start browsing
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_TITLE" desc="Title of a section telling the user that their work profile was created but is not fully ready yet.">
-      Your work profile is almost ready
+      Your profile hasn't been set up
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_SUBTITLE" desc="Subtitle of a section telling the user that their work profile was created but is not fully ready yet.">
+      You can try again or contact your administrator for help
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_RETRY_LABEL" desc="Title of a section telling the user that their work profile was created but is not fully ready yet.">
+      Try again
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_TITLE" desc="Title of a section telling the user that there was an error while creating their work profile.">
       Something went wrong

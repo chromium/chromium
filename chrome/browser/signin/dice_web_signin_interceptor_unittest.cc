@@ -71,9 +71,9 @@ class MockDiceWebSigninInterceptorDelegate
               ShowOidcInterceptionDialog,
               (content::WebContents*,
                const WebSigninInterceptor::Delegate::BubbleParameters&,
-               signin::SigninChoiceWithConfirmationCallback,
+               signin::SigninChoiceWithConfirmAndRetryCallback,
                base::OnceClosure,
-               base::OnceClosure),
+               base::RepeatingClosure),
               (override));
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,

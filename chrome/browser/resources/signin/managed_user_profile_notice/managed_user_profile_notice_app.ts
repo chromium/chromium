@@ -203,7 +203,7 @@ export class ManagedUserProfileNoticeAppElement extends
 
   protected allowCancel_() {
     return this.showDisclosure_ || this.showValueProposition_ ||
-        this.showUserDataHandling_;
+        this.showUserDataHandling_ || this.showTimeout_ || this.showProcessing_;
   }
 
   private computeCancelLabel_() {
@@ -226,10 +226,11 @@ export class ManagedUserProfileNoticeAppElement extends
       case State.PROCESSING:
         return this.i18n('continueLabel');
       case State.USER_DATA_HANDLING:
-      case State.TIMEOUT:
       case State.SUCCESS:
       case State.ERROR:
         return this.i18n('confirmLabel');
+      case State.TIMEOUT:
+        return this.i18n('retryLabel');
     }
   }
 

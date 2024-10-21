@@ -63,12 +63,13 @@ class TestDiceWebSigninInterceptorDelegate
   ShowOidcInterceptionDialog(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
-      signin::SigninChoiceWithConfirmationCallback callback,
+      signin::SigninChoiceWithConfirmAndRetryCallback callback,
       base::OnceClosure done_callback,
-      base::OnceClosure retry_callback) override {
+      base::RepeatingClosure retry_callback) override {
     std::move(callback)
         .Then(std::move(done_callback))
-        .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing());
+        .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing(),
+             base::DoNothing());
     return nullptr;
   }
 

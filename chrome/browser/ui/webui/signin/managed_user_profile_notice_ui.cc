@@ -129,6 +129,8 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT);
   source->AddLocalizedString("continueLabel", IDS_APP_CONTINUE);
   source->AddLocalizedString("confirmLabel", IDS_CONFIRM);
+  source->AddLocalizedString("retryLabel",
+                             IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_RETRY_LABEL);
   source->AddLocalizedString("linkDataText",
                              IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX);
 

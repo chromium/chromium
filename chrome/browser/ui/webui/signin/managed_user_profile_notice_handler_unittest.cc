@@ -233,9 +233,9 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   base::test::ScopedFeatureList feature_list(
       profile_management::features::kOidcAuthProfileManagement);
 
-  base::MockCallback<signin::SigninChoiceWithConfirmationCallback>
+  base::MockCallback<signin::SigninChoiceWithConfirmAndRetryCallback>
       mock_process_user_choice_callback;
-  base::MockCallback<base::OnceClosure> mock_done_callback;
+  base::MockCallback<base::RepeatingClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
@@ -251,10 +251,11 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
   EXPECT_CALL(mock_process_user_choice_callback,
-              Run(GetParam().expected_choice, ::testing::_))
+              Run(GetParam().expected_choice, ::testing::_, ::testing::_))
       .WillOnce([&run_loop](
                     signin::SigninChoice choice,
-                    signin::SigninChoiceOperationDoneCallback done_callback) {
+                    signin::SigninChoiceOperationDoneCallback done_callback,
+                    signin::SigninChoiceOperationRetryCallback) {
         std::move(done_callback)
             .Run(signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
         run_loop.Quit();
@@ -269,7 +270,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   base::test::ScopedFeatureList feature_list(
       profile_management::features::kOidcAuthProfileManagement);
 
-  base::MockCallback<signin::SigninChoiceWithConfirmationCallback>
+  base::MockCallback<signin::SigninChoiceWithConfirmAndRetryCallback>
       mock_process_user_choice_callback;
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
@@ -287,10 +288,11 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
   EXPECT_CALL(mock_process_user_choice_callback,
-              Run(GetParam().expected_choice, ::testing::_))
+              Run(GetParam().expected_choice, ::testing::_, ::testing::_))
       .WillOnce([&run_loop](
                     signin::SigninChoice choice,
-                    signin::SigninChoiceOperationDoneCallback done_callback) {
+                    signin::SigninChoiceOperationDoneCallback done_callback,
+                    signin::SigninChoiceOperationRetryCallback) {
         std::move(done_callback)
             .Run(signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
         run_loop.Quit();
@@ -314,7 +316,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
        HandleProceedWithSuccessConfirmationCallback) {
   base::test::ScopedFeatureList feature_list(
       profile_management::features::kOidcAuthProfileManagement);
-  base::MockCallback<signin::SigninChoiceWithConfirmationCallback>
+  base::MockCallback<signin::SigninChoiceWithConfirmAndRetryCallback>
       mock_process_user_choice_callback;
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
@@ -332,10 +334,11 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
   EXPECT_CALL(mock_process_user_choice_callback,
-              Run(GetParam().expected_choice, ::testing::_))
+              Run(GetParam().expected_choice, ::testing::_, ::testing::_))
       .WillOnce(
           [&run_loop](signin::SigninChoice choice,
-                      signin::SigninChoiceOperationDoneCallback done_callback) {
+                      signin::SigninChoiceOperationDoneCallback done_callback,
+                      signin::SigninChoiceOperationRetryCallback) {
             std::move(done_callback).Run(GetParam().choice_operation_result);
             run_loop.Quit();
           });

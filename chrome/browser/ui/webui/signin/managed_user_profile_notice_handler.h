@@ -146,10 +146,10 @@ class ManagedUserProfileNoticeHandler
   const std::u16string email_;
   const std::string domain_name_;
   const CoreAccountId account_id_;
-  signin::SigninChoiceWithConfirmationCallback
+  signin::SigninChoiceWithConfirmAndRetryCallback
       process_user_choice_with_confirmation_callback_;
   base::OnceClosure done_callback_;
-  base::OnceClosure retry_callback_;
+  base::RepeatingClosure retry_callback_;
   bool canceling_ = false;
   base::WeakPtrFactory<ManagedUserProfileNoticeHandler> weak_ptr_factory_{this};
 };

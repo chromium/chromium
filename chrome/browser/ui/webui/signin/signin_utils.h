@@ -56,12 +56,16 @@ enum SigninChoiceOperationResult {
 // handled.
 using SigninChoiceOperationDoneCallback =
     base::OnceCallback<void(SigninChoiceOperationResult)>;
-using SigninChoiceWithConfirmationCallback =
-    base::OnceCallback<void(SigninChoice, SigninChoiceOperationDoneCallback)>;
+using SigninChoiceOperationRetryCallback =
+    base::RepeatingCallback<void(SigninChoiceOperationResult)>;
+using SigninChoiceWithConfirmAndRetryCallback =
+    base::OnceCallback<void(SigninChoice,
+                            SigninChoiceOperationDoneCallback,
+                            SigninChoiceOperationRetryCallback)>;
 using SigninChoiceCallback = base::OnceCallback<void(SigninChoice)>;
 using SigninChoiceCallbackVariant =
     std::variant<SigninChoiceCallback,
-                 signin::SigninChoiceWithConfirmationCallback>;
+                 signin::SigninChoiceWithConfirmAndRetryCallback>;
 
 struct EnterpriseProfileCreationDialogParams {
   EnterpriseProfileCreationDialogParams(
@@ -71,7 +75,7 @@ struct EnterpriseProfileCreationDialogParams {
       bool show_link_data_option,
       SigninChoiceCallbackVariant process_user_choice_callback,
       base::OnceClosure done_callback,
-      base::OnceClosure retry_callback = base::DoNothing());
+      base::RepeatingClosure retry_callback = base::DoNothing());
   ~EnterpriseProfileCreationDialogParams();
   EnterpriseProfileCreationDialogParams(
       const EnterpriseProfileCreationDialogParams&) = delete;
@@ -84,7 +88,7 @@ struct EnterpriseProfileCreationDialogParams {
   bool show_link_data_option;
   SigninChoiceCallbackVariant process_user_choice_callback;
   base::OnceClosure done_callback;
-  base::OnceClosure retry_callback;
+  base::RepeatingClosure retry_callback;
 };
 
 // Gets a webview within an auth page that has the specified parent frame name

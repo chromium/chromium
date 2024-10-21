@@ -125,7 +125,8 @@ class OidcAuthenticationSigninInterceptor
   // Called when user makes a decision on the profile creation dialog.
   void OnProfileCreationChoice(
       signin::SigninChoice choice,
-      signin::SigninChoiceOperationDoneCallback callback);
+      signin::SigninChoiceOperationDoneCallback confirm_callback,
+      signin::SigninChoiceOperationRetryCallback retry_callback);
   void OnProfileSwitchChoice(SigninInterceptionResult result);
   // Called when the new profile has been created.
   void OnNewSignedInProfileCreated(base::WeakPtr<Profile> new_profile);
@@ -165,6 +166,8 @@ class OidcAuthenticationSigninInterceptor
   OidcInterceptionCallback oidc_callback_;
 
   signin::SigninChoiceOperationDoneCallback user_choice_handling_done_callback_;
+  signin::SigninChoiceOperationRetryCallback
+      user_choice_handling_retry_callback_;
 
   base::WeakPtrFactory<OidcAuthenticationSigninInterceptor> weak_factory_{this};
 

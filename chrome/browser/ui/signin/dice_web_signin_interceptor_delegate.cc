@@ -54,9 +54,9 @@ class OidcEnterpriseSigninInterceptionHandle
   OidcEnterpriseSigninInterceptionHandle(
       Browser* browser,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
-      signin::SigninChoiceWithConfirmationCallback callback,
+      signin::SigninChoiceWithConfirmAndRetryCallback callback,
       base::OnceClosure dialog_closed_closure,
-      base::OnceClosure retry_callback)
+      base::RepeatingClosure retry_callback)
       : browser_(browser->AsWeakPtr()),
         bubble_parameters_(bubble_parameters),
         callback_(std::move(callback)) {
@@ -89,14 +89,16 @@ class OidcEnterpriseSigninInterceptionHandle
       DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
           bubble_parameters_, browser_->profile(),
           SigninInterceptionResult::kDeclined);
-      std::move(callback_).Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing());
+      std::move(callback_).Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing(),
+                               base::DoNothing());
     }
   }
 
  private:
   void OnEnterpriseInterceptionUserChoice(
       signin::SigninChoice result,
-      signin::SigninChoiceOperationDoneCallback done_callback) {
+      signin::SigninChoiceOperationDoneCallback done_callback,
+      signin::SigninChoiceOperationRetryCallback retry_callback) {
     SigninInterceptionResult interception_result =
         SigninInterceptionResult::kDeclined;
     switch (result) {
@@ -113,12 +115,13 @@ class OidcEnterpriseSigninInterceptionHandle
     }
     DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
         bubble_parameters_, browser_->profile(), interception_result);
-    std::move(callback_).Run(result, std::move(done_callback));
+    std::move(callback_).Run(result, std::move(done_callback),
+                             std::move(retry_callback));
   }
 
   base::WeakPtr<Browser> browser_;
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
-  signin::SigninChoiceWithConfirmationCallback callback_;
+  signin::SigninChoiceWithConfirmAndRetryCallback callback_;
   base::WeakPtrFactory<OidcEnterpriseSigninInterceptionHandle>
       weak_ptr_factory_{this};
 };
@@ -255,9 +258,9 @@ std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptorDelegate::ShowOidcInterceptionDialog(
     content::WebContents* web_contents,
     const DiceWebSigninInterceptorDelegate::BubbleParameters& bubble_parameters,
-    signin::SigninChoiceWithConfirmationCallback callback,
+    signin::SigninChoiceWithConfirmAndRetryCallback callback,
     base::OnceClosure dialog_closed_closure,
-    base::OnceClosure retry_callback) {
+    base::RepeatingClosure retry_callback) {
   CHECK_EQ(bubble_parameters.interception_type,
            WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC);
   return std::make_unique<OidcEnterpriseSigninInterceptionHandle>(
