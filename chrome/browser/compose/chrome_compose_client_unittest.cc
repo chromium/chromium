@@ -61,6 +61,7 @@
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -100,8 +101,6 @@ const uint64_t kSessionIdHigh = 1234;
 const uint64_t kSessionIdLow = 5678;
 const segmentation_platform::TrainingRequestId kTrainingRequestId =
     segmentation_platform::TrainingRequestId(456);
-constexpr char kTypeURL[] =
-    "type.googleapis.com/optimization_guide.proto.ComposeResponse";
 
 class MockInnerText : public InnerTextProvider {
  public:
@@ -408,11 +407,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   StreamingResponse OptimizationGuideResponse(
       const optimization_guide::proto::ComposeResponse compose_response,
       bool is_complete = true) {
-    optimization_guide::proto::Any any;
-    any.set_type_url(kTypeURL);
-    compose_response.SerializeToString(any.mutable_value());
     return StreamingResponse{
-        .response = any,
+        .response = optimization_guide::AnyWrapProto(compose_response),
         .is_complete = is_complete,
     };
   }
