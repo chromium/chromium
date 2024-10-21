@@ -313,11 +313,9 @@ export class FakeReadingMode {
   // toolbar and are ready to consume.
   updateTheme() {}
 
-  // Called with the response of sendGetVoicePackInfoRequest()
+  // Called with the response of sendGetVoicePackInfoRequest() or
+  // sendInstallVoicePackRequest()
   updateVoicePackStatus(_lang: string, _status: string) {}
-
-  // Called with the response of sendInstallVoicePackRequest()
-  updateVoicePackStatusFromInstallResponse() {}
 
   // Ping that the theme choices of the user have been retrieved from
   // preferences and can be used to set up the page.

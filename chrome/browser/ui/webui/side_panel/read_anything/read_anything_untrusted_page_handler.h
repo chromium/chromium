@@ -142,10 +142,8 @@ class ReadAnythingUntrustedPageHandler :
   // read_anything::mojom::UntrustedPageHandler:
   void GetDependencyParserModel(
       GetDependencyParserModelCallback callback) override;
-  void GetVoicePackInfo(const std::string& language,
-                        GetVoicePackInfoCallback mojo_remote_callback) override;
-  void InstallVoicePack(const std::string& language,
-                        InstallVoicePackCallback mojo_remote_callback) override;
+  void GetVoicePackInfo(const std::string& language) override;
+  void InstallVoicePack(const std::string& language) override;
   void OnCopy() override;
   void OnLineSpaceChange(
       read_anything::mojom::LineSpacing line_spacing) override;
@@ -186,6 +184,8 @@ class ReadAnythingUntrustedPageHandler :
   void SetUpPdfObserver();
 
   void OnActiveAXTreeIDChanged();
+
+  void OnGetVoicePackInfo(read_anything::mojom::VoicePackInfoPtr info);
 
   // Logs the current visual settings values.
   void LogTextStyle();

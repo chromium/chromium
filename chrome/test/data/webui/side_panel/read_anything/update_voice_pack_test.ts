@@ -124,6 +124,78 @@ suite('UpdateVoicePack', () => {
         assertEquals(voicePackLang, sentInstallRequestFor);
       });
     });
+
+    suite('with error code', () => {
+      const lang = 'pt-br';
+
+      setup(() => {
+        app.enabledLangs.push(lang);
+        return microtasksFinished();
+      });
+
+      test('and no other voices for language, disables language', async () => {
+        createAndSetVoices(app, speechSynthesis, []);
+        app.updateVoicePackStatus(lang, 'kOther');
+        await microtasksFinished();
+
+        assertFalse(app.enabledLangs.includes(lang));
+      });
+
+      test(
+          'and only eSpeak voices for language, disables language',
+          async () => {
+            createAndSetVoices(app, speechSynthesis, [
+              {lang: lang, name: 'eSpeak Portuguese'},
+            ]);
+
+            app.updateVoicePackStatus(lang, 'kOther');
+            await microtasksFinished();
+
+            assertFalse(app.enabledLangs.includes(lang));
+          });
+
+      test(
+          'and when language-pack lang does not match voice lang, ' +
+              'still disables language',
+          async () => {
+            app.enabledLangs.push('it-it');
+            createAndSetVoices(app, speechSynthesis, []);
+
+            app.updateVoicePackStatus('it', 'kOther');
+            await microtasksFinished();
+
+            assertFalse(app.enabledLangs.includes('it-it'));
+          });
+
+      test(
+          'and when language-pack lang does not match voice lang, with ' +
+              'e-speak voices, still disables language',
+          async () => {
+            app.enabledLangs.push('it-it');
+            createAndSetVoices(app, speechSynthesis, [
+              {lang: 'it', name: 'eSpeak Italian '},
+            ]);
+
+            app.updateVoicePackStatus('it', 'kOther');
+            await microtasksFinished();
+
+            assertFalse(app.enabledLangs.includes('it-it'));
+          });
+
+      test(
+          'and has other Google voices for language, keeps language enabled',
+          async () => {
+            createAndSetVoices(app, speechSynthesis, [
+              {lang: lang, name: 'ChromeOS Portuguese 1'},
+              {lang: lang, name: 'ChromeOS Portuguese 2'},
+            ]);
+            app.onVoicesChanged();
+            app.updateVoicePackStatus(lang, 'kOther');
+            await microtasksFinished();
+
+            assertTrue(app.enabledLangs.includes(lang));
+          });
+    });
   });
 
   // <if expr="chromeos_ash">
@@ -360,79 +432,5 @@ suite('UpdateVoicePack', () => {
     assertEquals('Unsuccessful response', status.server.id);
 
     assertEquals(status.client, VoiceClientSideStatusCode.ERROR_INSTALLING);
-  });
-
-  suite('updateVoicePackStatusFromInstallResponse', () => {
-    suite('with error code', () => {
-      const lang = 'pt-br';
-
-      setup(() => {
-        app.enabledLangs.push(lang);
-        return microtasksFinished();
-      });
-
-      test('and no other voices for language, disables language', async () => {
-        createAndSetVoices(app, speechSynthesis, []);
-        app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
-        await microtasksFinished();
-
-        assertFalse(app.enabledLangs.includes(lang));
-      });
-
-      test(
-          'and only eSpeak voices for language, disables language',
-          async () => {
-            createAndSetVoices(app, speechSynthesis, [
-              {lang: lang, name: 'eSpeak Portuguese'},
-            ]);
-
-            app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
-            await microtasksFinished();
-
-            assertFalse(app.enabledLangs.includes(lang));
-          });
-
-      test(
-          'and when language-pack lang does not match voice lang, ' +
-              'still disables language',
-          async () => {
-            app.enabledLangs.push('it-it');
-            createAndSetVoices(app, speechSynthesis, []);
-
-            app.updateVoicePackStatusFromInstallResponse('it', 'kOther');
-            await microtasksFinished();
-
-            assertFalse(app.enabledLangs.includes('it-it'));
-          });
-
-      test(
-          'and when language-pack lang does not match voice lang, with ' +
-              'e-speak voices, still disables language',
-          async () => {
-            app.enabledLangs.push('it-it');
-            createAndSetVoices(app, speechSynthesis, [
-              {lang: 'it', name: 'eSpeak Italian '},
-            ]);
-
-            app.updateVoicePackStatusFromInstallResponse('it', 'kOther');
-            await microtasksFinished();
-
-            assertFalse(app.enabledLangs.includes('it-it'));
-          });
-
-      test(
-          'and has other Google voices for language, keeps language enabled',
-          async () => {
-            createAndSetVoices(app, speechSynthesis, [
-              {lang: lang, name: 'ChromeOS Portuguese 1'},
-              {lang: lang, name: 'ChromeOS Portuguese 2'},
-            ]);
-            app.onVoicesChanged();
-            app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
-            await microtasksFinished();
-
-            assertTrue(app.enabledLangs.includes(lang));
-          });
-    });
   });
 });

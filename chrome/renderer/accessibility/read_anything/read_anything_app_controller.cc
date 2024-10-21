@@ -1211,9 +1211,7 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
 
 void ReadAnythingAppController::SendGetVoicePackInfoRequest(
     const std::string& language) const {
-  page_handler_->GetVoicePackInfo(
-      language, base::BindOnce(&ReadAnythingAppController::OnGetVoicePackInfo,
-                               weak_ptr_factory_.GetSafeRef()));
+  page_handler_->GetVoicePackInfo(language);
 }
 
 void ReadAnythingAppController::OnGetVoicePackInfo(
@@ -1230,28 +1228,7 @@ void ReadAnythingAppController::OnGetVoicePackInfo(
 
 void ReadAnythingAppController::SendInstallVoicePackRequest(
     const std::string& language) const {
-  page_handler_->InstallVoicePack(
-      language,
-      base::BindOnce(&ReadAnythingAppController::OnInstallVoicePackResponse,
-                     weak_ptr_factory_.GetSafeRef()));
-}
-
-void ReadAnythingAppController::OnInstallVoicePackResponse(
-    read_anything::mojom::VoicePackInfoPtr voice_pack_info) {
-  // TODO (b/40927698) Investigate the fact that VoicePackManager doesn't return
-  // the expected pack_state. Even when a voice is unavailable and not
-  // installed, it responds "INSTALLED" in the InstallVoicePackCallback. So we
-  // probably need to rely on GetVoicePackInfo for the pack_state.
-
-  std::string status =
-      voice_pack_info->pack_state->is_installation_state()
-          ? base::ToString(
-                voice_pack_info->pack_state->get_installation_state())
-          : base::ToString(voice_pack_info->pack_state->get_error_code());
-
-  ExecuteJavaScript(
-      "chrome.readingMode.updateVoicePackStatusFromInstallResponse(\'" +
-      voice_pack_info->language + "\', \'" + status + "\');");
+  page_handler_->InstallVoicePack(language);
 }
 
 std::string ReadAnythingAppController::GetAltText(

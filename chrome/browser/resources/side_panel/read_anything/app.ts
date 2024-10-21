@@ -453,11 +453,6 @@ export class AppElement extends AppElementBase {
           this.updateVoicePackStatus(lang, status);
         };
 
-    chrome.readingMode.updateVoicePackStatusFromInstallResponse =
-        (lang: string, status: string) => {
-          this.updateVoicePackStatusFromInstallResponse(lang, status);
-        };
-
     chrome.readingMode.showLoading = () => {
       this.showLoading();
     };
@@ -871,39 +866,6 @@ export class AppElement extends AppElementBase {
     chrome.readingMode.onScrolledToBottom();
   }
 
-  updateVoicePackStatusFromInstallResponse(lang: string, status: string) {
-    if (!lang) {
-      return;
-    }
-
-    const newVoicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
-
-    if (isVoicePackStatusError(newVoicePackStatus)) {
-      // Keep the server responses.
-      this.setVoicePackServerStatus_(lang, newVoicePackStatus);
-
-      // Update application state.
-      this.updateApplicationState(lang, newVoicePackStatus);
-
-      // Disable the associated language if there are no other Google voices for
-      // it.
-      const availableVoicesForLang = this.getVoices_().filter(
-          v => getVoicePackConvertedLangIfExists(v.lang) === lang);
-      if (availableVoicesForLang.length === 0 ||
-          availableVoicesForLang.every(v => isEspeak(v))) {
-        this.enabledLangs = this.enabledLangs.filter(
-            enabledLang =>
-                getVoicePackConvertedLangIfExists(enabledLang) !== lang);
-      }
-    } else {
-      // Do not rely on the status from Install response. It has responded
-      // "installed" for voices that are not installed. Instead, request the
-      // status from GetVoicePackInfo. The result will be returned in
-      // updateVoicePackStatus().
-      this.sendGetVoicePackInfoRequest(lang);
-    }
-  }
-
   updateVoicePackStatus(lang: string, status: string) {
     if (!lang) {
       return;
@@ -916,6 +878,19 @@ export class AppElement extends AppElementBase {
 
     // Update application state
     this.updateApplicationState(lang, newVoicePackStatus);
+
+    if (isVoicePackStatusError(newVoicePackStatus)) {
+      // Disable the associated language if there are no other Google voices for
+      // it.
+      const availableVoicesForLang = this.getVoices_().filter(
+          v => getVoicePackConvertedLangIfExists(v.lang) === lang);
+      if (availableVoicesForLang.length === 0 ||
+          availableVoicesForLang.some(v => isEspeak(v))) {
+        this.enabledLangs = this.enabledLangs.filter(
+            enabledLang =>
+                getVoicePackConvertedLangIfExists(enabledLang) !== lang);
+      }
+    }
   }
 
 

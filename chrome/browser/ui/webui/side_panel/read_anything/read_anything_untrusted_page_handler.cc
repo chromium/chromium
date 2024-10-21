@@ -133,10 +133,9 @@ ErrorCode GetMojoErrorFromPackError(const PackResult::ErrorCode pack_error) {
   }
 }
 
-// Called when LanguagePackManager::GetPackState or ::InstallPack is complete.
-void OnLanguagePackManagerResponse(
-    read_anything::mojom::UntrustedPageHandler::GetVoicePackInfoCallback
-        mojo_remote_callback,
+// Called when LanguagePackManager::GetPackState is complete.
+void OnGetPackStateResponse(
+    base::OnceCallback<void(read_anything::mojom::VoicePackInfoPtr)> callback,
     const PackResult& pack_result) {
   // Convert the LanguagePackManager's response object into a mojo object
   read_anything::mojom::VoicePackInfoPtr voicePackInfo =
@@ -152,8 +151,32 @@ void OnLanguagePackManagerResponse(
   }
   voicePackInfo->language = pack_result.language_code;
 
-  // Call the callback sent from the mojo remote
-  std::move(mojo_remote_callback).Run(std::move(voicePackInfo));
+  std::move(callback).Run(std::move(voicePackInfo));
+}
+
+// Called when LanguagePackManager::InstallPack is complete.
+void OnInstallPackResponse(
+    base::OnceCallback<void(read_anything::mojom::VoicePackInfoPtr)> callback,
+    const PackResult& pack_result) {
+  // Convert the LanguagePackManager's response object into a mojo object
+  read_anything::mojom::VoicePackInfoPtr voicePackInfo =
+      read_anything::mojom::VoicePackInfo::New();
+
+  // TODO(crbug.com/40927698): Investigate the fact that VoicePackManager
+  // doesn't return the expected pack_state. Even when a voice is unavailable
+  // and not installed, it responds "INSTALLED" in the InstallVoicePackCallback.
+  // So we probably need to rely on GetVoicePackInfo for the pack_state.
+  if (pack_result.operation_error == PackResult::ErrorCode::kNone) {
+    LanguagePackManager::GetPackState(
+        ash::language_packs::kTtsFeatureId, pack_result.language_code,
+        base::BindOnce(&OnGetPackStateResponse, std::move(callback)));
+    return;
+  }
+
+  voicePackInfo->pack_state = VoicePackInstallationState::NewErrorCode(
+      GetMojoErrorFromPackError(pack_result.operation_error));
+  voicePackInfo->language = pack_result.language_code;
+  std::move(callback).Run(std::move(voicePackInfo));
 }
 
 #endif
@@ -453,15 +476,20 @@ void ReadAnythingUntrustedPageHandler::GetDependencyParserModel(
   OnDependencyParserModelFileAvailabilityChanged(std::move(callback), true);
 }
 
+void ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo(
+    read_anything::mojom::VoicePackInfoPtr info) {
+  page_->OnGetVoicePackInfo(std::move(info));
+}
+
 void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
-    const std::string& language,
-    read_anything::mojom::UntrustedPageHandler::GetVoicePackInfoCallback
-        mojo_remote_callback) {
+    const std::string& language) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   LanguagePackManager::GetPackState(
       ash::language_packs::kTtsFeatureId, language,
-      base::BindOnce(&OnLanguagePackManagerResponse,
-                     std::move(mojo_remote_callback)));
+      base::BindOnce(
+          &OnGetPackStateResponse,
+          base::BindOnce(&ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo,
+                         weak_factory_.GetSafeRef())));
 #else
   //  TODO (b/40927698) Implement high quality voice support for non ChromeOS
   //  platforms. For now, just return that all high quality voices are
@@ -470,19 +498,19 @@ void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
   voicePackInfo->language = language;
   voicePackInfo->pack_state =
       VoicePackInstallationState::NewErrorCode(ErrorCode::kUnsupportedPlatform);
-  std::move(mojo_remote_callback).Run(std::move(voicePackInfo));
+  OnGetVoicePackInfo(std::move(voicePackInfo));
 #endif
 }
 
 void ReadAnythingUntrustedPageHandler::InstallVoicePack(
-    const std::string& language,
-    read_anything::mojom::UntrustedPageHandler::InstallVoicePackCallback
-        mojo_remote_callback) {
+    const std::string& language) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   LanguagePackManager::InstallPack(
       ash::language_packs::kTtsFeatureId, language,
-      base::BindOnce(&OnLanguagePackManagerResponse,
-                     std::move(mojo_remote_callback)));
+      base::BindOnce(
+          &OnInstallPackResponse,
+          base::BindOnce(&ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo,
+                         weak_factory_.GetSafeRef())));
 #else
   TtsController::GetInstance()->InstallLanguageRequest(
       profile_, language, string_constants::kReadingModeName,

@@ -115,10 +115,12 @@ interface UntrustedPageHandler {
   GetDependencyParserModel() => (mojo_base.mojom.File? model_file);
 
   // Called by the renderer to see if a voice is installed, or being installed.
-  GetVoicePackInfo(string language) => (VoicePackInfo voice_pack_info);
+  // The response for this call comes via UntrustedPage::OnGetVoicePackInfo.
+  GetVoicePackInfo(string language);
 
-  // Called by the renderer to install a natural-voice pack.
-  InstallVoicePack(string language) => (VoicePackInfo voice_pack_info);
+  // Called by the renderer to install a natural-voice pack. The response for
+  // this call comes via UntrustedPage::OnGetVoicePackInfo.
+  InstallVoicePack(string language);
 
   // Informs the browser controller that a user tried to copy text from the
   // WebUI. If the main page allows copy commands, then the current selection

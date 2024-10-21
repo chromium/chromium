@@ -286,12 +286,9 @@ declare namespace chrome {
     // Read Aloud state should be updated if the lock screen state changes.
     function onLockScreen(): void;
 
-    // Called with the response of sendGetVoicePackInfoRequest()
+    // Called with the response of sendGetVoicePackInfoRequest() or
+    // sendInstallVoicePackRequest()
     function updateVoicePackStatus(lang: string, status: string): void;
-
-    // Called with the response of sendInstallVoicePackRequest()
-    function updateVoicePackStatusFromInstallResponse(
-        lang: string, status: string): void;
 
     // Ping that the theme choices of the user have been retrieved from
     // preferences and can be used to set up the page.
@@ -369,7 +366,7 @@ declare namespace chrome {
 
     // Sends an async request to install a  Natural voice pack for a
     // specific language. The response is sent back to the UI via
-    // updateVoicePackStatusFromInstallResponse()
+    // updateVoicePackStatus()
     function sendInstallVoicePackRequest(language: string): void;
 
     // Log UmaHistogramCount

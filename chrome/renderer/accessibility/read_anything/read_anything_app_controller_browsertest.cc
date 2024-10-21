@@ -85,13 +85,11 @@ class MockReadAnythingUntrustedPageHandler
               (override));
   MOCK_METHOD(void,
               GetVoicePackInfo,
-              (const std::string& language,
-               GetVoicePackInfoCallback mojo_callback),
+              (const std::string& language),
               (override));
   MOCK_METHOD(void,
               InstallVoicePack,
-              (const std::string& language,
-               InstallVoicePackCallback mojo_callback),
+              (const std::string& language),
               (override));
   MOCK_METHOD(void,
               OnLinkClicked,
