@@ -1700,8 +1700,9 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           value.GetBool());
       return true;
     case mojom::Setting::kFlashNotifications:
-      base::UmaHistogramBoolean("ChromeOS.Settings.FlashNotifications.Enabled",
-                                value.GetBool());
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.FlashNotifications.Enabled",
+          value.GetBool());
       return true;
     default:
       return false;
