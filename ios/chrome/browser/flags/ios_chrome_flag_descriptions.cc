@@ -628,6 +628,11 @@ const char kLensFiltersAblationModeEnabledName[] =
 const char kLensFiltersAblationModeEnabledDescription[] =
     "Enables the filters ablation mode.";
 
+extern const char kLensOverlayEnableIPadCompatibilityName[] =
+    "Allow Lens overlay to also run on iPad devices if the feature is enabled";
+extern const char kLensOverlayEnableIPadCompatibilityDescription[] =
+    "When enabled, it allows Lens Overlay to run on iPad devices";
+
 extern const char kLensOverlayForceShowOnboardingScreenName[] =
     "Force show Lens overlay onboarding screen";
 extern const char kLensOverlayForceShowOnboardingScreenDescription[] =
