@@ -50,6 +50,7 @@ BASE_DECLARE_FEATURE(kIPHMemorySaverModeFeature);
 BASE_DECLARE_FEATURE(kIPHLensOverlayFeature);
 extern const base::FeatureParam<std::string> kIPHLensOverlayUrlAllowFilters;
 extern const base::FeatureParam<std::string> kIPHLensOverlayUrlBlockFilters;
+extern const base::FeatureParam<base::TimeDelta> kIPHLensOverlayDelayTime;
 BASE_DECLARE_FEATURE(kIPHLensOverlayTranslateButtonFeature);
 BASE_DECLARE_FEATURE(kIPHLiveCaptionFeature);
 BASE_DECLARE_FEATURE(kIPHTabAudioMutingFeature);

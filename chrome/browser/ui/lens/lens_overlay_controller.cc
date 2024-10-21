@@ -282,7 +282,8 @@ LensOverlayController::LensOverlayController(
       std::make_unique<lens::LensSearchBubbleController>(this);
   lens_overlay_event_handler_ =
       std::make_unique<lens::LensOverlayEventHandler>(this);
-  InitializeIPHUrlMatcher();
+
+  InitializeTutorialIPHUrlMatcher();
 
   // Listen to WebContents events
   tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
@@ -1207,6 +1208,11 @@ LensOverlayController::GetLensSuggestInputsForTesting() {
   return GetLensSuggestInputs();
 }
 
+bool LensOverlayController::IsUrlEligibleForTutorialIPHForTesting(
+    const GURL& url) {
+  return IsUrlEligibleForTutorialIPH(url);
+}
+
 std::unique_ptr<lens::LensOverlayQueryController>
 LensOverlayController::CreateLensQueryController(
     lens::LensOverlayFullImageResponseCallback full_image_callback,
@@ -1265,7 +1271,8 @@ class LensOverlayController::UnderlyingWebContentsObserver
           navigation_handle->IsInPrimaryMainFrame() &&
           !navigation_handle->IsSameDocument() &&
           navigation_handle->HasCommitted()) {
-        // TODO(crbug.com/372531753): Trigger IPH tutorial here.
+        lens_overlay_controller_->MaybeShowDelayedTutorialIPH(
+            navigation_handle->GetURL());
       }
       return;
     }
@@ -2641,31 +2648,43 @@ void LensOverlayController::MaybeLaunchSurvey() {
         base::NumberToString(lens_overlay_query_controller_->gen204_id())}});
 }
 
-void LensOverlayController::InitializeIPHUrlMatcher() {
+void LensOverlayController::InitializeTutorialIPHUrlMatcher() {
   if (!base::FeatureList::IsEnabled(
           feature_engagement::kIPHLensOverlayFeature)) {
     return;
   }
 
-  iph_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
+  tutorial_iph_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   base::MatcherStringPattern::ID id(0);
   url_matcher::util::AddFilters(
-      iph_url_matcher_.get(), true, &id,
+      tutorial_iph_url_matcher_.get(), true, &id,
       JSONArrayToVector(
           feature_engagement::kIPHLensOverlayUrlAllowFilters.Get()),
       &iph_url_filters_);
   url_matcher::util::AddFilters(
-      iph_url_matcher_.get(), false, &id,
+      tutorial_iph_url_matcher_.get(), false, &id,
       JSONArrayToVector(
           feature_engagement::kIPHLensOverlayUrlBlockFilters.Get()),
       &iph_url_filters_);
 }
 
-bool LensOverlayController::IsUrlEligibleForIPH(const GURL& url) {
-  if (!iph_url_matcher_) {
+void LensOverlayController::MaybeShowDelayedTutorialIPH(const GURL& url) {
+  // If a tutorial IPH was already queued, cancel it.
+  tutorial_iph_timer_.Stop();
+
+  if (IsUrlEligibleForTutorialIPH(url)) {
+    tutorial_iph_timer_.Start(
+        FROM_HERE, feature_engagement::kIPHLensOverlayDelayTime.Get(),
+        base::BindOnce(&LensOverlayController::ShowTutorialIPH,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {
+  if (!tutorial_iph_url_matcher_) {
     return false;
   }
-  auto matches = iph_url_matcher_.get()->MatchURL(url);
+  auto matches = tutorial_iph_url_matcher_.get()->MatchURL(url);
   if (!matches.size()) {
     return false;
   }
@@ -2676,4 +2695,11 @@ bool LensOverlayController::IsUrlEligibleForIPH(const GURL& url) {
     }
   }
   return true;
+}
+
+void LensOverlayController::ShowTutorialIPH() {
+  if (auto* user_ed =
+          tab_->GetBrowserWindowInterface()->GetUserEducationInterface()) {
+    user_ed->MaybeShowFeaturePromo(feature_engagement::kIPHLensOverlayFeature);
+  }
 }

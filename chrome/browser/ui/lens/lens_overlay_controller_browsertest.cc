@@ -4971,19 +4971,22 @@ class LensOverlayControllerIPHBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerIPHBrowserTest,
-                       IsUrlEligibleForIPH) {
+                       IsUrlEligibleForTutorialIPH) {
   WaitForPaint();
 
   auto* controller = GetLensOverlayController();
-  EXPECT_TRUE(controller->IsUrlEligibleForIPH(GURL("https://www.a.com/")));
-  EXPECT_FALSE(controller->IsUrlEligibleForIPH(
+  EXPECT_TRUE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.a.com/")));
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
       GURL("https://www.a.com/login/path?key=param")));
-  EXPECT_TRUE(controller->IsUrlEligibleForIPH(
+  EXPECT_TRUE(controller->IsUrlEligibleForTutorialIPHForTesting(
       GURL("https://www.b.com/page?key=param")));
-  EXPECT_FALSE(controller->IsUrlEligibleForIPH(GURL("https://www.c.com/")));
-  EXPECT_TRUE(
-      controller->IsUrlEligibleForIPH(GURL("https://www.c.com/path/path")));
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.c.com/")));
+  EXPECT_TRUE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.c.com/path/path")));
   // Blocks override allows.
-  EXPECT_FALSE(controller->IsUrlEligibleForIPH(GURL("https://www.d.com/path")));
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.d.com/path")));
 }
 }  // namespace
