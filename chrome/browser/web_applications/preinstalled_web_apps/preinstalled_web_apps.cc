@@ -29,7 +29,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/preinstalled_web_apps/app_mall.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/calculator.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
@@ -88,7 +87,6 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
   if (!base::FeatureList::IsEnabled(
           chromeos::features::kPreinstalledWebAppsCoreOnly)) {
     apps.insert(apps.end(), {
-      GetConfigForAppMall(),
       GetConfigForCalculator(),
       GetConfigForGemini(device_info),
       GetConfigForGoogleCalendar(),

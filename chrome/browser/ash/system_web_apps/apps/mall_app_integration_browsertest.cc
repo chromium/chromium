@@ -20,9 +20,8 @@ namespace {
 class MallAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   MallAppIntegrationTest() {
-    features_.InitWithFeatures(
-        {chromeos::features::kCrosMall, chromeos::features::kCrosMallSwa},
-        /*disabled_features=*/{});
+    features_.InitWithFeatures({chromeos::features::kCrosMall},
+                               /*disabled_features=*/{});
   }
 
   std::string GetMallEmbedUrl(content::WebContents* contents) {
@@ -49,9 +48,9 @@ class MallAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 // Test that the Mall app installs and launches correctly.
 IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, MallApp) {
   const GURL url{ash::kChromeUIMallUrl};
-  EXPECT_NO_FATAL_FAILURE(
-      ExpectSystemWebAppValid(ash::SystemWebAppType::MALL, url,
-                              /*title=*/"Apps & games"));
+  EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(ash::SystemWebAppType::MALL,
+                                                  url,
+                                                  /*title=*/"Apps & games"));
 }
 
 IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, EmbedMallWithContext) {

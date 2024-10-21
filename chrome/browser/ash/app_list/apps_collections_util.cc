@@ -103,7 +103,6 @@ AppCollectionMap GetAppCollectionsMap() {
       {arc::kGoogleMapsAppId, ash::AppCollection::kUtilities},
       {ash::kGoogleMapsAppId, ash::AppCollection::kUtilities},
       {ash::kHelpAppId, ash::AppCollection::kUtilities},
-      {ash::kMallAppId, ash::AppCollection::kUtilities},
       {ash::kMallSystemAppId, ash::AppCollection::kUtilities},
       {ash::kCalculatorAppId, ash::AppCollection::kUtilities},
       {extension_misc::kCalculatorAppId, ash::AppCollection::kUtilities},
@@ -207,7 +206,6 @@ void GetSecondaryDefaultOrder(std::vector<std::string>* app_ids) {
 
     ash::kHelpAppId,
 
-    ash::kMallAppId,
     ash::kMallSystemAppId,
 
     ash::kCalculatorAppId,

@@ -366,31 +366,8 @@ TEST_F(ChromeShelfPrefsTest, ShelfPositionAfterLacrosMigration) {
   EXPECT_FALSE(base::Contains(pinned_apps_strs, app_constants::kChromeAppId));
 }
 
-TEST_F(ChromeShelfPrefsTest, PinMallBeforeDefaultApps) {
-  std::string second_pin_app_id;
-  {
-    std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
-    second_pin_app_id = pinned_apps_strs[1];
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kCrosMall},
-        /*disabled_features=*/{chromeos::features::kCrosMallSwa});
-
-    std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
-    EXPECT_EQ(pinned_apps_strs[1], ash::kMallAppId);
-    // Mall should have pushed back any default apps.
-    EXPECT_EQ(pinned_apps_strs[2], second_pin_app_id);
-  }
-}
-
 TEST_F(ChromeShelfPrefsTest, PinMallSystemApp) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kCrosMall,
-                            chromeos::features::kCrosMallSwa},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
 
   std::string second_pin_app_id;
   {
@@ -415,11 +392,7 @@ TEST_F(ChromeShelfPrefsTest, PinMallSystemApp) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallSystemAppOnceOnly) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kCrosMall,
-                            chromeos::features::kCrosMallSwa},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
 
   apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kSystemWeb,
                                                  ash::kMallSystemAppId);

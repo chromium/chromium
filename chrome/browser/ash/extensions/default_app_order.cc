@@ -180,7 +180,6 @@ void GetDefault(std::vector<std::string>* app_ids) {
 
     ash::kHelpAppId,
 
-    ash::kMallAppId,
     ash::kMallSystemAppId,
 
     ash::kCalculatorAppId,

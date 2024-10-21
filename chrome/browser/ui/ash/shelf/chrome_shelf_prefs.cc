@@ -409,15 +409,6 @@ void AddMallPinIfNeeded(Profile* profile,
     return;
   }
 
-  // When Mall SWA is disabled, always pin the Mall web app if it is not
-  // already pinned. There is no option to unpin the web app.
-  if (!chromeos::features::IsCrosMallSwaEnabled()) {
-    InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
-                                                 {{ash::kMallAppId}},
-                                                 /*is_policy_initiated=*/false);
-    return;
-  }
-
   // When Mall SWA is enabled, pin the Mall SWA once, and use a synced pref to
   // make sure it doesn't pin a second time. Users have the option to unpin the
   // SWA.

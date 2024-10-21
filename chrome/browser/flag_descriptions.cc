@@ -7858,10 +7858,6 @@ const char kCrosMallName[] = "ChromeOS App Mall";
 const char kCrosMallDescription[] =
     "Enables an app to discover and install other apps.";
 
-const char kCrosMallSwaName[] = "ChromeOS App Mall System App";
-const char kCrosMallSwaDescription[] =
-    "Use System Web App for ChromeOS App Mall.";
-
 const char kCrosMallUrlName[] = "ChromeOS App Mall URL";
 const char kCrosMallUrlDescription[] =
     "Customize the URL used for the ChromeOS App Mall.";

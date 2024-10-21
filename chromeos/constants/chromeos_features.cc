@@ -85,10 +85,6 @@ BASE_FEATURE(kCrosComponents,
 // with Finch.
 BASE_FEATURE(kCrosMall, "CrosMall", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the Mall app will be installed as an SWA. Only takes effect
-// when CrosMall is enabled. This flag will be enabled with Finch.
-BASE_FEATURE(kCrosMallSwa, "CrosMallSwa", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables denying file access to dlp protected files in MyFiles.
 BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
              "DataControlsFileAccessDefaultDeny",
@@ -380,18 +376,8 @@ bool IsCrosComponentsEnabled() {
   return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
 }
 
-bool IsCrosMallWebAppEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsCrosMallWebAppEnabled();
-#else
-  return base::FeatureList::IsEnabled(kCrosMall) &&
-         !base::FeatureList::IsEnabled(kCrosMallSwa);
-#endif
-}
-
 bool IsCrosMallSwaEnabled() {
-  return base::FeatureList::IsEnabled(kCrosMall) &&
-         base::FeatureList::IsEnabled(kCrosMallSwa);
+  return base::FeatureList::IsEnabled(kCrosMall);
 }
 
 bool IsDataControlsFileAccessDefaultDenyEnabled() {

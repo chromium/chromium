@@ -941,8 +941,7 @@ void InjectBrowserInitParams(
   params->is_orca_internationalize_enabled =
       chromeos::features::IsOrcaInternationalizeEnabled();
 
-  params->is_cros_mall_web_app_enabled =
-      chromeos::features::IsCrosMallWebAppEnabled();
+  params->is_cros_mall_web_app_enabled = false;
 
   params->is_mahi_enabled = chromeos::features::IsMahiEnabled();
 

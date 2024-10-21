@@ -339,8 +339,6 @@ const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     return apps::DefaultAppName::kKeep;
   } else if (app_id == ash::kGoogleMapsAppId) {
     return apps::DefaultAppName::kGoogleMaps;
-  } else if (app_id == ash::kMallAppId) {
-    return DefaultAppName::kMall;
   } else if (app_id == ash::kMessagesAppId) {
     return apps::DefaultAppName::kGoogleMessages;
   } else if (app_id == ash::kPlayBooksAppId) {

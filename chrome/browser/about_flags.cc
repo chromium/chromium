@@ -11107,9 +11107,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"cros-mall", flag_descriptions::kCrosMallName,
      flag_descriptions::kCrosMallDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCrosMall)},
-    {"cros-mall-swa", flag_descriptions::kCrosMallSwaName,
-     flag_descriptions::kCrosMallSwaDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCrosMallSwa)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"autofill-enable-vcn-gray-out-for-merchant-opt-out",

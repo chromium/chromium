@@ -15,8 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
-#include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -73,21 +71,6 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
                             LaunchSource launch_source,
                             WindowInfoPtr window_info) {
   if (!LogIfNotConnected(FROM_HERE)) {
-    return;
-  }
-
-  // Redirect launches of the Mall app so that we can add additional context to
-  // the URL. Loading the context will cause a slight delay on first launch, but
-  // it is then cached in the DeviceInfoManager for subsequent launches.
-  // TODO(b/331702863): Remove this custom integration.
-  if (chromeos::features::IsCrosMallWebAppEnabled() &&
-      app_id == ash::kMallAppId) {
-    apps::DeviceInfoManager* device_info_manager =
-        apps::DeviceInfoManagerFactory::GetForProfile(proxy_->profile());
-    CHECK(device_info_manager);
-    device_info_manager->GetDeviceInfo(base::BindOnce(
-        &WebAppsCrosapi::LaunchMallWithContext, weak_factory_.GetWeakPtr(),
-        event_flags, launch_source, std::move(window_info)));
     return;
   }
 
@@ -438,17 +421,6 @@ void WebAppsCrosapi::PublishImpl(std::vector<AppPtr> deltas) {
 void WebAppsCrosapi::PublishCapabilityAccessesImpl(
     std::vector<CapabilityAccessPtr> deltas) {
   proxy()->OnCapabilityAccesses(std::move(deltas));
-}
-
-void WebAppsCrosapi::LaunchMallWithContext(int32_t event_flags,
-                                           apps::LaunchSource launch_source,
-                                           apps::WindowInfoPtr window_info,
-                                           apps::DeviceInfo device_info) {
-  LaunchAppWithIntent(
-      ash::kMallAppId, event_flags,
-      std::make_unique<apps::Intent>(apps_util::kIntentActionView,
-                                     ash::GetMallLaunchUrl(device_info)),
-      launch_source, std::move(window_info), base::DoNothing());
 }
 
 }  // namespace apps
