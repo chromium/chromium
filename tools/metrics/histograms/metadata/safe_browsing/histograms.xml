@@ -1601,13 +1601,13 @@ chromium-metrics-reviews@google.com.
   <token key="IneligibleReason">
     <variant name="FeatureOff" summary="the feature being disabled"/>
     <variant name="IneligibleForLocation" summary="the location"/>
+    <variant name="IneligibleForSafeBrowsingState"
+        summary="not having standard protection or enhanced protection"/>
     <variant name="IneligibleForSessionOrLocation"
         summary="the feature being disabled for the session or the location"/>
     <variant name="NoGoogleChromeBranding"
         summary="the session not being branded"/>
     <variant name="NotAllowedByPolicy" summary="not being allowed by policy"/>
-    <variant name="NotStandardProtection"
-        summary="not having standard protection"/>
     <variant name="OffTheRecord" summary="being off the record"/>
   </token>
 </histogram>

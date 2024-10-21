@@ -35,7 +35,8 @@ std::unique_ptr<KeyedService> BuildOhttpKeyService(web::BrowserState* context) {
   return std::make_unique<safe_browsing::OhttpKeyService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
-      base::BindRepeating(&GetCountry));
+      base::BindRepeating(&GetCountry),
+      /*are_background_lookups_allowed=*/false);
 }
 
 }  // namespace

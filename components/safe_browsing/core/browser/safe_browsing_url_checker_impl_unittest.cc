@@ -1675,7 +1675,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
       /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
+      hash_realtime_utils::HashRealTimeSelection::
+          kHashRealTimeServiceBackgroundOnly);
 
   GURL url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -1764,7 +1765,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
       /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
+      hash_realtime_utils::HashRealTimeSelection::
+          kHashRealTimeServiceBackgroundOnly);
 
   GURL url("https://example.test/");
   hash_realtime_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -1831,7 +1833,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
       /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kDatabaseManager);
+      hash_realtime_utils::HashRealTimeSelection::
+          kDatabaseManagerBackgroundOnly);
 
   GURL url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
@@ -1896,7 +1899,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
       /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
+      hash_realtime_utils::HashRealTimeSelection::
+          kHashRealTimeServiceBackgroundOnly);
 
   GURL url("https://example.test/");
   hash_realtime_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -1955,7 +1959,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
       /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
+      hash_realtime_utils::HashRealTimeSelection::
+          kHashRealTimeServiceBackgroundOnly);
 
   GURL url("https://example.test/");
   hash_realtime_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,

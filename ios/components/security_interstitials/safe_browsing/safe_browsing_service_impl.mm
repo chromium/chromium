@@ -173,7 +173,8 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
               pref_change_registrar_->prefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   client->GetVariationsService()),
-              /*log_usage_histograms=*/true);
+              /*log_usage_histograms=*/true,
+              /*are_background_lookups_allowed=*/false);
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
@@ -218,7 +219,8 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
               pref_change_registrar_->prefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   client->GetVariationsService()),
-              /*log_usage_histograms=*/true);
+              /*log_usage_histograms=*/true,
+              /*are_background_lookups_allowed=*/false);
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
@@ -297,7 +299,8 @@ bool SafeBrowsingServiceImpl::ShouldCreateAsyncChecker(
               pref_change_registrar_->prefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   client->GetVariationsService()),
-              /*log_usage_histograms=*/true);
+              /*log_usage_histograms=*/true,
+              /*are_background_lookups_allowed=*/false);
 
   if (!can_perform_full_url_lookup &&
       hash_real_time_selection ==

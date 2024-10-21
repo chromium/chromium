@@ -134,8 +134,8 @@ class TestOhttpKeyService : public OhttpKeyService {
                         /*pref_service=*/nullptr,
                         /*local_state=*/nullptr,
                         /*country_getter=*/
-                        base::BindRepeating(&TestOhttpKeyService::GetCountry)) {
-  }
+                        base::BindRepeating(&TestOhttpKeyService::GetCountry),
+                        /*are_background_lookups_allowed=*/true) {}
 
   void GetOhttpKey(OhttpKeyService::Callback callback) override {
     std::move(callback).Run(ohttp_key_);

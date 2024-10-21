@@ -470,15 +470,22 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
   if (CanPerformFullURLLookup(url)) {
     performed_check = PerformedCheck::kUrlRealTimeCheck;
 
+    bool can_use_hash_real_time_service_background_only =
+        hash_realtime_selection_ ==
+            HashRealTimeSelection::kHashRealTimeServiceBackgroundOnly &&
+        HashRealTimeService::CanCheckUrl(url);
+    bool can_use_hash_real_time_db_manager_background_only =
+        hash_realtime_selection_ ==
+            HashRealTimeSelection::kDatabaseManagerBackgroundOnly &&
+        hash_realtime_utils::CanCheckUrl(url);
+
     // For ESB users, we will sample eligible lookups and send both Protego and
     // HPRT lookups based on the configurable percentage. Otherwise, perform URL
     // real-time lookup only.
     bool should_run_background_hprt_check =
-        base::FeatureList::IsEnabled(kHashPrefixRealTimeLookupsSamplePing) &&
-        url_checker_delegate_->AreBackgroundHashRealTimeSampleLookupsAllowed(
-            web_contents_getter_) &&
-        base::RandDouble() * 100 < kHashPrefixRealTimeLookupsSampleRate.Get() &&
-        (can_use_hash_real_time_service || can_use_hash_real_time_db_manager);
+        (can_use_hash_real_time_service_background_only ||
+         can_use_hash_real_time_db_manager_background_only) &&
+        base::RandDouble() * 100 < kHashPrefixRealTimeLookupsSampleRate.Get();
     lookup_mechanism = std::make_unique<UrlRealTimeMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
         can_check_db_, can_check_high_confidence_allowlist_,
@@ -486,26 +493,20 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
         url_lookup_service_on_ui_, url_checker_delegate_, web_contents_getter_,
         tab_id_,
         should_run_background_hprt_check
-            ? GetHashRealTimeLookupMechanism(url,
-                                             can_use_hash_real_time_service,
-                                             can_use_hash_real_time_db_manager)
+            ? GetHashRealTimeLookupMechanism(
+                  url, can_use_hash_real_time_service_background_only,
+                  can_use_hash_real_time_db_manager_background_only)
             : nullptr);
   } else if (!can_check_db_) {
     return KickOffLookupMechanismResult(
         SafeBrowsingLookupMechanism::StartCheckResult(
             /*is_safe_synchronously=*/true, /*threat_source=*/std::nullopt),
         PerformedCheck::kCheckSkipped);
-  } else if (can_use_hash_real_time_service) {
+  } else if (can_use_hash_real_time_service ||
+             can_use_hash_real_time_db_manager) {
     performed_check = PerformedCheck::kHashRealTimeCheck;
-    lookup_mechanism = std::make_unique<HashRealTimeMechanism>(
-        url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-        ui_task_runner_, hash_realtime_service_on_ui_);
-  } else if (can_use_hash_real_time_db_manager) {
-    performed_check = PerformedCheck::kHashRealTimeCheck;
-    lookup_mechanism = std::make_unique<DatabaseManagerMechanism>(
-        url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-        CheckBrowseUrlType::kHashRealTime,
-        /*check_allowlist=*/false);
+    lookup_mechanism = GetHashRealTimeLookupMechanism(
+        url, can_use_hash_real_time_service, can_use_hash_real_time_db_manager);
   } else {
     performed_check = PerformedCheck::kHashDatabaseCheck;
     lookup_mechanism = std::make_unique<DatabaseManagerMechanism>(

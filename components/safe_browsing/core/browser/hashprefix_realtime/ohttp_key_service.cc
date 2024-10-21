@@ -114,14 +114,24 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
       "default."
   )");
 
-bool IsEnabled(PrefService* pref_service, std::optional<std::string> country) {
+bool IsEnabled(PrefService* pref_service,
+               std::optional<std::string> country,
+               bool are_background_lookups_allowed) {
   // If this class has been created, it is already known that the session is not
   // off-the-record, so |is_off_the_record| is passed through as false.
-  return safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
-             /*is_off_the_record=*/false, pref_service,
-             /*latest_country=*/country) ==
-         safe_browsing::hash_realtime_utils::HashRealTimeSelection::
-             kHashRealTimeService;
+  safe_browsing::hash_realtime_utils::HashRealTimeSelection
+      hash_realtime_selection =
+          safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
+              /*is_off_the_record=*/false, pref_service,
+              /*latest_country=*/country, /*log_usage_histograms=*/false,
+              /*are_background_lookups_allowed=*/
+              are_background_lookups_allowed);
+  return hash_realtime_selection ==
+             safe_browsing::hash_realtime_utils::HashRealTimeSelection::
+                 kHashRealTimeService ||
+         hash_realtime_selection ==
+             safe_browsing::hash_realtime_utils::HashRealTimeSelection::
+                 kHashRealTimeServiceBackgroundOnly;
 }
 
 GURL GetKeyFetchingUrl() {
@@ -141,7 +151,8 @@ OhttpKeyService::OhttpKeyService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
     PrefService* local_state,
-    base::RepeatingCallback<std::optional<std::string>()> country_getter)
+    base::RepeatingCallback<std::optional<std::string>()> country_getter,
+    bool are_background_lookups_allowed)
     : url_loader_factory_(url_loader_factory),
       pref_service_(pref_service),
       backoff_operator_(std::make_unique<BackoffOperator>(
@@ -150,7 +161,8 @@ OhttpKeyService::OhttpKeyService(
           kMinBackOffResetDurationInSeconds,
           /*max_backoff_reset_duration_in_seconds=*/
           kMaxBackOffResetDurationInSeconds)),
-      country_getter_(country_getter) {
+      country_getter_(country_getter),
+      are_background_lookups_allowed_(are_background_lookups_allowed) {
   // |pref_service_| can be null in tests.
   if (!pref_service_) {
     return;
@@ -175,13 +187,15 @@ OhttpKeyService::OhttpKeyService(
                                   weak_factory_.GetWeakPtr()));
   }
 
-  SetEnabled(IsEnabled(pref_service_, country_getter_.Run()));
+  SetEnabled(IsEnabled(pref_service_, country_getter_.Run(),
+                       are_background_lookups_allowed_));
 }
 
 OhttpKeyService::~OhttpKeyService() = default;
 
 void OhttpKeyService::OnConfiguringPrefsChanged() {
-  SetEnabled(IsEnabled(pref_service_, country_getter_.Run()));
+  SetEnabled(IsEnabled(pref_service_, country_getter_.Run(),
+                       are_background_lookups_allowed_));
 }
 
 void OhttpKeyService::SetEnabled(bool enable) {
@@ -208,7 +222,8 @@ void OhttpKeyService::SetEnabled(bool enable) {
 void OhttpKeyService::GetOhttpKey(Callback callback) {
   base::UmaHistogramBoolean(
       "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch",
-      enabled_ == IsEnabled(pref_service_, country_getter_.Run()));
+      enabled_ == IsEnabled(pref_service_, country_getter_.Run(),
+                            are_background_lookups_allowed_));
   if (!enabled_) {
     std::move(callback).Run(std::nullopt);
     return;

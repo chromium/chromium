@@ -61,7 +61,8 @@ OhttpKeyServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<OhttpKeyService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       profile->GetPrefs(), g_browser_process->local_state(),
-      base::BindRepeating(&OhttpKeyServiceFactory::GetCountry));
+      base::BindRepeating(&OhttpKeyServiceFactory::GetCountry),
+      /*are_background_lookups_allowed=*/true);
 #endif
 }
 
