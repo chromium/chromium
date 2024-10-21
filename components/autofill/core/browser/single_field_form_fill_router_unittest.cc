@@ -31,6 +31,7 @@ namespace {
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::SaveArg;
+using ::testing::SizeIs;
 
 class SingleFieldFormFillRouterTest : public testing::Test {
  protected:
@@ -139,51 +140,16 @@ TEST_F(SingleFieldFormFillRouterTest, RouteToAllFillers_OnWillSubmitForm) {
                       MERCHANT_PROMO_CODE});
 #endif
 
-  std::vector<FormFieldData> submitted_autocomplete_fields;
-  bool autocomplete_fields_is_autocomplete_enabled = false;
-  EXPECT_CALL(autocomplete_history_manager_, OnWillSubmitFormWithFields(_, _))
-      .WillOnce(
-          (DoAll(SaveArg<0>(&submitted_autocomplete_fields),
-                 SaveArg<1>(&autocomplete_fields_is_autocomplete_enabled))));
-
-  std::vector<FormFieldData> submitted_merchant_promo_code_fields;
-  bool merchant_promo_code_fields_is_autocomplete_enabled = false;
-  EXPECT_CALL(merchant_promo_code_manager_, OnWillSubmitFormWithFields(_, _))
-      .WillOnce((DoAll(
-          SaveArg<0>(&submitted_merchant_promo_code_fields),
-          SaveArg<1>(&merchant_promo_code_fields_is_autocomplete_enabled))));
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  std::vector<FormFieldData> submitted_iban_fields;
-  bool iban_fields_is_autocomplete_enabled = false;
-  EXPECT_CALL(iban_manager_, OnWillSubmitFormWithFields(_, _))
-      .WillOnce((DoAll(SaveArg<0>(&submitted_iban_fields),
-                       SaveArg<1>(&iban_fields_is_autocomplete_enabled))));
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
+  EXPECT_CALL(
+      autocomplete_history_manager_,
+      OnWillSubmitFormWithFields(SizeIs(number_of_fields_for_testing), true));
   single_field_form_fill_router_.OnWillSubmitForm(
       form_data, &form_structure, /*is_autocomplete_enabled=*/true);
-
-  EXPECT_TRUE(submitted_autocomplete_fields.size() ==
-              number_of_fields_for_testing);
-  EXPECT_TRUE(autocomplete_fields_is_autocomplete_enabled);
-
-  EXPECT_TRUE(submitted_merchant_promo_code_fields.size() ==
-              number_of_fields_for_testing);
-  EXPECT_TRUE(merchant_promo_code_fields_is_autocomplete_enabled);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(submitted_iban_fields.size() == number_of_fields_for_testing);
-  EXPECT_TRUE(iban_fields_is_autocomplete_enabled);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 // Ensure that the router routes to fillers for this CancelPendingQueries call.
 TEST_F(SingleFieldFormFillRouterTest, RouteToAllFillers_CancelPendingQueries) {
   EXPECT_CALL(autocomplete_history_manager_, CancelPendingQueries);
-  EXPECT_CALL(merchant_promo_code_manager_, CancelPendingQueries);
-  EXPECT_CALL(iban_manager_, CancelPendingQueries);
-
   single_field_form_fill_router_.CancelPendingQueries();
 }
 
@@ -272,18 +238,6 @@ TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerReturnedFalse) {
 }
 
 // Ensure that the router routes to MerchantPromoCodeManager for this
-// OnRemoveCurrentSingleFieldSuggestion call.
-TEST_F(SingleFieldFormFillRouterTest,
-       RouteToMerchantPromoCodeManager_OnRemoveCurrentSingleFieldSuggestion) {
-  EXPECT_CALL(merchant_promo_code_manager_,
-              OnRemoveCurrentSingleFieldSuggestion);
-
-  single_field_form_fill_router_.OnRemoveCurrentSingleFieldSuggestion(
-      /*field_name=*/u"Field Name", /*value=*/u"Value",
-      SuggestionType::kMerchantPromoCodeEntry);
-}
-
-// Ensure that the router routes to MerchantPromoCodeManager for this
 // OnSingleFieldSuggestionSelected call.
 TEST_F(SingleFieldFormFillRouterTest,
        RouteToMerchantPromoCodeManager_OnSingleFieldSuggestionSelected) {
@@ -348,17 +302,6 @@ TEST_F(SingleFieldFormFillRouterTest, IbanManagerReturnedFalse) {
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_.OnGetSingleFieldSuggestions(
       &form(), field(), &field(), autofill_client_, base::DoNothing()));
-}
-
-// Ensure that the router routes to IbanManager for this
-// OnRemoveCurrentSingleFieldSuggestion call.
-TEST_F(SingleFieldFormFillRouterTest,
-       RouteToIbanManager_OnRemoveCurrentSingleFieldSuggestion) {
-  EXPECT_CALL(iban_manager_, OnRemoveCurrentSingleFieldSuggestion);
-
-  single_field_form_fill_router_.OnRemoveCurrentSingleFieldSuggestion(
-      /*field_name=*/u"Field Name", /*value=*/u"Value",
-      SuggestionType::kIbanEntry);
 }
 
 }  // namespace

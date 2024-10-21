@@ -73,15 +73,6 @@ class SingleFieldFormFillRouter {
       const AutofillClient& client,
       OnSuggestionsReturnedCallback on_suggestions_returned);
 
-  // Runs when a form is going to be submitted. In the case of Autocomplete, it
-  // saves the given |fields| that are eligible to be saved as new or updated
-  // Autocomplete entries, which can then be served in the future as
-  // suggestions. This update is dependent on whether we are running in
-  // incognito and if Autocomplete is enabled or not. |fields| can be empty.
-  virtual void OnWillSubmitFormWithFields(
-      const std::vector<FormFieldData>& fields,
-      bool is_autocomplete_enabled);
-
   // Cancels all pending queries. This is only applicable to single-field
   // fillers that fetch suggestions asynchronously.
   virtual void CancelPendingQueries();

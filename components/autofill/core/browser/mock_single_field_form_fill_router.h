@@ -36,11 +36,6 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
        const AutofillClient& client,
        SingleFieldFormFillRouter::OnSuggestionsReturnedCallback callback),
       (override));
-  MOCK_METHOD(void,
-              OnWillSubmitFormWithFields,
-              (const std::vector<FormFieldData>& fields,
-               bool is_autocomplete_enabled),
-              (override));
   MOCK_METHOD(void, CancelPendingQueries, (), (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,

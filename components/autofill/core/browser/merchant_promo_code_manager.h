@@ -43,14 +43,6 @@ class MerchantPromoCodeManager : public KeyedService {
       const AutofillClient& client,
       SingleFieldFormFillRouter::OnSuggestionsReturnedCallback&
           on_suggestions_returned);
-  virtual void OnWillSubmitFormWithFields(
-      const std::vector<FormFieldData>& fields,
-      bool is_autocomplete_enabled);
-  virtual void CancelPendingQueries() {}
-  virtual void OnRemoveCurrentSingleFieldSuggestion(
-      const std::u16string& field_name,
-      const std::u16string& value,
-      SuggestionType type);
   virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
 
   // Initializes the instance with the given parameters. |personal_data_manager|

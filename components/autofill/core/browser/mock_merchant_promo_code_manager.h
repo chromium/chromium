@@ -26,16 +26,6 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
        SingleFieldFormFillRouter::OnSuggestionsReturnedCallback& callback),
       (override));
   MOCK_METHOD(void,
-              OnWillSubmitFormWithFields,
-              (const std::vector<FormFieldData>& fields,
-               bool is_autocomplete_enabled),
-              (override));
-  MOCK_METHOD(void, CancelPendingQueries, (), (override));
-  MOCK_METHOD(void,
-              OnRemoveCurrentSingleFieldSuggestion,
-              (const std::u16string&, const std::u16string&, SuggestionType),
-              (override));
-  MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,
               (const Suggestion& suggestion),
               (override));

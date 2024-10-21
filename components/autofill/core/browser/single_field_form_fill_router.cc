@@ -29,36 +29,24 @@ void SingleFieldFormFillRouter::OnWillSubmitForm(
     const FormData& form,
     const FormStructure* form_structure,
     bool is_autocomplete_enabled) {
-  if (form_structure)
-    DCHECK(form.fields().size() == form_structure->field_count());
+  CHECK(!form_structure ||
+        form.fields().size() == form_structure->field_count());
   std::vector<FormFieldData> autocomplete_fields;
-  std::vector<FormFieldData> iban_fields;
-  std::vector<FormFieldData> merchant_promo_code_fields;
   for (size_t i = 0; i < form.fields().size(); i++) {
     // If |form_structure| is present, then the fields in |form_structure| and
-    // the fields in |form| should be 1:1. |form_structure| not being present
+    // the fields in |form| are 1:1. |form_structure| not being present
     // indicates we may have fields that were not able to be parsed, so we route
     // them to autocomplete functionality by default.
-    if (merchant_promo_code_manager_ && form_structure &&
+    bool skip_because_promo_code =
+        merchant_promo_code_manager_ && form_structure &&
         form_structure->field(i)->Type().GetStorableType() ==
-            MERCHANT_PROMO_CODE) {
-      merchant_promo_code_fields.push_back(form.fields()[i]);
-    } else if (iban_manager_ && form_structure &&
-               form_structure->field(i)->Type().GetStorableType() ==
-                   IBAN_VALUE) {
-      iban_fields.push_back(form.fields()[i]);
-    } else {
+            MERCHANT_PROMO_CODE;
+    bool skip_because_iban =
+        iban_manager_ && form_structure &&
+        form_structure->field(i)->Type().GetStorableType() == IBAN_VALUE;
+    if (!skip_because_iban && !skip_because_promo_code) {
       autocomplete_fields.push_back(form.fields()[i]);
     }
-  }
-
-  if (merchant_promo_code_manager_) {
-    merchant_promo_code_manager_->OnWillSubmitFormWithFields(
-        merchant_promo_code_fields, is_autocomplete_enabled);
-  }
-  if (iban_manager_) {
-    iban_manager_->OnWillSubmitFormWithFields(iban_fields,
-                                              is_autocomplete_enabled);
   }
   autocomplete_history_manager_->OnWillSubmitFormWithFields(
       autocomplete_fields, is_autocomplete_enabled);
@@ -87,32 +75,15 @@ bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
       field, client, on_suggestions_returned);
 }
 
-void SingleFieldFormFillRouter::OnWillSubmitFormWithFields(
-    const std::vector<FormFieldData>& fields,
-    bool is_autocomplete_enabled) {}
-
 void SingleFieldFormFillRouter::CancelPendingQueries() {
   autocomplete_history_manager_->CancelPendingQueries();
-  if (merchant_promo_code_manager_) {
-    merchant_promo_code_manager_->CancelPendingQueries();
-  }
-  if (iban_manager_) {
-    iban_manager_->CancelPendingQueries();
-  }
 }
 
 void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
     SuggestionType type) {
-  if (merchant_promo_code_manager_ &&
-      type == SuggestionType::kMerchantPromoCodeEntry) {
-    merchant_promo_code_manager_->OnRemoveCurrentSingleFieldSuggestion(
-        field_name, value, type);
-  } else if (iban_manager_ && type == SuggestionType::kIbanEntry) {
-    iban_manager_->OnRemoveCurrentSingleFieldSuggestion(field_name, value,
-                                                        type);
-  } else if (type == SuggestionType::kAutocompleteEntry) {
+  if (type == SuggestionType::kAutocompleteEntry) {
     autocomplete_history_manager_->OnRemoveCurrentSingleFieldSuggestion(
         field_name, value, type);
   }

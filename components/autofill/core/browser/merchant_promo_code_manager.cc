@@ -47,15 +47,6 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
   return false;
 }
 
-void MerchantPromoCodeManager::OnWillSubmitFormWithFields(
-    const std::vector<FormFieldData>& fields,
-    bool is_autocomplete_enabled) {}
-
-void MerchantPromoCodeManager::OnRemoveCurrentSingleFieldSuggestion(
-    const std::u16string& field_name,
-    const std::u16string& value,
-    SuggestionType type) {}
-
 void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
     const Suggestion& suggestion) {
   uma_recorder_.OnOfferSuggestionSelected(suggestion.type);
