@@ -101,8 +101,6 @@ def PrintPerfResult(measurement, trace, values, units,
 
   The string args may be empty but they must not contain any colons (:) or
   equals signs (=).
-  This is parsed by the buildbot using:
-  http://src.chromium.org/viewvc/chrome/trunk/tools/build/scripts/slave/process_log_utils.py
 
   Args:
     measurement: A description of the quantity being measured, e.g. "vm_peak".
