@@ -17,6 +17,14 @@ BASE_FEATURE(kEnablePlatformHighContrastInkDrop,
              "EnablePlatformHighContrastInkDrop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Handle mouse cursor being out sync with a touch drag operation. If mouse
+// cursor is over different window, drag will not start, and cursor will be
+// moved to the window where the touch drag started. This is a kill switch
+// for this new logic,  crbug.com/370856871.
+BASE_FEATURE(kEnableTouchDragCursorSync,
+             "EnableTouchDragCursorSync",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Only paint views that are invalidated/dirty (i.e. a paint was directly
 // scheduled on those views) as opposed to painting all views that intersect
 // an invalid rectangle on the layer.
