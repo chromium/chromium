@@ -43,7 +43,7 @@ import org.chromium.ui.text.SpanApplier;
  * (in either direction).
  */
 class AutofillOptionsMediator implements ModalDialogProperties.Controller {
-    private static final String AWG_PACKAGE_NAME = "package:com.google.android.gms";
+    private static final String NON_PACKAGE_NAME = "package:not.a.package.so.all.providers.show";
     private static final String SKIP_COMPATIBILITY_CHECK_PARAM_NAME = "skip_compatibility_check";
     private static final String SKIP_ALL_CHECKS_PARAM_VALUE = "skip_all_checks";
     private static final String ONLY_SKIP_AWG_CHECK_PARAM_VALUE = "only_skip_awg_check";
@@ -195,7 +195,8 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
 
     private static Intent createAutofillServiceChangeIntent() {
         Intent intent = new Intent(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE);
-        intent.setData(Uri.parse(AWG_PACKAGE_NAME));
+        // Request an unlikely package to become the new provider to ensure the picker always shows.
+        intent.setData(Uri.parse(NON_PACKAGE_NAME));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
