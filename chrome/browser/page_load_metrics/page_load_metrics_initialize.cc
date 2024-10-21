@@ -95,12 +95,6 @@ bool IsNonTabWebUI(content::BrowserContext* browser_context, const GURL& url) {
 }
 #endif
 
-}  // namespace
-
-namespace chrome {
-
-namespace {
-
 std::string GetApplicationLocale() {
   return g_browser_process->GetApplicationLocale();
 }
@@ -304,5 +298,3 @@ void InitializePageLoadMetricsForWebContents(
   page_load_metrics::MetricsWebContentsObserver::CreateForWebContents(
       web_contents, std::make_unique<PageLoadMetricsEmbedder>(web_contents));
 }
-
-}  // namespace chrome

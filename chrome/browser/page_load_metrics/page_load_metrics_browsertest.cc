@@ -2404,7 +2404,7 @@ class SessionRestorePaintWaiter : public SessionRestoreObserver {
 
   // SessionRestoreObserver implementation:
   void OnWillRestoreTab(content::WebContents* contents) override {
-    chrome::InitializePageLoadMetricsForWebContents(contents);
+    InitializePageLoadMetricsForWebContents(contents);
     auto waiter = std::make_unique<PageLoadMetricsTestWaiter>(contents);
     waiter->AddPageExpectation(TimingField::kFirstPaint);
     waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);

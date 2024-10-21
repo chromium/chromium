@@ -476,7 +476,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     }
 #endif  // BUILDFLAG(IS_ANDROID)
   }
-  chrome::InitializePageLoadMetricsForWebContents(web_contents);
+  InitializePageLoadMetricsForWebContents(web_contents);
   if (auto* pm_registry =
           performance_manager::PerformanceManagerRegistry::GetInstance()) {
     pm_registry->SetPageType(web_contents, performance_manager::PageType::kTab);

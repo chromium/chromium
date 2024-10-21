@@ -99,7 +99,7 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
   WebContentsObserver::Observe(web_contents_.get());
 
   PrefsTabHelper::CreateForWebContents(web_contents_.get());
-  chrome::InitializePageLoadMetricsForWebContents(web_contents_.get());
+  InitializePageLoadMetricsForWebContents(web_contents_.get());
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
   if (site_engagement::SiteEngagementService::IsEnabled()) {

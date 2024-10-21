@@ -448,7 +448,7 @@ WebUIContentsPreloadManager::CreateNewContents(
 
   task_manager::WebContentsTags::CreateForToolContents(
       web_contents.get(), IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI);
-  chrome::InitializePageLoadMetricsForWebContents(web_contents.get());
+  InitializePageLoadMetricsForWebContents(web_contents.get());
   webui_tracker_->AddWebContents(web_contents.get());
 
   LoadURLForContents(web_contents.get(), url);

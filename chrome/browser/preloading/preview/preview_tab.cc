@@ -120,7 +120,7 @@ void PreviewTab::AttachTabHelpersForInit() {
   // (initiation/promotion) we should attach each of them.
   zoom::ZoomController::CreateForWebContents(web_contents);
   ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
-  chrome::InitializePageLoadMetricsForWebContents(web_contents);
+  InitializePageLoadMetricsForWebContents(web_contents);
 }
 
 bool PreviewTab::AuditWebInputEvent(const blink::WebInputEvent& event) {
