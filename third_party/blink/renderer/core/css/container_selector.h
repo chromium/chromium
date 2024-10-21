@@ -47,7 +47,8 @@ class CORE_EXPORT ContainerSelector {
            (logical_axes_ == o.logical_axes_) &&
            (has_style_query_ == o.has_style_query_) &&
            (has_sticky_query_ == o.has_sticky_query_) &&
-           (has_snap_query_ == o.has_snap_query_);
+           (has_snap_query_ == o.has_snap_query_) &&
+           (has_overflow_query_ == o.has_overflow_query_);
   }
   bool operator!=(const ContainerSelector& o) const { return !(*this == o); }
 
@@ -67,8 +68,10 @@ class CORE_EXPORT ContainerSelector {
   bool SelectsStyleContainers() const { return has_style_query_; }
   bool SelectsStickyContainers() const { return has_sticky_query_; }
   bool SelectsSnapContainers() const { return has_snap_query_; }
-  bool SelectsStateContainers() const {
-    return SelectsStickyContainers() || SelectsSnapContainers();
+  bool SelectsOverflowContainers() const { return has_overflow_query_; }
+  bool SelectsScrollStateContainers() const {
+    return SelectsStickyContainers() || SelectsSnapContainers() ||
+           SelectsOverflowContainers();
   }
   bool HasUnknownFeature() const { return has_unknown_feature_; }
 
@@ -82,6 +85,7 @@ class CORE_EXPORT ContainerSelector {
   bool has_style_query_{false};
   bool has_sticky_query_{false};
   bool has_snap_query_{false};
+  bool has_overflow_query_{false};
   bool has_unknown_feature_{false};
 };
 

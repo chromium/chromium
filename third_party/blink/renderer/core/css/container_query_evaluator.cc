@@ -135,7 +135,9 @@ ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
   }
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container.GetDocument(), container, std::nullopt, std::nullopt,
-      ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped_);
+      ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped_,
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone),
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone));
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -181,8 +183,8 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   }
   bool selects_size = selector.SelectsSizeContainers();
   bool selects_style = selector.SelectsStyleContainers();
-  bool selects_state = selector.SelectsStateContainers();
-  if (!selects_size && !selects_style && !selects_state) {
+  bool selects_scroll_state = selector.SelectsScrollStateContainers();
+  if (!selects_size && !selects_style && !selects_scroll_state) {
     return false;
   }
 
@@ -192,7 +194,7 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   if (selects_style) {
     match_result.SetDependsOnStyleContainerQueries();
   }
-  if (selects_state) {
+  if (selects_scroll_state) {
     match_result.SetDependsOnStateContainerQueries();
   }
 
@@ -446,7 +448,9 @@ void ContainerQueryEvaluator::UpdateContainerValues() {
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, existing_values.Width(),
       existing_values.Height(), existing_values.StuckHorizontal(),
-      existing_values.StuckVertical(), existing_values.SnappedFlags());
+      existing_values.StuckVertical(), existing_values.SnappedFlags(),
+      existing_values.OverflowingHorizontal(),
+      existing_values.OverflowingVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -488,7 +492,8 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, width, height,
       existing_values.StuckHorizontal(), existing_values.StuckVertical(),
-      existing_values.SnappedFlags());
+      existing_values.SnappedFlags(), existing_values.OverflowingHorizontal(),
+      existing_values.OverflowingVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -505,7 +510,8 @@ void ContainerQueryEvaluator::UpdateContainerStuck(
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, existing_values.Width(),
       existing_values.Height(), stuck_horizontal, stuck_vertical,
-      existing_values.SnappedFlags());
+      existing_values.SnappedFlags(), existing_values.OverflowingHorizontal(),
+      existing_values.OverflowingVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -520,7 +526,9 @@ void ContainerQueryEvaluator::UpdateContainerSnapped(
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, existing_values.Width(),
       existing_values.Height(), existing_values.StuckHorizontal(),
-      existing_values.StuckVertical(), snapped);
+      existing_values.StuckVertical(), snapped,
+      existing_values.OverflowingHorizontal(),
+      existing_values.OverflowingVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -656,7 +664,8 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyStateAndStyleChanges(
     bool style_changed) {
   StyleRecalcChange recalc_change = child_change;
   if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
-      RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
+      RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() ||
+      RuntimeEnabledFeatures::CSSOverflowContainerQueriesEnabled()) {
     switch (ApplyScrollState()) {
       case ContainerQueryEvaluator::Change::kNone:
         break;

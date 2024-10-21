@@ -142,6 +142,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Update the CSSContainerValues with the new stuck state.
   void UpdateContainerSnapped(ContainerSnappedFlags snapped);
 
+  // Update the CSSContainerValues with the new overflowing state.
+  void UpdateContainerOverflowing(ContainerOverflowing overflowing_horizontal,
+                                  ContainerOverflowing overflowing_vertical);
+
   // Re-evaluate the cached results and clear any results which are affected by
   // the ContainerStuckPhysical changes.
   Change StickyContainerChanged(ContainerStuckPhysical stuck_horizontal,
@@ -151,11 +155,17 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // the snapped target changes.
   Change SnapContainerChanged(ContainerSnappedFlags snapped);
 
+  // Re-evaluate the cached results and clear any results which are affected by
+  // the snapped target changes.
+  Change OverflowContainerChanged(ContainerOverflowing overflowing_horizontal,
+                                  ContainerOverflowing overflowing_vertical);
+
   enum ContainerType {
     kSizeContainer,
     kStyleContainer,
     kStickyContainer,
-    kSnapContainer
+    kSnapContainer,
+    kOverflowContainer,
   };
   void ClearResults(Change change, ContainerType container_type);
 

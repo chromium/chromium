@@ -48,6 +48,37 @@ enum class ContainerSnapped {
 
 using ContainerSnappedFlags = unsigned;
 
+// Flags that represent whether a scroll-state query container has scrollable
+// overflow in a given direction. For physical directions, kStart is used for
+// left/top and kEnd is used for right/bottom.
+enum class ContainerOverflowing {
+  kNone = 0,
+  kStart = 1 << 0,
+  kEnd = 1 << 1,
+};
+
+using ContainerOverflowingFlags = unsigned;
+
+inline ContainerOverflowingFlags Flip(ContainerOverflowingFlags overflowing) {
+  if (overflowing ==
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone)) {
+    return overflowing;
+  }
+  ContainerOverflowingFlags flipped =
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  if (overflowing &
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart)) {
+    flipped |=
+        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+  }
+  if (overflowing &
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd)) {
+    flipped |=
+        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart);
+  }
+  return flipped;
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_STATE_H_

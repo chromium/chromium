@@ -208,6 +208,25 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     }
   }
 
+  if (RuntimeEnabledFeatures::CSSOverflowContainerQueriesEnabled()) {
+    if (media_feature == media_feature_names::kOverflowingMediaFeature) {
+      switch (ident) {
+        case CSSValueID::kNone:
+        case CSSValueID::kTop:
+        case CSSValueID::kLeft:
+        case CSSValueID::kBottom:
+        case CSSValueID::kRight:
+        case CSSValueID::kBlockStart:
+        case CSSValueID::kBlockEnd:
+        case CSSValueID::kInlineStart:
+        case CSSValueID::kInlineEnd:
+          return true;
+        default:
+          return false;
+      }
+    }
+  }
+
   return false;
 }
 
@@ -741,6 +760,9 @@ MediaQueryExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
     return kFeatureSticky;
   } else if (exp_.MediaFeature() == media_feature_names::kSnappedMediaFeature) {
     return kFeatureSnap;
+  } else if (exp_.MediaFeature() ==
+             media_feature_names::kOverflowingMediaFeature) {
+    return kFeatureOverflow;
   } else if (exp_.IsInlineSizeDependent()) {
     return kFeatureInlineSize;
   } else if (exp_.IsBlockSizeDependent()) {

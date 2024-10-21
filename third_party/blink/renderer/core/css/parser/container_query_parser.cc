@@ -111,7 +111,9 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
     return (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() &&
             feature == media_feature_names::kStuckMediaFeature) ||
            (RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() &&
-            feature == media_feature_names::kSnappedMediaFeature);
+            feature == media_feature_names::kSnappedMediaFeature) ||
+           (RuntimeEnabledFeatures::CSSOverflowContainerQueriesEnabled() &&
+            feature == media_feature_names::kOverflowingMediaFeature);
   }
   bool IsAllowedWithoutValue(const String& feature,
                              const ExecutionContext*) const override {
@@ -194,8 +196,10 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
   } else if (RuntimeEnabledFeatures::CSSScrollStateContainerQueriesEnabled() &&
              stream.Peek().GetType() == kFunctionToken &&
              stream.Peek().FunctionId() == CSSValueID::kScrollState) {
-    // scroll-state(stuck: [ none | top | left | right | bottom | inset-* ] )
-    // scroll-state(snapped: [ none | block | inline | x | y ] )
+    // scroll-state(stuck: [ none | top | right | bottom | left | block-start |
+    // inline-start | block-end | inline-end ] ) scroll-state(snapped: [ none |
+    // x | y | block | inline ] ) scroll-state(overflowing: [ none | top | right
+    // | bottom | left | block-start | inline-start | block-end | inline-end ] )
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
 

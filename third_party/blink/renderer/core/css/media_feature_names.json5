@@ -57,6 +57,7 @@
     "navigation-controls",
     // This feature only exists to test out origin-trial infrastructure.
     "origin-trial-test",
+    "overflowing",
     "pointer",
     "prefers-color-scheme",
     "prefers-contrast",

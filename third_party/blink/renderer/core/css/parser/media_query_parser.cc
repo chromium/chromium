@@ -40,6 +40,7 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
         feature == media_feature_names::kMaxBlockSizeMediaFeature ||
         feature == media_feature_names::kStuckMediaFeature ||
         feature == media_feature_names::kSnappedMediaFeature ||
+        feature == media_feature_names::kOverflowingMediaFeature ||
         CSSVariableParser::IsValidVariableName(feature)) {
       return false;
     }

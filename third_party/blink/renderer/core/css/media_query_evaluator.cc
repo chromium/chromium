@@ -1579,6 +1579,50 @@ static bool SnappedMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
+static bool OverflowingMediaFeatureEval(const MediaQueryExpValue& value,
+                                        MediaQueryOperator op,
+                                        const MediaValues& media_values) {
+  if (!value.IsValid()) {
+    return media_values.Overflowing();
+  }
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return !media_values.Overflowing();
+    case CSSValueID::kTop:
+      return media_values.OverflowingVertical() &
+             static_cast<ContainerOverflowingFlags>(
+                 ContainerOverflowing::kStart);
+    case CSSValueID::kLeft:
+      return media_values.OverflowingHorizontal() &
+             static_cast<ContainerOverflowingFlags>(
+                 ContainerOverflowing::kStart);
+    case CSSValueID::kBottom:
+      return media_values.OverflowingVertical() &
+             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+    case CSSValueID::kRight:
+      return media_values.OverflowingHorizontal() &
+             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+    case CSSValueID::kBlockStart:
+      return media_values.OverflowingBlock() &
+             static_cast<ContainerOverflowingFlags>(
+                 ContainerOverflowing::kStart);
+      ;
+    case CSSValueID::kBlockEnd:
+      return media_values.OverflowingBlock() &
+             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+    case CSSValueID::kInlineStart:
+      return media_values.OverflowingInline() &
+             static_cast<ContainerOverflowingFlags>(
+                 ContainerOverflowing::kStart);
+    case CSSValueID::kInlineEnd:
+      return media_values.OverflowingInline() &
+             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+    default:
+      NOTREACHED_IN_MIGRATION();
+      return false;
+  }
+}
+
 static bool InvertedColorsMediaFeatureEval(const MediaQueryExpValue& value,
                                            MediaQueryOperator,
                                            const MediaValues& media_values) {

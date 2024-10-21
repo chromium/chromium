@@ -34,13 +34,27 @@ class CSSContainerValuesTest : public PageTestBase {
     return MakeGarbageCollected<CSSContainerValues>(
         GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
         horizontal, vertical,
-        static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone));
+        static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone),
+        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone),
+        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone));
   }
 
   CSSContainerValues* CreateSnappedValues(ContainerSnappedFlags snapped) {
     return MakeGarbageCollected<CSSContainerValues>(
         GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
-        ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped);
+        ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped,
+        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone),
+        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone));
+  }
+
+  CSSContainerValues* CreateOverflowingValues(
+      ContainerOverflowingFlags horizontal,
+      ContainerOverflowingFlags vertical) {
+    return MakeGarbageCollected<CSSContainerValues>(
+        GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
+        ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo,
+        static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone), horizontal,
+        vertical);
   }
 
  private:
@@ -150,6 +164,72 @@ TEST_F(CSSContainerValuesTest, SnappedBoth) {
   EXPECT_TRUE(values->SnappedBlock());
   EXPECT_TRUE(values->SnappedInline());
   EXPECT_TRUE(values->Snapped());
+}
+
+TEST_F(CSSContainerValuesTest, OverflowingHorizontalTbLtr) {
+  SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
+  MediaValues* values = CreateOverflowingValues(
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
+  EXPECT_EQ(values->OverflowingInline(),
+            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd));
+  EXPECT_EQ(values->OverflowingBlock(), static_cast<ContainerOverflowingFlags>(
+                                            ContainerOverflowing::kStart));
+}
+
+TEST_F(CSSContainerValuesTest, OverflowingHorizontalTbRtl) {
+  SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kRtl);
+  MediaValues* values = CreateOverflowingValues(
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
+  EXPECT_EQ(values->OverflowingInline(), static_cast<ContainerOverflowingFlags>(
+                                             ContainerOverflowing::kStart));
+  EXPECT_EQ(values->OverflowingBlock(), static_cast<ContainerOverflowingFlags>(
+                                            ContainerOverflowing::kStart));
+}
+
+TEST_F(CSSContainerValuesTest, OverflowingVerticalLrLtr) {
+  SetContainerWritingDirection(WritingMode::kVerticalLr, TextDirection::kLtr);
+  MediaValues* values = CreateOverflowingValues(
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
+  EXPECT_EQ(values->OverflowingInline(), static_cast<ContainerOverflowingFlags>(
+                                             ContainerOverflowing::kStart));
+  EXPECT_EQ(values->OverflowingBlock(),
+            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd));
+}
+
+TEST_F(CSSContainerValuesTest, OverflowingVerticalLrRtl) {
+  SetContainerWritingDirection(WritingMode::kVerticalLr, TextDirection::kRtl);
+  MediaValues* values = CreateOverflowingValues(
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
+  EXPECT_EQ(values->OverflowingInline(),
+            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd));
+  EXPECT_EQ(values->OverflowingBlock(),
+            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd));
+}
+
+TEST_F(CSSContainerValuesTest, OverflowingVerticalRlLtr) {
+  SetContainerWritingDirection(WritingMode::kVerticalRl, TextDirection::kLtr);
+  MediaValues* values = CreateOverflowingValues(
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
+  EXPECT_EQ(values->OverflowingInline(), static_cast<ContainerOverflowingFlags>(
+                                             ContainerOverflowing::kStart));
+  EXPECT_EQ(values->OverflowingBlock(), static_cast<ContainerOverflowingFlags>(
+                                            ContainerOverflowing::kStart));
+}
+
+TEST_F(CSSContainerValuesTest, OverflowingVerticalRlRtl) {
+  SetContainerWritingDirection(WritingMode::kVerticalRl, TextDirection::kRtl);
+  MediaValues* values = CreateOverflowingValues(
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
+  EXPECT_EQ(values->OverflowingInline(),
+            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd));
+  EXPECT_EQ(values->OverflowingBlock(), static_cast<ContainerOverflowingFlags>(
+                                            ContainerOverflowing::kStart));
 }
 
 }  // namespace blink
