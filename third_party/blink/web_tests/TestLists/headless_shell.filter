@@ -18,12 +18,15 @@ external/wpt/css/css-scrollbars/*
 external/wpt/css/css-sizing/*
 external/wpt/css/css-transitions/*
 external/wpt/digital-credentials/*
+external/wpt/ecmascript/*
+external/wpt/js*
 external/wpt/longtask-timing/*
 external/wpt/picture-in-picture/*
 external/wpt/preload/*
 external/wpt/resource-timing/*
 external/wpt/selection/*
 external/wpt/signed-exchange/*
+external/wpt/wasm/*
 external/wpt/webauthn/*
 external/wpt/WebCryptoAPI/*
 
