@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/notreached.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata/common/web_database.h"
@@ -51,7 +51,7 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
                      "expire_date INTEGER NOT NULL DEFAULT 0, "
                      "method_name VARCHAR, "
                      "web_app_id VARCHAR)")) {
-    NOTREACHED_IN_MIGRATION();
+    LOG(ERROR) << "Cannot create the payment_method_manifest table";
     return false;
   }
 
@@ -64,7 +64,8 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
           "relying_party_id VARCHAR NOT NULL, "
           "label VARCHAR NOT NULL, "
           "icon BLOB NOT NULL)")) {
-    NOTREACHED_IN_MIGRATION();
+    LOG(ERROR)
+        << "Cannot create the secure_payment_confirmation_instrument table";
     return false;
   }
 
@@ -73,7 +74,8 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
     if (!db()->Execute(
             "ALTER TABLE secure_payment_confirmation_instrument ADD COLUMN "
             "date_created INTEGER NOT NULL DEFAULT 0")) {
-      NOTREACHED_IN_MIGRATION();
+      LOG(ERROR)
+          << "Cannot alter the secure_payment_confirmation_instrument table";
       return false;
     }
   }
@@ -83,7 +85,8 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
     if (!db()->Execute(
             "ALTER TABLE secure_payment_confirmation_instrument ADD COLUMN "
             "user_id BLOB")) {
-      NOTREACHED_IN_MIGRATION();
+      LOG(ERROR)
+          << "Cannot alter the secure_payment_confirmation_instrument table";
       return false;
     }
   }
