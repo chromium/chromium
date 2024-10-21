@@ -642,7 +642,6 @@ _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
     ])
 _ANDROID_PIXEL6_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
-    _tint_benchmark(),
 ])
 _ANDROID_PIXEL6_PGO_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),

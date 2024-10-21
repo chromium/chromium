@@ -4436,10 +4436,6 @@
         "name": "webrtc/pause_play_peerconnections"
     },
     {
-        "duration": "180.0",
-        "name": "tint_benchmark/_gtest_"
-    },
-    {
         "duration": "60.0",
         "name": "components_perftests/_gtest_"
     }
