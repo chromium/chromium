@@ -158,6 +158,12 @@ void HeadlessContentBrowserClient::OverrideWebkitPrefs(
     content::WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
   prefs->lazy_load_enabled = browser_->options()->lazy_load_enabled;
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kForceHighContrast)) {
+    prefs->in_forced_colors = true;
+    prefs->preferred_contrast = blink::mojom::PreferredContrast::kMore;
+  }
 }
 
 void HeadlessContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
