@@ -1056,6 +1056,10 @@
     'device_bluetooth': {
       'filepath': 'device/.*bluetooth'
     },
+    'device_bound_sessions': {
+      'filepath': 'net/device_bound_sessions/|'\
+                  'components/unexportable_keys/',
+    },
     'device_chooser': {
       'filepath': 'chrome/browser/chooser_controller/|'\
                   'chrome/browser/ui/android/bluetooth_chooser_|'\
@@ -2862,6 +2866,7 @@
                                 'mickeyburks+watch@chromium.org',
                                 'estalin+watch@chromium.org'],
     'device_bluetooth': ['mattreynolds+watch@chromium.org'],
+    'device_bound_sessions': ['drubery+watch@chromium.org'],
     'device_chooser': ['mattreynolds+watch@chromium.org',
                        'odejesush+watch@chromium.org'],
     'devtools': ['devtools-reviews@chromium.org'],
