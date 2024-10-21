@@ -102,27 +102,21 @@ int GetLinearBucketForRatioArea(int value) {
 }
 
 base::TimeDelta MLModelExecutionTimerStartDelay() {
-  static int timer_start_delay =
-      blink::features::kPreloadingModelTimerStartDelay.Get();
-  return base::Milliseconds(timer_start_delay);
+  return base::Milliseconds(
+      blink::features::kPreloadingModelTimerStartDelay.Get());
 }
 
 base::TimeDelta MLModelExecutionTimerInterval() {
-  static int timer_interval =
-      blink::features::kPreloadingModelTimerInterval.Get();
-  return base::Milliseconds(timer_interval);
+  return base::Milliseconds(
+      blink::features::kPreloadingModelTimerInterval.Get());
 }
 
 bool MLModelOneExecutionPerHover() {
-  static bool one_execution_per_hover =
-      blink::features::kPreloadingModelOneExecutionPerHover.Get();
-  return one_execution_per_hover;
+  return blink::features::kPreloadingModelOneExecutionPerHover.Get();
 }
 
 base::TimeDelta MLModelMaxHoverTime() {
-  static const base::TimeDelta max_hover_time =
-      blink::features::kPreloadingModelMaxHoverTime.Get();
-  return max_hover_time;
+  return blink::features::kPreloadingModelMaxHoverTime.Get();
 }
 
 void RecordMetricsForModelTraining(
@@ -250,13 +244,15 @@ void NavigationPredictor::Create(
   }
 
   // Only valid for the main frame.
-  if (render_frame_host->GetParentOrOuterDocument())
+  if (render_frame_host->GetParentOrOuterDocument()) {
     return;
+  }
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   DCHECK(web_contents->GetBrowserContext());
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
@@ -543,8 +539,9 @@ void NavigationPredictor::ReportAnchorElementClick(
   navigation_start_to_click_ = click->navigation_start_to_click;
 
   clicked_count_++;
-  if (clicked_count_ > kMaxClicksTracked)
+  if (clicked_count_ > kMaxClicksTracked) {
     return;
+  }
 
   if (!ukm_recorder_) {
     return;

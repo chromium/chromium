@@ -1297,20 +1297,23 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrefetchPrivacyChanges);
 // If enabled, the machine learning model will be employed to predict the next
 // click for speculation-rule based pre-loadings.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingHeuristicsMLModel);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kPreloadingModelTimerStartDelay;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kPreloadingModelTimerInterval;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPreloadingModelOneExecutionPerHover;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kPreloadingModelMaxHoverTime;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPreloadingModelEnactCandidates;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kPreloadingModelPrefetchModerateThreshold;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kPreloadingModelPrerenderModerateThreshold;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kPreloadingModelTimerStartDelay);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kPreloadingModelTimerInterval);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kPreloadingModelOneExecutionPerHover);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                               kPreloadingModelMaxHoverTime);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kPreloadingModelEnactCandidates);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kPreloadingModelPrefetchModerateThreshold);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kPreloadingModelPrerenderModerateThreshold);
 
 // Enables the same-origin main frame navigation in a prerendered page.
 // See https://crbug.com/1239281.
@@ -1357,9 +1360,9 @@ enum class Prerender2WarmUpCompositorTriggerPoint {
   kDidDispatchDOMContentLoadedEvent,
   kDidFinishLoad,
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    Prerender2WarmUpCompositorTriggerPoint>
-    kPrerender2WarmUpCompositorTriggerPoint;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    Prerender2WarmUpCompositorTriggerPoint,
+    kPrerender2WarmUpCompositorTriggerPoint);
 
 // Enables to run prerendering for new tabs (e.g., target="_blank").
 // See https://crbug.com/1350676.
@@ -1380,14 +1383,18 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool> kPrewarmFantasy;
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApi);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPrivateAggregationApiEnabledInSharedStorage;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPrivateAggregationApiEnabledInProtectedAudience;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPrivateAggregationApiProtectedAudienceExtensionsEnabled;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPrivateAggregationApiDebugModeEnabledAtAll;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kPrivateAggregationApiEnabledInSharedStorage);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kPrivateAggregationApiEnabledInProtectedAudience);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kPrivateAggregationApiProtectedAudienceExtensionsEnabled);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kPrivateAggregationApiDebugModeEnabledAtAll);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
 

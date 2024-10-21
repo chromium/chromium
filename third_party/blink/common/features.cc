@@ -2023,22 +2023,43 @@ BASE_FEATURE(kPrefetchPrivacyChanges,
 BASE_FEATURE(kPreloadingHeuristicsMLModel,
              "PreloadingHeuristicsMLModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kPreloadingModelTimerStartDelay{
-    &kPreloadingHeuristicsMLModel, "timer_start_delay", 0};
-const base::FeatureParam<int> kPreloadingModelTimerInterval{
-    &kPreloadingHeuristicsMLModel, "timer_interval", 100};
-const base::FeatureParam<bool> kPreloadingModelOneExecutionPerHover{
-    &kPreloadingHeuristicsMLModel, "one_execution_per_hover", true};
+BASE_FEATURE_PARAM(int,
+                   kPreloadingModelTimerStartDelay,
+                   &kPreloadingHeuristicsMLModel,
+                   "timer_start_delay",
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kPreloadingModelTimerInterval,
+                   &kPreloadingHeuristicsMLModel,
+                   "timer_interval",
+                   100);
+BASE_FEATURE_PARAM(bool,
+                   kPreloadingModelOneExecutionPerHover,
+                   &kPreloadingHeuristicsMLModel,
+                   "one_execution_per_hover",
+                   true);
 // The default max hover time of 10s covers the 98th percentile of hovering
 // cases that are relevant to the model.
-const base::FeatureParam<base::TimeDelta> kPreloadingModelMaxHoverTime{
-    &kPreloadingHeuristicsMLModel, "max_hover_time", base::Seconds(10)};
-const base::FeatureParam<bool> kPreloadingModelEnactCandidates{
-    &kPreloadingHeuristicsMLModel, "enact_candidates", false};
-const base::FeatureParam<int> kPreloadingModelPrefetchModerateThreshold{
-    &kPreloadingHeuristicsMLModel, "prefetch_moderate_threshold", 50};
-const base::FeatureParam<int> kPreloadingModelPrerenderModerateThreshold{
-    &kPreloadingHeuristicsMLModel, "prerender_moderate_threshold", 50};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kPreloadingModelMaxHoverTime,
+                   &kPreloadingHeuristicsMLModel,
+                   "max_hover_time",
+                   base::Seconds(10));
+BASE_FEATURE_PARAM(bool,
+                   kPreloadingModelEnactCandidates,
+                   &kPreloadingHeuristicsMLModel,
+                   "enact_candidates",
+                   false);
+BASE_FEATURE_PARAM(int,
+                   kPreloadingModelPrefetchModerateThreshold,
+                   &kPreloadingHeuristicsMLModel,
+                   "prefetch_moderate_threshold",
+                   50);
+BASE_FEATURE_PARAM(int,
+                   kPreloadingModelPrerenderModerateThreshold,
+                   &kPreloadingHeuristicsMLModel,
+                   "prerender_moderate_threshold",
+                   50);
 
 BASE_FEATURE(kPrerender2InNewTab,
              "Prerender2InNewTab",
@@ -2079,11 +2100,12 @@ const base::FeatureParam<Prerender2WarmUpCompositorTriggerPoint>::Option
         {Prerender2WarmUpCompositorTriggerPoint::kDidFinishLoad,
          "did_finish_load"},
 };
-const base::FeatureParam<Prerender2WarmUpCompositorTriggerPoint>
-    kPrerender2WarmUpCompositorTriggerPoint{
-        &kPrerender2WarmUpCompositor, "trigger_point",
-        Prerender2WarmUpCompositorTriggerPoint::kDidCommitLoad,
-        &prerender2_warm_up_compositor_trigger_point};
+BASE_FEATURE_ENUM_PARAM(Prerender2WarmUpCompositorTriggerPoint,
+                        kPrerender2WarmUpCompositorTriggerPoint,
+                        &kPrerender2WarmUpCompositor,
+                        "trigger_point",
+                        Prerender2WarmUpCompositorTriggerPoint::kDidCommitLoad,
+                        &prerender2_warm_up_compositor_trigger_point);
 
 // Enable limiting previews loading hints to specific resource types.
 BASE_FEATURE(kPreviewsResourceLoadingHintsSpecificResourceTypes,
@@ -2094,18 +2116,36 @@ BASE_FEATURE(kPreviewsResourceLoadingHintsSpecificResourceTypes,
 BASE_FEATURE(kPrewarmDefaultFontFamilies,
              "PrewarmDefaultFontFamilies",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kPrewarmStandard = {&kPrewarmDefaultFontFamilies,
-                                                   "prewarm_standard", false};
-const base::FeatureParam<bool> kPrewarmFixed = {&kPrewarmDefaultFontFamilies,
-                                                "prewarm_fixed", false};
-const base::FeatureParam<bool> kPrewarmSerif = {&kPrewarmDefaultFontFamilies,
-                                                "prewarm_serif", true};
-const base::FeatureParam<bool> kPrewarmSansSerif = {
-    &kPrewarmDefaultFontFamilies, "prewarm_sans_serif", true};
-const base::FeatureParam<bool> kPrewarmCursive = {&kPrewarmDefaultFontFamilies,
-                                                  "prewarm_cursive", false};
-const base::FeatureParam<bool> kPrewarmFantasy = {&kPrewarmDefaultFontFamilies,
-                                                  "prewarm_fantasy", false};
+BASE_FEATURE_PARAM(bool,
+                   kPrewarmStandard,
+                   &kPrewarmDefaultFontFamilies,
+                   "prewarm_standard",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kPrewarmFixed,
+                   &kPrewarmDefaultFontFamilies,
+                   "prewarm_fixed",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kPrewarmSerif,
+                   &kPrewarmDefaultFontFamilies,
+                   "prewarm_serif",
+                   true);
+BASE_FEATURE_PARAM(bool,
+                   kPrewarmSansSerif,
+                   &kPrewarmDefaultFontFamilies,
+                   "prewarm_sans_serif",
+                   true);
+BASE_FEATURE_PARAM(bool,
+                   kPrewarmCursive,
+                   &kPrewarmDefaultFontFamilies,
+                   "prewarm_cursive",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kPrewarmFantasy,
+                   &kPrewarmDefaultFontFamilies,
+                   "prewarm_fantasy",
+                   false);
 #endif
 
 // Enables the Private Aggregation API. Note that this API also requires the
@@ -2118,27 +2158,33 @@ BASE_FEATURE(kPrivateAggregationApi,
 // Selectively allows the JavaScript API to be disabled in just one of the
 // contexts. The Protected Audience param's name has not been updated (from
 // "fledge") for consistency across versions
-constexpr base::FeatureParam<bool> kPrivateAggregationApiEnabledInSharedStorage{
-    &kPrivateAggregationApi, "enabled_in_shared_storage",
-    /*default_value=*/true};
-constexpr base::FeatureParam<bool>
-    kPrivateAggregationApiEnabledInProtectedAudience{&kPrivateAggregationApi,
-                                                     "enabled_in_fledge",
-                                                     /*default_value=*/true};
+BASE_FEATURE_PARAM(bool,
+                   kPrivateAggregationApiEnabledInSharedStorage,
+                   &kPrivateAggregationApi,
+                   "enabled_in_shared_storage",
+                   /*default_value=*/true);
+BASE_FEATURE_PARAM(bool,
+                   kPrivateAggregationApiEnabledInProtectedAudience,
+                   &kPrivateAggregationApi,
+                   "enabled_in_fledge",
+                   /*default_value=*/true);
 
 // Selectively allows the Protected Audience-specific extensions to be disabled.
 // The name has not been updated (from "fledge") for consistency across versions
-constexpr base::FeatureParam<bool>
-    kPrivateAggregationApiProtectedAudienceExtensionsEnabled{
-        &kPrivateAggregationApi, "fledge_extensions_enabled",
-        /*default_value=*/true};
+BASE_FEATURE_PARAM(bool,
+                   kPrivateAggregationApiProtectedAudienceExtensionsEnabled,
+                   &kPrivateAggregationApi,
+                   "fledge_extensions_enabled",
+                   /*default_value=*/true);
 
 // Selectively allows the debug mode to be disabled while leaving the rest of
 // the API in place. If disabled, any `enableDebugMode()` calls will essentially
 // have no effect.
-constexpr base::FeatureParam<bool> kPrivateAggregationApiDebugModeEnabledAtAll{
-    &kPrivateAggregationApi, "debug_mode_enabled_at_all",
-    /*default_value=*/true};
+BASE_FEATURE_PARAM(bool,
+                   kPrivateAggregationApiDebugModeEnabledAtAll,
+                   &kPrivateAggregationApi,
+                   "debug_mode_enabled_at_all",
+                   /*default_value=*/true);
 
 // Adds some additional functionality (new reserved event types, base values)
 // to things enabled by
