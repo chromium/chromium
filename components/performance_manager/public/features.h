@@ -142,6 +142,19 @@ extern const base::FeatureParam<int> kThresholdChromeCPUPercent;
 // When enabled, the freezing policy measures background CPU usage.
 BASE_DECLARE_FEATURE(kCPUMeasurementInFreezingPolicy);
 
+// When enabled, the freezing policy measures memory usage. This exists to
+// quantify the overhead of memory measurement in a holdback study.
+BASE_DECLARE_FEATURE(kMemoryMeasurementInFreezingPolicy);
+
+// When enabled, frozen browsing instances in which an origin's private memory
+// footprint grows above a threshold are discarded. Depends on
+// `kMemoryMeasurementInFreezingPolicy`.
+BASE_DECLARE_FEATURE(kDiscardFrozenBrowsingInstancesWithGrowingPMF);
+
+// Per-origin private memory footprint increase above which a frozen browsing
+// instance is discarded.
+BASE_DECLARE_FEATURE_PARAM(int, kFreezingMemoryGrowthThresholdToDiscardKb);
+
 // Proportion of background CPU usage for a group of frames/workers that belong
 // to the same [browsing instance, origin] that is considered "high".
 BASE_DECLARE_FEATURE_PARAM(double, kFreezingHighCPUProportion);
@@ -153,7 +166,7 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFreezingVisibleProtectionTime);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFreezingAudioProtectionTime);
 
 // When enabled, browsing instances with high CPU usage in background are frozen
-// when Battery Saver is active. Depends on kCPUMeasurementInFreezingPolicy.
+// when Battery Saver is active. Depends on `kCPUMeasurementInFreezingPolicy`.
 BASE_DECLARE_FEATURE(kFreezingOnBatterySaver);
 
 // This is the similar to `kFreezingOnBatterySaver`, with some changes to

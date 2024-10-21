@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/freezing/freezing_policy.h"
 
+#include <set>
 #include <vector>
 
 #include "base/check.h"
@@ -11,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/features.h"
@@ -103,20 +105,31 @@ bool IsPageCapturingDisplay(const PageNode* page_node) {
 
 }  // namespace
 
-FreezingPolicy::FreezingPolicy()
+FreezingPolicy::FreezingPolicy(std::unique_ptr<freezing::Discarder> discarder)
     : freezer_(std::make_unique<Freezer>()),
+      discarder_(std::move(discarder)),
       cpu_proportion_tracker_(
           /*context_filter=*/base::NullCallback(),
           /*cpu_proportion_type=*/resource_attribution::CPUProportionTracker::
               CPUProportionType::kBackground) {
-  if (base::FeatureList::IsEnabled(features::kCPUMeasurementInFreezingPolicy)) {
-    cpu_usage_query_ =
-        resource_attribution::QueryBuilder()
-            .AddAllContextsOfType<OriginInBrowsingInstanceContext>()
-            .AddResourceType(resource_attribution::ResourceType::kCPUTime)
-            .CreateScopedQuery();
-    cpu_usage_query_observation_.Observe(&cpu_usage_query_.value());
-    cpu_usage_query_->Start(kCPUMeasurementInterval);
+  if (base::FeatureList::IsEnabled(features::kCPUMeasurementInFreezingPolicy) ||
+      base::FeatureList::IsEnabled(
+          features::kMemoryMeasurementInFreezingPolicy)) {
+    resource_attribution::QueryBuilder builder;
+    builder.AddAllContextsOfType<OriginInBrowsingInstanceContext>();
+    if (base::FeatureList::IsEnabled(
+            features::kCPUMeasurementInFreezingPolicy)) {
+      builder.AddResourceType(resource_attribution::ResourceType::kCPUTime);
+    }
+    if (base::FeatureList::IsEnabled(
+            features::kMemoryMeasurementInFreezingPolicy)) {
+      builder.AddResourceType(
+          resource_attribution::ResourceType::kMemorySummary);
+    }
+
+    resource_usage_query_ = builder.CreateScopedQuery();
+    resource_usage_query_observation_.Observe(&resource_usage_query_.value());
+    resource_usage_query_->Start(kCPUMeasurementInterval);
   }
 }
 
@@ -159,6 +172,21 @@ void FreezingPolicy::RemoveFreezeVote(PageNode* page_node) {
 
 FreezingPolicy::BrowsingInstanceState::BrowsingInstanceState() = default;
 FreezingPolicy::BrowsingInstanceState::~BrowsingInstanceState() = default;
+
+bool FreezingPolicy::BrowsingInstanceState::AllPagesFrozen() const {
+  CHECK(!pages.empty());
+
+  // This policy always requests the same frozen state for all pages in a
+  // browsing instance. However, since freezing/unfreezing is done
+  // asynchronously, pages may be in different state at a given point in time.
+
+  for (const PageNode* page_node : pages) {
+    if (page_node->GetLifecycleState() != PageNode::LifecycleState::kFrozen) {
+      return false;
+    }
+  }
+  return true;
+}
 
 base::flat_set<content::BrowsingInstanceId>
 FreezingPolicy::GetBrowsingInstances(const PageNode* page) const {
@@ -394,6 +422,18 @@ void FreezingPolicy::OnIsAudibleChanged(const PageNode* page_node) {
   }
 }
 
+void FreezingPolicy::OnPageLifecycleStateChanged(const PageNode* page_node) {
+  // When a page is unfrozen, clear post-freezing PMF measurements for all its
+  // browsing instances.
+  if (page_node->GetLifecycleState() != PageNode::LifecycleState::kFrozen) {
+    for (content::BrowsingInstanceId id : GetBrowsingInstances(page_node)) {
+      auto it = browsing_instances_.find(id);
+      CHECK(it != browsing_instances_.end());
+      it->second.per_origin_pmf_after_freezing_kb.clear();
+    }
+  }
+}
+
 void FreezingPolicy::OnPageIsHoldingWebLockChanged(const PageNode* page_node) {
   OnCannotFreezeReasonChange(page_node, /*add=*/page_node->IsHoldingWebLock(),
                              CannotFreezeReason::kHoldingWebLock);
@@ -621,6 +661,105 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
 }
 
 void FreezingPolicy::OnResourceUsageUpdated(
+    const resource_attribution::QueryResultMap& results) {
+  DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(results);
+  UpdateFrozenStateOnCPUMeasurement(results);
+}
+
+void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
+    const resource_attribution::QueryResultMap& results) {
+  // Clear memory measurements for browsing instances that are not frozen and
+  // build a set of frozen browsing instances that don't yet have their initial
+  // memory measurement.
+  std::set<content::BrowsingInstanceId>
+      browsing_instances_without_initial_measurement;
+  for (auto& [id, state] : browsing_instances_) {
+    if (state.AllPagesFrozen()) {
+      if (state.per_origin_pmf_after_freezing_kb.empty()) {
+        browsing_instances_without_initial_measurement.insert(id);
+      }
+    } else {
+      // Should have been cleared by `OnPageLifecycleStateChanged`.
+      CHECK(state.per_origin_pmf_after_freezing_kb.empty());
+    }
+  }
+
+  const int growth_threshold_kb =
+      features::kFreezingMemoryGrowthThresholdToDiscardKb.Get();
+
+  // Traverse memory measurements to find pages to discard.
+  std::set<const PageNode*> pages_to_discard;
+  for (const auto& [context, result] : results) {
+    if (!result.memory_summary_result.has_value()) {
+      continue;
+    }
+
+    // This cast is valid because the query only targets contexts of type
+    // `OriginInBrowsingInstanceContext` (verified by CHECK inside `AsContext`).
+    const auto& origin_in_browsing_instance_context =
+        resource_attribution::AsContext<OriginInBrowsingInstanceContext>(
+            context);
+    auto browsing_instance_it = browsing_instances_.find(
+        origin_in_browsing_instance_context.GetBrowsingInstance());
+    if (browsing_instance_it == browsing_instances_.end()) {
+      continue;
+    }
+    content::BrowsingInstanceId id = browsing_instance_it->first;
+    auto& state = browsing_instance_it->second;
+
+    if (!state.AllPagesFrozen()) {
+      continue;
+    }
+
+    const uint64_t current_kb =
+        result.memory_summary_result->private_footprint_kb;
+    if (base::Contains(browsing_instances_without_initial_measurement, id)) {
+      // Store the first PMF measurement after being frozen.
+      state.per_origin_pmf_after_freezing_kb[origin_in_browsing_instance_context
+                                                 .GetOrigin()] = current_kb;
+    } else {
+      // Compare current measurement against the one stored after being frozen.
+      auto it = state.per_origin_pmf_after_freezing_kb.find(
+          origin_in_browsing_instance_context.GetOrigin());
+      uint64_t after_freezing_kb;
+      if (it == state.per_origin_pmf_after_freezing_kb.end()) {
+        // No memory measurement was stored for this origin after being frozen.
+        // This could indicate a measurement error (e.g. process missing in a
+        // `memory_instrumentation::GlobalMemoryDump`) or that the browsing
+        // instance navigated while frozen (e.g. requested by an extension).
+        //
+        // Pretend that 0 was stored after freezing. This will cause the
+        // browsing instance to be discarded iff the current measurement is
+        // above the growth threshold. In any case, no extra measurement is
+        // stored in `per_origin_pmf_after_freezing_kb` to prevent it from
+        // growing without bounds if the page continuously navigates to new
+        // origins.
+        after_freezing_kb = 0;
+      } else {
+        after_freezing_kb = it->second;
+      }
+
+      const uint64_t growth_kb =
+          current_kb > after_freezing_kb ? current_kb - after_freezing_kb : 0u;
+      if (growth_kb > base::checked_cast<uint64_t>(growth_threshold_kb)) {
+        pages_to_discard.insert(state.pages.begin(), state.pages.end());
+      }
+    }
+  }
+
+  // Note: Feature state is checked last so that only clients that have a frozen
+  // browsing instance with a growing private memory footprint are enrolled in
+  // the experiment.
+  if (!pages_to_discard.empty() &&
+      base::FeatureList::IsEnabled(
+          features::kDiscardFrozenBrowsingInstancesWithGrowingPMF)) {
+    discarder_->DiscardPages(
+        GetOwningGraph(), std::vector<const PageNode*>(pages_to_discard.begin(),
+                                                       pages_to_discard.end()));
+  }
+}
+
+void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
     const resource_attribution::QueryResultMap& results) {
   if (!cpu_proportion_tracker_.IsTracking()) {
     cpu_proportion_tracker_.StartFirstInterval(base::TimeTicks::Now(), results);

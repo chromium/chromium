@@ -41,4 +41,7 @@ FreezingVote::~FreezingVote() {
           page_node_));
 }
 
+Discarder::Discarder() = default;
+Discarder::~Discarder() = default;
+
 }  // namespace performance_manager::freezing
