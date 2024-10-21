@@ -301,16 +301,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
 
 // Tests that the sign-in tabs opened through the re-auth interstitial
 // are closed on re-authentication.
-// TODO(https://crbug.com/370115099): This test fails on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads \
-  DISABLED_TestReauthInterstitialClosesSignInTabsAndReloads
-#else
-#define MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads \
-  TestReauthInterstitialClosesSignInTabsAndReloads
-#endif
 IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
-                       MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads) {
+                       TestReauthInterstitialClosesSignInTabsAndReloads) {
   base::HistogramTester histogram_tester;
 
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
