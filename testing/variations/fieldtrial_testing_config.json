@@ -24861,6 +24861,27 @@
             ]
         }
     ],
+    "V8GCSpeedUsesCounters": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8GCSpeedUsesCounters"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8IncrementalMarkingStartUserVisible": [
         {
             "platforms": [
