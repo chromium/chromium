@@ -259,6 +259,12 @@ void BirchCoralProvider::RemoveItemFromGroup(const int group_id,
   coral_item_remover_->RemoveItem(identifier);
 }
 
+mojo::PendingRemote<coral::mojom::TitleObserver>
+BirchCoralProvider::BindRemote() {
+  receiver_.reset();
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
 void BirchCoralProvider::RequestBirchDataFetch() {
   // Use the customized fake response if set.
   if (fake_response_) {
@@ -270,12 +276,6 @@ void BirchCoralProvider::RequestBirchDataFetch() {
     }
     fake_response_copy->set_groups(std::move(groups));
     HandleCoralResponse(std::move(fake_response_copy));
-    return;
-  }
-
-  // Do not make additional requests to the backend if we have valid post login
-  // clusters.
-  if (HasValidPostLoginResponse()) {
     return;
   }
 
@@ -297,6 +297,24 @@ void BirchCoralProvider::OnTabItemUpdated(TabClusterUIItem* tab_item) {
 
 void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
 
+void BirchCoralProvider::TitleUpdated(const base::Token& id,
+                                      const std::string& title) {
+  for (coral::mojom::GroupPtr& group : response_->groups()) {
+    if (group->id == id) {
+      group->title = title;
+      return;
+    }
+  }
+}
+
+void BirchCoralProvider::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  // Clear stale items on login.
+  if (state == session_manager::SessionState::ACTIVE) {
+    response_.reset();
+  }
+}
+
 void BirchCoralProvider::OverrideCoralResponseForTest(
     std::unique_ptr<CoralResponse> response) {
   fake_response_ = std::move(response);
@@ -310,6 +328,11 @@ bool BirchCoralProvider::HasValidPostLoginData() const {
 }
 
 void BirchCoralProvider::HandlePostLoginDataRequest() {
+  if (response_) {
+    HandleCoralResponse(std::move(response_));
+    return;
+  }
+
   InformedRestoreContentsData* contents_data =
       Shell::Get()->informed_restore_controller()->contents_data();
   std::vector<CoralRequest::ContentItem> tab_app_data;
@@ -372,15 +395,25 @@ bool BirchCoralProvider::HasValidPostLoginResponse() {
 
 void BirchCoralProvider::HandlePostLoginCoralResponse(
     std::unique_ptr<CoralResponse> response) {
+  // If response_ is not null, it may be a previously arrived post-login or
+  // in-session response. Skip handling the newly arrived response in this case.
+  if (response_) {
+    return;
+  }
   post_login_response_timestamp_ = base::Time::Now();
   HandleCoralResponse(std::move(response));
 }
 
 void BirchCoralProvider::HandleInSessionCoralResponse(
     std::unique_ptr<CoralResponse> response) {
-  // Do not handle in-session responses while the post-login response is still
-  // valid.
-  CHECK(!HasValidPostLoginResponse());
+  const bool non_empty = response && response->groups().size();
+  if (HasValidPostLoginResponse() && !non_empty) {
+    HandleCoralResponse(std::move(response_));
+    return;
+  }
+
+  // Invalid post login response if a valid in-session response is generated.
+  post_login_response_timestamp_ = base::Time();
   HandleCoralResponse(std::move(response));
 }
 
@@ -438,22 +471,6 @@ void BirchCoralProvider::CacheTabEmbedding(TabClusterUIItem* tab_item) {
 
 void BirchCoralProvider::HandleEmbeddingResult(bool success) {
   // TODO(yulunwu) Add metrics.
-}
-
-void BirchCoralProvider::TitleUpdated(const base::Token& id,
-                                      const std::string& title) {
-  for (coral::mojom::GroupPtr& group : response_->groups()) {
-    if (group->id == id) {
-      group->title = title;
-      return;
-    }
-  }
-}
-
-mojo::PendingRemote<coral::mojom::TitleObserver>
-BirchCoralProvider::BindRemote() {
-  receiver_.reset();
-  return receiver_.BindNewPipeAndPassRemote();
 }
 
 }  // namespace ash

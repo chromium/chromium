@@ -472,7 +472,8 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
           std::make_unique<BirchReleaseNotesItem>(release_notes_item));
     }
   }
-  if (prefs->GetBoolean(prefs::kBirchUseCoral)) {
+
+  if (prefs->GetBoolean(prefs::kBirchUseCoral) && coral_data_.is_fresh) {
     for (auto& coral_item : coral_data_.items) {
       all_items.push_back(std::make_unique<BirchCoralItem>(coral_item));
     }

@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/birch/birch_data_provider.h"
 #include "ash/public/cpp/coral_util.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/wm/coral/coral_controller.h"
 #include "base/containers/flat_map.h"
@@ -23,7 +24,8 @@ class CoralItemRemover;
 
 class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
                                       public TabClusterUIController::Observer,
-                                      public coral::mojom::TitleObserver {
+                                      public coral::mojom::TitleObserver,
+                                      public SessionObserver {
  public:
   explicit BirchCoralProvider(BirchModel* birch_model);
   BirchCoralProvider(const BirchCoralProvider&) = delete;
@@ -46,6 +48,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   // Removes an item with `identifier` from the group with group_id.
   void RemoveItemFromGroup(const int group_id, const std::string& identifier);
 
+  mojo::PendingRemote<coral::mojom::TitleObserver> BindRemote();
+
   // BirchDataProvider:
   void RequestBirchDataFetch() override;
 
@@ -57,7 +61,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   // coral::mojom::TitleObserver:
   void TitleUpdated(const base::Token& id, const std::string& title) override;
 
-  mojo::PendingRemote<coral::mojom::TitleObserver> BindRemote();
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   const CoralRequest& GetCoralRequestForTest() const { return request_; }
 
@@ -122,6 +127,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   std::unique_ptr<CoralItemRemover> coral_item_remover_;
 
   mojo::Receiver<coral::mojom::TitleObserver> receiver_{this};
+
+  ScopedSessionObserver session_observer_{this};
 
   base::WeakPtrFactory<BirchCoralProvider> weak_ptr_factory_{this};
 };
