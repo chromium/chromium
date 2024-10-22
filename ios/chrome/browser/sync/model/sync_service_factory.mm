@@ -285,28 +285,24 @@ SyncServiceFactory::SyncServiceFactory()
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but
   // actually plumbed in IOSChromeSyncClient, which this factory constructs.
-  DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(GoogleGroupsManagerFactory::GetInstance());
-  DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::AboutSigninInternalsFactory::GetInstance());
   DependsOn(ios::AccountBookmarkSyncServiceFactory::GetInstance());
   DependsOn(ios::BookmarkModelFactory::GetInstance());
-  DependsOn(ios::BookmarkUndoServiceFactory::GetInstance());
   DependsOn(ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
   DependsOn(ios::FaviconServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
-  DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
-  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
   DependsOn(IOSChromePasswordReceiverServiceFactory::GetInstance());
   DependsOn(IOSChromePasswordSenderServiceFactory::GetInstance());
   DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
-  DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
     DependsOn(IOSPasskeyModelFactory::GetInstance());
   }
@@ -319,6 +315,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());
   DependsOn(PowerBookmarkServiceFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
+  DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
