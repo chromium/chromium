@@ -1212,8 +1212,6 @@ def create_proto_modules(blueprint, gn, target):
 def create_gcc_preprocess_modules(blueprint, target):
   # gcc_preprocess.py internally execute host gcc which is not allowed in genrule.
   # So, this function create multiple modules and realize equivalent processing
-  # TODO: Consider to support gcc_preprocess.py in different way
-  # It's not great to have genrule and cc_object in the dependency from java_library
   assert (len(target.sources) == 1)
   source = list(target.sources)[0]
   assert (Path(source).suffix == '.template')
@@ -1221,7 +1219,8 @@ def create_gcc_preprocess_modules(blueprint, target):
 
   bp_module_name = label_to_module_name(target.name)
 
-  # Rename .template to .cc since cc_object does not accept .template file as srcs
+  # Rename .template to .cc since cc_preprocess_no_configuration does
+  # not accept .template file as srcs
   rename_module = Module('genrule', bp_module_name + '_rename', target.name)
   rename_module.srcs.add(gn_utils.label_to_path(source))
   rename_module.out.add(stem + '.cc')
@@ -1229,8 +1228,8 @@ def create_gcc_preprocess_modules(blueprint, target):
   blueprint.add_module(rename_module)
 
   # Preprocess template file and generates java file
-  preprocess_module = Module('cc_object', bp_module_name + '_preprocess',
-                             target.name)
+  preprocess_module = Module('cc_preprocess_no_configuration',
+                             bp_module_name + '_preprocess', target.name)
   # -E: stop after preprocessing.
   # -P: disable line markers, i.e. '#line 309'
   preprocess_module.cflags.update(['-E', '-P', '-DANDROID'])
@@ -1240,12 +1239,6 @@ def create_gcc_preprocess_modules(blueprint, target):
       if arg == '--define'
   ]
   preprocess_module.cflags.update(defines)
-  # HACK: Specifying compile_multilib to build cc_object only once.
-  # Without this, soong complain to genrule that depends on cc_object when built for 64bit target.
-  # It seems this is because cc object is a module with per-architecture variants and genrule is a
-  # module with default variant. For 64bit target, cc_object is built multiple times for 32/64bit
-  # modes and genrule doesn't know which one to depend on.
-  preprocess_module.compile_multilib = 'first'
   blueprint.add_module(preprocess_module)
 
   # Generates srcjar using soong_zip
@@ -2730,10 +2723,11 @@ def _break_down_blueprint(top_level_blueprint: Blueprint):
   blueprints = {"": Blueprint()}
   for (module_name, module) in top_level_blueprint.modules.items():
     if module.type in [
-        "package", "genrule", "cc_genrule", "java_genrule", "cc_object"
+        "package", "genrule", "cc_genrule", "java_genrule",
+        "cc_preprocess_no_configuration"
     ] and not module.allow_rebasing:
       # Exclude the genrules from the rebasing as there is no support for them.
-      # cc_object is created only for the sake of genrules as an intermediate
+      # cc_preprocess_no_configuration is created only for the sake of genrules as an intermediate
       # target.
       blueprints[""].add_module(module)
       continue
