@@ -12,6 +12,8 @@
   cr-dialog [slot=header] {
     padding-inline-end: var(--dialog-horizontal-padding);
     padding-inline-start: var(--dialog-horizontal-padding);
+    padding-bottom: 16px;
+    line-height: 1;
   }
 
   cr-dialog [slot=body] {
@@ -151,6 +153,10 @@
     margin-inline-end: 10px;
   }
 
+  iron-icon[icon='cr:warning'] {
+    fill: var(--cros-icon-color-warning);
+  }
+
 </style>
 
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
@@ -244,6 +250,7 @@
       [[localizedSelectGestureTitle_]]
     </div>
     <div slot="header">
+      <iron-icon icon="cr:warning"></iron-icon>
       $i18n{faceGazeActionsDialogSelectGestureSubtitle}
     </div>
     <div id="dialogBody" slot="body" scrollable>
