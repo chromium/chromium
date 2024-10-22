@@ -84,6 +84,35 @@ static constexpr auto kDmlFloatDataTypes =
     base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
         {DML_TENSOR_DATA_TYPE_FLOAT32, DML_TENSOR_DATA_TYPE_FLOAT16});
 
+// TODO(crbug.com/335909582): Take an MLNumber rather than a float, and replace
+// all these saturated_casts with conversions handled by MLNumber.
+DML_SCALAR_UNION ToScalarUnion(float value, DML_TENSOR_DATA_TYPE type) {
+  switch (type) {
+    case DML_TENSOR_DATA_TYPE_FLOAT32:
+      return DML_SCALAR_UNION{.Float32 = value};
+    case DML_TENSOR_DATA_TYPE_FLOAT16:
+      // Use UInt16 since DML_SCALAR_UNION does not have a float16 variant. The
+      // bits in this value will correctly be interpreted as float16 by
+      // functions which allow passing a DML_SCALAR_UNION paired with a
+      // corresponding DML_TENSOR_DATA_TYPE of DML_TENSOR_DATA_TYPE_FLOAT16.
+      return DML_SCALAR_UNION{.UInt16 = fp16_ieee_from_fp32_value(value)};
+    case DML_TENSOR_DATA_TYPE_INT8:
+      return DML_SCALAR_UNION{.Int8 = base::saturated_cast<int8_t>(value)};
+    case DML_TENSOR_DATA_TYPE_UINT8:
+      return DML_SCALAR_UNION{.UInt8 = base::saturated_cast<uint8_t>(value)};
+    case DML_TENSOR_DATA_TYPE_INT64:
+      return DML_SCALAR_UNION{.Int64 = base::saturated_cast<int64_t>(value)};
+    case DML_TENSOR_DATA_TYPE_UINT64:
+      return DML_SCALAR_UNION{.UInt64 = base::saturated_cast<uint64_t>(value)};
+    case DML_TENSOR_DATA_TYPE_INT32:
+      return DML_SCALAR_UNION{.Int32 = base::saturated_cast<int32_t>(value)};
+    case DML_TENSOR_DATA_TYPE_UINT32:
+      return DML_SCALAR_UNION{.UInt32 = base::saturated_cast<uint32_t>(value)};
+    default:
+      NOTREACHED() << "[WebNN] This data type is not supported.";
+  }
+}
+
 DML_TENSOR_DATA_TYPE GetTensorDataType(OperandDataType type) {
   switch (type) {
     case OperandDataType::kFloat32:
@@ -1638,7 +1667,8 @@ void CreateOperatorNodeForBatchNormalization(
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
-void CreateOperatorNodeForClamp(const ContextProperties& context_properties,
+void CreateOperatorNodeForClamp(Adapter* adapter,
+                                const ContextProperties& context_properties,
                                 const IdToOperandMap& id_to_operand_map,
                                 const mojom::ClampPtr& clamp,
                                 GraphBuilderDml& graph_builder,
@@ -1654,18 +1684,35 @@ void CreateOperatorNodeForClamp(const ContextProperties& context_properties,
   auto output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
 
-  DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc{
-      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
-      // No scale or bias applies to the input.
-      .ScaleBias = nullptr,
-      .Min = clamp->min_value,
-      .Max = clamp->max_value};
-
+  const GraphNode* clamp_node = nullptr;
   std::array<const NodeOutput*, 1> inputs = {input};
-  const GraphNode* clamp_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_ELEMENT_WISE_CLIP, &clamp_operator_desc, inputs,
-      clamp->label);
+
+  if (adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_5_0)) {
+    DML_ELEMENT_WISE_CLIP1_OPERATOR_DESC clamp_operator_desc{
+        .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+        .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+        // No scale or bias applies to the input.
+        .ScaleBias = nullptr,
+        .MinMaxDataType = output_tensor_desc.GetDataType(),
+        .Min =
+            ToScalarUnion(clamp->min_value, output_tensor_desc.GetDataType()),
+        .Max =
+            ToScalarUnion(clamp->max_value, output_tensor_desc.GetDataType())};
+    clamp_node = graph_builder.CreateOperatorNode(
+        DML_OPERATOR_ELEMENT_WISE_CLIP1, &clamp_operator_desc, inputs,
+        clamp->label);
+  } else {
+    DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc{
+        .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+        .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+        // No scale or bias applies to the input.
+        .ScaleBias = nullptr,
+        .Min = clamp->min_value,
+        .Max = clamp->max_value};
+    clamp_node = graph_builder.CreateOperatorNode(
+        DML_OPERATOR_ELEMENT_WISE_CLIP, &clamp_operator_desc, inputs,
+        clamp->label);
+  }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
       clamp_node, std::move(output_tensor_desc), 0);
@@ -6182,9 +6229,9 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kClamp: {
-        CreateOperatorNodeForClamp(context_properties, id_to_operand_map,
-                                   operation->get_clamp(), graph_builder,
-                                   id_to_node_output_map);
+        CreateOperatorNodeForClamp(adapter.get(), context_properties,
+                                   id_to_operand_map, operation->get_clamp(),
+                                   graph_builder, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kConcat: {

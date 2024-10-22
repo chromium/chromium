@@ -1,4 +1,15 @@
 This is a testharness.js-based test.
-All subtests passed and are omitted for brevity.
-See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
+[FAIL] clamp int8 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'clamp' on 'MLGraphBuilder': Unsupported data type int8 for argument input, must be one of [float32, float16]."
+[FAIL] clamp uint8 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'clamp' on 'MLGraphBuilder': Unsupported data type uint8 for argument input, must be one of [float32, float16]."
+[FAIL] clamp int32 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'clamp' on 'MLGraphBuilder': Unsupported data type int32 for argument input, must be one of [float32, float16]."
+[FAIL] clamp uint32 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] clamp int64 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'clampInput', must be one of [float32, float16, int32]."
+[FAIL] clamp uint64 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint64 for input operand named 'clampInput', must be one of [float32, float16, int32]."
 Harness: the test ran to completion.
+

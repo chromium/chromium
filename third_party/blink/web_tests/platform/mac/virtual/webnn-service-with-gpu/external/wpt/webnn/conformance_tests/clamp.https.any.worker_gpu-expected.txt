@@ -5,6 +5,18 @@ This is a testharness.js-based test.
   assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
 [FAIL] clamp float32 1D tensor default options
   assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp int8 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'clamp' on 'MLGraphBuilder': Unsupported data type int8 for argument input, must be one of [float32, float16]."
+[FAIL] clamp uint8 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'clamp' on 'MLGraphBuilder': Unsupported data type uint8 for argument input, must be one of [float32, float16]."
+[FAIL] clamp int32 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'clamp' on 'MLGraphBuilder': Unsupported data type int32 for argument input, must be one of [float32, float16]."
+[FAIL] clamp uint32 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] clamp int64 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'clampInput', must be one of [float32, float16, int32]."
+[FAIL] clamp uint64 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint64 for input operand named 'clampInput', must be one of [float32, float16, int32]."
 [FAIL] clamp float32 2D tensor default options
   assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
 [FAIL] clamp float32 3D tensor default options
