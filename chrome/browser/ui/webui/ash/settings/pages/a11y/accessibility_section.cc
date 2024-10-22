@@ -1038,6 +1038,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_ASSIGNED_CUSTOM_KEY_COMBO},
       {"faceGazeMacroSubLabelToggleScrollMode",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_TOGGLE_SCROLL_MODE},
+      {"faceGazeMacroSubLabelLongClickLeft",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_LONG_CLICK_LEFT},
       {"faceGazeKeyboardLabelOneModifier",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_KEYBOARD_LABEL_ONE_MODIFIER},
       {"faceGazeKeyboardLabelTwoModifiers",

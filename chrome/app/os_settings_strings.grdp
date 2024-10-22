@@ -1433,6 +1433,9 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_TOGGLE_SCROLL_MODE" desc="This text describes how users can scroll on their computer using their face when in scroll mode.">
     Once you start scroll mode, move your head in the direction you'd like to scroll
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_LONG_CLICK_LEFT" desc="This text describes how users can drag and drop on their computer using their face to hold down or release the left mouse button.">
+    Use the gesture, then move your head to show where you'd like to drop the item. Use the gesture again to drop it.
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_SCREENSHOT" desc="This text describes an action that a user can take on their computer to take a screenshot.">
     Take a screenshot
   </message>

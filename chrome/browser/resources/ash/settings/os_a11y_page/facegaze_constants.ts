@@ -277,6 +277,8 @@ export class FaceGazeUtils {
     switch (macro) {
       case MacroName.TOGGLE_SCROLL_MODE:
         return 'faceGazeMacroSubLabelToggleScrollMode';
+      case MacroName.MOUSE_LONG_CLICK_LEFT:
+        return 'faceGazeMacroSubLabelLongClickLeft';
       default:
         // Other macros do not have a sub-label, return null to indicate this.
         return null;
