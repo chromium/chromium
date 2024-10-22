@@ -61,9 +61,6 @@ class SyncService;
 // Called before the instance is deallocated.
 - (void)shutdown;
 
-// Hides the promo cell. It won't be presented again on this profile.
-- (void)hidePromoCell;
-
 // Updates `shouldShowSigninPromo` based on the sign-in state of the user.
 - (void)updateShouldShowSigninPromo;
 
