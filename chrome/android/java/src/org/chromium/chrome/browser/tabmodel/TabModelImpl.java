@@ -515,6 +515,8 @@ public class TabModelImpl extends TabModelJniBridge {
      *     {@link TabModelObserver#willCloseTab}. This should be {@code TabCloseType.SINGLE} if
      *     closing the tab by itself, {@code TabCloseType.MULTIPLE} if closing multiple tabs or
      *     {@code TabCloseType.ALL} all tabs (which also does additional optimization).
+     * @param undoRunnable The runnable to invoke if the operation is undone. Only applicable if
+     *     {@code allowUndo} and {@code notifyPending} are both true.
      * @return true if the closure succeeds and false otherwise.
      */
     private boolean closeTab(
@@ -523,7 +525,8 @@ public class TabModelImpl extends TabModelJniBridge {
             boolean uponExit,
             boolean allowUndo,
             boolean notifyPending,
-            @TabCloseType int tabCloseType) {
+            @TabCloseType int tabCloseType,
+            @Nullable Runnable undoRunnable) {
         if (tabToClose == null) {
             assert false : "Tab is null!";
             return false;
@@ -539,7 +542,7 @@ public class TabModelImpl extends TabModelJniBridge {
         startTabClosure(tabToClose, recommendedNextTab, uponExit, allowUndo, tabCloseType);
         if (notifyPending && allowUndo) {
             mPendingTabClosureManager.addTabClosureEvent(
-                    Collections.singletonList(tabToClose), /* undoRunnable= */ null);
+                    Collections.singletonList(tabToClose), undoRunnable);
             for (TabModelObserver obs : mObservers) obs.tabPendingClosure(tabToClose);
         }
         if (!allowUndo) {
@@ -553,7 +556,10 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     private void closeMultipleTabs(
-            List<Tab> tabs, boolean allowUndo, boolean saveToTabRestoreService) {
+            List<Tab> tabs,
+            boolean allowUndo,
+            boolean saveToTabRestoreService,
+            @Nullable Runnable undoRunnable) {
         assert (!allowUndo || saveToTabRestoreService)
                 : "saveToTabRestoreService == false is ignored if allowUndo == true.";
 
@@ -570,10 +576,19 @@ public class TabModelImpl extends TabModelJniBridge {
         }
         for (TabModelObserver obs : mObservers) obs.willCloseMultipleTabs(allowUndo, tabs);
         for (Tab tab : tabs) {
-            closeTab(tab, null, false, allowUndo, false, TabCloseType.MULTIPLE);
+            // Pass a null undoRunnable here as we want to attach it to the latter tab closure
+            // event.
+            closeTab(
+                    tab,
+                    null,
+                    false,
+                    allowUndo,
+                    false,
+                    TabCloseType.MULTIPLE,
+                    /* undoRunnable= */ null);
         }
         if (allowUndo) {
-            mPendingTabClosureManager.addTabClosureEvent(tabs, /* undoRunnable= */ null);
+            mPendingTabClosureManager.addTabClosureEvent(tabs, undoRunnable);
             for (TabModelObserver obs : mObservers) obs.multipleTabsPendingClosure(tabs, false);
         }
     }
@@ -589,7 +604,16 @@ public class TabModelImpl extends TabModelJniBridge {
             notifyOnFinishingMultipleTabClosure(mTabs, /* saveToTabRestoreService= */ true);
             while (getCount() > 0) {
                 Tab tab = getTabAt(0);
-                closeTab(tab, null, uponExit, false, false, TabCloseType.ALL);
+                // Pass a null undoRunnable here as we want to attach it to the latter tab closure
+                // event.
+                closeTab(
+                        tab,
+                        null,
+                        uponExit,
+                        false,
+                        false,
+                        TabCloseType.ALL,
+                        /* undoRunnable= */ null);
             }
             return;
         }
@@ -602,7 +626,9 @@ public class TabModelImpl extends TabModelJniBridge {
         }
         while (getCount() > 0) {
             Tab tab = getTabAt(0);
-            closeTab(tab, null, false, true, false, TabCloseType.ALL);
+            // Pass a null undoRunnable here as we want to attach it to the latter tab closure
+            // event.
+            closeTab(tab, null, false, true, false, TabCloseType.ALL, /* undoRunnable= */ null);
         }
 
         if (supportsPendingClosures()) {
@@ -644,12 +670,14 @@ public class TabModelImpl extends TabModelJniBridge {
                         tabClosureParams.uponExit,
                         tabClosureParams.allowUndo,
                         notifyPending,
-                        tabClosureParams.tabCloseType);
+                        tabClosureParams.tabCloseType,
+                        tabClosureParams.undoRunnable);
             case TabCloseType.MULTIPLE:
                 closeMultipleTabs(
                         tabClosureParams.tabs,
                         tabClosureParams.allowUndo,
-                        tabClosureParams.saveToTabRestoreService);
+                        tabClosureParams.saveToTabRestoreService,
+                        tabClosureParams.undoRunnable);
                 return true;
             case TabCloseType.ALL:
                 closeAllTabs(tabClosureParams.uponExit, tabClosureParams.undoRunnable);

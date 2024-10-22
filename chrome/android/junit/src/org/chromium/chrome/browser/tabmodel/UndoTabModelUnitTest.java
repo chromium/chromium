@@ -84,6 +84,7 @@ public class UndoTabModelUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
 
     @Mock private Callback<Tab> mTabSupplierObserver;
+    @Mock private Runnable mUndoRunnable;
 
     private int mNextTabId;
 
@@ -1577,5 +1578,43 @@ public class UndoTabModelUnitTest {
         assertEquals(tab0, model.getCurrentTabSupplier().get());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab0));
         assertEquals(1, model.getTabCountSupplier().get().intValue());
+    }
+
+    @Test
+    @SmallTest
+    public void testUndoRunnable() throws TimeoutException {
+        final boolean isIncognito = false;
+        final TabModelImpl model = createTabModel(isIncognito);
+        createTab(model, isIncognito);
+        createTab(model, isIncognito);
+
+        Tab tab0 = model.getTabAt(0);
+        Tab tab1 = model.getTabAt(1);
+
+        model.closeTabs(
+                TabClosureParams.closeTab(tab0)
+                        .allowUndo(true)
+                        .withUndoRunnable(mUndoRunnable)
+                        .build());
+        cancelTabClosure(model, tab0);
+        verify(mUndoRunnable).run();
+
+        model.closeTabs(
+                TabClosureParams.closeTabs(List.of(tab0, tab1))
+                        .allowUndo(true)
+                        .withUndoRunnable(mUndoRunnable)
+                        .build());
+        cancelTabClosure(model, tab0);
+        // Should not incremement yet.
+        verify(mUndoRunnable).run();
+        cancelTabClosure(model, tab1);
+        verify(mUndoRunnable, times(2)).run();
+
+        model.closeTabs(TabClosureParams.closeAllTabs().withUndoRunnable(mUndoRunnable).build());
+        cancelTabClosure(model, tab0);
+        // Should not incremement yet.
+        verify(mUndoRunnable, times(2)).run();
+        cancelTabClosure(model, tab1);
+        verify(mUndoRunnable, times(3)).run();
     }
 }
