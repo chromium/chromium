@@ -179,15 +179,13 @@ bool InSameAnchorScope(const AnchorKey& key,
   }
   auto anchor_scope_ancestor =
       [name](const LayoutObject& layout_object) -> const Element* {
-    const Element* element = To<Element>(layout_object.GetNode());
-    CHECK(element);
-    while ((element = LayoutTreeBuilderTraversal::ParentElement(*element)) !=
-           nullptr) {
+    for (const Element* element = To<Element>(layout_object.GetNode()); element;
+         element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
       if (IsScopedByElement(*name, *element)) {
-        break;
+        return element;
       }
     }
-    return element;
+    return nullptr;
   };
   return anchor_scope_ancestor(query_object) ==
          anchor_scope_ancestor(anchor_object);
