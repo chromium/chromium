@@ -3950,43 +3950,6 @@
             ]
         }
     ],
-    "CaptureModeEducation": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledShortcutNudge_20231214",
-                    "params": {
-                        "CaptureModeEducationParam": "ShortcutNudge"
-                    },
-                    "enable_features": [
-                        "CaptureModeEducation"
-                    ]
-                },
-                {
-                    "name": "EnabledShortcutTutorial_20231214",
-                    "params": {
-                        "CaptureModeEducationParam": "ShortcutTutorial"
-                    },
-                    "enable_features": [
-                        "CaptureModeEducation"
-                    ]
-                },
-                {
-                    "name": "EnabledQuickSettingsNudge_20231214",
-                    "params": {
-                        "CaptureModeEducationParam": "QuickSettingsNudge"
-                    },
-                    "enable_features": [
-                        "CaptureModeEducation"
-                    ]
-                }
-            ]
-        }
-    ],
     "CastCertificateRevocation": [
         {
             "platforms": [
