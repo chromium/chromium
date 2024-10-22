@@ -5,7 +5,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -452,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
 
 // https://crbug.com/1444959
 // TODO(crbug.com/40919435): Re-enable this test
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_SelectActiveBrowser DISABLED_SelectActiveBrowser
 #else
 #define MAYBE_SelectActiveBrowser SelectActiveBrowser

@@ -21,13 +21,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
-#include "chromeos/crosapi/mojom/message_center.mojom.h"
-#include "chromeos/crosapi/mojom/notification.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 using testing::_;
 using testing::AllOf;
 using testing::Eq;
@@ -64,40 +57,21 @@ class WebAppRelaunchNotificationBrowserTest
   Profile* profile() { return browser()->profile(); }
 
   auto GetAllNotifications() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
     NotificationDisplayServiceFactory::GetForProfile(profile())->GetDisplayed(
         get_displayed_future.GetCallback());
-#else
-    base::test::TestFuture<const std::vector<std::string>&>
-        get_displayed_future;
-    auto& remote = chromeos::LacrosService::Get()
-                       ->GetRemote<crosapi::mojom::MessageCenter>();
-    EXPECT_TRUE(remote.get());
-    remote->GetDisplayedNotifications(get_displayed_future.GetCallback());
-#endif
+
     const auto& notification_ids = get_displayed_future.Get<0>();
     EXPECT_TRUE(get_displayed_future.Wait());
     return notification_ids;
   }
 
   void ClearAllNotifications() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     NotificationDisplayService* service =
         NotificationDisplayServiceFactory::GetForProfile(profile());
-#else
-    base::test::TestFuture<const std::vector<std::string>&>
-        get_displayed_future;
-    auto& service = chromeos::LacrosService::Get()
-                        ->GetRemote<crosapi::mojom::MessageCenter>();
-    EXPECT_TRUE(service.get());
-#endif
+
     for (const std::string& notification_id : GetAllNotifications()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       service->Close(NotificationHandler::Type::TRANSIENT, notification_id);
-#else
-      service->CloseNotification(notification_id);
-#endif
     }
   }
 

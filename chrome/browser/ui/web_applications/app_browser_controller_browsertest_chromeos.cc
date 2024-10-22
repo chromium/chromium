@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -294,8 +293,6 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabLoadNoThemeChange) {
   EXPECT_EQ(GetFrameColor(app_browser_), SK_ColorGREEN);
 }
 
-// App Popups are only used on Chrome OS. See https://crbug.com/1060917.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
                        WhiteThemeForSystemAppPopup) {
   InstallAndLaunchMockPopup();
@@ -360,7 +357,6 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
   InstallAndLaunchMockPopup();
   EXPECT_EQ(app_browser_->window()->GetExtensionsContainer(), nullptr);
 }
-#endif
 
 class AppBrowserControllerChromeUntrustedBrowserTest
     : public InProcessBrowserTest {

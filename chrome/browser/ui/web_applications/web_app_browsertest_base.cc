@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -45,15 +44,11 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "base/containers/extend.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace web_app {
@@ -72,7 +67,7 @@ WebAppBrowserTestBase::WebAppBrowserTestBase(
       update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
           AppIdentityUpdate::kSkipped)) {
   std::vector<base::test::FeatureRef> all_disabled_features = disabled_features;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::Extend(all_disabled_features,
                ash::standalone_browser::GetFeatureRefs());
 #endif
@@ -278,12 +273,6 @@ void WebAppBrowserTestBase::TearDownOnMainThread() {
     base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
     test::LogDebugInfoToConsole(profile_manager->GetLoadedProfiles(), log_time);
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
-    // Make sure all ash browser UI are closed before the test tears down.
-    CloseAllAshBrowserWindows();
-  }
-#endif
 
   WebAppBrowserTestBaseParent::TearDownOnMainThread();
 }
@@ -296,12 +285,6 @@ void WebAppBrowserTestBase::SetUpCommandLine(
 }
 
 void WebAppBrowserTestBase::SetUpOnMainThread() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
-    CHECK(IsWebAppsCrosapiEnabled());
-  }
-#endif
-
   WebAppBrowserTestBaseParent::SetUpOnMainThread();
 
   host_resolver()->AddRule("*", "127.0.0.1");

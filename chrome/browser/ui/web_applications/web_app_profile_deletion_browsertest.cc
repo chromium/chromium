@@ -8,7 +8,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -36,7 +35,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
@@ -127,7 +126,7 @@ class WebAppProfileDeletionBrowserTest : public WebAppBrowserTestBase {
     return deleting_web_contents;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void CreateSession(const AccountId& account_id) {
     auto* session_manager = session_manager::SessionManager::Get();
     session_manager->CreateSession(account_id, account_id.GetUserEmail(),
@@ -155,7 +154,7 @@ class WebAppProfileDeletionBrowserTest : public WebAppBrowserTestBase {
   const std::string kTestUserGaiaId = "9876543210";
   const AccountId test_account_id_ =
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
  private:
   base::AutoReset<bool> skip_preinstalled_;
 };
@@ -175,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest, OsIntegrationRemoved) {
 
   /// Create a new profile and install a web app.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CreateSession(test_account_id_);
   Profile& profile_to_delete = StartUserSession(test_account_id_);
 #else
@@ -209,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
                        CommandsNotScheduledAfterProfileMarkedForDeletion) {
   // Create a new profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CreateSession(test_account_id_);
   Profile& profile_to_delete = StartUserSession(test_account_id_);
 #else
@@ -249,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest_WebAppPublisher,
 
   /// Create a new profile and install a web app.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CreateSession(test_account_id_);
   Profile& profile_to_delete = StartUserSession(test_account_id_);
 #else
@@ -287,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest_WebAppPublisher,
   EXPECT_EQ(app_id_future.Get(), app_id);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40283231): Figure out a way having this test be run on
 // ChromeOS Ash, i.e. properly trigger a browser context shutdown.
 
@@ -402,6 +401,6 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
             IconsDownloadedResult::kPrimaryPageChanged);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

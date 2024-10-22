@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"

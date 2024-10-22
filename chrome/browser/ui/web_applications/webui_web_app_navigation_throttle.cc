@@ -46,7 +46,7 @@ WebUIWebAppNavigationThrottle::MaybeCreateThrottleFor(
     return nullptr;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Exclude system web apps.
   if (browser->app_controller()->system_app()) {
     return nullptr;

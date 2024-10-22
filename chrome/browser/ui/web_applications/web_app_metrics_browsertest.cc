@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,10 +47,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
-#endif
 
 namespace web_app {
 
@@ -196,9 +191,6 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
                        PreinstalledWebAppInTab_RecordsDailyInteraction) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LoopbackCrosapiAppServiceProxy loopback(profile());
-#endif
 
   auto web_app_info =
       WebAppInstallInfo::CreateWithStartUrlForTesting(GetInstallableAppURL());
@@ -242,9 +234,6 @@ IN_PROC_BROWSER_TEST_F(
     WebAppMetricsBrowserTest,
     InstalledWebAppInWindow_RecordsDailyInteractionWithSessionDurations) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LoopbackCrosapiAppServiceProxy loopback(profile());
-#endif
 
   auto web_app_info =
       WebAppInstallInfo::CreateWithStartUrlForTesting(GetInstallableAppURL());

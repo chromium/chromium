@@ -46,7 +46,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/notifier_catalogs.h"
 #endif
 
@@ -619,7 +619,7 @@ void SubAppsServiceImpl::NotifyUninstall(
         kSubAppsUninstallNotificationId, title, message, ui::ImageModel(),
         /*display_source=*/std::u16string(),
         /*origin_url=*/start_url,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT,
             kSubAppsUninstallNotifierId,

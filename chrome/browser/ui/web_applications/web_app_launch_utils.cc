@@ -26,7 +26,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -96,20 +95,13 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_browser_controller_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/constants/chromeos_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -149,7 +141,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   return target_browser;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(
     Browser* browser,
     const webapps::AppId& app_id) {
@@ -161,22 +153,17 @@ const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(
   }
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<AppBrowserController> CreateWebKioskBrowserController(
     Browser* browser,
     WebAppProvider* provider,
     const webapps::AppId& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const ash::SystemWebAppDelegate* system_app =
       GetSystemWebAppDelegate(browser, app_id);
   return std::make_unique<ash::WebKioskBrowserControllerAsh>(
       *provider, browser, app_id, system_app);
-#else
-  // TODO(b/242023891): Add web Kiosk browser controller for Lacros.
-  return nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -185,20 +172,20 @@ std::unique_ptr<AppBrowserController> CreateWebAppBrowserController(
     WebAppProvider* provider,
     const webapps::AppId& app_id) {
   bool should_have_tab_strip_for_swa = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const ash::SystemWebAppDelegate* system_app =
       GetSystemWebAppDelegate(browser, app_id);
   should_have_tab_strip_for_swa =
       system_app && system_app->ShouldHaveTabStrip();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   const bool has_tab_strip =
       !browser->is_type_app_popup() &&
       (should_have_tab_strip_for_swa ||
        provider->registrar_unsafe().IsTabbedWindowModeEnabled(app_id));
   return std::make_unique<WebAppBrowserController>(*provider, browser, app_id,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                                                    system_app,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
                                                    has_tab_strip);
 }
 
@@ -682,7 +669,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
     nav_params.disposition = WindowOpenDisposition::CURRENT_TAB;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Browser* browser = nav_params.browser;
   const std::optional<ash::SystemWebAppType> capturing_system_app_type =
       ash::GetCapturingSystemAppForURL(browser->profile(), nav_params.url);
@@ -703,35 +690,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
     base::debug::DumpWithoutCrashing();
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Highly experimental feature to isolate web app application with a different
-  // storage partition.
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kExperimentalWebAppStoragePartitionIsolation)) {
-    // TODO(crbug.com/40260833): Cover other app launch paths (e.g. restore
-    // apps).
-    auto partition_config = content::StoragePartitionConfig::Create(
-        nav_params.browser->profile(),
-        /*partition_domain=*/kExperimentalWebAppStorageParitionDomain,
-        /*partition_name=*/app_id, /*in_memory=*/false);
-
-    auto site_instance = content::SiteInstance::CreateForFixedStoragePartition(
-        nav_params.browser->profile(), nav_params.url, partition_config);
-
-    content::WebContents::CreateParams params(nav_params.browser->profile(),
-                                              std::move(site_instance));
-    std::unique_ptr<content::WebContents> new_contents =
-        content::WebContents::Create(params);
-    content::NavigationController::LoadURLParams load_url_params(
-        nav_params.url);
-
-    new_contents->GetController().LoadURLWithParams(load_url_params);
-
-    nav_params.contents_to_insert = std::move(new_contents);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   Navigate(&nav_params);
 
@@ -821,13 +780,13 @@ void RecordLaunchMetrics(const webapps::AppId& app_id,
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // System web apps have different launch paths compared with web apps, and
   // those paths aren't configurable. So their launch metrics shouldn't be
   // reported to avoid skewing web app metrics.
   DCHECK(!ash::GetSystemWebAppTypeForAppId(profile, app_id))
       << "System web apps shouldn't be included in web app launch metrics";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (container == apps::LaunchContainer::kLaunchContainerWindow) {
     RecordAppWindowLaunchMetric(profile, app_id, launch_source);
@@ -851,12 +810,12 @@ void UpdateLaunchStats(content::WebContents* web_contents,
       ->sync_bridge_unsafe()
       .SetAppLastLaunchTime(app_id, base::Time::Now());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::GetSystemWebAppTypeForAppId(profile, app_id)) {
     // System web apps doesn't use the rest of the stats.
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Update the launch time in the site engagement service. A recent web
   // app launch will provide an engagement boost to the origin.

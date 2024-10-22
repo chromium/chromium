@@ -16,7 +16,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -35,19 +34,15 @@
 #include "components/content_relationship_verification/digital_asset_links_handler.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/web_app_service.mojom-forward.h"
-#endif
-
 class Browser;
 class BrowserWindowInterface;
 class SkBitmap;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class SystemWebAppDelegate;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace content_relationship_verification {
 class DigitalAssetLinksHandler;
@@ -70,9 +65,9 @@ class WebAppBrowserController : public AppBrowserController,
   WebAppBrowserController(WebAppProvider& provider,
                           Browser* browser,
                           webapps::AppId app_id,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                           const ash::SystemWebAppDelegate* system_app,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
                           bool has_tab_strip);
   WebAppBrowserController(const WebAppBrowserController&) = delete;
   WebAppBrowserController& operator=(const WebAppBrowserController&) = delete;
@@ -113,17 +108,13 @@ class WebAppBrowserController : public AppBrowserController,
   void SetIsolatedWebAppTrueForTesting() override;
   gfx::Rect GetDefaultBounds() const override;
   bool HasReloadButton() const override;
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  const ash::SystemWebAppDelegate* system_app() const override;
+  bool ShouldShowCustomTabBar() const override;
+#else
   bool HasProfileMenuButton() const override;
   bool IsProfileMenuButtonVisible() const override;
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const ash::SystemWebAppDelegate* system_app() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  bool ShouldShowCustomTabBar() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
   bool AlwaysShowToolbarInFullscreen() const override;
@@ -179,10 +170,6 @@ class WebAppBrowserController : public AppBrowserController,
       content_relationship_verification::RelationshipCheckResult result);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnGetAssociatedAndroidPackage(crosapi::mojom::WebAppAndroidPackagePtr);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   // Helper function to return the resolved background color from the manifest
   // given the current state of dark/light mode.
   std::optional<SkColor> GetResolvedManifestBackgroundColor() const;
@@ -196,9 +183,9 @@ class WebAppBrowserController : public AppBrowserController,
   DisplayMode effective_display_mode_ = DisplayMode::kUndefined;
   bool is_isolated_web_app_for_testing_ = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   raw_ptr<const ash::SystemWebAppDelegate> system_app_ = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   mutable std::optional<ui::ImageModel> app_icon_;
 
   // Lazily initialized list of patterns to match URLs against for tabbed mode

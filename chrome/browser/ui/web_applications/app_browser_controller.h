@@ -30,11 +30,11 @@ class BrowserThemePack;
 class CustomThemeSupplier;
 class TabMenuModelFactory;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class SystemWebAppDelegate;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace gfx {
 class Rect;
@@ -225,10 +225,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   virtual bool IsProfileMenuButtonVisible() const;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns the SystemWebAppDelegate if any for this controller.
   virtual const ash::SystemWebAppDelegate* system_app() const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Updates the custom tab bar's visibility based on whether it should be
   // currently visible or not. If |animate| is set, the change will be
