@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/drive/service/fake_drive_service.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/scanner_provider.h"
@@ -42,9 +44,14 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
       std::unique_ptr<manta::proto::ScannerOutput> output,
       manta::MantaStatus status);
 
+  scoped_refptr<base::RefCountedMemory> fetch_actions_jpeg_bytes() {
+    return fetch_actions_jpeg_bytes_;
+  }
+
  private:
   drive::FakeDriveService drive_service_;
 
+  scoped_refptr<base::RefCountedMemory> fetch_actions_jpeg_bytes_;
   manta::ScannerProvider::ScannerProtoResponseCallback fetch_actions_callback_;
 };
 

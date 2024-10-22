@@ -31,6 +31,7 @@ ScannerSystemState FakeScannerProfileScopedDelegate::GetSystemState() const {
 void FakeScannerProfileScopedDelegate::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     manta::ScannerProvider::ScannerProtoResponseCallback callback) {
+  fetch_actions_jpeg_bytes_ = std::move(jpeg_bytes);
   fetch_actions_callback_ = std::move(callback);
 }
 

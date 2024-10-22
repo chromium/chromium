@@ -4,6 +4,8 @@
 
 #include "ash/scanner/scanner_session.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -24,13 +26,23 @@
 #include "base/observer_list.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
+#include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "url/gurl.h"
-
 namespace ash {
 
 namespace {
+// The maximum number of pixels in either width or height of an image to be
+// processed by scanner.
+// We chose a conservative number based on typical laptop screen sizes in case
+// that is required by the backend.
+constexpr int64_t kMaxEdgePixels = 2300;
+
+// The quality attribute (out of 100) for the JPEG compression algorithm used.
+constexpr int kJpegQuality = 90;
 
 // Converts a proto action - a oneof - into the equivalent variant type in
 // Scanner code.
@@ -55,6 +67,57 @@ std::optional<ScannerAction> ProtoActionToVariant(
   NOTREACHED();
 }
 
+// Downscales so that the width and height are both less than kMaxEdgePixels and
+// retains the ratio.
+scoped_refptr<base::RefCountedMemory> DownscaleImageIfNeeded(
+    scoped_refptr<base::RefCountedMemory> original_bytes) {
+  if (original_bytes == nullptr) {
+    return nullptr;
+  }
+
+  SkBitmap img = gfx::JPEGCodec::Decode(*original_bytes);
+  int width = img.width();
+  int height = img.height();
+
+  if (width <= 0 || height <= 0 ||
+      (width <= kMaxEdgePixels && height <= kMaxEdgePixels) ||
+      (width * height <= kMaxEdgePixels * kMaxEdgePixels)) {
+    return original_bytes;
+  }
+
+  if (width > height) {
+    height = kMaxEdgePixels * height / width;
+    width = kMaxEdgePixels;
+  } else {
+    width = kMaxEdgePixels * width / height;
+    height = kMaxEdgePixels;
+  }
+
+  // If the height and width is 0 given that we only try to resize when the
+  // total pixels are less than 2300x2300, it will only be possible if it was
+  // 5 million pixels in one edge and then 1 pixel in the other.
+  //
+  // This is clearly an edge case so we will return nullptr to stop processing
+  // this image.
+  if (height == 0 || width == 0) {
+    return nullptr;
+  }
+
+  std::optional<std::vector<uint8_t>> shrunk_jpeg_bytes =
+      gfx::JPEGCodec::Encode(
+          skia::ImageOperations::Resize(img, skia::ImageOperations::RESIZE_BEST,
+                                        width, height),
+          kJpegQuality);
+
+  if (shrunk_jpeg_bytes.has_value()) {
+    return base::MakeRefCounted<base::RefCountedBytes>(
+        std::move(*shrunk_jpeg_bytes));
+  }
+
+  // Fallback.
+  return original_bytes;
+}
+
 }  // namespace
 
 ScannerSession::ScannerSession(ScannerProfileScopedDelegate* delegate)
@@ -66,7 +129,7 @@ void ScannerSession::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     FetchActionsCallback callback) {
   delegate_->FetchActionsForImage(
-      jpeg_bytes,
+      DownscaleImageIfNeeded(std::move(jpeg_bytes)),
       base::BindOnce(&ScannerSession::OnActionsReturned,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

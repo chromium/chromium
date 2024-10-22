@@ -11,11 +11,17 @@
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -25,6 +31,15 @@ using ::testing::_;
 using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::SizeIs;
+
+scoped_refptr<base::RefCountedMemory> MakeJpegBytes(int width = 100,
+                                                    int height = 100) {
+  gfx::ImageSkia img = gfx::test::CreateImageSkia(width, height);
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(*img.bitmap(), /*quality=*/90);
+  CHECK(data.has_value());
+  return base::MakeRefCounted<base::RefCountedBytes>(std::move(*data));
+}
 
 class MockNewWindowDelegate : public TestNewWindowDelegate {
  public:
@@ -155,6 +170,68 @@ TEST(ScannerSessionTest, RunningNewContactActionOpensUrl) {
       .Run();
 
   EXPECT_TRUE(action_finished_future.Get());
+}
+
+TEST(ScannerSessionTest, ResizesImageHeightToMaxEdge) {
+  FakeScannerProfileScopedDelegate delegate;
+  ScannerSession session(&delegate);
+
+  scoped_refptr<base::RefCountedMemory> bytes =
+      MakeJpegBytes(/*width=*/2300, /*height=*/23000);
+  session.FetchActionsForImage(bytes, base::DoNothing());
+
+  scoped_refptr<base::RefCountedMemory> processed_bytes =
+      delegate.fetch_actions_jpeg_bytes();
+
+  SkBitmap processed_bitmap = gfx::JPEGCodec::Decode(*processed_bytes);
+
+  EXPECT_EQ(processed_bitmap.width(), 230);
+  EXPECT_EQ(processed_bitmap.height(), 2300);
+}
+
+TEST(ScannerSessionTest, ResizesImageWidthToMaxEdge) {
+  FakeScannerProfileScopedDelegate delegate;
+  ScannerSession session(&delegate);
+
+  scoped_refptr<base::RefCountedMemory> bytes =
+      MakeJpegBytes(/*width=*/23000, /*height=*/2300);
+  session.FetchActionsForImage(bytes, base::DoNothing());
+
+  scoped_refptr<base::RefCountedMemory> processed_bytes =
+      delegate.fetch_actions_jpeg_bytes();
+
+  SkBitmap processed_bitmap = gfx::JPEGCodec::Decode(*processed_bytes);
+
+  EXPECT_EQ(processed_bitmap.width(), 2300);
+  EXPECT_EQ(processed_bitmap.height(), 230);
+}
+
+TEST(ScannerSessionTest, NoResizeIfWithinLimit) {
+  FakeScannerProfileScopedDelegate delegate;
+  ScannerSession session(&delegate);
+
+  scoped_refptr<base::RefCountedMemory> bytes =
+      MakeJpegBytes(/*width=*/1000, /*height=*/1000);
+  session.FetchActionsForImage(bytes, base::DoNothing());
+
+  scoped_refptr<base::RefCountedMemory> processed_bytes =
+      delegate.fetch_actions_jpeg_bytes();
+
+  EXPECT_EQ(bytes, processed_bytes);
+}
+
+TEST(ScannerSessionTest, DoesNotResizeIfTotalPixelSizeLowerThanMax) {
+  FakeScannerProfileScopedDelegate delegate;
+  ScannerSession session(&delegate);
+
+  scoped_refptr<base::RefCountedMemory> bytes =
+      MakeJpegBytes(/*width=*/4600, /*height=*/1100);
+  session.FetchActionsForImage(bytes, base::DoNothing());
+
+  scoped_refptr<base::RefCountedMemory> processed_bytes =
+      delegate.fetch_actions_jpeg_bytes();
+
+  EXPECT_EQ(bytes, processed_bytes);
 }
 
 }  // namespace
