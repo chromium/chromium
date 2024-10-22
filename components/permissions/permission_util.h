@@ -111,18 +111,18 @@ class PermissionUtil {
   static GURL GetLastCommittedOriginAsURL(
       content::RenderFrameHost* render_frame_host);
 
-  // Helper method to convert `PermissionType` to `ContentSettingType`.
+  // Helper method to convert `PermissionType` to `ContentSettingsType`.
   // If `PermissionType` is not supported or found, returns
   // ContentSettingsType::DEFAULT.
-  static ContentSettingsType PermissionTypeToContentSettingTypeSafe(
+  static ContentSettingsType PermissionTypeToContentSettingsTypeSafe(
       blink::PermissionType permission);
 
-  // Helper method to convert `PermissionType` to `ContentSettingType`.
-  static ContentSettingsType PermissionTypeToContentSettingType(
+  // Helper method to convert `PermissionType` to `ContentSettingsType`.
+  static ContentSettingsType PermissionTypeToContentSettingsType(
       blink::PermissionType permission);
 
-  // Helper method to convert `ContentSettingType` to `PermissionType`.
-  static blink::PermissionType ContentSettingTypeToPermissionType(
+  // Helper method to convert `ContentSettingsType` to `PermissionType`.
+  static blink::PermissionType ContentSettingsTypeToPermissionType(
       ContentSettingsType permission);
 
   // Helper method to convert PermissionStatus to ContentSetting.

@@ -78,7 +78,7 @@ class ChromePermissionManagerTest : public ChromeRenderViewHostTestHarness {
         ->GetSettingsMap(GetBrowserContext())
         ->SetContentSettingDefaultScope(
             url, url,
-            permissions::PermissionUtil::PermissionTypeToContentSettingType(
+            permissions::PermissionUtil::PermissionTypeToContentSettingsType(
                 permission),
             permissions::PermissionUtil::PermissionStatusToContentSetting(
                 status));

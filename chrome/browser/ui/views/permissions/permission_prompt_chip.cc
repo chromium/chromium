@@ -130,7 +130,8 @@ void PermissionPromptChip::PreemptivelyResolvePermissionRequest(
       ContentSettingsType type = request->GetContentSettingsType();
 
       blink::PermissionType permission_type =
-          permissions::PermissionUtil::ContentSettingTypeToPermissionType(type);
+          permissions::PermissionUtil::ContentSettingsTypeToPermissionType(
+              type);
 
       // Pre-ignore is allowed only for the quiet chip. The quiet chip is
       // enabled only for `NOTIFICATIONS` and `GEOLOCATION`.

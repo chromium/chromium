@@ -700,7 +700,7 @@ void PageInfo::OnSitePermissionChanged(
         web_contents_->GetBrowserContext()->GetPermissionController();
 
     blink::PermissionType permission_type =
-        permissions::PermissionUtil::ContentSettingTypeToPermissionType(type);
+        permissions::PermissionUtil::ContentSettingsTypeToPermissionType(type);
 
     // An origin should subscribe to a permission status change from the top
     // frame. Hence we verify only the main frame.
@@ -1219,7 +1219,7 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
         PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED);
     if (permissions::PermissionUtil::IsPermission(permission_info.type)) {
       permission_result = delegate_->GetPermissionResult(
-          permissions::PermissionUtil::ContentSettingTypeToPermissionType(
+          permissions::PermissionUtil::ContentSettingsTypeToPermissionType(
               permission_info.type),
           url::Origin::Create(site_url_), permission_info.requesting_origin);
     } else if (permission_info.type ==

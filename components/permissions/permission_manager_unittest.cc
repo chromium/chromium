@@ -100,7 +100,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     EXPECT_EQ(expected,
               GetPermissionManager()
                   ->GetPermissionStatusInternal(
-                      PermissionUtil::PermissionTypeToContentSettingType(type),
+                      PermissionUtil::PermissionTypeToContentSettingsType(type),
                       /*render_process_host=*/nullptr,
                       /*render_frame_host=*/nullptr, url_, url_,
                       should_include_device_status)
@@ -134,7 +134,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
                      PermissionStatus value) {
     GetHostContentSettingsMap()->SetContentSettingDefaultScope(
         requesting_origin, embedding_origin,
-        permissions::PermissionUtil::PermissionTypeToContentSettingType(type),
+        permissions::PermissionUtil::PermissionTypeToContentSettingsType(type),
         permissions::PermissionUtil::PermissionStatusToContentSetting(value));
   }
 

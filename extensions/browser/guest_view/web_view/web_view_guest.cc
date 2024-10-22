@@ -1148,7 +1148,7 @@ bool WebViewGuest::RequiresSslInterstitials() const {
 bool WebViewGuest::IsPermissionRequestable(ContentSettingsType type) const {
   CHECK(permissions::PermissionUtil::IsPermission(type));
   const blink::PermissionType permission_type =
-      permissions::PermissionUtil::ContentSettingTypeToPermissionType(type);
+      permissions::PermissionUtil::ContentSettingsTypeToPermissionType(type);
 
   switch (permission_type) {
     case blink::PermissionType::GEOLOCATION:
@@ -1179,7 +1179,7 @@ std::optional<content::PermissionResult> WebViewGuest::OverridePermissionResult(
     // Therefore, Controlled Frame decides what the immediate permission result
     // is.
     const blink::PermissionType permission_type =
-        permissions::PermissionUtil::ContentSettingTypeToPermissionType(type);
+        permissions::PermissionUtil::ContentSettingsTypeToPermissionType(type);
     if (permission_type == blink::PermissionType::GEOLOCATION) {
       return content::PermissionResult(
           content::PermissionStatus::ASK,

@@ -1244,7 +1244,7 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
       result = profile->GetPermissionController()
                    ->GetPermissionResultForOriginWithoutContext(
                        permissions::PermissionUtil::
-                           ContentSettingTypeToPermissionType(content_type),
+                           ContentSettingsTypeToPermissionType(content_type),
                        url::Origin::Create(origin));
     } else {
       permissions::PermissionDecisionAutoBlocker* auto_blocker =

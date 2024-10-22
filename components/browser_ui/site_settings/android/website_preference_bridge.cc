@@ -229,7 +229,7 @@ ContentSetting GetPermissionSettingForOrigin(
         browser_context->GetPermissionController();
     content::PermissionResult result =
         permission_controller->GetPermissionResultForOriginWithoutContext(
-            permissions::PermissionUtil::ContentSettingTypeToPermissionType(
+            permissions::PermissionUtil::ContentSettingsTypeToPermissionType(
                 content_type),
             url::Origin::Create(requesting_origin),
             url::Origin::Create(embedding_origin));

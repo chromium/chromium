@@ -291,7 +291,7 @@ CreateSecurityDescriptionForSafetyTip(
   return security_description;
 }
 
-// Gets the actual setting for a ContentSettingType, taking into account what
+// Gets the actual setting for a ContentSettingsType, taking into account what
 // the default setting value is and whether Html5ByDefault is enabled.
 ContentSetting GetEffectiveSetting(ContentSettingsType type,
                                    ContentSetting setting,
@@ -873,7 +873,7 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
         PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED);
     if (permissions::PermissionUtil::IsPermission(permission.type)) {
       blink::PermissionType permission_type =
-          permissions::PermissionUtil::ContentSettingTypeToPermissionType(
+          permissions::PermissionUtil::ContentSettingsTypeToPermissionType(
               permission.type);
       permission_result = delegate->GetPermissionResult(permission_type);
     } else if (permission.type == ContentSettingsType::FEDERATED_IDENTITY_API) {
