@@ -10,7 +10,6 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//headless/headless.gni")
 import("//pdf/features.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/webui/webui_features.gni")
@@ -468,6 +467,11 @@ template("chrome_extra_paks") {
       deps += [ "//chrome/browser/resources/discards:resources" ]
     }
 
+    if (!is_android) {
+      sources += [ "$root_gen_dir/components/headless/command_handler/headless_command_resources.pak" ]
+      deps += [ "//components/headless/command_handler" ]
+    }
+
     if (enable_extensions_core) {
       sources += [
         "$root_gen_dir/extensions/extensions_renderer_resources.pak",
@@ -491,11 +495,6 @@ template("chrome_extra_paks") {
     if (enable_webui_tab_strip) {
       sources += [ "$root_gen_dir/chrome/tab_strip_resources.pak" ]
       deps += [ "//chrome/browser/resources/tab_strip:resources" ]
-    }
-
-    if (headless_enable_commands && !is_android) {
-      sources += [ "$root_gen_dir/components/headless/command_handler/headless_command_resources.pak" ]
-      deps += [ "//components/headless/command_handler" ]
     }
 
     if (enable_webui_certificate_viewer) {
