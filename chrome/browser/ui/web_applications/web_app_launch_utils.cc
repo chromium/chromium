@@ -445,6 +445,61 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
   }
 }
 
+bool MaybeHandleFocusExistingOrNavigateExisting(Profile* profile,
+                                                const GURL& launch_url,
+                                                content::WebContents* contents,
+                                                const webapps::AppId& app_id,
+                                                WebAppRegistrar& registrar) {
+  LaunchHandler::ClientMode client_mode = registrar.GetAppById(app_id)
+                                              ->launch_handler()
+                                              .value_or(LaunchHandler())
+                                              .client_mode;
+  if (client_mode != LaunchHandler::ClientMode::kFocusExisting &&
+      client_mode != LaunchHandler::ClientMode::kNavigateExisting) {
+    return false;
+  }
+
+  blink::mojom::DisplayMode display_mode =
+      registrar.GetEffectiveDisplayModeFromManifest(app_id);
+  CHECK(display_mode != blink::mojom::DisplayMode::kBrowser);
+  CHECK(display_mode != blink::mojom::DisplayMode::kTabbed);
+
+  // Look for a pre-existing app in the background.
+  std::optional<std::pair<Browser*, int>> existing_browser_and_tab =
+      GetAppHostForCapturing(*profile, app_id,
+                             mojom::UserDisplayMode::kStandalone);
+  if (!existing_browser_and_tab.has_value()) {
+    return false;
+  }
+
+  content::WebContents* preexisting_web_contents =
+      existing_browser_and_tab->first->tab_strip_model()->GetWebContentsAt(
+          existing_browser_and_tab->second);
+  CHECK(preexisting_web_contents != contents);
+
+  // We've found a browser in the background. We need to focus it and enqueue
+  // launch params. But first we ensure that the contents (for which the Intent
+  // Picker was clicked) goes away without its containing browser closing.
+  Browser* foreground_browser = chrome::FindBrowserWithTab(contents);
+  if (foreground_browser->tab_strip_model()->count() == 1) {
+    chrome::NewTab(foreground_browser);
+  }
+
+  contents->Close();
+
+  preexisting_web_contents->Focus();
+  if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
+    NavigateParams nav_params(existing_browser_and_tab->first, launch_url,
+                              ui::PageTransition::PAGE_TRANSITION_LINK);
+    Navigate(&nav_params);
+  }
+
+  EnqueueLaunchParams(preexisting_web_contents, app_id, launch_url,
+                      /*wait_for_navigation_to_complete=*/client_mode ==
+                          LaunchHandler::ClientMode::kNavigateExisting);
+  return true;
+}
+
 Browser* ReparentWebAppForActiveTab(Browser* browser) {
   std::optional<webapps::AppId> app_id = GetWebAppForActiveTab(browser);
   if (!app_id) {
@@ -489,6 +544,19 @@ Browser* ReparentWebContentsIntoAppBrowser(
   RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
                       apps::LaunchSource::kFromReparenting, launch_url,
                       contents);
+
+  // The current browser, in this situation, is a browser tab, so std::nullopt
+  // is appropriate for `current_browser_app_id`.
+  if (IsNavigationCapturingReimplExperimentEnabled(
+          /*current_browser_app_id=*/std::nullopt, launch_url, app_id)) {
+    // The Intent Picker needs to respect kFocusExisting and kNavigateExisting,
+    // by focusing such apps in the background instead of re-parenting the
+    // current contents.
+    if (MaybeHandleFocusExistingOrNavigateExisting(
+            profile, launch_url, contents, app_id, registrar)) {
+      return nullptr;
+    }
+  }
 
   if (web_app->launch_handler()
           .value_or(LaunchHandler{})
