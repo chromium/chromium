@@ -11,6 +11,7 @@
 
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/signin/batch_upload_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -18,15 +19,17 @@
 #include "chrome/grit/batch_upload_resources.h"
 #include "chrome/grit/batch_upload_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/favicon_base/favicon_url_parser.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   // Set up the chrome://batch-upload source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIBatchUploadHost);
+      profile, chrome::kChromeUIBatchUploadHost);
 
   // Add required resources.
   webui::SetupWebUIDataSource(
@@ -42,6 +45,10 @@ BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
+
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
 }
 
 BatchUploadUI::~BatchUploadUI() = default;
