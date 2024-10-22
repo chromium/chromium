@@ -78,7 +78,8 @@ int DesiredIndexTableLen(int32_t storage_size) {
 }
 
 int MaxStorageSizeForTable(int table_len) {
-  return table_len * (k64kEntriesStore / kBaseTableLen);
+  return std::min(int64_t{std::numeric_limits<int32_t>::max()},
+                  int64_t{table_len} * (k64kEntriesStore / kBaseTableLen));
 }
 
 size_t GetIndexSize(int table_len) {
