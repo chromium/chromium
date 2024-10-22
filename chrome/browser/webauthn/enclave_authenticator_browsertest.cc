@@ -2013,7 +2013,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   // The modal UI should not be shown yet.
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kConditionalMediation);
+            AuthenticatorRequestDialogModel::Step::kNotStarted);
 
   // Resolve the connection and wait for the next step.
   model_observer()->SetStepToObserve(
@@ -2025,6 +2025,56 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   registration_state_result.key_version = kSecretVersion;
   std::move(connection_cb).Run(std::move(registration_state_result));
   model_observer()->WaitForStep();
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       ConditionalAssertionWhileFullySetUp) {
+  // This test reproduces crbug.com/374366241. It performs a conditional request
+  // to generate an assertion and then triggers another conditional UI request.
+  // At one point this crashed.
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  security_domain_service_->pretend_there_are_members();
+  AddTestPasskeyToModel();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionConditionalUI);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kConditionalMediation);
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnAccountPreselectedIndex(0);
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->StoreKeys(kGaiaId,
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  content::ExecuteScriptAsync(web_contents, kGetAssertionConditionalUI);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kConditionalMediation);
+  // Not crashing here is success.
+  dialog_model()->OnAccountPreselectedIndex(0);
 }
 
 // Tests tapping a passkey from autofill after the trusted vault service times
@@ -2070,11 +2120,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kConditionalMediation);
 
-  // Tap the passkey. The step should still be conditional mediation while
-  // autofill shows a loading indicator.
+  // Tap the passkey. The step should be kNotStarted while autofill shows a
+  // loading indicator.
   dialog_model()->OnAccountPreselectedIndex(0);
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kConditionalMediation);
+            AuthenticatorRequestDialogModel::Step::kNotStarted);
 
   // Wait for the request to time out.
   model_observer()->SetStepToObserve(
