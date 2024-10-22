@@ -4999,7 +4999,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.Toolbar.BitmapCapture" enum="ToolbarCaptureType"
     expires_after="2025-04-13">
   <owner>skym@chromium.org</owner>
-  <owner>seacow@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
   <summary>
     Recorded when a toolbar view draws itself to a bitmap such that it can be
     passed to the compositor and drawn by native. Performing a bitmap capture is
@@ -5009,23 +5009,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TopToolbar.AllowCaptureReason"
-    enum="TopToolbarAllowCaptureReason" expires_after="2024-01-14">
+    enum="TopToolbarAllowCaptureReason" expires_after="2025-10-22">
   <owner>skym@chromium.org</owner>
-  <owner>seacow@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
   <summary>
     Recorded on #isDirty calls that return true. Because #isDirty() is used to
     control when bitmap captures happen, this histogram holds the reason that
     the capture was allowed. Note that there there's an assert that calls into
     #isDirty() from #getBitmap(), which can cause these to be double counted. If
     Canary starts running assert code, this will cause this metric to double in
-    report volume.
+    report volume. Was expired from 2024-01 to 2024-10.
   </summary>
 </histogram>
 
 <histogram name="Android.TopToolbar.BlockCaptureReason"
     enum="TopToolbarBlockCaptureReason" expires_after="2025-03-02">
   <owner>skym@chromium.org</owner>
-  <owner>seacow@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
   <summary>
     Recorded on #isDirty calls that return false. Because #isDirty() is used to
     control when bitmap captures happen, this histogram holds the reason that
@@ -5034,9 +5034,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TopToolbar.InMotionStage" enum="ToolbarInMotionStage"
-    expires_after="2023-12-31">
+    expires_after="2025-10-22">
   <owner>skym@chromium.org</owner>
-  <owner>seacow@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
   <summary>
     Captures the stages reached in the Toolbar's in motion handling. Recorded
     every time the in motion state of the compositor changes, before the event
@@ -5044,19 +5044,19 @@ chromium-metrics-reviews@google.com.
     and any gesture that the CompositorViewHolder is processing. This metric
     shows how often the in motion handling had to request the toolbar's capture
     readiness state, which is a computationally expensive operation, and could
-    slow down input handling.
+    slow down input handling. Was expired from 2024-01 to 2024-10.
   </summary>
 </histogram>
 
 <histogram name="Android.TopToolbar.SnapshotDifference"
-    enum="ToolbarSnapshotDifference" expires_after="2023-05-16">
+    enum="ToolbarSnapshotDifference" expires_after="2025-10-22">
   <owner>skym@chromium.org</owner>
-  <owner>seacow@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
   <summary>
     When the allow reason for a bitmap capture was that the snapshots were
     different, then this histogram is recorded with the reason that the
     snapshots were different. Often there may be multiple differences but one is
-    arbitrarily and consistently picked.
+    arbitrarily and consistently picked. Was expired from 2024-01 to 2024-10.
   </summary>
 </histogram>
 
