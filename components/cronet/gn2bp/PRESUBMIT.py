@@ -12,13 +12,13 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckGenerateBuildScriptsOutput(input_api, output_api):
-    presubmit_script_path = input_api.PresubmitLocalPath()
-    return input_api.RunTests(
-        input_api.canned_checks.GetUnitTests(
-            input_api,
-            output_api,
-            unit_tests=[
-                input_api.os_path.join(presubmit_script_path, 'tests',
-                                       'gen_android_bp_test.py')
-            ],
-        ))
+  presubmit_script_path = input_api.PresubmitLocalPath()
+  return input_api.RunTests(
+      input_api.canned_checks.GetUnitTests(
+          input_api,
+          output_api,
+          unit_tests=[
+              input_api.os_path.join(presubmit_script_path, 'tests',
+                                     'gen_android_bp_test.py')
+          ],
+      ))
