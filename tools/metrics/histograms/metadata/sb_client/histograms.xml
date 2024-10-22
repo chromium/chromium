@@ -711,17 +711,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.LocalModelDetectsPhishing"
+<histogram name="SBClientPhishing.LocalModelDetectsPhishing{RequestType}"
     enum="BooleanIsPhishing" expires_after="2025-03-09">
-  <owner>drubery@chromium.org</owner>
+  <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records whether the local phishing detection model detects phishing. This
-    histogram is logged each time the model is run (roughly on every navigation
-    to a non-allowlisted site)
+    Records whether the local phishing detection model detects phishing for a
+    specific {RequestType}. This histogram is logged each time the model is run
+    (roughly on every navigation to a non-allowlisted site)
 
     This metric is used to populate a dashboard on go/crsb-site.
   </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.MatchHighConfidenceAllowlist{RequestType}"

@@ -2092,6 +2092,8 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
   // Check that the page is phishing and triggers a ping.
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.LocalModelDetectsPhishing", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.LocalModelDetectsPhishing.TriggerModel", true, 1);
 
   SetRTResponseInCacheManager(/*is_enforced=*/true);
 
