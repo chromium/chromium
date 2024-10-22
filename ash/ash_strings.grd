@@ -7963,12 +7963,12 @@ New install
       <message name="IDS_ASH_DISABLE_TOUCHPAD_DIALOG_DESCRIPTION" desc="Content of the dialog for disabling the internal touchpad.">
         The built-in touchpad is disabled. Use your keyboard or another pointer device to confirm the change.
 
-Otherwise the built-in touchpad will be re-enabled in 30 seconds.
+Otherwise the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS">$1<ex>30 seconds</ex></ph>.
       </message>
       <message name="IDS_ASH_DISABLE_TOUCHPAD_DIALOG_EXTERNAL_MOUSE_DESCRIPTION" desc="Sign out button.">
         The built-in touchpad is disabled because a mouse is connected. Use the mouse or keyboard to confirm the change.
 
-Otherwise the built-in touchpad will be re-enabled in 30 seconds.
+Otherwise the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS">$1<ex>30 seconds</ex></ph>.
       </message>
 
       <!-- Guest session confirmation dialog -->

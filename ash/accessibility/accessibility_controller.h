@@ -629,13 +629,15 @@ class ASH_EXPORT AccessibilityController
   // pointer in the variable |confirmation_dialog_| below.
   // This is also used to show the dialog for Select to Speak's enhanced network
   // voices.
-  void ShowConfirmationDialog(const std::u16string& title,
-                              const std::u16string& description,
-                              const std::u16string& confirm_name,
-                              const std::u16string& cancel_name,
-                              base::OnceClosure on_accept_callback,
-                              base::OnceClosure on_cancel_callback,
-                              base::OnceClosure on_close_callback);
+  void ShowConfirmationDialog(
+      const std::u16string& title,
+      const std::u16string& description,
+      const std::u16string& confirm_name,
+      const std::u16string& cancel_name,
+      base::OnceClosure on_accept_callback,
+      base::OnceClosure on_cancel_callback,
+      base::OnceClosure on_close_callback,
+      std::optional<int> timeout_seconds = std::nullopt);
   gfx::Rect GetConfirmationDialogBoundsInScreen();
 
   void PreviewFlashNotification() const;

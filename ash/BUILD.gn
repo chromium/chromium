@@ -3716,6 +3716,8 @@ test("ash_unittests") {
     "accessibility/switch_access/point_scan_controller_unittest.cc",
     "accessibility/test_event_recorder.cc",
     "accessibility/test_event_recorder.h",
+    "accessibility/ui/accessibility_confirmation_dialog.cc",
+    "accessibility/ui/accessibility_confirmation_dialog.h",
     "accessibility/ui/accessibility_focus_ring_controller_unittest.cc",
     "accessibility/ui/accessibility_focus_ring_group_unittest.cc",
     "accessibility/ui/accessibility_highlight_controller_unittest.cc",

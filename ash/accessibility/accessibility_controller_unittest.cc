@@ -16,6 +16,7 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
+#include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -64,8 +65,9 @@ namespace {
 constexpr char kDictationLanguageUpgradedNudgeId[] =
     "dictation_language_upgraded.nudge_id";
 
-const int kUsbMouseDeviceId = 20;
+const int kDialogTimeoutSeconds = 30;
 const int kInternalTouchpadDeviceId = 30;
+const int kUsbMouseDeviceId = 20;
 
 ui::InputDevice GetSampleMouseUsb() {
   return {kUsbMouseDeviceId, ui::INPUT_DEVICE_USB, "SampleMouseUsb"};
@@ -2390,7 +2392,8 @@ TEST_F(AccessibilityControllerSelectToSpeakKeyboardShortcutTest,
 
 class AccessibilityControllerDisableTouchpadTest : public AshTestBase {
  protected:
-  AccessibilityControllerDisableTouchpadTest() = default;
+  AccessibilityControllerDisableTouchpadTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   AccessibilityControllerDisableTouchpadTest(
       const AccessibilityControllerDisableTouchpadTest&) = delete;
   AccessibilityControllerDisableTouchpadTest& operator=(
@@ -2414,6 +2417,13 @@ class AccessibilityControllerDisableTouchpadTest : public AshTestBase {
 
   PrefService* prefs() {
     return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  }
+
+  base::RepeatingTimer& confirmation_dialog_timer() {
+    return Shell::Get()
+        ->accessibility_controller()
+        ->GetConfirmationDialogForTest()
+        ->timer_;
   }
 
   DisableTouchpadEventRewriter* disable_touchpad_event_rewriter() {
@@ -2595,6 +2605,45 @@ TEST_F(AccessibilityControllerDisableTouchpadTest,
   SimulateExternalMouseConnected();
   ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
   ASSERT_TRUE(disable_touchpad_event_rewriter()->IsEnabled());
+}
+
+TEST_F(AccessibilityControllerDisableTouchpadTest, DialogClosesAfter30Seconds) {
+  SimulateOnlyInternalTouchpadConnected();
+  // Ensure confirmation dialog closes after 30 seconds when trackpad mode
+  // is set to "on mouse connected".
+  prefs()->SetInteger(
+      prefs::kAccessibilityDisableTrackpadMode,
+      static_cast<int>(DisableTouchpadMode::kOnExternalMouseConnected));
+
+  ASSERT_FALSE(disable_touchpad_event_rewriter()->IsEnabled());
+
+  SimulateExternalMouseConnected();
+  ASSERT_TRUE(disable_touchpad_event_rewriter()->IsEnabled());
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(confirmation_dialog_timer().IsRunning());
+
+  for (int i = 0; i < kDialogTimeoutSeconds; ++i) {
+    ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+    task_environment()->FastForwardBy(base::Seconds(1));
+  }
+
+  ASSERT_FALSE(disable_touchpad_event_rewriter()->IsEnabled());
+  ASSERT_EQ(nullptr, controller()->GetConfirmationDialogForTest());
+
+  // Ensure confirmation dialog closes after 30 seconds when trackpad mode
+  // is set to "always".
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTouchpadMode::kAlways));
+  ASSERT_TRUE(disable_touchpad_event_rewriter()->IsEnabled());
+  ASSERT_TRUE(confirmation_dialog_timer().IsRunning());
+
+  for (int i = 0; i < kDialogTimeoutSeconds; ++i) {
+    ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+    task_environment()->FastForwardBy(base::Seconds(1));
+  }
+
+  ASSERT_FALSE(disable_touchpad_event_rewriter()->IsEnabled());
+  ASSERT_EQ(nullptr, controller()->GetConfirmationDialogForTest());
 }
 
 }  // namespace ash

@@ -27,6 +27,7 @@
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
+#include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/accessibility/ui/accessibility_highlight_controller.h"
 #include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
 #include "ash/color_enhancement/color_enhancement_controller.h"
@@ -117,6 +118,8 @@ using session_manager::SessionState;
 namespace ash {
 namespace {
 
+// How much time before the time out dialog should close.
+const int kDialogTimeoutSeconds = 30;
 // How much distance to travel with each generated scroll event.
 const int kScrollDelta = 40;
 
@@ -3016,12 +3019,20 @@ void AccessibilityController::ShowDisableTouchpadDialog() {
           prefs::kAccessibilityDisableTrackpadMode));
   const std::u16string title =
       l10n_util::GetStringUTF16(IDS_ASH_DISABLE_TOUCHPAD_DIALOG_TITLE);
+
+  // Construct the timeout message, leaving a placeholder for the countdown
+  // timer so that the string does not need to be completely rebuilt every
+  // timer tick.
+  constexpr char16_t kTimeoutPlaceHolder[] = u"$1";
+
   const std::u16string description =
       disable_touchpad_mode == DisableTouchpadMode::kAlways
-          ? l10n_util::GetStringUTF16(
-                IDS_ASH_DISABLE_TOUCHPAD_DIALOG_DESCRIPTION)
-          : l10n_util::GetStringUTF16(
-                IDS_ASH_DISABLE_TOUCHPAD_DIALOG_EXTERNAL_MOUSE_DESCRIPTION);
+          ? l10n_util::GetStringFUTF16(
+                IDS_ASH_DISABLE_TOUCHPAD_DIALOG_DESCRIPTION,
+                kTimeoutPlaceHolder)
+          : l10n_util::GetStringFUTF16(
+                IDS_ASH_DISABLE_TOUCHPAD_DIALOG_EXTERNAL_MOUSE_DESCRIPTION,
+                kTimeoutPlaceHolder);
 
   ShowConfirmationDialog(
       title, description, l10n_util::GetStringUTF16(IDS_ASH_CONFIRM_BUTTON),
@@ -3031,7 +3042,8 @@ void AccessibilityController::ShowDisableTouchpadDialog() {
       base::BindOnce(&AccessibilityController::OnDisableTouchpadDialogDismissed,
                      GetWeakPtr()),
       base::BindOnce(&AccessibilityController::OnDisableTouchpadDialogDismissed,
-                     GetWeakPtr()));
+                     GetWeakPtr()),
+      kDialogTimeoutSeconds);
 }
 
 void AccessibilityController::OnDisableTouchpadDialogAccepted() {
@@ -3455,7 +3467,8 @@ void AccessibilityController::ShowConfirmationDialog(
     const std::u16string& cancel_name,
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback,
-    base::OnceClosure on_close_callback) {
+    base::OnceClosure on_close_callback,
+    std::optional<int> timeout_seconds) {
   if (confirmation_dialog_) {
     // If a dialog is already being shown we do not show a new one.
     // Instead, run the on_close_callback on the new dialog to indicate
@@ -3467,7 +3480,7 @@ void AccessibilityController::ShowConfirmationDialog(
   auto* dialog = new AccessibilityConfirmationDialog(
       title, description, confirm_name, cancel_name,
       std::move(on_accept_callback), std::move(on_cancel_callback),
-      std::move(on_close_callback));
+      std::move(on_close_callback), timeout_seconds);
   // Save the dialog so it doesn't go out of scope before it is
   // used and closed.
   confirmation_dialog_ = dialog->GetWeakPtr();
