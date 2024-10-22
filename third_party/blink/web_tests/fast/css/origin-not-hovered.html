@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<style>
+
+body { background: white; margin: 0; }
+#b {
+  position: absolute; z-index: 0;
+  left: 0; top: 0; width: 100px; height: 100px;
+  background: cyan;
+}
+#b:hover { background: orange; width: 150px; }
+
+</style>
+</head>
+<body>
+<div id=b></div>
+<script>
+
+promise_test(async () => {
+  await waitForCompositorCommit();
+  await new Promise(r => { requestAnimationFrame(r); });
+  assert_equals(b.clientWidth, 100);
+});
+
+</script>
+</body>
+</html>
