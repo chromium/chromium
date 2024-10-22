@@ -280,17 +280,31 @@ message Tab {
   PageContext page_context = 4;
 }
 
+// The site engagement information for a single site.
+message SiteEngagementEntry {
+  // The URL of the site.
+  string url = 1;
+
+  // On a scale of 0 to 100, the relative score of engagement with the site.
+  float score = 2;
+}
+
+// The site engagement information for the user.
+message SiteEngagement {
+  // The site engagement information for the user.
+  repeated SiteEngagementEntry entries = 1;
+}
+
 // All the information collected from the browser along with the user input
 // (for features like Compose).
 message BrowserCollectedInformation {
   // The page context of the page the model is acting on.
   PageContext page_context = 1;
 
-  // The inner text of the page the model is acting on (excluding x-origin
-  // frames)
+  // Deprecated, but still sent by older clients. Use page_context instead.
   string inner_text = 2;
 
-  // The offset of the focused element into the |inner_text|.
+  // Deprecated, but still sent by older clients. Use page_context instead.
   uint64 inner_text_offset = 3;
 
   // Custom text that a prototyper can inject into prompts. If the browser
@@ -315,6 +329,9 @@ message BrowserCollectedInformation {
 
   // All pre-existing tab groups.
   repeated TabGroup pre_existing_tab_groups = 9;
+
+  // The site engagement information for the user.
+  SiteEngagement site_engagement = 10;
 }
 
 // Selection text affinity, part of the a11y snapshot.

@@ -72,14 +72,18 @@ message ModelPrototypingRequest {
     message ModelInformation {
       ModelEnum model_enum = 1;
 
+      bool skip_model = 2;
+
       enum ModelEnum {
-        MODEL_UNSPECIFIED = 0;
+        MODEL_ENUM_UNSPECIFIED = 0;
 
-        // Returns the filled templates without running an LLM.
-        MODEL_RETURN_FILLED_TEMPLATES = 1;
+        MODEL_ENUM_EVERGREEN_GEMINI_V2 = 1;
 
-        // The compose s-dense model.
-        MODEL_COMPOSE = 2;
+        MODEL_ENUM_SUP_GEMINI_V2 = 2;
+
+        MODEL_ENUM_EVERGREEN_GEMINI_V2_MULTI_MODAL = 3;
+
+        MODEL_ENUM_EVERGREEN_GEMINI_V2_MULTI_MODAL_MPP = 4;
       }
     }
   }
