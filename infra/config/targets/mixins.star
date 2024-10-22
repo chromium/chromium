@@ -589,6 +589,7 @@ targets.mixin(
 
 targets.mixin(
     name = "chromium-tester-dev-service-account",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         service_account = "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
     ),

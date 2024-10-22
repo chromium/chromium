@@ -809,9 +809,20 @@ def _set_builder_config_property(ctx):
 
             targets_spec = _targets_spec(bc_state, targets_spec_nodes)
             if targets_spec:
-                builder_config["targets_spec_directory"] = "src/infra/config/generated/builders/{}/{}/targets".format(bucket_name, builder_name)
+                builder_config["targets_spec_directory"] = (
+                    "src/infra/config/generated/{}/{}/{}/targets".format(
+                        per_builder_outputs_config().root_dir,
+                        bucket_name,
+                        builder_name,
+                    )
+                )
                 for builder_group, contents in targets_spec.items():
-                    json_file = "builders/{}/{}/targets/{}.json".format(bucket_name, builder_name, builder_group)
+                    json_file = "{}/{}/{}/targets/{}.json".format(
+                        per_builder_outputs_config().root_dir,
+                        bucket_name,
+                        builder_name,
+                        builder_group,
+                    )
                     ctx.output[json_file] = json.indent(json.encode(contents), indent = "  ")
 
             builder_properties = json.decode(builder.properties)

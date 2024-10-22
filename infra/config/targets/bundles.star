@@ -875,6 +875,117 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_dev_android_gtests",
+    targets = [
+        "chrome_public_smoke_test",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_dev_linux_gtests",
+    targets = [
+        "base_unittests",
+        "browser_tests",
+        "content_browsertests",
+        "content_unittests",
+        "interactive_ui_tests",
+        "net_unittests",
+        "rust_gtest_interop_unittests",
+        "unit_tests",
+    ],
+    per_test_modifications = {
+        "base_unittests": targets.mixin(
+            swarming = targets.swarming(
+                dimensions = {
+                    "cores": "8",
+                },
+            ),
+        ),
+        "browser_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 8,
+                dimensions = {
+                    "cores": "8",
+                },
+            ),
+        ),
+        "content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+                dimensions = {
+                    "cores": "8",
+                },
+            ),
+        ),
+        "content_unittests": targets.mixin(
+            swarming = targets.swarming(
+                dimensions = {
+                    "cores": "2",
+                },
+            ),
+        ),
+        "interactive_ui_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
+                dimensions = {
+                    "cores": "8",
+                },
+            ),
+        ),
+        "net_unittests": targets.mixin(
+            swarming = targets.swarming(
+                dimensions = {
+                    "cores": "8",
+                },
+            ),
+        ),
+        "unit_tests": targets.mixin(
+            swarming = targets.swarming(
+                dimensions = {
+                    "cores": "2",
+                },
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "chromium_dev_mac_gtests",
+    targets = [
+        "base_unittests",
+        "content_unittests",
+        "net_unittests",
+        "rust_gtest_interop_unittests",
+        "unit_tests",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_dev_win_gtests",
+    targets = [
+        "base_unittests",
+        "content_browsertests",
+        "content_unittests",
+        "interactive_ui_tests",
+        "net_unittests",
+        "rust_gtest_interop_unittests",
+        "unit_tests",
+    ],
+    per_test_modifications = {
+        "content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+        ),
+        "interactive_ui_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "chromium_ios_scripts",
     targets = [
         "check_static_initializers",

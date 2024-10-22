@@ -169,11 +169,6 @@
   'chromeos-tast-public-builder': {
     'args': ["tast.setup.FieldTrialConfig=enable", "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)", "shard_method=hash"],
   },
-  'chromium-tester-dev-service-account': {
-    'swarming': {
-      'service_account': 'chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com',
-    },
-  },
   'chromium-tester-service-account': {
     'fail_if_unused': False,
     'swarming': {

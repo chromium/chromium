@@ -30,6 +30,10 @@
   # builders' declarations in
   # //infra/config/subprojects/build/build.fyi.star
   #   chromium.build.fyi
+  #
+  # The following builder group has been migrated to set their targets in the
+  # builders' declarations in //infra/config/dev/subprojects/chromium/ci.star
+  #   chromium.dev
   {
     'name': 'chrome',
     'mixins': ['chrome-tester-service-account'],
@@ -1297,68 +1301,6 @@
           'telemetry_gpu_unittests',
           'webgpu_blink_web_tests',
         ],
-      },
-    },
-  },
-  {
-    'name': 'chromium.dev',
-    'mixins': ['chromium-tester-dev-service-account'],
-    'machines': {
-      'android-pie-arm64-rel-dev': {
-        'mixins': [
-          'chromium_pixel_2_pie',
-          'has_native_resultdb_integration',
-        ],
-        'test_suites': {
-           'gtest_tests': 'chromium_dev_android_gtests',
-        },
-        'swarming': {
-          'dimensions': {
-            'os': 'Android',
-          },
-          'expiration': 10800,
-        },
-        'os_type': 'android',
-      },
-      'linux-rel-jammy-dev': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-           'gtest_tests': 'chromium_dev_linux_gtests',
-        },
-      },
-      'mac-arm-rel-dev': {
-        'mixins': [
-          'mac_default_arm64',
-        ],
-        'test_suites': {
-           'gtest_tests': 'chromium_dev_mac_gtests',
-        },
-      },
-      'mac-rel-dev': {
-        'mixins': [
-          'mac_default_x64',
-        ],
-        'test_suites': {
-           'gtest_tests': 'chromium_dev_mac_gtests',
-        },
-      },
-      'win-rel-dev': {
-        'mixins': [
-          'win10',
-        ],
-        'test_suites': {
-           'gtest_tests': 'chromium_dev_win_gtests',
-        },
-      },
-      'win11-rel-dev': {
-        'mixins': [
-          'win11-any',
-        ],
-        'test_suites': {
-           'gtest_tests': 'chromium_dev_win_gtests',
-        },
       },
     },
   },

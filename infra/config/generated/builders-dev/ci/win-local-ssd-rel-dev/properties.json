@@ -39,7 +39,8 @@
           "builder": "win-local-ssd-rel-dev",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders-dev/ci/win-local-ssd-rel-dev/targets"
     }
   },
   "$build/reclient": {

@@ -481,13 +481,6 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
     ],
-    'modifications': {
-      'android-pie-arm64-rel-dev': {
-        'swarming': {
-          'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
-        },
-      },
-    },
   },
   'chrome_public_test_vr_apk': {
     'remove_from': [
@@ -616,15 +609,6 @@
         'retry_only_failed_tests': True,
         'swarming': {
           'shards': 6,
-        },
-      },
-      # https://crbug.com/1255940
-      'mac-rel-dev': {
-        'swarming': {
-          'dimensions': {
-            # These test would time out when running on 4 cores instances.
-            'cores': '8|12',
-          },
         },
       },
       'win-asan': {
@@ -1849,11 +1833,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.unit_tests.filter',
         ],
-      },
-      'android-pie-arm64-rel-dev': {
-        'swarming': {
-          'shards': 8,
-        },
       },
       'linux-chromeos-chrome': {
         'args': [

@@ -44,7 +44,8 @@
           "builder": "android-pie-arm64-rel-dev",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders-dev/ci/android-pie-arm64-rel-dev/targets"
     }
   },
   "$build/reclient": {
