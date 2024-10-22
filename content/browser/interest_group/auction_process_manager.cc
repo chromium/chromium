@@ -56,24 +56,31 @@ void RecordRequestWorkletServiceOutcomeUMA(
 constexpr size_t AuctionProcessManager::kMaxBidderProcesses = 10;
 constexpr size_t AuctionProcessManager::kMaxSellerProcesses = 3;
 
+AuctionProcessManager::WorkletProcess::ProcessContext::ProcessContext(
+    mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service,
+    RenderProcessHost* render_process_host)
+    : service(std::move(service)), render_process_host(render_process_host) {}
+
+AuctionProcessManager::WorkletProcess::ProcessContext::ProcessContext(
+    ProcessContext&&) = default;
+
+AuctionProcessManager::WorkletProcess::ProcessContext::~ProcessContext() =
+    default;
+
 AuctionProcessManager::WorkletProcess::WorkletProcess(
     AuctionProcessManager* auction_process_manager,
     scoped_refptr<SiteInstance> site_instance,
-    RenderProcessHost* render_process_host,
-    mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service,
     WorkletType worklet_type,
     const url::Origin& origin,
     bool uses_shared_process,
     bool is_idle,
     bool is_bound_to_origin)
-    : render_process_host_(render_process_host),
-      site_instance_(std::move(site_instance)),
+    : site_instance_(std::move(site_instance)),
       worklet_type_(worklet_type),
       origin_(origin),
       start_time_(base::TimeTicks::Now()),
       uses_shared_process_(uses_shared_process),
       auction_process_manager_(auction_process_manager),
-      service_(std::move(service)),
       is_idle_(is_idle),
       is_bound_to_origin_(is_bound_to_origin) {
   DCHECK(auction_process_manager);
@@ -81,21 +88,6 @@ AuctionProcessManager::WorkletProcess::WorkletProcess(
   CHECK(is_idle_ || is_bound_to_origin_);
   // Shared processes cannot be idle.
   CHECK(!uses_shared_process || !is_idle);
-
-  service_.set_disconnect_handler(
-      base::BindOnce(&WorkletProcess::RemoveFromProcessManager,
-                     base::Unretained(this), /*on_destruction=*/false));
-
-  if (render_process_host_) {
-    render_process_host_->IncrementWorkerRefCount();
-    render_process_host_->AddObserver(this);
-
-    // Note the PID if the process has already launched
-    if (render_process_host_->IsReady()) {
-      DCHECK(render_process_host_->GetProcess().IsValid());
-      pid_ = render_process_host_->GetProcess().Pid();
-    }
-  }
 
   if (is_idle_) {
     remove_idle_process_from_manager_timer_.Start(
@@ -163,6 +155,36 @@ void AuctionProcessManager::WorkletProcess::ActivateAndBindIfUnbound(
   is_idle_ = false;
   is_bound_to_origin_ = true;
   remove_idle_process_from_manager_timer_.Stop();
+}
+
+std::string AuctionProcessManager::WorkletProcess::ComputeDisplayName() const {
+  return AuctionProcessManager::ComputeDisplayName(worklet_type_, origin_);
+}
+
+void AuctionProcessManager::WorkletProcess::SetService(
+    ProcessContext service_context) {
+  DCHECK(!service_);
+  DCHECK(!render_process_host_);
+  DCHECK(service_context.service);
+
+  service_.Bind(std::move(service_context.service));
+  service_.set_disconnect_handler(
+      base::BindOnce(&WorkletProcess::RemoveFromProcessManager,
+                     base::Unretained(this), /*on_destruction=*/false));
+
+  if (service_context.render_process_host) {
+    DCHECK(site_instance_);
+
+    render_process_host_ = service_context.render_process_host;
+    render_process_host_->IncrementWorkerRefCount();
+    render_process_host_->AddObserver(this);
+
+    // Note the PID if the process has already launched
+    if (render_process_host_->IsReady()) {
+      DCHECK(render_process_host_->GetProcess().IsValid());
+      pid_ = render_process_host_->GetProcess().Pid();
+    }
+  }
 }
 
 void AuctionProcessManager::WorkletProcess::RenderProcessReady(
@@ -378,9 +400,8 @@ void AuctionProcessManager::MaybeStartAnticipatoryProcess(
     return;
   }
 
-  scoped_refptr<WorkletProcess> worklet_process =
-      LaunchProcess(worklet_type, origin, std::move(site_instance),
-                    ComputeDisplayName(worklet_type, origin), /*is_idle=*/true);
+  scoped_refptr<WorkletProcess> worklet_process = LaunchProcess(
+      worklet_type, origin, std::move(site_instance), /*is_idle=*/true);
   idle_processes_.push_back(std::move(worklet_process));
 }
 
@@ -420,8 +441,6 @@ AuctionProcessManager::TryCreateOrGetProcessForHandle(
   scoped_refptr<WorkletProcess> worklet_process =
       LaunchProcess(process_handle->worklet_type_, process_handle->origin_,
                     process_handle->site_instance_,
-                    ComputeDisplayName(process_handle->worklet_type_,
-                                       process_handle->origin_),
                     /*is_idle=*/false);
   (*processes)[process_handle->origin_] = worklet_process.get();
   process_handle->AssignProcess(std::move(worklet_process));
@@ -677,33 +696,38 @@ bool AuctionProcessManager::HasAvailableProcessSlotForIdleProcess(
 DedicatedAuctionProcessManager::DedicatedAuctionProcessManager() = default;
 DedicatedAuctionProcessManager::~DedicatedAuctionProcessManager() = default;
 
-scoped_refptr<AuctionProcessManager::WorkletProcess>
-DedicatedAuctionProcessManager::LaunchProcess(
-    WorkletType worklet_type,
-    const url::Origin& origin,
-    scoped_refptr<SiteInstance> site_instance,
-    const std::string& display_name,
-    bool is_idle) {
-  mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService> receiver;
-  // Start all idle processes unbound and all non-idle processes bound.
-  scoped_refptr<WorkletProcess> worklet_process =
-      base::MakeRefCounted<WorkletProcess>(
-          this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-          receiver.InitWithNewPipeAndPassRemote(), worklet_type, origin,
-          /*uses_shared_process=*/false, /*is_idle=*/is_idle,
-          /*is_bound_to_origin=*/!is_idle);
+AuctionProcessManager::WorkletProcess::ProcessContext
+DedicatedAuctionProcessManager::CreateProcessInternal(
+    WorkletProcess& worklet_process) {
+  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
   content::ServiceProcessHost::Launch(
-      std::move(receiver),
+      service.InitWithNewPipeAndPassReceiver(),
       ServiceProcessHost::Options()
-          .WithDisplayName(display_name)
+          .WithDisplayName(worklet_process.ComputeDisplayName())
 #if BUILDFLAG(IS_MAC)
           // TODO(crbug.com/40812055) add a utility helper for Jit.
           .WithChildFlags(ChildProcessHost::CHILD_RENDERER)
 #endif
           .WithProcessCallback(
               base::BindOnce(&WorkletProcess::OnLaunchedWithProcess,
-                             worklet_process->weak_ptr_factory_.GetWeakPtr()))
+                             worklet_process.weak_ptr_factory_.GetWeakPtr()))
           .Pass());
+  return WorkletProcess::ProcessContext(std::move(service));
+}
+
+scoped_refptr<AuctionProcessManager::WorkletProcess>
+DedicatedAuctionProcessManager::LaunchProcess(
+    WorkletType worklet_type,
+    const url::Origin& origin,
+    scoped_refptr<SiteInstance> site_instance,
+    bool is_idle) {
+  // Start all idle processes unbound and all non-idle processes bound.
+  scoped_refptr<WorkletProcess> worklet_process =
+      base::MakeRefCounted<WorkletProcess>(
+          this, /*site_instance=*/nullptr, worklet_type, origin,
+          /*uses_shared_process=*/false, /*is_idle=*/is_idle,
+          /*is_bound_to_origin=*/!is_idle);
+  worklet_process->SetService(CreateProcessInternal(*worklet_process));
   return worklet_process;
 }
 
@@ -722,24 +746,46 @@ bool DedicatedAuctionProcessManager::TryUseSharedProcess(
 InRendererAuctionProcessManager::InRendererAuctionProcessManager() = default;
 InRendererAuctionProcessManager::~InRendererAuctionProcessManager() = default;
 
+AuctionProcessManager::WorkletProcess::ProcessContext
+InRendererAuctionProcessManager::CreateProcessInternal(
+    WorkletProcess& worklet_process) {
+  SiteInstance* site_instance = worklet_process.site_instance();
+  if (site_instance->GetBrowserContext()->ShutdownStarted()) {
+    // This browser context is shutting down, so we shouldn't start any
+    // processes, in part because managing their lifetime will be impossible.
+    // So... just give up. Create a pipe and drop the other end. The service
+    // pipe will be broken, but that should be OK since the destination of the
+    // async callback on process assignment should get deleted before we get
+    // back to the event loop.
+    return WorkletProcess::ProcessContext(
+        mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>()
+            .InitWithNewPipeAndPassRemote());
+  }
+
+  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
+  site_instance->GetProcess()->Init();
+  site_instance->GetProcess()->BindReceiver(
+      service.InitWithNewPipeAndPassReceiver());
+  return WorkletProcess::ProcessContext(std::move(service),
+                                        site_instance->GetProcess());
+}
+
 scoped_refptr<AuctionProcessManager::WorkletProcess>
 InRendererAuctionProcessManager::LaunchProcess(
     WorkletType worklet_type,
     const url::Origin& origin,
     scoped_refptr<SiteInstance> site_instance,
-    const std::string& display_name,
     bool is_idle) {
   DCHECK(site_instance);
   DCHECK(site_instance->RequiresDedicatedProcess());
-  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-  RenderProcessHost* render_process_host = LaunchInSiteInstance(
-      site_instance.get(), service.InitWithNewPipeAndPassReceiver());
+  auto worklet_process = base::MakeRefCounted<WorkletProcess>(
+      this, std::move(site_instance), worklet_type, origin,
+      /*uses_shared_process=*/false, /*is_idle=*/is_idle,
+      /*is_bound_to_origin=*/true);
+  worklet_process->SetService(CreateProcessInternal(*worklet_process));
   // This process must be bound to an origin because it's launched in
   // the site instance.
-  return base::MakeRefCounted<WorkletProcess>(
-      this, std::move(site_instance), render_process_host, std::move(service),
-      worklet_type, origin, /*uses_shared_process=*/false, /*is_idle=*/is_idle,
-      /*is_bound_to_origin=*/true);
+  return worklet_process;
 }
 
 scoped_refptr<SiteInstance>
@@ -761,35 +807,13 @@ bool InRendererAuctionProcessManager::TryUseSharedProcess(
     return false;
 
   // Shared process case.
-  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-  RenderProcessHost* render_process_host =
-      LaunchInSiteInstance(process_handle->site_instance_.get(),
-                           service.InitWithNewPipeAndPassReceiver());
-  auto process = base::MakeRefCounted<WorkletProcess>(
-      this, process_handle->site_instance_, render_process_host,
-      std::move(service), process_handle->worklet_type(),
+  auto worklet_process = base::MakeRefCounted<WorkletProcess>(
+      this, process_handle->site_instance_, process_handle->worklet_type(),
       process_handle->origin(), /*uses_shared_process=*/true, /*is_idle=*/false,
       /*is_bound_to_origin=*/true);
-  process_handle->AssignProcess(std::move(process));
+  worklet_process->SetService(CreateProcessInternal(*worklet_process));
+  process_handle->AssignProcess(std::move(worklet_process));
   return true;
-}
-
-RenderProcessHost* InRendererAuctionProcessManager::LaunchInSiteInstance(
-    SiteInstance* site_instance,
-    mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-        auction_worklet_service_receiver) {
-  if (site_instance->GetBrowserContext()->ShutdownStarted()) {
-    // This browser context is shutting down, so we shouldn't start any
-    // processes, in part because managing their lifetime will be impossible.
-    // So... just give up. The service pipe will be broken, but that should be
-    // OK since the destination of the async callback on process assignment
-    // should get deleted before we get back to the event loop.
-    return nullptr;
-  }
-  site_instance->GetProcess()->Init();
-  site_instance->GetProcess()->BindReceiver(
-      std::move(auction_worklet_service_receiver));
-  return site_instance->GetProcess();
 }
 
 }  // namespace content

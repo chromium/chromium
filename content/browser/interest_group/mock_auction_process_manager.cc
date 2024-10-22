@@ -554,45 +554,26 @@ void MockSellerWorklet::Flush() {
 MockAuctionProcessManager::MockAuctionProcessManager() = default;
 MockAuctionProcessManager::~MockAuctionProcessManager() = default;
 
-scoped_refptr<AuctionProcessManager::WorkletProcess>
-MockAuctionProcessManager::LaunchProcess(
-    WorkletType worklet_type,
-    const url::Origin& origin,
-    scoped_refptr<SiteInstance> site_instance,
-    const std::string& display_name,
-    bool is_idle) {
-  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-  mojo::ReceiverId receiver_id =
-      receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
-
+AuctionProcessManager::WorkletProcess::ProcessContext
+MockAuctionProcessManager::CreateProcessInternal(
+    WorkletProcess& worklet_process) {
   // Each receiver should get a unique display name. This check serves to help
   // ensure that processes are correctly reused.
-  EXPECT_EQ(0u, receiver_display_name_map_.count(receiver_id));
-  for (auto receiver : receiver_display_name_map_) {
-    // Ignore closed receivers. ReportWin() will result in re-loading a
-    // worklet, after closing the original worklet, which may require
-    // re-creating the AuctionWorkletService.
-    if (receiver_set_.HasReceiver(receiver.first)) {
-      EXPECT_NE(receiver.second, display_name);
-    }
+  std::string display_name = worklet_process.ComputeDisplayName();
+  for (auto receiver : receiver_set_.GetAllContexts()) {
+    EXPECT_NE(*receiver.second, display_name);
   }
 
-  receiver_display_name_map_[receiver_id] = display_name;
-  return base::MakeRefCounted<WorkletProcess>(
-      this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-      std::move(service), worklet_type, origin, /*uses_shared_process=*/false,
-      /*is_idle=*/is_idle, /*is_bound_to_origin=*/true);
-}
-
-scoped_refptr<SiteInstance> MockAuctionProcessManager::MaybeComputeSiteInstance(
-    SiteInstance* frame_site_instance,
-    const url::Origin& worklet_origin) {
-  return nullptr;
-}
-
-bool MockAuctionProcessManager::TryUseSharedProcess(
-    ProcessHandle* process_handle) {
-  return false;
+  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
+  receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver(),
+                    std::move(display_name));
+  if (!worklet_process.is_bound_to_origin()) {
+    // The display name check isn't compatible with late-binding, as it can
+    // change which origin a process is bound to, so bind processes immediately
+    // to avoid running into issues. See https://crbug.com/374790901.
+    worklet_process.set_is_bound_to_origin_for_testing();
+  }
+  return WorkletProcess::ProcessContext(std::move(service));
 }
 
 void MockAuctionProcessManager::SetTrustedSignalsCache(
@@ -624,7 +605,7 @@ void MockAuctionProcessManager::LoadBidderWorklet(
 
   // Make sure this request came over the right pipe.
   url::Origin owner = url::Origin::Create(script_source_url);
-  EXPECT_EQ(receiver_display_name_map_[receiver_set_.current_receiver()],
+  EXPECT_EQ(receiver_set_.current_context(),
             ComputeDisplayName(AuctionProcessManager::WorkletType::kBidder,
                                url::Origin::Create(script_source_url)));
 
@@ -657,7 +638,7 @@ void MockAuctionProcessManager::LoadSellerWorklet(
   EXPECT_EQ(0u, seller_worklets_.count(script_source_url));
 
   // Make sure this request came over the right pipe.
-  EXPECT_EQ(receiver_display_name_map_[receiver_set_.current_receiver()],
+  EXPECT_EQ(receiver_set_.current_context(),
             ComputeDisplayName(AuctionProcessManager::WorkletType::kSeller,
                                url::Origin::Create(script_source_url)));
 

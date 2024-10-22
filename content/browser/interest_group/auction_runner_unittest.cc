@@ -1442,7 +1442,7 @@ CreateBiddingAndAuctionEncryptionContext() {
   return std::move(request).ReleaseContext();
 }
 
-class SameProcessAuctionProcessManager : public AuctionProcessManager {
+class SameProcessAuctionProcessManager : public DedicatedAuctionProcessManager {
  public:
   SameProcessAuctionProcessManager() = default;
   SameProcessAuctionProcessManager(const SameProcessAuctionProcessManager&) =
@@ -1483,38 +1483,17 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
   }
 
  private:
-  scoped_refptr<WorkletProcess> LaunchProcess(
-      WorkletType worklet_type,
-      const url::Origin& origin,
-      scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name,
-      bool is_idle) override {
-    // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
-    // production code. Don't bother to delete the service on pipe close,
-    // though; just keep it in a vector instead.
+  WorkletProcess::ProcessContext CreateProcessInternal(
+      WorkletProcess& worklet_process) override {
     mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
     auction_worklet_services_.push_back(
         auction_worklet::AuctionWorkletServiceImpl::CreateForService(
             service.InitWithNewPipeAndPassReceiver()));
-    return base::MakeRefCounted<WorkletProcess>(
-        this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-        std::move(service), worklet_type, origin,
-        /*uses_shared_process=*/false, /*is_idle=*/is_idle,
-        /*is_bound_to_origin=*/true);
+    return WorkletProcess::ProcessContext(std::move(service));
   }
 
   void OnNewProcessAssigned(const ProcessHandle* handle) override {
     ProcessHandleTestPeer(handle).CallOnLaunchedWithPidForCurrentProcess();
-  }
-
-  scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
-      SiteInstance* frame_site_instance,
-      const url::Origin& worklet_origin) override {
-    return nullptr;
-  }
-
-  bool TryUseSharedProcess(ProcessHandle* process_handle) override {
-    return false;
   }
 
   std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>

@@ -62,8 +62,9 @@ using RequestWorkletServiceOutcome =
 const size_t kMaxSellerProcesses = AuctionProcessManager::kMaxSellerProcesses;
 const size_t kMaxBidderProcesses = AuctionProcessManager::kMaxBidderProcesses;
 
+template <class AuctionManagerBaseType>
 class TestAuctionProcessManager
-    : public AuctionProcessManager,
+    : public AuctionManagerBaseType,
       public auction_worklet::mojom::AuctionWorkletService {
  public:
   TestAuctionProcessManager() = default;
@@ -129,29 +130,19 @@ class TestAuctionProcessManager
   }
 
  private:
-  scoped_refptr<WorkletProcess> LaunchProcess(
-      WorkletType worklet_type,
-      const url::Origin& origin,
-      scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name,
-      bool is_idle) override {
-    mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-    receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
-    RenderProcessHost* host = site_instance->GetProcess();
-    return base::MakeRefCounted<WorkletProcess>(
-        this, site_instance, /*render_process_host=*/host, std::move(service),
-        worklet_type, origin, /*uses_shared_process=*/false,
-        /*is_idle=*/is_idle, /*is_bound_to_origin=*/true);
-  }
-
-  scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
-      SiteInstance* frame_site_instance,
-      const url::Origin& worklet_origin) override {
-    return frame_site_instance->GetRelatedSiteInstance(worklet_origin.GetURL());
-  }
-
-  bool TryUseSharedProcess(ProcessHandle* process_handle) override {
-    return false;
+  AuctionProcessManager::WorkletProcess::ProcessContext CreateProcessInternal(
+      AuctionProcessManager::WorkletProcess& worklet_process) override {
+    if constexpr (std::is_same<AuctionManagerBaseType,
+                               InRendererAuctionProcessManager>::value) {
+      // Defer to the RendererProcessHost mocks when using the InRenderer path.
+      return AuctionManagerBaseType::CreateProcessInternal(worklet_process);
+    } else {
+      mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
+          service;
+      receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
+      return AuctionProcessManager::WorkletProcess::ProcessContext(
+          std::move(service));
+    }
   }
 
   mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
@@ -159,7 +150,7 @@ class TestAuctionProcessManager
 };
 
 class DedicatedStyleTestAuctionProcessManager
-    : public TestAuctionProcessManager {
+    : public TestAuctionProcessManager<DedicatedAuctionProcessManager> {
  public:
   DedicatedStyleTestAuctionProcessManager() = default;
   DedicatedStyleTestAuctionProcessManager(
@@ -185,29 +176,12 @@ class DedicatedStyleTestAuctionProcessManager
   }
 
  private:
-  scoped_refptr<WorkletProcess> LaunchProcess(
-      WorkletType worklet_type,
-      const url::Origin& origin,
-      scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name,
-      bool is_idle) override {
+  WorkletProcess::ProcessContext CreateProcessInternal(
+      WorkletProcess& worklet_process) override {
     mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
     receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
-    // Start all idle processes unbound and all non-idle processes bound.
-    scoped_refptr<WorkletProcess> process =
-        base::MakeRefCounted<WorkletProcess>(
-            this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-            std::move(service), worklet_type, origin,
-            /*uses_shared_process=*/false, /*is_idle=*/is_idle,
-            /*is_bound_to_origin=*/!is_idle);
-    launched_processes_.push_back(process.get());
-    return process;
-  }
-
-  scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
-      SiteInstance* frame_site_instance,
-      const url::Origin& worklet_origin) override {
-    return nullptr;
+    launched_processes_.push_back(&worklet_process);
+    return WorkletProcess::ProcessContext(std::move(service));
   }
 
   mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
@@ -362,7 +336,8 @@ class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
   TestBrowserContext test_browser_context_;
   MockRenderProcessHostFactory rph_factory_;
   scoped_refptr<SiteInstance> site_instance_;
-  TestAuctionProcessManager auction_process_manager_;
+  TestAuctionProcessManager<DedicatedAuctionProcessManager>
+      auction_process_manager_;
 };
 
 class DedicatedStyleAuctionProcessManagerTest
@@ -905,82 +880,6 @@ TEST_P(AuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(AuctionProcessManagerTest, PidLookup) {
-  auto handle = GetServiceOfTypeExpectSuccess(
-      AuctionProcessManager::WorkletType::kSeller, kOriginA);
-
-  base::ProcessId expected_pid = base::Process::Current().Pid();
-
-  // Request PID twice. Should happen asynchronously, but only use one RPC.
-  base::RunLoop run_loop0, run_loop1;
-  bool got_pid0 = false, got_pid1 = false;
-  std::optional<base::ProcessId> pid0 =
-      handle->GetPid(base::BindLambdaForTesting(
-          [&run_loop0, &got_pid0, expected_pid](base::ProcessId pid) {
-            EXPECT_EQ(expected_pid, pid);
-            got_pid0 = true;
-            run_loop0.Quit();
-          }));
-  EXPECT_FALSE(pid0.has_value());
-  std::optional<base::ProcessId> pid1 =
-      handle->GetPid(base::BindLambdaForTesting(
-          [&run_loop1, &got_pid1, expected_pid](base::ProcessId pid) {
-            EXPECT_EQ(expected_pid, pid);
-            got_pid1 = true;
-            run_loop1.Quit();
-          }));
-  EXPECT_FALSE(pid1.has_value());
-
-  for (std::unique_ptr<MockRenderProcessHost>& proc :
-       *rph_factory_.GetProcesses()) {
-    proc->SimulateReady();
-  }
-
-  run_loop0.Run();
-  EXPECT_TRUE(got_pid0);
-  run_loop1.Run();
-  EXPECT_TRUE(got_pid1);
-
-  // Next attempt should be synchronous.
-  std::optional<base::ProcessId> pid2 =
-      handle->GetPid(base::BindOnce([](base::ProcessId pid) {
-        ADD_FAILURE() << "Should not get to callback in pid2 case";
-      }));
-  ASSERT_TRUE(pid2.has_value());
-  EXPECT_EQ(expected_pid, pid2.value());
-}
-
-TEST_F(AuctionProcessManagerTest, PidLookupAlreadyRunning) {
-  // "Launch" the appropriate process before we even ask for it, and mark its
-  // launch as completed. |frame_site_instance| will help keep it alive.
-  scoped_refptr<SiteInstance> frame_site_instance =
-      site_instance_->GetRelatedSiteInstance(kOriginA.GetURL());
-  frame_site_instance->GetProcess()->Init();
-  for (std::unique_ptr<MockRenderProcessHost>& proc :
-       *rph_factory_.GetProcesses()) {
-    proc->SimulateReady();
-  }
-
-  auto handle = GetServiceOfTypeExpectSuccess(
-      AuctionProcessManager::WorkletType::kSeller, kOriginA);
-
-  base::ProcessId expected_pid = base::Process::Current().Pid();
-
-  // Request PID twice. Should happen asynchronously, but only use one RPC.
-  std::optional<base::ProcessId> pid0 =
-      handle->GetPid(base::BindOnce([](base::ProcessId pid) {
-        ADD_FAILURE() << "Should not get to callback in pid0 case";
-      }));
-  ASSERT_TRUE(pid0.has_value());
-  EXPECT_EQ(expected_pid, pid0.value());
-  std::optional<base::ProcessId> pid1 =
-      handle->GetPid(base::BindOnce([](base::ProcessId pid) {
-        ADD_FAILURE() << "Should not get to callback in pid1 case";
-      }));
-  ASSERT_TRUE(pid1.has_value());
-  EXPECT_EQ(expected_pid, pid1.value());
-}
-
 TEST_P(DedicatedStyleAuctionProcessManagerTest,
        DoesNotStartAnticipatoryProcessIfFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
@@ -1386,7 +1285,8 @@ class InRendererAuctionProcessManagerTestBase
   // `site_instance1_` and `site_instance2_` are in different browsing
   // instances.
   scoped_refptr<SiteInstance> site_instance1_, site_instance2_;
-  InRendererAuctionProcessManager auction_process_manager_;
+  TestAuctionProcessManager<InRendererAuctionProcessManager>
+      auction_process_manager_;
 
   const url::Origin kIsolatedOrigin =
       url::Origin::Create(GURL("https://bank.test"));
@@ -1452,6 +1352,82 @@ class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
   PartialSiteIsolationContentBrowserClient browser_client_;
   raw_ptr<ContentBrowserClient> original_browser_client_;
 };
+
+TEST_P(InRendererAuctionProcessManagerTest, PidLookup) {
+  auto handle =
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginA);
+
+  base::ProcessId expected_pid = base::Process::Current().Pid();
+
+  // Request PID twice. Should happen asynchronously, but only use one RPC.
+  base::RunLoop run_loop0, run_loop1;
+  bool got_pid0 = false, got_pid1 = false;
+  std::optional<base::ProcessId> pid0 =
+      handle->GetPid(base::BindLambdaForTesting(
+          [&run_loop0, &got_pid0, expected_pid](base::ProcessId pid) {
+            EXPECT_EQ(expected_pid, pid);
+            got_pid0 = true;
+            run_loop0.Quit();
+          }));
+  EXPECT_FALSE(pid0.has_value());
+  std::optional<base::ProcessId> pid1 =
+      handle->GetPid(base::BindLambdaForTesting(
+          [&run_loop1, &got_pid1, expected_pid](base::ProcessId pid) {
+            EXPECT_EQ(expected_pid, pid);
+            got_pid1 = true;
+            run_loop1.Quit();
+          }));
+  EXPECT_FALSE(pid1.has_value());
+
+  for (std::unique_ptr<MockRenderProcessHost>& proc :
+       *rph_factory_.GetProcesses()) {
+    proc->SimulateReady();
+  }
+
+  run_loop0.Run();
+  EXPECT_TRUE(got_pid0);
+  run_loop1.Run();
+  EXPECT_TRUE(got_pid1);
+
+  // Next attempt should be synchronous.
+  std::optional<base::ProcessId> pid2 =
+      handle->GetPid(base::BindOnce([](base::ProcessId pid) {
+        ADD_FAILURE() << "Should not get to callback in pid2 case";
+      }));
+  ASSERT_TRUE(pid2.has_value());
+  EXPECT_EQ(expected_pid, pid2.value());
+}
+
+TEST_P(InRendererAuctionProcessManagerTest, PidLookupAlreadyRunning) {
+  // "Launch" the appropriate process before we even ask for it, and mark its
+  // launch as completed. |frame_site_instance| will help keep it alive.
+  scoped_refptr<SiteInstance> frame_site_instance =
+      site_instance1_->GetRelatedSiteInstance(kOriginA.GetURL());
+  frame_site_instance->GetProcess()->Init();
+  for (std::unique_ptr<MockRenderProcessHost>& proc :
+       *rph_factory_.GetProcesses()) {
+    proc->SimulateReady();
+  }
+
+  auto handle =
+      GetServiceOfTypeExpectSuccess(GetParam(), frame_site_instance, kOriginA);
+
+  base::ProcessId expected_pid = base::Process::Current().Pid();
+
+  // Request PID twice. Should happen asynchronously, but only use one RPC.
+  std::optional<base::ProcessId> pid0 =
+      handle->GetPid(base::BindOnce([](base::ProcessId pid) {
+        ADD_FAILURE() << "Should not get to callback in pid0 case";
+      }));
+  ASSERT_TRUE(pid0.has_value());
+  EXPECT_EQ(expected_pid, pid0.value());
+  std::optional<base::ProcessId> pid1 =
+      handle->GetPid(base::BindOnce([](base::ProcessId pid) {
+        ADD_FAILURE() << "Should not get to callback in pid1 case";
+      }));
+  ASSERT_TRUE(pid1.has_value());
+  EXPECT_EQ(expected_pid, pid1.value());
+}
 
 TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
        AndroidLike) {

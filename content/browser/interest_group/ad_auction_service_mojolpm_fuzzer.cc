@@ -165,7 +165,8 @@ class NetworkResponder {
 };
 
 // AuctionProcessManager that allows running auctions in-proc.
-class SameProcessAuctionProcessManager : public content::AuctionProcessManager {
+class SameProcessAuctionProcessManager
+    : public content::DedicatedAuctionProcessManager {
  public:
   SameProcessAuctionProcessManager() = default;
   SameProcessAuctionProcessManager(const SameProcessAuctionProcessManager&) =
@@ -175,12 +176,8 @@ class SameProcessAuctionProcessManager : public content::AuctionProcessManager {
   ~SameProcessAuctionProcessManager() override = default;
 
  private:
-  scoped_refptr<WorkletProcess> LaunchProcess(
-      WorkletType worklet_type,
-      const url::Origin& origin,
-      scoped_refptr<content::SiteInstance> site_instance,
-      const std::string& display_name,
-      bool is_idle) override {
+  WorkletProcess::ProcessContext CreateProcessInternal(
+      WorkletProcess& worklet_process) override {
     // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
     // production code. Don't bother to delete the service on pipe close,
     // though; just keep it in a vector instead.
@@ -188,21 +185,7 @@ class SameProcessAuctionProcessManager : public content::AuctionProcessManager {
     auction_worklet_services_.push_back(
         auction_worklet::AuctionWorkletServiceImpl::CreateForService(
             service.InitWithNewPipeAndPassReceiver()));
-    return base::MakeRefCounted<WorkletProcess>(
-        this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-        std::move(service), worklet_type, origin,
-        /*uses_shared_process=*/false, /*is_idle=*/is_idle,
-        /*is_bound_to_origin=*/true);
-  }
-
-  scoped_refptr<content::SiteInstance> MaybeComputeSiteInstance(
-      content::SiteInstance* frame_site_instance,
-      const url::Origin& worklet_origin) override {
-    return nullptr;
-  }
-
-  bool TryUseSharedProcess(ProcessHandle* process_handle) override {
-    return false;
+    return WorkletProcess::ProcessContext(std::move(service));
   }
 
   std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>

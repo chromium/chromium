@@ -551,31 +551,16 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 // mojo::ReceiverSet makes it easier to track which call came over which
 // receiver than using separate classes.
 class MockAuctionProcessManager
-    : public AuctionProcessManager,
+    : public DedicatedAuctionProcessManager,
       public auction_worklet::mojom::AuctionWorkletService {
  public:
   MockAuctionProcessManager() = default;
   ~MockAuctionProcessManager() override = default;
 
-  // AuctionProcessManager implementation:
-  void SetTrustedSignalsCache(
-      mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
-          trusted_signals_cache) override {}
-  scoped_refptr<AuctionProcessManager::WorkletProcess> LaunchProcess(
-      WorkletType worklet_type,
-      const url::Origin& origin,
-      scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name,
-      bool is_idle) override {
-    mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-        pending_receiver;
-    auto worklet_process = base::MakeRefCounted<WorkletProcess>(
-        this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-        pending_receiver.InitWithNewPipeAndPassRemote(), worklet_type, origin,
-        /*uses_shared_process=*/false, /*is_idle=*/is_idle,
-        /*is_bound_to_origin=*/true);
-    mojo::ReceiverId receiver_id =
-        receiver_set_.Add(this, std::move(pending_receiver));
+  // DedicatedAuctionProcessManager implementation:
+  WorkletProcess::ProcessContext CreateProcessInternal(
+      WorkletProcess& worklet_process) override {
+    mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
 
     // Have to flush the receiver set, so that any closed receivers are removed,
     // before searching for duplicate process names.
@@ -583,18 +568,16 @@ class MockAuctionProcessManager
 
     // Each receiver should get a unique display name. This check serves to help
     // ensure that processes are correctly reused.
-    EXPECT_EQ(0u, receiver_display_name_map_.count(receiver_id));
-    for (auto receiver : receiver_display_name_map_) {
-      // Ignore closed receivers. ReportWin() will result in re-loading a
-      // worklet, after closing the original worklet, which may require
-      // re-creating the AuctionWorkletService.
-      if (receiver_set_.HasReceiver(receiver.first)) {
-        EXPECT_NE(receiver.second, display_name);
-      }
+    std::string display_name = worklet_process.ComputeDisplayName();
+
+    for (auto context : receiver_set_.GetAllContexts()) {
+      EXPECT_NE(*context.second, display_name);
     }
 
-    receiver_display_name_map_[receiver_id] = display_name;
-    return worklet_process;
+    receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver(),
+                      display_name);
+
+    return WorkletProcess::ProcessContext(std::move(service));
   }
 
   void OnNewProcessAssigned(const ProcessHandle* handle) override {
@@ -615,21 +598,15 @@ class MockAuctionProcessManager
     deferred_on_launch_call_handles_.clear();
   }
 
-  scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
-      SiteInstance* frame_site_instance,
-      const url::Origin& worklet_origin) override {
-    return nullptr;
-  }
-
-  bool TryUseSharedProcess(ProcessHandle* process_handle) override {
-    return false;
-  }
-
   void DisableBidderWorkletDtorPendingSignalsCheck() {
     enable_bidder_worklet_dtor_pending_signals_check_ = false;
   }
 
   // auction_worklet::mojom::AuctionWorkletService implementation:
+
+  void SetTrustedSignalsCache(
+      mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
+          trusted_signals_cache) override {}
 
   void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
@@ -654,7 +631,7 @@ class MockAuctionProcessManager
     DCHECK(!bidder_worklet_);
 
     // Make sure this request came over the right pipe.
-    EXPECT_EQ(receiver_display_name_map_[receiver_set_.current_receiver()],
+    EXPECT_EQ(receiver_set_.current_context(),
               ComputeDisplayName(AuctionProcessManager::WorkletType::kBidder,
                                  url::Origin::Create(script_source_url)));
 
@@ -691,7 +668,7 @@ class MockAuctionProcessManager
     DCHECK(!seller_worklet_);
 
     // Make sure this request came over the right pipe.
-    EXPECT_EQ(receiver_display_name_map_[receiver_set_.current_receiver()],
+    EXPECT_EQ(receiver_set_.current_context(),
               ComputeDisplayName(AuctionProcessManager::WorkletType::kSeller,
                                  url::Origin::Create(script_source_url)));
 
@@ -752,9 +729,11 @@ class MockAuctionProcessManager
   // Used to verify that worklets are created in the right process.
   std::map<mojo::ReceiverId, std::string> receiver_display_name_map_;
 
-  // ReceiverSet is last so that destroying `this` while there's a pending
-  // callback over the pipe will not DCHECK.
-  mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
+  // ReceiverSet is last (except for ProcessHandles) so that destroying `this`
+  // while there's a pending callback over the pipe will not DCHECK. Each
+  // context is the display name associated with the WorkletProcess used to
+  // create the pipe.
+  mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService, std::string>
       receiver_set_;
 
   bool defer_on_launched_for_handles_ = false;

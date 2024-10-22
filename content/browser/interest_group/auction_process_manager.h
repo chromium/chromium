@@ -92,10 +92,32 @@ class CONTENT_EXPORT AuctionProcessManager {
   class ProcessHandle;
 
   // Refcounted class that creates / holds Mojo Remote for an
-  // AuctionWorkletService. Only public so it can be used by ProcessHandle.
+  // AuctionWorkletService. Only public so it can be used by ProcessHandle and
+  // by test classes.
   class CONTENT_EXPORT WorkletProcess : public base::RefCounted<WorkletProcess>,
                                         public RenderProcessHostObserver {
    public:
+    // The Mojo pipe and related data passed in when attaching a process to a
+    // WorkletProcess. To make mocking easier, and given the laundry list of
+    // parameters, WorkletProcesses are created without a service pipe. The
+    // AuctionWorkletProcessManager subclass then immediately passes in a
+    // ProcessContext to the WorkletProcess.
+    struct CONTENT_EXPORT ProcessContext {
+      explicit ProcessContext(
+          mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
+              service,
+          RenderProcessHost* render_process_host = nullptr);
+      ProcessContext(ProcessContext&&);
+      ~ProcessContext();
+
+      mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
+          service;
+
+      // May only be non-null when the WorkletProcess was created with a
+      // non-null ServiceInstance.
+      raw_ptr<RenderProcessHost> render_process_host;
+    };
+
     // `is_idle` indicates whether the process will be immediately used. If not,
     // a timer is started, and if it triggers before ActivateAndBindIfUnbound()
     // is invoked, the AuctionProcessManager is told to delete process.
@@ -107,9 +129,6 @@ class CONTENT_EXPORT AuctionProcessManager {
     WorkletProcess(
         AuctionProcessManager* auction_process_manager,
         scoped_refptr<SiteInstance> site_instance,
-        RenderProcessHost* render_process_host,
-        mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
-            service,
         WorkletType worklet_type,
         const url::Origin& origin,
         bool uses_shared_process,
@@ -146,9 +165,21 @@ class CONTENT_EXPORT AuctionProcessManager {
     void ActivateAndBindIfUnbound(WorkletType worklet_type,
                                   const url::Origin& origin);
 
+    // Returns the display name to use for a process.
+    std::string ComputeDisplayName() const;
+
+    // Sets `is_bound_` to true. Only used in tests.
+    void set_is_bound_to_origin_for_testing() { is_bound_to_origin_ = true; }
+
+    SiteInstance* site_instance() { return site_instance_.get(); }
+
    private:
     friend class base::RefCounted<WorkletProcess>;
     friend class DedicatedAuctionProcessManager;
+    friend class InRendererAuctionProcessManager;
+
+    // Used to set the Mojo service. Called immediately after construction.
+    void SetService(ProcessContext service_context);
 
     // From RenderProcessHostObserver:
     void RenderProcessReady(RenderProcessHost* host) override;
@@ -356,7 +387,6 @@ class CONTENT_EXPORT AuctionProcessManager {
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name,
       bool is_idle) = 0;
 
   // Hook called when a new process is assigned at the end of
@@ -483,14 +513,19 @@ class CONTENT_EXPORT DedicatedAuctionProcessManager
   DedicatedAuctionProcessManager();
   ~DedicatedAuctionProcessManager() override;
 
+ protected:
+  // Virtual for testing. Takes `worklet_process` so that test classes can get
+  // WeakPtrs to it for creation order tracking.
+  virtual WorkletProcess::ProcessContext CreateProcessInternal(
+      WorkletProcess& worklet_process);
+
  private:
+  // AuctionProcessManager implementation:
   scoped_refptr<WorkletProcess> LaunchProcess(
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name,
       bool is_idle) override;
-
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
       SiteInstance* frame_site_instance,
       const url::Origin& worklet_origin) override;
@@ -507,23 +542,22 @@ class CONTENT_EXPORT InRendererAuctionProcessManager
   ~InRendererAuctionProcessManager() override;
 
  protected:
+  // Virtual for testing. Takes `worklet_process` so that test classes can get
+  // WeakPtrs to it for creation order tracking.
+  virtual WorkletProcess::ProcessContext CreateProcessInternal(
+      WorkletProcess& worklet_process);
+
+ private:
+  // AuctionProcessManager implementation:
   scoped_refptr<WorkletProcess> LaunchProcess(
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name,
       bool is_idle) override;
-
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
       SiteInstance* frame_site_instance,
       const url::Origin& worklet_origin) override;
   bool TryUseSharedProcess(ProcessHandle* process_handle) override;
-
- private:
-  RenderProcessHost* LaunchInSiteInstance(
-      SiteInstance* site_instance,
-      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-          auction_worklet_service_receiver);
 };
 
 }  // namespace content
