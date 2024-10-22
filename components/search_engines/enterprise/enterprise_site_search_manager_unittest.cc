@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/default_search_manager.h"
@@ -50,9 +49,6 @@ class EnterpriseSiteSearchManagerTest : public testing::Test {
   ~EnterpriseSiteSearchManagerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        omnibox::kSiteSearchSettingsPolicy);
-
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     EnterpriseSiteSearchManager::RegisterProfilePrefs(
@@ -65,7 +61,6 @@ class EnterpriseSiteSearchManagerTest : public testing::Test {
 
  private:
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(EnterpriseSiteSearchManagerTest, EmptyList) {

@@ -1992,15 +1992,6 @@ extern const char kShowAutofillSignaturesDescription[];
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-extern const char kShowFeaturedEnterpriseSiteSearchName[];
-extern const char kShowFeaturedEnterpriseSiteSearchDescription[];
-
-extern const char kShowFeaturedEnterpriseSiteSearchIPHName[];
-extern const char kShowFeaturedEnterpriseSiteSearchIPHDescription[];
-#endif
-
 extern const char kShowPerformanceMetricsHudName[];
 extern const char kShowPerformanceMetricsHudDescription[];
 
@@ -2016,9 +2007,6 @@ extern const char kSiteInstanceGroupsForDataUrlsDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-extern const char kSiteSearchSettingsPolicyName[];
-extern const char kSiteSearchSettingsPolicyDescription[];
-
 extern const char kPwaNavigationCapturingName[];
 extern const char kPwaNavigationCapturingDescription[];
 #endif

@@ -27,17 +27,6 @@ namespace policy {
 
 namespace {
 
-bool IsSiteSearchPolicyEnabled() {
-  // Check that FeatureList is available as a protection against early startup
-  // crashes. Some policy providers are initialized very early even before
-  // base::FeatureList is available, but when policies are finally applied, the
-  // feature stack is fully initialized. The instance check ensures that the
-  // final decision is delayed until all features are initialized, without any
-  // other downstream effect.
-  return base::FeatureList::GetInstance() &&
-         base::FeatureList::IsEnabled(omnibox::kSiteSearchSettingsPolicy);
-}
-
 // Converts a site search policy entry `policy_dict` into a dictionary to be
 // saved to prefs, with fields corresponding to `TemplateURLData`.
 base::Value SiteSearchDictFromPolicyValue(const base::Value::Dict& policy_dict,
@@ -259,7 +248,7 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                   PolicyErrorMap* errors) {
   ignored_shortcuts_.clear();
 
-  if (!IsSiteSearchPolicyEnabled() || !policies.Get(policy_name())) {
+  if (!policies.Get(policy_name())) {
     return true;
   }
 
@@ -334,10 +323,6 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
 void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                   PrefValueMap* prefs) {
-  if (!IsSiteSearchPolicyEnabled()) {
-    return;
-  }
-
   const base::Value* policy_value =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
 

@@ -3507,21 +3507,6 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-const char kShowFeaturedEnterpriseSiteSearchName[] =
-    "Show featured Enterprise site search engines in Omnibox";
-const char kShowFeaturedEnterpriseSiteSearchDescription[] =
-    "Allow Enterprise site search engines created by the SiteSearchSettings "
-    "policy to be featured in the Omnibox on @ state.";
-
-const char kShowFeaturedEnterpriseSiteSearchIPHName[] =
-    "Show IPH for featured Enterprise search";
-const char kShowFeaturedEnterpriseSiteSearchIPHDescription[] =
-    "Show an IPH on zero-suggest in the Omnibox for featured Enterprise search "
-    "engines created by the SiteSearchSettings policy. ";
-#endif
-
 const char kShowOverdrawFeedbackName[] = "Show overdraw feedback";
 const char kShowOverdrawFeedbackDescription[] =
     "Visualize overdraw by color-coding elements based on if they have other "
@@ -3541,10 +3526,6 @@ const char kSiteInstanceGroupsForDataUrlsDescription[] =
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-const char kSiteSearchSettingsPolicyName[] = "Enable SiteSearchSettings policy";
-const char kSiteSearchSettingsPolicyDescription[] =
-    "Allow site search engines to be defined by the SiteSearchSettings policy.";
-
 const char kPwaNavigationCapturingName[] = "Desktop PWA Link Capturing";
 const char kPwaNavigationCapturingDescription[] =
     "Enables opening links from Chrome in an installed PWA. Currently under "

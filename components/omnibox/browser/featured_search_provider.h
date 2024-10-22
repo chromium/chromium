@@ -44,7 +44,7 @@ class FeaturedSearchProvider : public AutocompleteProvider {
 
   // Populates `matches_` with matching starter pack keywords such as @history,
   // and @bookmarks
-  void DoStarterPackAutocompletion(const AutocompleteInput& input);
+  void AddFeaturedKeywordMatches(const AutocompleteInput& input);
 
   // Constructs an AutocompleteMatch for starter pack suggestions such as
   // @bookmarks, @history, etc. and adds it to `matches_`.

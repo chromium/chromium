@@ -65,8 +65,6 @@ void EnterpriseSiteSearchManager::RegisterProfilePrefs(
 void EnterpriseSiteSearchManager::AddPrefValueToMap(
     base::Value::List providers,
     PrefValueMap* pref_value_map) {
-  CHECK(base::FeatureList::IsEnabled(omnibox::kSiteSearchSettingsPolicy));
-
   pref_value_map->SetValue(kSiteSearchSettingsPrefName,
                            base::Value(std::move(providers)));
 }

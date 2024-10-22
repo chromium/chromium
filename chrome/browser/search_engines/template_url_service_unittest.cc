@@ -36,7 +36,6 @@
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -2617,11 +2616,8 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyBeforeLoading) {
   constexpr char kKeyword1[] = "site_search_1";
   constexpr char kKeyword2[] = "site_search_2";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/false);
 
   // Set a managed preference that establishes site search providers before
@@ -2669,11 +2665,8 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyAfterLoading) {
   constexpr char kKeyword1[] = "site_search_1";
   constexpr char kKeyword2[] = "site_search_2";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   // Set a managed preference that establishes site search providers after
@@ -2705,11 +2698,8 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyUpdates) {
   constexpr char16_t kKeyword3U16[] = u"site_search_3";
   constexpr char16_t kKeyword4U16[] = u"site_search_4";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   // Set a managed preference that establishes site search providers.
@@ -2771,12 +2761,10 @@ TEST_P(TemplateURLServiceTest,
   constexpr char kKeyword1[] = "site_search_1";
   constexpr char kKeyword2[] = "site_search_2";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
   base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   // Create two pre-existing site search engines.
@@ -2844,12 +2832,10 @@ TEST_P(TemplateURLServiceTest,
   constexpr char kKeyword2[] = "site_search_2";
   constexpr char kKeywordWithAt2[] = "@site_search_2";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
   base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   // Create some pre-existing site search engines with variations of starting/
@@ -2923,12 +2909,10 @@ TEST_P(TemplateURLServiceTest,
 }
 
 TEST_P(TemplateURLServiceTest, NonFeaturedSiteSearchPolicyConflictWithDSP) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
   base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   const TemplateURL* dse = model()->GetDefaultSearchProvider();
@@ -2974,12 +2958,10 @@ TEST_P(TemplateURLServiceTest,
   constexpr char kKeyword[] = "keyword";
   constexpr char16_t kKeywordU16[] = u"keyword";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
   base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   TemplateURL* user_dse = AddKeywordWithDate(
@@ -3026,12 +3008,10 @@ TEST_P(TemplateURLServiceTest,
   constexpr char kKeyword[] = "keyword";
   constexpr char16_t kKeywordU16[] = u"keyword";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
   base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   TemplateURL* extension_dse =
@@ -3075,12 +3055,10 @@ TEST_P(TemplateURLServiceTest,
   constexpr char kKeyword[] = "@keyword";
   constexpr char16_t kKeywordU16[] = u"@keyword";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
   base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   TemplateURL* user_dse = AddKeywordWithDate(
@@ -3128,12 +3106,10 @@ TEST_P(TemplateURLServiceTest,
   constexpr char kKeyword[] = "@keyword";
   constexpr char16_t kKeywordU16[] = u"@keyword";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
   base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   TemplateURL* extension_dse =
@@ -3178,12 +3154,10 @@ TEST_P(TemplateURLServiceTest,
   constexpr char kBookmarksKeyword[] = "@bookmarks";
   constexpr char16_t kBookmarksKeywordU16[] = u"@bookmarks";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
   base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
-  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   const TemplateURL* bookmarks_entry =

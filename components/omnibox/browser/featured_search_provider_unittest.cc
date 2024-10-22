@@ -317,9 +317,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
 
 TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({omnibox::kShowFeaturedEnterpriseSiteSearch,
-                             omnibox::kStarterPackExpansion},
-                            {});
+  features.InitWithFeatures({omnibox::kStarterPackExpansion}, {});
 
   AddStarterPackEntriesToTemplateUrlService();
 
@@ -423,9 +421,7 @@ TEST_F(FeaturedSearchProviderTest,
 
 TEST_F(FeaturedSearchProviderTest, ZeroSuggestFeaturedSearchIPHSuggestion) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({omnibox::kShowFeaturedEnterpriseSiteSearch,
-                             omnibox::kShowFeaturedEnterpriseSiteSearchIPH,
-                             omnibox::kStarterPackExpansion},
+  features.InitWithFeatures({omnibox::kStarterPackExpansion},
                             {omnibox::kStarterPackIPH});
 
   AddStarterPackEntriesToTemplateUrlService();
@@ -467,8 +463,6 @@ TEST_F(FeaturedSearchProviderTest,
   features.InitWithFeaturesAndParameters(
       {{history_embeddings::kHistoryEmbeddings,
         {{history_embeddings::kOmniboxScoped.name, "false"}}},
-       {omnibox::kShowFeaturedEnterpriseSiteSearch, {}},
-       {omnibox::kShowFeaturedEnterpriseSiteSearchIPH, {}},
        {omnibox::kStarterPackExpansion, {}}},
       {omnibox::kStarterPackIPH});
 
@@ -513,8 +507,6 @@ TEST_F(FeaturedSearchProviderTest,
   features.InitWithFeaturesAndParameters(
       {{history_embeddings::kHistoryEmbeddings,
         {{history_embeddings::kOmniboxScoped.name, "false"}}},
-       {omnibox::kShowFeaturedEnterpriseSiteSearch, {}},
-       {omnibox::kShowFeaturedEnterpriseSiteSearchIPH, {}},
        {omnibox::kStarterPackExpansion, {}},
        {omnibox::kStarterPackIPH, {}}},
       {});

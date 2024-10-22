@@ -161,7 +161,7 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
     return;
   }
 
-  DoStarterPackAutocompletion(input);
+  AddFeaturedKeywordMatches(input);
 }
 
 void FeaturedSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
@@ -182,7 +182,7 @@ void FeaturedSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
 
 FeaturedSearchProvider::~FeaturedSearchProvider() = default;
 
-void FeaturedSearchProvider::DoStarterPackAutocompletion(
+void FeaturedSearchProvider::AddFeaturedKeywordMatches(
     const AutocompleteInput& input) {
   // When the user's input begins with '@', we want to prioritize providing
   // suggestions for all active starter pack search engines.
@@ -203,9 +203,7 @@ void FeaturedSearchProvider::DoStarterPackAutocompletion(
         }
 
         AddStarterPackMatch(*match, input);
-      } else if (base::FeatureList::IsEnabled(
-                     omnibox::kShowFeaturedEnterpriseSiteSearch) &&
-                 match->featured_by_policy()) {
+      } else if (match->featured_by_policy()) {
         AddFeaturedEnterpriseSearchMatch(*match, input);
       }
     }
@@ -410,8 +408,7 @@ bool FeaturedSearchProvider::ShouldShowEnterpriseFeaturedSearchIPHMatch(
   // - The user has not successfully used at least one featured engine.
   TemplateURLService::TemplateURLVector featured_engines =
       template_url_service_->GetFeaturedEnterpriseSearchEngines();
-  return OmniboxFieldTrial::IsFeaturedEnterpriseSearchIPHEnabled() &&
-         input.IsZeroSuggest() && !featured_engines.empty() &&
+  return input.IsZeroSuggest() && !featured_engines.empty() &&
          ShouldShowIPH(IphType::kFeaturedEnterpriseSearch) &&
          base::ranges::all_of(featured_engines, [](auto turl) {
            return turl->usage_count() == 0;

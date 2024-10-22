@@ -1116,13 +1116,6 @@ bool IsStarterPackIPHEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackIPH);
 }
 // <- Site Search Starter Pack
-// ---------------------------------------------------------
-// Featured Enterprise Site Search ->
-bool IsFeaturedEnterpriseSearchIPHEnabled() {
-  return base::FeatureList::IsEnabled(
-      omnibox::kShowFeaturedEnterpriseSiteSearchIPH);
-}
-
 }  // namespace OmniboxFieldTrial
 
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(

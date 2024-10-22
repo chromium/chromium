@@ -340,30 +340,6 @@ BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
              "OmniboxTouchDownTriggerForPrefetch",
              DISABLED);
 
-// If enabled, site search engines featured by policy are shown on @ state in
-// the omnibox above starter pack suggestions.
-BASE_FEATURE(kShowFeaturedEnterpriseSiteSearch,
-             "ShowFeaturedEnterpriseSiteSearch",
-             enable_if(!IS_ANDROID && !IS_IOS));
-
-// Enables an informational IPH message at the bottom of the Omnibox directing
-// users to featured Enterprise search engines created by policy.
-BASE_FEATURE(kShowFeaturedEnterpriseSiteSearchIPH,
-             "ShowFeaturedEnterpriseSiteSearchIPH",
-             enable_if(!IS_ANDROID && !IS_IOS));
-
-// If enabled, site search engines defined by policy are saved into prefs and
-// committed to the keyword database, so that they can be accessed from the
-// Omnibox and the Settings page.
-// This feature only has any effect if the policy is set by the administrator,
-// so it's safe to keep it enabled by default - in case of errors, disabling
-// the policy should be enough.
-// Keeping the feature as a kill switch in case we identify any major regression
-// in the implementation.
-BASE_FEATURE(kSiteSearchSettingsPolicy,
-             "SiteSearchSettingsPolicy",
-             enable_if(!IS_ANDROID && !IS_IOS));
-
 // Enables additional site search providers for the Site search Starter Pack.
 BASE_FEATURE(kStarterPackExpansion,
              "StarterPackExpansion",

@@ -878,8 +878,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void EmitTemplateURLActiveOnStartupHistogram(
       OwnedTemplateURLVector* template_urls);
 
-  // Returns an instance of |EnterpriseSiteSearchManager| if feature
-  // |kSiteSearchSettingsPolicy| or nullptr otherwise.
+  // Returns an instance of |EnterpriseSiteSearchManager|.
   std::unique_ptr<EnterpriseSiteSearchManager> GetEnterpriseSiteSearchManager(
       PrefService* prefs);
 
@@ -1007,8 +1006,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Helper class to manage the default search engine.
   DefaultSearchManager default_search_manager_;
 
-  // Site search engines defined by enterprise policy. Set as nullptr if feature
-  // |kSiteSearchSettingsPolicy| is not enabled.
+  // Site search engines defined by enterprise policy.
   std::unique_ptr<EnterpriseSiteSearchManager> enterprise_site_search_manager_;
 
   // This tracks how many Scoper handles exist. When the number of handles drops

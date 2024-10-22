@@ -2205,10 +2205,8 @@ void TemplateURLService::ChangeToLoadedState() {
           ? &pre_loading_providers_->default_search_provider()->data()
           : nullptr,
       default_search_provider_source_);
-  if (base::FeatureList::IsEnabled(omnibox::kSiteSearchSettingsPolicy)) {
-    ApplyEnterpriseSiteSearchChanges(
-        pre_loading_providers_->TakeSiteSearchEngines());
-  }
+  ApplyEnterpriseSiteSearchChanges(
+      pre_loading_providers_->TakeSiteSearchEngines());
   pre_loading_providers_.reset();
 
   if (on_loaded_callback_for_sync_)
@@ -3070,12 +3068,10 @@ std::unique_ptr<EnterpriseSiteSearchManager>
 TemplateURLService::GetEnterpriseSiteSearchManager(PrefService* prefs) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  return base::FeatureList::IsEnabled(omnibox::kSiteSearchSettingsPolicy)
-             ? std::make_unique<EnterpriseSiteSearchManager>(
-                   prefs, base::BindRepeating(
-                              &TemplateURLService::EnterpriseSiteSearchChanged,
-                              base::Unretained(this)))
-             : nullptr;
+  return std::make_unique<EnterpriseSiteSearchManager>(
+      prefs,
+      base::BindRepeating(&TemplateURLService::EnterpriseSiteSearchChanged,
+                          base::Unretained(this)));
 #else
   return nullptr;
 #endif
