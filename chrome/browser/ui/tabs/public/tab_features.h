@@ -18,6 +18,7 @@ class LensOverlayController;
 class Profile;
 class ReadAnythingSidePanelController;
 class SidePanelRegistry;
+class PinnedTranslateActionListener;
 
 namespace commerce {
 class CommerceUiTabHelper;
@@ -167,6 +168,10 @@ class TabFeatures {
 
   // Responsible for commerce related features.
   std::unique_ptr<commerce::CommerceUiTabHelper> commerce_ui_tab_helper_;
+
+  // Responsible for updating status indicator of the pinned translate button.
+  std::unique_ptr<PinnedTranslateActionListener>
+      pinned_translate_action_listener_;
 
   std::unique_ptr<privacy_sandbox::PrivacySandboxTabObserver>
       privacy_sandbox_tab_observer_;

@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
@@ -104,6 +105,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     chrome_autofill_prediction_improvements_client_ =
         ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
             tab.GetContents(), profile);
+
+    pinned_translate_action_listener_ =
+        std::make_unique<PinnedTranslateActionListener>(&tab);
 
     if (!profile->IsIncognitoProfile()) {
       commerce_ui_tab_helper_ =
