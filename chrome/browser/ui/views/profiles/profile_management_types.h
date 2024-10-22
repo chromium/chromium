@@ -26,4 +26,10 @@ using PostHostClearedCallback =
     base::StrongAlias<class PostHostClearedCallbackTag,
                       base::OnceCallback<void(Browser*)>>;
 
+// Helper method to combine two existing PostHostClearedCallbacks
+// and schedule them to run one after the other.
+PostHostClearedCallback CombinePostHostClearedCallbacks(
+    PostHostClearedCallback first_post_host_cleared_callback,
+    PostHostClearedCallback second_post_host_cleared_callback);
+
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_TYPES_H_

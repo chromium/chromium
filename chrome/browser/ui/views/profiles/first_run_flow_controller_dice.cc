@@ -26,6 +26,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -389,6 +390,18 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
     ProfilePickerSignedInFlowController::Init();
   }
 
+  PostHostClearedCallback CreateSupervisedUserIphCallback() {
+    return PostHostClearedCallback(base::BindOnce([](Browser* browser) {
+      CHECK(browser);
+      BrowserView* browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser);
+      if (!browser_view) {
+        return;
+      }
+      browser_view->MaybeShowSupervisedUserProfileSignInIPH();
+    }));
+  }
+
   void FinishAndOpenBrowserInternal(
       PostHostClearedCallback post_host_cleared_callback,
       bool is_continue_callback) override {
@@ -398,8 +411,13 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
     if (!step_completed_callback_) {
       return;
     }
+    // The supervised user IPH should be called after the present
+    // post_host_cleared_callback which finishes the browser creation.
+    auto combined_callback =
+        CombinePostHostClearedCallbacks(std::move(post_host_cleared_callback),
+                                        CreateSupervisedUserIphCallback());
     std::move(step_completed_callback_)
-        .Run(std::move(post_host_cleared_callback), is_continue_callback,
+        .Run(std::move(combined_callback), is_continue_callback,
              StepSwitchFinishedCallback());
   }
 
