@@ -199,6 +199,12 @@ TEST_F(InputRowWithPasswordUnitTest, ResetStateTest) {
   CHECK_EQ(test_api_->GetSubmitButton()->GetEnabled(), false);
   // Display text button should be disabled with empty text.
   CHECK_EQ(test_api_->GetDisplayTextButton()->GetEnabled(), false);
+
+  // Double check that SetInputEnabled will not enable the buttons when
+  // there is no input.
+  auth_input_->SetInputEnabled(true);
+  CHECK_EQ(test_api_->GetSubmitButton()->GetEnabled(), false);
+  CHECK_EQ(test_api_->GetDisplayTextButton()->GetEnabled(), false);
 }
 
 class InputRowWithPinUnitTest : public AshTestBase {
@@ -305,6 +311,26 @@ TEST_F(InputRowWithPinUnitTest, ReenabledBackspacePressTest) {
   modifiedPIN.pop_back();
   EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
   PressAndReleaseKey(ui::VKEY_BACK);
+}
+
+// Testing that clearing the input would disable submit and display-text button.
+TEST_F(InputRowWithPinUnitTest, ClearingInputDisabledButtonsTest) {
+  auth_input_->SetInputEnabled(true);
+  auth_input_->RequestFocus();
+  std::u16string modifiedPIN = kPIN;
+  while (!modifiedPIN.empty()) {
+    modifiedPIN.pop_back();
+    EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
+    PressAndReleaseKey(ui::VKEY_BACK);
+  }
+  CHECK_EQ(test_api_->GetSubmitButton()->GetEnabled(), false);
+  CHECK_EQ(test_api_->GetDisplayTextButton()->GetEnabled(), false);
+
+  // Double check that SetInputEnabled will not enable the buttons when
+  // there is no input.
+  auth_input_->SetInputEnabled(true);
+  CHECK_EQ(test_api_->GetSubmitButton()->GetEnabled(), false);
+  CHECK_EQ(test_api_->GetDisplayTextButton()->GetEnabled(), false);
 }
 
 // Testing PIN OnSubmit observer.

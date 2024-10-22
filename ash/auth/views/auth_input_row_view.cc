@@ -440,6 +440,8 @@ void AuthInputRowView::SetInputEnabled(bool enabled) {
   SetEnabled(enabled);
   textfield_->SetEnabled(enabled);
   textfield_->SetBorder(nullptr);
+  // Enable buttons only when the input is submittable.
+  enabled = enabled && IsInputSubmittable();
   submit_button_->SetEnabled(enabled);
   display_text_button_->SetEnabled(enabled);
 }
