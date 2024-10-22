@@ -138,13 +138,18 @@ public class ActionConfirmationDelegate {
             @ActionConfirmationResult Integer result,
             Runnable confirmationCallback,
             boolean shouldRunIfImmediateContinue) {
-        if ((result == ActionConfirmationResult.IMMEDIATE_CONTINUE && shouldRunIfImmediateContinue)
-                || result == ActionConfirmationResult.CONFIRMATION_POSITIVE) {
-            confirmationCallback.run();
+        switch (result) {
+            case ActionConfirmationResult.IMMEDIATE_CONTINUE:
+                if (shouldRunIfImmediateContinue) confirmationCallback.run();
+                break;
+            case ActionConfirmationResult.CONFIRMATION_POSITIVE:
+                confirmationCallback.run();
+                break;
+            case ActionConfirmationResult.CONFIRMATION_NEGATIVE:
+                // Restore the hidden group.
+                mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
+                break;
         }
-        // Reset the group ID to hide after the group deletion has occurred, so we rebuild the strip
-        // with the correct tab state, meaning the indicator won't unexpectedly reappear.
-        mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
     }
 
     void setPrefServiceForTesting(PrefService prefService) {
