@@ -182,7 +182,6 @@ void CompositorFrameSinkImpl::SubmitCompositorFrameInternal(
               << " because " << reason;
   compositor_frame_sink_receiver_.ResetWithReason(static_cast<uint32_t>(result),
                                                   reason);
-  OnClientConnectionLost();
 }
 
 void CompositorFrameSinkImpl::DidNotProduceFrame(
@@ -197,7 +196,6 @@ void CompositorFrameSinkImpl::DidAllocateSharedBitmap(
     DLOG(ERROR) << "DidAllocateSharedBitmap failed for duplicate "
                 << "SharedBitmapId";
     compositor_frame_sink_receiver_.reset();
-    OnClientConnectionLost();
   }
 }
 
