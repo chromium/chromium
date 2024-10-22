@@ -22,6 +22,7 @@
   #   chromium.fuchsia
   #   chromium.fuchsia.fyi
   #   chromium.gpu
+  #   chromium.linux
   #   chromium.mac
   #   chromium.rust
   #   chromium.win
@@ -1185,68 +1186,6 @@
           'skylab_tests': 'gpu_fyi_chromeos_release_gtests_volteer_skylab',
           'skylab_gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab',
         },
-      },
-    },
-  },
-  {
-    # The following builders in this group have been migrated to set their
-    # targets in the builders' declarations in
-    # //infra/config/subprojects/ci/chromium.linux.star
-    #   Linux Builder
-    #   Linux Builder (Wayland)
-    #   Linux Builder (dbg)
-    #   Linux Tests
-    #   Linux Tests (Wayland)
-    #   Linux Tests (dbg)(1)
-    'name': 'chromium.linux',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'Leak Detection Linux': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'leak_detection_isolated_scripts',
-        },
-      },
-      # For documentation, see //services/network/README.md.
-      'Network Service Linux': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'network_service_extra_gtests',
-        },
-      },
-      'linux-bfcache-rel': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'bfcache_linux_gtests',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'linux-extended-tracing-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'linux-gcc-rel': {
-        'additional_compile_targets': [
-          'empty_main',
-        ],
-      },
-      'linux-v4l2-codec-rel': {
-        'additional_compile_targets': [
-          'image_processor_perf_test',
-          'video_decode_accelerator_tests',
-          'video_decode_accelerator_perf_tests',
-          'video_encode_accelerator_tests',
-          'video_encode_accelerator_perf_tests',
-          'v4l2_stateless_decoder',
-          'v4l2_unittest',
-        ],
       },
     },
   },

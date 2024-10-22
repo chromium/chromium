@@ -251,6 +251,8 @@ targets.compile_target(
 targets.compile_target(
     name = "empty_main",
     label = "//testing:empty_main",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -263,6 +265,8 @@ targets.compile_target(
 targets.compile_target(
     name = "image_processor_perf_test",
     label = "//media/gpu/chromeos:image_processor_perf_test",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -412,26 +416,36 @@ targets.compile_target(
 targets.compile_target(
     name = "v4l2_stateless_decoder",
     label = "//media/gpu/v4l2:v4l2_stateless_decoder",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "v4l2_unittest",
     label = "//media/gpu/v4l2:v4l2_unittest",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "video_decode_accelerator_perf_tests",
     label = "//media/gpu/test:video_decode_accelerator_perf_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "video_encode_accelerator_tests",
     label = "//media/gpu/test:video_encode_accelerator_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "video_encode_accelerator_perf_tests",
     label = "//media/gpu/test:video_encode_accelerator_perf_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(

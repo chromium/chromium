@@ -12,14 +12,6 @@
 load("//lib/targets.star", "targets")
 
 targets.legacy_compound_suite(
-    name = "bfcache_linux_gtests",
-    basic_suites = [
-        "bfcache_generic_gtests",
-        "bfcache_linux_specific_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "chrome_linux_isolated_script_tests",
     basic_suites = [
         "chrome_isolated_script_tests",
@@ -404,13 +396,6 @@ targets.legacy_compound_suite(
 #         'telemetry_perf_unittests_isolated_scripts_android',
 #     ],
 # )
-
-targets.legacy_compound_suite(
-    name = "network_service_extra_gtests",
-    basic_suites = [
-        "network_service_fyi_gtests",
-    ],
-)
 
 targets.legacy_compound_suite(
     name = "win_specific_isolated_scripts_and_sizes",

@@ -38,7 +38,8 @@
           "builder": "linux-v4l2-codec-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-v4l2-codec-rel/targets"
     }
   },
   "$build/flakiness": {

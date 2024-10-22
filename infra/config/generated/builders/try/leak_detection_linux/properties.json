@@ -38,7 +38,8 @@
           "builder": "Leak Detection Linux",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/leak_detection_linux/targets"
     }
   },
   "$build/reclient": {

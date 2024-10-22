@@ -309,6 +309,14 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "leak_detection_isolated_scripts",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+    ),
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -746,6 +754,7 @@ ci.thin_tester(
     contact_team_email = "chrome-linux-engprod@google.com",
 )
 
+# For documentation, see //services/network/README.md.
 ci.builder(
     name = "Network Service Linux",
     builder_spec = builder_config.builder_spec(
@@ -771,6 +780,14 @@ ci.builder(
             "remoteexec",
             "linux",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "network_service_extra_gtests",
+        ],
+        mixins = [
+            "linux-jammy",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -808,6 +825,23 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "bfcache_linux_gtests",
+            "chromium_webkit_isolated_scripts",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "blink_wpt_tests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/40200069): Re-enable the test.
+                    "--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html",
+                ],
+            ),
+        },
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
         short_name = "bfc",
@@ -842,6 +876,11 @@ ci.builder(
             "extended_tracing",
             "linux",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -881,6 +920,11 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "empty_main",
+        ],
+    ),
     # Focal is needed for better C++20 support. See crbug.com/1284275.
     os = os.LINUX_FOCAL,
     console_view_entry = consoles.console_view_entry(
@@ -918,6 +962,17 @@ ci.builder(
             "remoteexec",
             "linux",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "image_processor_perf_test",
+            "video_decode_accelerator_tests",
+            "video_decode_accelerator_perf_tests",
+            "video_encode_accelerator_tests",
+            "video_encode_accelerator_perf_tests",
+            "v4l2_stateless_decoder",
+            "v4l2_unittest",
         ],
     ),
     tree_closing = False,

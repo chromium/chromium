@@ -214,12 +214,6 @@
           'shards': 12,
         },
       },
-      'linux-bfcache-rel': {
-        'args': [
-          # TODO(crbug.com/40200069): Re-enable the test.
-          '--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html',
-        ],
-      },
       'linux-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,

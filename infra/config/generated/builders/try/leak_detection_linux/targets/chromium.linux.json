@@ -1,0 +1,35 @@
+{
+  "Leak Detection Linux": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--pageset-repeat=1",
+          "--test-shard-map-filename=linux_leak_detection_shard_map.json",
+          "--upload-results",
+          "--output-format=histograms",
+          "--browser=release",
+          "--xvfb"
+        ],
+        "merge": {
+          "args": [
+            "--smoke-test-mode"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "memory.leak_detection",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "expiration": 36000,
+          "hard_timeout": 10800,
+          "io_timeout": 3600,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "performance_test_suite",
+        "test_id_prefix": "ninja://chrome/test:performance_test_suite/"
+      }
+    ]
+  }
+}

@@ -95,30 +95,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# Run content_browser_tests with BackForwardCache disabled
-targets.legacy_basic_suite(
-    name = "bfcache_generic_gtests",
-    tests = {
-        "bf_cache_content_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 20,
-            ),
-        ),
-    },
-)
-
-# Run browser_tests with BackForwardCache disabled
-targets.legacy_basic_suite(
-    name = "bfcache_linux_specific_gtests",
-    tests = {
-        "bf_cache_browser_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 10,
-            ),
-        ),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "blink_unittests_suite",
     tests = {
@@ -2259,20 +2235,6 @@ targets.legacy_basic_suite(
 # END tests which run on the GPU bots
 
 targets.legacy_basic_suite(
-    name = "leak_detection_isolated_scripts",
-    tests = {
-        "memory.leak_detection": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 10,
-                expiration_sec = 36000,
-                hard_timeout_sec = 10800,
-                io_timeout_sec = 3600,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "linux_cfm_gtests",
     tests = {
         "chromeos_unittests": targets.legacy_test_config(),
@@ -2483,17 +2445,6 @@ targets.legacy_basic_suite(
     name = "mojo_python_unittests_isolated_scripts",
     tests = {
         "mojo_python_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "network_service_fyi_gtests",
-    tests = {
-        "network_service_web_request_proxy_browser_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 15,
-            ),
-        ),
     },
 )
 

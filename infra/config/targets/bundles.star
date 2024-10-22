@@ -708,6 +708,44 @@ targets.bundle(
     },
 )
 
+# Run content_browser_tests with BackForwardCache disabled
+targets.bundle(
+    name = "bfcache_generic_gtests",
+    targets = [
+        "bf_cache_content_browsertests",
+    ],
+    per_test_modifications = {
+        "bf_cache_content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+    },
+)
+
+# Run browser_tests with BackForwardCache disabled
+targets.bundle(
+    name = "bfcache_linux_gtests",
+    targets = [
+        "bfcache_generic_gtests",
+        "bfcache_linux_specific_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "bfcache_linux_specific_gtests",
+    targets = [
+        "bf_cache_browser_tests",
+    ],
+    per_test_modifications = {
+        "bf_cache_browser_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 10,
+            ),
+        ),
+    },
+)
+
 targets.bundle(
     name = "cast_junit_tests",
     targets = [
@@ -3827,6 +3865,23 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "leak_detection_isolated_scripts",
+    targets = [
+        "memory.leak_detection",
+    ],
+    per_test_modifications = {
+        "memory.leak_detection": targets.mixin(
+            swarming = targets.swarming(
+                shards = 10,
+                expiration_sec = 36000,
+                hard_timeout_sec = 10800,
+                io_timeout_sec = 3600,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "linux_force_accessibility_gtests",
     targets = [
         "browser_tests",
@@ -3896,6 +3951,27 @@ targets.bundle(
                 "marshmallow",
                 "oreo_mr1_fleet",
             ],
+        ),
+    },
+)
+
+targets.bundle(
+    name = "network_service_extra_gtests",
+    targets = [
+        "network_service_fyi_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "network_service_fyi_gtests",
+    targets = [
+        "network_service_web_request_proxy_browser_tests",
+    ],
+    per_test_modifications = {
+        "network_service_web_request_proxy_browser_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 15,
+            ),
         ),
     },
 )

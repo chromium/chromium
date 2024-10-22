@@ -93,34 +93,6 @@
       'wm_unittests': {},
     },
 
-    'bfcache_generic_gtests': {
-      'bf_cache_content_browsertests': {
-        'test_common': {
-          'args': [
-            '--disable-features=BackForwardCache',
-          ],
-        },
-        'test': 'content_browsertests',
-        'swarming': {
-          'shards': 20,
-        },
-      },
-    },
-
-    'bfcache_linux_specific_gtests': {
-      'bf_cache_browser_tests': {
-        'test_common': {
-          'args': [
-            '--disable-features=BackForwardCache',
-          ],
-        },
-        'test': 'browser_tests',
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-
     'blink_unittests_suite': {
       'blink_unit_tests': {
         'test': 'blink_unittests',
@@ -2977,34 +2949,6 @@
       'ui_base_unittests': {},
     },
 
-    'leak_detection_isolated_scripts': {
-      'memory.leak_detection': {
-        'test_common': {
-          'args': [
-            '--pageset-repeat=1',
-            '--test-shard-map-filename=linux_leak_detection_shard_map.json',
-            '--upload-results',
-            '--output-format=histograms',
-            '--browser=release',
-            '--xvfb',
-          ],
-          'merge': {
-            'script': '//tools/perf/process_perf_results.py',
-            'args': [
-              '--smoke-test-mode',
-            ],
-          },
-        },
-        'test': 'performance_test_suite',
-        'swarming': {
-          'shards': 10,
-          'expiration': 36000,
-          'hard_timeout': 10800,
-          'io_timeout': 3600,
-        },
-      },
-    },
-
     'linux_cfm_gtests': {
       'chromeos_unittests': {},
       'unit_tests': {},
@@ -3244,20 +3188,6 @@
           'resultdb': {
             'enable': True,
           },
-        },
-      },
-    },
-
-    'network_service_fyi_gtests': {
-      'network_service_web_request_proxy_browser_tests': {
-        'test_common': {
-          'args': [
-            '--enable-features=ForceWebRequestProxyForTest',
-          ],
-        },
-        'test': 'browser_tests',
-        'swarming': {
-          'shards': 15,
         },
       },
     },
@@ -4126,11 +4056,6 @@
 
   'compound_suites': {
 
-    'bfcache_linux_gtests': [
-      'bfcache_generic_gtests',
-      'bfcache_linux_specific_gtests',
-    ],
-
     'chrome_linux_isolated_script_tests': [
       'chrome_isolated_script_tests',
       'chrome_private_code_test_isolated_scripts',
@@ -4396,10 +4321,6 @@
       'linux_flavor_specific_chromium_gtests',
       'non_android_chromium_gtests',
       'pixel_experimental_browser_tests_gtests',
-    ],
-
-    'network_service_extra_gtests': [
-      'network_service_fyi_gtests',
     ],
 
     'win_specific_isolated_scripts_and_sizes': [
