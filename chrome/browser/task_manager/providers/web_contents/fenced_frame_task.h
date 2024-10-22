@@ -19,7 +19,7 @@ namespace task_manager {
 class FencedFrameTask : public RendererTask {
  public:
   FencedFrameTask(content::RenderFrameHost* render_frame_host,
-                  RendererTask* embedder_task);
+                  base::WeakPtr<RendererTask> embedder_task);
   FencedFrameTask(const FencedFrameTask&) = delete;
   FencedFrameTask& operator=(const FencedFrameTask&) = delete;
   ~FencedFrameTask() override;

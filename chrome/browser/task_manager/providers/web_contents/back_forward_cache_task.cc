@@ -65,9 +65,9 @@ BackForwardCacheTask::~BackForwardCacheTask() {}
 
 // For the top level BackForwardCacheTask |parent_task_| is nullptr.
 Task* BackForwardCacheTask::GetParentTask() const {
-  return parent_task_.get() ? parent_task_.get()
-                            : task_provider_->GetTaskOfFrame(
-                                  web_contents()->GetPrimaryMainFrame());
+  return parent_task_ ? parent_task_.get()
+                      : task_provider_->GetTaskOfFrame(
+                            web_contents()->GetPrimaryMainFrame());
 }
 
 // The top page calls the default Activate().

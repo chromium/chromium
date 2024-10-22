@@ -393,8 +393,13 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
   // represented by a SubframeTask.
   if (!site_instance_exists ||
       (is_primary_main_frame && !site_instance_is_main)) {
-    auto* primary_main_frame_task =
+    base::WeakPtr<RendererTask> primary_main_frame_task;
+    RendererTask* renderer_task =
         GetTaskForFrame(web_contents()->GetPrimaryMainFrame());
+    if (renderer_task) {
+      primary_main_frame_task = renderer_task->AsWeakPtr();
+    }
+
     if (rfh_state == RenderFrameHost::LifecycleState::kInBackForwardCache) {
       // Use RFH::GetMainFrame instead web_contents()->GetPrimaryMainFrame()
       // because the BFCached frames are not the currently active main frame.
@@ -409,11 +414,11 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
       new_task = tag->CreateTask(provider_);
       primary_main_frame_site_instance_ = site_instance;
     } else if (render_frame_host->IsFencedFrameRoot()) {
-      new_task = std::make_unique<FencedFrameTask>(render_frame_host,
-                                                   primary_main_frame_task);
+      new_task = std::make_unique<FencedFrameTask>(
+          render_frame_host, std::move(primary_main_frame_task));
     } else {
       new_task = std::make_unique<SubframeTask>(
-          render_frame_host, primary_main_frame_task->AsWeakPtr());
+          render_frame_host, std::move(primary_main_frame_task));
     }
   }
 
