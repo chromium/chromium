@@ -107,7 +107,10 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         /* supportUndo= */ false,
                         /* trackInNativeModelList= */ true);
 
-        selector.initialize(normalTabModel, incognitoTabModel);
+        TabUngrouperFactory factory =
+                (isIncognitoBranded, tabGroupModelFilterSupplier) ->
+                        new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
+        selector.initialize(normalTabModel, incognitoTabModel, factory);
 
         return selector;
     }

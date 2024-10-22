@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
 
@@ -69,6 +70,7 @@ public class TabModelSelectorImplTest {
     @Mock private TabContentManager mMockTabContentManager;
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
+    @Mock private ModalDialogManager mModalDialogManager;
 
     @Mock
     private IncognitoTabModelObserver.IncognitoReauthDialogDelegate
@@ -101,6 +103,8 @@ public class TabModelSelectorImplTest {
         mProfileProviderSupplier.set(mProfileProvider);
         mTabModelSelector =
                 new TabModelSelectorImpl(
+                        mContext,
+                        mModalDialogManager,
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
@@ -438,6 +442,8 @@ public class TabModelSelectorImplTest {
         TabModelImpl regularModel = mock(TabModelImpl.class);
         mTabModelSelector =
                 new TabModelSelectorImpl(
+                        mContext,
+                        mModalDialogManager,
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
@@ -446,7 +452,10 @@ public class TabModelSelectorImplTest {
                         NO_RESTORE_TYPE,
                         /* startIncognito= */ false);
         when(regularModel.isActiveModel()).thenReturn(true);
-        mTabModelSelector.initializeForTesting(regularModel, mIncognitoTabModel);
+        TabUngrouperFactory factory =
+                (isIncognitoBranded, tabGroupModelFilterSupplier) ->
+                        new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
+        mTabModelSelector.initializeForTesting(regularModel, mIncognitoTabModel, factory);
         TabModelSelectorObserver observer =
                 new TabModelSelectorObserver() {
                     @Override

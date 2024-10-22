@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.nio.ByteBuffer;
@@ -74,6 +75,7 @@ public class TabbedModeTabPersistencePolicyTest {
     @Mock Profile mProfile;
     @Mock Profile mIncognitoProfile;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock ModalDialogManager mModalDialogManager;
 
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
@@ -86,6 +88,7 @@ public class TabbedModeTabPersistencePolicyTest {
                     @Override
                     public TabModelSelector buildSelector(
                             Context context,
+                            ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier) {
@@ -163,6 +166,7 @@ public class TabbedModeTabPersistencePolicyTest {
                                             false, mActivityLifecycleDispatcher, mCipherFactory);
                             tmpOrchestrator.createTabModels(
                                     new ChromeTabbedActivity(),
+                                    mModalDialogManager,
                                     profileProviderSupplier,
                                     null,
                                     null,

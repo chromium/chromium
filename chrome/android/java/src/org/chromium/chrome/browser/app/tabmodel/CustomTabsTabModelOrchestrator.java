@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import android.content.Context;
+
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -30,6 +32,7 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
 
     /** Creates the TabModelSelector and the TabPersistentStore. */
     public void createTabModels(
+            Context context,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             TabPersistencePolicy persistencePolicy,
@@ -40,6 +43,8 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.LOCATIONAL;
         mTabModelSelector =
                 new TabModelSelectorImpl(
+                        context,
+                        /* modalDialogManager= */ null,
                         profileProviderSupplier,
                         tabCreatorManager,
                         nextTabPolicySupplier,

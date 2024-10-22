@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -72,7 +73,7 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
         TabCreator tabCreator = getTabCreatorManager().getTabCreator(false);
         TabModelOrderController orderController = new TabModelOrderControllerImpl(this);
         TabRemover tabRemover =
-                new TabRemoverImpl(
+                new PassthroughTabRemover(
                         () ->
                                 getTabGroupModelFilterProvider()
                                         .getTabGroupModelFilter(/* isIncognito= */ false));
@@ -121,7 +122,7 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
             TabModelInternal normalModel,
             IncognitoTabModelInternal incognitoModel) {
         mTabContentManager = tabContentProvider;
-        initialize(normalModel, incognitoModel);
+        initialize(normalModel, incognitoModel, ArchivedTabModelSelectorImpl::createTabUngrouper);
 
         new TabModelSelectorTabObserver(this) {
             @Override
@@ -151,7 +152,7 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
      */
     public void initializeForTesting(
             TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
-        initialize(normalModel, incognitoModel);
+        initialize(normalModel, incognitoModel, ArchivedTabModelSelectorImpl::createTabUngrouper);
     }
 
     @Override
@@ -170,5 +171,10 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
     @Override
     public boolean isSessionRestoreInProgress() {
         return mSessionRestoreCompleted.get();
+    }
+
+    private static TabUngrouper createTabUngrouper(
+            boolean isIncognitoBranded, Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+        return new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
     }
 }

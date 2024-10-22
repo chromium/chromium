@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import android.content.Context;
 import android.os.Handler;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -23,6 +25,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,6 +47,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     private final TabModelOrderController mOrderController;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
+    private final Context mContext;
+    private final @Nullable ModalDialogManager mModalDialogManager;
 
     private boolean mIsUndoSupported;
     private NextTabPolicySupplier mNextTabPolicySupplier;
@@ -54,6 +59,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     /**
      * Builds a {@link TabModelSelectorImpl} instance.
      *
+     * @param context The activity context.
+     * @param modalDialogManager A {@link ModalDialogManager}.
      * @param profileProviderSupplier Provides the Profiles used in this selector.
      * @param tabCreatorManager A {@link TabCreatorManager} instance.
      * @param nextTabPolicySupplier Supplier of a policy to decide which tab to select next.
@@ -63,6 +70,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
      * @param startIncognito Whether to start in incognito mode.
      */
     public TabModelSelectorImpl(
+            Context context,
+            @Nullable ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
@@ -71,6 +80,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             @ActivityType int activityType,
             boolean startIncognito) {
         super(tabCreatorManager, startIncognito);
+        mContext = context;
+        mModalDialogManager = modalDialogManager;
         mProfileProviderSupplier = profileProviderSupplier;
         mIsUndoSupported = supportUndo;
         mOrderController = new TabModelOrderControllerImpl(this);
@@ -112,11 +123,15 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(true);
         mRecentlyClosedBridge =
                 new RecentlyClosedBridge(profileProvider.getOriginalProfile(), this);
+        Supplier<TabGroupModelFilter> regularTabGroupModelFilterSupplier =
+                () ->
+                        getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(/* isIncognito= */ false);
         TabRemover regularTabRemover =
-                new TabRemoverImpl(
-                        () ->
-                                getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(/* isIncognito= */ false));
+                mModalDialogManager != null
+                        ? new TabRemoverImpl(
+                                mContext, mModalDialogManager, regularTabGroupModelFilterSupplier)
+                        : new PassthroughTabRemover(regularTabGroupModelFilterSupplier);
         TabModelImpl normalModel =
                 new TabModelImpl(
                         profileProvider.getOriginalProfile(),
@@ -134,7 +149,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         regularTabCreator.setTabModel(normalModel, mOrderController);
 
         TabRemover incognitoTabRemover =
-                new TabRemoverImpl(
+                new PassthroughTabRemover(
                         () ->
                                 getTabGroupModelFilterProvider()
                                         .getTabGroupModelFilter(/* isIncognito= */ true));
@@ -161,7 +176,14 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             TabModelInternal normalModel,
             IncognitoTabModelInternal incognitoModel) {
         mTabContentManager = tabContentProvider;
-        initialize(normalModel, incognitoModel);
+        TabUngrouperFactory factory =
+                (isIncognitoBranded, tabGroupModelFilterSupplier) -> {
+                    return (isIncognitoBranded || mModalDialogManager == null)
+                            ? new PassthroughTabUngrouper(tabGroupModelFilterSupplier)
+                            : new TabUngrouperImpl(
+                                    mContext, mModalDialogManager, tabGroupModelFilterSupplier);
+                };
+        initialize(normalModel, incognitoModel, factory);
 
         addObserver(
                 new TabModelSelectorObserver() {
@@ -235,10 +257,13 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
      *
      * @param normalModel The normal tab model.
      * @param incognitoModel The incognito tab model.
+     * @param tabUngrouperFactory The factory for building {@link TabUngrouper};
      */
     public void initializeForTesting(
-            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
-        initialize(normalModel, incognitoModel);
+            TabModelInternal normalModel,
+            IncognitoTabModelInternal incognitoModel,
+            TabUngrouperFactory tabUngrouperFactory) {
+        initialize(normalModel, incognitoModel, tabUngrouperFactory);
     }
 
     @Override

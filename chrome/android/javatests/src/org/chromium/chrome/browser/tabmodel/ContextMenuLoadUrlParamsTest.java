@@ -39,6 +39,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
@@ -77,9 +78,13 @@ public class ContextMenuLoadUrlParamsTest {
         }
 
         public RecordingTabModelSelector(
+                Context context,
+                ModalDialogManager modalDialogManager,
                 OneshotSupplier<ProfileProvider> profileProviderSupplier,
                 TabCreatorManager tabCreatorManager) {
             super(
+                    context,
+                    modalDialogManager,
                     profileProviderSupplier,
                     tabCreatorManager,
                     () -> NextTabPolicy.HIERARCHICAL,
@@ -100,11 +105,15 @@ public class ContextMenuLoadUrlParamsTest {
                     @Override
                     public TabModelSelector buildSelector(
                             Context context,
+                            ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier) {
                         return new RecordingTabModelSelector(
-                                profileProviderSupplier, tabCreatorManager);
+                                context,
+                                modalDialogManager,
+                                profileProviderSupplier,
+                                tabCreatorManager);
                     }
                 });
     }

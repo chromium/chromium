@@ -134,7 +134,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 };
 
         TabRemover normalTabRemover =
-                new TabRemoverImpl(
+                new PassthroughTabRemover(
                         () ->
                                 mSelector
                                         .getTabGroupModelFilterProvider()
@@ -151,7 +151,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                         normalTabRemover);
 
         TabRemover incognitoTabRemover =
-                new TabRemoverImpl(
+                new PassthroughTabRemover(
                         () ->
                                 mSelector
                                         .getTabGroupModelFilterProvider()
@@ -167,7 +167,10 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                         delegate,
                         incognitoTabRemover);
 
-        mSelector.initialize(mNormalTabModel, mIncognitoTabModel);
+        TabUngrouperFactory factory =
+                (isIncognitoBranded, tabGroupModelFilterSupplier) ->
+                        new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
+        mSelector.initialize(mNormalTabModel, mIncognitoTabModel, factory);
     }
 
     /** Test TabModel that exposes the needed capabilities for testing. */

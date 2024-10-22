@@ -32,5 +32,6 @@ android_library("java") {
     "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    "//ui/android:ui_java",
   ]
 }

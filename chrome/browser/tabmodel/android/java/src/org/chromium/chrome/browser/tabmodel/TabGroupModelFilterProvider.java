@@ -47,7 +47,8 @@ public class TabGroupModelFilterProvider {
         for (TabModel tabModel : tabModels) {
             boolean isIncognitoBranded = tabModel.isIncognitoBranded();
             TabUngrouper tabUngrouper =
-                    tabUngrouperFactory.create(() -> getTabGroupModelFilter(isIncognitoBranded));
+                    tabUngrouperFactory.create(
+                            isIncognitoBranded, () -> getTabGroupModelFilter(isIncognitoBranded));
             filters.add(
                     tabGroupModelFilterFactory.createTabGroupModelFilter(tabModel, tabUngrouper));
         }

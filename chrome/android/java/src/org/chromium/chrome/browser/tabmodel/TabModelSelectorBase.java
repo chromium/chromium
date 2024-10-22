@@ -44,13 +44,8 @@ public abstract class TabModelSelectorBase
     private final List<TabModelInternal> mTabModelInternals = new ArrayList<>();
     private IncognitoTabModel mIncognitoTabModel;
 
-    /**
-     * This is a placeholder implementation intended to stub out TabGroupModelFilterProvider before
-     * native is ready.
-     */
-    private TabGroupModelFilterProvider mTabGroupModelFilterProvider =
+    private final TabGroupModelFilterProvider mTabGroupModelFilterProvider =
             new TabGroupModelFilterProvider();
-
     private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
             new ObservableSupplierImpl<>();
     private final TransitiveObservableSupplier<TabModel, Tab> mCurrentTabSupplier;
@@ -60,14 +55,14 @@ public abstract class TabModelSelectorBase
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
 
-    @NonNull private final Callback<TabModel> mIncognitoReauthDialogDelegateCallback;
-    @Nullable protected IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegate;
+    private final TabCreatorManager mTabCreatorManager;
+
+    private final @NonNull Callback<TabModel> mIncognitoReauthDialogDelegateCallback;
+    protected @Nullable IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegate;
 
     private boolean mTabStateInitialized;
     private boolean mStartIncognito;
     private boolean mReparentingInProgress;
-
-    private final TabCreatorManager mTabCreatorManager;
 
     protected TabModelSelectorBase(TabCreatorManager tabCreatorManager, boolean startIncognito) {
         mTabCreatorManager = tabCreatorManager;
@@ -89,7 +84,9 @@ public abstract class TabModelSelectorBase
     }
 
     protected final void initialize(
-            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
+            TabModelInternal normalModel,
+            IncognitoTabModelInternal incognitoModel,
+            TabUngrouperFactory tabUngrouperFactory) {
         // Only normal and incognito supported for now.
         assert mTabModelInternals.isEmpty();
 
@@ -100,7 +97,7 @@ public abstract class TabModelSelectorBase
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
         mTabGroupModelFilterProvider.init(
-                TabGroupModelFilterImpl::new, TabUngrouperImpl::new, this, getModels());
+                TabGroupModelFilterImpl::new, tabUngrouperFactory, this, getModels());
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {

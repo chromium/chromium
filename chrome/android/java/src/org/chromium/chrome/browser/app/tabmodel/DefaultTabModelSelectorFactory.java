@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Default {@link TabModelSelectorFactory} for Chrome. */
 public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
@@ -23,12 +24,15 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
     @Override
     public TabModelSelector buildSelector(
             Context context,
+            ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier) {
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 
         return new TabModelSelectorImpl(
+                context,
+                modalDialogManager,
                 profileProviderSupplier,
                 tabCreatorManager,
                 nextTabPolicySupplier,

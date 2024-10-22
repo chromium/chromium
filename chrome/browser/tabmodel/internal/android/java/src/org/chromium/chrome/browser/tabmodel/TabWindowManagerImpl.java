@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -111,6 +112,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     @Override
     public Pair<Integer, TabModelSelector> requestSelector(
             Activity activity,
+            ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
@@ -165,6 +167,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         TabModelSelector selector =
                 mSelectorFactory.buildSelector(
                         activity,
+                        modalDialogManager,
                         profileProviderSupplier,
                         tabCreatorManager,
                         nextTabPolicySupplier);

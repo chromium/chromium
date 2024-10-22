@@ -4,28 +4,28 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/** Implementation of the {@link TabRemover} interface. */
-public class TabRemoverImpl extends TabModelActor implements TabRemover {
+/**
+ * Passthrough implementation of the {@link TabRemover} interface that forwards calls directly
+ * through to {@link TabModel}.
+ */
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+public class PassthroughTabRemover implements TabRemover {
+    private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+
     /**
-     * @param context The activity context.
-     * @param modalDialogManager The manager to use for warning dialogs.
      * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
      */
-    public TabRemoverImpl(
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager,
+    public PassthroughTabRemover(
             @NonNull Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
-        super(context, modalDialogManager, tabGroupModelFilterSupplier);
+        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
     }
 
     @Override
@@ -33,9 +33,7 @@ public class TabRemoverImpl extends TabModelActor implements TabRemover {
             @NonNull TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
-        // TODO(crbug.com/347981662, crbug.com/347981397, crbug.com/345854441): Show a dialog and
-        // create NTPs if needed.
-        PassthroughTabRemover.doCloseTabs(getTabGroupModelFilter(), tabClosureParams);
+        forceCloseTabs(tabClosureParams);
         if (listener != null) {
             listener.onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
@@ -43,17 +41,26 @@ public class TabRemoverImpl extends TabModelActor implements TabRemover {
 
     @Override
     public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
-        getTabGroupModelFilter().closeTabs(tabClosureParams);
+        assert mTabGroupModelFilterSupplier.hasValue();
+        doCloseTabs(mTabGroupModelFilterSupplier.get(), tabClosureParams);
     }
 
     @Override
     public void removeTab(
             @NonNull Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
-        // TODO(crbug.com/347981662, crbug.com/347981397, crbug.com/345854441): Show a dialog and
-        // create NTPs if needed.
-        PassthroughTabRemover.doRemoveTab(getTabGroupModelFilter().getTabModel(), tab);
+        assert mTabGroupModelFilterSupplier.hasValue();
+        doRemoveTab(mTabGroupModelFilterSupplier.get().getTabModel(), tab);
         if (listener != null) {
             listener.onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
+    }
+
+    static boolean doCloseTabs(
+            @NonNull TabGroupModelFilter filter, @NonNull TabClosureParams tabClosureParams) {
+        return filter.closeTabs(tabClosureParams);
+    }
+
+    static void doRemoveTab(@NonNull TabModel model, @NonNull Tab tab) {
+        model.removeTab(tab);
     }
 }

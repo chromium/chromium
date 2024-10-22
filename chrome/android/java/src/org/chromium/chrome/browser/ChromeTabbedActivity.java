@@ -2392,6 +2392,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         boolean tabModelWasCreated =
                 mTabModelOrchestrator.createTabModels(
                         this,
+                        getModalDialogManager(),
                         getProfileProviderSupplier(),
                         this,
                         mNextTabPolicySupplier,

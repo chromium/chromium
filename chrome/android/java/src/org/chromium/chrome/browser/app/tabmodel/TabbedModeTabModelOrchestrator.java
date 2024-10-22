@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 
 /**
@@ -67,6 +68,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      * Creates the TabModelSelector and the TabPersistentStore.
      *
      * @param activity The activity that hosts this TabModelOrchestrator.
+     * @param modalDialogManager The {@link ModalDialogManager}.
      * @param profileProviderSupplier Supplies the {@link ProfileProvider} for the activity.
      * @param tabCreatorManager Manager for the {@link TabCreator} for the {@link TabModelSelector}.
      * @param nextTabPolicySupplier Policy for what to do when a tab is closed.
@@ -77,6 +79,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      */
     public boolean createTabModels(
             Activity activity,
+            ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
@@ -94,6 +97,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                 TabWindowManagerSingleton.getInstance()
                         .requestSelector(
                                 activity,
+                                modalDialogManager,
                                 profileProviderSupplier,
                                 tabCreatorManager,
                                 nextTabPolicySupplier,

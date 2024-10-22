@@ -120,7 +120,7 @@ public class UndoTabModelUnitTest {
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
         TabModelOrderControllerImpl orderController =
                 new TabModelOrderControllerImpl(mTabModelSelector);
-        TabRemover tabRemover = new TabRemoverImpl(() -> mTabGroupModelFilter);
+        TabRemover tabRemover = new PassthroughTabRemover(() -> mTabGroupModelFilter);
         TabModelImpl tabModel;
         final boolean supportUndo = !isIncognito;
         if (isIncognito) {

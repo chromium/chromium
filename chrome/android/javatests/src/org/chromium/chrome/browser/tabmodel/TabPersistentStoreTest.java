@@ -82,6 +82,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreator;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -188,7 +189,7 @@ public class TabPersistentStoreTest {
                         @Override
                         public TabModelImpl call() {
                             TabRemover tabRemover =
-                                    new TabRemoverImpl(
+                                    new PassthroughTabRemover(
                                             () ->
                                                     getTabGroupModelFilterProvider()
                                                             .getTabGroupModelFilter(
@@ -210,7 +211,7 @@ public class TabPersistentStoreTest {
                     };
             TabModelImpl regularTabModel = ThreadUtils.runOnUiThreadBlocking(callable);
             TabRemover incognitoTabRemover =
-                    new TabRemoverImpl(
+                    new PassthroughTabRemover(
                             () ->
                                     getTabGroupModelFilterProvider()
                                             .getTabGroupModelFilter(/* isIncognito= */ true));
@@ -227,7 +228,10 @@ public class TabPersistentStoreTest {
                                     NO_RESTORE_TYPE,
                                     this,
                                     incognitoTabRemover));
-            initialize(regularTabModel, incognitoTabModel);
+            TabUngrouperFactory factory =
+                    (isIncognitoBranded, tabGroupModelFilterSupplier) ->
+                            new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
+            initialize(regularTabModel, incognitoTabModel, factory);
         }
 
         @Override
@@ -296,6 +300,7 @@ public class TabPersistentStoreTest {
                 @Override
                 public TabModelSelector buildSelector(
                         Context context,
+                        ModalDialogManager modalDialogManager,
                         OneshotSupplier<ProfileProvider> profileProviderSupplier,
                         TabCreatorManager tabCreatorManager,
                         NextTabPolicySupplier nextTabPolicySupplier) {
@@ -1492,6 +1497,7 @@ public class TabPersistentStoreTest {
                             return (TestTabModelSelector)
                                     sTabWindowManager.requestSelector(
                                                     mChromeActivity,
+                                                    mChromeActivity.getModalDialogManager(),
                                                     profileProvider,
                                                     mChromeActivity,
                                                     null,

@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -92,6 +93,7 @@ public class TabPersistentStoreIntegrationTest {
     private TabPersistentStore mTabPersistentStore;
 
     @Mock private ChromeTabbedActivity mChromeActivity;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private ChromeTabCreator mChromeTabCreator;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
@@ -134,6 +136,7 @@ public class TabPersistentStoreIntegrationTest {
                         new CipherFactory());
         mOrchestrator.createTabModels(
                 mChromeActivity,
+                mModalDialogManager,
                 profileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,

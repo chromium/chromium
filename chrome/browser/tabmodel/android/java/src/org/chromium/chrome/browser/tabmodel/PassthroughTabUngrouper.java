@@ -4,30 +4,30 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 
-/** Implementation of the {@link TabUngrouper} interface. */
-public class TabUngrouperImpl extends TabModelActor implements TabUngrouper {
+/**
+ * Passthrough implementation of the {@link TabUngrouper} interface that forwards calls directly
+ * into {@link TabGroupModelFilter}.
+ */
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+public class PassthroughTabUngrouper implements TabUngrouper {
+    private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+
     /**
-     * @param context The activity context.
-     * @param modalDialogManager The manager to use for warning dialogs.
      * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
      */
-    public TabUngrouperImpl(
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager,
+    public PassthroughTabUngrouper(
             @NonNull Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
-        super(context, modalDialogManager, tabGroupModelFilterSupplier);
+        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
     }
 
     @Override
@@ -36,11 +36,18 @@ public class TabUngrouperImpl extends TabModelActor implements TabUngrouper {
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
-        // TODO(crbug.com/347981662, crbug.com/347981397, crbug.com/345854441): Show a dialog and
-        // create NTPs if needed.
-        PassthroughTabUngrouper.doUngroupTabs(getTabGroupModelFilter(), tabs, trailing);
+        assert mTabGroupModelFilterSupplier.hasValue();
+        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
+        doUngroupTabs(filter, tabs, trailing);
         if (listener != null) {
             listener.onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        }
+    }
+
+    static void doUngroupTabs(
+            @NonNull TabGroupModelFilter filter, @NonNull List<Tab> tabs, boolean trailing) {
+        for (Tab tab : tabs) {
+            filter.moveTabOutOfGroupInDirection(tab.getId(), trailing);
         }
     }
 }

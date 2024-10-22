@@ -109,6 +109,7 @@ public class CustomTabActivityTabFactory {
     /** Calls the {@link TabModelOrchestrator} to create TabModels and TabPersistentStore. */
     public void createTabModels() {
         mTabModelOrchestrator.createTabModels(
+                mActivity,
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mPersistencePolicy,
