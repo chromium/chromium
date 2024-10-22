@@ -55,7 +55,8 @@ FileHlsDataSourceStreamFactory::CreateStream(std::string filename,
                                              bool taint_origin) {
   base::FilePath file_path = GetTestDataFilePath(filename);
   std::optional<int64_t> file_size = base::GetFileSize(file_path);
-  CHECK(file_size) << "Failed to get file size for '" << filename << "'";
+  CHECK(file_size.has_value())
+      << "Failed to get file size for '" << filename << "'";
   HlsDataSourceProvider::SegmentQueue segments;
   auto stream = std::make_unique<HlsDataSourceStream>(
       HlsDataSourceStream::StreamId::FromUnsafeValue(42), std::move(segments),

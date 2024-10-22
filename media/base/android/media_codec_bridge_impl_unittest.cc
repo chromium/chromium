@@ -475,7 +475,7 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
   const char kSrcFileName[] = "bali_640x360_P420.yuv";
   base::FilePath src_file = GetTestDataFilePath(kSrcFileName);
   std::optional<int64_t> src_file_size = base::GetFileSize(src_file);
-  ASSERT_TRUE(src_file_size);
+  ASSERT_TRUE(src_file_size.has_value());
 
   const VideoPixelFormat kInputFormat = PIXEL_FORMAT_I420;
   const int frame_size = static_cast<int>(

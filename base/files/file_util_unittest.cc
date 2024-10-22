@@ -12,6 +12,7 @@
 #include <fstream>
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -384,9 +385,9 @@ TEST_F(FileUtilTest, FileAndDirectorySize) {
 
   std::optional<int64_t> size_f1 = GetFileSize(file_01);
   ASSERT_THAT(size_f1, testing::Optional(20));
-  int64_t size_f1_out = 0;
-  ASSERT_TRUE(GetFileSize(file_01, &size_f1_out));
-  EXPECT_EQ(size_f1.value(), size_f1_out);
+  std::optional<int64_t> size_f1_out = GetFileSize(file_01);
+  ASSERT_TRUE(size_f1_out.has_value());
+  EXPECT_EQ(size_f1.value(), size_f1_out.value());
 
   FilePath subdir_path = temp_dir_.GetPath().Append(FPL("Level2"));
   CreateDirectory(subdir_path);
@@ -395,9 +396,9 @@ TEST_F(FileUtilTest, FileAndDirectorySize) {
   CreateTextFile(file_02, L"123456789012345678901234567890");
   std::optional<int64_t> size_f2 = GetFileSize(file_02);
   ASSERT_THAT(size_f2, testing::Optional(30));
-  int64_t size_f2_out = 0;
-  ASSERT_TRUE(GetFileSize(file_02, &size_f2_out));
-  EXPECT_EQ(size_f2.value(), size_f2_out);
+  std::optional<int64_t> size_f2_out = GetFileSize(file_02);
+  ASSERT_TRUE(size_f2_out.has_value());
+  EXPECT_EQ(size_f2.value(), size_f2_out.value());
 
   FilePath subsubdir_path = subdir_path.Append(FPL("Level3"));
   CreateDirectory(subsubdir_path);
@@ -4442,9 +4443,9 @@ TEST_F(FileUtilTest, ValidContentUriTest) {
   data_dir = data_dir.AppendASCII("file_util");
   ASSERT_TRUE(PathExists(data_dir));
   FilePath image_file = data_dir.Append(FILE_PATH_LITERAL("red.png"));
-  int64_t image_size;
-  GetFileSize(image_file, &image_size);
-  ASSERT_GT(image_size, 0);
+  std::optional<int64_t> image_size = GetFileSize(image_file);
+  ASSERT_TRUE(image_size.has_value());
+  ASSERT_GT(image_size.value(), 0);
 
   // Insert the image into MediaStore. MediaStore will do some conversions, and
   // return the content URI.
@@ -4453,16 +4454,17 @@ TEST_F(FileUtilTest, ValidContentUriTest) {
   EXPECT_TRUE(PathExists(path));
   // The file size may not equal to the input image as MediaStore may convert
   // the image.
-  int64_t content_uri_size;
-  GetFileSize(path, &content_uri_size);
-  EXPECT_EQ(image_size, content_uri_size);
+  std::optional<int64_t> content_uri_size = GetFileSize(path);
+  ASSERT_TRUE(content_uri_size.has_value());
+  EXPECT_EQ(image_size.value(), content_uri_size.value());
 
   // We should be able to read the file.
   File file(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_TRUE(file.IsValid());
-  auto buffer = std::make_unique<char[]>(image_size);
+  auto buffer = std::make_unique<char[]>(image_size.value());
   // SAFETY: required for test.
-  EXPECT_TRUE(UNSAFE_BUFFERS(file.ReadAtCurrentPos(buffer.get(), image_size)));
+  EXPECT_TRUE(
+      UNSAFE_BUFFERS(file.ReadAtCurrentPos(buffer.get(), image_size.value())));
 }
 
 TEST_F(FileUtilTest, WriteContentUri) {
@@ -4475,23 +4477,22 @@ TEST_F(FileUtilTest, WriteContentUri) {
   // We should be able to open the file as writable which truncates the file.
   File file = File(content_uri, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
   EXPECT_TRUE(file.IsValid());
-  int64_t size;
-  GetFileSize(path, &size);
-  EXPECT_EQ(size, 0);
+  std::optional<int64_t> size = GetFileSize(path);
+  ASSERT_TRUE(size.has_value());
+  EXPECT_EQ(size.value(), 0);
 
   EXPECT_EQ(*file.WriteAtCurrentPos(byte_span_from_cstring("123")), 3u);
   EXPECT_TRUE(file.Flush());
-  GetFileSize(path, &size);
-  EXPECT_EQ(size, 3);
+  size = GetFileSize(path);
+  ASSERT_TRUE(size.has_value());
+  EXPECT_EQ(size.value(), 3);
 }
 
 TEST_F(FileUtilTest, NonExistentContentUriTest) {
   FilePath path("content://foo.bar");
   EXPECT_TRUE(path.IsContentUri());
   EXPECT_FALSE(PathExists(path));
-  // Size should be smaller than 0.
-  int64_t size;
-  EXPECT_FALSE(GetFileSize(path, &size));
+  EXPECT_FALSE(GetFileSize(path).has_value());
 
   // We should not be able to read the file.
   File file(path, File::FLAG_OPEN | File::FLAG_READ);

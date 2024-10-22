@@ -236,7 +236,7 @@ scoped_refptr<DecoderBuffer> ReadTestDataFile(std::string_view name) {
   base::FilePath file_path = GetTestDataFilePath(name);
 
   std::optional<int64_t> tmp = base::GetFileSize(file_path);
-  CHECK(tmp) << "Failed to get file size for '" << name << "'";
+  CHECK(tmp.has_value()) << "Failed to get file size for '" << name << "'";
 
   int file_size = base::checked_cast<int>(tmp.value());
 

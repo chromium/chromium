@@ -96,8 +96,7 @@ std::pair<URLDownloader::SuccessState, int64_t> SavePDFFile(
                                                              path);
 
     if (base::Move(temporary_path, absolute_path)) {
-      int64_t pdf_file_size;
-      base::GetFileSize(absolute_path, &pdf_file_size);
+      int64_t pdf_file_size = base::GetFileSize(absolute_path).value_or(0);
       return {URLDownloader::DOWNLOAD_SUCCESS, pdf_file_size};
     } else {
       return {URLDownloader::ERROR, 0};

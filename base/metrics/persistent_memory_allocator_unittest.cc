@@ -10,6 +10,7 @@
 #include "base/metrics/persistent_memory_allocator.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/heap_array.h"
 #include "base/files/file.h"
@@ -48,9 +49,9 @@ void SetFileLength(const base::FilePath& path, size_t length) {
     ASSERT_TRUE(file.SetLength(static_cast<int64_t>(length)));
   }
 
-  int64_t actual_length;
-  DCHECK(GetFileSize(path, &actual_length));
-  DCHECK_EQ(length, static_cast<size_t>(actual_length));
+  std::optional<int64_t> actual_length = GetFileSize(path);
+  DCHECK(actual_length.has_value());
+  DCHECK_EQ(length, static_cast<size_t>(actual_length.value()));
 }
 
 }  // namespace
@@ -880,8 +881,8 @@ TEST(FilePersistentMemoryAllocatorTest, ExtendTest) {
     writer.Write(0, (const char*)local.data(), local.used());
   }
   ASSERT_TRUE(PathExists(file_path));
-  int64_t before_size;
-  ASSERT_TRUE(GetFileSize(file_path, &before_size));
+  std::optional<int64_t> before_size = GetFileSize(file_path);
+  ASSERT_TRUE(before_size.has_value());
 
   // Map it as an extendable read/write file and append to it.
   {
@@ -892,16 +893,16 @@ TEST(FilePersistentMemoryAllocatorTest, ExtendTest) {
     FilePersistentMemoryAllocator allocator(
         std::move(mmfile), region.size, 0, "",
         FilePersistentMemoryAllocator::kReadWrite);
-    EXPECT_EQ(static_cast<size_t>(before_size), allocator.used());
+    EXPECT_EQ(static_cast<size_t>(before_size.value()), allocator.used());
 
     allocator.Allocate(111, 111);
-    EXPECT_LT(static_cast<size_t>(before_size), allocator.used());
+    EXPECT_LT(static_cast<size_t>(before_size.value()), allocator.used());
   }
 
   // Validate that append worked.
-  int64_t after_size;
-  ASSERT_TRUE(GetFileSize(file_path, &after_size));
-  EXPECT_LT(before_size, after_size);
+  std::optional<int64_t> after_size = GetFileSize(file_path);
+  ASSERT_TRUE(after_size.has_value());
+  EXPECT_LT(before_size.value(), after_size.value());
 
   // Verify that it's still an acceptable file.
   {
@@ -1078,9 +1079,9 @@ TEST_F(PersistentMemoryAllocatorTest, TruncateTest) {
     }
 
     // Ensure that file length was not adjusted.
-    int64_t actual_length;
-    ASSERT_TRUE(GetFileSize(file_path, &actual_length));
-    EXPECT_EQ(file_length, static_cast<size_t>(actual_length));
+    std::optional<int64_t> actual_length = GetFileSize(file_path);
+    ASSERT_TRUE(actual_length.has_value());
+    EXPECT_EQ(file_length, static_cast<size_t>(actual_length.value()));
   }
 }
 

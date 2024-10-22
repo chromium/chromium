@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/heap_array.h"
@@ -203,9 +204,9 @@ TEST_F(MemoryMappedFileTest, WriteableFile) {
         CheckBufferContents(map.bytes().first(kFileSize - 1).subspan(3), 3));
   }
 
-  int64_t file_size;
-  ASSERT_TRUE(GetFileSize(temp_file_path(), &file_size));
-  EXPECT_EQ(static_cast<int64_t>(kFileSize), file_size);
+  std::optional<int64_t> file_size = GetFileSize(temp_file_path());
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(static_cast<int64_t>(kFileSize), file_size.value());
 
   std::string contents;
   ASSERT_TRUE(ReadFileToString(temp_file_path(), &contents));
@@ -236,9 +237,9 @@ TEST_F(MemoryMappedFileTest, CopyOnWrite) {
         CheckBufferContents(map.bytes().first(kFileSize - 1).subspan(3), 3));
   }
 
-  int64_t file_size;
-  ASSERT_TRUE(GetFileSize(temp_file_path(), &file_size));
-  EXPECT_EQ(static_cast<int64_t>(kFileSize), file_size);
+  std::optional<int64_t> file_size = GetFileSize(temp_file_path());
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(static_cast<int64_t>(kFileSize), file_size.value());
 
   // Although the buffer has been modified in memory, the file is unchanged.
   std::string contents;
@@ -273,10 +274,10 @@ TEST_F(MemoryMappedFileTest, ExtendableFile) {
     EXPECT_TRUE(CheckBufferContents(map.bytes().first(kFileSize), 0));
   }
 
-  int64_t file_size;
-  ASSERT_TRUE(GetFileSize(temp_file_path(), &file_size));
-  EXPECT_LE(static_cast<int64_t>(kFileSize + 3), file_size);
-  EXPECT_GE(static_cast<int64_t>(kFileSize + kFileExtend), file_size);
+  std::optional<int64_t> file_size = GetFileSize(temp_file_path());
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_LE(static_cast<int64_t>(kFileSize + 3), file_size.value());
+  EXPECT_GE(static_cast<int64_t>(kFileSize + kFileExtend), file_size.value());
 
   std::string contents;
   ASSERT_TRUE(ReadFileToString(temp_file_path(), &contents));

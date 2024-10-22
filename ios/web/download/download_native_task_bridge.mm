@@ -4,6 +4,8 @@
 
 #import "ios/web/download/download_native_task_bridge.h"
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/files/file_util.h"
@@ -17,11 +19,7 @@ namespace {
 
 // Helper to get the size of file at `file_path`. Returns -1 in case of error.
 int64_t FileSizeForFileAtPath(base::FilePath file_path) {
-  int64_t file_size = 0;
-  if (!base::GetFileSize(file_path, &file_size))
-    return -1;
-
-  return file_size;
+  return base::GetFileSize(file_path).value_or(-1);
 }
 
 // Helper to invoke the download complete callback after getting the file

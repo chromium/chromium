@@ -10,6 +10,7 @@
 #include <winspool.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -199,9 +200,9 @@ TEST(EmfTest, FileBackedEmf) {
     EXPECT_TRUE(emf.GetDataAsVector(&data));
     EXPECT_EQ(data.size(), size);
   }
-  int64_t file_size = 0;
-  base::GetFileSize(metafile_path, &file_size);
-  EXPECT_EQ(size, file_size);
+  std::optional<int64_t> file_size = base::GetFileSize(metafile_path);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(size, file_size.value());
 
   // Playback the data.
   HDC hdc = CreateCompatibleDC(nullptr);

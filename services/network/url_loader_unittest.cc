@@ -7607,9 +7607,9 @@ TEST_F(URLLoaderTest, CookieSettingOverridesCopiedToURLRequest) {
 TEST_F(URLLoaderTest, ReadAndDiscardBody) {
   const std::string file = "simple_page.html";
   const GURL url = test_server()->GetURL("/" + file);
-  int64_t actual_size = 0;
-  bool got_file_size = base::GetFileSize(GetTestFilePath(file), &actual_size);
-  ASSERT_TRUE(got_file_size);
+  std::optional<int64_t> file_size = base::GetFileSize(GetTestFilePath(file));
+  ASSERT_TRUE(file_size.has_value());
+  int64_t actual_size = file_size.value();
 
   TestURLLoaderClient loader_client;
   ResourceRequest request = CreateResourceRequest("GET", url);
