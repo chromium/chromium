@@ -402,14 +402,20 @@ export class FaceGazeAddActionDialogElement extends
   private getActionAriaLabel_(macro: MacroName, selected: boolean): string {
     const label = selected ? 'faceGazeActionsDialogSelectedItemInstruction' :
                              'faceGazeActionsDialogNotSelectedItemInstruction';
-    return this.i18n(label, this.getActionDisplayText_(macro));
+    return this.i18n(
+        label, this.getActionDisplayText_(macro),
+        this.displayedActions_.indexOf(macro) + 1,
+        this.displayedActions_.length);
   }
 
-  private getGestureAriaLabel_(macro: FacialGesture, selected: boolean):
+  private getGestureAriaLabel_(gesture: FacialGesture, selected: boolean):
       string {
+    const displayedGestures = this.get('displayedGestures_');
     const label = selected ? 'faceGazeActionsDialogSelectedItemInstruction' :
                              'faceGazeActionsDialogNotSelectedItemInstruction';
-    return this.i18n(label, this.getGestureDisplayText_(macro));
+    return this.i18n(
+        label, this.getGestureDisplayText_(gesture),
+        displayedGestures.indexOf(gesture) + 1, displayedGestures.length);
   }
 
   // Dialog page navigation.
