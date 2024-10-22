@@ -60,7 +60,7 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   ~InterestGroupUpdateManager();
 
   // Loads all interest groups owned by `owner`, then updates their definitions
-  // by fetching their `dailyUpdateUrl`. Interest group updates that fail to
+  // by fetching their `updateURL`. Interest group updates that fail to
   // load or validate are skipped, but other updates will proceed.
   void UpdateInterestGroupsOfOwner(
       const url::Origin& owner,

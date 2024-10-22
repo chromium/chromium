@@ -196,7 +196,7 @@ a new database version and migration. Run InterestGroupStorageTest and follow
 the test failure message instructions to update the
 InterestGroupStorageTest.MultiVersionUpgradeTest database upgrade test.
 
-If the new field is to be updatable via dailyUpdateUrl, also update *all* of
+If the new field is to be updatable via updateURL, also update *all* of
 these:
 
 * Add field to content::InterestGroupUpdate

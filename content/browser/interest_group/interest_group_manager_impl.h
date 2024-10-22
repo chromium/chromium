@@ -213,7 +213,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       std::set<std::string> interest_groups_to_keep,
       url::Origin main_frame_origin);
   // Loads all interest groups owned by `owner`, then updates their
-  // definitions by fetching their `dailyUpdateUrl`. Interest group updates
+  // definitions by fetching their `updateURL`. Interest group updates
   // that fail to load or validate are skipped, but other updates will
   // proceed.
   void UpdateInterestGroupsOfOwner(
