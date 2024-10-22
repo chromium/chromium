@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -34,68 +33,92 @@ import java.util.stream.Collectors;
 
 /** Utilities related to tab groups in data sharing. */
 public class DataSharingTabGroupUtils {
+    /** A holder for list of tab groups pending destruction. */
+    public static class GroupsPendingDestroy {
+        /**
+         * The list of synced groups that will be destroyed. This excludes entries with
+         * collaboration IDs.
+         */
+        public final List<LocalTabGroupId> syncedGroupsDestroyed = new ArrayList<>();
+
+        /**
+         * The list of synced groups with collaborations that will be destroyed. Entries in this
+         * list will not be in syncedGroupsDestroyed.
+         */
+        public final List<LocalTabGroupId> collaborationGroupsDestroyed = new ArrayList<>();
+
+        /** Returns if there are no groups that would be destroyed. */
+        public boolean isEmpty() {
+            return syncedGroupsDestroyed.isEmpty() && collaborationGroupsDestroyed.isEmpty();
+        }
+    }
+
     /**
-     * Returns the list of local tab group IDs with collaborations that closing or ungrouping the
-     * list of tabs would destroy.
+     * Returns lists of local tab group IDs in sync that closing or ungrouping the tabs would
+     * destroy.
      *
      * @param tabModel The tab model to close or ungroup tabs in.
      * @param tabsToRemove The list of tabs to remove.
-     * @return A list of the local tab groups IDs that would have collaborations destroyed, or an
-     *     empty list if none.
+     * @return lists of the local tab group IDs that would have collaborations or sync data
+     *     destroyed.
      */
-    @NonNull
-    public static List<LocalTabGroupId> getCollaborationsDestroyedByTabRemoval(
+    public static @NonNull GroupsPendingDestroy getSyncedGroupsDestroyedByTabRemoval(
             @NonNull TabModel tabModel, @Nullable List<Tab> tabsToRemove) {
         // TODO(crbug.com/345854441): Add feature flag checks.
 
+        GroupsPendingDestroy destroyedGroups = new GroupsPendingDestroy();
+
         // Collaborations are not possible in incognito branded mode.
         if (tabsToRemove == null || tabsToRemove.isEmpty() || tabModel.isIncognitoBranded()) {
-            return Collections.emptyList();
+            return destroyedGroups;
         }
 
-        List<LocalTabGroupId> groupIds = new ArrayList<>();
         @Nullable
         TabGroupSyncService tabGroupSyncService =
                 TabGroupSyncServiceFactory.getForProfile(tabModel.getProfile());
         if (tabGroupSyncService == null) {
-            return Collections.emptyList();
+            return destroyedGroups;
         }
 
         for (String syncId : tabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup group = tabGroupSyncService.getGroup(syncId);
 
-            // Tab groups without collaborations are not of interest since there is no risk if they
-            // are destroyed. Tab groups without a local representation won't have local tabs that
-            // are being removed and can also be skipped.
-            if (group.localId == null || TextUtils.isEmpty(group.collaborationId)) continue;
+            // Tab groups without a local representation won't have local tabs that are being
+            // removed and can be skipped.
+            if (group.localId == null) continue;
 
+            boolean isCollaboration = !TextUtils.isEmpty(group.collaborationId);
             if (willRemoveAllTabsInGroup(group.savedTabs, tabsToRemove)) {
-                groupIds.add(group.localId);
+                if (isCollaboration) {
+                    destroyedGroups.collaborationGroupsDestroyed.add(group.localId);
+                } else {
+                    destroyedGroups.syncedGroupsDestroyed.add(group.localId);
+                }
             }
         }
-        return groupIds;
+        return destroyedGroups;
     }
 
     /**
-     * Returns the list of local tab group IDs with collaborations that closing the tabs described
-     * by the closure params would destroy.
+     * Returns lists of local tab group IDs in sync that closing the tabs described by the closure
+     * params would destroy.
      *
      * @param tabModel The tab model to close tabs in.
      * @param closureParams The params that would be used to close tabs.
-     * @return A list of the local tab group IDs that would have collaborations destroyed, or an
-     *     empty list if none.
+     * @return lists of the local tab group IDs that would have collaborations or sync data
+     *     destroyed.
      */
-    public static @NonNull List<LocalTabGroupId> getCollaborationsDestroyedByTabClosure(
+    public static @NonNull GroupsPendingDestroy getSyncedGroupsDestroyedByTabClosure(
             @NonNull TabModel tabModel, @NonNull TabClosureParams closureParams) {
         // If tab groups are being hidden then they cannot be destroyed.
-        if (closureParams.hideTabGroups) return Collections.emptyList();
+        if (closureParams.hideTabGroups) return new GroupsPendingDestroy();
 
         @Nullable
         List<Tab> tabsToClose =
                 closureParams.isAllTabs
                         ? TabModelUtils.convertTabListToListOfTabs(tabModel)
                         : closureParams.tabs;
-        return getCollaborationsDestroyedByTabRemoval(tabModel, tabsToClose);
+        return getSyncedGroupsDestroyedByTabRemoval(tabModel, tabsToClose);
     }
 
     /**
@@ -103,14 +126,11 @@ public class DataSharingTabGroupUtils {
      * collaborations from being deleted.
      *
      * @param tabModel The tab model to close tabs in.
-     * @param tabCreatorManager The tab creator manager.
      * @param localTabGroupIds The list of tab group IDs to add tabs to.
      * @return A list of tabs that were created.
      */
     public static @NonNull List<Tab> createPlaceholderTabInGroups(
-            TabModel tabModel,
-            TabCreatorManager tabCreatorManager,
-            @Nullable List<LocalTabGroupId> localTabGroupIds) {
+            TabModel tabModel, @Nullable List<LocalTabGroupId> localTabGroupIds) {
         // This functionality is not supported in incognito mode.
         if (localTabGroupIds == null
                 || localTabGroupIds.isEmpty()
@@ -137,7 +157,7 @@ public class DataSharingTabGroupUtils {
             }
         }
 
-        TabCreator tabCreator = tabCreatorManager.getTabCreator(tabModel.isIncognitoBranded());
+        TabCreator tabCreator = tabModel.getTabCreator();
         List<Tab> newTabs = new ArrayList<>();
         for (Tab parentTab : parentTabMap.values()) {
             // The tab will automatically be placed immediately after the parent and this launch

@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -50,6 +51,7 @@ public class MockTabModel extends EmptyTabModel {
     private final Profile mProfile;
     private final MockTabModelDelegate mDelegate;
     private boolean mIsActiveModel;
+    private @Nullable TabCreator mTabCreator;
 
     public MockTabModel(Profile profile, MockTabModelDelegate delegate) {
         mProfile = profile;
@@ -74,6 +76,14 @@ public class MockTabModel extends EmptyTabModel {
     @Override
     public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
         return mTabCountSupplier;
+    }
+
+    @Override
+    public @NonNull TabCreator getTabCreator() {
+        if (mTabCreator == null) {
+            return super.getTabCreator();
+        }
+        return mTabCreator;
     }
 
     @Override
@@ -196,5 +206,9 @@ public class MockTabModel extends EmptyTabModel {
     @Override
     public boolean isActiveModel() {
         return mIsActiveModel;
+    }
+
+    public void setTabCreatorForTesting(TabCreator tabCreator) {
+        mTabCreator = tabCreator;
     }
 }

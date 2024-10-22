@@ -3101,8 +3101,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return false;
         }
         TabModel tabModel = mTabModelSelector.getModel(tab.isIncognitoBranded());
-        if (!DataSharingTabGroupUtils.getCollaborationsDestroyedByTabRemoval(
+        if (!DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
                         tabModel, Arrays.asList(tab))
+                .collaborationGroupsDestroyed
                 .isEmpty()) {
             return false;
         }
