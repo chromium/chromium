@@ -192,108 +192,6 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
   }
 }
 
-// Please follow go/preloading-dashboard-updates if a new outcome enum or a
-// failure reason enum is added.
-void SetTriggeringOutcomeAndFailureReasonFromStatus(
-    PreloadingAttempt* attempt,
-    const GURL& url,
-    std::optional<PrefetchStatus> old_prefetch_status,
-    PrefetchStatus new_prefetch_status) {
-  if (old_prefetch_status &&
-      old_prefetch_status.value() == PrefetchStatus::kPrefetchResponseUsed) {
-    // Skip this update if the triggering outcome has already been updated
-    // to kSuccess.
-    return;
-  }
-
-  if (old_prefetch_status &&
-      TriggeringOutcomeFromStatus(old_prefetch_status.value()) ==
-          PreloadingTriggeringOutcome::kFailure) {
-    CHECK(StatusUpdateIsPossibleAfterFailure(new_prefetch_status))
-        << "old_prefetch_status: "
-        << static_cast<int>(old_prefetch_status.value())
-        << " -> new_prefetch_status: " << static_cast<int>(new_prefetch_status);
-    CHECK(TriggeringOutcomeFromStatus(new_prefetch_status) ==
-          PreloadingTriggeringOutcome::kFailure);
-    // Skip this update if the triggering outcome has already been updated to
-    // kFailure.
-      return;
-  }
-
-  if (attempt) {
-    switch (new_prefetch_status) {
-      case PrefetchStatus::kPrefetchNotFinishedInTime:
-        attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
-        break;
-      case PrefetchStatus::kPrefetchSuccessful:
-        // A successful prefetch means the response is ready to be used for the
-        // next navigation.
-        attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
-        break;
-      case PrefetchStatus::kPrefetchResponseUsed:
-        if (old_prefetch_status && old_prefetch_status.value() !=
-                                       PrefetchStatus::kPrefetchSuccessful) {
-          // If the new prefetch status is |kPrefetchResponseUsed| or
-          // |kPrefetchUsedNoProbe| but the previous status is not
-          // |kPrefetchSuccessful|, then temporarily update the triggering
-          // outcome to |kReady| to ensure valid triggering outcome state
-          // transitions. This can occur in cases where the prefetch is served
-          // before the body is fully received.
-          attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
-        }
-        attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
-        break;
-      // A decoy is considered eligible because a network request is made for
-      // it. It is considered as a failure as the final response is never
-      // served.
-      case PrefetchStatus::kPrefetchIsPrivacyDecoy:
-      case PrefetchStatus::kPrefetchFailedNetError:
-      case PrefetchStatus::kPrefetchFailedNon2XX:
-      case PrefetchStatus::kPrefetchFailedMIMENotSupported:
-      case PrefetchStatus::kPrefetchFailedInvalidRedirect:
-      case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
-      case PrefetchStatus::kPrefetchNotUsedProbeFailed:
-      case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
-      // TODO(adithyas): This would report 'eviction' as a failure even though
-      // the initial prefetch succeeded, consider introducing a different
-      // PreloadingTriggerOutcome for eviction.
-      case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
-      case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
-      case PrefetchStatus::kPrefetchIsStale:
-        attempt->SetFailureReason(
-            ToPreloadingFailureReason(new_prefetch_status));
-        break;
-      case PrefetchStatus::kPrefetchHeldback:
-      // `kPrefetchAllowed` will soon transition into `kPrefetchNotStarted`.
-      case PrefetchStatus::kPrefetchAllowed:
-      case PrefetchStatus::kPrefetchNotStarted:
-        // `kPrefetchNotStarted` is set in
-        // `PrefetchService::OnGotEligibilityResult` when the container is
-        // pushed onto the prefetch queue, which occurs before the holdback
-        // status is determined in `PrefetchService::StartSinglePrefetch`.
-        // After the container is queued and before it is sent for prefetch, the
-        // only status change is when the container is popped from the queue but
-        // heldback. This is covered by attempt's holdback status. For these two
-        // reasons this PrefetchStatus does not fire a `SetTriggeringOutcome`.
-        break;
-      case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
-      case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
-      case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
-      case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
-      case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
-      case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
-      case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
-      case PrefetchStatus::kPrefetchIneligibleExistingProxy:
-      case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
-      case PrefetchStatus::kPrefetchIneligibleRetryAfter:
-      case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
-      case PrefetchStatus::
-          kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
-        NOTIMPLEMENTED();
-    }
-  }
-}
-
 void RecordWasBlockedUntilHeadWhenServingHistogram(
     const PrefetchType& prefetch_type,
     bool blocked_until_head) {
@@ -669,6 +567,9 @@ PrefetchContainer::~PrefetchContainer() {
 
   CancelStreamingURLLoaderIfNotServing();
 
+  MaybeRecordPrefetchStatusToUMA(
+      prefetch_status_.value_or(PrefetchStatus::kPrefetchNotStarted));
+
   ukm::builders::PrefetchProxy_PrefetchedResource builder(ukm_source_id_);
   builder.SetResourceType(/*mainframe*/ 1);
   builder.SetStatus(static_cast<int>(
@@ -761,6 +662,119 @@ PrefetchContainer::Reader PrefetchContainer::CreateReader() {
   return Reader(GetWeakPtr(), 0);
 }
 
+// Please follow go/preloading-dashboard-updates if a new outcome enum or a
+// failure reason enum is added.
+void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
+    PrefetchStatus new_prefetch_status) {
+  std::optional<PrefetchStatus> old_prefetch_status = prefetch_status_;
+  if (old_prefetch_status &&
+      old_prefetch_status.value() == PrefetchStatus::kPrefetchResponseUsed) {
+    // Skip this update if the triggering outcome has already been updated
+    // to kSuccess.
+    return;
+  }
+
+  if (old_prefetch_status &&
+      TriggeringOutcomeFromStatus(old_prefetch_status.value()) ==
+          PreloadingTriggeringOutcome::kFailure) {
+    CHECK(StatusUpdateIsPossibleAfterFailure(new_prefetch_status))
+        << "old_prefetch_status: "
+        << static_cast<int>(old_prefetch_status.value())
+        << " -> new_prefetch_status: " << static_cast<int>(new_prefetch_status);
+    CHECK(TriggeringOutcomeFromStatus(new_prefetch_status) ==
+          PreloadingTriggeringOutcome::kFailure);
+    // Skip this update if the triggering outcome has already been updated to
+    // kFailure.
+    return;
+  }
+
+  // We record the prefetch status to UMA if it's a failure, or if the prefetch
+  // response is being used. For other statuses, there may be more updates in
+  // the future, so we only record them in the destructor.
+  // Note: The prefetch may have an updated failure status in the future
+  // (for example: if the triggering speculation candidate for a failed prefetch
+  // is removed), but the original failure is more pertinent for metrics
+  // purposes.
+  if (TriggeringOutcomeFromStatus(new_prefetch_status) ==
+          PreloadingTriggeringOutcome::kFailure ||
+      new_prefetch_status == PrefetchStatus::kPrefetchResponseUsed) {
+    MaybeRecordPrefetchStatusToUMA(new_prefetch_status);
+  }
+
+  if (attempt_) {
+    switch (new_prefetch_status) {
+      case PrefetchStatus::kPrefetchNotFinishedInTime:
+        attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
+        break;
+      case PrefetchStatus::kPrefetchSuccessful:
+        // A successful prefetch means the response is ready to be used for the
+        // next navigation.
+        attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
+        break;
+      case PrefetchStatus::kPrefetchResponseUsed:
+        if (old_prefetch_status && old_prefetch_status.value() !=
+                                       PrefetchStatus::kPrefetchSuccessful) {
+          // If the new prefetch status is |kPrefetchResponseUsed| or
+          // |kPrefetchUsedNoProbe| but the previous status is not
+          // |kPrefetchSuccessful|, then temporarily update the triggering
+          // outcome to |kReady| to ensure valid triggering outcome state
+          // transitions. This can occur in cases where the prefetch is served
+          // before the body is fully received.
+          attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
+        }
+        attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
+        break;
+      // A decoy is considered eligible because a network request is made for
+      // it. It is considered as a failure as the final response is never
+      // served.
+      case PrefetchStatus::kPrefetchIsPrivacyDecoy:
+      case PrefetchStatus::kPrefetchFailedNetError:
+      case PrefetchStatus::kPrefetchFailedNon2XX:
+      case PrefetchStatus::kPrefetchFailedMIMENotSupported:
+      case PrefetchStatus::kPrefetchFailedInvalidRedirect:
+      case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
+      case PrefetchStatus::kPrefetchNotUsedProbeFailed:
+      case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
+      // TODO(adithyas): This would report 'eviction' as a failure even though
+      // the initial prefetch succeeded, consider introducing a different
+      // PreloadingTriggerOutcome for eviction.
+      case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+      case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+      case PrefetchStatus::kPrefetchIsStale:
+        attempt_->SetFailureReason(
+            ToPreloadingFailureReason(new_prefetch_status));
+        break;
+      case PrefetchStatus::kPrefetchHeldback:
+      // `kPrefetchAllowed` will soon transition into `kPrefetchNotStarted`.
+      case PrefetchStatus::kPrefetchAllowed:
+      case PrefetchStatus::kPrefetchNotStarted:
+        // `kPrefetchNotStarted` is set in
+        // `PrefetchService::OnGotEligibilityResult` when the container is
+        // pushed onto the prefetch queue, which occurs before the holdback
+        // status is determined in `PrefetchService::StartSinglePrefetch`.
+        // After the container is queued and before it is sent for prefetch, the
+        // only status change is when the container is popped from the queue but
+        // heldback. This is covered by attempt's holdback status. For these two
+        // reasons this PrefetchStatus does not fire a `SetTriggeringOutcome`.
+        break;
+      case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+      case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
+      case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
+      case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
+      case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
+      case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
+      case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
+      case PrefetchStatus::kPrefetchIneligibleExistingProxy:
+      case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
+      case PrefetchStatus::kPrefetchIneligibleRetryAfter:
+      case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
+      case PrefetchStatus::
+          kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
+        NOTIMPLEMENTED();
+    }
+  }
+}
+
 void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
     PrefetchStatus prefetch_status) {
   prefetch_status_ = prefetch_status;
@@ -788,10 +802,7 @@ void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
 }
 
 void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
-  SetTriggeringOutcomeAndFailureReasonFromStatus(
-      attempt_.get(), GetURL(),
-      /*old_prefetch_status=*/prefetch_status_,
-      /*new_prefetch_status=*/prefetch_status);
+  SetTriggeringOutcomeAndFailureReasonFromStatus(prefetch_status);
   SetPrefetchStatusWithoutUpdatingTriggeringOutcome(prefetch_status);
 }
 
@@ -901,8 +912,10 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       SetLoadState(LoadState::kEligible);
     } else {
       SetLoadState(LoadState::kFailedIneligible);
-      SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
-          PrefetchStatusFromIneligibleReason(eligibility));
+      PrefetchStatus new_prefetch_status =
+          PrefetchStatusFromIneligibleReason(eligibility);
+      MaybeRecordPrefetchStatusToUMA(new_prefetch_status);
+      SetPrefetchStatusWithoutUpdatingTriggeringOutcome(new_prefetch_status);
       OnInitialPrefetchFailedIneligible(eligibility);
     }
 
@@ -2101,6 +2114,17 @@ void PrefetchContainer::MigrateNewlyAdded(
   inherited_preload_pipeline_infos_.push_back(
       std::move(added->preload_pipeline_info_));
   is_likely_ahead_of_prerender_ |= added->is_likely_ahead_of_prerender_;
+}
+
+void PrefetchContainer::MaybeRecordPrefetchStatusToUMA(
+    PrefetchStatus prefetch_status) {
+  if (prefetch_status_recorded_to_uma_) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration("Preloading.Prefetch.PrefetchStatus",
+                                prefetch_status);
+  prefetch_status_recorded_to_uma_ = true;
 }
 
 }  // namespace content

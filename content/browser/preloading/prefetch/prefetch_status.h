@@ -224,7 +224,7 @@ enum class PrefetchStatus {
   // The max value of the PrefetchStatus. Update this when new enums are added.
   kMaxValue = kPrefetchEvictedForNewerPrefetch,
 };
-// LINT.ThenChange()
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 // Mapping from `PrefetchStatus` to `PreloadingFailureReason`.
 static_assert(

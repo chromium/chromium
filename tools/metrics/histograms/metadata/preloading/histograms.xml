@@ -176,6 +176,17 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
 </histogram>
 
+<histogram name="Preloading.Prefetch.PrefetchStatus"
+    enum="PrefetchProxyPrefetchStatus" expires_after="2025-10-08">
+  <owner>adithyas@chromium.org</owner>
+  <owner>portals-team@google.com</owner>
+  <summary>
+    Records the final PrefetchStatus value for a PrefetchContainer. The value is
+    recorded when a prefetch fails (in the failure case), or when the
+    PrefetchContainer is destroyed (in all other cases).
+  </summary>
+</histogram>
+
 <histogram name="Preloading.PrefetchBCGSwap.RelatedActiveContents"
     units="contents" expires_after="2024-06-30">
   <owner>jbroman@chromium.org</owner>

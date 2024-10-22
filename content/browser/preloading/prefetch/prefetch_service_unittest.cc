@@ -879,6 +879,8 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
       bool is_accurate = false) {
     ExpectPrefetchNoNetErrorOrResponseReceived(histogram_tester,
                                                /*is_eligible=*/true);
+    histogram_tester.ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
+                                        expected_prefetch_status, 1);
     ExpectCorrectUkmLogs(
         {.outcome = PreloadingTriggeringOutcome::kFailure,
          .failure = ToPreloadingFailureReason(expected_prefetch_status),
@@ -914,6 +916,9 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
     EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
     EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
 
+    histogram_tester.ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
+                                        PrefetchStatus::kPrefetchFailedNetError,
+                                        1);
     ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
                           .failure = ToPreloadingFailureReason(
                               PrefetchStatus::kPrefetchFailedNetError),
@@ -949,6 +954,8 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
     EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
     EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
 
+    histogram_tester.ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
+                                        expected_prefetch_status, 1);
     ExpectCorrectUkmLogs(
         {.outcome = PreloadingTriggeringOutcome::kFailure,
          .failure = ToPreloadingFailureReason(expected_prefetch_status)});
@@ -1465,6 +1472,9 @@ TEST_P(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligiblePreloadingDisabled, 1);
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kPreloadingDisabled);
 
@@ -1708,6 +1718,9 @@ TEST_P(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligibleHostIsNonUnique, 1);
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kHostIsNonUnique);
 
@@ -1740,6 +1753,9 @@ TEST_P(PrefetchServiceTest, NotEligibleDataSaverEnabled) {
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligibleDataSaverEnabled, 1);
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kDataSaverEnabled);
 
@@ -1763,6 +1779,9 @@ TEST_P(PrefetchServiceTest, NotEligibleNonHttps) {
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps, 1);
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kSchemeIsNotHttps);
 
@@ -1794,6 +1813,9 @@ TEST_P(PrefetchServiceTest, NotEligiblePrefetchProxyNotAvailable) {
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable, 1);
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kPrefetchProxyNotAvailable);
 
@@ -1859,6 +1881,9 @@ TEST_P(PrefetchServiceTest, NotEligibleOriginWithinRetryAfterWindow) {
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligibleRetryAfter, 1);
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kRetryAfter);
 
@@ -1913,6 +1938,9 @@ TEST_P(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker, 1);
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kUserHasServiceWorker);
 
@@ -2200,6 +2228,9 @@ TEST_P(PrefetchServiceTest, NotEligibleUserHasCookies) {
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligibleUserHasCookies, 1);
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kUserHasCookies);
 
@@ -2322,6 +2353,9 @@ TEST_P(PrefetchServiceTest,
                             PrefetchStatus::kPrefetchNotUsedCookiesChanged),
                         .is_accurate = true,
                         .expect_ready_time = true});
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchNotUsedCookiesChanged, 1);
 }
 
 // TODO(crbug.com/40249481): Test flaky on lacros trybots.
@@ -2379,6 +2413,11 @@ TEST_P(PrefetchServiceTest,
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::
+          kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy,
+      1);
   ExpectPrefetchNotEligible(
       histogram_tester,
       PreloadingEligibility::kSameSiteCrossOriginPrefetchRequiredProxy);
@@ -2411,6 +2450,9 @@ TEST_P(PrefetchServiceTest, NotEligibleExistingConnectProxy) {
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligibleExistingProxy, 1);
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kExistingProxy);
 
@@ -2913,6 +2955,9 @@ TEST_P(PrefetchServiceTest, NonDefaultStoragePartition) {
 
   EXPECT_EQ(RequestCount(), 0);
 
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition, 1);
   ExpectPrefetchNotEligible(histogram_tester,
                             PreloadingEligibility::kNonDefaultStoragePartition);
 
@@ -5570,6 +5615,7 @@ TEST_F(PrefetchServiceNewLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
 }
 
 TEST_F(PrefetchServiceNewLimitsTest, PrefetchFailsAndIsReset) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::kPrefetchUseContentRefactor,
@@ -5615,6 +5661,9 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchFailsAndIsReset) {
   ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
                         .failure = ToPreloadingFailureReason(
                             PrefetchStatus::kPrefetchFailedNetError)});
+  histogram_tester.ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
+                                      PrefetchStatus::kPrefetchFailedNetError,
+                                      1);
 }
 
 TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
