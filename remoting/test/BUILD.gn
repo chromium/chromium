@@ -50,8 +50,6 @@ static_library("test_support") {
     "//net",
     "//remoting/base",
     "//remoting/base:logging",
-    "//remoting/client",
-    "//remoting/client/audio",
     "//remoting/codec:decoder",
     "//remoting/codec:encoder",
     "//remoting/protocol",

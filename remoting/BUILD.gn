@@ -68,7 +68,6 @@ group("test_support") {
     "//base",
     "//net",
     "//remoting/base:test_support",
-    "//remoting/client",
     "//remoting/codec:decoder",
     "//remoting/codec:encoder",
     "//remoting/protocol:test_support",
@@ -96,11 +95,6 @@ test("remoting_unittests") {
     "//base/test:test_support",
     "//google_apis",
     "//remoting/base:unit_tests",
-    "//remoting/client:unit_tests",
-    "//remoting/client/audio:unit_tests",
-    "//remoting/client/input:unit_tests",
-    "//remoting/client/notification:unit_tests",
-    "//remoting/client/ui:unit_tests",
     "//remoting/protocol:unit_tests",
     "//remoting/signaling:unit_tests",
     "//testing/gmock",
@@ -132,11 +126,6 @@ test("remoting_unittests") {
       "wtsapi32.lib",
     ]
   }
-
-  # TODO(crbug.com/40118868): Change to !is_chromeos once lacros-chrome is switched to target_os=chromeos.
-  if (!is_chromeos) {
-    deps += [ "//remoting/client/display:unit_tests" ]
-  }
 }
 
 if (enable_remoting_host) {
@@ -156,8 +145,6 @@ if (enable_remoting_host) {
       "//components/webrtc:thread_wrapper",
       "//net:test_support",
       "//remoting/base",
-      "//remoting/client:client",
-      "//remoting/client/audio:audio",
       "//remoting/codec:encoder",
       "//remoting/host:common",
       "//remoting/host:test_support",

@@ -27,7 +27,6 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SKIP_GN_ISOLATE_MAP_TARGETS = {
     # This target is magic and not present in gn_isolate_map.pyl.
     'all',
-    'remoting/client:client',
     'remoting/host:host',
 
     # These targets are only used by script tests

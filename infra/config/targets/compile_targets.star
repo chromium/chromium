@@ -358,11 +358,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "remoting/client:client",
-    label = "//remoting/client:client",
-)
-
-targets.compile_target(
     name = "remoting/host:host",
     label = "//remoting/host:host",
 )

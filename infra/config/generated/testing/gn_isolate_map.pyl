@@ -1519,10 +1519,6 @@
     "label": "//tools/android/push_apps_to_background:push_apps_to_background_apk",
     "type": "additional_compile_target",
   },
-  "remoting/client:client": {
-    "label": "//remoting/client:client",
-    "type": "additional_compile_target",
-  },
   "remoting/host:host": {
     "label": "//remoting/host:host",
     "type": "additional_compile_target",

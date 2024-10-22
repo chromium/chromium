@@ -915,7 +915,6 @@ if (enable_remoting && ((is_linux && ozone_platform_x11) ||
   group("traffic_annotation_auditor_dependencies") {
     deps = [
       "//chrome:chrome",
-      "//remoting/client",
       "//remoting/host:host",
       "//tools/traffic_annotation:annotations_xml",
     ]
