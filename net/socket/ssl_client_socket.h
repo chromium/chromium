@@ -42,7 +42,7 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
  public:
   // Records some histograms based on the result of the SSL handshake.
   static void RecordSSLConnectResult(
-      SSLClientSocket& ssl_socket,
+      SSLClientSocket* ssl_socket,
       int result,
       bool is_ech_capable,
       bool ech_enabled,

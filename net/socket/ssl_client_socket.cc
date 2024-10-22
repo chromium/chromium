@@ -71,7 +71,7 @@ base::Value::Dict NetLogClearMatchingCachedClientCertParams(
 
 // static
 void SSLClientSocket::RecordSSLConnectResult(
-    SSLClientSocket& ssl_socket,
+    SSLClientSocket* ssl_socket,
     int result,
     bool is_ech_capable,
     bool ech_enabled,
@@ -112,6 +112,7 @@ void SSLClientSocket::RecordSSLConnectResult(
 
   if (result == OK) {
     DCHECK(!connect_timing.ssl_start.is_null());
+    CHECK(ssl_socket);
     base::TimeDelta connect_duration =
         connect_timing.ssl_end - connect_timing.ssl_start;
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_2", connect_duration,
@@ -123,7 +124,7 @@ void SSLClientSocket::RecordSSLConnectResult(
     }
 
     SSLInfo ssl_info;
-    bool has_ssl_info = ssl_socket.GetSSLInfo(&ssl_info);
+    bool has_ssl_info = ssl_socket->GetSSLInfo(&ssl_info);
     DCHECK(has_ssl_info);
 
     SSLVersion version =

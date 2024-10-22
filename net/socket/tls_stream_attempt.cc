@@ -194,6 +194,7 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
   const bool ech_enabled = params().ssl_client_context->config().ech_enabled;
 
   if (!ech_retry_configs_ && rv == ERR_ECH_NOT_NEGOTIATED && ech_enabled) {
+    CHECK(ssl_socket_);
     // We used ECH, and the server could not decrypt the ClientHello. However,
     // it was able to handshake with the public name and send authenticated
     // retry configs. If this is not the first time around, retry the connection
@@ -219,7 +220,7 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
 
   const bool is_ech_capable =
       ssl_config_ && !ssl_config_->ech_config_list.empty();
-  SSLClientSocket::RecordSSLConnectResult(*ssl_socket_, rv, is_ech_capable,
+  SSLClientSocket::RecordSSLConnectResult(ssl_socket_.get(), rv, is_ech_capable,
                                           ech_enabled, ech_retry_configs_,
                                           connect_timing());
 
