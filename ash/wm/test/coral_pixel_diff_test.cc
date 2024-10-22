@@ -72,7 +72,7 @@ TEST_F(CoralPixelDiffTest, CoralSelectorView) {
           ->scroll_view_.get();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "coral_selector_view",
-      /*revision_number=*/1, scroll_view));
+      /*revision_number=*/2, scroll_view));
 }
 
 }  // namespace ash

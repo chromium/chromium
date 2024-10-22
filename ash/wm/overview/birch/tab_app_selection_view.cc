@@ -10,12 +10,16 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
@@ -30,15 +34,25 @@ namespace ash {
 namespace {
 
 constexpr int kScrollViewMaxHeight = 358;
+// The space between the user feedback view and the tab app items view.
+constexpr int kChildSpacing = 8;
 
 constexpr int kItemChildSpacing = 16;
 constexpr gfx::Insets kItemInsets = gfx::Insets::VH(8, 16);
 constexpr int kImageSize = 20;
 constexpr gfx::Size kImagePreferredSize(20, 20);
 
+// UserFeedbackView.
+constexpr int kUserFeedbackChildSpacing = 8;
+constexpr gfx::Insets kUserFeedbackInsets(16);
+constexpr gfx::RoundedCornersF kUserFeedbackContainerCornerRadius(20.f);
+
 constexpr gfx::Insets kContentsInsets = gfx::Insets::VH(8, 0);
 
-constexpr gfx::RoundedCornersF kContainerCornerRadius(20.f, 20.f, 0.f, 0.f);
+constexpr gfx::RoundedCornersF kTabAppItemsContainerCornerRadius(20.f,
+                                                                 20.f,
+                                                                 0.f,
+                                                                 0.f);
 
 constexpr gfx::Insets kSubtitleMargins = gfx::Insets::VH(8, 16);
 
@@ -265,20 +279,103 @@ BEGIN_METADATA(TabAppSelectionView, TabAppSelectionItemView)
 END_METADATA
 
 // -----------------------------------------------------------------------------
+// UserFeedbackView:
+// A view that allows users to give feedback via the thumb up and thumb down
+// buttons.
+//
+//   +-------------------------------------------+
+//   |  +-----------------------+  +----++-+--+  |
+//   |  |                       |  |    ||    |  |
+//   |  +-----------------------+  +----++----+  |
+//   +--^--------------------------^-------^-----+
+//   ^  |                          |       |
+//   |  `Label`                    |       'IconButton'(thumb down)
+//   |                             'IconButton'(thumb up)
+//   |
+//   `UserFeedbackView`
+// TODO(crbug.com/374117101): Add hover state for thumb up/down buttons.
+// TODO(crbug.com/374116829): Localization and proper accessibility names.
+class UserFeedbackView : public views::BoxLayoutView {
+  METADATA_HEADER(UserFeedbackView, views::BoxLayoutView)
+
+ public:
+  UserFeedbackView() {
+    SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    SetInsideBorderInsets(kUserFeedbackInsets);
+    SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysSystemOnBaseOpaque,
+        kUserFeedbackContainerCornerRadius, 0));
+    SetBetweenChildSpacing(kUserFeedbackChildSpacing);
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kUserFeedbackContainerCornerRadius,
+        views::HighlightBorder::Type::kHighlightBorderNoShadow));
+
+    auto* feedback_label = AddChildView(std::make_unique<views::Label>());
+    feedback_label->SetText(
+        u"This is experimental AI feature and won't always get it right.");
+    feedback_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    feedback_label->SetMultiLine(true);
+    feedback_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation2,
+                                          *feedback_label);
+    SetFlexForView(feedback_label, 1);
+
+    auto* thumb_buttons_container =
+        AddChildView(std::make_unique<views::BoxLayoutView>());
+    thumb_buttons_container->SetOrientation(
+        views::BoxLayout::Orientation::kHorizontal);
+    thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
+        base::BindOnce(&UserFeedbackView::OnThumbUpButtonPressed,
+                       base::Unretained(this)),
+        IconButton::Type::kMediumFloating, &kThumbUpIcon, u"test",
+        /*is_togglable=*/false, /*has_border=*/false));
+    thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
+        base::BindOnce(&UserFeedbackView::OnThumbDownButtonPressed,
+                       base::Unretained(this)),
+        IconButton::Type::kMediumFloating, &kThumbDownIcon, u"test",
+        /*is_togglable=*/false, /*has_border=*/false));
+  }
+
+  UserFeedbackView(const UserFeedbackView&) = delete;
+  UserFeedbackView& operator=(const UserFeedbackView&) = delete;
+  ~UserFeedbackView() override = default;
+
+ private:
+  // TODO(crbug.com/374116757): Implement `OnThumbUpButtonPressed` and
+  // `OnThumbDownButtonPressed`.
+  void OnThumbUpButtonPressed() {}
+  void OnThumbDownButtonPressed() {}
+};
+
+BEGIN_METADATA(UserFeedbackView)
+END_METADATA
+
+// -----------------------------------------------------------------------------
 // TabAppSelectionView:
 TabAppSelectionView::TabAppSelectionView(int group_id) : group_id_(group_id) {
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBaseOpaque, kContainerCornerRadius, 0));
-
+  SetBetweenChildSpacing(kChildSpacing);
   GetViewAccessibility().SetIsVertical(true);
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_SELECTOR_ACCESSIBLE_NAME));
 
-  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
-      views::ScrollView::ScrollWithLayers::kEnabled));
+  AddChildView(std::make_unique<UserFeedbackView>());
+
+  auto* tab_app_items_view =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  tab_app_items_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+  tab_app_items_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  tab_app_items_view->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBaseOpaque,
+      kTabAppItemsContainerCornerRadius, 0));
+
+  scroll_view_ =
+      tab_app_items_view->AddChildView(std::make_unique<views::ScrollView>(
+          views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->ClipHeightTo(/*min_height=*/0,
                              /*max_height=*/kScrollViewMaxHeight);
   // This applies a non-rounded rectangle themed background. We set this to
@@ -287,15 +384,17 @@ TabAppSelectionView::TabAppSelectionView(int group_id) : group_id_(group_id) {
   // child backgrounds when they are hovered over.
   scroll_view_->SetBackgroundThemeColorId(std::nullopt);
   scroll_view_->SetBorder(std::make_unique<views::HighlightBorder>(
-      kContainerCornerRadius,
+      kTabAppItemsContainerCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  scroll_view_->SetViewportRoundedCornerRadius(kContainerCornerRadius);
+  scroll_view_->SetViewportRoundedCornerRadius(
+      kTabAppItemsContainerCornerRadius);
   scroll_view_->SetDrawOverflowIndicator(false);
 
-  AddChildView(views::Builder<views::Separator>()
-                   .SetColorId(cros_tokens::kCrosSysSeparator)
-                   .SetOrientation(views::Separator::Orientation::kHorizontal)
-                   .Build());
+  tab_app_items_view->AddChildView(
+      views::Builder<views::Separator>()
+          .SetColorId(cros_tokens::kCrosSysSeparator)
+          .SetOrientation(views::Separator::Orientation::kHorizontal)
+          .Build());
 
   auto contents =
       views::Builder<views::BoxLayoutView>()
