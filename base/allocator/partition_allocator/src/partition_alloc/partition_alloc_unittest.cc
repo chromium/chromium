@@ -983,7 +983,7 @@ TEST_P(PartitionAllocTest, ExtraAllocSize) {
   // There is a bucket with a slot size exactly that (asserted below).
   size_t slot_size = 64;
   size_t bucket_index =
-      allocator.root()->SizeToBucketIndex(slot_size, GetBucketDistribution());
+      PartitionRoot::SizeToBucketIndex(slot_size, GetBucketDistribution());
   PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
   ASSERT_EQ(bucket->slot_size, slot_size);
 
@@ -1009,7 +1009,7 @@ TEST_P(PartitionAllocTest, PreferSlotSpansWithProvisionedEntries) {
   size_t size = SystemPageSize() - ExtraAllocSize(allocator);
   size_t real_size = size + ExtraAllocSize(allocator);
   size_t bucket_index =
-      allocator.root()->SizeToBucketIndex(real_size, GetBucketDistribution());
+      PartitionRoot::SizeToBucketIndex(real_size, GetBucketDistribution());
   PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
   ASSERT_EQ(bucket->slot_size, real_size);
   size_t slots_per_span = bucket->num_system_pages_per_slot_span;
@@ -2131,7 +2131,7 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
   EXPECT_TRUE(ptr);
   slot_span = SlotSpan::FromSlotStart(allocator.root()->ObjectToSlotStart(ptr));
   EXPECT_EQ(1u, slot_span->num_allocated_slots);
-  size_t very_small_actual_size = allocator.root()->GetUsableSize(ptr);
+  size_t very_small_actual_size = PartitionRoot::GetUsableSize(ptr);
   total_slots =
       (slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize()) /
       (very_small_actual_size + ExtraAllocSize(allocator));
@@ -3681,7 +3681,7 @@ TEST_P(PartitionAllocTest, ActiveListMaintenance) {
   size_t size = SystemPageSize() - ExtraAllocSize(allocator);
   size_t real_size = size + ExtraAllocSize(allocator);
   size_t bucket_index =
-      allocator.root()->SizeToBucketIndex(real_size, GetBucketDistribution());
+      PartitionRoot::SizeToBucketIndex(real_size, GetBucketDistribution());
   PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
   ASSERT_EQ(bucket->slot_size, real_size);
   size_t slots_per_span = bucket->num_system_pages_per_slot_span;
