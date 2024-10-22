@@ -97,8 +97,8 @@ void BluetoothTestAndroid::InitWithFakeAdapter() {
 }
 
 bool BluetoothTestAndroid::DenyPermission() {
-  Java_FakeBluetoothAdapter_setFakeContextLocationPermission(
-      AttachCurrentThread(), j_fake_bluetooth_adapter_, false);
+  Java_FakeBluetoothAdapter_setFakePermission(AttachCurrentThread(),
+                                              j_fake_bluetooth_adapter_, false);
   return true;
 }
 

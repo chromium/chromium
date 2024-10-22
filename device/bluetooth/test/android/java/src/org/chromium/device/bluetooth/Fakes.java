@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.test.mock.MockContext;
@@ -121,8 +122,12 @@ class Fakes {
         }
 
         @CalledByNative("FakeBluetoothAdapter")
-        public void setFakeContextLocationPermission(boolean enabled) {
-            mFakeContext.setLocationPermission(enabled);
+        public void setFakePermission(boolean enabled) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                mFakeContext.setBluetoothPermission(enabled);
+            } else {
+                mFakeContext.setLocationPermission(enabled);
+            }
         }
 
         /** Creates and discovers a new device. */
@@ -369,15 +374,23 @@ class Fakes {
 
     /** Fakes android.content.Context by extending MockContext. */
     static class FakeContext extends MockContext {
-        private boolean mLocationPermission;
+        private int mLocationPermission;
+        private int mBluetoothPermission;
 
         public FakeContext() {
             super();
-            mLocationPermission = true;
+            mLocationPermission = PackageManager.PERMISSION_GRANTED;
+            mBluetoothPermission = PackageManager.PERMISSION_GRANTED;
         }
 
         public void setLocationPermission(boolean enabled) {
-            mLocationPermission = enabled;
+            mLocationPermission = (enabled ? PackageManager.PERMISSION_GRANTED
+                                           : PackageManager.PERMISSION_DENIED);
+        }
+
+        public void setBluetoothPermission(boolean enabled) {
+            mBluetoothPermission = (enabled ? PackageManager.PERMISSION_GRANTED
+                                            : PackageManager.PERMISSION_DENIED);
         }
 
         @Override
@@ -404,11 +417,15 @@ class Fakes {
 
         @Override
         public int checkCallingOrSelfPermission(String permission) {
+            final boolean isBluetoothPermissionSOrAbove =
+                permission.equals(Manifest.permission.BLUETOOTH_SCAN)
+                    || permission.equals(Manifest.permission.BLUETOOTH_CONNECT);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isBluetoothPermissionSOrAbove) {
+                return mBluetoothPermission;
+            }
             if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)
                     || permission.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                return mLocationPermission
-                        ? PackageManager.PERMISSION_GRANTED
-                        : PackageManager.PERMISSION_DENIED;
+                return mLocationPermission;
             }
             return PackageManager.PERMISSION_DENIED;
         }
