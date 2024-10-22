@@ -217,6 +217,45 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
                                                          &new_frame));
 }
 
+TEST_F(VideoFrameStructTraitsTest, HoleVideoFrame) {
+  base::UnguessableToken overlay_plane_id = base::UnguessableToken::Create();
+  scoped_refptr<VideoFrame> frame = VideoFrame::CreateVideoHoleFrame(
+      overlay_plane_id, gfx::Size(200, 100), base::Seconds(100));
+
+  // Saves the VideoFrame metadata from the created frame. The test should not
+  // assume these have any particular value.
+  const VideoFrame::StorageType storage_type = frame->storage_type();
+  const VideoPixelFormat format = frame->format();
+
+  ASSERT_TRUE(RoundTrip(&frame));
+  ASSERT_TRUE(frame);
+  EXPECT_FALSE(frame->metadata().end_of_stream);
+  EXPECT_EQ(frame->storage_type(), storage_type);
+  EXPECT_EQ(frame->format(), format);
+  EXPECT_EQ(frame->natural_size(), gfx::Size(200, 100));
+  EXPECT_EQ(frame->timestamp(), base::Seconds(100));
+  ASSERT_TRUE(frame->metadata().tracking_token.has_value());
+  ASSERT_EQ(*frame->metadata().tracking_token, overlay_plane_id);
+}
+
+TEST_F(VideoFrameStructTraitsTest, TrackingTokenVideoFrame) {
+  base::UnguessableToken tracking_token = base::UnguessableToken::Create();
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapTrackingToken(
+      PIXEL_FORMAT_ARGB, tracking_token, gfx::Size(100, 100),
+      gfx::Rect(10, 10, 80, 80), gfx::Size(200, 100), base::Seconds(100));
+
+  ASSERT_TRUE(RoundTrip(&frame));
+  ASSERT_TRUE(frame);
+  EXPECT_FALSE(frame->metadata().end_of_stream);
+  EXPECT_EQ(frame->format(), PIXEL_FORMAT_ARGB);
+  EXPECT_EQ(frame->coded_size(), gfx::Size(100, 100));
+  EXPECT_EQ(frame->visible_rect(), gfx::Rect(10, 10, 80, 80));
+  EXPECT_EQ(frame->natural_size(), gfx::Size(200, 100));
+  EXPECT_EQ(frame->timestamp(), base::Seconds(100));
+  ASSERT_TRUE(frame->metadata().tracking_token.has_value());
+  ASSERT_EQ(*frame->metadata().tracking_token, tracking_token);
+}
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(VideoFrameStructTraitsTest, OOPVDMailboxVideoFrame) {
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();

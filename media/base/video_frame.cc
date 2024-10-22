@@ -294,15 +294,29 @@ scoped_refptr<VideoFrame> VideoFrame::CreateVideoHoleFrame(
     const base::UnguessableToken& overlay_plane_id,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
-  auto layout = VideoFrameLayout::Create(PIXEL_FORMAT_UNKNOWN, natural_size);
+  return VideoFrame::WrapTrackingToken(PIXEL_FORMAT_UNKNOWN, overlay_plane_id,
+                                       /*coded_size=*/natural_size,
+                                       /*visible_rect=*/gfx::Rect(natural_size),
+                                       natural_size, timestamp);
+}
+
+// static
+scoped_refptr<VideoFrame> VideoFrame::WrapTrackingToken(
+    VideoPixelFormat format,
+    const base::UnguessableToken& tracking_token,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    base::TimeDelta timestamp) {
+  auto layout = VideoFrameLayout::Create(format, coded_size);
   if (!layout) {
     DLOG(ERROR) << "Invalid layout.";
     return nullptr;
   }
-  scoped_refptr<VideoFrame> frame = new VideoFrame(
-      *layout, StorageType::STORAGE_OPAQUE, gfx::Rect(natural_size),
-      natural_size, timestamp, FrameControlType::kVideoHole);
-  frame->metadata().tracking_token = overlay_plane_id;
+  scoped_refptr<VideoFrame> frame =
+      new VideoFrame(*layout, StorageType::STORAGE_OPAQUE, visible_rect,
+                     natural_size, timestamp);
+  frame->metadata().tracking_token = tracking_token;
   return frame;
 }
 
@@ -1706,10 +1720,6 @@ bool VideoFrame::IsValidConfigInternal(VideoPixelFormat format,
       DCHECK_EQ(format, PIXEL_FORMAT_UNKNOWN);
       return coded_size.IsEmpty() && visible_rect.IsEmpty() &&
              natural_size.IsEmpty();
-    case FrameControlType::kVideoHole:
-      DCHECK_EQ(format, PIXEL_FORMAT_UNKNOWN);
-      return !coded_size.IsEmpty() && !visible_rect.IsEmpty() &&
-             !natural_size.IsEmpty();
   }
 }
 

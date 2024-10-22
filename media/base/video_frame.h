@@ -207,6 +207,18 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
 
+  // Creates a frame that doesn't contain any valid video content.
+  // |tracking_token| is stored in the frame metadata and can be used to look up
+  // the underlying resource or VideoFrame source. The resulting frame's
+  // |storage_type_| will be STORAGE_OPAQUE.
+  static scoped_refptr<VideoFrame> WrapTrackingToken(
+      VideoPixelFormat format,
+      const base::UnguessableToken& tracking_token,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      base::TimeDelta timestamp);
+
   // Offers the same functionality as CreateFrame, and additionally zeroes out
   // the initial allocated buffers.
   static scoped_refptr<VideoFrame> CreateZeroInitializedFrame(
@@ -796,7 +808,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   enum class FrameControlType {
     kNone,
     kEos,
-    kVideoHole,
   };
 
   // Clients must use the static factory/wrapping methods to create a new frame.

@@ -462,6 +462,7 @@ union VideoFrameData {
   [EnableIf=is_linux_or_chromeos]
   MailboxVideoFrameData mailbox_data;
   SharedImageVideoFrameData shared_image_data;
+  OpaqueVideoFrameData opaque_data;
 };
 
 // A marker for EOS frames.
@@ -498,6 +499,10 @@ struct SharedImageVideoFrameData {
   // |ycbcr_data| is present on Android (and sometimes Fuchsia) when the
   // video is hardware decoded and the display compositor uses Vulkan.
   gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
+};
+
+// An empty structure used for STORAGE_OPAQUE VideoFrame.
+struct OpaqueVideoFrameData {
 };
 
 struct PipelineStatistics {

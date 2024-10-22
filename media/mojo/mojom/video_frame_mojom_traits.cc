@@ -140,17 +140,26 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
         media::mojom::GpuMemoryBufferSharedImageVideoFrameData::New(
             std::move(gpu_memory_buffer_handle), std::move(shared_image),
             std::move(sync_token)));
-  } else if (input->HasSharedImage()) {
+  }
+
+  if (input->HasSharedImage()) {
     gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image), input->acquire_sync_token(),
             std::move(input->ycbcr_info())));
+  }
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  } else if (input->HasOOPVDMailbox()) {
+  if (input->HasOOPVDMailbox()) {
     return media::mojom::VideoFrameData::NewMailboxData(
         media::mojom::MailboxVideoFrameData::New(input->oopvd_mailbox()));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+
+  if (input->storage_type() == media::VideoFrame::STORAGE_OPAQUE) {
+    return media::mojom::VideoFrameData::NewOpaqueData(
+        media::mojom::OpaqueVideoFrameData::New());
   }
 
   NOTREACHED_IN_MIGRATION() << "Unsupported VideoFrame conversion";
@@ -357,6 +366,11 @@ bool StructTraits<media::mojom::VideoFrameDataView,
         coded_size, visible_rect, natural_size, timestamp);
 
     frame->set_ycbcr_info(ycbcr_info);
+  } else if (data.is_opaque_data()) {
+    DCHECK(metadata.tracking_token.has_value());
+    frame = media::VideoFrame::WrapTrackingToken(
+        format, *metadata.tracking_token, coded_size, visible_rect,
+        natural_size, timestamp);
   } else {
     // TODO(sandersd): Switch on the union tag to avoid this ugliness?
     NOTREACHED();
