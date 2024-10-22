@@ -118,13 +118,12 @@ DownloadObfuscator::DeobfuscateChunk(base::span<const uint8_t> data,
     if (data.size() < kHeaderSize + per_chunk_overhead) {
       return base::unexpected(Error::kDeobfuscationFailed);
     }
-    std::vector<uint8_t> header(data.begin(), data.begin() + kHeaderSize);
-    auto header_data = GetHeaderData(header);
+    auto header_data = GetHeaderData(data.first(kHeaderSize));
     if (!header_data.has_value()) {
       return base::unexpected(header_data.error());
     }
-    derived_key_ = std::move(header_data->first);
-    nonce_prefix_ = std::move(header_data->second);
+    derived_key_ = std::move(header_data->derived_key);
+    nonce_prefix_ = std::move(header_data->nonce_prefix);
     obfuscated_file_offset = kHeaderSize;
   }
 
@@ -140,8 +139,8 @@ DownloadObfuscator::DeobfuscateChunk(base::span<const uint8_t> data,
   bool is_last_chunk =
       (obfuscated_file_offset + chunk_size.value() >= data.size());
   auto result = DeobfuscateDataChunk(
-      base::make_span(data).subspan(obfuscated_file_offset, chunk_size.value()),
-      derived_key_, nonce_prefix_, chunk_counter_++, is_last_chunk);
+      data.subspan(obfuscated_file_offset, chunk_size.value()), derived_key_,
+      nonce_prefix_, chunk_counter_++, is_last_chunk);
 
   if (!result.has_value()) {
     return base::unexpected(result.error());
