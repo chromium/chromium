@@ -47,12 +47,6 @@ namespace commerce {
 ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   Profile* const profile = Profile::FromWebUI(web_ui);
-  commerce::ShoppingService* shopping_service =
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-  if (!shopping_service || !CanLoadProductSpecificationsFullPageUi(
-                               shopping_service->GetAccountChecker())) {
-    return;
-  }
   // Add ThemeSource to serve the chrome logo.
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   // Add SanitizedImageSource to embed images in WebUI.
@@ -202,7 +196,11 @@ ProductSpecificationsUIConfig::ProductSpecificationsUIConfig()
 bool ProductSpecificationsUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   Profile* const profile = Profile::FromBrowserContext(browser_context);
-  return profile && !profile->IsOffTheRecord();
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  return profile && !profile->IsOffTheRecord() && shopping_service &&
+         CanLoadProductSpecificationsFullPageUi(
+             shopping_service->GetAccountChecker());
 }
 
 ProductSpecificationsUIConfig::~ProductSpecificationsUIConfig() = default;
