@@ -4,6 +4,8 @@
 
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -191,7 +193,7 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
           *navigation_handle());
   return content::NavigationThrottle::ThrottleCheckResult(
       content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-      interstitial_html);
+      std::move(interstitial_html));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   // A credentials re-mint is already underway when we reach here (Mirror
   // account reconciliation). Nothing to do here except block the navigation

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -165,7 +167,7 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
           AssociateBlockingPage(handle, std::move(blocking_page));
       return content::NavigationThrottle::ThrottleCheckResult(
           content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-          interstitial_html);
+          std::move(interstitial_html));
     }
 
     // Otherwise, just record metrics and continue.
@@ -225,7 +227,7 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
         AssociateBlockingPage(handle, std::move(blocking_page));
     return content::NavigationThrottle::ThrottleCheckResult(
         content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-        interstitial_html);
+        std::move(interstitial_html));
   }
 
   // Otherwise, just record metrics and continue.

@@ -4,6 +4,8 @@
 
 #include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -162,7 +164,7 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
     tab_storage = InsecureFormTabStorage::GetOrCreate(contents);
   tab_storage->SetInterstitialShown(true);
   return content::NavigationThrottle::ThrottleCheckResult(
-      CANCEL, net::ERR_BLOCKED_BY_CLIENT, interstitial_html);
+      CANCEL, net::ERR_BLOCKED_BY_CLIENT, std::move(interstitial_html));
 }
 
 }  // namespace security_interstitials

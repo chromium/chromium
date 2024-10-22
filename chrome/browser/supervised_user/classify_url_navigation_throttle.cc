@@ -8,6 +8,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
@@ -242,7 +243,7 @@ void ClassifyUrlNavigationThrottle::OnInterstitialResult(
               profile->GetPrefs(), result.reason, already_sent_request,
               is_main_frame, g_browser_process->GetApplicationLocale());
       CancelDeferredNavigation(content::NavigationThrottle::ThrottleCheckResult(
-          CANCEL, net::ERR_BLOCKED_BY_CLIENT, interstitial_html));
+          CANCEL, net::ERR_BLOCKED_BY_CLIENT, std::move(interstitial_html)));
       break;
     }
   }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -238,7 +240,7 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
               profile->GetPrefs(), reason_, already_sent_request, is_main_frame,
               g_browser_process->GetApplicationLocale());
       CancelDeferredNavigation(content::NavigationThrottle::ThrottleCheckResult(
-          CANCEL, net::ERR_BLOCKED_BY_CLIENT, interstitial_html));
+          CANCEL, net::ERR_BLOCKED_BY_CLIENT, std::move(interstitial_html)));
     }
   }
 }
