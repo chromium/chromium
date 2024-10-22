@@ -1987,7 +1987,7 @@
   {
     "name": "defer-renderer-tasks-after-input",
     "owners": [ "shaseley@google.com" ],
-    "expiry_milestone": 131
+    "expiry_milestone": 133
   },
   {
     "name": "delay-media-sink-discovery",
