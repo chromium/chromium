@@ -64,7 +64,9 @@ constexpr auto kTrafficAnnotation =
 
 ScannerKeyedService::ScannerKeyedService(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<manta::ScannerProvider> scanner_provider)
+    : scanner_provider_(std::move(scanner_provider)) {
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -91,12 +93,17 @@ ash::ScannerSystemState ScannerKeyedService::GetSystemState() const {
 void ScannerKeyedService::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     manta::ScannerProvider::ScannerProtoResponseCallback callback) {
-  // TODO(b/363100868): Fetch available actions from service
-  auto output = std::make_unique<manta::proto::ScannerOutput>();
-  output->add_objects()->add_actions()->mutable_new_event()->set_title(
-      "Event title");
-
-  std::move(callback).Run(std::move(output), manta::MantaStatus());
+  if (!scanner_provider_) {
+    // `scanner_provider_` can only be nullptr when there is no identity
+    // manager to instantiate the provider.
+    std::move(callback).Run(
+        nullptr,
+        manta::MantaStatus(manta::MantaStatusCode::kNoIdentityManager));
+    return;
+  }
+  manta::proto::ScannerInput scanner_input;
+  scanner_input.set_image(std::string(jpeg_bytes->begin(), jpeg_bytes->end()));
+  scanner_provider_->Call(scanner_input, std::move(callback));
 }
 
 drive::DriveServiceInterface* ScannerKeyedService::GetDriveService() {

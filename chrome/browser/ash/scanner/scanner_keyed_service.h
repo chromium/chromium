@@ -13,6 +13,11 @@
 #include "chrome/browser/ash/scanner/scanner_system_state_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/manta/scanner_provider.h"
+
+namespace manta {
+class ScannerProvider;
+}  // namespace manta
 
 namespace ash {
 struct ScannerSystemState;
@@ -39,7 +44,8 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
  public:
   explicit ScannerKeyedService(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<manta::ScannerProvider> scanner_provider);
   ScannerKeyedService(const ScannerKeyedService&) = delete;
   ScannerKeyedService& operator=(const ScannerKeyedService&) = delete;
   ~ScannerKeyedService() override;
@@ -55,6 +61,7 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
   void Shutdown() override;
 
  private:
+  std::unique_ptr<manta::ScannerProvider> scanner_provider_;
   ScannerSystemStateProvider system_state_provider_;
 
   std::unique_ptr<drive::DriveAPIService> drive_service_;

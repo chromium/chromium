@@ -10,11 +10,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/scanner/scanner_keyed_service.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/manta/manta_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -43,6 +45,7 @@ ScannerKeyedServiceFactory::ScannerKeyedServiceFactory()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(manta::MantaServiceFactory::GetInstance());
 }
 
 ScannerKeyedServiceFactory::~ScannerKeyedServiceFactory() = default;
@@ -57,8 +60,16 @@ std::unique_ptr<KeyedService> ScannerKeyedServiceFactory::BuildInstanceFor(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
+
+  std::unique_ptr<manta::ScannerProvider> scanner_provider;
+  manta::MantaService* manta_service =
+      manta::MantaServiceFactory::GetForProfile(profile);
+  if (manta_service) {
+    scanner_provider = manta_service->CreateScannerProvider();
+  }
   return std::make_unique<ScannerKeyedService>(identity_manager,
-                                               std::move(url_loader_factory));
+                                               std::move(url_loader_factory),
+                                               std::move(scanner_provider));
 }
 
 std::unique_ptr<KeyedService>
