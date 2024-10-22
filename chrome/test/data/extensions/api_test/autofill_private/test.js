@@ -749,6 +749,29 @@ var availableTests = [
     chrome.test.succeed();
   },
 
+  function hasUserAnnotationsEntries_NoEntries() {
+    chrome.autofillPrivate.hasUserAnnotationsEntries(function(hasEntries) {
+      chrome.test.assertFalse(hasEntries, 'Expected no entries');
+      chrome.test.succeed();
+    });
+  },
+
+  function hasUserAnnotationsEntries_WithEntries() {
+    chrome.autofillPrivate.hasUserAnnotationsEntries(function(hasEntries) {
+      chrome.test.assertTrue(hasEntries, 'Expected entries to exist');
+      chrome.test.succeed();
+    });
+  },
+
+  function isUserEligibleForAutofillImprovements() {
+    chrome.autofillPrivate.isUserEligibleForAutofillImprovements(function(
+        isEligible) {
+      // TODO(crbug.com/373609897): Override account info status in the test
+      // setup to verify this properly.
+      chrome.test.assertFalse(isEligible, "Expected not eligible");
+      chrome.test.succeed();
+    });
+  },
 ];
 
 /** @const */
@@ -786,6 +809,12 @@ var TESTS_FOR_CONFIG = {
   'deleteAllUserAnnotationsEntries': ['deleteAllUserAnnotationsEntries'],
   'deleteUserAnnotationsEntries': ['deleteUserAnnotationsEntries'],
   'getUserAnnotationsEntries': ['getUserAnnotationsEntries'],
+  'hasUserAnnotationsEntries_NoEntries':
+      ['hasUserAnnotationsEntries_NoEntries'],
+  'hasUserAnnotationsEntries_WithEntries':
+      ['hasUserAnnotationsEntries_WithEntries'],
+  'isUserEligibleForAutofillImprovements':
+      ['isUserEligibleForAutofillImprovements'],
 };
 
 var testConfig = window.location.search.substring(1);

@@ -59,6 +59,11 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
         notify: true,
       },
 
+      disabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       entryToDelete_: Object,
 
       deleteEntryConfirmationText_: {
@@ -74,6 +79,7 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
   }
 
   prefs: {[key: string]: any};
+  disabled: boolean = false;
   private userAnnotationsEntries_: UserAnnotationsEntry[] = [];
   private userAnnotationsManager_: UserAnnotationsManagerProxy =
       UserAnnotationsManagerProxyImpl.getInstance();

@@ -24,7 +24,7 @@
             sub-label="[[addressesSublabel_()]]"
             on-click="onAddressesClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <template is="dom-if" if="[[autofillPredictionImprovementsEnabled_]]">
+        <template is="dom-if" if="[[autofillPredictionImprovementsAvailable_]]">
           <!-- TODO(crbug.com/361437117): Set proper icon. -->
           <!-- TODO(crbug.com/361437117): Add the beta label. -->
           <cr-link-row id="autofillPredictionImprovementsManagerButton"
@@ -63,16 +63,15 @@
           </settings-autofill-section>
         </settings-subpage>
       </template>
-      <template is="dom-if" if="[[autofillPredictionImprovementsEnabled_]]">
-        <template is="dom-if" route-path="/autofillPredictionImprovements">
-          <settings-subpage
-              associated-control=
-                  "[[$$('#autofillPredictionImprovementsManagerButton')]]"
-              page-title="$i18n{autofillPredictionImprovementsPageTitle}">
-            <settings-autofill-prediction-improvements-section
-                id="autofillPredictionImprovementsSection" prefs="{{prefs}}">
-            </settings-autofill-prediction-improvements-section>
-          </settings-subpage>
-        </template>
+      <template is="dom-if" route-path="/autofillPredictionImprovements">
+        <settings-subpage
+            associated-control=
+                "[[$$('#autofillPredictionImprovementsManagerButton')]]"
+            page-title="$i18n{autofillPredictionImprovementsPageTitle}">
+          <settings-autofill-prediction-improvements-section
+              id="autofillPredictionImprovementsSection" prefs="{{prefs}}"
+              disabled$="[[!userEligbleForAutofillPredictionImprovements_]]">
+          </settings-autofill-prediction-improvements-section>
+        </settings-subpage>
       </template>
     </settings-animated-pages>

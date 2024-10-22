@@ -2770,6 +2770,9 @@ Called by update_extension_histograms.py.-->
   <int value="1904" label="EXPERIMENTALAIDATA_PRIVATE_GETAIDATA"/>
   <int value="1905" label="AUTOTESTPRIVATE_GETDEVICEEVENTLOG"/>
   <int value="1906" label="ACCESSIBILITY_PRIVATE_UPDATEFACEGAZEBUBBLE"/>
+  <int value="1907" label="AUTOFILLPRIVATE_HASUSERANNOTATIONSENTRIES"/>
+  <int value="1908"
+      label="AUTOFILLPRIVATE_ISUSERELIGIBLEFORAUTOFILLIMPROVEMENTS"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

@@ -6,8 +6,9 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
-import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
+import {AutofillManagerImpl, PaymentsManagerImpl, UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {resetRouterForTesting} from 'chrome://settings/settings.js';
 import type {CrLinkRowElement, SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsPluralStringProxyImpl, PasswordManagerPage} from 'chrome://settings/settings.js';
@@ -17,6 +18,7 @@ import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_prox
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createIbanEntry, PaymentsManagerExpectations, STUB_USER_ACCOUNT_INFO, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
+import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // clang-format on
@@ -130,6 +132,7 @@ suite('PasswordsAndForms', function() {
 
   let autofillManager: TestAutofillManager;
   let paymentsManager: TestPaymentsManager;
+  let userAnnotationManager: TestUserAnnotationsManagerProxyImpl;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -141,6 +144,10 @@ suite('PasswordsAndForms', function() {
     // Override the PaymentsManagerImpl for testing.
     paymentsManager = new TestPaymentsManager();
     PaymentsManagerImpl.setInstance(paymentsManager);
+
+    // Override the UserAnnotationsManagerProxyImpl for testing.
+    userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
+    UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
   });
 
   test('baseLoadAndRemove', function() {
@@ -172,6 +179,7 @@ suite('PasswordsAndForms', function() {
     });
     const prefs = await createPrefs(true, true);
     const element = createAutofillElement(prefs);
+    await flushTasks();
     const autofillPredictionImprovementsManagerButton =
         element.shadowRoot!.querySelector<CrLinkRowElement>(
             '#autofillPredictionImprovementsManagerButton');

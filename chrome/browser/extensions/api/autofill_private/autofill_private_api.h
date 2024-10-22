@@ -406,6 +406,49 @@ class AutofillPrivateGetUserAnnotationsEntriesFunction
   void OnEntriesRetrieved(user_annotations::UserAnnotationsEntries results);
 };
 
+class AutofillPrivateHasUserAnnotationsEntriesFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateHasUserAnnotationsEntriesFunction() = default;
+  AutofillPrivateHasUserAnnotationsEntriesFunction(
+      const AutofillPrivateHasUserAnnotationsEntriesFunction&) = delete;
+  AutofillPrivateHasUserAnnotationsEntriesFunction& operator=(
+      const AutofillPrivateHasUserAnnotationsEntriesFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.hasUserAnnotationsEntries",
+                             AUTOFILLPRIVATE_HASUSERANNOTATIONSENTRIES)
+
+ protected:
+  ~AutofillPrivateHasUserAnnotationsEntriesFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void OnEntriesRetrieved(user_annotations::UserAnnotationsEntries results);
+};
+
+class AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateIsUserEligibleForAutofillImprovementsFunction() = default;
+  AutofillPrivateIsUserEligibleForAutofillImprovementsFunction(
+      const AutofillPrivateIsUserEligibleForAutofillImprovementsFunction&) =
+      delete;
+  AutofillPrivateIsUserEligibleForAutofillImprovementsFunction& operator=(
+      const AutofillPrivateIsUserEligibleForAutofillImprovementsFunction&) =
+      delete;
+  DECLARE_EXTENSION_FUNCTION(
+      "autofillPrivate.isUserEligibleForAutofillImprovements",
+      AUTOFILLPRIVATE_ISUSERELIGIBLEFORAUTOFILLIMPROVEMENTS)
+
+ protected:
+  ~AutofillPrivateIsUserEligibleForAutofillImprovementsFunction() override =
+      default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class AutofillPrivateDeleteUserAnnotationsEntryFunction
     : public ExtensionFunction {
  public:

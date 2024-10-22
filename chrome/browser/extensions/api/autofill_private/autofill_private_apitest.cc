@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/values.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
@@ -29,6 +31,8 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/user_annotations/test_user_annotations_service.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/switches.h"
@@ -58,6 +62,13 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
             autofill_client()->GetPersonalDataManager());
     autofill_client()->GetPersonalDataManager()->SetPrefService(
         autofill_client()->GetPrefs());
+    UserAnnotationsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        profile(),
+        base::BindLambdaForTesting([](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              user_annotations::TestUserAnnotationsService>();
+        }));
   }
 
   void TearDownOnMainThread() override {
@@ -66,6 +77,11 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
     // the observers in `SetUpOnMainThread()` for `AutofillPrivateEventRouter`.
     AutofillPrivateEventRouterFactory::GetForProfile(browser_context())
         ->UnbindPersonalDataManagerForTesting();
+  }
+
+  user_annotations::TestUserAnnotationsService* user_annotations_service() {
+    return static_cast<user_annotations::TestUserAnnotationsService*>(
+        UserAnnotationsServiceFactory::GetForProfile(profile()));
   }
 
  protected:
@@ -369,6 +385,29 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, bulkDeleteAllCvcs) {
   EXPECT_TRUE(RunAutofillSubtest("bulkDeleteAllCvcs")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       HasUserAnnotationsEntries_NoEntries) {
+  // Ensure the service has no entries.
+  user_annotations_service()->RemoveAllEntries(base::DoNothing());
+  EXPECT_TRUE(RunAutofillSubtest("hasUserAnnotationsEntries_NoEntries"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       HasUserAnnotationsEntries_WithEntries) {
+  optimization_guide::proto::UserAnnotationsEntry entry;
+  entry.set_entry_id(1);
+  user_annotations_service()->ReplaceAllEntries({entry});
+  EXPECT_TRUE(RunAutofillSubtest("hasUserAnnotationsEntries_WithEntries"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       IsUserEligibleForAutofillImprovements) {
+  EXPECT_TRUE(RunAutofillSubtest("isUserEligibleForAutofillImprovements"))
+      << message_;
 }
 
 }  // namespace
