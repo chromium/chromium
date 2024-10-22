@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.KeybindSetSettingChanged" enum="DevToolsKeybindSets"
-    expires_after="2024-12-01">
+    expires_after="2025-12-01">
   <owner>bmeurer@google.com</owner>
   <owner>jalyn@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>
@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.KeyboardShortcutFired"
-    enum="DevToolsKeyboardShortcutAction" expires_after="2024-12-01">
+    enum="DevToolsKeyboardShortcutAction" expires_after="2025-12-01">
   <owner>bmeurer@google.com</owner>
   <owner>jalyn@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Language" enum="DevToolsLanguage"
-    expires_after="2024-12-01">
+    expires_after="2025-12-01">
   <owner>bmeurer@google.com</owner>
   <owner>szuend@google.com</owner>
   <owner>yangguo@chromium.org</owner>
@@ -563,7 +563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SyncSetting" enum="DevToolsSyncSetting"
-    expires_after="2024-12-01">
+    expires_after="2025-12-01">
   <owner>bmeurer@google.com</owner>
   <owner>szuend@google.com</owner>
   <owner>yangguo@chromium.org</owner>
@@ -594,7 +594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Workspaces.NumberOfDirectoriesTraversed"
-    units="count" expires_after="2024-12-01">
+    units="count" expires_after="2025-12-01">
   <owner>bmeurer@google.com</owner>
   <owner>hablich@chromium.org</owner>
   <summary>
@@ -604,7 +604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Workspaces.NumberOfFilesLoaded" units="count"
-    expires_after="2024-12-01">
+    expires_after="2025-12-01">
   <owner>bmeurer@google.com</owner>
   <owner>hablich@chromium.org</owner>
   <summary>
@@ -614,7 +614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Workspaces.PopulateWallClockTime" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-12-01">
   <owner>bmeurer@google.com</owner>
   <owner>hablich@chromium.org</owner>
   <summary>
