@@ -72,10 +72,6 @@ struct VoidOperationResult {
 
 using AddModuleResult = VoidOperationResult;
 using RunResult = VoidOperationResult;
-using SetResult = VoidOperationResult;
-using AppendResult = VoidOperationResult;
-using DeleteResult = VoidOperationResult;
-using ClearResult = VoidOperationResult;
 
 struct SelectURLResult {
   bool success = true;
@@ -100,17 +96,6 @@ struct RemainingBudgetResult {
   bool success = true;
   std::string error_message;
   double bits = 0;
-};
-
-struct SetParams {
-  std::u16string key;
-  std::u16string value;
-  bool ignore_if_present = false;
-};
-
-struct AppendParams {
-  std::u16string key;
-  std::u16string value;
 };
 
 std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> CreateBatchResult(
@@ -154,32 +139,11 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
                       blink::mojom::SharedStorageWorkletServiceClient> receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  void SharedStorageSet(const std::u16string& key,
-                        const std::u16string& value,
-                        bool ignore_if_present,
-                        SharedStorageSetCallback callback) override {
-    observed_set_params_.push_back({key, value, ignore_if_present});
-    std::move(callback).Run(set_result_.success, set_result_.error_message);
-  }
+  void SharedStorageUpdate(blink::mojom::SharedStorageModifierMethodPtr method,
+                           SharedStorageUpdateCallback callback) override {
+    observed_update_params_.push_back(std::move(method));
 
-  void SharedStorageAppend(const std::u16string& key,
-                           const std::u16string& value,
-                           SharedStorageAppendCallback callback) override {
-    observed_append_params_.push_back({key, value});
-    std::move(callback).Run(append_result_.success,
-                            append_result_.error_message);
-  }
-
-  void SharedStorageDelete(const std::u16string& key,
-                           SharedStorageDeleteCallback callback) override {
-    observed_delete_params_.push_back(key);
-    std::move(callback).Run(delete_result_.success,
-                            delete_result_.error_message);
-  }
-
-  void SharedStorageClear(SharedStorageClearCallback callback) override {
-    observed_clear_count_++;
-    std::move(callback).Run(clear_result_.success, clear_result_.error_message);
+    std::move(callback).Run(update_result_error_message_);
   }
 
   void SharedStorageGet(const std::u16string& key,
@@ -261,10 +225,8 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
   std::deque<mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>>
       pending_entries_listeners_;
 
-  std::vector<SetParams> observed_set_params_;
-  std::vector<AppendParams> observed_append_params_;
-  std::vector<std::u16string> observed_delete_params_;
-  size_t observed_clear_count_ = 0;
+  std::vector<blink::mojom::SharedStorageModifierMethodPtr>
+      observed_update_params_;
   std::vector<std::u16string> observed_get_params_;
   size_t observed_length_count_ = 0;
   size_t observed_remaining_budget_count_ = 0;
@@ -274,10 +236,7 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
 
   // Default results to be returned for corresponding operations. They can be
   // overridden.
-  SetResult set_result_;
-  AppendResult append_result_;
-  DeleteResult delete_result_;
-  ClearResult clear_result_;
+  std::string update_result_error_message_;
   GetResult get_result_;
   LengthResult length_result_;
   RemainingBudgetResult remaining_budget_result_;
@@ -1446,8 +1405,7 @@ TEST_F(SharedStorageWorkletTest, Run_RejectedAsynchronously) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  test_client_->clear_result_ =
-      ClearResult{.success = false, .error_message = "error 123"};
+  test_client_->update_result_error_message_ = "error 123";
 
   RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
@@ -1726,7 +1684,7 @@ TEST_F(SharedStorageWorkletTest, Set_MissingKey) {
   EXPECT_THAT(run_result.error_message,
               testing::HasSubstr("2 arguments required, but only 0 present"));
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Set_InvalidKey_Empty) {
@@ -1749,7 +1707,7 @@ TEST_F(SharedStorageWorkletTest, Set_InvalidKey_Empty) {
       run_result.error_message,
       testing::HasSubstr("Length of the \"key\" parameter is not valid"));
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Set_InvalidKey_TooLong) {
@@ -1776,7 +1734,7 @@ TEST_F(SharedStorageWorkletTest, Set_InvalidKey_TooLong) {
       run_result.error_message,
       testing::HasSubstr("Length of the \"key\" parameter is not valid"));
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Set_MissingValue) {
@@ -1798,7 +1756,7 @@ TEST_F(SharedStorageWorkletTest, Set_MissingValue) {
   EXPECT_THAT(run_result.error_message,
               testing::HasSubstr("2 arguments required, but only 1 present"));
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Set_InvalidValue_TooLong) {
@@ -1825,7 +1783,7 @@ TEST_F(SharedStorageWorkletTest, Set_InvalidValue_TooLong) {
       run_result.error_message,
       testing::HasSubstr("Length of the \"value\" parameter is not valid"));
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Set_InvalidOptions) {
@@ -1849,7 +1807,7 @@ TEST_F(SharedStorageWorkletTest, Set_InvalidOptions) {
       testing::HasSubstr(
           "The provided value is not of type 'SharedStorageSetMethodOptions'"));
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Set_ClientError) {
@@ -1865,17 +1823,18 @@ TEST_F(SharedStorageWorkletTest, Set_ClientError) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  test_client_->set_result_ =
-      SetResult{.success = false, .error_message = "error 123"};
+  test_client_->update_result_error_message_ = "error 123";
 
   RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 1u);
-  EXPECT_EQ(test_client_->observed_set_params_[0].key, u"key0");
-  EXPECT_EQ(test_client_->observed_set_params_[0].value, u"value0");
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
+  blink::mojom::SharedStorageSetMethodPtr& observed_params =
+      test_client_->observed_update_params_[0]->get_set_method();
+  EXPECT_EQ(observed_params->key, u"key0");
+  EXPECT_EQ(observed_params->value, u"value0");
 }
 
 TEST_F(SharedStorageWorkletTest,
@@ -2271,9 +2230,11 @@ TEST_F(SharedStorageWorkletTest, Set_Success) {
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 1u);
-  EXPECT_EQ(test_client_->observed_set_params_[0].key, u"key0");
-  EXPECT_EQ(test_client_->observed_set_params_[0].value, u"value0");
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
+  blink::mojom::SharedStorageSetMethodPtr& observed_params =
+      test_client_->observed_update_params_[0]->get_set_method();
+  EXPECT_EQ(observed_params->key, u"key0");
+  EXPECT_EQ(observed_params->value, u"value0");
 }
 
 TEST_F(SharedStorageWorkletTest, Set_IgnoreIfPresent_True) {
@@ -2300,10 +2261,16 @@ TEST_F(SharedStorageWorkletTest, Set_IgnoreIfPresent_True) {
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 3u);
-  EXPECT_TRUE(test_client_->observed_set_params_[0].ignore_if_present);
-  EXPECT_TRUE(test_client_->observed_set_params_[1].ignore_if_present);
-  EXPECT_TRUE(test_client_->observed_set_params_[2].ignore_if_present);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 3u);
+  EXPECT_TRUE(test_client_->observed_update_params_[0]
+                  ->get_set_method()
+                  ->ignore_if_present);
+  EXPECT_TRUE(test_client_->observed_update_params_[1]
+                  ->get_set_method()
+                  ->ignore_if_present);
+  EXPECT_TRUE(test_client_->observed_update_params_[2]
+                  ->get_set_method()
+                  ->ignore_if_present);
 }
 
 TEST_F(SharedStorageWorkletTest, Set_IgnoreIfPresent_False) {
@@ -2328,12 +2295,22 @@ TEST_F(SharedStorageWorkletTest, Set_IgnoreIfPresent_False) {
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 5u);
-  EXPECT_FALSE(test_client_->observed_set_params_[0].ignore_if_present);
-  EXPECT_FALSE(test_client_->observed_set_params_[1].ignore_if_present);
-  EXPECT_FALSE(test_client_->observed_set_params_[2].ignore_if_present);
-  EXPECT_FALSE(test_client_->observed_set_params_[3].ignore_if_present);
-  EXPECT_FALSE(test_client_->observed_set_params_[4].ignore_if_present);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 5u);
+  EXPECT_FALSE(test_client_->observed_update_params_[0]
+                   ->get_set_method()
+                   ->ignore_if_present);
+  EXPECT_FALSE(test_client_->observed_update_params_[1]
+                   ->get_set_method()
+                   ->ignore_if_present);
+  EXPECT_FALSE(test_client_->observed_update_params_[2]
+                   ->get_set_method()
+                   ->ignore_if_present);
+  EXPECT_FALSE(test_client_->observed_update_params_[3]
+                   ->get_set_method()
+                   ->ignore_if_present);
+  EXPECT_FALSE(test_client_->observed_update_params_[4]
+                   ->get_set_method()
+                   ->ignore_if_present);
 }
 
 TEST_F(SharedStorageWorkletTest, Set_KeyAndValueConvertedToString) {
@@ -2357,15 +2334,27 @@ TEST_F(SharedStorageWorkletTest, Set_KeyAndValueConvertedToString) {
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 4u);
-  EXPECT_EQ(test_client_->observed_set_params_[0].key, u"123");
-  EXPECT_EQ(test_client_->observed_set_params_[0].value, u"456");
-  EXPECT_EQ(test_client_->observed_set_params_[1].key, u"null");
-  EXPECT_EQ(test_client_->observed_set_params_[1].value, u"null");
-  EXPECT_EQ(test_client_->observed_set_params_[2].key, u"undefined");
-  EXPECT_EQ(test_client_->observed_set_params_[2].value, u"undefined");
-  EXPECT_EQ(test_client_->observed_set_params_[3].key, u"[object Object]");
-  EXPECT_EQ(test_client_->observed_set_params_[3].value, u"[object Object]");
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 4u);
+
+  blink::mojom::SharedStorageSetMethodPtr& observed_params_0 =
+      test_client_->observed_update_params_[0]->get_set_method();
+  EXPECT_EQ(observed_params_0->key, u"123");
+  EXPECT_EQ(observed_params_0->value, u"456");
+
+  blink::mojom::SharedStorageSetMethodPtr& observed_params_1 =
+      test_client_->observed_update_params_[1]->get_set_method();
+  EXPECT_EQ(observed_params_1->key, u"null");
+  EXPECT_EQ(observed_params_1->value, u"null");
+
+  blink::mojom::SharedStorageSetMethodPtr& observed_params_2 =
+      test_client_->observed_update_params_[2]->get_set_method();
+  EXPECT_EQ(observed_params_2->key, u"undefined");
+  EXPECT_EQ(observed_params_2->value, u"undefined");
+
+  blink::mojom::SharedStorageSetMethodPtr& observed_params_3 =
+      test_client_->observed_update_params_[3]->get_set_method();
+  EXPECT_EQ(observed_params_3->key, u"[object Object]");
+  EXPECT_EQ(observed_params_3->value, u"[object Object]");
 }
 
 TEST_F(SharedStorageWorkletTest, Set_ParamConvertedToStringError) {
@@ -2390,7 +2379,7 @@ TEST_F(SharedStorageWorkletTest, Set_ParamConvertedToStringError) {
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
 
-  EXPECT_EQ(test_client_->observed_set_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Append_MissingKey) {
@@ -2412,7 +2401,7 @@ TEST_F(SharedStorageWorkletTest, Append_MissingKey) {
   EXPECT_THAT(run_result.error_message,
               testing::HasSubstr("2 arguments required, but only 0 present"));
 
-  EXPECT_EQ(test_client_->observed_append_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Append_InvalidKey_Empty) {
@@ -2435,7 +2424,7 @@ TEST_F(SharedStorageWorkletTest, Append_InvalidKey_Empty) {
       run_result.error_message,
       testing::HasSubstr("Length of the \"key\" parameter is not valid"));
 
-  EXPECT_EQ(test_client_->observed_append_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Append_InvalidKey_TooLong) {
@@ -2462,7 +2451,7 @@ TEST_F(SharedStorageWorkletTest, Append_InvalidKey_TooLong) {
       run_result.error_message,
       testing::HasSubstr("Length of the \"key\" parameter is not valid"));
 
-  EXPECT_EQ(test_client_->observed_append_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Append_MissingValue) {
@@ -2484,7 +2473,7 @@ TEST_F(SharedStorageWorkletTest, Append_MissingValue) {
   EXPECT_THAT(run_result.error_message,
               testing::HasSubstr("2 arguments required, but only 1 present"));
 
-  EXPECT_EQ(test_client_->observed_append_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Append_InvalidValue_TooLong) {
@@ -2511,7 +2500,7 @@ TEST_F(SharedStorageWorkletTest, Append_InvalidValue_TooLong) {
       run_result.error_message,
       testing::HasSubstr("Length of the \"value\" parameter is not valid"));
 
-  EXPECT_EQ(test_client_->observed_append_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Append_ClientError) {
@@ -2527,17 +2516,18 @@ TEST_F(SharedStorageWorkletTest, Append_ClientError) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  test_client_->append_result_ =
-      AppendResult{.success = false, .error_message = "error 123"};
+  test_client_->update_result_error_message_ = "error 123";
 
   RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
 
-  EXPECT_EQ(test_client_->observed_append_params_.size(), 1u);
-  EXPECT_EQ(test_client_->observed_append_params_[0].key, u"key0");
-  EXPECT_EQ(test_client_->observed_append_params_[0].value, u"value0");
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
+  blink::mojom::SharedStorageAppendMethodPtr& observed_params =
+      test_client_->observed_update_params_[0]->get_append_method();
+  EXPECT_EQ(observed_params->key, u"key0");
+  EXPECT_EQ(observed_params->value, u"value0");
 }
 
 TEST_F(SharedStorageWorkletTest, Append_Success) {
@@ -2558,9 +2548,11 @@ TEST_F(SharedStorageWorkletTest, Append_Success) {
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
 
-  EXPECT_EQ(test_client_->observed_append_params_.size(), 1u);
-  EXPECT_EQ(test_client_->observed_append_params_[0].key, u"key0");
-  EXPECT_EQ(test_client_->observed_append_params_[0].value, u"value0");
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
+  blink::mojom::SharedStorageAppendMethodPtr& observed_params =
+      test_client_->observed_update_params_[0]->get_append_method();
+  EXPECT_EQ(observed_params->key, u"key0");
+  EXPECT_EQ(observed_params->value, u"value0");
 }
 
 TEST_F(SharedStorageWorkletTest, Delete_MissingKey) {
@@ -2582,7 +2574,7 @@ TEST_F(SharedStorageWorkletTest, Delete_MissingKey) {
   EXPECT_THAT(run_result.error_message,
               testing::HasSubstr("1 argument required, but only 0 present"));
 
-  EXPECT_EQ(test_client_->observed_delete_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Delete_InvalidKey_Empty) {
@@ -2605,7 +2597,7 @@ TEST_F(SharedStorageWorkletTest, Delete_InvalidKey_Empty) {
       run_result.error_message,
       testing::HasSubstr("Length of the \"key\" parameter is not valid"));
 
-  EXPECT_EQ(test_client_->observed_delete_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Delete_InvalidKey_TooLong) {
@@ -2632,7 +2624,7 @@ TEST_F(SharedStorageWorkletTest, Delete_InvalidKey_TooLong) {
       run_result.error_message,
       testing::HasSubstr("Length of the \"key\" parameter is not valid"));
 
-  EXPECT_EQ(test_client_->observed_delete_params_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Delete_ClientError) {
@@ -2648,16 +2640,17 @@ TEST_F(SharedStorageWorkletTest, Delete_ClientError) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  test_client_->delete_result_ =
-      DeleteResult{.success = false, .error_message = "error 123"};
+  test_client_->update_result_error_message_ = "error 123";
 
   RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
 
-  EXPECT_EQ(test_client_->observed_delete_params_.size(), 1u);
-  EXPECT_EQ(test_client_->observed_delete_params_[0], u"key0");
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
+  blink::mojom::SharedStorageDeleteMethodPtr& observed_params =
+      test_client_->observed_update_params_[0]->get_delete_method();
+  EXPECT_EQ(observed_params->key, u"key0");
 }
 
 TEST_F(SharedStorageWorkletTest, Delete_Success) {
@@ -2678,8 +2671,10 @@ TEST_F(SharedStorageWorkletTest, Delete_Success) {
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
 
-  EXPECT_EQ(test_client_->observed_delete_params_.size(), 1u);
-  EXPECT_EQ(test_client_->observed_delete_params_[0], u"key0");
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
+  blink::mojom::SharedStorageDeleteMethodPtr& observed_params =
+      test_client_->observed_update_params_[0]->get_delete_method();
+  EXPECT_EQ(observed_params->key, u"key0");
 }
 
 TEST_F(SharedStorageWorkletTest, Clear_ClientError) {
@@ -2695,15 +2690,14 @@ TEST_F(SharedStorageWorkletTest, Clear_ClientError) {
 
   EXPECT_TRUE(add_module_result.success);
 
-  test_client_->clear_result_ =
-      ClearResult{.success = false, .error_message = "error 123"};
+  test_client_->update_result_error_message_ = "error 123";
 
   RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
   EXPECT_FALSE(run_result.success);
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
 
-  EXPECT_EQ(test_client_->observed_clear_count_, 1u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
 }
 
 TEST_F(SharedStorageWorkletTest, Clear_Success) {
@@ -2724,7 +2718,7 @@ TEST_F(SharedStorageWorkletTest, Clear_Success) {
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
 
-  EXPECT_EQ(test_client_->observed_clear_count_, 1u);
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
 }
 
 TEST_F(SharedStorageWorkletTest, Get_MissingKey) {

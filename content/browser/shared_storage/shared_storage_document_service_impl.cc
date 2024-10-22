@@ -283,65 +283,18 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
                                  key, std::move(operation_completed_callback));
 }
 
-void SharedStorageDocumentServiceImpl::SharedStorageSet(
-    const std::u16string& key,
-    const std::u16string& value,
-    bool ignore_if_present,
-    SharedStorageSetCallback callback) {
+void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
+    blink::mojom::SharedStorageModifierMethodPtr method,
+    SharedStorageUpdateCallback callback) {
   if (render_frame_host().GetLastCommittedOrigin().opaque()) {
     receiver_.ReportBadMessage(
-        "Attempted to call sharedStorage.set() from an opaque origin context.");
-    return;
-  }
-
-  if (!CheckSecureContext(render_frame_host())) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/kSharedStorageMethodFromInsecureContextMessage);
-
-    // TODO(crbug.com/40068897): Invoke receiver_.ReportBadMessage here when
-    // we can be sure honest renderers won't hit this path.
-    return;
-  }
-
-  std::string debug_message;
-  if (!IsSharedStorageAllowed(&debug_message)) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/GetSharedStorageErrorMessage(
-            debug_message, kSharedStorageDisabledMessage));
-    return;
-  }
-
-  storage::SharedStorageDatabase::SetBehavior set_behavior =
-      ignore_if_present
-          ? storage::SharedStorageDatabase::SetBehavior::kIgnoreIfPresent
-          : storage::SharedStorageDatabase::SetBehavior::kDefault;
-
-  GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
-      AccessType::kDocumentSet, main_frame_id(), SerializeLastCommittedOrigin(),
-      SharedStorageEventParams::CreateForSet(
-          base::UTF16ToUTF8(key), base::UTF16ToUTF8(value), ignore_if_present));
-
-  GetSharedStorageManager()->Set(render_frame_host().GetLastCommittedOrigin(),
-                                 key, value, base::DoNothing(), set_behavior);
-  std::move(callback).Run(/*success=*/true, /*error_message=*/{});
-}
-
-void SharedStorageDocumentServiceImpl::SharedStorageAppend(
-    const std::u16string& key,
-    const std::u16string& value,
-    SharedStorageAppendCallback callback) {
-  if (render_frame_host().GetLastCommittedOrigin().opaque()) {
-    receiver_.ReportBadMessage(
-        "Attempted to call sharedStorage.append() from an opaque origin "
+        "Attempted to call SharedStorageUpdate() from an opaque origin "
         "context.");
     return;
   }
 
   if (!CheckSecureContext(render_frame_host())) {
     std::move(callback).Run(
-        /*success=*/false,
         /*error_message=*/kSharedStorageMethodFromInsecureContextMessage);
 
     // TODO(crbug.com/40068897): Invoke receiver_.ReportBadMessage here when
@@ -351,100 +304,71 @@ void SharedStorageDocumentServiceImpl::SharedStorageAppend(
 
   std::string debug_message;
   if (!IsSharedStorageAllowed(&debug_message)) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/GetSharedStorageErrorMessage(
-            debug_message, kSharedStorageDisabledMessage));
+    std::move(callback).Run(GetSharedStorageErrorMessage(
+        debug_message, kSharedStorageDisabledMessage));
     return;
   }
 
-  GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
-      AccessType::kDocumentAppend, main_frame_id(),
-      SerializeLastCommittedOrigin(),
-      SharedStorageEventParams::CreateForAppend(base::UTF16ToUTF8(key),
-                                                base::UTF16ToUTF8(value)));
+  if (method->is_set_method()) {
+    blink::mojom::SharedStorageSetMethodPtr& set_method =
+        method->get_set_method();
 
-  GetSharedStorageManager()->Append(
-      render_frame_host().GetLastCommittedOrigin(), key, value,
-      base::DoNothing());
-  std::move(callback).Run(/*success=*/true, /*error_message=*/{});
-}
+    storage::SharedStorageDatabase::SetBehavior set_behavior =
+        set_method->ignore_if_present
+            ? storage::SharedStorageDatabase::SetBehavior::kIgnoreIfPresent
+            : storage::SharedStorageDatabase::SetBehavior::kDefault;
 
-void SharedStorageDocumentServiceImpl::SharedStorageDelete(
-    const std::u16string& key,
-    SharedStorageDeleteCallback callback) {
-  if (render_frame_host().GetLastCommittedOrigin().opaque()) {
-    receiver_.ReportBadMessage(
-        "Attempted to call sharedStorage.delete() from an opaque origin "
-        "context.");
-    return;
+    GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
+        AccessType::kDocumentSet, main_frame_id(),
+        SerializeLastCommittedOrigin(),
+        SharedStorageEventParams::CreateForSet(
+            base::UTF16ToUTF8(set_method->key),
+            base::UTF16ToUTF8(set_method->value),
+            set_method->ignore_if_present));
+
+    GetSharedStorageManager()->Set(render_frame_host().GetLastCommittedOrigin(),
+                                   set_method->key, set_method->value,
+                                   base::DoNothing(), set_behavior);
+  } else if (method->is_append_method()) {
+    blink::mojom::SharedStorageAppendMethodPtr& append_method =
+        method->get_append_method();
+
+    GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
+        AccessType::kDocumentAppend, main_frame_id(),
+        SerializeLastCommittedOrigin(),
+        SharedStorageEventParams::CreateForAppend(
+            base::UTF16ToUTF8(append_method->key),
+            base::UTF16ToUTF8(append_method->value)));
+
+    GetSharedStorageManager()->Append(
+        render_frame_host().GetLastCommittedOrigin(), append_method->key,
+        append_method->value, base::DoNothing());
+  } else if (method->is_delete_method()) {
+    blink::mojom::SharedStorageDeleteMethodPtr& delete_method =
+        method->get_delete_method();
+
+    GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
+        AccessType::kDocumentDelete, main_frame_id(),
+        SerializeLastCommittedOrigin(),
+        SharedStorageEventParams::CreateForGetOrDelete(
+            base::UTF16ToUTF8(delete_method->key)));
+
+    GetSharedStorageManager()->Delete(
+        render_frame_host().GetLastCommittedOrigin(), delete_method->key,
+        base::DoNothing());
+  } else {
+    CHECK(method->is_clear_method());
+
+    GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
+        AccessType::kDocumentClear, main_frame_id(),
+        SerializeLastCommittedOrigin(),
+        SharedStorageEventParams::CreateDefault());
+
+    GetSharedStorageManager()->Clear(
+        render_frame_host().GetLastCommittedOrigin(), base::DoNothing());
   }
 
-  if (!CheckSecureContext(render_frame_host())) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/kSharedStorageMethodFromInsecureContextMessage);
-
-    // TODO(crbug.com/40068897): Invoke receiver_.ReportBadMessage here when
-    // we can be sure honest renderers won't hit this path.
-    return;
-  }
-
-  std::string debug_message;
-  if (!IsSharedStorageAllowed(&debug_message)) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/GetSharedStorageErrorMessage(
-            debug_message, kSharedStorageDisabledMessage));
-    return;
-  }
-
-  GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
-      AccessType::kDocumentDelete, main_frame_id(),
-      SerializeLastCommittedOrigin(),
-      SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key)));
-
-  GetSharedStorageManager()->Delete(
-      render_frame_host().GetLastCommittedOrigin(), key, base::DoNothing());
-  std::move(callback).Run(/*success=*/true, /*error_message=*/{});
-}
-
-void SharedStorageDocumentServiceImpl::SharedStorageClear(
-    SharedStorageClearCallback callback) {
-  if (render_frame_host().GetLastCommittedOrigin().opaque()) {
-    receiver_.ReportBadMessage(
-        "Attempted to call sharedStorage.clear() from an opaque origin "
-        "context.");
-    return;
-  }
-
-  if (!CheckSecureContext(render_frame_host())) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/kSharedStorageMethodFromInsecureContextMessage);
-
-    // TODO(crbug.com/40068897): Invoke receiver_.ReportBadMessage here when
-    // we can be sure honest renderers won't hit this path.
-    return;
-  }
-
-  std::string debug_message;
-  if (!IsSharedStorageAllowed(&debug_message)) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/GetSharedStorageErrorMessage(
-            debug_message, kSharedStorageDisabledMessage));
-    return;
-  }
-
-  GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
-      AccessType::kDocumentClear, main_frame_id(),
-      SerializeLastCommittedOrigin(),
-      SharedStorageEventParams::CreateDefault());
-
-  GetSharedStorageManager()->Clear(render_frame_host().GetLastCommittedOrigin(),
-                                   base::DoNothing());
-  std::move(callback).Run(/*success=*/true, /*error_message=*/{});
+  std::move(callback).Run(/*error_message=*/{});
 }
 
 base::WeakPtr<SharedStorageDocumentServiceImpl>

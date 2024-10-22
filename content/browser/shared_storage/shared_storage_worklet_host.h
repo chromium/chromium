@@ -106,16 +106,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void EnterKeepAliveOnDocumentDestroyed(KeepAliveFinishedCallback callback);
 
   // blink::mojom::SharedStorageWorkletServiceClient:
-  void SharedStorageSet(const std::u16string& key,
-                        const std::u16string& value,
-                        bool ignore_if_present,
-                        SharedStorageSetCallback callback) override;
-  void SharedStorageAppend(const std::u16string& key,
-                           const std::u16string& value,
-                           SharedStorageAppendCallback callback) override;
-  void SharedStorageDelete(const std::u16string& key,
-                           SharedStorageDeleteCallback callback) override;
-  void SharedStorageClear(SharedStorageClearCallback callback) override;
+  void SharedStorageUpdate(blink::mojom::SharedStorageModifierMethodPtr method,
+                           SharedStorageUpdateCallback callback) override;
   void SharedStorageGet(const std::u16string& key,
                         SharedStorageGetCallback callback) override;
   void SharedStorageKeys(

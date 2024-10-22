@@ -61,27 +61,10 @@ union GetInterestGroupsResult {
 // Used by the shared storage worklet environment to access the shared storage,
 // log messages, etc.
 interface SharedStorageWorkletServiceClient {
- // Handle sharedStorage.set(): set `key`’s entry to `value`. If
-  // `ignoreIfPresent` is true, the entry is not updated if `key` already
-  // exists.
-  SharedStorageSet(SharedStorageKeyArgument key,
-                   SharedStorageValueArgument value,
-                   bool ignore_if_present)
-    => (bool success, string error_message);
-
-  // Handle sharedStorage.append(): append `value` to the entry for `key`.
-  // Equivalent to "set" if the `key` is not present.
-  SharedStorageAppend(SharedStorageKeyArgument key,
-                      SharedStorageValueArgument value)
-    => (bool success, string error_message);
-
-  // Handle sharedStorage.delete(): delete the entry at the given `key`.
-  SharedStorageDelete(SharedStorageKeyArgument key)
-    => (bool success, string error_message);
-
-  // Handle sharedStorage.clear(): delete all entries.
-  SharedStorageClear()
-    => (bool success, string error_message);
+  // Handle the modifier method `method`. Return an empty `error_message` on
+  // success, and return an non-empty `error_message` on failure.
+  SharedStorageUpdate(SharedStorageModifierMethod method)
+      => (string error_message);
 
   // Handle sharedStorage.get(): get the entry at `key`, or an empty string if
   // `key` is not present.

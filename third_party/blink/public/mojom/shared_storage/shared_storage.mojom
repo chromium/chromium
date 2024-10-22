@@ -26,6 +26,35 @@ struct SharedStorageValueArgument {
   mojo_base.mojom.String16 data;
 };
 
+// Request to set the entry at `key` to `value`. If `ignoreIfPresent` is true,
+// the entry is not updated if `key` already exists.
+struct SharedStorageSetMethod {
+  blink.mojom.SharedStorageKeyArgument key;
+  blink.mojom.SharedStorageValueArgument value;
+  bool ignore_if_present;
+};
+
+// Request to append `value` to the entry at `key`.
+struct SharedStorageAppendMethod {
+  blink.mojom.SharedStorageKeyArgument key;
+  blink.mojom.SharedStorageValueArgument value;
+};
+
+// Request to delete the entry at `key`.
+struct SharedStorageDeleteMethod {
+  blink.mojom.SharedStorageKeyArgument key;
+};
+
+// Request to clear all entries.
+struct SharedStorageClearMethod {};
+
+union SharedStorageModifierMethod {
+  SharedStorageSetMethod set_method;
+  SharedStorageAppendMethod append_method;
+  SharedStorageDeleteMethod delete_method;
+  SharedStorageClearMethod clear_method;
+};
+
 // Bundles a candidate URL for `RunURLSelectionOperationOnWorklet()` with any
 // `reporting metadata` (map of each report event type to report URL) for
 // event-level reporting.
@@ -129,36 +158,8 @@ interface SharedStorageDocumentService {
       => (SharedStorageGetStatus status, string error_message,
           mojo_base.mojom.String16 value);
 
-  // Handle sharedStorage.set(): set `key`’s entry to `value`. If
-  // `ignore_if_present` is true, the entry is not updated if `key` already
-  // exists. The only error reported is if the API is disabled; other errors are
-  // suppressed and reported as success.
-  SharedStorageSet(blink.mojom.SharedStorageKeyArgument key,
-                   blink.mojom.SharedStorageValueArgument value,
-                   bool ignore_if_present)
-      => (bool success,
-          string error_message);
-
-  // Handle sharedStorage.append(): append `value` to the entry for `key`.
-  // Equivalent to "set" if the `key` is not present. The only error reported
-  // is if the API is disabled; other errors are suppressed and reported as
-  // success.
-  SharedStorageAppend(blink.mojom.SharedStorageKeyArgument key,
-                      blink.mojom.SharedStorageValueArgument value)
-      => (bool success,
-          string error_message);
-
-  // Handle sharedStorage.delete(): delete the entry at the given `key`. The
-  // only error reported is if the API is disabled; other errors are suppressed
-  // and reported as success.
-  SharedStorageDelete(blink.mojom.SharedStorageKeyArgument key)
-      => (bool success,
-          string error_message);
-
-  // Handle sharedStorage.clear(): delete all entries. The only error reported
-  // is if the API is disabled; other errors are suppressed and reported as
-  // success.
-  SharedStorageClear()
-      => (bool success,
-          string error_message);
+  // Handle the modifier method `method`. Return an empty `error_message` on
+  // success, and return an non-empty `error_message` on failure.
+  SharedStorageUpdate(SharedStorageModifierMethod method)
+      => (string error_message);
 };
