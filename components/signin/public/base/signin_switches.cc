@@ -160,12 +160,6 @@ BASE_FEATURE(kPreconnectAccountCapabilitiesPostSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kAlwaysLoadDeviceAccounts,
-             "kAlwaysLoadDeviceAccounts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kBatchUploadDesktop,
              "BatchUploadDesktop",

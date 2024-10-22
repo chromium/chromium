@@ -11,7 +11,6 @@
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/unified_consent/pref_names.h"
@@ -68,16 +67,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 @end
 
 @implementation FirstRunWithoutSearchEngineChoiceTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector
-            (testHistorySyncShownWithEquallyWeightedButtons)]) {
-    config.features_enabled.push_back(switches::kAlwaysLoadDeviceAccounts);
-  }
-
-  return config;
-}
 
 #pragma mark - Tests
 

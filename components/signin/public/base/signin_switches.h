@@ -139,15 +139,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kPreconnectAccountCapabilitiesPostSignin);
 #endif
 
-#if BUILDFLAG(IS_IOS)
-// This flag enables IdentityManager to load all accounts when having no primary
-// accounts. And it makes IdentityManager reloads AccountInfo when an update
-// notification is sent by ChromeAccountManagerService. The data are reloaded
-// from ChromeAccountManagerService instead of contacting Gaia server.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kAlwaysLoadDeviceAccounts);
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kBatchUploadDesktop);

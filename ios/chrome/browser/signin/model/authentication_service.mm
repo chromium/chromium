@@ -18,7 +18,6 @@
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -518,17 +517,6 @@ void AuthenticationService::OnPrimaryAccountChanged(
 void AuthenticationService::OnIdentityListChanged() {
   ClearAccountSettingsPrefsOfRemovedAccounts();
 
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      !base::FeatureList::IsEnabled(switches::kAlwaysLoadDeviceAccounts)) {
-    // IdentityManager::HasPrimaryAccount() needs to be called instead of
-    // AuthenticationService::HasPrimaryIdentity() or
-    // AuthenticationService::GetPrimaryIdentity().
-    // If the primary identity has just been removed, GetPrimaryIdentity()
-    // would return NO (since this method tests if the primary identity exists
-    // in ChromeIdentityService).
-    // In this case, we do need to call ReloadCredentialsFromIdentities().
-    return;
-  }
   // The list of identities may change while in an authorized call. Signing out
   // the authenticated user at this time may lead to crashes (e.g.
   // http://crbug.com/398431 ).
@@ -691,16 +679,13 @@ void AuthenticationService::HandleForgottenIdentity(
 }
 
 void AuthenticationService::ReloadCredentialsFromIdentities() {
-  if (is_reloading_credentials_)
+  if (is_reloading_credentials_) {
     return;
+  }
 
   base::AutoReset<bool> auto_reset(&is_reloading_credentials_, true);
 
   HandleForgottenIdentity(nil, /*device_restore=*/false);
-  if (!HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-      !base::FeatureList::IsEnabled(switches::kAlwaysLoadDeviceAccounts)) {
-    return;
-  }
 
   identity_manager_->GetDeviceAccountsSynchronizer()
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(
