@@ -155,6 +155,9 @@ constexpr char kOpSubtractTypeName[] = "sub";
 constexpr char kOpMaximumTypeName[] = "maximum";
 constexpr char kOpMinimumTypeName[] = "minimum";
 constexpr char kOpPowerTypeName[] = "pow";
+constexpr char kOpLogicalAnd[] = "logical_and";
+constexpr char kOpLogicalOr[] = "logical_or";
+constexpr char kOpLogicalXor[] = "logical_xor";
 // Elementwise unary operators.
 constexpr char kOpLogicalEqual[] = "equal";
 constexpr char kOpLogicalGreater[] = "greater";
@@ -738,10 +741,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*greater_or_equal_input=*/kFloatsAndInt32,
        /*lesser_input=*/kFloatsAndInt32,
        /*lesser_or_equal_input=*/kFloatsAndInt32,
-       // TODO(crbug.com/368208141): Implement logical binary ops.
-       /*logical_and_input=*/{},
-       /*logical_or_input=*/{},
-       /*logical_xor_input=*/{},
+       /*logical_and_input=*/DataTypeConstraint::kUint8,
+       /*logical_or_input=*/DataTypeConstraint::kUint8,
+       /*logical_xor_input=*/DataTypeConstraint::kUint8,
        /*logical_not_input=*/DataTypeConstraint::kUint8,
        /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/kFloatsAndInt32,
@@ -1710,99 +1712,133 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
     uint64_t output_operand_id,
     const mojom::ElementWiseBinary::Kind kind,
     CoreML::Specification::MILSpec::Block& block) {
-  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
-
-  const OperandInfo& lhs_operand_info = GetOperandInfo(lhs_operand_id);
   const OperandDataType input_data_type =
-      MILDataTypeToOperandType(lhs_operand_info.mil_data_type);
+      MILDataTypeToOperandType(GetOperandInfo(lhs_operand_id).mil_data_type);
+  std::string op_type_name;
 
   switch (kind) {
     case mojom::ElementWiseBinary::Kind::kAdd: {
       CHECK(
           context_properties_.data_type_limits.add_input.Has(input_data_type));
-      op->set_type(kOpAddTypeName);
+      op_type_name = kOpAddTypeName;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kDiv: {
       CHECK(
           context_properties_.data_type_limits.div_input.Has(input_data_type));
-      op->set_type(kOpDivideTypeName);
+      op_type_name = kOpDivideTypeName;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMul: {
       CHECK(
           context_properties_.data_type_limits.mul_input.Has(input_data_type));
-      op->set_type(kOpMultiplyTypeName);
+      op_type_name = kOpMultiplyTypeName;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kSub: {
       CHECK(
           context_properties_.data_type_limits.sub_input.Has(input_data_type));
-      op->set_type(kOpSubtractTypeName);
+      op_type_name = kOpSubtractTypeName;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMax: {
       CHECK(
           context_properties_.data_type_limits.max_input.Has(input_data_type));
-      op->set_type(kOpMaximumTypeName);
+      op_type_name = kOpMaximumTypeName;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMin: {
       CHECK(
           context_properties_.data_type_limits.min_input.Has(input_data_type));
-      op->set_type(kOpMinimumTypeName);
+      op_type_name = kOpMinimumTypeName;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kPow: {
       CHECK(
           context_properties_.data_type_limits.pow_input.Has(input_data_type));
-      op->set_type(kOpPowerTypeName);
+      op_type_name = kOpPowerTypeName;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kEqual: {
       CHECK(context_properties_.data_type_limits.equal_input.Has(
           input_data_type));
-      op->set_type(kOpLogicalEqual);
+      op_type_name = kOpLogicalEqual;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kGreater: {
       CHECK(context_properties_.data_type_limits.greater_input.Has(
           input_data_type));
-      op->set_type(kOpLogicalGreater);
+      op_type_name = kOpLogicalGreater;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
       CHECK(context_properties_.data_type_limits.greater_or_equal_input.Has(
           input_data_type));
-      op->set_type(kOpLogicalGreaterEqual);
+      op_type_name = kOpLogicalGreaterEqual;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLesser: {
       CHECK(context_properties_.data_type_limits.lesser_input.Has(
           input_data_type));
-      op->set_type(kOpLogicalLess);
+      op_type_name = kOpLogicalLess;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
       CHECK(context_properties_.data_type_limits.lesser_or_equal_input.Has(
           input_data_type));
-      op->set_type(kOpLogicalLessEqual);
+      op_type_name = kOpLogicalLessEqual;
       break;
     }
-    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
-    case mojom::ElementWiseBinary::Kind::kLogicalOr:
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd: {
+      CHECK(context_properties_.data_type_limits.logical_and_input.Has(
+          input_data_type));
+      op_type_name = kOpLogicalAnd;
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLogicalOr: {
+      CHECK(context_properties_.data_type_limits.logical_or_input.Has(
+          input_data_type));
+      op_type_name = kOpLogicalOr;
+      break;
+    }
     case mojom::ElementWiseBinary::Kind::kLogicalXor: {
-      // TODO(crbug.com/368208141): Implement logical binary ops for CoreML.
-      return NewNotSupportedError(
-          "logicalAnd, logicalXor, and logicalXor are not yet supported on "
-          "CoreML.");
+      CHECK(context_properties_.data_type_limits.logical_xor_input.Has(
+          input_data_type));
+      op_type_name = kOpLogicalXor;
+      break;
     }
   }
+
+  if (kind == mojom::ElementWiseBinary::Kind::kLogicalAnd ||
+      kind == mojom::ElementWiseBinary::Kind::kLogicalOr ||
+      kind == mojom::ElementWiseBinary::Kind::kLogicalXor) {
+    // Logical binary ops in CoreML require both operands to be boolean tensors.
+    ASSIGN_OR_RETURN(uint64_t cast_to_lhs_operand_id,
+                     GenerateInternalOperandInfo(
+                         CoreML::Specification::MILSpec::DataType::BOOL,
+                         GetOperandInfo(lhs_operand_id).dimensions));
+    AddOperationForCast(lhs_operand_id, cast_to_lhs_operand_id, block);
+    lhs_operand_id = cast_to_lhs_operand_id;
+
+    CHECK(std::holds_alternative<uint64_t>(rhs_operand));
+    uint64_t rhs_operand_id = std::get<uint64_t>(rhs_operand);
+    ASSIGN_OR_RETURN(uint64_t cast_to_rhs_operand_id,
+                     GenerateInternalOperandInfo(
+                         CoreML::Specification::MILSpec::DataType::BOOL,
+                         GetOperandInfo(rhs_operand_id).dimensions));
+    AddOperationForCast(rhs_operand_id, cast_to_rhs_operand_id, block);
+    rhs_operand = cast_to_rhs_operand_id;
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(op_type_name);
 
   SetInputFromOperand(*op->mutable_inputs(), kOpParamX, lhs_operand_id);
 
   std::visit(
       base::Overloaded{[&](uint64_t rhs_operand_id) {
+                         const OperandInfo& lhs_operand_info =
+                             GetOperandInfo(lhs_operand_id);
                          const OperandInfo& rhs_operand_info =
                              GetOperandInfo(rhs_operand_id);
                          CHECK_EQ(lhs_operand_info.mil_data_type,
