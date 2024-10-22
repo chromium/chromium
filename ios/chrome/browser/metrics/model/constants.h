@@ -29,6 +29,9 @@ extern const char kSafetyCheckNotifClientStatusByProviderHistogram[];
 // Histogram name for the Send Tab Notification Client Status filter.
 extern const char kSendTabNotifClientStatusByProviderHistogram[];
 
+// Histogram name for the Price Tracking Client status filter.
+extern const char kPriceTrackingClientStatusByProviderHistogram[];
+
 // Histogram name for the feed enabled metric.
 extern const char kFeedEnabledHistogram[];
 
