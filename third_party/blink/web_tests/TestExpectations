@@ -849,9 +849,6 @@ crbug.com/1322062 external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.
 crbug.com/970201 external/wpt/css/css-sizing/slice-intrinsic-size.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure ]
 
-# Flaky across platforms
-crbug.com/374675198 external/wpt/css/css-sizing/keyword-sizes-on-inline-block.html [ Failure Pass ]
-
 # Block direction compressibility.
 crbug.com/357649027 external/wpt/css/css-sizing/range-percent-intrinsic-size-2.html [ Failure ]
 crbug.com/357649027 external/wpt/css/css-sizing/range-percent-intrinsic-size-2a.html [ Failure ]
@@ -8234,4 +8231,3 @@ crbug.com/374384731 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-fr
 crbug.com/374384731 [ Mac ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-share.https.html [ Crash ]
 crbug.com/374384731 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-share.https.html [ Crash ]
 crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/print/frame_tentative.py [ Failure Pass ]
-crbug.com/374694820 external/wpt/css/css-sizing/keyword-sizes-on-floated-element.html [ Failure Pass ]
