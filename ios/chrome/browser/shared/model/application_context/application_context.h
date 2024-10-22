@@ -103,14 +103,23 @@ class ApplicationContext {
 
   virtual ~ApplicationContext();
 
-  // Invoked when application enters foreground. Cancels the effect of
+  // Invoked when the application enters the foreground. Cancels the effect of
   // OnAppEnterBackground(), in particular removes the boolean preference
   // indicating that the Profiles have been shutdown.
   virtual void OnAppEnterForeground() = 0;
 
-  // Invoked when application enters background. Saves any state that must be
-  // saved before shutdown can continue.
+  // Invoked when the application enters the background from the foreground.
+  // Saves any state that must be saved before shutdown can continue.
   virtual void OnAppEnterBackground() = 0;
+
+  // Invoked when the application is launched in the background and begins doing
+  // background update work.
+  virtual void OnAppStartedBackgroundProcessing() = 0;
+
+  // Invoked when the application has completed update work in the background,
+  // but is not yet in the foreground. At this stage the app is effectively
+  // "background idle".
+  virtual void OnAppFinishedBackgroundProcessing() = 0;
 
   // Returns whether the last complete shutdown was clean (i.e. happened while
   // the application was backgrounded).

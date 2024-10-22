@@ -140,6 +140,7 @@ source_set("app_state_header") {
     "startup_information.h",
   ]
   public_deps = [
+    "//ios/chrome/app/background_refresh:headers",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
     "//ios/chrome/browser/ui/device_orientation",
     "//ios/chrome/browser/ui/scoped_ui_blocker",

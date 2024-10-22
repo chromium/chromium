@@ -12,11 +12,11 @@ source_set("background_refresh") {
     "app_refresh_provider.mm",
     "background_refresh_app_agent.h",
     "background_refresh_app_agent.mm",
-    "background_refresh_app_agent_audience.h",
     "test_refresher.h",
     "test_refresher.mm",
   ]
   deps = [
+    ":headers",
     ":metrics",
     "//base",
     "//components/metrics",
@@ -33,6 +33,10 @@ source_set("background_refresh") {
     "BackgroundTasks.framework",
     "UserNotifications.framework",
   ]
+}
+
+source_set("headers") {
+  sources = [ "background_refresh_app_agent_audience.h" ]
 }
 
 source_set("metrics") {

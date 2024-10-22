@@ -55,6 +55,8 @@ class ApplicationContextImpl : public ApplicationContext {
   // ApplicationContext implementation.
   void OnAppEnterForeground() override;
   void OnAppEnterBackground() override;
+  void OnAppStartedBackgroundProcessing() override;
+  void OnAppFinishedBackgroundProcessing() override;
   bool WasLastShutdownClean() override;
   PrefService* GetLocalState() override;
   net::URLRequestContextGetter* GetSystemURLRequestContext() override;
@@ -99,7 +101,9 @@ class ApplicationContextImpl : public ApplicationContext {
   // Represents the possible application states the app can be in.
   enum class AppState {
     kForeground,
-    kBackground,
+    kBackgroundFromActive,
+    kBackgroundProcessing,
+    kBackgroundIdle
   };
 
   // Helper method to implement the work required when transitioning between

@@ -57,6 +57,9 @@ class TestingApplicationContext : public ApplicationContext {
   // ApplicationContext implementation.
   void OnAppEnterForeground() override;
   void OnAppEnterBackground() override;
+  void OnAppStartedBackgroundProcessing() override;
+  void OnAppFinishedBackgroundProcessing() override;
+
   bool WasLastShutdownClean() override;
 
   PrefService* GetLocalState() override;

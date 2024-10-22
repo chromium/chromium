@@ -288,28 +288,12 @@ NSString* dirtyShutdownDuringAppRefreshKey =
 }
 
 - (void)refreshStarted {
-  // TODO(crbug.com/354919106): At a minimum, this should signal to the app
-  // state that refresh has started.
-  // Better would be tell the app state to call back when the right init stage
-  // has been reached, which might be immediate. There's currently no control
-  // flow to do this.
-  //
-  // The design intent for this class is that it is agnostic to whether the app
-  // is actually foregrounded or not.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.audience backgroundRefreshDidStart];
 }
 
 - (void)refreshComplete {
-  // TODO(crbug.com/354919106): Signal to the app state that background refresh
-  // is done. This should, if the app is not yet in the foreground, cause the
-  // app to enter a state where background termination is not considered a
-  // crash.
-  //
-  // The design intent for this class is that it is agnostic to whether the app
-  // is actually foregrounded or not. The app state will care about how to
-  // handle -refreshComplete in the foreground vs the background, but this class
-  // will not.
-
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.audience backgroundRefreshDidEnd];
 }
 

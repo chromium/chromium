@@ -77,6 +77,13 @@ void FlushCookieStoreOnIOThread(
   getter->GetURLRequestContext()->cookie_store()->FlushStore(
       std::move(closure));
 }
+
+// Returns YES if the UIApplication is currently in the background, regardless
+// of where it is in the lifecycle.
+BOOL ApplicationIsInBackground() {
+  return [[UIApplication sharedApplication] applicationState] ==
+         UIApplicationStateBackground;
+}
 }  // namespace
 
 #pragma mark - AppStateObserverList
@@ -637,6 +644,27 @@ void FlushCookieStoreOnIOThread(
   if (self.needsIncrementInitStage) {
     self.needsIncrementInitStage = NO;
     [self queueTransitionToNextInitStage];
+  }
+}
+
+#pragma mark - BackgroundRefreshAudience
+
+- (void)backgroundRefreshDidStart {
+  // If  refresh is starting, and the app is in the background, then let the
+  // application state know so it can enable the clean exit beacon while work
+  // is underway.
+  if (ApplicationIsInBackground()) {
+    GetApplicationContext()->OnAppStartedBackgroundProcessing();
+  }
+}
+
+- (void)backgroundRefreshDidEnd {
+  // If  refresh has completed, and the app is in the background, then let the
+  // application state know so it can disable the clean exit beacon. If iOS
+  // kills the app in the background at this point it should not be a crash for
+  // the purposes of metrics or experiments.
+  if (ApplicationIsInBackground()) {
+    GetApplicationContext()->OnAppFinishedBackgroundProcessing();
   }
 }
 

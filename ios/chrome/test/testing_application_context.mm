@@ -109,6 +109,14 @@ void TestingApplicationContext::OnAppEnterBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void TestingApplicationContext::OnAppStartedBackgroundProcessing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void TestingApplicationContext::OnAppFinishedBackgroundProcessing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
 bool TestingApplicationContext::WasLastShutdownClean() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return was_last_shutdown_clean_;
