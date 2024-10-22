@@ -127,7 +127,7 @@ int ExtensionsMenuTestUtil::NumberOfBrowserActions() {
 }
 
 bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
-  return GetMenuItemViewForId(id) != nullptr;
+  return extensions_container_->GetActionForId(id) != nullptr;
 }
 
 void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
