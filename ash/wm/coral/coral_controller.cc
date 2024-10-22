@@ -24,6 +24,7 @@ constexpr int kMaxItemsInGroup = 10;
 constexpr int kMaxGroupsToGenerate = 2;
 // Too many items in 1 request could result in poor performance.
 constexpr size_t kMaxItemsInRequest = 100;
+constexpr base::TimeDelta kRequestCoralServiceTimeout = base::Seconds(10);
 }  // namespace
 
 CoralRequest::CoralRequest() = default;
@@ -133,8 +134,8 @@ CoralController::CoralService* CoralController::EnsureCoralService() {
   if (!coral_service_) {
     auto pipe_handle = coral_service_.BindNewPipeAndPassReceiver().PassPipe();
     coral_service_.reset_on_disconnect();
-    ash::mojo_service_manager::GetServiceManagerProxy()->Request(
-        chromeos::mojo_services::kCrosCoralService, std::nullopt,
+    mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosCoralService, kRequestCoralServiceTimeout,
         std::move(pipe_handle));
   }
   return coral_service_.get();
