@@ -18,7 +18,9 @@
 #include "base/component_export.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/win/atl.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
@@ -312,6 +314,19 @@ enum {
 #define WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(enum_value) \
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(                     \
       "Accessibility.Performance.WinAPIs." #enum_value)
+
+// Macro to record performance metrics for Windows Accessibility APIs.
+#define WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(enum_value)      \
+  absl::Cleanup record_metric = [node = GetDelegate()->node(),       \
+                                 timer = base::ElapsedTimer()] {     \
+    base::UmaHistogramMicrosecondsTimes(                             \
+        node && !node->IsView()                                      \
+            ? std::string_view("Accessibility.Performance.WinAPIs2." \
+                               "WebContents." #enum_value)           \
+            : std::string_view("Accessibility.Performance.WinAPIs2." \
+                               "View." #enum_value),                 \
+        timer.Elapsed());                                            \
+  }
 
 //
 // Macros to use at the top of any AXPlatformNodeWin (or derived class) method

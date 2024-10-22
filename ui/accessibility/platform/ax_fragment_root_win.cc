@@ -161,9 +161,11 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
       double screen_physical_pixel_x,
       double screen_physical_pixel_y,
       IRawElementProviderFragment** element_provider) override {
+    UIA_VALIDATE_CALL_1_ARG(element_provider);
     WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ELEMENT_PROVIDER_FROM_POINT);
     WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_ELEMENT_PROVIDER_FROM_POINT);
-    UIA_VALIDATE_CALL_1_ARG(element_provider);
+    WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
+        UMA_API_ELEMENT_PROVIDER_FROM_POINT);
 
     *element_provider = nullptr;
 
