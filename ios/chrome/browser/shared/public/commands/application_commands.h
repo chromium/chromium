@@ -188,6 +188,9 @@ enum class TabGridOpeningMode {
 // incognito is forced, then it will ensure an incognito NTP tab is open.
 - (void)prepareToPresentModal:(ProceduralBlock)completion;
 
+// Opens a debug menu for AI prototyping.
+- (void)openAIMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_APPLICATION_COMMANDS_H_

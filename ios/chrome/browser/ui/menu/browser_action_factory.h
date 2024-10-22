@@ -112,6 +112,9 @@ class WebState;
 // Creates a UIAction instance for searching for the text in the pasteboard.
 - (UIAction*)actionToSearchCopiedText;
 
+// Creates a UIAction instance for opening the AI debug menu.
+- (UIAction*)actionToOpenAIMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_BROWSER_ACTION_FACTORY_H_

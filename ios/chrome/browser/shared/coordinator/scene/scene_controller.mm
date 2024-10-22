@@ -48,6 +48,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_view_controller.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
@@ -2110,6 +2111,20 @@ using UserFeedbackDataCallback =
     return NO;
   }
   return YES;
+}
+
+- (void)openAIMenu {
+  UIViewController* baseViewController = self.currentInterface.viewController;
+  DCHECK(self.currentInterface.browser);
+  web::WebState* webState =
+      self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
+
+  // View controllers shouldn't be instantiated here. This is allowed as an
+  // exception since the menu was created for prototyping.
+  AIPrototypingViewController* AIMenu =
+      [[AIPrototypingViewController alloc] initWithWebState:webState];
+
+  [baseViewController presentViewController:AIMenu animated:YES completion:nil];
 }
 
 #pragma mark - SettingsCommands

@@ -29,6 +29,7 @@ source_set("toolbar") {
     "//components/bookmarks/common",
     "//components/google/core/common",
     "//components/open_from_clipboard",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/search_engines",

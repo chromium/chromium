@@ -454,4 +454,16 @@
                          }];
 }
 
+- (UIAction*)actionToOpenAIMenu {
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  return [self actionWithTitle:@"Open AI menu"
+                         image:DefaultSymbolWithPointSize(
+                                   kMagicStackSymbol, kSymbolActionPointSize)
+                          type:MenuActionType::AIPrototyping
+                         block:^{
+                           [handler openAIMenu];
+                         }];
+}
+
 @end
