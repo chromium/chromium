@@ -17262,8 +17262,10 @@
                         "PlusAddressGlobalToggle",
                         "PlusAddressIOSErrorAndLoadingStatesEnabled",
                         "PlusAddressIOSManualFallbackEnabled",
+                        "PlusAddressOfferCreationIfPasswordFieldIsNotVisible",
                         "PlusAddressOfferCreationOnSingleUsernameForms",
                         "PlusAddressPreallocation",
+                        "PlusAddressRefinedPasswordFormClassification",
                         "PlusAddressSuggestionRedesign",
                         "PlusAddressUserOnboardingEnabled",
                         "PlusAddressesEnabled"
