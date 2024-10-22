@@ -915,10 +915,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Autofill will reset the autofill state of fields modified by JS"),
         Flag.baseFeature("StandardCompliantNonSpecialSchemeURLParsing"),
         Flag.baseFeature(
-                BlinkFeatures.BLINK_SCHEDULER_DISCRETE_INPUT_MATCHES_RESPONSIVENESS_METRICS,
-                "If enabled, the scheduler filters discrete input based on responsivness metrics"
-                        + " definitions"),
-        Flag.baseFeature(
                 BlinkFeatures.CURSOR_ANCHOR_INFO_MOJO_PIPE,
                 "If enabled, CursorAnchorInfo is sent from Blink to the browser using a single"
                         + " IPC."),

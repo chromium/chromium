@@ -11322,16 +11322,6 @@ const FeatureEntry kFeatureEntries[] = {
          kDeferRendererTasksAfterInputVariations,
          "DeferRendererTasksAfterInput")},
 
-    {"blink-scheduler-discrete-input-matches-responsiveness-metrics",
-     flag_descriptions::
-         kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsName,
-     flag_descriptions::
-         kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::
-             kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics)},
-
     {"threaded-scroll-prevent-rendering-starvation",
      flag_descriptions::kThreadedScrollPreventRenderingStarvationName,
      flag_descriptions::kThreadedScrollPreventRenderingStarvationDescription,

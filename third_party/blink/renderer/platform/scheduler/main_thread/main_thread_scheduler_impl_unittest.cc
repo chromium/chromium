@@ -4039,12 +4039,16 @@ class DiscreteInputMatchesResponsivenessMetricsTest
       public ::testing::WithParamInterface<bool> {
  public:
   DiscreteInputMatchesResponsivenessMetricsTest() {
+    feature_list_.Reset();
     if (GetParam()) {
-      feature_list_.Reset();
       feature_list_.InitWithFeatures(
           {{features::
                 kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics}},
           {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {{features::
+                    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics}});
     }
   }
 };

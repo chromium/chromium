@@ -2632,7 +2632,7 @@ BASE_FEATURE(kEmulateLoadStartedForInspectorOncePerResource,
 
 BASE_FEATURE(kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics,
              "BlinkSchedulerDiscreteInputMatchesResponsivenessMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThreadedScrollPreventRenderingStarvation,
              "ThreadedScrollPreventRenderingStarvation",
