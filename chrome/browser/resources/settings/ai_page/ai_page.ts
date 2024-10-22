@@ -13,8 +13,10 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {AiPageInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Router} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './ai_page.html.js';
 import {FeatureOptInState, SettingsAiPageFeaturePrefName} from './constants.js';
@@ -25,7 +27,8 @@ export interface SettingsAiPageElement {
   };
 }
 
-const SettingsAiPageElementBase = PrefsMixin(PolymerElement);
+const SettingsAiPageElementBase =
+    RouteObserverMixin(PrefsMixin(PolymerElement));
 
 export class SettingsAiPageElement extends SettingsAiPageElementBase {
   static get is() {
@@ -123,6 +126,32 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private showTabOrganizationControl_: boolean;
   private showWallpaperSearchControl_: boolean;
   private numericUncheckedValues_: FeatureOptInState[];
+  private shouldRecordMetrics_: boolean = true;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+
+  override currentRouteChanged() {
+    // Only record metrics when the user first navigates to the main AI page.
+    if (!this.shouldRecordMetrics_ || !this.enableAiSettingsPageRefresh_ ||
+        Router.getInstance().getCurrentRoute() !== routes.AI) {
+      return;
+    }
+
+    this.shouldRecordMetrics_ = false;
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Settings.AiPage.ElementVisibility.HistorySearch',
+        this.showHistorySearchControl_);
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Settings.AiPage.ElementVisibility.Compare', this.showCompareControl_);
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Settings.AiPage.ElementVisibility.Compose', this.showComposeControl_);
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Settings.AiPage.ElementVisibility.TabOrganization',
+        this.showTabOrganizationControl_);
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Settings.AiPage.ElementVisibility.Themes',
+        this.showWallpaperSearchControl_);
+  }
 
   private isExpanded_(): boolean {
     return this.getPref(SettingsAiPageFeaturePrefName.MAIN).value ===
@@ -144,28 +173,56 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private onHistorySearchRowClick_() {
+    if (this.enableAiSettingsPageRefresh_) {
+      this.recordInteractionMetrics(
+          AiPageInteractions.HISTORY_SEARCH_CLICK,
+          'Settings.AiPage.HistorySearchEntryPointClick');
+    }
+
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().HISTORY_SEARCH);
   }
 
   private onCompareRowClick_() {
+    this.recordInteractionMetrics(
+        AiPageInteractions.COMPARE_CLICK,
+        'Settings.AiPage.CompareEntryPointClick');
+
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().COMPARE);
   }
 
   private onComposeRowClick_() {
+    this.recordInteractionMetrics(
+        AiPageInteractions.COMPOSE_CLICK,
+        'Settings.AiPage.ComposeEntryPointClick');
+
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().OFFER_WRITING_HELP);
   }
 
   private onTabOrganizationRowClick_() {
+    this.recordInteractionMetrics(
+        AiPageInteractions.TAB_ORGANIZATION_CLICK,
+        'Settings.AiPage.TabOrganizationEntryPointClick');
+
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().AI_TAB_ORGANIZATION);
   }
 
   private onWallpaperSearchRowClick_() {
+    this.recordInteractionMetrics(
+        AiPageInteractions.WALLPAPER_SEARCH_CLICK,
+        'Settings.AiPage.ThemesEntryPointClick');
+
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('wallpaperSearchLearnMoreUrl'));
+  }
+
+  private recordInteractionMetrics(
+      interaction: AiPageInteractions, action: string) {
+    this.metricsBrowserProxy_.recordAiPageInteractions(interaction);
+    this.metricsBrowserProxy_.recordAction(action);
   }
 
   private getHistorySearchSublabel_(): string {

@@ -34011,6 +34011,56 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.AiPage.CompareEntryPointClick">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Reported when user clicks on the Compare row in the chrome://settings/ai
+    page.
+  </description>
+</action>
+
+<action name="Settings.AiPage.ComposeEntryPointClick">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Reported when user clicks on the Compose row in the chrome://settings/ai
+    page.
+  </description>
+</action>
+
+<action name="Settings.AiPage.HistorySearchEntryPointClick">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Reported when user clicks on the History Search row in the
+    chrome://settings/ai page.
+  </description>
+</action>
+
+<action name="Settings.AiPage.TabOrganizationEntryPointClick">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Reported when user clicks on the Tab Organization row in the
+    chrome://settings/ai page.
+  </description>
+</action>
+
+<action name="Settings.AiPage.ThemesEntryPointClick">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Reported when user clicks on the Themes row in the chrome://settings/ai
+    page.
+  </description>
+</action>
+
 <action name="Settings.ArticlesForYouToggled">
   <owner>gambard@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -35329,6 +35379,16 @@ should be able to be added at any place in this file.
   <owner>pmonette@chromium.org</owner>
   <description>
     The user clicked the &quot;Switch Anyway&quot; button in the Edge promo.
+  </description>
+</action>
+
+<action name="SettingsMenu_AiPageEntryPointClicked">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    The user clicked the &quot;AI Innovations&quot; external link in the
+    settings menu (drawer).
   </description>
 </action>
 

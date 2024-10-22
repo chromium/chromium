@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
+import type {AiPageInteractions, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -10,6 +10,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'recordAction',
+      'recordBooleanHistogram',
       'recordSafetyCheckInteractionHistogram',
       'recordSafetyCheckNotificationsListCountHistogram',
       'recordSafetyCheckNotificationsModuleInteractionsHistogram',
@@ -40,11 +41,16 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       // <if expr="_google_chrome and is_win">
       'recordFeatureNotificationsChange',
       // </if>
+      'recordAiPageInteractions',
     ]);
   }
 
   recordAction(action: string) {
     this.methodCalled('recordAction', action);
+  }
+
+  recordBooleanHistogram(histogramName: string, visible: boolean) {
+    this.methodCalled('recordBooleanHistogram', [histogramName, visible]);
   }
 
   recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {
@@ -194,4 +200,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordFeatureNotificationsChange', enabled);
   }
   // </if>
+
+  recordAiPageInteractions(interaction: AiPageInteractions) {
+    this.methodCalled('recordAiPageInteractions', interaction);
+  }
 }

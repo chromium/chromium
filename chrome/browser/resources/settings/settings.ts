@@ -62,7 +62,7 @@ export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_
 // </if>
 export {HatsBrowserProxy, HatsBrowserProxyImpl, SafeBrowsingSetting, SecurityPageInteraction, TrustSafetyInteraction} from './hats_browser_proxy.js';
 export {loadTimeData} from './i18n_setup.js';
-export {CardBenefitsUserAction, CvcDeletionUserAction, DeleteBrowsingDataAction, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from './metrics_browser_proxy.js';
+export {AiPageInteractions, CardBenefitsUserAction, CvcDeletionUserAction, DeleteBrowsingDataAction, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from './metrics_browser_proxy.js';
 export {NtpExtension, OnStartupBrowserProxy, OnStartupBrowserProxyImpl} from './on_startup_page/on_startup_browser_proxy.js';
 export {SettingsOnStartupPageElement} from './on_startup_page/on_startup_page.js';
 export {SettingsStartupUrlDialogElement} from './on_startup_page/startup_url_dialog.js';

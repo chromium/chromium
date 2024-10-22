@@ -80,6 +80,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.AiPage.ElementVisibility.{FeatureName}"
+    enum="BooleanVisible" expires_after="2025-06-01">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures whether the entry point for the {FeatureName} in AI settings page
+    is shown to the user. The metric is recorded when the user navigates to
+    'chrome://settings/ai'.
+  </summary>
+  <token key="FeatureName">
+    <variant name="Compare"/>
+    <variant name="Compose"/>
+    <variant name="HistorySearch"/>
+    <variant name="TabOrganization"/>
+    <variant name="Themes"/>
+  </token>
+</histogram>
+
+<histogram name="Settings.AiPage.Interactions"
+    enum="SettingsAiPageInteractions" expires_after="2025-06-01">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures the user interaction with all entrypoints in AI settings page.
+  </summary>
+</histogram>
+
 <histogram name="Settings.AllSites.DeprecatedRedirect" enum="BooleanRedirected"
     expires_after="M101">
   <owner>sauski@google.com</owner>

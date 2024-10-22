@@ -7,31 +7,62 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsToggleButtonElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, resetRouterForTesting, Router, routes, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {AiPageInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {microtasksFinished, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
 suite('ExperimentalAdvancedPage', function() {
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let page: SettingsAiPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
+
+    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+    metricsBrowserProxy.reset();
   });
 
   async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-ai-page');
     page.prefs = settingsPrefs.prefs;
+    Router.getInstance().navigateTo(routes.AI);
     document.body.appendChild(page);
     return flushTasks();
+  }
+
+  async function verifyFeatureVisibilityMetrics(
+      histogramName: string, visible: boolean) {
+    const recordedHistograms =
+        await metricsBrowserProxy.getArgs('recordBooleanHistogram');
+    assertTrue(recordedHistograms.some(
+        histogram =>
+            histogramName === histogram[0] && visible === histogram[1]));
+  }
+
+  async function verifyFeatureInteractionMetrics(
+      interaction: AiPageInteractions, action: string) {
+    const result =
+        await metricsBrowserProxy.whenCalled('recordAiPageInteractions');
+    assertEquals(interaction, result);
+
+    assertEquals(action, await metricsBrowserProxy.whenCalled('recordAction'));
   }
 
   test('FeaturesVisibilityWithRefreshEnabled', async () => {
@@ -45,18 +76,39 @@ suite('ExperimentalAdvancedPage', function() {
     });
     resetRouterForTesting();
     await createPage();
+    assertEquals(5, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.HistorySearch', false);
+
     assertTrue(isChildVisible(page, '#compareRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.Compare', true);
+
     assertTrue(isChildVisible(page, '#composeRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.Compose', true);
+
     assertFalse(isChildVisible(page, '#tabOrganizationRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.TabOrganization', false);
+
     assertFalse(isChildVisible(page, '#wallpaperSearchRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.Themes', false);
 
     // The old UI should not be visible if the refresh flag is enabled.
     const toggles1 =
         page.shadowRoot!.querySelectorAll('settings-toggle-button');
     assertEquals(0, toggles1.length);
     assertFalse(isChildVisible(page, '#historySearchRow'));
+
+    metricsBrowserProxy.resetResolver('recordBooleanHistogram');
+
+    // No new metrics should get recorded on next AI page navigation.
+    Router.getInstance().navigateTo(routes.AI);
+    assertEquals(0, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     // Case 2, a different subset of the controls should be visible.
     loadTimeData.overrideValues({
@@ -68,18 +120,39 @@ suite('ExperimentalAdvancedPage', function() {
     });
     resetRouterForTesting();
     await createPage();
+    assertEquals(5, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertTrue(isChildVisible(page, '#historySearchRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.HistorySearch', true);
+
     assertFalse(isChildVisible(page, '#compareRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.Compare', false);
+
     assertFalse(isChildVisible(page, '#composeRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.Compose', false);
+
     assertTrue(isChildVisible(page, '#tabOrganizationRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.TabOrganization', true);
+
     assertTrue(isChildVisible(page, '#wallpaperSearchRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.Themes', true);
 
     // The old UI should not be visible if the refresh flag is enabled.
     const toggles2 =
         page.shadowRoot!.querySelectorAll('settings-toggle-button');
     assertEquals(0, toggles2.length);
     assertFalse(isChildVisible(page, '#historySearchRow'));
+
+    metricsBrowserProxy.resetResolver('recordBooleanHistogram');
+
+    // No new metrics should get recorded on next AI page navigation.
+    Router.getInstance().navigateTo(routes.AI);
+    assertEquals(0, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
   });
 
   test('historySearchRow', async () => {
@@ -113,6 +186,9 @@ suite('ExperimentalAdvancedPage', function() {
         historySearchRow.subLabel);
 
     historySearchRow.click();
+    await verifyFeatureInteractionMetrics(
+        AiPageInteractions.HISTORY_SEARCH_CLICK,
+        'Settings.AiPage.HistorySearchEntryPointClick');
 
     const currentRoute = Router.getInstance().getCurrentRoute();
     assertEquals(routes.HISTORY_SEARCH, currentRoute);
@@ -133,6 +209,9 @@ suite('ExperimentalAdvancedPage', function() {
     assertTrue(!!compareRow);
     assertTrue(isVisible(compareRow));
     compareRow.click();
+    await verifyFeatureInteractionMetrics(
+        AiPageInteractions.COMPARE_CLICK,
+        'Settings.AiPage.CompareEntryPointClick');
 
     const currentRoute = Router.getInstance().getCurrentRoute();
     assertEquals(routes.COMPARE, currentRoute);
@@ -153,6 +232,9 @@ suite('ExperimentalAdvancedPage', function() {
     assertTrue(!!composeRow);
     assertTrue(isVisible(composeRow));
     composeRow.click();
+    await verifyFeatureInteractionMetrics(
+        AiPageInteractions.COMPOSE_CLICK,
+        'Settings.AiPage.ComposeEntryPointClick');
 
     const currentRoute = Router.getInstance().getCurrentRoute();
     assertEquals(routes.OFFER_WRITING_HELP, currentRoute);
@@ -173,6 +255,10 @@ suite('ExperimentalAdvancedPage', function() {
     assertTrue(!!tabOrganizationRow);
     assertTrue(isVisible(tabOrganizationRow));
     tabOrganizationRow.click();
+    await verifyFeatureInteractionMetrics(
+        AiPageInteractions.TAB_ORGANIZATION_CLICK,
+        'Settings.AiPage.TabOrganizationEntryPointClick');
+
     assertEquals(
         routes.AI_TAB_ORGANIZATION, Router.getInstance().getCurrentRoute());
   });
@@ -190,6 +276,10 @@ suite('ExperimentalAdvancedPage', function() {
     assertTrue(isVisible(wallpaperSearchRow));
 
     wallpaperSearchRow.click();
+    await verifyFeatureInteractionMetrics(
+        AiPageInteractions.WALLPAPER_SEARCH_CLICK,
+        'Settings.AiPage.ThemesEntryPointClick');
+
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('wallpaperSearchLearnMoreUrl'));
   });
