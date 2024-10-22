@@ -144,22 +144,19 @@ class BocaManagerProducerTest : public BocaManagerTest {
 };
 
 TEST_F(BocaManagerProducerTest, VerifyOnTaskObserverNotAddedForProducer) {
-  ASSERT_FALSE(
-      boca_manager_->GetBocaSessionManagerForTesting()->observers().HasObserver(
-          boca_manager_->GetOnTaskSessionManagerForTesting()));
+  ASSERT_FALSE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
+      boca_manager_->GetOnTaskSessionManagerForTesting()));
 }
 
 TEST_F(BocaManagerProducerTest, VerifyBabelOrcaObserverHasAddedForProducer) {
-  ASSERT_TRUE(
-      boca_manager_->GetBocaSessionManagerForTesting()->observers().HasObserver(
-          boca_manager_->GetBabelOrcaManagerForTesting()));
+  ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
+      boca_manager_->GetBabelOrcaManagerForTesting()));
 }
 
 TEST_F(BocaManagerProducerTest, VerifyDependenciesTearDownProperly) {
   boca_manager_->Shutdown();
   ASSERT_EQ(nullptr, invalidation_service_impl_);
-  ASSERT_TRUE(
-      boca_manager_->GetBocaSessionManagerForTesting()->observers().empty());
+  ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().empty());
 }
 
 class BocaManagerConsumerTest : public BocaManagerTest {
@@ -185,22 +182,19 @@ class BocaManagerConsumerTest : public BocaManagerTest {
 };
 
 TEST_F(BocaManagerConsumerTest, VerifyOnTaskObserverHasAddedForConsumer) {
-  ASSERT_TRUE(
-      boca_manager_->GetBocaSessionManagerForTesting()->observers().HasObserver(
-          boca_manager_->GetOnTaskSessionManagerForTesting()));
+  ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
+      boca_manager_->GetOnTaskSessionManagerForTesting()));
 }
 
 TEST_F(BocaManagerConsumerTest, VerifyBabelOrcaObserverHasAddedForConsumer) {
-  ASSERT_TRUE(
-      boca_manager_->GetBocaSessionManagerForTesting()->observers().HasObserver(
-          boca_manager_->GetBabelOrcaManagerForTesting()));
+  ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
+      boca_manager_->GetBabelOrcaManagerForTesting()));
 }
 
 TEST_F(BocaManagerConsumerTest, VerifyDependenciesTearDownProperly) {
   boca_manager_->Shutdown();
   ASSERT_EQ(nullptr, invalidation_service_impl_);
-  ASSERT_TRUE(
-      boca_manager_->GetBocaSessionManagerForTesting()->observers().empty());
+  ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().empty());
 }
 
 }  // namespace

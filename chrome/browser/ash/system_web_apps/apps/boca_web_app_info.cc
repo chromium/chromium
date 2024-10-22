@@ -8,6 +8,8 @@
 #include "ash/webui/boca_ui/boca_ui.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
+#include "chrome/browser/ash/boca/boca_manager.h"
+#include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "url/gurl.h"
 
@@ -105,4 +108,22 @@ std::unique_ptr<ui::SimpleMenuModel> BocaSystemAppDelegate::GetTabMenuModel(
   tab_menu->AddItemWithStringId(TabStripModel::CommandGoBack,
                                 IDS_CONTENT_CONTEXT_BACK);
   return tab_menu;
+}
+
+Browser* BocaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
+    Profile* profile,
+    web_app::WebAppProvider* provider,
+    const GURL& url,
+    const apps::AppLaunchParams& params) const {
+  Browser* const browser =
+      ash::SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
+          profile, provider, url, params);
+  if (IsConsumerProfile(profile)) {
+    // Notify downstream Boca components so they can prepare the app instance
+    // for OnTask and restore contents from the previous session if needed.
+    ash::BocaManager* const boca_manager =
+        ash::BocaManagerFactory::GetInstance()->GetForProfile(profile);
+    boca_manager->GetBocaSessionManager()->NotifyAppReload();
+  }
+  return browser;
 }

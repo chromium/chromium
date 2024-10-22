@@ -33,11 +33,12 @@ class BocaManager : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  boca::BocaSessionManager* GetBocaSessionManager() {
+    return boca_session_manager_.get();
+  }
+
   boca::OnTaskSessionManager* GetOnTaskSessionManagerForTesting() {
     return on_task_session_manager_.get();
-  }
-  boca::BocaSessionManager* GetBocaSessionManagerForTesting() {
-    return boca_session_manager_.get();
   }
   boca::BabelOrcaManager* GetBabelOrcaManagerForTesting() {
     return babel_orca_manager_.get();

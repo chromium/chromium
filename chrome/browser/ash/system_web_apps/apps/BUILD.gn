@@ -135,6 +135,7 @@ static_library("apps") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/boca",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/drive",
@@ -199,6 +200,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "boca_app_integration_browsertest.cc",
     "demo_mode_app_integration_browsertest.cc",
     "diagnostics_app_integration_browsertest.cc",
     "eche_app_integration_browsertest.cc",
@@ -219,6 +221,7 @@ source_set("browser_tests") {
     ":apps",
     "//ash",
     "//ash/constants",
+    "//ash/webui/boca_ui",
     "//ash/webui/demo_mode_app_ui",
     "//ash/webui/diagnostics_ui:url_constants",
     "//ash/webui/eche_app_ui",
@@ -240,6 +243,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/boca",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
@@ -250,6 +254,8 @@ source_set("browser_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/proto",
     "//chromeos/constants",
     "//components/policy/core/common:common_constants",
     "//components/prefs",

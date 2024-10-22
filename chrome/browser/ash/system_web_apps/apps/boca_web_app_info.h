@@ -11,6 +11,10 @@
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
+// Forward declare browser and profile.
+class Browser;
+class Profile;
+
 namespace web_app {
 struct WebAppInstallInfo;
 }  // namespace web_app
@@ -36,6 +40,11 @@ class BocaSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool HasCustomTabMenuModel() const override;
   std::unique_ptr<ui::SimpleMenuModel> GetTabMenuModel(
       ui::SimpleMenuModel::Delegate* delegate) const override;
+  Browser* LaunchAndNavigateSystemWebApp(
+      Profile* profile,
+      web_app::WebAppProvider* provider,
+      const GURL& url,
+      const apps::AppLaunchParams& params) const override;
 };
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp();
