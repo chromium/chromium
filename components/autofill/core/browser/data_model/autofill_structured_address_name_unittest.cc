@@ -5,17 +5,20 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 
 #include <stddef.h>
+
 #include <map>
 #include <string>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,6 +38,12 @@ struct NameParserTestRecord {
   std::string last_first;
   std::string last_conjunction;
   std::string last_second;
+};
+
+struct AlternativeNameParserTestRecord {
+  std::string full;
+  std::string given;
+  std::string family;
 };
 
 // A test record that contains all entries of the hybrid-structure last name
@@ -229,6 +238,74 @@ TEST(AutofillStructuredName, ParseFullName) {
         base::UTF8ToUTF16(name_test.last_first),
         base::UTF8ToUTF16(name_test.last_conjunction),
         base::UTF8ToUTF16(name_test.last_second));
+  }
+}
+
+TEST(AutofillStructuredName, ParseFullAlternativeName) {
+  AlternativeNameParserTestRecord name_tests[] = {
+      // Hiragana with space as a separator.
+      {"やまもと あおい", "あおい", "やまもと"},
+      // Hiragana with full width space as a separator.
+      {"さとう　みどり", "みどり", "さとう"},
+      // Dot as a separator.
+      {"やまもと・あおい", "あおい", "やまもと"}};
+
+  for (const auto& name_test : name_tests) {
+    SCOPED_TRACE(name_test.full);
+    AlternativeFullName name;
+    name.SetValueForType(ALTERNATIVE_FULL_NAME,
+                         base::UTF8ToUTF16(name_test.full),
+                         VerificationStatus::kObserved);
+    name.CompleteFullTree();
+
+    EXPECT_EQ(name.GetValueForType(ALTERNATIVE_FULL_NAME),
+              base::UTF8ToUTF16(name_test.full));
+    SCOPED_TRACE(testing::Message()
+                 << "alternative given name: "
+                 << name.GetValueForType(ALTERNATIVE_GIVEN_NAME) << "\n"
+                 << "alternative family name: "
+                 << name.GetValueForType(ALTERNATIVE_FAMILY_NAME));
+
+    EXPECT_EQ(name.GetValueForType(ALTERNATIVE_GIVEN_NAME),
+              base::UTF8ToUTF16(name_test.given));
+    EXPECT_EQ(name.GetValueForType(ALTERNATIVE_FAMILY_NAME),
+              base::UTF8ToUTF16(name_test.family));
+  }
+}
+
+TEST(AutofillStructuredName, FormatFullAlternativeName) {
+  AlternativeNameParserTestRecord name_tests[] = {
+      // Hiragana with space as a separator.
+      {"やまもと あおい", "あおい", "やまもと"},
+      // Hiragana with full width space as a separator.
+      {"さとう　みどり", "みどり", "さとう"},
+      // Dot as a separator.
+      {"やまもと・あおい", "あおい", "やまもと"}};
+
+  for (const auto& name_test : name_tests) {
+    SCOPED_TRACE(name_test.full);
+    AlternativeFullName name;
+    name.SetValueForType(ALTERNATIVE_GIVEN_NAME,
+                         base::UTF8ToUTF16(name_test.given),
+                         VerificationStatus::kObserved);
+    name.SetValueForType(ALTERNATIVE_FAMILY_NAME,
+                         base::UTF8ToUTF16(name_test.family),
+                         VerificationStatus::kObserved);
+    name.CompleteFullTree();
+
+    EXPECT_EQ(name.GetValueForType(ALTERNATIVE_FULL_NAME),
+              base::StrCat({base::UTF8ToUTF16(name_test.family),
+                            base::UTF8ToUTF16(name_test.given)}));
+    SCOPED_TRACE(testing::Message()
+                 << "alternative given name: "
+                 << name.GetValueForType(ALTERNATIVE_GIVEN_NAME) << "\n"
+                 << "alternative family name: "
+                 << name.GetValueForType(ALTERNATIVE_FAMILY_NAME));
+
+    EXPECT_EQ(name.GetValueForType(ALTERNATIVE_GIVEN_NAME),
+              base::UTF8ToUTF16(name_test.given));
+    EXPECT_EQ(name.GetValueForType(ALTERNATIVE_FAMILY_NAME),
+              base::UTF8ToUTF16(name_test.family));
   }
 }
 

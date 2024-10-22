@@ -59,6 +59,11 @@ class NameInfo : public FormGroup {
   // Returns a constant reference to the structured name tree.
   const AddressComponent& GetStructuredName() const { return *name_; }
 
+  // Returns a constant reference to the structured alternative name tree.
+  const AddressComponent& GetStructuredAlternativeName() const {
+    return *alternative_name_;
+  }
+
  private:
   // FormGroup:
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;
@@ -73,9 +78,17 @@ class NameInfo : public FormGroup {
   // Return the verification status of a structured name value.
   VerificationStatus GetVerificationStatusImpl(FieldType type) const override;
 
-  // This data structure stores the more-structured representation of the name
-  // when |features::kAutofillEnableSupportForMoreStructureInNames| is enabled.
+  // Returns the node in the tree that supports `field_type`. This node, if it
+  // exists, is unique by definition.
+  AddressComponent* GetNodeForType(FieldType type);
+
+  // const version of GetNodeForType.
+  const AddressComponent* GetNodeForType(FieldType type) const;
+
+  // This data structures store structured representation of the name and
+  // alternative (e.g. phonetic) name.
   const std::unique_ptr<AddressComponent> name_;
+  const std::unique_ptr<AddressComponent> alternative_name_;
 };
 
 class EmailInfo : public FormGroup {

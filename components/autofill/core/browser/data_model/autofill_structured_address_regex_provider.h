@@ -20,6 +20,7 @@ namespace autofill {
 enum class RegEx {
   kSingleWord,
   kParseSeparatedCjkName,
+  kParseSeparatedCjkAlternativeName,
   kParseCommonCjkTwoCharacterLastName,
   kParseKoreanTwoCharacterLastName,
   kParseCjkSingleCharacterLastName,

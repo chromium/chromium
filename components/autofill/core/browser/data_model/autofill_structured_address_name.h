@@ -140,5 +140,56 @@ class NameFull : public AddressComponent {
   NameLast last_;
 };
 
+// Atomic component that represents the first part of an alternative name(e.g.
+// Japanese phonetic given name).
+class AlternativeGivenName : public AddressComponent {
+ public:
+  AlternativeGivenName();
+  ~AlternativeGivenName() override;
+};
+
+// Atomic component that represents the last part of an alternative name(e.g.
+// Japanese phonetic last name).
+class AlternativeFamilyName : public AddressComponent {
+ public:
+  AlternativeFamilyName();
+  ~AlternativeFamilyName() override;
+};
+
+// Compound node that represents an alternative full name (e.g. full phonetic
+// name in Japanese). It contains a given name and a family name.
+// TODO(crbug.com/359768803): This class is currently mainly focused on
+// supporting Japanese phonetic names, but its logic should be extended to
+// handle alternative name expressions in different languages as well (e.g.
+// latin names in Greek).
+//
+//                   +-----------------------+
+//                   | ALTERNATIVE_FULL_NAME |
+//                   +-----------------------+
+//                    /                   \
+//                   /                     \
+//                  /                       \
+//    +------------------------+     +-------------------------+
+//    | ALTERNATIVE_GIVEN_NAME |     | ALTERNATIVE_FAMILY_NAME |
+//    +------------------------+     +-------------------------+
+//
+class AlternativeFullName : public AddressComponent {
+ public:
+  AlternativeFullName();
+  AlternativeFullName(const AlternativeFullName& other);
+  ~AlternativeFullName() override;
+
+ protected:
+  std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()
+      const override;
+
+  // Returns the format string to create the full alternative name from its
+  // subcomponents.
+  std::u16string GetFormatString() const override;
+
+  AlternativeGivenName given_name_;
+  AlternativeFamilyName family_name_;
+};
+
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_NAME_H_

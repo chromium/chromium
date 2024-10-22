@@ -220,4 +220,54 @@ std::u16string NameFull::GetFormatString() const {
 
 NameFull::~NameFull() = default;
 
+AlternativeGivenName::AlternativeGivenName()
+    : AddressComponent(ALTERNATIVE_GIVEN_NAME, {}, MergeMode::kDefault) {}
+
+AlternativeGivenName::~AlternativeGivenName() = default;
+
+AlternativeFamilyName::AlternativeFamilyName()
+    : AddressComponent(ALTERNATIVE_FAMILY_NAME, {}, MergeMode::kDefault) {}
+
+AlternativeFamilyName::~AlternativeFamilyName() = default;
+
+AlternativeFullName::AlternativeFullName()
+    : AddressComponent(ALTERNATIVE_FULL_NAME, {}, MergeMode::kDefault) {
+  RegisterChildNode(&given_name_);
+  RegisterChildNode(&family_name_);
+}
+
+AlternativeFullName::AlternativeFullName(const AlternativeFullName& other)
+    : AlternativeFullName() {
+  CopyFrom(other);
+}
+
+std::vector<const re2::RE2*>
+AlternativeFullName::GetParseRegularExpressionsByRelevance() const {
+  auto* pattern_provider = StructuredAddressesRegExProvider::Instance();
+  CHECK(pattern_provider);
+  if (HasCjkNameCharacteristics(base::UTF16ToUTF8(GetValue()))) {
+    return {
+        pattern_provider->GetRegEx(RegEx::kParseSeparatedCjkAlternativeName)};
+  }
+
+  return {};
+}
+
+std::u16string AlternativeFullName::GetFormatString() const {
+  StructuredAddressesFormatProvider::ContextInfo info;
+  info.name_has_cjk_characteristics =
+      HasCjkNameCharacteristics(base::UTF16ToUTF8(
+          GetNodeForType(ALTERNATIVE_GIVEN_NAME)->GetValue())) &&
+      HasCjkNameCharacteristics(base::UTF16ToUTF8(
+          GetNodeForType(ALTERNATIVE_FAMILY_NAME)->GetValue()));
+
+  auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
+  CHECK(pattern_provider);
+  // TODO(crbug.com/40275657): Add i18n support for name format strings.
+  return pattern_provider->GetPattern(GetStorageType(), /*country_code=*/"",
+                                      info);
+}
+
+AlternativeFullName::~AlternativeFullName() = default;
+
 }  // namespace autofill
