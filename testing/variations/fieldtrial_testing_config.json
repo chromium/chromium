@@ -22805,6 +22805,39 @@
             ]
         }
     ],
+    "StaleSessionCookieCleanup": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeleteStaleSessionCookiesOnStartup"
+                    ]
+                },
+                {
+                    "name": "Auto_Dogfood",
+                    "enable_features": [
+                        "DeleteStaleSessionCookiesOnStartup"
+                    ]
+                },
+                {
+                    "name": "Opt_In_Dogfood",
+                    "enable_features": [
+                        "DeleteStaleSessionCookiesOnStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "StaleStorageCleanup": [
         {
             "platforms": [
@@ -22818,28 +22851,21 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeleteOrphanLocalStorageOnStartup",
+                        "DeleteStaleLocalStorageOnStartup",
+                        "EvictOrphanQuotaStorage",
+                        "EvictStaleQuotaStorage"
+                    ]
+                },
+                {
                     "name": "Auto_Dogfood",
                     "enable_features": [
                         "DeleteOrphanLocalStorageOnStartup",
                         "DeleteStaleLocalStorageOnStartup",
-                        "DeleteStaleSessionCookiesOnStartup",
                         "EvictOrphanQuotaStorage",
                         "EvictStaleQuotaStorage"
-                    ]
-                },
-                {
-                    "name": "Enabled_NoSessionCookieCleanup",
-                    "enable_features": [
-                        "DeleteOrphanLocalStorageOnStartup",
-                        "DeleteStaleLocalStorageOnStartup",
-                        "EvictOrphanQuotaStorage",
-                        "EvictStaleQuotaStorage"
-                    ]
-                },
-                {
-                    "name": "Enabled_OnlySessionCookieCleanup",
-                    "enable_features": [
-                        "DeleteStaleSessionCookiesOnStartup"
                     ]
                 },
                 {
@@ -22847,7 +22873,6 @@
                     "enable_features": [
                         "DeleteOrphanLocalStorageOnStartup",
                         "DeleteStaleLocalStorageOnStartup",
-                        "DeleteStaleSessionCookiesOnStartup",
                         "EvictOrphanQuotaStorage",
                         "EvictStaleQuotaStorage"
                     ]
