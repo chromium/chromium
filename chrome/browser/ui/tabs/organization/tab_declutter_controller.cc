@@ -80,10 +80,6 @@ void TabDeclutterController::StartDeclutterTimer() {
 void TabDeclutterController::ProcessStaleTabs() {
   CHECK(features::IsTabstripDeclutterEnabled());
 
-  if (!is_active_) {
-    return;
-  }
-
   std::vector<tabs::TabModel*> tabs = GetStaleTabs();
 
   for (auto& observer : observers_) {
@@ -193,6 +189,10 @@ void TabDeclutterController::ExcludeFromStaleTabs(tabs::TabModel* tab_model) {
 
 bool TabDeclutterController::DeclutterNudgeCriteriaMet(
     base::span<tabs::TabModel*> stale_tabs) {
+  if (!is_active_) {
+    return false;
+  }
+
   if (usage_tick_clock_->NowTicks() < next_nudge_valid_time_ticks_) {
     return false;
   }

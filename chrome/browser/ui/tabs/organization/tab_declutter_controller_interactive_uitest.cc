@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
-                       TestInactiveBrowserDoesNotDeclutterTabs) {
+                       TestInactiveBrowserDoesNotShowNudge) {
   // Activate another browser.
   Browser* const second_browser = CreateBrowser(browser()->profile());
   ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GURL("about:blank"),
@@ -408,8 +408,8 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   browser()->tab_strip_model()->AddToNewGroup(std::vector<int>{2});
 
   task_runner->FastForwardBy(
-      tab_declutter_controller()->declutter_timer_interval());
+      tab_declutter_controller()->nudge_timer_interval());
 
-  EXPECT_EQ(fake_observer.stale_tabs_processed_count(), 0);
+  EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
 }
