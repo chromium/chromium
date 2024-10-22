@@ -24,7 +24,7 @@ namespace {
 // this key is less than `resetDataValue`, then all of the foillowing debug
 // data counts are reset to 0.
 NSString* resetDebugDataKey = @"debug_data_reset";
-NSInteger resetDebugDataValue = 2;
+NSInteger resetDebugDataValue = 3;
 
 // Debug NSUserDefaults keys used to collect debug data.
 // Number of times refresh was triggered.
@@ -104,7 +104,8 @@ NSString* dirtyShutdownDuringAppRefreshKey =
 
 - (void)appDidEnterForeground {
   // Log if the last session was cleanly shutdown.
-  if (!GetApplicationContext()->WasLastShutdownClean()) {
+  if (self.startupInformation.isColdStart &&
+      !GetApplicationContext()->WasLastShutdownClean()) {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     [defaults
         setInteger:[defaults integerForKey:dirtyShutdownDuringAppRefreshKey] + 1
