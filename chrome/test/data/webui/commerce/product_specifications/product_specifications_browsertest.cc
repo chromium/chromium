@@ -89,7 +89,13 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DescriptionSection) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DisclosureApp) {
+// TODO(https://crbug.com/374855688): Fix flaky timeout on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DisclosureApp DISABLED_DisclosureApp
+#else
+#define MAYBE_DisclosureApp DisclosureApp
+#endif
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, MAYBE_DisclosureApp) {
   RunTest("commerce/product_specifications/disclosure_app_test.js",
           "mocha.run()");
 }
