@@ -8580,6 +8580,25 @@
             ]
         }
     ],
+    "DiscardFrozenBrowsingInstancesWithGrowingPMF": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DiscardFrozenBrowsingInstancesWithGrowingPMF"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscardInputEventsToRecentlyMovedFrames": [
         {
             "platforms": [
@@ -10445,6 +10464,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FrameRoutingCache"
+                    ]
+                }
+            ]
+        }
+    ],
+    "FreezingOnBatterySaver": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FreezingOnBatterySaver"
                     ]
                 }
             ]
