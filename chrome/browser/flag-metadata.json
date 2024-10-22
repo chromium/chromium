@@ -6850,11 +6850,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "parcel-tracking-test-data",
-    "owners": [ "mdjones@chromium.org", "thegreenfrog@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "password-form-clientside-classifier",
     "owners": ["kazinova@google.com", "vasilii@chromium.org", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 137

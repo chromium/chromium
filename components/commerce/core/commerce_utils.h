@@ -18,10 +18,6 @@ namespace commerce {
 // Returns whether the `url` contains the discount utm tags.
 bool UrlContainsDiscountUtmTag(const GURL& url);
 
-// Gets test data for the parcel tracking APIs if the |kParcelTrackingTestData|
-// flag is enabled.
-ParcelTrackingStatus GetParcelTrackingStatusTestData();
-
 // Gets the url for the ProductSpec page based on `urls`.
 GURL GetProductSpecsTabUrl(const std::vector<GURL>& urls);
 
