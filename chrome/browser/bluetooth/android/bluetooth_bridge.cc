@@ -12,7 +12,8 @@ jboolean JNI_BluetoothBridge_IsWebContentsConnectedToBluetoothDevice(
     const base::android::JavaParamRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
-  return web_contents->IsConnectedToBluetoothDevice();
+  return web_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kBluetoothConnected);
 }
 
 jboolean JNI_BluetoothBridge_IsWebContentsScanningForBluetoothDevices(
@@ -20,5 +21,6 @@ jboolean JNI_BluetoothBridge_IsWebContentsScanningForBluetoothDevices(
     const base::android::JavaParamRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
-  return web_contents->IsScanningForBluetoothDevices();
+  return web_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kBluetoothScanning);
 }

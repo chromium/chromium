@@ -2606,28 +2606,21 @@ bool WebContentsImpl::IsCurrentlyAudible() {
   return is_currently_audible_;
 }
 
-bool WebContentsImpl::IsConnectedToBluetoothDevice() {
-  return bluetooth_connected_device_count_ > 0;
-}
-
-bool WebContentsImpl::IsScanningForBluetoothDevices() {
-  return bluetooth_scanning_sessions_count_ > 0;
-}
-
-bool WebContentsImpl::IsConnectedToSerialPort() {
-  return serial_active_frame_count_ > 0;
-}
-
-bool WebContentsImpl::IsConnectedToHidDevice() {
-  return hid_active_frame_count_ > 0;
-}
-
-bool WebContentsImpl::IsConnectedToUsbDevice() {
-  return usb_active_frame_count_ > 0;
-}
-
-bool WebContentsImpl::IsConnectedToGeolocation() {
-  return geolocation_active_frame_count_ > 0;
+bool WebContentsImpl::IsCapabilityActive(CapabilityType capability_type) {
+  switch (capability_type) {
+    case CapabilityType::kBluetoothConnected:
+      return bluetooth_connected_device_count_ > 0;
+    case CapabilityType::kBluetoothScanning:
+      return bluetooth_scanning_sessions_count_ > 0;
+    case CapabilityType::kSerial:
+      return serial_active_frame_count_ > 0;
+    case CapabilityType::kHID:
+      return hid_active_frame_count_ > 0;
+    case CapabilityType::kUSB:
+      return usb_active_frame_count_ > 0;
+    case CapabilityType::kGeolocation:
+      return geolocation_active_frame_count_ > 0;
+  }
 }
 
 bool WebContentsImpl::HasFileSystemAccessHandles() {
@@ -9960,8 +9953,8 @@ void WebContentsImpl::IncrementBluetoothConnectedDeviceCount() {
   // Notify for UI updates if the state changes.
   bluetooth_connected_device_count_++;
   if (bluetooth_connected_device_count_ == 1) {
-    OnDeviceConnectionTypesChanged(
-        WebContentsObserver::DeviceConnectionType::kBluetooth, /*used=*/true);
+    OnCapabilityTypesChanged(CapabilityType::kBluetoothConnected,
+                             /*used=*/true);
   }
 }
 
@@ -9977,9 +9970,8 @@ void WebContentsImpl::DecrementBluetoothConnectedDeviceCount() {
   DCHECK_NE(bluetooth_connected_device_count_, 0u);
   bluetooth_connected_device_count_--;
   if (bluetooth_connected_device_count_ == 0) {
-    OnDeviceConnectionTypesChanged(
-        WebContentsObserver::DeviceConnectionType::kBluetooth,
-        /*used=*/false);
+    OnCapabilityTypesChanged(CapabilityType::kBluetoothConnected,
+                             /*used=*/false);
   }
 }
 
@@ -10027,8 +10019,7 @@ void WebContentsImpl::IncrementSerialActiveFrameCount() {
   // Notify for UI updates if the state changes.
   serial_active_frame_count_++;
   if (serial_active_frame_count_ == 1) {
-    OnDeviceConnectionTypesChanged(
-        WebContentsObserver::DeviceConnectionType::kSerial, /*used=*/true);
+    OnCapabilityTypesChanged(CapabilityType::kSerial, /*used=*/true);
   }
 }
 
@@ -10045,8 +10036,7 @@ void WebContentsImpl::DecrementSerialActiveFrameCount() {
   DCHECK_NE(0u, serial_active_frame_count_);
   serial_active_frame_count_--;
   if (serial_active_frame_count_ == 0) {
-    OnDeviceConnectionTypesChanged(
-        WebContentsObserver::DeviceConnectionType::kSerial, /*used=*/false);
+    OnCapabilityTypesChanged(CapabilityType::kSerial, /*used=*/false);
   }
 }
 
@@ -10063,8 +10053,7 @@ void WebContentsImpl::IncrementHidActiveFrameCount() {
   // non-zero.
   hid_active_frame_count_++;
   if (hid_active_frame_count_ == 1) {
-    OnDeviceConnectionTypesChanged(
-        WebContentsObserver::DeviceConnectionType::kHID, /*used=*/true);
+    OnCapabilityTypesChanged(CapabilityType::kHID, /*used=*/true);
   }
 }
 
@@ -10082,8 +10071,7 @@ void WebContentsImpl::DecrementHidActiveFrameCount() {
   DCHECK_NE(0u, hid_active_frame_count_);
   hid_active_frame_count_--;
   if (hid_active_frame_count_ == 0) {
-    OnDeviceConnectionTypesChanged(
-        WebContentsObserver::DeviceConnectionType::kHID, /*used=*/false);
+    OnCapabilityTypesChanged(CapabilityType::kHID, /*used=*/false);
   }
 }
 
@@ -10100,8 +10088,7 @@ void WebContentsImpl::IncrementGeolocationActiveFrameCount() {
   // non-zero.
   geolocation_active_frame_count_++;
   if (geolocation_active_frame_count_ == 1) {
-    OnDeviceConnectionTypesChanged(
-        WebContentsObserver::DeviceConnectionType::kGeolocation, /*used=*/true);
+    OnCapabilityTypesChanged(CapabilityType::kGeolocation, /*used=*/true);
   }
 }
 
@@ -10119,21 +10106,17 @@ void WebContentsImpl::DecrementGeolocationActiveFrameCount() {
   DCHECK_NE(0u, geolocation_active_frame_count_);
   geolocation_active_frame_count_--;
   if (geolocation_active_frame_count_ == 0) {
-    OnDeviceConnectionTypesChanged(
-        WebContentsObserver::DeviceConnectionType::kGeolocation,
-        /*used=*/false);
+    OnCapabilityTypesChanged(CapabilityType::kGeolocation,
+                             /*used=*/false);
   }
 }
 
-void WebContentsImpl::OnDeviceConnectionTypesChanged(
-    WebContentsObserver::DeviceConnectionType device_connection_type,
-    bool used) {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::OnDeviceConnectionTypesChanged");
+void WebContentsImpl::OnCapabilityTypesChanged(CapabilityType capability_type,
+                                               bool used) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OnCapabilityTypesChanged");
   NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
-  observers_.NotifyObservers(
-      &WebContentsObserver::OnDeviceConnectionTypesChanged,
-      device_connection_type, used);
+  observers_.NotifyObservers(&WebContentsObserver::OnCapabilityTypesChanged,
+                             capability_type, used);
 }
 
 void WebContentsImpl::IncrementUsbActiveFrameCount() {
@@ -10149,8 +10132,7 @@ void WebContentsImpl::IncrementUsbActiveFrameCount() {
   // non-zero.
   usb_active_frame_count_++;
   if (usb_active_frame_count_ == 1) {
-    OnDeviceConnectionTypesChanged(
-        WebContentsObserver::DeviceConnectionType::kUSB, /*used=*/true);
+    OnCapabilityTypesChanged(CapabilityType::kUSB, /*used=*/true);
   }
 }
 
@@ -10168,8 +10150,7 @@ void WebContentsImpl::DecrementUsbActiveFrameCount() {
   DCHECK_NE(0u, usb_active_frame_count_);
   usb_active_frame_count_--;
   if (usb_active_frame_count_ == 0) {
-    OnDeviceConnectionTypesChanged(
-        WebContentsObserver::DeviceConnectionType::kUSB, /*used=*/false);
+    OnCapabilityTypesChanged(CapabilityType::kUSB, /*used=*/false);
   }
 }
 

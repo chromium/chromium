@@ -149,6 +149,21 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
+  // Device activity types that can be used by a WebContents.
+  enum class CapabilityType {
+    // WebUSB
+    kUSB,
+    // Web Bluetooth
+    kBluetoothConnected,
+    kBluetoothScanning,
+    // WebHID
+    kHID,
+    // Web Serial
+    kSerial,
+    // Geolocation
+    kGeolocation
+  };
+
   struct CONTENT_EXPORT CreateParams {
     explicit CreateParams(
         BrowserContext* context,
@@ -812,29 +827,9 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Returns true if the audio is currently audible.
   virtual bool IsCurrentlyAudible() = 0;
 
-  // Indicates whether any frame in the WebContents is connected to a Bluetooth
-  // Device.
-  virtual bool IsConnectedToBluetoothDevice() = 0;
-
-  // Indicates whether any frame in the WebContents is scanning for Bluetooth
-  // devices.
-  virtual bool IsScanningForBluetoothDevices() = 0;
-
-  // Indicates whether any frame in the WebContents is connected to a serial
-  // port.
-  virtual bool IsConnectedToSerialPort() = 0;
-
-  // Indicates whether any frame in the WebContents is connected to a HID
-  // device.
-  virtual bool IsConnectedToHidDevice() = 0;
-
-  // Indicates whether any frame in the WebContents is connected to a USB
-  // device.
-  virtual bool IsConnectedToUsbDevice() = 0;
-
-  // Indicates whether any frame in the WebContents is connected to geolocation
-  // service.
-  virtual bool IsConnectedToGeolocation() = 0;
+  // Indicates whether any frame in the WebContents is connected to anything in
+  // the WebContents::CapabilityType enum.
+  virtual bool IsCapabilityActive(CapabilityType capability_type) = 0;
 
   // Indicates whether any frame in the WebContents has File System Access
   // handles.

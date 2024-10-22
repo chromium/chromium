@@ -328,11 +328,12 @@ void VRUiHostImpl::PollCapturingState() {
         indicator->IsCapturingDisplay(web_contents_.get());
 
     // Bluetooth.
-    active_capturing.bluetooth_connected =
-        web_contents_->IsConnectedToBluetoothDevice();
+    active_capturing.bluetooth_connected = web_contents_->IsCapabilityActive(
+        content::WebContents::CapabilityType::kBluetoothConnected);
 
     // USB.
-    active_capturing.usb_connected = web_contents_->IsConnectedToUsbDevice();
+    active_capturing.usb_connected = web_contents_->IsCapabilityActive(
+        content::WebContents::CapabilityType::kUSB);
   }
 
   auto capturing_switched_on =

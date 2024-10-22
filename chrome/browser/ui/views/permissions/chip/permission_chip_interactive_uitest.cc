@@ -1607,9 +1607,10 @@ class TestWebContentsObserver : content::WebContentsObserver {
 
   void Wait() { loop_.Run(); }
 
-  void OnDeviceConnectionTypesChanged(DeviceConnectionType connection_type,
-                                      bool used) override {
-    if (connection_type == DeviceConnectionType::kGeolocation) {
+  void OnCapabilityTypesChanged(
+      content::WebContents::CapabilityType capability_type,
+      bool used) override {
+    if (capability_type == content::WebContents::CapabilityType::kGeolocation) {
       loop_.Quit();
     }
   }
@@ -1648,7 +1649,8 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
                                                                 1);
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
   ASSERT_TRUE(main_rfh);
-  ASSERT_FALSE(embedder_contents->IsConnectedToGeolocation());
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 
   // Set geolocation permission to allow.
   SetPermission(ContentSettingsType::GEOLOCATION,
@@ -1662,10 +1664,12 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   TestWebContentsObserver observer_1(embedder_contents);
   ASSERT_TRUE(content::ExecJs(main_rfh, kGetCurrentPosition));
   observer_1.Wait();
-  EXPECT_TRUE(embedder_contents->IsConnectedToGeolocation());
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
   TestWebContentsObserver observer_2(embedder_contents);
   observer_2.Wait();
-  EXPECT_FALSE(embedder_contents->IsConnectedToGeolocation());
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
@@ -1681,7 +1685,8 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
   ASSERT_TRUE(main_rfh);
 
-  ASSERT_FALSE(embedder_contents->IsConnectedToGeolocation());
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 
   // Set geolocation permission to allow.
   SetPermission(ContentSettingsType::GEOLOCATION,
@@ -1699,12 +1704,14 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   TestWebContentsObserver observer_1(embedder_contents);
   ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
   observer_1.Wait();
-  EXPECT_TRUE(embedder_contents->IsConnectedToGeolocation());
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
   // javascript clearWatch() should stop geolocation service.
   TestWebContentsObserver observer_2(embedder_contents);
   ASSERT_TRUE(content::ExecJs(main_rfh, kClearWatch));
   observer_2.Wait();
-  EXPECT_FALSE(embedder_contents->IsConnectedToGeolocation());
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
@@ -1720,7 +1727,8 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
   ASSERT_TRUE(main_rfh);
 
-  ASSERT_FALSE(embedder_contents->IsConnectedToGeolocation());
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 
   // Set geolocation permission to allow.
   SetPermission(ContentSettingsType::GEOLOCATION,
@@ -1741,13 +1749,16 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   TestWebContentsObserver observer_1(embedder_contents);
   ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
   observer_1.Wait();
-  EXPECT_TRUE(embedder_contents->IsConnectedToGeolocation());
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
   ASSERT_TRUE(content::ExecJs(main_rfh, kGetCurrentPosition));
-  EXPECT_TRUE(embedder_contents->IsConnectedToGeolocation());
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
   TestWebContentsObserver observer_2(embedder_contents);
   ASSERT_TRUE(content::ExecJs(main_rfh, kClearWatch));
   observer_2.Wait();
-  EXPECT_FALSE(embedder_contents->IsConnectedToGeolocation());
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
@@ -1763,7 +1774,8 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
   ASSERT_TRUE(main_rfh);
 
-  ASSERT_FALSE(embedder_contents->IsConnectedToGeolocation());
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 
   // Set geolocation permission to allow.
   SetPermission(ContentSettingsType::GEOLOCATION,
@@ -1788,7 +1800,8 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   ASSERT_TRUE(content::ExecJs(rfh_tab_1, kWatchPosition));
   observer_2.Wait();
   tab_strip->ActivateTabAt(0);
-  EXPECT_FALSE(embedder_contents->IsConnectedToGeolocation());
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest, ReloadPage) {
@@ -1803,7 +1816,8 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest, ReloadPage) {
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
   ASSERT_TRUE(main_rfh);
 
-  ASSERT_FALSE(embedder_contents->IsConnectedToGeolocation());
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 
   // Set geolocation permission to allow.
   SetPermission(ContentSettingsType::GEOLOCATION,
@@ -1817,9 +1831,11 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest, ReloadPage) {
   TestWebContentsObserver observer_1(embedder_contents);
   ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
   observer_1.Wait();
-  EXPECT_TRUE(embedder_contents->IsConnectedToGeolocation());
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
   content::TestNavigationObserver reload_observer(embedder_contents);
   main_rfh->Reload();
   reload_observer.Wait();
-  EXPECT_FALSE(embedder_contents->IsConnectedToGeolocation());
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 }

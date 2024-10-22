@@ -52,20 +52,30 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
     }
   }
 
-  if (contents->IsConnectedToBluetoothDevice())
+  if (contents->IsCapabilityActive(
+          content::WebContents::CapabilityType::kBluetoothConnected)) {
     states.push_back(TabAlertState::BLUETOOTH_CONNECTED);
+  }
 
-  if (contents->IsScanningForBluetoothDevices())
+  if (contents->IsCapabilityActive(
+          content::WebContents::CapabilityType::kBluetoothScanning)) {
     states.push_back(TabAlertState::BLUETOOTH_SCAN_ACTIVE);
+  }
 
-  if (contents->IsConnectedToUsbDevice())
+  if (contents->IsCapabilityActive(
+          content::WebContents::CapabilityType::kUSB)) {
     states.push_back(TabAlertState::USB_CONNECTED);
+  }
 
-  if (contents->IsConnectedToHidDevice())
+  if (contents->IsCapabilityActive(
+          content::WebContents::CapabilityType::kHID)) {
     states.push_back(TabAlertState::HID_CONNECTED);
+  }
 
-  if (contents->IsConnectedToSerialPort())
+  if (contents->IsCapabilityActive(
+          content::WebContents::CapabilityType::kSerial)) {
     states.push_back(TabAlertState::SERIAL_CONNECTED);
+  }
 
   // Check if VR content is being presented in a headset.
   // NOTE: This icon must take priority over the audio alert ones

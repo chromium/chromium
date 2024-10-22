@@ -447,12 +447,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool IsAudioMuted() override;
   void SetAudioMuted(bool mute) override;
   bool IsCurrentlyAudible() override;
-  bool IsConnectedToBluetoothDevice() override;
-  bool IsScanningForBluetoothDevices() override;
-  bool IsConnectedToSerialPort() override;
-  bool IsConnectedToHidDevice() override;
-  bool IsConnectedToUsbDevice() override;
-  bool IsConnectedToGeolocation() override;
+  bool IsCapabilityActive(CapabilityType capability_type) override;
   bool HasFileSystemAccessHandles() override;
   bool HasPictureInPictureVideo() override;
   bool HasPictureInPictureDocument() override;
@@ -1307,9 +1302,8 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Notifies the delegate and observers when device connection types used by
   // the WebContents change.
-  void OnDeviceConnectionTypesChanged(
-      WebContentsObserver::DeviceConnectionType device_connection_type,
-      bool used);
+  void OnCapabilityTypesChanged(CapabilityType device_capability_type,
+                                bool used);
 
   // Modify the counter of frames in this WebContents actively using USB
   // devices.
