@@ -71,7 +71,7 @@ def _convert_basic_suite(
         case 'resultdb':
           anonymous_mixin_builder['resultdb'] = values.convert_resultdb(value)
 
-        case 'android_swarming' | 'swarming':
+        case 'android_swarming' | 'chromeos_swarming' | 'swarming':
           anonymous_mixin_builder[key] = values.convert_swarming(value)
 
         case 'mixins':
