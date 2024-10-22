@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -56,12 +55,14 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -70,6 +71,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/test/button_test_api.h"
 
 using content::WebContents;
 
@@ -112,21 +114,7 @@ class BrowserActionApiTest : public ExtensionApiTest {
   BrowserActionApiTest(const BrowserActionApiTest&) = delete;
   BrowserActionApiTest& operator=(const BrowserActionApiTest&) = delete;
 
-  void TearDownOnMainThread() override {
-    // Clean up the test util first, so that any created UI properly removes
-    // itself before profile destruction.
-    browser_action_test_util_.reset();
-    ExtensionApiTest::TearDownOnMainThread();
-  }
-
  protected:
-  ExtensionActionTestHelper* GetBrowserActionsBar() {
-    if (!browser_action_test_util_) {
-      browser_action_test_util_ = ExtensionActionTestHelper::Create(browser());
-    }
-    return browser_action_test_util_.get();
-  }
-
   ExtensionAction* GetBrowserAction(Browser* browser,
                                     const Extension& extension) {
     ExtensionAction* extension_action =
@@ -137,12 +125,17 @@ class BrowserActionApiTest : public ExtensionApiTest {
                : nullptr;
   }
 
+  void ClickAction(const extensions::ExtensionId& extension_id) {
+    ToolbarActionView* action_view =
+        extensions_container()->GetViewForId(extension_id);
+    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), 0, 0);
+    views::test::ButtonTestApi(action_view).NotifyClick(event);
+  }
+
   ExtensionsToolbarContainer* extensions_container() {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
-
- private:
-  std::unique_ptr<ExtensionActionTestHelper> browser_action_test_util_;
 };
 
 // Canvas tests rely on the harness producing pixel output in order to read back
@@ -539,7 +532,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
 
   // Execute the action, its title should change.
   ResultCatcher catcher;
-  GetBrowserActionsBar()->Press(extension->id());
+  ExecuteExtensionAction(browser(), extension);
   ASSERT_TRUE(catcher.GetNextResult());
   int first_tab_id = ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetActiveWebContents());
@@ -584,7 +577,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, SetIcon) {
   // call setIcon().
   {
     ResultCatcher catcher;
-    GetBrowserActionsBar()->Press(extension->id());
+    ClickAction(extension->id());
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -617,7 +610,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, AddPopup) {
   // will add a popup.
   {
     ResultCatcher catcher;
-    GetBrowserActionsBar()->Press(extension->id());
+    ClickAction(extension->id());
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -958,7 +951,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   // Simulate a click on the browser action icon.
   {
     ResultCatcher catcher;
-    GetBrowserActionsBar()->Press(extension->id());
+    ClickAction(extension->id());
     EXPECT_TRUE(catcher.GetNextResult());
   }
 
@@ -1034,13 +1027,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest,
 
   // Click on the browser action icon to enter Picture-in-Picture.
   ResultCatcher catcher;
-  GetBrowserActionsBar()->Press(extension->id());
+  ClickAction(extension->id());
   EXPECT_TRUE(catcher.GetNextResult());
   ASSERT_TRUE(window_controller->GetWindowForTesting());
   EXPECT_TRUE(window_controller->GetWindowForTesting()->IsVisible());
 
   // Click on the browser action icon to exit Picture-in-Picture.
-  GetBrowserActionsBar()->Press(extension->id());
+  ClickAction(extension->id());
   EXPECT_TRUE(catcher.GetNextResult());
   ASSERT_TRUE(window_controller->GetWindowForTesting());
   EXPECT_FALSE(window_controller->GetWindowForTesting()->IsVisible());
