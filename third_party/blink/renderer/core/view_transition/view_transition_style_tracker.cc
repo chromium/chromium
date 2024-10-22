@@ -83,7 +83,10 @@ CSSPropertyID kLayeredCaptureProperties[] = {
     // Deliberately capturing the shorthand, to include all the mask-related
     // properties.
     CSSPropertyID::kMask,
-    CSSPropertyID::kBorder,
+    CSSPropertyID::kBorderTop,
+    CSSPropertyID::kBorderRight,
+    CSSPropertyID::kBorderBottom,
+    CSSPropertyID::kBorderLeft,
     CSSPropertyID::kBackground,
     CSSPropertyID::kBorderRadius,
     CSSPropertyID::kBoxShadow,
@@ -98,10 +101,12 @@ CSSPropertyID kLayeredCaptureProperties[] = {
 CSSPropertyID kPropertiesToAnimate[] = {
     CSSPropertyID::kBackdropFilter, CSSPropertyID::kOpacity,
     CSSPropertyID::kClipPath,       CSSPropertyID::kFilter,
-    CSSPropertyID::kMask,           CSSPropertyID::kBorder,
-    CSSPropertyID::kBackground,     CSSPropertyID::kBorderRadius,
-    CSSPropertyID::kBoxShadow,      CSSPropertyID::kOutline,
-    CSSPropertyID::kBorderImage,    CSSPropertyID::kPadding,
+    CSSPropertyID::kMask,           CSSPropertyID::kBorderTop,
+    CSSPropertyID::kBorderRight,    CSSPropertyID::kBorderBottom,
+    CSSPropertyID::kBorderLeft,     CSSPropertyID::kBackground,
+    CSSPropertyID::kBorderRadius,   CSSPropertyID::kBoxShadow,
+    CSSPropertyID::kOutline,        CSSPropertyID::kBorderImage,
+    CSSPropertyID::kPadding,
 };
 
 template <typename K, typename V>
