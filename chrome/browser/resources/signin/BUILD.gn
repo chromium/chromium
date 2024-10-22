@@ -144,8 +144,14 @@ build_webui("build") {
   ]
 
   ts_path_mappings = [
+    "/icons.html.js|" +
+        rebase_path("$target_gen_dir/preprocessed/icons.html.ts",
+                    target_gen_dir),
     "/signin_shared.css.js|" +
         rebase_path("$target_gen_dir/preprocessed/signin_shared.css.ts",
+                    target_gen_dir),
+    "/signin_vars.css.js|" +
+        rebase_path("$target_gen_dir/preprocessed/signin_vars.css.ts",
                     target_gen_dir),
     "/tangible_sync_style_shared.css.js|" +
         rebase_path(

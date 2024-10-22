@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './managed_user_profile_notice_disclosure.js';
 import './managed_user_profile_notice_value_prop.js';
 import './managed_user_profile_notice_state.js';
