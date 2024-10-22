@@ -441,6 +441,7 @@ ci.builder(
     ),
     main_console_view = "main",
     contact_team_email = "chromeos-sw-engprod@google.com",
+    notifies = ["chrome-v4l2-visl-test"],
 )
 
 ci.builder(

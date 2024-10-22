@@ -338,6 +338,15 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "chrome-v4l2-visl-test",
+    on_occurrence = ["SUCCESS", "FAILURE", "INFRA_FAILURE"],
+    failed_step_regexp = "video_decode_accelerator_tests_v4l2*",
+    notify_emails = [
+        "stevecho@google.com",
+    ],
+)
+
+luci.notifier(
     name = "multiscreen-owners",
     on_new_status = ["FAILURE"],
     notify_emails = [
