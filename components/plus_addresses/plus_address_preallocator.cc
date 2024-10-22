@@ -75,19 +75,7 @@ const std::string& GetPlusAddress(const base::Value& preallocated_address) {
 
 // Returns whether we should retry the network request after receiving `error`.
 bool ShouldRetryOnError(const PlusAddressRequestError& error) {
-  switch (error.type()) {
-    case PlusAddressRequestErrorType::kNetworkError:
-      // For now, only retry on timeout.
-      return error.http_response_code() == net::HTTP_REQUEST_TIMEOUT;
-    case PlusAddressRequestErrorType::kParsingError:
-    case PlusAddressRequestErrorType::kOAuthError:
-    case PlusAddressRequestErrorType::kRequestNotSupportedError:
-    case PlusAddressRequestErrorType::kMaxRefreshesReached:
-    case PlusAddressRequestErrorType::kUserSignedOut:
-    case PlusAddressRequestErrorType::kInvalidOrigin:
-      return false;
-  }
-  NOTREACHED();
+  return error.IsTimeoutError();
 }
 
 }  // namespace

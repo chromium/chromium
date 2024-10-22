@@ -95,6 +95,19 @@ chromium-metrics-reviews@google.com.
   <token key="Type" variants="PlusAddressNetworkRequestType"/>
 </histogram>
 
+<histogram name="PlusAddresses.NetworkRequest.{Type}.NetErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-09-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <summary>
+    Records the net error codes of network requests. PlusAddressHttpClientImpl
+    records this whenever it gets a response from the URL loader for the network
+    requests it makes.
+  </summary>
+  <token key="Type" variants="PlusAddressNetworkRequestType"/>
+</histogram>
+
 <histogram name="PlusAddresses.NetworkRequest.{Type}.ResponseByteSize"
     units="bytes" expires_after="2024-12-31">
   <owner>jkeitel@google.com</owner>

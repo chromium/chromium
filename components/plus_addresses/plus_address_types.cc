@@ -9,6 +9,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/notreached.h"
 #include "net/http/http_status_code.h"
 
 namespace plus_addresses {
@@ -45,14 +46,24 @@ PlusProfile::~PlusProfile() = default;
 
 bool PlusAddressRequestError::IsQuotaError() const {
   return error_type_ == PlusAddressRequestErrorType::kNetworkError &&
-         http_response_code_.value_or(net::HTTP_REQUEST_TIMEOUT) ==
-             net::HTTP_TOO_MANY_REQUESTS;
+         http_response_code_ == net::HTTP_TOO_MANY_REQUESTS;
 }
 
 bool PlusAddressRequestError::IsTimeoutError() const {
-  return error_type_ == PlusAddressRequestErrorType::kNetworkError &&
-         http_response_code_.value_or(net::HTTP_TOO_MANY_REQUESTS) ==
-             net::HTTP_REQUEST_TIMEOUT;
+  switch (error_type_) {
+    case PlusAddressRequestErrorType::kClientTimeout:
+      return true;
+    case PlusAddressRequestErrorType::kNetworkError:
+      return http_response_code_ == net::HTTP_REQUEST_TIMEOUT;
+    case PlusAddressRequestErrorType::kParsingError:
+    case PlusAddressRequestErrorType::kOAuthError:
+    case PlusAddressRequestErrorType::kRequestNotSupportedError:
+    case PlusAddressRequestErrorType::kMaxRefreshesReached:
+    case PlusAddressRequestErrorType::kUserSignedOut:
+    case PlusAddressRequestErrorType::kInvalidOrigin:
+      return false;
+  }
+  NOTREACHED();
 }
 
 PlusAddressDataChange::PlusAddressDataChange(Type type, PlusProfile profile)
@@ -86,6 +97,8 @@ std::ostream& operator<<(std::ostream& os, PlusAddressRequestErrorType type) {
         return "UserSignedOut";
       case PlusAddressRequestErrorType::kInvalidOrigin:
         return "InvalidOrigin";
+      case PlusAddressRequestErrorType::kClientTimeout:
+        return "ClientTimeout";
     }
   }();
 }
