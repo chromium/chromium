@@ -94,6 +94,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/switches.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/latency/janky_duration_tracker.h"
 #include "ui/latency/latency_info.h"
@@ -1257,7 +1258,10 @@ bool GpuProcessHost::LaunchGpuProcess() {
   int child_flags = gpu_launcher.empty() ? ChildProcessHost::CHILD_ALLOW_SELF
                                          : ChildProcessHost::CHILD_NORMAL;
 #elif BUILDFLAG(IS_MAC)
-  int child_flags = ChildProcessHost::CHILD_GPU;
+  int child_flags =
+      features::IsSwiftShaderAllowed(base::CommandLine::ForCurrentProcess())
+          ? ChildProcessHost::CHILD_GPU
+          : ChildProcessHost::CHILD_NORMAL;
 #else
   int child_flags = ChildProcessHost::CHILD_NORMAL;
 #endif
