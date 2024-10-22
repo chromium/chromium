@@ -3422,12 +3422,12 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.Secagentd.SHA256InputSize" units="KiB"
+<histogram name="ChromeOS.Secagentd.SHA256InputSize" units="MiB"
     expires_after="2025-03-31">
   <owner>jasonling@google.com</owner>
   <owner>cros-enterprise-security@google.com</owner>
   <summary>
-    Records the number of kibibytes a SHA256 hash is computed on. SHA256 hashes
+    Records the number of mebibytes a SHA256 hash is computed on. SHA256 hashes
     are computed for each file, process, and network event, unless the value is
     available in the cache.
   </summary>
