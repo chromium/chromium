@@ -7,27 +7,33 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/service/local_data_description.h"
 
 class Browser;
-class Profile;
-enum class BatchUploadDataType;
 class BatchUploadController;
 class BatchUploadDelegate;
 
-// Service tied to a profile that allows the management of the Batch Upload
-// Dialog. It communicates with the different data type services that needs to
-// integerate with the Batch Upload service.
-// Used to open the dialog and manages the lifetime of the controller.
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
+// Service that allows the management of the Batch Upload Dialog. Used to open
+// the dialog and manages the lifetime of the controller.
+// It communicates with the `sync_service` to get information of the current
+// local data for eligible types.
 class BatchUploadService : public KeyedService {
  public:
-  explicit BatchUploadService(Profile& profile,
-                              std::unique_ptr<BatchUploadDelegate> delegate);
+  BatchUploadService(signin::IdentityManager* identity_manager,
+                     syncer::SyncService* sync_service,
+                     std::unique_ptr<BatchUploadDelegate> delegate);
   BatchUploadService(const BatchUploadService&) = delete;
   BatchUploadService& operator=(const BatchUploadService&) = delete;
   ~BatchUploadService() override;
@@ -46,24 +52,24 @@ class BatchUploadService : public KeyedService {
 
  private:
   // Iterates over all available types that can be displayed in the dialog and
-  // request the container. Result of each containers is returned in
-  // `OnBatchUploadContainerReady()` asynchronously.
-  void RequestBatchUploadDataContainers();
+  // request the local data description. Result of each local data descriptions
+  // is returned in `OnLocalDataDescriptionsReady()` asynchronously.
+  void RequestLocalDataDescriptions();
 
-  // Barrier callback aggregating the `BatchUploadDataContainer`s. It is
-  // expected to return a container per data type in `BatchUploadDataType` even
-  // if the returned container is empty. Once all the containers are available,
-  // triggers showing the dialog.
-  void OnBatchUploadContainersReady(
-      std::vector<BatchUploadDataContainer> data_containers);
+  // Barrier callback aggregating the `syncer::LocalDataDescription`s. It is
+  // expected to return a local data description per data type for the available
+  // data types even if the returned local data description is empty. Once all
+  // the local data descriptions are available, triggers showing the dialog.
+  void OnLocalDataDescriptionsReady(
+      std::vector<syncer::LocalDataDescription> local_data_descriptions);
 
   // Callback of the dialog view closing, contains the IDs of the selected items
   // per data type. Selected items will be processed to be moved to the account
   // storage. Empty map means the dialog was closed explicitly not to move any
   // data.
   void OnBatchUplaodDialogResult(
-      const base::flat_map<BatchUploadDataType,
-                           std::vector<BatchUploadDataItemModel::DataId>>&
+      const std::map<syncer::DataType,
+                     std::vector<syncer::LocalDataItemModel::DataId>>&
           item_ids_to_move);
 
   // Whether the profile is in the proper sign in state to see the dialog.
@@ -76,7 +82,8 @@ class BatchUploadService : public KeyedService {
   // Callback to clear the overridden avatar text on timeout.
   void OnAvatarOverrideTextTimeout();
 
-  base::raw_ref<Profile> profile_;
+  raw_ref<signin::IdentityManager> identity_manager_;
+  raw_ref<syncer::SyncService> sync_service_;
   std::unique_ptr<BatchUploadDelegate> delegate_;
 
   // Controller lifetime is bind to when the dialog is currently showing. There

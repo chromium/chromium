@@ -29,12 +29,12 @@ namespace {
 // All strings take into account the plural aspect based on the count. The count
 // is either the "hero" type count if applicable, or the total item count in the
 // generic case.
-std::string ComputeBatchUploadSubtitle(BatchUploadDataType first_type,
+std::string ComputeBatchUploadSubtitle(syncer::DataType first_type,
                                        size_t first_type_item_count,
                                        size_t number_of_types,
                                        size_t total_item_count) {
   // Check for the "hero" type availability.
-  if (first_type == BatchUploadDataType::kPasswords) {
+  if (first_type == syncer::DataType::PASSWORDS) {
     if (number_of_types > 1) {
       // Returns "passwords + other items" combo string.
       return l10n_util::GetPluralStringFUTF8(
@@ -57,10 +57,10 @@ BatchUploadHandler::BatchUploadHandler(
     mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver,
     mojo::PendingRemote<batch_upload::mojom::Page> page,
     const AccountInfo& account_info,
-    std::vector<BatchUploadDataContainer> data_containers_list,
+    std::vector<syncer::LocalDataDescription> local_data_description_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
-    SelectedDataTypeItemsCallback completion_callback)
-    : data_containers_list_(std::move(data_containers_list)),
+    BatchUploadSelectedDataTypeItemsCallback completion_callback)
+    : local_data_description_list_(std::move(local_data_description_list)),
       update_view_height_callback_(update_view_height_callback),
       completion_callback_(std::move(completion_callback)),
       receiver_(this, std::move(receiver)),
@@ -76,27 +76,26 @@ void BatchUploadHandler::UpdateViewHeight(uint32_t height) {
 
 void BatchUploadHandler::Close() {
   // Clear the data as after `completion_callback_` is done.
-  data_containers_list_.clear();
+  local_data_description_list_.clear();
   std::move(completion_callback_).Run({});
 }
 
 void BatchUploadHandler::SaveToAccount(
     const std::vector<std::vector<int32_t>>& ids_to_move) {
-  CHECK_EQ(ids_to_move.size(), data_containers_list_.size());
+  CHECK_EQ(ids_to_move.size(), local_data_description_list_.size());
   CHECK_EQ(ids_to_move.size(), internal_data_item_id_mapping_list_.size());
 
   // Convert `ids_to_move` ids from `int32_t` to
-  // `BatchUploadDataItemModel::DataId` using
+  // `LocalDataItemModel::DataId` using
   // `internal_data_item_id_mapping_list_`.
-  base::flat_map<BatchUploadDataType,
-                 std::vector<BatchUploadDataItemModel::DataId>>
+  std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
       ret_ids_to_move;
   for (size_t i = 0; i < ids_to_move.size(); ++i) {
-    const base::flat_map<InternalId, BatchUploadDataItemModel::DataId>&
+    const std::map<InternalId, syncer::LocalDataItemModel::DataId>&
         internal_data_item_id_mapping = internal_data_item_id_mapping_list_[i];
     CHECK_LE(ids_to_move[i].size(), internal_data_item_id_mapping.size());
 
-    std::vector<BatchUploadDataItemModel::DataId> section_ids;
+    std::vector<syncer::LocalDataItemModel::DataId> section_ids;
     std::ranges::transform(
         ids_to_move[i], std::back_inserter(section_ids),
         [&internal_data_item_id_mapping](int32_t id) {
@@ -105,11 +104,11 @@ void BatchUploadHandler::SaveToAccount(
           CHECK(internal_data_item_id_mapping.contains(internal_item_id));
           return internal_data_item_id_mapping.at(internal_item_id);
         });
-    ret_ids_to_move.insert_or_assign(data_containers_list_[i].type,
+    ret_ids_to_move.insert_or_assign(local_data_description_list_[i].type,
                                      section_ids);
   }
 
-  data_containers_list_.clear();
+  local_data_description_list_.clear();
   std::move(completion_callback_).Run(ret_ids_to_move);
 }
 
@@ -117,7 +116,7 @@ batch_upload::mojom::BatchUploadDataPtr
 BatchUploadHandler::ConstructMojoBatchUploadData(
     const AccountInfo& account_info) {
   CHECK(!account_info.IsEmpty());
-  CHECK(!data_containers_list_.empty());
+  CHECK(!local_data_description_list_.empty());
 
   batch_upload::mojom::BatchUploadAccountInfoPtr account_info_mojo =
       batch_upload::mojom::BatchUploadAccountInfo::New();
@@ -127,10 +126,10 @@ BatchUploadHandler::ConstructMojoBatchUploadData(
 
   size_t total_item_count = 0;
   std::vector<batch_upload::mojom::DataContainerPtr> data_containers_mojo;
-  for (const auto& data_container : data_containers_list_) {
-    CHECK(!data_container.items.empty());
+  for (const auto& local_data_description : local_data_description_list_) {
+    CHECK(!local_data_description.local_data_models.empty());
 
-    base::flat_map<InternalId, BatchUploadDataItemModel::DataId>&
+    std::map<InternalId, syncer::LocalDataItemModel::DataId>&
         internal_data_item_id_mapping =
             internal_data_item_id_mapping_list_.emplace_back();
 
@@ -138,10 +137,10 @@ BatchUploadHandler::ConstructMojoBatchUploadData(
         batch_upload::mojom::DataContainer::New();
     // TODO(crbug.com/372450941): Adadpt the mojo variable name.
     data_container_mojo->section_title =
-        base::ToString(data_container.section_title_id);
+        base::ToString(GetTypeSectionTitleId(local_data_description.type));
 
     InternalId current_id = InternalId(0);
-    for (const auto& data_item : data_container.items) {
+    for (const auto& data_item : local_data_description.local_data_models) {
       batch_upload::mojom::DataItemPtr data_item_mojo =
           batch_upload::mojom::DataItem::New();
       // Increment the Id everytime to have a unique id per data type.
@@ -158,7 +157,7 @@ BatchUploadHandler::ConstructMojoBatchUploadData(
     }
     data_containers_mojo.push_back(std::move(data_container_mojo));
 
-    total_item_count += data_container.items.size();
+    total_item_count += local_data_description.local_data_models.size();
   }
 
   batch_upload::mojom::BatchUploadDataPtr batch_upload_mojo =
@@ -166,10 +165,22 @@ BatchUploadHandler::ConstructMojoBatchUploadData(
 
   batch_upload_mojo->account_info = std::move(account_info_mojo);
   batch_upload_mojo->dialog_subtitle = ComputeBatchUploadSubtitle(
-      /*first_type=*/data_containers_list_[0].type,
-      /*first_type_item_count=*/data_containers_list_[0].items.size(),
-      data_containers_list_.size(), total_item_count);
+      /*first_type=*/local_data_description_list_[0].type,
+      /*first_type_item_count=*/
+      local_data_description_list_[0].local_data_models.size(),
+      local_data_description_list_.size(), total_item_count);
   batch_upload_mojo->data_containers = std::move(data_containers_mojo);
 
   return batch_upload_mojo;
+}
+
+int BatchUploadHandler::GetTypeSectionTitleId(syncer::DataType type) {
+  switch (type) {
+    case syncer::DataType::PASSWORDS:
+      return IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS;
+    case syncer::DataType::CONTACT_INFO:
+      return IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }

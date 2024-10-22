@@ -172,6 +172,14 @@ BASE_FEATURE(kBatchUploadDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+bool IsBatchUploadDesktopEnabled() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  return base::FeatureList::IsEnabled(kBatchUploadDesktop);
+#else
+  return false;
+#endif
+}
+
 }  // namespace switches
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

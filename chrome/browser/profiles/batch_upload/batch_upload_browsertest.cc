@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -262,7 +263,7 @@ class BatchUploadDelegateFake : public BatchUploadDelegate {
   void SimulateCancel() {
     CHECK(complete_callback_);
 
-    data_containers_list_.clear();
+    local_data_description_list_.clear();
     std::move(complete_callback_).Run({});
   }
 
@@ -270,19 +271,19 @@ class BatchUploadDelegateFake : public BatchUploadDelegate {
   void SimulateSaveWithAllSelected() {
     CHECK(complete_callback_);
 
-    base::flat_map<BatchUploadDataType,
-                   std::vector<BatchUploadDataItemModel::DataId>>
+    std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
         result;
-    for (const BatchUploadDataContainer& container : data_containers_list_) {
-      std::vector<BatchUploadDataItemModel::DataId> data_id_list;
-      CHECK(!container.items.empty());
+    for (const syncer::LocalDataDescription& description :
+         local_data_description_list_) {
+      std::vector<syncer::LocalDataItemModel::DataId> data_id_list;
+      CHECK(!description.local_data_models.empty());
       std::ranges::transform(
-          container.items, std::back_inserter(data_id_list),
-          [](const BatchUploadDataItemModel& item) { return item.id; });
-      result.insert_or_assign(container.type, data_id_list);
+          description.local_data_models, std::back_inserter(data_id_list),
+          [](const syncer::LocalDataItemModel& item) { return item.id; });
+      result.insert_or_assign(description.type, data_id_list);
     }
 
-    data_containers_list_.clear();
+    local_data_description_list_.clear();
     std::move(complete_callback_).Run(result);
   }
 
@@ -290,14 +291,14 @@ class BatchUploadDelegateFake : public BatchUploadDelegate {
   // BatchUploadDelegate:
   void ShowBatchUploadDialog(
       Browser* browser,
-      std::vector<BatchUploadDataContainer> data_containers_list,
-      SelectedDataTypeItemsCallback complete_callback) override {
-    data_containers_list_ = std::move(data_containers_list);
+      std::vector<syncer::LocalDataDescription> local_data_description_list,
+      BatchUploadSelectedDataTypeItemsCallback complete_callback) override {
+    local_data_description_list_ = std::move(local_data_description_list);
     complete_callback_ = std::move(complete_callback);
   }
 
-  std::vector<BatchUploadDataContainer> data_containers_list_;
-  SelectedDataTypeItemsCallback complete_callback_;
+  std::vector<syncer::LocalDataDescription> local_data_description_list_;
+  BatchUploadSelectedDataTypeItemsCallback complete_callback_;
 };
 
 // This fake service extension is only used to reset the test delegate. The rest
@@ -307,7 +308,9 @@ class BatchUploadServiceFake : public BatchUploadService {
   BatchUploadServiceFake(Profile& profile,
                          std::unique_ptr<BatchUploadDelegate> delegate,
                          base::OnceClosure clear_test_callback)
-      : BatchUploadService(profile, std::move(delegate)),
+      : BatchUploadService(IdentityManagerFactory::GetForProfile(&profile),
+                           SyncServiceFactory::GetForProfile(&profile),
+                           std::move(delegate)),
         clear_test_callback_(std::move(clear_test_callback)) {}
 
   // BatchUploadService:

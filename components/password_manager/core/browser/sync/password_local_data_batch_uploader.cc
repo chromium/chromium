@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/sync/password_local_data_batch_uploader.h"
 
+#include <memory>
 #include <optional>
 #include <ranges>
 #include <utility>
@@ -15,9 +16,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/service/local_data_description.h"
 
 namespace password_manager {
@@ -32,6 +35,12 @@ base::Time GetLatestOfTimeLastUsedOrModifiedOrCreated(
   return std::max(
       {form.date_last_used, form.date_password_modified, form.date_created});
 }
+
+// This tuple is used as a type in `syncer::LocalDataItemModel::DataId` for
+// PASSWORDS. It should match with the result of `PasswordFormUniqueKey()`
+// (omitting the const& since the key outlives the data).
+using PasswordFormKey = std::
+    tuple<std::string, GURL, std::u16string, std::u16string, std::u16string>;
 
 }  // namespace
 
@@ -124,11 +133,28 @@ void PasswordLocalDataBatchUploader::TriggerLocalDataMigration() {
 void PasswordLocalDataBatchUploader::OnGotLocalPasswordsForDescription(
     base::OnceCallback<void(syncer::LocalDataDescription)> description_callback,
     std::unique_ptr<PasswordFetchRequest> request) {
+  const bool is_batch_upload_desktop_enabled =
+      switches::IsBatchUploadDesktopEnabled();
   std::vector<GURL> urls;
-  std::ranges::transform(request->TakeResults(), std::back_inserter(urls),
-                         &PasswordForm::url);
-  std::move(description_callback)
-      .Run(syncer::LocalDataDescription(std::move(urls)));
+  std::vector<syncer::LocalDataItemModel> local_data_models;
+  for (auto& result : request->TakeResults()) {
+    if (is_batch_upload_desktop_enabled) {
+      syncer::LocalDataItemModel item;
+      item.id = PasswordFormKey(PasswordFormUniqueKey(*result.get()));
+      item.title = result->url.host();
+      item.subtitle = base::UTF16ToUTF8(result->username_value);
+      item.icon_url = result->url.GetWithEmptyPath();
+      local_data_models.push_back(std::move(item));
+    }
+    urls.push_back(result->url);
+  }
+
+  syncer::LocalDataDescription local_data(std::move(urls));
+  if (is_batch_upload_desktop_enabled) {
+    local_data.type = syncer::DataType::PASSWORDS;
+    local_data.local_data_models = std::move(local_data_models);
+  }
+  std::move(description_callback).Run(std::move(local_data));
 }
 
 void PasswordLocalDataBatchUploader::OnGotAllPasswordsForMigration(

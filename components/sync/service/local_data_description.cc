@@ -29,6 +29,15 @@ using base::android::ToJavaArrayOfStrings;
 
 namespace syncer {
 
+LocalDataItemModel::LocalDataItemModel() = default;
+LocalDataItemModel::~LocalDataItemModel() = default;
+LocalDataItemModel::LocalDataItemModel(const LocalDataItemModel&) = default;
+LocalDataItemModel& LocalDataItemModel::operator=(const LocalDataItemModel&) =
+    default;
+LocalDataItemModel::LocalDataItemModel(LocalDataItemModel&& other) = default;
+LocalDataItemModel& LocalDataItemModel::operator=(LocalDataItemModel&& other) =
+    default;
+
 LocalDataDescription::LocalDataDescription() = default;
 
 LocalDataDescription::LocalDataDescription(const std::vector<GURL>& all_urls)
