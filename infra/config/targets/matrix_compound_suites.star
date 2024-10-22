@@ -886,11 +886,25 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "ios_vm_tests_with_variants",
+    name = "ios_vm_tests",
     basic_suites = {
-        "ios_vm_tests": targets.legacy_matrix_config(
+        "ios_vm_unittests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_15_18_0",
+                "SIM_IPHONE_14_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_10TH_GEN_18_0",
+                "SIM_IPAD_10TH_GEN_17_5",
+            ],
+        ),
+        "ios_vm_eg2_tests": targets.legacy_matrix_config(
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPHONE_14_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_10TH_GEN_18_0",
+                "SIM_IPAD_10TH_GEN_17_5",
             ],
         ),
     },

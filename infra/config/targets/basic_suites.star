@@ -2753,9 +2753,16 @@ targets.legacy_basic_suite(
 # END tests which run on the GPU bots
 
 targets.legacy_basic_suite(
-    name = "ios_vm_tests",
+    name = "ios_vm_unittests",
     tests = {
-        "base_unittests": targets.legacy_test_config(),
+        "ios_chrome_unittests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "ios_vm_eg2_tests",
+    tests = {
+        "ios_chrome_smoke_eg2tests_module": targets.legacy_test_config(),
     },
 )
 

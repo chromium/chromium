@@ -3571,8 +3571,12 @@
       'ui_base_unittests': {},
     },
 
-    'ios_vm_tests': {
-      'base_unittests': {},
+    'ios_vm_eg2_tests': {
+      'ios_chrome_smoke_eg2tests_module': {},
+    },
+
+    'ios_vm_unittests': {
+      'ios_chrome_unittests': {},
     },
 
     'leak_detection_isolated_scripts': {
@@ -5936,10 +5940,24 @@
       },
     },
 
-    'ios_vm_tests_with_variants': {
-      'ios_vm_tests': {
+    'ios_vm_tests': {
+      'ios_vm_eg2_tests': {
+        'mixins': [
+          'xcodebuild_sim_runner',
+        ],
         'variants': [
-          'SIM_IPHONE_15_18_0',
+          'SIM_IPAD_10TH_GEN_17_5',
+          'SIM_IPAD_10TH_GEN_18_0',
+          'SIM_IPHONE_14_17_5',
+          'SIM_IPHONE_14_18_0',
+        ],
+      },
+      'ios_vm_unittests': {
+        'variants': [
+          'SIM_IPAD_10TH_GEN_17_5',
+          'SIM_IPAD_10TH_GEN_18_0',
+          'SIM_IPHONE_14_17_5',
+          'SIM_IPHONE_14_18_0',
         ],
       },
     },

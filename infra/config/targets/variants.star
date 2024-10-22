@@ -247,6 +247,20 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPAD_10TH_GEN_17_5",
+    identifier = "iPad (10th generation) 17.5",
+    mixins = [
+        "ios_runtime_cache_17_5",
+    ],
+    args = [
+        "--platform",
+        "iPad (10th generation)",
+        "--version",
+        "17.5",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPAD_10TH_GEN_18_0",
     identifier = "iPad (10th generation) 18.0",
     mixins = [
@@ -292,7 +306,6 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_18_0",
     identifier = "iPhone 14 18.0",
-    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],

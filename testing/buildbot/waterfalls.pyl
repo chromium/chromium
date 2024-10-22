@@ -1576,7 +1576,7 @@
           'xctest',
         ],
         'test_suites': {
-          'isolated_scripts': 'ios_vm_tests_with_variants'
+          'isolated_scripts': 'ios_vm_tests'
         },
       },
       'ios-webkit-tot': {
