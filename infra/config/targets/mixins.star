@@ -1178,6 +1178,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_10.15",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1361,6 +1362,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_beta_arm64",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1371,6 +1373,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_beta_x64",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",

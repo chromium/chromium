@@ -765,15 +765,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromium_mac_scripts",
-    tests = {
-        "check_static_initializers": targets.legacy_test_config(),
-        "metrics_python_tests": targets.legacy_test_config(),
-        "webkit_lint": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "chromium_web_tests_high_dpi_isolated_scripts",
     tests = {
         # high_dpi_blink_web_tests provides coverage for
@@ -968,40 +959,6 @@ targets.legacy_basic_suite(
                 shards = 2,
             ),
         ),
-        "content_shell_crash_test": targets.legacy_test_config(),
-        "flatbuffers_unittests": targets.legacy_test_config(),
-        "grit_python_unittests": targets.legacy_test_config(),
-        "telemetry_gpu_unittests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                idempotent = False,  # https://crbug.com/549140
-            ),
-        ),
-        "telemetry_unittests": targets.legacy_test_config(
-            args = [
-                "--jobs=1",
-                # Disable GPU compositing, telemetry_unittests runs on VMs.
-                # https://crbug.com/871955
-                "--extra-browser-args=--disable-gpu",
-            ],
-            swarming = targets.swarming(
-                shards = 8,
-                idempotent = False,  # https://crbug.com/549140
-            ),
-            resultdb = targets.resultdb(
-                enable = True,
-            ),
-        ),
-        "views_perftests": targets.legacy_test_config(
-            args = [
-                "--gtest-benchmark-name=views_perftests",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "desktop_chromium_mac_osxbeta_scripts",
-    tests = {
         "content_shell_crash_test": targets.legacy_test_config(),
         "flatbuffers_unittests": targets.legacy_test_config(),
         "grit_python_unittests": targets.legacy_test_config(),

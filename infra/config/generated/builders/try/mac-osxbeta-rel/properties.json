@@ -41,7 +41,8 @@
           "builder": "mac-osxbeta-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-osxbeta-rel/targets"
     }
   },
   "$build/reclient": {

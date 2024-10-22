@@ -1339,6 +1339,34 @@ targets.bundle(
     ],
 )
 
+# chromium_mac_gtests_no_nacl_once in the same way.
+# TODO(crbug.com/303417958): This no_nacl suite is identical to the normal
+# suite, since NaCl has been disabled on Mac. Replace this by the normal
+# suite.
+targets.bundle(
+    name = "chromium_mac_gtests_no_nacl",
+    targets = [
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "chromium_gtests_for_linux_and_mac_only",
+        "mac_specific_chromium_gtests",
+        "non_android_and_cast_and_chromeos_chromium_gtests",
+        "non_android_chromium_gtests_no_nacl",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_mac_osxbeta_rel_isolated_scripts",
+    targets = [
+        "chromedriver_py_tests_isolated_scripts",
+        "components_perftests_isolated_scripts",
+        "desktop_chromium_mac_osxbeta_scripts",
+        "mac_specific_isolated_scripts",
+        "mojo_python_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
 targets.bundle(
     name = "chromium_mac_rel_isolated_scripts",
     targets = [
@@ -1370,6 +1398,15 @@ targets.bundle(
         "mac_specific_isolated_scripts",
         "mojo_python_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_mac_scripts",
+    targets = [
+        "check_static_initializers",
+        "metrics_python_tests",
+        "webkit_lint",
     ],
 )
 
@@ -1627,6 +1664,45 @@ targets.bundle(
                 "chromium_pixel_2_pie",
                 "marshmallow",
                 "oreo_mr1_fleet",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
+    name = "desktop_chromium_mac_osxbeta_scripts",
+    targets = [
+        "content_shell_crash_test",
+        "flatbuffers_unittests",
+        "grit_python_unittests",
+        "telemetry_gpu_unittests",
+        "telemetry_unittests",
+        "views_perftests",
+    ],
+    per_test_modifications = {
+        "telemetry_gpu_unittests": targets.mixin(
+            swarming = targets.swarming(
+                idempotent = False,  # https://crbug.com/549140
+            ),
+        ),
+        "telemetry_unittests": targets.mixin(
+            args = [
+                "--jobs=1",
+                # Disable GPU compositing, telemetry_unittests runs on VMs.
+                # https://crbug.com/871955
+                "--extra-browser-args=--disable-gpu",
+            ],
+            swarming = targets.swarming(
+                shards = 8,
+                idempotent = False,  # https://crbug.com/549140
+            ),
+            resultdb = targets.resultdb(
+                enable = True,
+            ),
+        ),
+        "views_perftests": targets.mixin(
+            args = [
+                "--gtest-benchmark-name=views_perftests",
             ],
         ),
     },

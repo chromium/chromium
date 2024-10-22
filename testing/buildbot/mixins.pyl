@@ -417,14 +417,6 @@
   'long_skylab_timeout': {
     'timeout_sec': 10800,
   },
-  'mac_10.15': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-10.15',
-      },
-    },
-  },
   'mac_11_arm64': {
     'swarming': {
       'dimensions': {
@@ -498,22 +490,6 @@
     },
   },
   'mac_15_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-15',
-      },
-    },
-  },
-  'mac_beta_arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-15',
-      },
-    },
-  },
-  'mac_beta_x64': {
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',

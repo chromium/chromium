@@ -42,7 +42,8 @@
           "builder": "Mac Builder (reclient compare)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac Builder (reclient compare)/targets"
     }
   },
   "$build/reclient": {

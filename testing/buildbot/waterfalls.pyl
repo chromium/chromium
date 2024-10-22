@@ -815,7 +815,12 @@
     #   linux-rel-no-external-ip
     #   linux-upload-perfetto
     #   linux-wpt-chromium-rel
+    #   Mac Builder (reclient compare)
+    #   Mac Builder Next
     #   mac-fieldtrial-tester
+    #   mac-osxbeta-rel
+    #   mac-perfetto-rel
+    #   mac13-wpt-chromium-rel
     'name': 'chromium.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -878,26 +883,6 @@
           'xcode_16_main',
           'xctest',
         ],
-      },
-      'Mac Builder (reclient compare)': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'scripts': 'chromium_mac_scripts',
-        }
-      },
-      'Mac Builder Next': {
-        'mixins': [
-          'mac_beta_arm64',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_osxbeta_rel_isolated_scripts',
-        }
       },
       'Site Isolation Android': {
         'additional_compile_targets': [
@@ -1008,35 +993,6 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'perfetto_gtests_android',
-        },
-      },
-      'mac-osxbeta-rel': {
-        'mixins': [
-          'limited_capacity_bot',
-          'mac_beta_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_osxbeta_rel_isolated_scripts',
-        },
-      },
-      'mac-perfetto-rel': {
-        'additional_compile_targets': [ 'all' ],
-        'mixins': [
-          'mac_10.15',
-        ],
-        'test_suites': {
-          'gtest_tests': 'perfetto_gtests',
-        },
-      },
-      'mac13-wpt-chromium-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_13_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'headless_shell_wpt_tests_isolated_scripts',
         },
       },
       'win-annotator-rel': {

@@ -780,6 +780,17 @@ fyi_mac_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "perfetto_gtests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "mac_10.15",
+        ],
+    ),
     builderless = True,
     cores = None,
     cpu = cpu.ARM64,
@@ -813,6 +824,31 @@ fyi_mac_builder(
             "x64",
             "dcheck_always_on",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "headless_shell_wpt_tests_isolated_scripts",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "mac_13_x64",
+        ],
+        per_test_modifications = {
+            "headless_shell_wpt_tests_include_all": targets.mixin(
+                args = [
+                    "--test-type",
+                    "testharness",
+                    "reftest",
+                    "crashtest",
+                    "print-reftest",
+                    "--exit-after-n-crashes-or-timeouts=10000",
+                    "--exit-after-n-failures=10000",
+                    "--no-retry-failures",
+                ],
+                experiment_percentage = 100,
+            ),
+        },
     ),
     builderless = True,
     cores = None,
@@ -969,6 +1005,36 @@ ci.builder(
             "mac",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_mac_gtests_no_nacl",
+            "chromium_mac_osxbeta_rel_isolated_scripts",
+        ],
+        mixins = [
+            "limited_capacity_bot",
+            "mac_beta_x64",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 30,
+                ),
+            ),
+            # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which
+            # breaks the tests. Run this experimentally on all the macOS bots
+            # >= 12 and remove this exception once fixed.
+            "crashpad_tests": targets.mixin(
+                experiment_percentage = 100,
+            ),
+            # TODO (crbug.com/1278617) Re-enable once fixed
+            "interactive_ui_tests": targets.mixin(
+                experiment_percentage = 100,
+                swarming = targets.swarming(
+                    shards = 7,
+                ),
+            ),
+        },
     ),
     builderless = False,
     cores = None,
@@ -1815,6 +1881,14 @@ fyi_mac_builder(
             "mac",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_mac_scripts",
+        ],
+        additional_compile_targets = [
+            "chrome",
+        ],
+    ),
     builderless = True,
     cores = None,  # crbug.com/1245114
     cpu = cpu.ARM64,
@@ -2343,6 +2417,36 @@ fyi_mac_builder(
             "shared",
             "mac",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_mac_gtests_no_nacl",
+            "chromium_mac_osxbeta_rel_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "mac_beta_arm64",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 20,  # crbug.com/1419045
+                ),
+            ),
+            # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which
+            # breaks the tests. Run this experimentally on all the macOS bots
+            # >= 12 and remove this exception once fixed.
+            "crashpad_tests": targets.mixin(
+                experiment_percentage = 100,
+            ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 7,
+                ),
+            ),
+        },
     ),
     cores = None,
     os = os.MAC_BETA,

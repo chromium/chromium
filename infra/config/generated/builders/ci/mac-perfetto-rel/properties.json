@@ -43,7 +43,8 @@
           "builder": "mac-perfetto-rel",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-perfetto-rel/targets"
     }
   },
   "$build/reclient": {

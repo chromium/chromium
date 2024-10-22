@@ -121,14 +121,6 @@
           '--flag-specific=enable-editing-ng',
         ],
       },
-      'mac-osxbeta-rel': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None
-          },
-          'shards': 10,
-        },
-      },
       'mac11.0-blink-rel': {
         'swarming': {
           'shards': 5,
@@ -223,14 +215,6 @@
         'args': [
           '--flag-specific=enable-editing-ng',
         ],
-      },
-      'mac-osxbeta-rel': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None
-          },
-          'shards': 18,
-        },
       },
       'mac11.0-blink-rel': {
         'swarming': {
@@ -340,11 +324,6 @@
         ],
         'experiment_percentage': 100, # https://crbug.com/1251657
       },
-      'Mac Builder Next': {
-        'swarming': {
-          'shards': 20,  # crbug.com/1419045
-        },
-      },
       'linux-chromeos-chrome': {
         # TODO(crbug.com/40614042): Promote out of experiment when the
         # tests are green.
@@ -370,11 +349,6 @@
           'dimensions': {
             'kvm': '1',
           },
-        },
-      },
-      'mac-osxbeta-rel': {
-        'swarming': {
-          'shards': 30,
         },
       },
       'win-asan': {
@@ -626,20 +600,6 @@
       # https://crbug.com/crashpad/306
       'Linux CFI',
     ],
-    'modifications': {
-      # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which breaks
-      # the tests. Run this experimentally on all the macOS bots >= 12 and
-      # remove this exception once fixed.
-      'Mac Builder Next': {
-        'experiment_percentage': 100,
-      },
-      # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which breaks
-      # the tests. Run this experimentally on all the macOS bots >= 12 and
-      # remove this exception once fixed.
-      'mac-osxbeta-rel': {
-        'experiment_percentage': 100,
-      },
-    },
   },
   'expected_color_pixel_gl_passthrough_ganesh_test': {
     'replacements': {
@@ -823,19 +783,6 @@
   },
   'headless_shell_wpt_tests_include_all': {
     'modifications': {
-      'mac13-wpt-chromium-rel': {
-        'args': [
-          '--test-type',
-          'testharness',
-          'reftest',
-          'crashtest',
-          'print-reftest',
-          '--exit-after-n-crashes-or-timeouts=10000',
-          '--exit-after-n-failures=10000',
-          '--no-retry-failures',
-        ],
-        'experiment_percentage': 100,
-      },
       'win10-wpt-chromium-rel': {
         'args': [
           '--test-type',
@@ -918,11 +865,6 @@
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
         'experiment_percentage': 100,
       },
-      'Mac Builder Next': {
-        'swarming': {
-          'shards': 7,
-        },
-      },
       # TODO(crbug.com/40630654): Remove these filters.
       'linux-chromeos-chrome': {
         'args': [
@@ -940,13 +882,6 @@
         'retry_only_failed_tests': True,
         'swarming': {
           'shards': 5,
-        },
-      },
-      # TODO (crbug.com/1278617) Re-enable once fixed
-      'mac-osxbeta-rel': {
-        'experiment_percentage': 100,
-        'swarming': {
-          'shards': 7,
         },
       },
       'win-asan': {

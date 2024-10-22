@@ -138,33 +138,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-# chromium_mac_gtests_no_nacl_once in the same way.
-# TODO(b/303417958): This no_nacl suite is identical to the normal suite, since
-# NaCl has been disabled on Mac. Replace this by the normal suite.
-targets.legacy_compound_suite(
-    name = "chromium_mac_gtests_no_nacl",
-    basic_suites = [
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chromium_gtests_for_linux_and_mac_only",
-        "mac_specific_chromium_gtests",
-        "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "chromium_mac_osxbeta_rel_isolated_scripts",
-    basic_suites = [
-        "chromedriver_py_tests_isolated_scripts",
-        "components_perftests_isolated_scripts",
-        "desktop_chromium_mac_osxbeta_scripts",
-        "mac_specific_isolated_scripts",
-        "mojo_python_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts",
-    ],
-)
-
 targets.legacy_compound_suite(
     name = "chromium_mac_rel_isolated_scripts_and_sizes",
     basic_suites = [

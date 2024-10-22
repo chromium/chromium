@@ -851,18 +851,6 @@
       },
     },
 
-    'chromium_mac_scripts': {
-      'check_static_initializers': {
-        'script': 'check_static_initializers.py',
-      },
-      'metrics_python_tests': {
-        'script': 'metrics_python_tests.py',
-      },
-      'webkit_lint': {
-        'script': 'blink_lint_expectations.py',
-      },
-    },
-
     'chromium_web_tests_high_dpi_isolated_scripts': {
       'high_dpi_blink_web_tests': {
         'test_common': {
@@ -1264,68 +1252,6 @@
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 2,
-        },
-      },
-      'telemetry_gpu_unittests': {
-        'test_common': {
-          'resultdb': {
-            'enable': True,
-          },
-        },
-        'swarming': {
-          'idempotent': False,
-        },
-      },
-      'telemetry_unittests': {
-        'args': [
-          '--jobs=1',
-          '--extra-browser-args=--disable-gpu',
-        ],
-        'swarming': {
-          'shards': 8,
-          'idempotent': False,
-        },
-        'resultdb': {
-          'enable': True,
-        },
-      },
-      'views_perftests': {
-        'test_common': {
-          'merge': {
-            'script': '//tools/perf/process_perf_results.py',
-            'args': [
-              '--smoke-test-mode',
-            ],
-          },
-        },
-        'args': [
-          '--gtest-benchmark-name=views_perftests',
-        ],
-      },
-    },
-
-    'desktop_chromium_mac_osxbeta_scripts': {
-      'content_shell_crash_test': {
-        'test_common': {
-          'resultdb': {
-            'enable': True,
-            'result_format': 'single',
-          },
-        },
-      },
-      'flatbuffers_unittests': {
-        'test_common': {
-          'resultdb': {
-            'enable': True,
-            'result_format': 'single',
-          },
-        },
-      },
-      'grit_python_unittests': {
-        'test_common': {
-          'resultdb': {
-            'enable': True,
-          },
         },
       },
       'telemetry_gpu_unittests': {
@@ -4148,24 +4074,6 @@
       'mac_specific_chromium_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests_no_nacl',
-    ],
-
-    'chromium_mac_gtests_no_nacl': [
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'chromium_gtests_for_linux_and_mac_only',
-      'mac_specific_chromium_gtests',
-      'non_android_and_cast_and_chromeos_chromium_gtests',
-      'non_android_chromium_gtests_no_nacl',
-    ],
-
-    'chromium_mac_osxbeta_rel_isolated_scripts': [
-      'chromedriver_py_tests_isolated_scripts',
-      'components_perftests_isolated_scripts',
-      'desktop_chromium_mac_osxbeta_scripts',
-      'mac_specific_isolated_scripts',
-      'mojo_python_unittests_isolated_scripts',
-      'telemetry_perf_unittests_isolated_scripts',
     ],
 
     'chromium_mac_rel_isolated_scripts_and_sizes': [

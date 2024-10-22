@@ -44,7 +44,8 @@
           "builder": "mac13-wpt-chromium-rel",
           "group": "tryserver.blink"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac13-wpt-chromium-rel/targets"
     }
   },
   "$build/reclient": {
