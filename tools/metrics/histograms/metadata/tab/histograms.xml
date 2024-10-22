@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discarding.ReclaimArrivalLatency" units="ms"
-    expires_after="2025-02-02">
+    expires_after="2025-04-20">
   <owner>kalutes@chromium.org</owner>
   <owner>kawasin@chromium.org</owner>
   <owner>vovoy@chromium.org</owner>
@@ -583,7 +583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.PerceivedRestoreTime" units="ms"
-    expires_after="2025-02-16">
+    expires_after="2025-04-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -850,7 +850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.SavedTabGroups.TabCountDifference.Negative"
-    units="tabs" expires_after="2025-02-16">
+    units="tabs" expires_after="2025-04-20">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -862,7 +862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.SavedTabGroups.TabCountDifference.Positive"
-    units="tabs" expires_after="2025-02-16">
+    units="tabs" expires_after="2025-04-20">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>

@@ -5380,7 +5380,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram name="Autofill.SharedStorageServerCardDataSetResult"
     enum="AutofillSharedStorageServerCardDataSetResult"
-    expires_after="2025-02-16">
+    expires_after="2025-04-20">
   <owner>npnavarro@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7045,7 +7045,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram
     name="Autofill.WebView.KeyMetrics.FillingCorrectness{AutofillFormType}"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2025-02-16">
+    enum="BooleanAutofillFillingCorrectness" expires_after="2025-04-20">
   <owner>pkotwicz@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -7158,7 +7158,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.WebView.SuggestionTime" units="ms"
-    expires_after="2025-02-16">
+    expires_after="2025-04-20">
   <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>The time taken to display suggestion.</summary>
