@@ -142,6 +142,7 @@ class GWSPageLoadMetricsObserver
 
   bool is_first_navigation_ = false;
   bool was_cached_ = false;
+  bool is_safesites_filter_enabled_ = false;
 
   NavigationSourceType source_type_ = kUnknown;
 
