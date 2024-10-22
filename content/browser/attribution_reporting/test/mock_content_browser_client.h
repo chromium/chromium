@@ -46,10 +46,6 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
                content::PrivacySandboxInvokingAPI invoking_api),
               (override));
   MOCK_METHOD(bool,
-              AddPrivacySandboxAttestationsObserver,
-              (PrivacySandboxAttestationsObserver*),
-              (override));
-  MOCK_METHOD(bool,
               IsAttributionReportingAllowedForContext,
               (content::BrowserContext*,
                RenderFrameHost*,

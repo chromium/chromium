@@ -28,7 +28,7 @@ enum OsRegistrationResult {
   kPassedToOs = 0,
   kInvalidRegistrationUrl = 2,
   kProhibitedByBrowserPolicy = 3,
-  kExcessiveQueueSize = 4,
+  // obsolete: 4,
   kRejectedByOs = 5,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionOsRegistrationResult)

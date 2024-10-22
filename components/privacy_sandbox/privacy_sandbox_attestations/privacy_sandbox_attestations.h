@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -23,10 +22,6 @@
 #include "base/version.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "net/base/schemeful_site.h"
-
-namespace content {
-class PrivacySandboxAttestationsObserver;
-}  // namespace content
 
 namespace privacy_sandbox {
 
@@ -157,11 +152,6 @@ class PrivacySandboxAttestations {
   // callback.
   void SetComponentRegistrationCallbackForTesting(base::OnceClosure callback);
 
-  // Returns true if the attestations have ever been loaded or if attestations
-  // are not enforced.
-  bool AddObserver(content::PrivacySandboxAttestationsObserver* observer);
-  void RemoveObserver(content::PrivacySandboxAttestationsObserver* observer);
-
   // Called when component installer finished registration and the check for
   // attestations file.
   void OnAttestationsFileCheckComplete();
@@ -202,19 +192,11 @@ class PrivacySandboxAttestations {
   void RunComponentRegistrationCallbackForTesting();
 
   // Called when attestations parsing finishes. Stores the parsed attestations
-  // map and its version. Also notifies the observers the attestations map has
-  // been loaded / updated.
+  // map and its version.
   void OnAttestationsParsed(base::Version version,
                             bool is_pre_installed,
                             base::expected<PrivacySandboxAttestationsMap,
                                            ParsingStatus> attestations_map);
-
-  // Notify observers that attestations have been loaded.
-  void NotifyObserversOnAttestationsLoaded();
-
-  // Returns whether attestations have ever been loaded. Also returns true
-  // if all Privacy Sandbox APIs are considered attested for testing.
-  bool IsEverLoaded() const;
 
   // Task runner used to execute the file opening and parsing.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -257,8 +239,6 @@ class PrivacySandboxAttestations {
 
   // Whether the attestation map is parsed from a pre-installed file.
   bool is_pre_installed_ = false;
-
-  base::ObserverList<content::PrivacySandboxAttestationsObserver> observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

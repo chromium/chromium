@@ -24,7 +24,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -38,7 +37,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 
@@ -321,14 +319,12 @@ bool PrivacySandboxAttestations::IsOverridden(
 void PrivacySandboxAttestations::SetAllPrivacySandboxAttestedForTesting(
     bool all_attested) {
   is_all_apis_attested_for_testing_ = all_attested;
-  NotifyObserversOnAttestationsLoaded();
 }
 
 void PrivacySandboxAttestations::SetAttestationsForTesting(
     std::optional<PrivacySandboxAttestationsMap> attestations_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   attestations_map_ = std::move(attestations_map);
-  NotifyObserversOnAttestationsLoaded();
 }
 
 base::Version PrivacySandboxAttestations::GetVersionForTesting() const {
@@ -408,48 +404,7 @@ void PrivacySandboxAttestations::OnAttestationsParsed(
   VLOG(1) << "Number of attestation entries: "
           << (attestations_map_ ? attestations_map_->size() : 0);
 
-  NotifyObserversOnAttestationsLoaded();
-
   RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
-}
-
-void PrivacySandboxAttestations::NotifyObserversOnAttestationsLoaded() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (auto& observer : observers_) {
-    observer.OnAttestationsLoaded();
-  }
-}
-
-bool PrivacySandboxAttestations::AddObserver(
-    content::PrivacySandboxAttestationsObserver* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // When the feature is disabled, the attestations are not enforced and the
-  // attestations are not loaded. Returning true so that the observers don't
-  // have to wait indefinitely.
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kEnforcePrivacySandboxAttestations)) {
-    return true;
-  }
-
-  observers_.AddObserver(observer);
-
-  return IsEverLoaded();
-}
-
-void PrivacySandboxAttestations::RemoveObserver(
-    content::PrivacySandboxAttestationsObserver* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  observers_.RemoveObserver(observer);
-}
-
-bool PrivacySandboxAttestations::IsEverLoaded() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/40287460): Add lock to `attestations_parse_progress_`.
-  return attestations_map_.has_value() ||
-         attestations_parse_progress_ == Progress::kFinished ||
-         is_all_apis_attested_for_testing_;
 }
 
 void PrivacySandboxAttestations::OnAttestationsFileCheckComplete() {

@@ -565,7 +565,6 @@ const osRegistrationResultText:
           'Invalid registration URL',
       [OsRegistrationResult.kProhibitedByBrowserPolicy]:
           'Prohibited by browser policy',
-      [OsRegistrationResult.kExcessiveQueueSize]: 'Excessive queue size',
       [OsRegistrationResult.kRejectedByOs]: 'Rejected by OS',
     };
 

@@ -4,10 +4,8 @@
 
 #include "content/browser/attribution_reporting/interop/runner.h"
 
-#include <stddef.h>
 #include <stdint.h>
 
-#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -553,7 +551,6 @@ RunAttributionInteropSimulation(
   auto manager = AttributionManagerImpl::CreateForTesting(
       // Avoid creating an on-disk sqlite DB.
       /*user_data_directory=*/base::FilePath(),
-      /*max_pending_events=*/std::numeric_limits<size_t>::max(),
       /*special_storage_policy=*/nullptr,
       std::make_unique<ControllableStorageDelegate>(run),
       std::make_unique<AttributionReportNetworkSender>(

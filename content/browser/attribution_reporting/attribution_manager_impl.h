@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_IMPL_H_
 
-#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
@@ -19,8 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
-#include "base/timer/elapsed_timer.h"
-#include "base/timer/timer.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -28,7 +25,6 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/process_aggregatable_debug_report_result.mojom-forward.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace attribution_reporting {
@@ -75,9 +71,7 @@ struct SendResult;
 // UI thread class that manages the lifetime of the underlying attribution
 // storage and coordinates sending attribution reports. Owned by the storage
 // partition.
-class CONTENT_EXPORT AttributionManagerImpl
-    : public AttributionManager,
-      public PrivacySandboxAttestationsObserver {
+class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
  public:
   // Configures underlying storage to be setup in memory, rather than on
   // disk. This speeds up initialization to avoid timeouts in test environments.
@@ -103,7 +97,6 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   static std::unique_ptr<AttributionManagerImpl> CreateForTesting(
       const base::FilePath& user_data_directory,
-      size_t max_pending_events,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       std::unique_ptr<AttributionResolverDelegate> resolver_delegate,
       std::unique_ptr<AttributionReportSender> report_sender,
@@ -168,26 +161,15 @@ class CONTENT_EXPORT AttributionManagerImpl
   using ReportSentCallback =
       base::OnceCallback<void(const AttributionReport&, SendResult)>;
 
-  struct SourceOrTriggerRFH;
-
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
-      size_t max_pending_events,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       std::unique_ptr<AttributionResolverDelegate> resolver_delegate,
       std::unique_ptr<AttributionReportSender> report_sender,
       std::unique_ptr<AttributionOsLevelManager> os_level_manager,
       scoped_refptr<base::UpdateableSequencedTaskRunner> resolver_task_runner,
       bool debug_mode);
-
-  template <typename T>
-  void MaybeEnqueueEvent(T&& event, GlobalRenderFrameHostId);
-  void ProcessEvent(StorableSource, GlobalRenderFrameHostId);
-  void ProcessEvent(AttributionTrigger, GlobalRenderFrameHostId);
-  void StoreSource(StorableSource source);
-  void StoreTrigger(AttributionTrigger trigger,
-                    bool cookie_based_debug_allowed);
 
   void GetReportsToSend();
 
@@ -233,9 +215,6 @@ class CONTENT_EXPORT AttributionManagerImpl
                         const AttributionReport&,
                         SendResult);
   void NotifyDebugReportSent(const AttributionDebugReport&, int status);
-  void NotifyTotalOsRegistrationFailure(
-      const OsRegistration&,
-      attribution_reporting::mojom::OsRegistrationResult);
   void NotifyOsRegistration(base::Time time,
                             const attribution_reporting::OsRegistrationItem&,
                             const url::Origin& top_level_origin,
@@ -270,27 +249,11 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   void OnClearDataComplete(bool was_user_visible);
 
-  void ProcessOsEvent(OsRegistration);
   void OnOsRegistration(const std::vector<bool>& is_debug_key_allowed,
                         const OsRegistration&,
                         const std::vector<bool>& success);
 
-  // PrivacySandboxAttestationsObserver:
-  void OnAttestationsLoaded() override;
-
-  // The manager may not be ready to process attribution events when
-  // attestations are not loaded yet. Returns whether the manager is ready upon
-  // `OnAttestationsLoaded()`.
-  bool IsReady() const;
-
   const raw_ref<StoragePartitionImpl> storage_partition_;
-
-  // Holds pending sources and triggers before attestations are loaded.
-  std::vector<SourceOrTriggerRFH> pending_events_;
-
-  // Controls the maximum size of `pending_events_` to avoid unbounded memory
-  // growth with adversarial input.
-  size_t max_pending_events_;
 
   // The task runner for all operations on the resolver.
   // Updateable to allow for priority to be temporarily increased to
@@ -321,16 +284,6 @@ class CONTENT_EXPORT AttributionManagerImpl
   base::ObserverList<AttributionObserver> observers_;
 
   const std::unique_ptr<AttributionOsLevelManager> os_level_manager_;
-
-  std::vector<OsRegistration> pending_os_events_;
-
-  // Guardrail to ensure `OnAttestationsLoaded()` is always called to avoid
-  // waiting indefinitely.
-  base::OneShotTimer privacy_sandbox_attestations_timer_;
-
-  // Timer to record the time elapsed since the construction. Used to measure
-  // the delay due to privacy sandbox attestations loading.
-  base::ElapsedTimer time_since_construction_;
 
   // Technically redundant with fields in the `AttributionResolverDelegate` but
   // duplicated here to avoid an async call to retrieve them.

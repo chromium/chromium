@@ -585,18 +585,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.DelayOnAttestationsLoaded" units="ms"
-    expires_after="2025-04-13">
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the time it took for the attribution manager to be ready upon
-    attestations loading. Recorded once per storage partition when the
-    attribution manager was created.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.DestinationRateLimitResult"
     enum="AttributionDestinationRateLimitResult" expires_after="2024-06-30">
   <owner>csharrison@chromium.org</owner>
@@ -605,33 +593,6 @@ chromium-metrics-reviews@google.com.
     For every successfully parsed attribution source that is also allowed by
     browser policy, records the result of the time-based destination limit,
     which governs whether a source can proceed to the storage layer.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.EnqueueEventAllowed" enum="BooleanAllowed"
-    expires_after="2025-03-23">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often sources and triggers are allowed to be enqueued for
-    processing in the attribution manager. If the queue reaches a maximum size,
-    additional sources and triggers are dropped. Events are enqueued while
-    waiting for a previous debug-cookie check to complete.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.EnqueueOsEventAllowed" enum="BooleanAllowed"
-    expires_after="2025-03-23">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often OS sources and triggers are allowed to be enqueued for
-    processing in the attribution manager. If the queue reaches a maximum size,
-    additional OS sources and triggers are dropped. Events are enqueued while
-    waiting for a previous debug-cookie check to complete. Only recorded on
-    Android.
   </summary>
 </histogram>
 
@@ -853,28 +814,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     When a trigger is received by the attribution manager, records whether it
     includes a non-default aggregatable filtering id.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.NumEventsQueuedOnAttestationsLoaded"
-    units="registrations" expires_after="2025-03-12">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how many web registrations are enqueued waiting for attestations to
-    be loaded. Recorded once per storage partition when attestations are loaded
-    or timeout if there are any pending registrations..
-  </summary>
-</histogram>
-
-<histogram name="Conversions.NumOsEventsQueuedOnAttestationsLoaded"
-    units="registrations" expires_after="2025-03-12">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how many OS registrations are enqueued waiting for attestations to
-    be loaded. Recorded once per storage partition when attestations are loaded
-    or timeout if there are any pending registrations.
   </summary>
 </histogram>
 
