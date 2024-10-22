@@ -29,7 +29,6 @@
 -org.chromium.chrome.browser.language.settings.LanguageSettingsTest.testToggleOfferToTranslate
 
 # crbug.com/1289810
--org.chromium.chrome.browser.dom_distiller.ReaderModeTest.testReaderModeInCCT_Downloaded
 -org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testMhtmlLoadResultFromRendererWithNamespace
 -org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testSharePublicOfflinePage
 
