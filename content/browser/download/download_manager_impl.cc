@@ -722,6 +722,9 @@ void DownloadManagerImpl::OnNewDownloadIdRetrieved(
     } else {
       for (const auto& iter : downloads_by_guid_) {
         download::DownloadItem* item = iter.second;
+        if (!item) {
+          continue;
+        }
         if (item->GetFileExternallyRemoved() ||
             item->GetState() != download::DownloadItem::COMPLETE) {
           continue;
