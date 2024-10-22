@@ -4,7 +4,6 @@
 
 #include "base/threading/scoped_thread_priority.h"
 
-#include "base/check_op.h"
 #include "base/location.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/base_tracing.h"
@@ -13,7 +12,7 @@
 namespace base {
 
 ScopedBoostPriority::ScopedBoostPriority(ThreadType target_thread_type) {
-  CHECK_LT(target_thread_type, ThreadType::kRealtimeAudio, NotFatalUntil::M133);
+  DCHECK_LT(target_thread_type, ThreadType::kRealtimeAudio);
   const ThreadType original_thread_type =
       PlatformThread::GetCurrentThreadType();
   const bool should_boost = original_thread_type < target_thread_type &&
