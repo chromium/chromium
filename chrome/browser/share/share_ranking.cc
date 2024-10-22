@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/to_vector.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -80,6 +81,7 @@ std::vector<std::string> OrderByUses(const std::vector<std::string>& ranking,
 std::string HighestUnshown(const std::vector<std::string>& ranking,
                            const std::map<std::string, int>& uses,
                            size_t length) {
+  CHECK_GT(length, 0u);
   std::vector<std::string> unshown =
       base::ToVector(base::span(ranking).subspan(length));
   return !unshown.empty() ? OrderByUses(unshown, uses).front() : "";
@@ -88,6 +90,7 @@ std::string HighestUnshown(const std::vector<std::string>& ranking,
 std::string LowestShown(const std::vector<std::string>& ranking,
                         const std::map<std::string, int>& uses,
                         size_t length) {
+  CHECK_GT(length, 0u);
   std::vector<std::string> shown =
       base::ToVector(base::span(ranking).first(length));
   return !shown.empty() ? OrderByUses(shown, uses).back() : "";
@@ -156,6 +159,13 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
     const std::map<std::string, int>& all_share_history,
     size_t length) {
   const double DAMPENING = 1.1;
+
+  if (length == 0) {
+    // Special case: if length is 0 here, the only thing that will be shown is
+    // the "More" tile, and the logic below to find lowest/highest within the
+    // first length tiles will all break. Bail out here.
+    return old_ranking;
+  }
 
   const std::string lowest_shown_recent =
       LowestShown(old_ranking, recent_share_history, length);
@@ -569,8 +579,11 @@ void JNI_ShareRankingBridge_Rank(JNIEnv* env,
   CHECK(history);
   CHECK(ranking);
 
+  size_t fold = base::checked_cast<size_t>(jfold);
+  size_t length = base::checked_cast<size_t>(jlength);
+
   ranking->Rank(
-      history, type, available, jfold, jlength, jpersist,
+      history, type, available, fold, length, jpersist,
       base::BindOnce(&sharing::RunJniRankCallback, std::move(callback),
                      // TODO(ellyjones): Is it safe to unretained env here?
                      base::Unretained(env)));
