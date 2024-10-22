@@ -246,14 +246,6 @@ void Seat::SetSelection(DataSource* source) {
       base::BindOnce(&Seat::OnAllReadsFinished, weak_ptr_factory_.GetWeakPtr(),
                      writer));
 
-  if (endpoint_type == ui::EndpointType::kLacros) {
-    source->ReadDataTransferEndpoint(
-        base::BindOnce(&Seat::OnDataTransferEndpointRead,
-                       weak_ptr_factory_.GetWeakPtr(), writer,
-                       data_read_callback),
-        data_read_callback);
-  }
-
   source->GetDataForPreferredMimeTypes(
       base::BindOnce(&Seat::OnTextRead, weak_ptr_factory_.GetWeakPtr(), writer,
                      data_read_callback),
@@ -284,18 +276,6 @@ class Seat::RefCountedScopedClipboardWriter
   friend class base::RefCounted<RefCountedScopedClipboardWriter>;
   virtual ~RefCountedScopedClipboardWriter() = default;
 };
-
-void Seat::OnDataTransferEndpointRead(
-    scoped_refptr<RefCountedScopedClipboardWriter> writer,
-    base::OnceClosure callback,
-    const std::string& mime_type,
-    std::u16string data) {
-  std::string utf8_json = base::UTF16ToUTF8(data);
-  auto clipboard_source = ui::ConvertJsonToDataTransferEndpoint(utf8_json);
-
-  writer->SetDataSource(std::move(clipboard_source));
-  std::move(callback).Run();
-}
 
 void Seat::OnTextRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       base::OnceClosure callback,

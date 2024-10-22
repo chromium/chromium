@@ -207,15 +207,6 @@ DragDropOperation::DragDropOperation(
   // TODO(crbug.com/40061238): Remove this once the issue is fixed.
   std::string callbacks;
 
-  // TODO(crbug.com/1298033): Move DTE retrieval into
-  // DataSource::GetDataForPreferredMimeTypes()
-  // Lacros sends additional metadata, in a custom MIME type, to sync drag
-  // source metadata. Hence, the number of callbacks is incremented by one.
-  if (endpoint_type == ui::EndpointType::kLacros) {
-    callbacks += "lacros,";
-    ++num_additional_callbacks;
-  }
-
   // When the icon is present, we increment the number of callbacks so we can
   // wait for the icon to be captured as well.
   if (icon) {
@@ -237,15 +228,6 @@ DragDropOperation::DragDropOperation(
   counter_ =
       base::BarrierClosure(DataSource::kMaxDataTypes + num_additional_callbacks,
                            std::move(start_op_callback));
-
-  // TODO(crbug.com/1298033): Move DTE retrieval into
-  // DataSource::GetDataForPreferredMimeTypes()
-  if (endpoint_type == ui::EndpointType::kLacros) {
-    source->ReadDataTransferEndpoint(
-        base::BindOnce(&DragDropOperation::OnDataTransferEndpointRead,
-                       weak_ptr_factory_.GetWeakPtr()),
-        counter_);
-  }
 
   source->GetDataForPreferredMimeTypes(
       base::BindOnce(&DragDropOperation::OnTextRead,
@@ -282,18 +264,6 @@ void DragDropOperation::AbortIfPending() {
   if (!started_) {
     delete this;
   }
-}
-
-void DragDropOperation::OnDataTransferEndpointRead(const std::string& mime_type,
-                                                   std::u16string data) {
-  DCHECK(os_exchange_data_);
-
-  std::string utf8_json = base::UTF16ToUTF8(data);
-  auto drag_source_dte = ui::ConvertJsonToDataTransferEndpoint(utf8_json);
-
-  os_exchange_data_->SetSource(std::move(drag_source_dte));
-
-  counter_.Run();
 }
 
 void DragDropOperation::OnTextRead(const std::string& mime_type,
