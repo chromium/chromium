@@ -878,8 +878,9 @@
     {
       // Allow WebAuthn relying parties to report information about existing
       // credentials back to credential storage providers.
+      // Enabled by default on M132. Remove flag on or after M135.
       name: "CredentialManagerReport",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CrossFramePerformanceTimeline",
