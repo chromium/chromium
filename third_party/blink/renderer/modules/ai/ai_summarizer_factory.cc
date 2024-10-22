@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
@@ -59,9 +60,10 @@ class CreateSummarizerClient
       public mojom::blink::AIManagerCreateSummarizerClient {
  public:
   explicit CreateSummarizerClient(AI* ai,
-                                  const AISummarizerCreateOptions* options,
-                                  ScriptPromiseResolver<AISummarizer>* resolver)
-      : AIMojoClient(ai, resolver, options->getSignalOr(nullptr)),
+                                  ScriptPromiseResolver<AISummarizer>* resolver,
+                                  AbortSignal* signal,
+                                  const AISummarizerCreateOptions* options)
+      : AIMojoClient(ai, resolver, signal),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         type_(options->type()),
@@ -179,6 +181,12 @@ ScriptPromise<AISummarizer> AISummarizerFactory::create(
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kSummarizer),
       AIMetrics::AIAPI::kSummarizerCreate);
 
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    ThrowAbortedException(exception_state);
+    return ScriptPromise<AISummarizer>();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AISummarizer>>(script_state);
   auto promise = resolver->Promise();
@@ -187,7 +195,8 @@ ScriptPromise<AISummarizer> AISummarizerFactory::create(
     return promise;
   }
 
-  MakeGarbageCollected<CreateSummarizerClient>(ai_.Get(), options, resolver)
+  MakeGarbageCollected<CreateSummarizerClient>(ai_.Get(), resolver, signal,
+                                               options)
       ->CreateSummarizer();
   return promise;
 }

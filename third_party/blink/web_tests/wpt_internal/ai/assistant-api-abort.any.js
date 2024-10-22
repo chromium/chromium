@@ -6,6 +6,10 @@ promise_test(async (t) => {
   const createPromise = ai.languageModel.create({ signal: controller.signal });
   controller.abort();
   await promise_rejects_dom(t, 'AbortError', createPromise);
+
+  // Using an aborted controller will get the `AbortError` as well.
+  const anotherCreatePromise = ai.languageModel.create({ signal: controller.signal });
+  await promise_rejects_dom(t, 'AbortError', anotherCreatePromise);
 }, "Aborting AIAssistantFactory.create()");
 
 promise_test(async (t) => {

@@ -105,7 +105,6 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
   HeapMojoReceiver<mojom::blink::AIManagerCreateRewriterClient,
                    CreateRewriterClient>
       receiver_;
-  // `resolver_` will be reset on Cleanup().
   const String shared_context_string_;
   const V8AIRewriterTone tone_;
   const V8AIRewriterLength length_;
