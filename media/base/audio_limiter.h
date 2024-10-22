@@ -62,6 +62,14 @@ class MEDIA_EXPORT AudioLimiter {
                   const OutputChannels& output_channels,
                   OutputFilledCB on_output_filled_cb);
 
+  // Same as `LimitPeaks()`, but only pushes in the first `num_frames` frames
+  // from `input`. Each channel in `output_channels` must have the exact size
+  // to contain `num_frames`.
+  void LimitPeaksPartial(const AudioBus& input,
+                         int num_frames,
+                         const OutputChannels& output_channels,
+                         OutputFilledCB on_output_filled_cb);
+
   // Feeds in silence to forces the remaining input data to be written out.
   // Can only be called once, after which the limiter cannot be re-used.
   void Flush();
@@ -80,7 +88,7 @@ class MEDIA_EXPORT AudioLimiter {
     OutputChannels channels;
   };
 
-  void FeedInput(const AudioBus& input);
+  void FeedInput(const AudioBus& input, int num_frames);
 
   // Updates `target_gain_` and `smoothed_gain_`.
   void UpdateGain(float current_maximum);

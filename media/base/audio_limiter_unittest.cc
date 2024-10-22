@@ -135,6 +135,34 @@ TEST_F(LimiterTest, NoLimiting_IsPassthrough) {
   EXPECT_TRUE(AudioBusAreEqual(source_bus_.get(), destination_bus_.get()));
 }
 
+// Makes sure inputs and outputs are bit-wise identical when the limiter isn't
+// adjusting gain.
+TEST_F(LimiterTest, NoLimiting_PartialBuffer_IsPassthrough) {
+  FillWithSine(source_bus_.get());
+
+  constexpr int kPartialSize = kBufferSize - 256;
+  auto dest_bus = AudioBus::Create(kChannels, kPartialSize);
+
+  bool callback_signaled = false;
+
+  limiter_->LimitPeaksPartial(
+      *source_bus_, kPartialSize, AudioBusAsOutputs(dest_bus.get()),
+      base::BindLambdaForTesting([&]() { callback_signaled = true; }));
+
+  // The limiter has a delay. The output should not be filled at this point.
+  EXPECT_FALSE(callback_signaled);
+
+  limiter_->Flush();
+
+  EXPECT_TRUE(callback_signaled);
+
+  // Create a trimmed copy input for ease of comparison.
+  auto resized_input = AudioBus::Create(kChannels, kPartialSize);
+  source_bus_->CopyPartialFramesTo(0, kPartialSize, 0, resized_input.get());
+
+  EXPECT_TRUE(AudioBusAreEqual(resized_input.get(), dest_bus.get()));
+}
+
 // Makes sure the limiter adjust the signal appropriately.
 TEST_F(LimiterTest, WithLimiting_CompressesSignal) {
   const int longer_frame_size =
@@ -221,6 +249,52 @@ TEST_F(LimiterTest, MultipleCalls) {
   // issues. This check could fail if the size of our busses was synced up with
   // the frequency of our sine generator.
   ASSERT_FALSE(AudioBusAreEqual(inputs[0].get(), inputs[1].get()));
+
+  limiter_->Flush();
+
+  EXPECT_EQ(total_output_calls, kIterations);
+}
+
+// Makes sure the limiter writes to outputs in FIFO order, and handles partial
+// inputs.
+TEST_F(LimiterTest, MultipleCalls_PartialBuffer) {
+  constexpr int kIterations = 5;
+
+  // Choose an arbitrary data size which isn't a multiple of 2.
+  constexpr int kPartialSize = kBufferSize / 2 + 3;
+
+  int total_output_calls = 0;
+
+  AudioBusVector inputs;
+  AudioBusVector outputs;
+
+  for (int i = 0; i < kIterations; ++i) {
+    // Create and fill a new input bus.
+    auto bus = AudioBus::Create(kChannels, kBufferSize);
+    FillWithSine(bus.get());
+    inputs.push_back(std::move(bus));
+
+    // Create an empty output destination, with a smaller size than `bus`.
+    outputs.push_back(AudioBus::Create(kChannels, kPartialSize));
+
+    // Each time an output is filled, make sure it matches the input.
+    auto verify_outputs = base::BindOnce(
+        [](AudioBusVector* inputs, AudioBusVector* outputs,
+           int* total_output_calls, int iteration) {
+          // Copy the input to a smaller bus, for ease of comparison.
+          auto resized_input = AudioBus::Create(kChannels, kPartialSize);
+          inputs->at(iteration)->CopyPartialFramesTo(0, kPartialSize, 0,
+                                                     resized_input.get());
+          EXPECT_TRUE(AudioBusAreEqual(resized_input.get(),
+                                       outputs->at(iteration).get()));
+          ++(*total_output_calls);
+        },
+        &inputs, &outputs, &total_output_calls, i);
+
+    limiter_->LimitPeaksPartial(*inputs.back(), kPartialSize,
+                                AudioBusAsOutputs(outputs.back().get()),
+                                std::move(verify_outputs));
+  }
 
   limiter_->Flush();
 

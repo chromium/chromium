@@ -4,14 +4,9 @@
 
 #include "media/base/audio_limiter.h"
 
-#include <algorithm>
-
-#include "base/check_op.h"
-#include "base/containers/heap_array.h"
 #include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/current_thread.h"
 #include "base/time/time.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -48,6 +43,7 @@ AudioLimiter::AudioLimiter(int sample_rate, int channels)
       moving_max_(attack_frames_),
       initial_output_delay_in_frames_(attack_frames_) {
   CHECK(sample_rate);
+  CHECK(channels_);
 }
 
 AudioLimiter::~AudioLimiter() = default;
@@ -55,17 +51,26 @@ AudioLimiter::~AudioLimiter() = default;
 void AudioLimiter::LimitPeaks(const AudioBus& input,
                               const OutputChannels& output,
                               OutputFilledCB on_output_filled_cb) {
+  LimitPeaksPartial(input, input.frames(), output,
+                    std::move(on_output_filled_cb));
+}
+
+void AudioLimiter::LimitPeaksPartial(const AudioBus& input,
+                                     int num_frames,
+                                     const OutputChannels& output,
+                                     OutputFilledCB on_output_filled_cb) {
   CHECK(!was_flushed_);
-  CHECK_GT(input.frames(), 0);
+  CHECK_GT(num_frames, 0);
+  CHECK_LE(num_frames, input.frames());
   CHECK_EQ(input.channels(), channels_);
   CHECK_EQ(static_cast<size_t>(input.channels()), output.size());
   for (int ch = 0; ch < channels_; ++ch) {
-    CHECK_EQ(input.frames() * sizeof(float), output[ch].size_bytes());
+    CHECK_EQ(num_frames * sizeof(float), output[ch].size_bytes());
   }
 
   outputs_.emplace_back(std::move(output), std::move(on_output_filled_cb));
 
-  FeedInput(input);
+  FeedInput(input, num_frames);
 }
 
 void AudioLimiter::Flush() {
@@ -75,7 +80,7 @@ void AudioLimiter::Flush() {
   auto silence = AudioBus::Create(channels_, attack_frames_);
   silence->Zero();
 
-  FeedInput(*silence);
+  FeedInput(*silence, attack_frames_);
 
   // All outputs should have been filled.
   CHECK(outputs_.empty());
@@ -83,15 +88,15 @@ void AudioLimiter::Flush() {
   was_flushed_ = true;
 }
 
-void AudioLimiter::FeedInput(const AudioBus& input) {
+void AudioLimiter::FeedInput(const AudioBus& input, int num_frames) {
   CHECK_EQ(input.channels(), channels_);
 
   const uint32_t frame_size = channels_;
 
   std::vector<float> interleaved_input;
-  interleaved_input.resize(input.frames() * frame_size);
+  interleaved_input.resize(num_frames * frame_size);
 
-  input.ToInterleaved<Float32SampleTypeTraitsNoClip>(input.frames(),
+  input.ToInterleaved<Float32SampleTypeTraitsNoClip>(num_frames,
                                                      interleaved_input.data());
 
   // Sanitize the input, removing unusual values. This is a destructive
