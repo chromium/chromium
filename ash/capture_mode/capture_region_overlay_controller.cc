@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/scanner/scanner_text.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -51,7 +52,10 @@ gfx::Rect GetRectCenteredAtOrigin(const gfx::Size& size) {
 
 }  // namespace
 
-CaptureRegionOverlayController::CaptureRegionOverlayController() {}
+CaptureRegionOverlayController::CaptureRegionOverlayController() {
+  // TODO(crbug.com/374209296): Update to Scanner flag.
+  DCHECK(features::IsSunfishFeatureEnabled());
+}
 
 CaptureRegionOverlayController::~CaptureRegionOverlayController() = default;
 

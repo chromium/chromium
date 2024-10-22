@@ -19,7 +19,6 @@ class Window;
 }  // namespace aura
 
 namespace gfx {
-class Canvas;
 class Rect;
 }  // namespace gfx
 
@@ -45,7 +44,7 @@ class CaptureModeBehavior {
  public:
   CaptureModeBehavior(const CaptureModeBehavior&) = delete;
   CaptureModeBehavior& operator=(const CaptureModeBehavior&) = delete;
-  virtual ~CaptureModeBehavior() = default;
+  virtual ~CaptureModeBehavior();
 
   // Creates an instance of the `CaptureModeBehavior` given the `behavior_type`.
   static std::unique_ptr<CaptureModeBehavior> Create(
@@ -65,6 +64,16 @@ class CaptureModeBehavior {
   // session, i.e. when its capture session ends and recording will not start,
   // or when its session ends to start recording right after recording begins.
   virtual void DetachFromSession();
+
+  // Returns true if the behavior supports paint capture region overlay. Note
+  // this differs from `CanPaintRegionOverlay()` which checks if the behavior
+  // can *currently* paint region overlay.
+  virtual bool ShouldRegionOverlayBeAllowed() const;
+
+  // Returns true if the behavior can currently paint capture region overlay.
+  // Note that this can change dynamically throughout the lifetime of this
+  // behavior.
+  virtual bool CanPaintRegionOverlay() const;
 
   virtual bool ShouldImageCaptureTypeBeAllowed() const;
   virtual bool ShouldVideoCaptureTypeBeAllowed() const;
@@ -118,13 +127,6 @@ class CaptureModeBehavior {
   // `root` window. The returned bounds of the bar will vary depending on the
   // actual type of the behavior.
   gfx::Rect GetCaptureBarBounds(aura::Window* root) const;
-
-  // Paints the capture region overlay onto `canvas` if supported by the
-  // behavior, otherwise does nothing. `region_bounds_in_canvas` specifies the
-  // coordinates of `canvas` to paint the overlay.
-  virtual void PaintCaptureRegionOverlay(
-      gfx::Canvas& canvas,
-      const gfx::Rect& region_bounds_in_canvas) const;
 
   // Notifies the behavior on audio recording mode settings change and the
   // behavior will decide whether to remember the audio recording mode settings

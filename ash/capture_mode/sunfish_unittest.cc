@@ -598,6 +598,32 @@ TEST_F(SunfishTest, ActionButtonRank) {
   EXPECT_EQ(action_buttons[3]->GetText(), u"Sunfish");
 }
 
+// Tests the behavior of the region overlay in default capture mode.
+TEST_F(SunfishTest, CaptureRegionOverlay) {
+  // Start capture mode in a non-region source and type. Test the overlay
+  // controller is created but doesn't support region overlay.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi test_api(session);
+  EXPECT_TRUE(test_api.GetCaptureRegionOverlayController());
+  EXPECT_FALSE(session->active_behavior()->CanPaintRegionOverlay());
+
+  // Set the source to `kRegion`. Test the overlay controller is created and the
+  // behavior supports region overlay.
+  controller->SetSource(CaptureModeSource::kRegion);
+  EXPECT_TRUE(test_api.GetCaptureRegionOverlayController());
+  EXPECT_TRUE(session->active_behavior()->CanPaintRegionOverlay());
+
+  // Set the source to `kWindow`. Though the overlay controller has been
+  // created, the behavior does not support region overlay.
+  controller->SetSource(CaptureModeSource::kWindow);
+  EXPECT_TRUE(test_api.GetCaptureRegionOverlayController());
+  EXPECT_FALSE(session->active_behavior()->CanPaintRegionOverlay());
+}
+
 class SunfishWithScannerTest : public SunfishTest {
  public:
   SunfishWithScannerTest() = default;

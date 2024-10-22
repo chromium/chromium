@@ -18,6 +18,7 @@ class BaseCaptureModeSession;
 class CaptureLabelView;
 class CaptureModeBarView;
 class CaptureModeSettingsView;
+class CaptureRegionOverlayController;
 class MagnifierGlass;
 class PillButton;
 class RecordingTypeMenuView;
@@ -81,6 +82,8 @@ class CaptureModeSessionTestApi {
   // A vector of the current action buttons for a Sunfish session. Will return
   // an empty vector if there are no buttons or there is no selected region.
   std::vector<PillButton*> GetActionButtons() const;
+
+  CaptureRegionOverlayController* GetCaptureRegionOverlayController() const;
 
  private:
   const raw_ptr<CaptureModeSession, DanglingUntriaged> session_;

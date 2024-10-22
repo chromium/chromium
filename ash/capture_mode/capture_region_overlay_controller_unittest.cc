@@ -8,7 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/scanner/scanner_text.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -22,7 +24,21 @@ namespace ash {
 
 namespace {
 
-TEST(CaptureRegionOverlayControllerTest, PaintsDetectedTextRegions) {
+class CaptureRegionOverlayControllerTest : public testing::Test {
+ public:
+  CaptureRegionOverlayControllerTest() = default;
+  CaptureRegionOverlayControllerTest(
+      const CaptureRegionOverlayControllerTest&) = delete;
+  CaptureRegionOverlayControllerTest& operator=(
+      const CaptureRegionOverlayControllerTest&) = delete;
+  ~CaptureRegionOverlayControllerTest() override = default;
+
+ private:
+  // TODO(crbug.com/374209296): Update to Scanner flag.
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSunfishFeature};
+};
+
+TEST_F(CaptureRegionOverlayControllerTest, PaintsDetectedTextRegions) {
   // Initialize an entirely green 100 x 100 canvas.
   constexpr gfx::Rect kCanvasBounds(0, 0, 100, 100);
   gfx::Canvas canvas(kCanvasBounds.size(), /*image_scale=*/1.0f,

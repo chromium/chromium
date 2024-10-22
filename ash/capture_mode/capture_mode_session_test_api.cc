@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/capture_region_overlay_controller.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
 #include "ash/style/pill_button.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -135,6 +136,11 @@ std::vector<PillButton*> CaptureModeSessionTestApi::GetActionButtons() const {
   }
 
   return action_buttons;
+}
+
+CaptureRegionOverlayController*
+CaptureModeSessionTestApi::GetCaptureRegionOverlayController() const {
+  return session_->capture_region_overlay_controller_.get();
 }
 
 }  // namespace ash

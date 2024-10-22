@@ -21,6 +21,7 @@
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/capture_region_overlay_controller.h"
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
@@ -1454,8 +1455,7 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
 
   PaintCaptureRegion(recorder.canvas());
 
-  active_behavior_->PaintCaptureRegionOverlay(
-      *recorder.canvas(), controller_->user_capture_region());
+  MaybePaintCaptureRegionOverlay(*recorder.canvas());
 }
 
 void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
@@ -1995,6 +1995,15 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   draw_circle(region.left_center());
 
   maybe_draw_focus_ring(focused_fine_tune_position);
+}
+
+void CaptureModeSession::MaybePaintCaptureRegionOverlay(
+    gfx::Canvas& canvas) const {
+  if (capture_region_overlay_controller_ &&
+      active_behavior_->CanPaintRegionOverlay()) {
+    capture_region_overlay_controller_->PaintCaptureRegionOverlay(
+        canvas, /*region_bounds_in_canvas=*/controller_->user_capture_region());
+  }
 }
 
 void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
@@ -3168,10 +3177,18 @@ void CaptureModeSession::InitInternal() {
   // by the user.
   capture_mode_bar_view_->OnCaptureTypeChanged(controller_->type());
   MaybeCreateUserNudge();
+
+  // TODO(crbug.com/374209296): Update to Scanner flag.
+  if (features::IsSunfishFeatureEnabled() &&
+      active_behavior_->ShouldRegionOverlayBeAllowed()) {
+    capture_region_overlay_controller_ =
+        std::make_unique<CaptureRegionOverlayController>();
+  }
 }
 
 void CaptureModeSession::ShutdownInternal() {
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
+  capture_region_overlay_controller_.reset();
   display_observer_.reset();
   user_nudge_controller_.reset();
   capture_window_observer_.reset();

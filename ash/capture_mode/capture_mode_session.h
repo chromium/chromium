@@ -48,6 +48,7 @@ class CaptureModeBarView;
 class CaptureModeController;
 class CaptureModeSessionFocusCycler;
 class CaptureModeSettingsView;
+class CaptureRegionOverlayController;
 class CaptureWindowObserver;
 class CursorSetter;
 class RecordingTypeMenuView;
@@ -265,6 +266,10 @@ class ASH_EXPORT CaptureModeSession
 
   // Paints the current capture region depending on the current capture source.
   void PaintCaptureRegion(gfx::Canvas* canvas);
+
+  // Paints the capture region overlay onto `canvas` if supported by the
+  // behavior, otherwise does nothing.
+  void MaybePaintCaptureRegionOverlay(gfx::Canvas& canvas) const;
 
   // Helper to unify mouse/touch events. Forwards events to the three below
   // functions and they are located on |capture_button_widget_|. Blocks events
@@ -521,6 +526,11 @@ class ASH_EXPORT CaptureModeSession
   // True when we ask the DLP manager to check the screen content before we
   // perform the capture.
   bool is_waiting_for_dlp_confirmation_ = false;
+
+  // Controls the overlay shown on the capture region to indicate detected text,
+  // translations, etc.
+  std::unique_ptr<CaptureRegionOverlayController>
+      capture_region_overlay_controller_;
 
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
