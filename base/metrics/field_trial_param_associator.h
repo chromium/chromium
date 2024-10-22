@@ -5,6 +5,7 @@
 #ifndef BASE_METRICS_FIELD_TRIAL_PARAM_ASSOCIATOR_H_
 #define BASE_METRICS_FIELD_TRIAL_PARAM_ASSOCIATOR_H_
 
+#include <functional>
 #include <map>
 #include <string>
 #include <utility>
@@ -74,12 +75,12 @@ class BASE_EXPORT FieldTrialParamAssociator {
   friend struct DefaultSingletonTraits<FieldTrialParamAssociator>;
 
   // (field_trial_name, field_trial_group)
-  typedef std::pair<std::string, std::string> FieldTrialKey;
+  using FieldTrialKey = std::pair<std::string, std::string>;
   // The following type can be used for lookups without needing to copy strings.
-  typedef std::pair<const std::string&, const std::string&> FieldTrialRefKey;
+  using FieldTrialRefKey = std::pair<const std::string&, const std::string&>;
 
   Lock lock_;
-  std::map<FieldTrialKey, FieldTrialParams> field_trial_params_;
+  std::map<FieldTrialKey, FieldTrialParams, std::less<>> field_trial_params_;
 };
 
 }  // namespace base
