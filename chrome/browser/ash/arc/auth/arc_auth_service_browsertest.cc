@@ -304,13 +304,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
         ash::standalone_browser::GetFeatureRefs();
     lacros.push_back(
         ash::standalone_browser::features::kLacrosForSupervisedUsers);
-    if (IsArcAccountRestrictionsEnabled()) {
-      feature_list_.InitWithFeatures(lacros, {});
-      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-          ash::switches::kEnableLacrosForTesting);
-    } else {
-      feature_list_.InitWithFeatures({}, lacros);
-    }
+    feature_list_.InitWithFeatures({}, lacros);
     InProcessBrowserTest::SetUp();
   }
 
@@ -358,9 +352,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
     // instance in fixture, once), but it should be no op.
     // TODO(hidehiko): Think about a way to test the code cleanly.
     ArcServiceLauncher::Get()->Shutdown();
-    if (IsArcAccountRestrictionsEnabled()) {
-      arc_availability_setter_.reset();
-    }
+    arc_availability_setter_.reset();
     identity_test_environment_adaptor_.reset();
     profile_.reset();
     fake_user_manager_.Reset();
@@ -444,12 +436,9 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     auth_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
-    if (IsArcAccountRestrictionsEnabled()) {
-      arc_availability_setter_ =
-          std::make_unique<AccountAppsAvailabilitySetter>(
-              ash::AccountAppsAvailabilityFactory::GetForProfile(profile()),
-              ::GetAccountManagerFacade(profile()->GetPath().value()));
-    }
+    arc_availability_setter_ = std::make_unique<AccountAppsAvailabilitySetter>(
+        ash::AccountAppsAvailabilityFactory::GetForProfile(profile()),
+        ::GetAccountManagerFacade(profile()->GetPath().value()));
     arc_bridge_service_ = ArcServiceManager::Get()->arc_bridge_service();
     DCHECK(arc_bridge_service_);
     arc_bridge_service_->auth()->SetInstance(&auth_instance_);
@@ -459,8 +448,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
 
     EXPECT_TRUE(user_manager::UserManager::Get()->IsPrimaryUser(
         ash::ProfileHelper::Get()->GetUserByProfile(profile())));
-    ASSERT_EQ(IsArcAccountRestrictionsEnabled(),
-              ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
   }
 
   bool SetIsAccountAvailableInArc(std::string gaia, bool is_available) {
@@ -475,7 +462,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
                             ->MakeAccountAvailable(email);
     // Wait for async calls to finish.
     base::RunLoop().RunUntilIdle();
-    if (IsArcAccountRestrictionsEnabled() && make_available_in_arc) {
+    if (make_available_in_arc) {
       EXPECT_TRUE(
           SetIsAccountAvailableInArc(account_info.gaia, make_available_in_arc));
     }
@@ -559,8 +546,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
   }
 
   void OnArcInitialStart() { auth_service().OnArcInitialStart(); }
-
-  bool IsArcAccountRestrictionsEnabled() { return true; }
 
   Profile* profile() { return profile_.get(); }
 
@@ -933,16 +918,12 @@ IN_PROC_BROWSER_TEST_F(
   // Our test setup manually sets the device as provisioned and invokes
   // |ArcAuthService::OnConnectionReady|. Hence, we would have received an
   // update for the Primary Account.
-  if (IsArcAccountRestrictionsEnabled()) {
-    // 1 SetAccounts() call for the Primary account.
-    EXPECT_EQ(1, initial_num_set_accounts_calls);
-    EXPECT_EQ(1u, auth_instance().last_set_accounts_list()->size());
-    EXPECT_EQ(kFakeUserName,
-              (*auth_instance().last_set_accounts_list())[0]->email);
-    EXPECT_EQ(0, initial_num_account_upserted_calls);
-  } else {
-    EXPECT_EQ(1, initial_num_account_upserted_calls);
-  }
+  // 1 SetAccounts() call for the Primary account.
+  EXPECT_EQ(1, initial_num_set_accounts_calls);
+  EXPECT_EQ(1u, auth_instance().last_set_accounts_list()->size());
+  EXPECT_EQ(kFakeUserName,
+            (*auth_instance().last_set_accounts_list())[0]->email);
+  EXPECT_EQ(0, initial_num_account_upserted_calls);
 
   // Simulate ARC first time provisioning call.
   OnArcInitialStart();
@@ -957,18 +938,13 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   const AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
 
   const int initial_num_calls = auth_instance().num_account_upserted_calls();
-  if (IsArcAccountRestrictionsEnabled()) {
-    // 1 SetAccounts() call for the Primary account.
-    EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
-    EXPECT_EQ(1u, auth_instance().last_set_accounts_list()->size());
-    EXPECT_EQ(kFakeUserName,
-              (*auth_instance().last_set_accounts_list())[0]->email);
-    // 1 call for the Secondary Account.
-    EXPECT_EQ(1, auth_instance().num_account_upserted_calls());
-  } else {
-    // 2 calls: 1 for the Primary Account and 1 for the Secondary Account.
-    EXPECT_EQ(2, auth_instance().num_account_upserted_calls());
-  }
+  // 1 SetAccounts() call for the Primary account.
+  EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
+  EXPECT_EQ(1u, auth_instance().last_set_accounts_list()->size());
+  EXPECT_EQ(kFakeUserName,
+            (*auth_instance().last_set_accounts_list())[0]->email);
+  // 1 call for the Secondary Account.
+  EXPECT_EQ(1, auth_instance().num_account_upserted_calls());
 
   SetInvalidRefreshTokenForAccount(account_info.account_id);
   EXPECT_EQ(initial_num_calls, auth_instance().num_account_upserted_calls());
@@ -979,18 +955,13 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, AccountUpdatesArePropagated) {
 
   SetInvalidRefreshTokenForAccount(account_info.account_id);
   const int initial_num_calls = auth_instance().num_account_upserted_calls();
-  if (IsArcAccountRestrictionsEnabled()) {
-    // 1 SetAccounts() call for the Primary account.
-    EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
-    EXPECT_EQ(1u, auth_instance().last_set_accounts_list()->size());
-    EXPECT_EQ(kFakeUserName,
-              (*auth_instance().last_set_accounts_list())[0]->email);
-    // 1 call for the Secondary Account.
-    EXPECT_EQ(1, initial_num_calls);
-  } else {
-    // 2 calls: 1 for the Primary Account and 1 for the Secondary Account.
-    EXPECT_EQ(2, initial_num_calls);
-  }
+  // 1 SetAccounts() call for the Primary account.
+  EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
+  EXPECT_EQ(1u, auth_instance().last_set_accounts_list()->size());
+  EXPECT_EQ(kFakeUserName,
+            (*auth_instance().last_set_accounts_list())[0]->email);
+  // 1 call for the Secondary Account.
+  EXPECT_EQ(1, initial_num_calls);
   SetRefreshTokenForAccount(account_info.account_id);
   // Expect exactly one call for the account update above.
   EXPECT_EQ(1,
@@ -1000,10 +971,6 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, AccountUpdatesArePropagated) {
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        AccountUpdatesAreNotPropagatedIfAccountIsNotAvailable) {
-  if (!IsArcAccountRestrictionsEnabled()) {
-    return;
-  }
-
   AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
 
   SetInvalidRefreshTokenForAccount(account_info.account_id);
@@ -1054,10 +1021,6 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, AccountRemovalsArePropagated) {
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        AccountRemovalsAreNotPropagatedIfAccountIsNotAvailable) {
-  if (!IsArcAccountRestrictionsEnabled()) {
-    return;
-  }
-
   SetAccountAndProfile(user_manager::UserType::kRegular);
   SeedAccountInfo(kSecondaryAccountEmail);
 
@@ -1394,18 +1357,13 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        RegularUserSecondaryAccountsArePropagated) {
   SetAccountAndProfile(user_manager::UserType::kRegular);
   SeedAccountInfo(kSecondaryAccountEmail);
-  if (IsArcAccountRestrictionsEnabled()) {
-    // 1 SetAccounts() call for the Primary account.
-    EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
-    EXPECT_EQ(1u, auth_instance().last_set_accounts_list()->size());
-    EXPECT_EQ(kFakeUserName,
-              (*auth_instance().last_set_accounts_list())[0]->email);
-    // 1 call for the Secondary Account.
-    EXPECT_EQ(1, auth_instance().num_account_upserted_calls());
-  } else {
-    // 2 calls: 1 for the Primary Account and 1 for the Secondary Account.
-    EXPECT_EQ(2, auth_instance().num_account_upserted_calls());
-  }
+  // 1 SetAccounts() call for the Primary account.
+  EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
+  EXPECT_EQ(1u, auth_instance().last_set_accounts_list()->size());
+  EXPECT_EQ(kFakeUserName,
+            (*auth_instance().last_set_accounts_list())[0]->email);
+  // 1 call for the Secondary Account.
+  EXPECT_EQ(1, auth_instance().num_account_upserted_calls());
 }
 
 // Tests child account propagation for Family Link user.
@@ -1414,18 +1372,13 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   SetAccountAndProfile(user_manager::UserType::kChild);
   SeedAccountInfo(kSecondaryAccountEmail);
   EXPECT_TRUE(profile()->IsChild());
-  if (IsArcAccountRestrictionsEnabled()) {
-    // 1 SetAccounts() call for the Primary account.
-    EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
-    EXPECT_EQ(1u, auth_instance().last_set_accounts_list()->size());
-    EXPECT_EQ(kFakeUserName,
-              (*auth_instance().last_set_accounts_list())[0]->email);
-    // 1 call for the Secondary Account.
-    EXPECT_EQ(1, auth_instance().num_account_upserted_calls());
-  } else {
-    // 2 calls: 1 for the Primary Account and 1 for the Secondary Account.
-    EXPECT_EQ(2, auth_instance().num_account_upserted_calls());
-  }
+  // 1 SetAccounts() call for the Primary account.
+  EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
+  EXPECT_EQ(1u, auth_instance().last_set_accounts_list()->size());
+  EXPECT_EQ(kFakeUserName,
+            (*auth_instance().last_set_accounts_list())[0]->email);
+  // 1 call for the Secondary Account.
+  EXPECT_EQ(1, auth_instance().num_account_upserted_calls());
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleRemoveAccountRequest) {
