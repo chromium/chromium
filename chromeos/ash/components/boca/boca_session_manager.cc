@@ -210,11 +210,13 @@ bool BocaSessionManager::IsProfileActive() {
              account_id_;
 }
 
+bool BocaSessionManager::IsSessionActive(::boca::Session* session) {
+  return session && session->session_state() == ::boca::Session::ACTIVE;
+}
+
 void BocaSessionManager::NotifySessionUpdate() {
-  if ((!current_session_ ||
-       current_session_->session_state() != ::boca::Session::ACTIVE) &&
-      previous_session_ &&
-      previous_session_->session_state() == ::boca::Session::ACTIVE) {
+  if (IsSessionActive(previous_session_.get()) &&
+      !IsSessionActive(current_session_.get())) {
     for (auto& observer : observers_) {
       // Stop polling when session ends.
       if (timer_.IsRunning()) {
@@ -224,10 +226,8 @@ void BocaSessionManager::NotifySessionUpdate() {
     }
   }
 
-  if (current_session_ &&
-      current_session_->session_state() == ::boca::Session::ACTIVE &&
-      (!previous_session_ ||
-       previous_session_->session_state() != ::boca::Session::ACTIVE)) {
+  if (!IsSessionActive(previous_session_.get()) &&
+      IsSessionActive(current_session_.get())) {
     for (auto& observer : observers_) {
       // Start polling after session start.
       if (!timer_.IsRunning()) {
@@ -241,6 +241,9 @@ void BocaSessionManager::NotifySessionUpdate() {
 }
 
 void BocaSessionManager::NotifyOnTaskUpdate() {
+  if (!IsSessionActive(current_session_.get())) {
+    return;
+  }
   auto previous_bundle = GetSessionConfigSafe(previous_session_.get())
                              .on_task_config()
                              .active_bundle();
@@ -256,6 +259,9 @@ void BocaSessionManager::NotifyOnTaskUpdate() {
 }
 
 void BocaSessionManager::NotifyCaptionConfigUpdate() {
+  if (!IsSessionActive(current_session_.get())) {
+    return;
+  }
   auto previous_session_caption_config =
       GetSessionConfigSafe(previous_session_.get()).captions_config();
   auto current_session_caption_config =
@@ -274,6 +280,9 @@ void BocaSessionManager::NotifyCaptionConfigUpdate() {
 }
 
 void BocaSessionManager::NotifyRosterUpdate() {
+  if (!IsSessionActive(current_session_.get())) {
+    return;
+  }
   auto previous_session_roster = GetRosterSafe(previous_session_.get());
   auto current_session_roster = GetRosterSafe(current_session_.get());
   if (previous_session_roster.SerializeAsString() !=
@@ -288,7 +297,7 @@ void BocaSessionManager::NotifyRosterUpdate() {
 }
 
 void BocaSessionManager::NotifyConsumerActivityUpdate() {
-  if (!current_session_ || !previous_session_) {
+  if (!IsSessionActive(current_session_.get()) || !previous_session_) {
     return;
   }
   auto current_activity = current_session_->student_statuses();

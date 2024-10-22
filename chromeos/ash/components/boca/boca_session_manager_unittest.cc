@@ -839,5 +839,57 @@ TEST_F(BocaSessionManagerTest,
   task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
                                     base::Seconds(1));
 }
+
+TEST_F(BocaSessionManagerTest,
+       DoNotNotifyEventsExceptSessionEndedWhenSessionEnded) {
+  auto session_1 = std::make_unique<::boca::Session>();
+  session_1->set_session_id(kInitialSessionId);
+  session_1->set_session_state(::boca::Session::ACTIVE);
+  ::boca::SessionConfig session_config;
+  auto* caption_config_1 = session_config.mutable_captions_config();
+  caption_config_1->set_captions_enabled(true);
+  caption_config_1->set_translations_enabled(true);
+  auto* active_bundle =
+      session_config.mutable_on_task_config()->mutable_active_bundle();
+  active_bundle->set_locked(true);
+  active_bundle->mutable_content_configs()->Add()->set_url("google.com");
+  (*session_1->mutable_student_group_configs())[kMainStudentGroupName] =
+      std::move(session_config);
+  auto* student_groups_1 =
+      session_1->mutable_roster()->mutable_student_groups()->Add();
+  student_groups_1->set_title(kMainStudentGroupName);
+  student_groups_1->mutable_students()->Add()->set_email("dog1@email.com");
+
+  ::boca::StudentStatus status;
+  ::boca::StudentDevice device;
+  auto* activity = device.mutable_activity();
+  activity->mutable_active_tab()->set_title("google");
+  (*status.mutable_devices())["device1"] = std::move(device);
+  (*session_1->mutable_student_statuses())["1"] = std::move(status);
+
+  auto session_2 = std::make_unique<::boca::Session>();
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+      }))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+      }));
+
+  // Only notify once for the initial session flip.
+  EXPECT_CALL(*observer(),
+              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _, _))
+      .Times(1);
+  EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(1);
+  EXPECT_CALL(*observer(), OnSessionRosterUpdated(_, _)).Times(1);
+  EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(1);
+  EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
+
+  // Have updated two sessions.
+  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
+                                    base::Seconds(1));
+}
+
 }  // namespace
 }  // namespace ash::boca
