@@ -170,6 +170,9 @@ public class CustomTabsConnection {
     @VisibleForTesting
     static final String EPHEMERAL_BROWSING_SUPPORTED_KEY = "ephemeralBrowsingSupported";
 
+    static final String IS_AUTH_TAB_SUPPORTED = "isAuthTabSupported";
+    static final String AUTH_TAB_SUPPORTED_KEY = "authTabSupported";
+
     @VisibleForTesting static final String ON_ACTIVITY_LAYOUT_CALLBACK = "onActivityLayout";
     @VisibleForTesting static final String ON_ACTIVITY_LAYOUT_LEFT_EXTRA = "left";
     @VisibleForTesting static final String ON_ACTIVITY_LAYOUT_TOP_EXTRA = "top";
@@ -810,6 +813,10 @@ public class CustomTabsConnection {
             bundle.putBoolean(
                     EPHEMERAL_BROWSING_SUPPORTED_KEY,
                     ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EPHEMERAL_MODE));
+            return bundle;
+        } else if (commandName.equals(IS_AUTH_TAB_SUPPORTED)) {
+            var bundle = new Bundle();
+            bundle.putBoolean(AUTH_TAB_SUPPORTED_KEY, ChromeFeatureList.sCctAuthTab.isEnabled());
             return bundle;
         }
         return null;

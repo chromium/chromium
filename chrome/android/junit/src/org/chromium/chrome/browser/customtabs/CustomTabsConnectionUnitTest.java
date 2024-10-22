@@ -266,5 +266,23 @@ public class CustomTabsConnectionUnitTest {
                         eq(CustomTabsConnection.OPEN_IN_BROWSER_CALLBACK), any(Bundle.class));
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_AUTH_TAB)
+    public void isAuthTabSupported_featureEnabled() {
+        Bundle bundle = mConnection.extraCommand(CustomTabsConnection.IS_AUTH_TAB_SUPPORTED, null);
+        assertNotNull(bundle);
+        assertTrue(bundle.containsKey(CustomTabsConnection.AUTH_TAB_SUPPORTED_KEY));
+        assertTrue(bundle.getBoolean(CustomTabsConnection.AUTH_TAB_SUPPORTED_KEY));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CCT_AUTH_TAB)
+    public void isAuthTabSupported_featureDisabled() {
+        Bundle bundle = mConnection.extraCommand(CustomTabsConnection.IS_AUTH_TAB_SUPPORTED, null);
+        assertNotNull(bundle);
+        assertTrue(bundle.containsKey(CustomTabsConnection.AUTH_TAB_SUPPORTED_KEY));
+        assertFalse(bundle.getBoolean(CustomTabsConnection.AUTH_TAB_SUPPORTED_KEY));
+    }
+
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.
 }
