@@ -11,7 +11,7 @@ export function getHtml(this: TabOrganizationSelectorElement) {
   // clang-format off
   return html`
 <!--_html_template_start_-->
-<div ?hidden=${this.selectedState_ !== TabOrganizationFeature.kSelector}>
+<div ?hidden=${this.getVisibleFeature_() !== TabOrganizationFeature.kSelector}>
   <div id="buttonContainer">
     <tab-organization-selector-button id="autoTabGroupsButton"
         top="true"
@@ -31,13 +31,15 @@ export function getHtml(this: TabOrganizationSelectorElement) {
   </div>
 </div>
 
-<div ?hidden=${this.selectedState_ !== TabOrganizationFeature.kAutoTabGroups}>
+<div ?hidden=${
+    this.getVisibleFeature_() !== TabOrganizationFeature.kAutoTabGroups}>
   <auto-tab-groups-page id="autoTabGroupsPage" ?show-back-button="${true}"
       @back-click="${this.onBackClick_}">
   </auto-tab-groups-page>
 </div>
 
-<div ?hidden=${this.selectedState_ !== TabOrganizationFeature.kDeclutter}>
+<div ?hidden=${
+    this.getVisibleFeature_() !== TabOrganizationFeature.kDeclutter}>
   <declutter-page id="declutterPage" ?show-back-button="${true}"
       @back-click="${this.onBackClick_}">
   </declutter-page>
