@@ -16843,32 +16843,26 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_SAVED_LINK" desc="Link text within a bubble that is displayed as a confirmation that a passkey was created and saved in Google Password Manager. See IDS_WEBAUTHN_GPM_PASSKEY_SAVED_LABEL for more details.">
         Google Password Manager
       </message>
-      <message name="IDS_WEBAUTHN_GPM_PASSKEY_UPDATE_NEEDED_TITLE" desc="The title of a bubble that is displayed to notify that the creation of a new passkey is necessary because the old passkey was deleted from Google Password Manager.">
-        Passkey update needed
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_UPDATE_NEEDED_TITLE" desc="The title of a bubble that is displayed to notify that the passkey the user tried to use was deleted from the site, explaining to the user that they need to sign in with some other method. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        This passkey was deleted from this site
       </message>
-      <message name="IDS_WEBAUTHN_GPM_PASSKEY_UPDATE_NEEDED_LABEL" desc="The label in a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager, explaining to the user to sign in to create a new one. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
-        Sign in to this site to create a new passkey. The old one was deleted from Google Password Manager.
-      </message>
-      <message name="IDS_WEBAUTHN_GPM_MANAGE_PASSKEYS_BUTTON" desc="The label of the 'Manage passkeys' button in the passkey-deleted-confirmation bubble. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
-        Manage passkeys
-      </message>
-      <message name="IDS_WEBAUTHN_GPM_GOT_IT_BUTTON" desc="The label of the 'Got it' button in the passkey-deleted-confirmation bubble.">
-        Got it
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_UPDATE_NEEDED_LABEL" desc="The label in a bubble that is displayed to notify that the passkey the user tried to use was deleted from the site, explaining to the user that they need to sign in with some other method. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        Sign in using a password or other recovery method
       </message>
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_UPDATED_TITLE" desc="The title of a bubble that is displayed as a confirmation that a passkey was updated with the current user details in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
-        Passkey updated
+        Updated passkey
       </message>
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_UPDATED_LABEL" desc="The label in a bubble that is displayed as a confirmation that a passkey was updated with the current user details in Google Password Manager, explaining that the passkeys can be managed in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
-        You can view and manage your passkeys saved in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>
+        Manage your passwords &amp; passkeys in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>
       </message>
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_UPDATED_LINK" desc="Link text that directs the user to the Google Password Manager passwords page within a bubble that is displayed as a confirmation that a passkey was updated with the current user details in Google Password Manager. See IDS_WEBAUTHN_GPM_PASSKEY_UPDATED_LABEL for more details.">
         Google Password Manager
       </message>
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_TITLE" desc="The title of a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
-        Passkey deleted
+        Deleted passkey
       </message>
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LABEL" desc="The label in a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager, explaining that the passkeys can be managed in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
-        You can view and manage your passkeys saved in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>
+        Manage your passwords &amp; passkeys in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>
       </message>
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LINK" desc="Link text that directs the user to the Google Password Manager passwords page within a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager. See IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LABEL for more details.">
         Google Password Manager

@@ -20,14 +20,6 @@ class PasskeyDeletedConfirmationController
   // PasswordBubbleControllerBase:
   std::u16string GetTitle() const override;
 
-  // Called by the view code when the "Got it" button is clicked
-  // by the user acknowledging the passkey deleted confirmation prompt.
-  void OnGotItButtonClicked();
-
-  // Called by the view when the user press manage passkeys
-  // button. Navigates to password manager main page.
-  void OnManagePasskeysButtonClicked();
-
  private:
   // PasswordBubbleControllerBase:
   void ReportInteractions() override;

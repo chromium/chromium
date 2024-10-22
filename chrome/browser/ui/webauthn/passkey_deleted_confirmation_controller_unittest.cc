@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webauthn/passkey_deleted_confirmation_controller.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/grit/generated_resources.h"
@@ -13,13 +12,10 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 using ::testing::Return;
-
-constexpr char kUIDismissalReasonMetric[] = "PasswordManager.UIDismissalReason";
 
 class PasskeyDeletedConfirmationControllerTest : public ::testing::Test {
  public:
@@ -59,30 +55,6 @@ TEST_F(PasskeyDeletedConfirmationControllerTest, Destroy) {
 TEST_F(PasskeyDeletedConfirmationControllerTest, DestroyImplicictly) {
   CreateController();
   EXPECT_CALL(*delegate(), OnBubbleHidden());
-}
-
-TEST_F(PasskeyDeletedConfirmationControllerTest, OnGotItButtonClicked) {
-  base::HistogramTester histogram_tester;
-  CreateController();
-  controller()->OnGotItButtonClicked();
-  DestroyController();
-  histogram_tester.ExpectUniqueSample(
-      kUIDismissalReasonMetric, password_manager::metrics_util::CLICKED_GOT_IT,
-      1);
-}
-
-TEST_F(PasskeyDeletedConfirmationControllerTest,
-       OnGooglePasswordManagerButtonClicked) {
-  base::HistogramTester histogram_tester;
-  CreateController();
-  EXPECT_CALL(*delegate(), NavigateToPasswordManagerSettingsPage(
-                               password_manager::ManagePasswordsReferrer::
-                                   kPasskeyDeletedConfirmationBubble));
-  controller()->OnManagePasskeysButtonClicked();
-  DestroyController();
-  histogram_tester.ExpectUniqueSample(
-      kUIDismissalReasonMetric, password_manager::metrics_util::CLICKED_MANAGE,
-      1);
 }
 
 }  // namespace
