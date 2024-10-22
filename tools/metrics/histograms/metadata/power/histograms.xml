@@ -1955,20 +1955,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PowerML.SmartDimFeature.WebPageInfoSource"
-    enum="PowerMLSmartDimWebPageInfoSource" expires_after="2022-11-01">
-  <expired_intentionally>
-    Kept because it's used in tast power.SmartDim.
-  </expired_intentionally>
-  <owner>alanlxl@chromium.org</owner>
-  <owner>amoylan@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
-  <summary>
-    The source of web page info in smart dim features, emitted everytime smart
-    dim is requested.
-  </summary>
-</histogram>
-
 <histogram name="PowerML.SmartDimModel.RequestCanceledDuration" units="ms"
     expires_after="2025-06-30">
   <owner>alanlxl@chromium.org</owner>

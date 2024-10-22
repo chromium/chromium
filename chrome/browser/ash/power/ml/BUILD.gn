@@ -48,7 +48,6 @@ static_library("ml") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/constants",
-    "//chromeos/crosapi/mojom",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/machine_learning/public/cpp:stub",

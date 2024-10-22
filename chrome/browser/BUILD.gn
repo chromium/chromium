@@ -5938,8 +5938,6 @@ static_library("browser") {
       "lacros/web_app_provider_bridge_lacros.h",
       "lacros/web_contents_can_go_back_observer.cc",
       "lacros/web_contents_can_go_back_observer.h",
-      "lacros/web_page_info_lacros.cc",
-      "lacros/web_page_info_lacros.h",
       "lacros/webauthn_request_registrar_lacros.cc",
       "lacros/webauthn_request_registrar_lacros.h",
       "metrics/enrollment_status.h",

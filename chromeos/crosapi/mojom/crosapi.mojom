@@ -124,7 +124,6 @@ import "chromeos/crosapi/mojom/vpn_extension_observer.mojom";
 import "chromeos/crosapi/mojom/wallpaper.mojom";
 import "chromeos/crosapi/mojom/web_app_service.mojom";
 import "chromeos/crosapi/mojom/web_kiosk_service.mojom";
-import "chromeos/crosapi/mojom/web_page_info.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
@@ -873,11 +872,7 @@ interface Crosapi {
   [MinVersion=79] BindVpnService@82(
       pending_receiver<VpnService> receiver);
 
-  // Binds the web page info factory interface which allows ash to request web
-  // page info from Lacros.
-  // Added in M93.
-  [MinVersion=34]
-  BindWebPageInfoFactory@39(pending_receiver<WebPageInfoFactory> receiver);
+  // BindWebPageInfoFactory@39 was removed.
 
   // Binds the web app publisher service to allow web app publishing from
   // lacros-chrome to the App Service in ash-chrome.

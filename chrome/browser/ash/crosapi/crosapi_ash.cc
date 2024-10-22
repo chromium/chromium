@@ -112,7 +112,6 @@
 #include "chrome/browser/ash/crosapi/wallpaper_ash.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
-#include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
@@ -331,8 +330,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
       wallpaper_ash_(std::make_unique<WallpaperAsh>()),
       web_app_service_ash_(std::make_unique<WebAppServiceAsh>()),
-      web_kiosk_service_ash_(std::make_unique<WebKioskServiceAsh>()),
-      web_page_info_factory_ash_(std::make_unique<WebPageInfoFactoryAsh>()) {
+      web_kiosk_service_ash_(std::make_unique<WebKioskServiceAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
 }
@@ -1098,11 +1096,6 @@ void CrosapiAsh::BindWebAppService(
 void CrosapiAsh::BindWebKioskService(
     mojo::PendingReceiver<mojom::WebKioskService> receiver) {
   web_kiosk_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindWebPageInfoFactory(
-    mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) {
-  web_page_info_factory_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindGuestOsSkForwarderFactory(

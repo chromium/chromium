@@ -145,7 +145,6 @@ class VpnServiceAsh;
 class WallpaperAsh;
 class WebAppServiceAsh;
 class WebKioskServiceAsh;
-class WebPageInfoFactoryAsh;
 class VirtualKeyboardAsh;
 class VolumeManagerAsh;
 class VpnExtensionObserverAsh;
@@ -440,8 +439,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::WebAppService> receiver) override;
   void BindWebKioskService(
       mojo::PendingReceiver<mojom::WebKioskService> receiver) override;
-  void BindWebPageInfoFactory(
-      mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) override;
   void BindGuestOsSkForwarderFactory(
       mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
       override;
@@ -631,10 +628,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return web_kiosk_service_ash_.get();
   }
 
-  WebPageInfoFactoryAsh* web_page_info_factory_ash() {
-    return web_page_info_factory_ash_.get();
-  }
-
   ash::VideoConferenceManagerAsh* video_conference_manager_ash() {
     return video_conference_manager_ash_.get();
   }
@@ -768,7 +761,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<WallpaperAsh> wallpaper_ash_;
   std::unique_ptr<WebAppServiceAsh> web_app_service_ash_;
   std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
-  std::unique_ptr<WebPageInfoFactoryAsh> web_page_info_factory_ash_;
 
   mojo::ReceiverSet<mojom::Crosapi, CrosapiId> receiver_set_;
   std::map<mojo::ReceiverId, base::OnceClosure> disconnect_handler_map_;
