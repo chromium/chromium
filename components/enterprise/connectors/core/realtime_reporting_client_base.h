@@ -49,6 +49,8 @@ class RealtimeReportingClientBase : public KeyedService,
   // so that it can called in tests.
   virtual bool ShouldInitRealtimeReportingClient();
 
+  virtual base::WeakPtr<RealtimeReportingClientBase> AsWeakPtr() = 0;
+
  protected:
   // Sub-method called by InitRealtimeReportingClient() to make appropriate
   // verifications and initialize the profile reporting client. Returns a policy
@@ -69,17 +71,20 @@ class RealtimeReportingClientBase : public KeyedService,
   virtual std::string GetProfileUserName() = 0;
 
   // Sub-method called by ReportEventWithTimestamp() to collect device signals
-  // on Windows/Mac/Linux platforms.
+  // on Windows/Mac/Linux platforms. Regardless of collecting device signals or
+  // not, this method is expected to call `UploadSecurityEventReport()` in the
+  // end.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  virtual void MaybeCollectDeviceSignals(base::Value::Dict event,
-                                         policy::CloudPolicyClient* client,
-                                         std::string name,
-                                         const ReportingSettings& settings,
-                                         base::Time time) = 0;
+  virtual void MaybeCollectDeviceSignalsAndReportEvent(
+      base::Value::Dict event,
+      policy::CloudPolicyClient* client,
+      std::string name,
+      const ReportingSettings& settings,
+      base::Time time) = 0;
 #endif
 
   // Returns whether device info should be reported for browser or profile.
-  virtual bool ShouldIncludeDeviceInfo() = 0;
+  virtual bool ShouldIncludeDeviceInfo(bool per_profile) = 0;
 
   // Callback used with UploadSecurityEventReport() to upload events to the
   // reporting server.
@@ -95,29 +100,10 @@ class RealtimeReportingClientBase : public KeyedService,
   // google3/google/internal/chrome/reporting/v1/chromereporting.proto.
   virtual base::Value::Dict GetContext() = 0;
 
- private:
   // Initialize a real-time report client if needed.  This client is used only
   // if real-time reporting is enabled, the machine is properly reigistered
   // with CBCM and the appropriate policies are enabled.
   void InitRealtimeReportingClient(const ReportingSettings& settings);
-
-  // Helper function that uploads security events, parametrized with the time.
-  void ReportEventWithTimestamp(const std::string& name,
-                                const ReportingSettings& settings,
-                                base::Value::Dict event,
-                                const base::Time& time,
-                                bool include_profile_user_name);
-
-  // Sub-method called by InitRealtimeReportingClient to make appropriate
-  // verifications and initialize the browser reporting client. Returns a policy
-  // client description and a client, which can be nullptr if it can't be
-  // initialized.
-  std::pair<std::string, policy::CloudPolicyClient*> InitBrowserReportingClient(
-      const std::string& dm_token);
-
-  // Handle the availability of a cloud policy client.
-  void OnCloudPolicyClientAvailable(const std::string& policy_client_desc,
-                                    policy::CloudPolicyClient* client);
 
   // Prepares information required by
   // CloudPolicyClient::UploadSecurityEventReport() and calls it.
@@ -126,6 +112,14 @@ class RealtimeReportingClientBase : public KeyedService,
                                  std::string name,
                                  const ReportingSettings& settings,
                                  base::Time time);
+  // Helper function that uploads security events, parameterized with the time.
+  void ReportEventWithTimestamp(const std::string& name,
+                                const ReportingSettings& settings,
+                                base::Value::Dict event,
+                                const base::Time& time,
+                                bool include_profile_user_name);
+
+  const std::string GetProfilePolicyClientDescription();
 
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
       nullptr;
@@ -148,10 +142,20 @@ class RealtimeReportingClientBase : public KeyedService,
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       rejected_dm_token_timers_;
 
+ private:
+  // Sub-method called by InitRealtimeReportingClient to make appropriate
+  // verifications and initialize the browser reporting client. Returns a policy
+  // client description and a client, which can be nullptr if it can't be
+  // initialized.
+  std::pair<std::string, policy::CloudPolicyClient*> InitBrowserReportingClient(
+      const std::string& dm_token);
+
+  // Handle the availability of a cloud policy client.
+  void OnCloudPolicyClientAvailable(const std::string& policy_client_desc,
+                                    policy::CloudPolicyClient* client);
+
   raw_ptr<policy::DeviceManagementService> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  base::WeakPtrFactory<RealtimeReportingClientBase> weak_ptr_factory_{this};
 };
 
 }  // namespace enterprise_connectors

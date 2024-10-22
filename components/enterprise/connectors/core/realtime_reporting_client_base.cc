@@ -161,7 +161,7 @@ void RealtimeReportingClientBase::OnCloudPolicyClientAvailable(
 
   client->AddObserver(this);
 
-  VLOG(1) << "Ready for safe browsing real-time event reporting.";
+  DVLOG(1) << "Ready for safe browsing real-time event reporting.";
 }
 
 void RealtimeReportingClientBase::ReportEventWithTimestamp(
@@ -200,9 +200,13 @@ void RealtimeReportingClientBase::ReportEventWithTimestamp(
     event.Set(kKeyProfileUserName, GetProfileUserName());
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  MaybeCollectDeviceSignals(std::move(event), client, name, settings, time);
-#endif
+  MaybeCollectDeviceSignalsAndReportEvent(std::move(event), client, name,
+                                          settings, time);
+#else
+  // Regardless of collecting device signals or not, upload the security event
+  // report.
   UploadSecurityEventReport(std::move(event), client, name, settings, time);
+#endif
 }
 
 void RealtimeReportingClientBase::UploadSecurityEventReport(
@@ -216,20 +220,26 @@ void RealtimeReportingClientBase::UploadSecurityEventReport(
           .Set("time", base::TimeFormatAsIso8601(time))
           .Set(name, std::move(event));
 
-  VLOG(1) << "enterprise.connectors: security event: "
-          << event_wrapper.DebugString();
+  DVLOG(1) << "enterprise.connectors: security event: "
+           << event_wrapper.DebugString();
 
   base::Value::Dict report =
       policy::RealtimeReportingJobConfiguration::BuildReport(
           base::Value::List().Append(std::move(event_wrapper)), GetContext());
 
-  auto upload_callback = base::BindOnce(
-      &RealtimeReportingClientBase::UploadCallback,
-      weak_ptr_factory_.GetWeakPtr(), report.Clone(), settings.per_profile,
-      client, enterprise_connectors::GetUmaEnumFromEventName(name));
+  auto upload_callback =
+      base::BindOnce(&RealtimeReportingClientBase::UploadCallback, AsWeakPtr(),
+                     report.Clone(), settings.per_profile, client,
+                     enterprise_connectors::GetUmaEnumFromEventName(name));
 
   client->UploadSecurityEventReport(
-      ShouldIncludeDeviceInfo(), std::move(report), std::move(upload_callback));
+      ShouldIncludeDeviceInfo(settings.per_profile), std::move(report),
+      std::move(upload_callback));
+}
+
+const std::string
+RealtimeReportingClientBase::GetProfilePolicyClientDescription() {
+  return kProfilePolicyClientDescription;
 }
 
 bool RealtimeReportingClientBase::ShouldInitRealtimeReportingClient() {

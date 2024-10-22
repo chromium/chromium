@@ -93,7 +93,8 @@ void ReportCrashes() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetNewReports, latest_creation_time),
-      base::BindOnce(&UploadToReportingServer, reporting_client->GetWeakPtr(),
+      base::BindOnce(&UploadToReportingServer,
+                     reporting_client->AsWeakPtrImpl(),
                      g_browser_process->local_state()));
 }
 

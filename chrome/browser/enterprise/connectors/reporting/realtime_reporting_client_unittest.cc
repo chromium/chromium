@@ -103,6 +103,7 @@ class RealtimeReportingClientTestBase : public testing::Test {
   raw_ptr<TestingProfile> profile_ = nullptr;
   raw_ptr<extensions::TestEventRouter> event_router_ = nullptr;
 };
+}  // namespace
 
 // Tests to make sure the feature flag and policy control real-time reporting
 // as expected.  The parameter for these tests is a tuple of bools:
@@ -133,6 +134,9 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
 
   void SetUp() override {
     RealtimeReportingClientTestBase::SetUp();
+    reporting_client_ =
+        enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+            profile_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
@@ -168,6 +172,7 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<RealtimeReportingClient> reporting_client_ = nullptr;
   const bool is_feature_flag_enabled_;
   const bool is_public_session_;
 
@@ -196,26 +201,27 @@ class RealtimeReportingClientOidcTest : public RealtimeReportingClientTestBase {
 };
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-}  // namespace
-
 TEST_P(RealtimeReportingClientIsRealtimeReportingEnabledTest,
        ShouldInitRealtimeReportingClient) {
   EXPECT_EQ(should_init(),
-            RealtimeReportingClient::ShouldInitRealtimeReportingClient());
+            reporting_client_->ShouldInitRealtimeReportingClient());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          RealtimeReportingClientIsRealtimeReportingEnabledTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
-class RealtimeReportingClientUmaTest : public RealtimeReportingClientTestBase {
+class RealtimeReportingClientUmaTest
+    : public RealtimeReportingClientTestBase,
+      public testing::WithParamInterface<bool> {
  public:
+  bool is_profile_reporting() { return GetParam(); }
+
   void SetUp() override {
     RealtimeReportingClientTestBase::SetUp();
     reporting_client_ =
         enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
             profile_);
-    reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
   }
 
  protected:
@@ -224,8 +230,20 @@ class RealtimeReportingClientUmaTest : public RealtimeReportingClientTestBase {
   policy::CloudPolicyClient::ResultCallback upload_callback;
 };
 
-TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
+TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
+// Profile reporting is not supported on Ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (is_profile_reporting()) {
+    return;
+  }
+#endif
+
+  is_profile_reporting()
+      ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
+      : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
+
   ReportingSettings settings;
+  settings.per_profile = is_profile_reporting();
   base::Value::Dict event;
 
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
@@ -243,8 +261,20 @@ TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
   histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadFailure", 0);
 }
 
-TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
+TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
+// Profile reporting is not supported on Ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (is_profile_reporting()) {
+    return;
+  }
+#endif
+
+  is_profile_reporting()
+      ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
+      : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
+
   ReportingSettings settings;
+  settings.per_profile = is_profile_reporting();
   base::Value::Dict event;
 
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
@@ -261,6 +291,8 @@ TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
       EnterpriseReportingEventType::kExtensionInstallEvent, 1);
   histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadSuccess", 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, RealtimeReportingClientUmaTest, testing::Bool());
 
 TEST_F(RealtimeReportingClientTestBase,
        TestEventNameToUmaEnumMapIncludesAllEvents) {

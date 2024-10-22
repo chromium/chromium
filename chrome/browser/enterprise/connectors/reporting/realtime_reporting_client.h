@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
@@ -40,14 +41,11 @@ class User;
 namespace enterprise_connectors {
 
 // An event router that observes Safe Browsing events and notifies listeners.
-// The router also uploads events to the chrome reporting server side API if
-// the kRealtimeReportingFeature feature is enabled.
-class RealtimeReportingClient : public KeyedService,
-                                public policy::CloudPolicyClient::Observer {
+// The router also uploads events to the chrome reporting server side API. The
+// browser-based reporting logics are in RealtimeReportingClientBase whereas
+// profile-based reporting logics are implemented in this class.
+class RealtimeReportingClient : public RealtimeReportingClientBase {
  public:
-  static const char kKeyProfileIdentifier[];
-  static const char kKeyProfileUserName[];
-
   explicit RealtimeReportingClient(content::BrowserContext* context);
 
   RealtimeReportingClient(const RealtimeReportingClient&) = delete;
@@ -55,33 +53,33 @@ class RealtimeReportingClient : public KeyedService,
 
   ~RealtimeReportingClient() override;
 
-  // Returns true if enterprise real-time reporting should be initialized,
-  // checking both the feature flag. This function is public so that it can
-  // called in tests.
-  static bool ShouldInitRealtimeReportingClient();
+  // RealtimeReportingClientBase overrides:
+  bool ShouldInitRealtimeReportingClient() override;
+  std::string GetProfileUserName() override;
+  base::WeakPtr<RealtimeReportingClientBase> AsWeakPtr() override;
+
+  base::WeakPtr<RealtimeReportingClient> AsWeakPtrImpl() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   void SetBrowserCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
   void SetProfileCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
 
+  void SetProfileUserNameForTesting(std::string username);
+
   void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
 
-  // policy::CloudPolicyClient::Observer:
+  // policy::CloudPolicyClient::Observer overrides:
   void OnClientError(policy::CloudPolicyClient* client) override;
   void OnPolicyFetched(policy::CloudPolicyClient* client) override {}
   void OnRegistrationStateChanged(policy::CloudPolicyClient* client) override {}
 
-  base::WeakPtr<RealtimeReportingClient> GetWeakPtr();
 
   // Determines if the real-time reporting feature is enabled.
   // Obtain settings to apply to a reporting event from ConnectorsService.
   // std::nullopt represents that reporting should not be done.
   // Declared virtual for tests.
   std::optional<ReportingSettings> virtual GetReportingSettings();
-
-  // Returns the Gaia email address of the account signed in to the profile or
-  // an empty string if the profile is not signed in (declared virtual for
-  // tests).
-  virtual std::string GetProfileUserName() const;
 
   // Report safe browsing event through real-time reporting channel, if enabled.
   // Declared as virtual for tests.
@@ -98,32 +96,39 @@ class RealtimeReportingClient : public KeyedService,
                                const base::Time& time);
 
  private:
-  // Initialize a real-time report client if needed.  This client is used only
-  // if real-time reporting is enabled, the machine is properly reigistered
-  // with CBCM and the appropriate policies are enabled.
-  void InitRealtimeReportingClient(const ReportingSettings& settings);
-
-  // Helper function that uploads security events, parametrized with the time.
-  void ReportEventWithTimestamp(const std::string& name,
-                                const ReportingSettings& settings,
-                                base::Value::Dict event,
-                                const base::Time& time,
-                                bool include_profile_user_name);
-
-  // Returns the profile identifier which is the path to the current profile on
-  // managed browsers or the globally unique profile identifier otherwise.
-  std::string GetProfileIdentifier() const;
-
-  // Sub-methods called by InitRealtimeReportingClient to make appropriate
-  // verifications and initialize the corresponding client. Returns a policy
-  // client description and a client, which can be nullptr if it can't be
-  // initialized.
-  std::pair<std::string, policy::CloudPolicyClient*> InitBrowserReportingClient(
-      const std::string& dm_token);
+  // RealtimeReportingClientBase overrides (all overrides below):
+  std::string GetProfileIdentifier() override;
+  std::string GetBrowserClientId() override;
+  base::Value::Dict GetContext() override;
+  bool ShouldIncludeDeviceInfo(bool per_profile) override;
+  void UploadCallback(base::Value::Dict event_wrapper,
+                      bool per_profile,
+                      policy::CloudPolicyClient* client,
+                      EnterpriseReportingEventType eventType,
+                      policy::CloudPolicyClient::Result upload_result) override;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::pair<std::string, policy::CloudPolicyClient*> InitProfileReportingClient(
-      const std::string& dm_token);
+      const std::string& dm_token) override;
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  void MaybeCollectDeviceSignalsAndReportEvent(
+      base::Value::Dict event,
+      policy::CloudPolicyClient* client,
+      std::string name,
+      const ReportingSettings& settings,
+      base::Time time) override;
+
+  // Add Crowdstrike signals to event report and upload it.
+  void PopulateSignalsAndReportEvent(
+      base::Value::Dict event,
+      policy::CloudPolicyClient* client,
+      std::string name,
+      ReportingSettings settings,
+      content::BrowserContext* context,
+      base::Time time,
+      device_signals::SignalsAggregationResponse response);
 #endif
 
   // Handle the availability of a cloud policy client.
@@ -141,26 +146,7 @@ class RealtimeReportingClient : public KeyedService,
   void RemoveDmTokenFromRejectedSet(const std::string& dm_token);
 
   raw_ptr<content::BrowserContext> context_;
-  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
-      nullptr;
-
-  // The cloud policy clients used to upload browser events and profile events
-  // to the cloud. These clients are never used to fetch policies. These
-  // pointers are not owned by the class.
-  raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> browser_client_ =
-      nullptr;
-  raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> profile_client_ =
-      nullptr;
-
-  // The private clients are used on platforms where we cannot just get a
-  // client and we create our own (used through the above client pointers).
-  std::unique_ptr<policy::CloudPolicyClient> browser_private_client_;
-  std::unique_ptr<policy::CloudPolicyClient> profile_private_client_;
-
-  // When a request is rejected for a given DM token, wait 24 hours before
-  // trying again for this specific DM Token.
-  base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
-      rejected_dm_token_timers_;
+  std::string username_;
 
   base::WeakPtrFactory<RealtimeReportingClient> weak_ptr_factory_{this};
 };

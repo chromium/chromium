@@ -61,7 +61,6 @@ class MockRealtimeReportingClient : public RealtimeReportingClient {
                void(const std::string&,
                     const ReportingSettings& settings,
                     base::Value::Dict event));
-  MOCK_METHOD(std::string, GetProfileUserName, (), (const, override));
 };
 
 std::unique_ptr<KeyedService> CreateMockRealtimeReportingClient(
@@ -87,6 +86,8 @@ class ExtensionInstallEventRouterTest : public testing::Test {
 
     mockRealtimeReportingClient_ = static_cast<MockRealtimeReportingClient*>(
         RealtimeReportingClientFactory::GetForProfile(profile_));
+    mockRealtimeReportingClient_->SetProfileUserNameForTesting(
+        kFakeProfileUsername);
 
     test::SetOnSecurityEventReporting(
         profile_->GetPrefs(), /*enabled=*/true,
