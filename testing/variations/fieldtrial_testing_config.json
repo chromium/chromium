@@ -19638,6 +19638,24 @@
             ]
         }
     ],
+    "RemoveRendererProcessLimit": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RemoveRendererProcessLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemoveSearchEngineChoiceAttribution": [
         {
             "platforms": [

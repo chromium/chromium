@@ -4556,6 +4556,11 @@ bool RenderProcessHost::IsProcessLimitReached() {
     // (meaning it only collects data from users who reach this code).
 #if !BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(features::kRemoveRendererProcessLimit)) {
+      // This is used for tests. To avoid changing test behaviors, don't
+      // change the behavior when it is set.
+      if (g_max_renderer_count_override) {
+        return process_count >= g_max_renderer_count_override;
+      }
       size_t sys_limit = GetPlatformProcessLimit();
       if (sys_limit == kUnknownPlatformProcessLimit) {
         return false;
