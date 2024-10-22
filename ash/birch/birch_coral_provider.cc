@@ -72,7 +72,7 @@ bool IsValidInSessionWindow(aura::Window* window) {
     return false;
   }
 
-  // The window should belongs to the current active user.
+  // The window should belong to the current active user.
   if (auto* window_manager = MultiUserWindowManagerImpl::Get()) {
     const AccountId& window_owner = window_manager->GetWindowOwner(window);
     const AccountId& active_owner =
@@ -410,7 +410,9 @@ void BirchCoralProvider::FilterCoralContentItems(
 }
 
 void BirchCoralProvider::MaybeCacheTabEmbedding(TabClusterUIItem* tab_item) {
-  if (IsValidTab(tab_item) && ShouldCreateEmbedding(tab_item)) {
+  // Only cache tab embeddings for the primary user.
+  if (Shell::Get()->session_controller()->IsUserPrimary() &&
+      IsValidTab(tab_item) && ShouldCreateEmbedding(tab_item)) {
     CacheTabEmbedding(tab_item);
   }
 }
