@@ -23,6 +23,8 @@ struct ASH_EXPORT OpenUrlCommand {
 
   OpenUrlCommand(const OpenUrlCommand&);
   OpenUrlCommand& operator=(const OpenUrlCommand&);
+  OpenUrlCommand(OpenUrlCommand&&);
+  OpenUrlCommand& operator=(OpenUrlCommand&&);
 
   ~OpenUrlCommand();
 };
@@ -43,6 +45,8 @@ struct ASH_EXPORT DriveUploadCommand {
 
   DriveUploadCommand(const DriveUploadCommand&);
   DriveUploadCommand& operator=(const DriveUploadCommand&);
+  DriveUploadCommand(DriveUploadCommand&&);
+  DriveUploadCommand& operator=(DriveUploadCommand&&);
 
   ~DriveUploadCommand();
 };

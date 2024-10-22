@@ -31,6 +31,12 @@ ScannerActionViewModel::ScannerActionViewModel(const ScannerActionViewModel&) =
 ScannerActionViewModel& ScannerActionViewModel::operator=(
     const ScannerActionViewModel&) = default;
 
+ScannerActionViewModel::ScannerActionViewModel(ScannerActionViewModel&&) =
+    default;
+
+ScannerActionViewModel& ScannerActionViewModel::operator=(
+    ScannerActionViewModel&&) = default;
+
 ScannerActionViewModel::~ScannerActionViewModel() = default;
 
 std::u16string ScannerActionViewModel::GetText() const {

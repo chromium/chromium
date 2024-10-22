@@ -30,6 +30,8 @@ class ASH_EXPORT ScannerActionViewModel {
       base::WeakPtr<ScannerCommandDelegate> delegate);
   ScannerActionViewModel(const ScannerActionViewModel&);
   ScannerActionViewModel& operator=(const ScannerActionViewModel&);
+  ScannerActionViewModel(ScannerActionViewModel&&);
+  ScannerActionViewModel& operator=(ScannerActionViewModel&&);
   ~ScannerActionViewModel();
 
   std::u16string GetText() const;

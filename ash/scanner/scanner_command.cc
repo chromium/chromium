@@ -16,6 +16,8 @@ OpenUrlCommand::OpenUrlCommand(GURL url) : url(std::move(url)) {}
 
 OpenUrlCommand::OpenUrlCommand(const OpenUrlCommand&) = default;
 OpenUrlCommand& OpenUrlCommand::operator=(const OpenUrlCommand&) = default;
+OpenUrlCommand::OpenUrlCommand(OpenUrlCommand&&) = default;
+OpenUrlCommand& OpenUrlCommand::operator=(OpenUrlCommand&&) = default;
 
 OpenUrlCommand::~OpenUrlCommand() = default;
 
@@ -30,6 +32,9 @@ DriveUploadCommand::DriveUploadCommand(std::string title,
 
 DriveUploadCommand::DriveUploadCommand(const DriveUploadCommand&) = default;
 DriveUploadCommand& DriveUploadCommand::operator=(const DriveUploadCommand&) =
+    default;
+DriveUploadCommand::DriveUploadCommand(DriveUploadCommand&&) = default;
+DriveUploadCommand& DriveUploadCommand::operator=(DriveUploadCommand&&) =
     default;
 
 DriveUploadCommand::~DriveUploadCommand() = default;
