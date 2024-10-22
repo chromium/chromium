@@ -69,6 +69,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Callback<Boolean> mSuccessCallback;
+    @Mock private DataSharingNotificationManager mDataSharingNotificationManager;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
@@ -84,7 +85,8 @@ public class InstantMessageDelegateImplUnitTest {
         when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_ID)).thenReturn(TAB_ID);
 
         mDelegate = new InstantMessageDelegateImpl(mProfile);
-        mDelegate.attachWindow(mWindowAndroid, mTabGroupModelFilter);
+        mDelegate.attachWindow(
+                mWindowAndroid, mTabGroupModelFilter, mDataSharingNotificationManager);
     }
 
     private InstantMessage newInstantMessage(@UserAction int action) {
@@ -219,5 +221,16 @@ public class InstantMessageDelegateImplUnitTest {
         assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(Integer.toString(13)));
+    }
+
+    @Test
+    public void testSystemNotification() {
+        InstantMessage message = newInstantMessage(UserAction.COLLABORATION_USER_JOINED);
+        message.level = InstantNotificationLevel.SYSTEM;
+
+        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+
+        verify(mDataSharingNotificationManager).showOtherJoinedNotification(any(), any());
+        verify(mSuccessCallback).onResult(true);
     }
 }

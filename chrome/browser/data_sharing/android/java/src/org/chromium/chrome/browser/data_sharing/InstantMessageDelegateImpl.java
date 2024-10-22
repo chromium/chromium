@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
@@ -44,7 +43,22 @@ import java.util.Objects;
  * scoped by profile. This class should be attached/detached by all windows.
  */
 public class InstantMessageDelegateImpl implements InstantMessageDelegate {
-    private final List<Pair<WindowAndroid, TabGroupModelFilter>> mAttachList = new ArrayList<>();
+    private static class AttachedWindowInfo {
+        public final WindowAndroid windowAndroid;
+        public final TabGroupModelFilter tabGroupModelFilter;
+        public final DataSharingNotificationManager dataSharingNotificationManager;
+
+        public AttachedWindowInfo(
+                WindowAndroid windowAndroid,
+                TabGroupModelFilter tabGroupModelFilter,
+                DataSharingNotificationManager dataSharingNotificationManager) {
+            this.windowAndroid = windowAndroid;
+            this.tabGroupModelFilter = tabGroupModelFilter;
+            this.dataSharingNotificationManager = dataSharingNotificationManager;
+        }
+    }
+
+    private final List<AttachedWindowInfo> mAttachList = new ArrayList<>();
 
     /**
      * @param profile The current profile to get dependencies with.
@@ -59,14 +73,19 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     /**
      * @param windowAndroid The window that can be used for showing messages.
      * @param tabGroupModelFilter The tab model and group filter for the given window.
+     * @param dataSharingNotificationManager Used to send notifications for a particular window.
      */
     public void attachWindow(
             @NonNull WindowAndroid windowAndroid,
-            @NonNull TabGroupModelFilter tabGroupModelFilter) {
+            @NonNull TabGroupModelFilter tabGroupModelFilter,
+            @NonNull DataSharingNotificationManager dataSharingNotificationManager) {
         assert windowAndroid != null;
         assert tabGroupModelFilter != null;
         assert !tabGroupModelFilter.isIncognito();
-        mAttachList.add(new Pair<>(windowAndroid, tabGroupModelFilter));
+        assert dataSharingNotificationManager != null;
+        mAttachList.add(
+                new AttachedWindowInfo(
+                        windowAndroid, tabGroupModelFilter, dataSharingNotificationManager));
     }
 
     /**
@@ -74,27 +93,40 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
      */
     public void detachWindow(@NonNull WindowAndroid windowAndroid) {
         assert windowAndroid != null;
-        mAttachList.removeIf(wa -> Objects.equals(wa.first, windowAndroid));
+        mAttachList.removeIf(awi -> Objects.equals(awi.windowAndroid, windowAndroid));
     }
 
     @Override
     public void displayInstantaneousMessage(
             InstantMessage message, Callback<Boolean> successCallback) {
         boolean success = false;
+
         try {
+            @Nullable AttachedWindowInfo attachedWindowInfo = getAttachedWindowInfo(message);
+            if (attachedWindowInfo == null) return;
+
+            @NonNull WindowAndroid windowAndroid = attachedWindowInfo.windowAndroid;
+            @Nullable Context context = windowAndroid.getContext().get();
+            if (context == null) return;
+
+            @NonNull
+            TabGroupModelFilter tabGroupModelFilter = attachedWindowInfo.tabGroupModelFilter;
+            @UserAction int userAction = message.action;
+
             if (message.level == InstantNotificationLevel.SYSTEM) {
-                // TODO(https://crbug.com/369164214): Implement.
+                if (userAction == UserAction.COLLABORATION_USER_JOINED) {
+                    @NonNull
+                    DataSharingNotificationManager dataSharingNotificationManager =
+                            attachedWindowInfo.dataSharingNotificationManager;
+                    showCollaborationUserJoinedSystemNotification(
+                            message, context, dataSharingNotificationManager, tabGroupModelFilter);
+                }
+                success = true;
             } else if (message.level == InstantNotificationLevel.BROWSER) {
-                @Nullable Pair<WindowAndroid, TabGroupModelFilter> attach = getAttach(message);
-                if (attach == null) return;
-                @NonNull WindowAndroid windowAndroid = attach.first;
-                @NonNull TabGroupModelFilter tabGroupModelFilter = attach.second;
                 @Nullable
                 MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
-                @Nullable Context context = windowAndroid.getContext().get();
-                if (messageDispatcher == null || context == null) return;
+                if (messageDispatcher == null) return;
 
-                @UserAction int userAction = message.action;
                 if (userAction == UserAction.TAB_REMOVED) {
                     showTabRemoved(message, context, messageDispatcher);
                 } else if (userAction == UserAction.TAB_NAVIGATED) {
@@ -109,12 +141,12 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 success = true;
             }
         } finally {
-            // TODO(https://crbug.com/369164214): Implement correct usage of `successCallback`.
+            // TODO(https://crbug.com/374803292): Implement correct usage of `successCallback`.
             successCallback.onResult(success);
         }
     }
 
-    private Pair<WindowAndroid, TabGroupModelFilter> getAttach(InstantMessage message) {
+    private AttachedWindowInfo getAttachedWindowInfo(InstantMessage message) {
         if (mAttachList.size() == 0) {
             return null;
         }
@@ -125,13 +157,13 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             return mAttachList.get(0);
         }
 
-        for (Pair<WindowAndroid, TabGroupModelFilter> attach : mAttachList) {
-            TabGroupModelFilter tabGroupModelFilter = attach.second;
+        for (AttachedWindowInfo info : mAttachList) {
+            TabGroupModelFilter tabGroupModelFilter = info.tabGroupModelFilter;
             int rootId = tabGroupModelFilter.getRootIdFromStableId(tabGroupId);
             if (rootId == Tab.INVALID_TAB_ID) continue;
 
             // If we had a valid rootId, this is the right window.
-            return attach;
+            return info;
         }
 
         // Tab group was deleted or window not active.
@@ -223,6 +255,23 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 buttonText,
                 icon,
                 () -> {});
+    }
+
+    private void showCollaborationUserJoinedSystemNotification(
+            InstantMessage message,
+            Context context,
+            DataSharingNotificationManager dataSharingNotificationManager,
+            TabGroupModelFilter tabGroupModelFilter) {
+        String givenName = MessageUtils.extractGivenName(message);
+        String tabGroupTitle = getTabGroupTitle(message, context, tabGroupModelFilter);
+        String contentTitle =
+                context.getString(
+                        R.string.data_sharing_browser_message_joined_tab_group,
+                        givenName,
+                        tabGroupTitle);
+
+        @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
+        dataSharingNotificationManager.showOtherJoinedNotification(contentTitle, tabGroupId);
     }
 
     private void showGenericMessage(
