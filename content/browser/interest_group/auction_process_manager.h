@@ -173,6 +173,12 @@ class CONTENT_EXPORT AuctionProcessManager {
 
     SiteInstance* site_instance() { return site_instance_.get(); }
 
+    // Returns a weak pointer so that tests can hold onto a pointer to the
+    // WorkletProcess without affecting lifetimes.
+    base::WeakPtr<WorkletProcess> GetWeakPtrForTesting() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
    private:
     friend class base::RefCounted<WorkletProcess>;
     friend class DedicatedAuctionProcessManager;

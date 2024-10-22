@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -129,9 +130,27 @@ class TestAuctionProcessManager
     base::RunLoop().RunUntilIdle();
   }
 
+  // Get the index that this process was created (e.g. if it was the first
+  // created process, return 0). Returns -1 and has an EXPECT failure if the
+  // process wasn't found or has since been destroyed. `handle` must have been
+  // assigned a WorkletProcess.
+  size_t ProcessCreationOrder(
+      const AuctionProcessManager::ProcessHandle& handle) {
+    EXPECT_TRUE(handle.worklet_process_for_testing());
+    for (size_t i = 0u; i < launched_processes_.size(); ++i) {
+      if (handle.worklet_process_for_testing() ==
+          launched_processes_[i].get()) {
+        return i;
+      }
+    }
+    ADD_FAILURE() << "Worklet process not found";
+    return -1;
+  }
+
  private:
   AuctionProcessManager::WorkletProcess::ProcessContext CreateProcessInternal(
       AuctionProcessManager::WorkletProcess& worklet_process) override {
+    launched_processes_.emplace_back(worklet_process.GetWeakPtrForTesting());
     if constexpr (std::is_same<AuctionManagerBaseType,
                                InRendererAuctionProcessManager>::value) {
       // Defer to the RendererProcessHost mocks when using the InRenderer path.
@@ -145,49 +164,11 @@ class TestAuctionProcessManager
     }
   }
 
-  mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
-      receiver_set_;
-};
-
-class DedicatedStyleTestAuctionProcessManager
-    : public TestAuctionProcessManager<DedicatedAuctionProcessManager> {
- public:
-  DedicatedStyleTestAuctionProcessManager() = default;
-  DedicatedStyleTestAuctionProcessManager(
-      const DedicatedStyleTestAuctionProcessManager&) = delete;
-  DedicatedStyleTestAuctionProcessManager& operator=(
-      const DedicatedStyleTestAuctionProcessManager&) = delete;
-  ~DedicatedStyleTestAuctionProcessManager() override = default;
-
-  // Get the index that this process was created (e.g. if it was
-  // the first created process, return 0).
-  // This will fail if this handle's process was not created by this
-  // DedicatedStyleTestAuctionProcessManager.
-  // Do not call this function after any process in the test has been
-  // destroyed.
-  size_t ProcessCreationOrder(const ProcessHandle* handle) {
-    for (size_t i = 0u; i < launched_processes_.size(); ++i) {
-      if (handle->worklet_process_for_testing() == launched_processes_[i]) {
-        return i;
-      }
-    }
-    CHECK(false);
-    return 0;
-  }
-
- private:
-  WorkletProcess::ProcessContext CreateProcessInternal(
-      WorkletProcess& worklet_process) override {
-    mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-    receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
-    launched_processes_.push_back(&worklet_process);
-    return WorkletProcess::ProcessContext(std::move(service));
-  }
+  std::vector<base::WeakPtr<AuctionProcessManager::WorkletProcess>>
+      launched_processes_;
 
   mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
       receiver_set_;
-
-  std::vector<WorkletProcess*> launched_processes_;
 };
 
 class AuctionProcessManagerTestBase
@@ -355,7 +336,8 @@ class DedicatedStyleAuctionProcessManagerTest
     return auction_process_manager_;
   }
 
-  DedicatedStyleTestAuctionProcessManager auction_process_manager_;
+  TestAuctionProcessManager<DedicatedAuctionProcessManager>
+      auction_process_manager_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -1068,9 +1050,8 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
     // process than to use the older process & have to remove one of our
     // anticipatory processes. All anticipatory processes were of type
     // GetParam() except the first one.
-    EXPECT_EQ(
-        auction_process_manager_.ProcessCreationOrder(handles.back().get()),
-        i + 1u);
+    EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(*handles.back()),
+              i + 1u);
     EXPECT_EQ(GetActiveProcessesOfParamType(), i + 1u);
   }
   EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
@@ -1093,7 +1074,7 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
                           /*expect_success=*/true,
                           RequestWorkletServiceOutcome::kUsedIdleProcess);
     // We assigned the oldest available idle process.
-    EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle.get()), i);
+    EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(*handle), i);
     EXPECT_EQ(GetActiveProcessesOfParamType(), i + 1u);
     EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 2 - i);
     handles.push_back(std::move(handle));
