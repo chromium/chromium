@@ -76,9 +76,10 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                                 bool* key_frame));
   MOCK_METHOD2(ReleaseOutputBuffer, void(int index, bool render));
   MOCK_METHOD1(GetInputBuffer, base::span<uint8_t>(int input_buffer_index));
-  MOCK_METHOD4(
-      CopyFromOutputBuffer,
-      MediaCodecResult(int index, size_t offset, void* dst, size_t num));
+  MOCK_METHOD3(CopyFromOutputBuffer,
+               MediaCodecResult(int index,
+                                size_t offset,
+                                base::span<uint8_t> dst));
   std::string GetName() override;
   bool IsSoftwareCodec() override;
   MOCK_METHOD1(SetSurface,

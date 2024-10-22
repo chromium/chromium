@@ -498,8 +498,8 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
              base::NumberToString(bitstream_buffer.size())});
     return;
   }
-  result = media_codec_->CopyFromOutputBuffer(buf_index, offset,
-                                              mapping.memory(), size);
+  result = media_codec_->CopyFromOutputBuffer(
+      buf_index, offset, mapping.GetMemoryAsSpan<uint8_t>(size));
   if (!result.is_ok()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "MediaCodec error in CopyFromOutputBuffer",

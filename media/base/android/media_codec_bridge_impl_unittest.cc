@@ -175,9 +175,9 @@ void DecodeMediaFrame(MediaCodecBridge* media_codec,
 // - as to key frames, correct sequences of H.264 NALUs (SPS before PPS and
 //   before slices).
 // - as to non key frames, contain no SPS/PPS infront.
-void H264Validate(const uint8_t* frame, size_t size) {
+void H264Validate(base::span<const uint8_t> frame) {
   H264Parser h264_parser;
-  h264_parser.SetStream(frame, static_cast<off_t>(size));
+  h264_parser.SetStream(frame.data(), frame.size());
   bool seen_sps = false;
   bool seen_pps = false;
 
@@ -278,13 +278,11 @@ void EncodeMediaFrame(MediaCodecBridge* media_codec,
   } while (buf_index < 0);
   ASSERT_TRUE(result.is_ok() && buf_index >= 0);
 
-  std::unique_ptr<uint8_t[]> output_data =
-      std::make_unique<uint8_t[]>(output_size);
-  result = media_codec->CopyFromOutputBuffer(buf_index, offset,
-                                             output_data.get(), output_size);
+  auto output_data = base::HeapArray<uint8_t>::Uninit(output_size);
+  result = media_codec->CopyFromOutputBuffer(buf_index, offset, output_data);
   ASSERT_TRUE(result.is_ok());
 
-  H264Validate(output_data.get(), output_size);
+  H264Validate(output_data);
 
   media_codec->ReleaseOutputBuffer(buf_index, false);
 }

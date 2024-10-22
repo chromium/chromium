@@ -161,8 +161,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   base::span<uint8_t> GetInputBuffer(int input_buffer_index) override;
   MediaCodecResult CopyFromOutputBuffer(int index,
                                         size_t offset,
-                                        void* dst,
-                                        size_t num) override;
+                                        base::span<uint8_t> dst) override;
   std::string GetName() override;
   bool IsSoftwareCodec() override;
   bool SetSurface(const base::android::JavaRef<jobject>& surface) override;

@@ -444,8 +444,13 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
         sample_format_, channel_layout_, channel_count_, sample_rate_,
         frame_count, out.size, pool_);
 
-    MediaCodecResult result = media_codec->CopyFromOutputBuffer(
-        out.index, out.offset, audio_buffer->channel_data()[0], out.size);
+    // TODO(crbug.com/373960632): Use spans from AudioBuffer directly once that
+    // class is spanified.
+    auto dst = UNSAFE_TODO(
+        base::span<uint8_t>(audio_buffer->channel_data()[0], out.size));
+
+    MediaCodecResult result =
+        media_codec->CopyFromOutputBuffer(out.index, out.offset, dst);
 
     if (!result.is_ok()) {
       media_codec->ReleaseOutputBuffer(out.index, false);
@@ -486,8 +491,13 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
   // Copy data into AudioBuffer.
   CHECK_LE(out.size, audio_buffer->data_size());
 
-  MediaCodecResult result = media_codec->CopyFromOutputBuffer(
-      out.index, out.offset, audio_buffer->channel_data()[0], out.size);
+  // TODO(crbug.com/373960632): Use spans from AudioBuffer directly once that
+  // class is spanified.
+  auto dst = UNSAFE_TODO(
+      base::span<uint8_t>(audio_buffer->channel_data()[0], out.size));
+
+  MediaCodecResult result =
+      media_codec->CopyFromOutputBuffer(out.index, out.offset, dst);
 
   // Release MediaCodec output buffer.
   media_codec->ReleaseOutputBuffer(out.index, false);

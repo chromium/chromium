@@ -792,38 +792,18 @@ base::span<uint8_t> MediaCodecBridgeImpl::GetInputBuffer(
              : base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj());
 }
 
-MediaCodecResult MediaCodecBridgeImpl::CopyFromOutputBuffer(int index,
-                                                            size_t offset,
-                                                            void* dst,
-                                                            size_t num) {
-  const uint8_t* src_data = nullptr;
-  size_t src_capacity = 0;
-  MediaCodecResult result =
-      GetOutputBufferAddress(index, offset, &src_data, &src_capacity);
-  if (result.is_ok()) {
-    CHECK_GE(src_capacity, num);
-    memcpy(dst, src_data, num);
-  }
-  return result;
-}
-
-MediaCodecResult MediaCodecBridgeImpl::GetOutputBufferAddress(
+MediaCodecResult MediaCodecBridgeImpl::CopyFromOutputBuffer(
     int index,
     size_t offset,
-    const uint8_t** addr,
-    size_t* capacity) {
+    base::span<uint8_t> dst) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_buffer(
       Java_MediaCodecBridge_getOutputBuffer(env, j_bridge_, index));
   if (j_buffer.is_null()) {
     return {MediaCodecResult::Codes::kError, "Unable to get output buffer."};
   }
-  const size_t total_capacity = env->GetDirectBufferCapacity(j_buffer.obj());
-  CHECK_GE(total_capacity, offset);
-  *addr = reinterpret_cast<const uint8_t*>(
-              env->GetDirectBufferAddress(j_buffer.obj())) +
-          offset;
-  *capacity = total_capacity - offset;
+  auto src_span = base::android::JavaByteBufferToSpan(env, j_buffer.obj());
+  dst.copy_from_nonoverlapping(src_span.subspan(offset, dst.size()));
   return OkStatus();
 }
 
