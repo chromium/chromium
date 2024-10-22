@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -185,8 +186,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
     ~Buffer();
 
     GLenum target;
-    std::unique_ptr<uint8_t[]> pixels;
-    size_t size;
+    base::HeapArray<uint8_t> pixels;
   };
 
   unsigned context_id_;

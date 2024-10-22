@@ -10,11 +10,14 @@
 #include "components/viz/test/test_gles2_interface.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "components/viz/test/test_context_support.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -284,14 +287,14 @@ void* TestGLES2Interface::MapBufferCHROMIUM(GLuint target, GLenum access) {
     --times_map_buffer_chromium_succeeds_;
   }
 
-  return buffers_[bound_buffer_[target]]->pixels.get();
+  return buffers_[bound_buffer_[target]]->pixels.data();
 }
 
 GLboolean TestGLES2Interface::UnmapBufferCHROMIUM(GLuint target) {
   DCHECK_GT(bound_buffer_.count(target), 0u);
   DCHECK_GT(buffers_.count(bound_buffer_[target]), 0u);
   DCHECK_EQ(target, buffers_[bound_buffer_[target]]->target);
-  buffers_[bound_buffer_[target]]->pixels = nullptr;
+  buffers_[bound_buffer_[target]]->pixels = {};
   return true;
 }
 
@@ -304,14 +307,16 @@ void TestGLES2Interface::BufferData(GLenum target,
   DCHECK_EQ(target, buffers_[bound_buffer_[target]]->target);
   Buffer* buffer = buffers_[bound_buffer_[target]].get();
   if (context_lost_) {
-    buffer->pixels = nullptr;
+    buffer->pixels = {};
     return;
   }
 
-  buffer->pixels.reset(new uint8_t[size]);
-  buffer->size = size;
-  if (data != nullptr)
-    memcpy(buffer->pixels.get(), data, size);
+  buffer->pixels = base::HeapArray<uint8_t>::Uninit(size);
+  if (data != nullptr) {
+    buffer->pixels.as_span().copy_from(
+        base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(data),
+                                  base::checked_cast<size_t>(size)));
+  }
 }
 
 void TestGLES2Interface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
@@ -547,7 +552,7 @@ size_t TestGLES2Interface::NumRenderbuffers() const {
   return renderbuffer_set_.size();
 }
 
-TestGLES2Interface::Buffer::Buffer() : target(0), size(0) {}
+TestGLES2Interface::Buffer::Buffer() : target(0) {}
 
 TestGLES2Interface::Buffer::~Buffer() = default;
 
