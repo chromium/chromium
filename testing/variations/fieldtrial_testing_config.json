@@ -1599,7 +1599,27 @@
             ]
         }
     ],
-    "AutofillEnableCardBenefits": [
+    "AutofillEnableCardBenefitsForAmericanExpress": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableCardBenefitsForAmericanExpress"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillEnableCardBenefitsForCapitalOne": [
         {
             "platforms": [
                 "chromeos",
@@ -1612,7 +1632,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillEnableCardBenefitsForAmericanExpress",
                         "AutofillEnableCardBenefitsForCapitalOne"
                     ]
                 }
