@@ -1,4 +1,26 @@
 {
+  "Mac Builder Siso FYI": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "args": [
+          "--allow-coverage-initializer"
+        ],
+        "name": "check_static_initializers",
+        "script": "check_static_initializers.py"
+      },
+      {
+        "name": "metrics_python_tests",
+        "script": "metrics_python_tests.py"
+      },
+      {
+        "name": "webkit_lint",
+        "script": "blink_lint_expectations.py"
+      }
+    ]
+  },
   "Mac Tests Siso FYI": {
     "gtest_tests": [
       {

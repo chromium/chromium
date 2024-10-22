@@ -67,6 +67,21 @@ ci.builder(
         build_gs_bucket = "chromium-fyi-archive",
     ),
     gn_args = "ci/Mac Builder",
+    targets = targets.bundle(
+        targets = [
+            "chromium_mac_scripts",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        per_test_modifications = {
+            "check_static_initializers": targets.mixin(
+                args = [
+                    "--allow-coverage-initializer",
+                ],
+            ),
+        },
+    ),
     cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
