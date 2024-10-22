@@ -18,11 +18,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
-import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -84,15 +84,15 @@ class NavigationSheetMediator {
         mIconGenerator = FaviconUtils.createCircularIconGenerator(context);
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         mHistoryIcon =
-                TintedDrawable.constructTintedDrawable(
+                UiUtils.getTintedDrawable(
                         context,
                         R.drawable.ic_history_googblue_24dp,
                         R.color.default_icon_color_tint_list);
         mDefaultIcon =
-                TintedDrawable.constructTintedDrawable(
+                UiUtils.getTintedDrawable(
                         context, R.drawable.ic_chrome, R.color.default_icon_color_tint_list);
         mIncognitoIcon =
-                TintedDrawable.constructTintedDrawable(
+                UiUtils.getTintedDrawable(
                         context, R.drawable.incognito_small, R.color.default_icon_color_tint_list);
         mNewTabText = context.getResources().getString(R.string.menu_new_tab);
         mNewIncognitoTabText = context.getResources().getString(R.string.menu_new_incognito_tab);
