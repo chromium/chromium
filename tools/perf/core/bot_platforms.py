@@ -493,7 +493,7 @@ _MAC_HIGH_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
-    # _dawn_perf_tests(330),    # b/332611618
+    _dawn_perf_tests(330),
     _tint_benchmark(),
     _views_perftests(),
 ])
@@ -510,7 +510,7 @@ _MAC_INTEL_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _MAC_INTEL_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
-    # _dawn_perf_tests(330),    # b/332611618
+    _dawn_perf_tests(330),
     _tint_benchmark(),
     _views_perftests(),
     _load_library_perf_tests(),
