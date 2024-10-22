@@ -1291,7 +1291,15 @@ int TabStripModel::GetTabCount() const {
 bool TabStripModel::IsContextMenuCommandEnabled(
     int context_index,
     ContextMenuCommand command_id) const {
+  // Command must be valid.
   DCHECK(command_id > CommandFirst && command_id < CommandLast);
+
+  // Context Index having an index greater than tab strip model doesnt make
+  // sense since this context menu must target a tab.
+  if (!ContainsIndex(context_index)) {
+    return false;
+  }
+
   switch (command_id) {
     case CommandNewTabToRight:
     case CommandCloseTab:
@@ -1301,9 +1309,9 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       return delegate_->CanReload();
 
     case CommandCloseOtherTabs:
-    case CommandCloseTabsToRight:
+    case CommandCloseTabsToRight: {
       return !GetIndicesClosedByCommand(context_index, command_id).empty();
-
+    }
     case CommandDuplicate: {
       std::vector<int> indices = GetIndicesForCommand(context_index);
       for (int index : indices) {
@@ -1388,7 +1396,9 @@ bool TabStripModel::IsContextMenuCommandEnabled(
 
 void TabStripModel::ExecuteContextMenuCommand(int context_index,
                                               ContextMenuCommand command_id) {
-  DCHECK(command_id > CommandFirst && command_id < CommandLast);
+  // This should have been tested by IsContextMenuCommandEnabled.
+  CHECK(command_id > CommandFirst && command_id < CommandLast);
+
   // The tab strip may have been modified while the context menu was open,
   // including closing the tab originally at |context_index|.
   if (!ContainsIndex(context_index))

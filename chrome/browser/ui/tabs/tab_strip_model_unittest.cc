@@ -1419,6 +1419,26 @@ TEST_P(TabStripModelTest, CloseTabWithOpenerShiftsSelectionToOpener) {
   ASSERT_TRUE(tabstrip.empty());
 }
 
+TEST_P(TabStripModelTest, IsContextMenuCommandEnabledBadIndex) {
+  constexpr int kTestTabCount = 1;
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, kTestTabCount, 0, "0"));
+  ASSERT_EQ(kTestTabCount, tabstrip.count());
+  ASSERT_FALSE(tabstrip.ContainsIndex(kTestTabCount));
+
+  // kNoTabs should return false for context menu commands being enabled.
+  EXPECT_FALSE(tabstrip.IsContextMenuCommandEnabled(
+      TabStripModel::kNoTab, TabStripModel::CommandCloseTab));
+
+  // Indexes out of bounds should return false for context menu
+  // commands being enabled.
+  EXPECT_FALSE(tabstrip.IsContextMenuCommandEnabled(
+      kTestTabCount, TabStripModel::CommandCloseTab));
+}
+
 // Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
 // CommandCloseTab.
 TEST_P(TabStripModelTest, CommandCloseTab) {
