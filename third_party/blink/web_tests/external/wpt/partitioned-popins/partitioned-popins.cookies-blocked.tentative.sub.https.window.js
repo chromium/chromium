@@ -34,7 +34,8 @@ async_test(t => {
       case 'popin-read':
         // Step 8
         // We want to see the same behavior a cross-site iframe would have, only SameSite=None available, with the ability to set additional cookies in the popin.
-        assert_equals(e.data.message, "ReadOnLoad:ThirdPartyNone-,ReadOnFetch:ThirdPartyNone-ThirdPartyNonePopin-,ReadOnDocument:ThirdPartyNone-ThirdPartyNonePopin-");
+        // TODO(crbug.com/340606651): Once RSA is implemented we should see first-party cookies after the call.
+        assert_equals(e.data.message, "ReadOnLoad:ThirdPartyNone-,ReadOnFetch:ThirdPartyNone-ThirdPartyNonePopin-,ReadOnDocument:ThirdPartyNone-ThirdPartyNonePopin-,ReadOnFetchAfterRSA:ThirdPartyNone-ThirdPartyNonePopin-ThirdPartyNonePopinAfterRSA-,ReadOnDocumentAfterRSA:ThirdPartyNone-ThirdPartyNonePopin-ThirdPartyNonePopinAfterRSA-");
         t.done();
         break;
     }

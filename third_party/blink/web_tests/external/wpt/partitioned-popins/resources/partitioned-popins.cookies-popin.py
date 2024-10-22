@@ -39,6 +39,7 @@ def main(request, response):
   let resp = await fetch("/partitioned-popins/resources/get_cookies.py", {credentials: 'include'});
   let resp_json = await resp.json();
   let message = \"""" + message + b""",ReadOnFetch:";
+  // TODO(crbug.com/340606651): Consolidate and refactor
   if (resp_json["first-party-strict"] == id) {
     message += "FirstPartyStrict-";
   }
@@ -111,6 +112,126 @@ def main(request, response):
   }
   if (document.cookie.includes("third-party-none-popin="+id)) {
     message += "ThirdPartyNonePopin-";
+  }
+  await test_driver.set_permission({ name: 'storage-access' }, 'granted');
+  await test_driver.bless("fake user interaction", () => document.requestStorageAccess());
+  document.cookie = "first-party-strict-popin-after-rsa=" + id + "; SameSite=Strict; Secure";
+  document.cookie = "first-party-lax-popin-after-rsa=" + id + "; SameSite=Lax; Secure";
+  document.cookie = "first-party-none-popin-after-rsa=" + id + "; SameSite=None; Secure";
+  document.cookie = "third-party-strict-popin-after-rsa=" + id + "; Partitioned; SameSite=Strict; Secure";
+  document.cookie = "third-party-lax-popin-after-rsa=" + id + "; Partitioned; SameSite=Lax; Secure";
+  document.cookie = "third-party-none-popin-after-rsa=" + id + "; Partitioned; SameSite=None; Secure";
+  resp = await fetch("/partitioned-popins/resources/get_cookies.py", {credentials: 'include'});
+  resp_json = await resp.json();
+  message += ",ReadOnFetchAfterRSA:";
+  if (resp_json["first-party-strict"] == id) {
+    message += "FirstPartyStrict-";
+  }
+  if (resp_json["first-party-lax"] == id) {
+    message += "FirstPartyLax-";
+  }
+  if (resp_json["first-party-none"] == id) {
+    message += "FirstPartyNone-";
+  }
+  if (resp_json["third-party-strict"] == id) {
+    message += "ThirdPartyStrict-";
+  }
+  if (resp_json["third-party-lax"] == id) {
+    message += "ThirdPartyLax-";
+  }
+  if (resp_json["third-party-none"] == id) {
+    message += "ThirdPartyNone-";
+  }
+  if (resp_json["first-party-strict-popin"] == id) {
+    message += "FirstPartyStrictPopin-";
+  }
+  if (resp_json["first-party-lax-popin"] == id) {
+    message += "FirstPartyLaxPopin-";
+  }
+  if (resp_json["first-party-none-popin"] == id) {
+    message += "FirstPartyNonePopin-";
+  }
+  if (resp_json["third-party-strict-popin"] == id) {
+    message += "ThirdPartyStrictPopin-";
+  }
+  if (resp_json["third-party-lax-popin"] == id) {
+    message += "ThirdPartyLaxPopin-";
+  }
+  if (resp_json["third-party-none-popin"] == id) {
+    message += "ThirdPartyNonePopin-";
+  }
+  if (resp_json["first-party-strict-popin-after-rsa"] == id) {
+    message += "FirstPartyStrictPopinAfterRSA-";
+  }
+  if (resp_json["first-party-lax-popin-after-rsa"] == id) {
+    message += "FirstPartyLaxPopinAfterRSA-";
+  }
+  if (resp_json["first-party-none-popin-after-rsa"] == id) {
+    message += "FirstPartyNonePopinAfterRSA-";
+  }
+  if (resp_json["third-party-strict-popin-after-rsa"] == id) {
+    message += "ThirdPartyStrictPopinAfterRSA-";
+  }
+  if (resp_json["third-party-lax-popin-after-rsa"] == id) {
+    message += "ThirdPartyLaxPopinAfterRSA-";
+  }
+  if (resp_json["third-party-none-popin-after-rsa"] == id) {
+    message += "ThirdPartyNonePopinAfterRSA-";
+  }
+  message += ",ReadOnDocumentAfterRSA:";
+  if (document.cookie.includes("first-party-strict="+id)) {
+    message += "FirstPartyStrict-";
+  }
+  if (document.cookie.includes("first-party-lax="+id)) {
+    message += "FirstPartyLax-";
+  }
+  if (document.cookie.includes("first-party-none="+id)) {
+    message += "FirstPartyNone-";
+  }
+  if (document.cookie.includes("third-party-strict="+id)) {
+    message += "ThirdPartyStrict-";
+  }
+  if (document.cookie.includes("third-party-lax="+id)) {
+    message += "ThirdPartyLax-";
+  }
+  if (document.cookie.includes("third-party-none="+id)) {
+    message += "ThirdPartyNone-";
+  }
+  if (document.cookie.includes("first-party-strict-popin="+id)) {
+    message += "FirstPartyStrictPopin-";
+  }
+  if (document.cookie.includes("first-party-lax-popin="+id)) {
+    message += "FirstPartyLaxPopin-";
+  }
+  if (document.cookie.includes("first-party-none-popin="+id)) {
+    message += "FirstPartyNonePopin-";
+  }
+  if (document.cookie.includes("third-party-strict-popin="+id)) {
+    message += "ThirdPartyStrictPopin-";
+  }
+  if (document.cookie.includes("third-party-lax-popin="+id)) {
+    message += "ThirdPartyLaxPopin-";
+  }
+  if (document.cookie.includes("third-party-none-popin="+id)) {
+    message += "ThirdPartyNonePopin-";
+  }
+  if (document.cookie.includes("first-party-strict-popin-after-rsa="+id)) {
+    message += "FirstPartyStrictPopinAfterRSA-";
+  }
+  if (document.cookie.includes("first-party-lax-popin-after-rsa="+id)) {
+    message += "FirstPartyLaxPopinAfterRSA-";
+  }
+  if (document.cookie.includes("first-party-none-popin-after-rsa="+id)) {
+    message += "FirstPartyNonePopinAfterRSA-";
+  }
+  if (document.cookie.includes("third-party-strict-popin-after-rsa="+id)) {
+    message += "ThirdPartyStrictPopinAfterRSA-";
+  }
+  if (document.cookie.includes("third-party-lax-popin-after-rsa="+id)) {
+    message += "ThirdPartyLaxPopinAfterRSA-";
+  }
+  if (document.cookie.includes("third-party-none-popin-after-rsa="+id)) {
+    message += "ThirdPartyNonePopinAfterRSA-";
   }
   window.opener.postMessage({type: "popin-read", message: message}, "*");
   window.close();

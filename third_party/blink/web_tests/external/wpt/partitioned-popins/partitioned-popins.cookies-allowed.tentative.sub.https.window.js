@@ -34,7 +34,7 @@ async_test(t => {
       case 'popin-read':
         // Step 8
         // We want to see the same behavior a cross-site iframe would have, only SameSite=None available, with the ability to set additional cookies in the popin.
-        assert_equals(e.data.message, "ReadOnLoad:FirstPartyNone-ThirdPartyNone-,ReadOnFetch:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-,ReadOnDocument:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-");
+        assert_equals(e.data.message, "ReadOnLoad:FirstPartyNone-ThirdPartyNone-,ReadOnFetch:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-,ReadOnDocument:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-,ReadOnFetchAfterRSA:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-FirstPartyNonePopinAfterRSA-ThirdPartyNonePopinAfterRSA-,ReadOnDocumentAfterRSA:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-FirstPartyNonePopinAfterRSA-ThirdPartyNonePopinAfterRSA-");
         t.done();
         break;
     }
