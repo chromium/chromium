@@ -61,10 +61,11 @@ def _convert_basic_suite(
               | 'test_common'):
           pass
 
-        case 'ci_only' | 'use_isolated_scripts_api':
+        case 'ci_only' | 'experiment_percentage' | 'use_isolated_scripts_api':
           anonymous_mixin_builder[key] = values.convert_direct(value)
 
-        case 'android_args' | 'args' | 'linux_args':
+        case ('android_args' | 'chromeos_args' | 'desktop_args' | 'args'
+              | 'lacros_args' | 'linux_args'):
           anonymous_mixin_builder[key] = values.convert_args(value)
 
         case 'resultdb':
