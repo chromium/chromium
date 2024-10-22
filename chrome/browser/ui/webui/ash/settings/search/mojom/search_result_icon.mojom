@@ -30,6 +30,7 @@ enum SearchResultIcon {
   kDisplay,
   kDockedMagnifier,
   kEthernet,
+  kFaceGaze,
   kFingerprint,
   kFirmwareUpdates,
   kFolder,

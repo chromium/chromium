@@ -125,6 +125,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kEnableCursorColor,
     type: PrefType.BOOLEAN,
   },
+  'settings.a11y.face_gaze.enabled': {
+    setting: Setting.kFaceGaze,
+    type: PrefType.BOOLEAN,
+  },
   'settings.a11y.large_cursor_enabled': {
     setting: Setting.kLargeCursor,
     type: PrefType.BOOLEAN,

@@ -542,6 +542,22 @@ const std::vector<SearchConcept>& GetA11yColorCorrectionSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetA11yFaceGazeSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE,
+       mojom::kFaceGazeSettingsSubpagePath,
+       mojom::SearchResultIcon::kFaceGaze,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kFaceGaze},
+       {IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT1,
+        IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT2,
+        IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT3,
+        IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT4}},
+  });
+  return *tags;
+}
+
 bool IsLiveCaptionEnabled() {
   return captions::IsLiveCaptionFeatureSupported();
 }
@@ -1706,6 +1722,10 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Accessibility.FlashNotifications.Enabled",
           value.GetBool());
       return true;
+    case mojom::Setting::kFaceGaze:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.FaceGaze.Enabled", value.GetBool());
+      return true;
     default:
       return false;
   }
@@ -1812,6 +1832,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kOverlayScrollbarEnabled,
       mojom::Setting::kOverscrollEnabled,
       mojom::Setting::kFlashNotifications,
+      mojom::Setting::kFaceGaze,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
                             kManageAccessibilitySettings, generator);
@@ -1946,6 +1967,10 @@ void AccessibilitySection::UpdateSearchTags() {
 
   if (IsAccessibilityFlashNotificationFeatureEnabled()) {
     updater.AddSearchTags(GetA11yFlashNotificationsSearchConcepts());
+  }
+
+  if (IsAccessibilityFaceGazeEnabled()) {
+    updater.AddSearchTags(GetA11yFaceGazeSearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(prefs::kAccessibilitySwitchAccessEnabled)) {

@@ -19,7 +19,8 @@
     <settings-toggle-button
         id="faceGazeToggle"
         label="[[toggleLabel_]]"
-        pref="{{prefs.settings.a11y.face_gaze.enabled}}">
+        pref="{{prefs.settings.a11y.face_gaze.enabled}}"
+        deep-link-focus-id$="[[Setting.kFaceGaze]]">
     </settings-toggle-button>
   </settings-card>
   <facegaze-cursor-card prefs="{{prefs}}"></facegaze-cursor-card>

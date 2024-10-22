@@ -335,6 +335,7 @@ enum Setting {
   kMainNodeAnnotationsEnabled = 1550,
   kFlashNotifications = 1551,
   kOverlayScrollbarEnabled = 1552,
+  kFaceGaze = 1553,
 
   // Reset section.
   kPowerwash = 1600,
