@@ -184,7 +184,7 @@ inline bool operator==(const ControlKey& a, const ControlKey& b) {
 
 struct ControlKeyHashTraits : SimpleClassHashTraits<ControlKey> {
   static unsigned GetHash(const ControlKey& key) {
-    return StringHasher::HashMemory<sizeof(ControlKey)>(&key);
+    return StringHasher::HashMemory(base::byte_span_from_ref(key));
   }
 };
 

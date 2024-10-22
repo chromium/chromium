@@ -104,7 +104,7 @@ struct FontCacheKey {
       font_variant_alternates_ ? font_variant_alternates_->GetHash() : 0,
       is_unique_match_
     };
-    return StringHasher::HashMemory<sizeof(hash_codes)>(hash_codes);
+    return StringHasher::HashMemory(base::as_byte_span(hash_codes));
   }
 
   bool operator==(const FontCacheKey& other) const {

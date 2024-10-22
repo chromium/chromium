@@ -30,6 +30,7 @@
 #include <cstring>
 #include <type_traits>
 
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -89,13 +90,13 @@ class StringHasher {
         rapidhash<Reader>(reinterpret_cast<const uint8_t*>(data), length));
   }
 
-  static uint64_t HashMemory(const void* data, unsigned length) {
-    return rapidhash(reinterpret_cast<const uint8_t*>(data), length);
+  static uint64_t HashMemory(base::span<const uint8_t> data) {
+    return rapidhash(data.data(), data.size());
   }
 
-  template <size_t length>
-  static uint64_t HashMemory(const void* data) {
-    return HashMemory(data, length);
+  template <size_t Extent>
+  static uint64_t HashMemory(base::span<const uint8_t, Extent> data) {
+    return rapidhash(data.data(), data.size());
   }
 
  private:

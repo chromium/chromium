@@ -51,8 +51,7 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
                                WTF::HashTraits<unsigned>::DeletedValue();
                       }))
       << "This should have been checked in AddMatchedProperties()";
-  return StringHasher::HashMemory(hashes.data(),
-                                  sizeof(hashes[0]) * hashes.size());
+  return StringHasher::HashMemory(base::as_byte_span(hashes));
 }
 
 CachedMatchedProperties::CachedMatchedProperties(
