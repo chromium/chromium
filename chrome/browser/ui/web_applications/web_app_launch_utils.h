@@ -70,9 +70,9 @@ struct AppNavigationResult {
   // default navigation behavior in browser_navigator.cc.
   std::optional<std::tuple<Browser*, int>> browser_tab_override;
 
-  // Set to true if web contents in navigation are found. This will perform
-  // tasks like enqueuing launch params and showing IPH bubble for
-  // navigation handling.
+  // Set to true if the `MaybeHandleAppNavigation` considered this navigation to
+  // be capturable, and the resulting navigation should be considered a launch
+  // for the given app (and do things like enqueue launch params and show IPH).
   bool perform_app_handling_tasks_in_web_contents = false;
 
   // Information necessary for handling redirection after a response is received

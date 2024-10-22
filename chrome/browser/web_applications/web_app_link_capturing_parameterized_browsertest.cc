@@ -36,6 +36,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
@@ -115,18 +116,23 @@ std::string_view ToParamString(LinkCapturing capturing) {
 // The user display mode configuration for the apps.
 enum class AppUserDisplayMode {
   // Both apps are UserDisplayMode::kBrowser.
-  kBrowser,
+  kBothBrowser,
   // Both apps are UserDisplayMode::kStandalone.
-  kStandalone,
-  kMaxValue = kStandalone,
+  kBothStandalone,
+  // App A is UserDisplayMode::kStandalone, and App B is
+  // UserDisplayMode::kBrowser.
+  kAppAStandaloneAppBBrowser,
+  kMaxValue = kAppAStandaloneAppBBrowser,
 };
 
 std::string_view ToParamString(AppUserDisplayMode mode) {
   switch (mode) {
-    case AppUserDisplayMode::kBrowser:
+    case AppUserDisplayMode::kBothBrowser:
       return "BothBrowser";
-    case AppUserDisplayMode::kStandalone:
+    case AppUserDisplayMode::kBothStandalone:
       return "BothStandalone";
+    case AppUserDisplayMode::kAppAStandaloneAppBBrowser:
+      return "AppAStandaloneAppBBrowser";
   }
 }
 
@@ -362,7 +368,11 @@ using LinkCaptureTestParam =
 // - `GetExpectationsFileSuffix`
 // - `RemoveExpectationsFileConfigFromTestName`
 // - `GetExpectationsFileConfigFromTestConfig`
+// - Every "Cleanup" test needs to be updated to use all new possible
+//   combination of values.
 // Each test fixture is currently split with:
+// - The 'app user display mode' configuration, which controls what the user's
+//   desired display mode is for each app.
 // - The 'link capturing' user setting being on or off. This appends
 //   "_capture_on" or "_capture_off" to the test fixture's test expectation file
 //   base name.
@@ -476,6 +486,11 @@ std::string BrowserTypeToString(Browser::Type type) {
   NOTREACHED() << "Unknown browser type: " + base::NumberToString(type);
 }
 
+bool IsNewTabOrAboutBlankUrl(const Browser* browser, const GURL& url) {
+  return url == GURL("about:blank") || url == GURL("chrome://newtab") ||
+         url == GURL("chrome://new-tab-page") || url == browser->GetNewTabURL();
+}
+
 // Serializes the state of a RenderFrameHost relevant for this test into a
 // dictionary that can be stored as JSON. This includes the frame name and
 // current URL.
@@ -503,9 +518,7 @@ base::Value::Dict WebContentsToJson(const Browser& browser,
       web_contents.GetPrimaryMainFrame()->GetLastCommittedURL();
 
   // The new tab page has inconsistent frames, so skip frame analysis there.
-  if (last_committed_url != GURL("chrome://newtab") &&
-      last_committed_url != GURL("chrome://new-tab-page") &&
-      last_committed_url != browser.GetNewTabURL()) {
+  if (!IsNewTabOrAboutBlankUrl(&browser, last_committed_url)) {
     base::Value::List frames;
     web_contents.GetPrimaryMainFrame()->ForEachRenderFrameHost(
         [&](content::RenderFrameHost* frame) {
@@ -971,12 +984,18 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return std::get<AppUserDisplayMode>(GetParam());
   }
 
-  mojom::UserDisplayMode GetUserDisplayMode() const {
+  mojom::UserDisplayMode GetUserDisplayMode(GURL start_url) const {
+    CHECK(start_url == GetDestinationUrlPageA() ||
+          start_url == GetDestinationUrlPageB());
     switch (GetAppUserDisplayMode()) {
-      case AppUserDisplayMode::kBrowser:
+      case AppUserDisplayMode::kBothBrowser:
         return mojom::UserDisplayMode::kBrowser;
-      case AppUserDisplayMode::kStandalone:
+      case AppUserDisplayMode::kBothStandalone:
         return mojom::UserDisplayMode::kStandalone;
+      case AppUserDisplayMode::kAppAStandaloneAppBBrowser:
+        return start_url == GetDestinationUrlPageA()
+                   ? mojom::UserDisplayMode::kStandalone
+                   : mojom::UserDisplayMode::kBrowser;
     }
   }
 
@@ -998,14 +1017,26 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return std::get<Destination>(GetParam());
   }
 
-  GURL GetDestinationUrl() {
+  GURL GetDestinationUrlPageA() const {
+    return embedded_test_server()->GetURL(kDestinationPageScopeA);
+  }
+
+  GURL GetDestinationUrlPageB() const {
+    return embedded_test_server()->GetURL(kDestinationPageScopeB);
+  }
+
+  GURL GetDestinationUrlPageX() const {
+    return embedded_test_server()->GetURL(kDestinationPageScopeX);
+  }
+
+  GURL GetDestinationUrl() const {
     switch (GetDestination()) {
       case Destination::kScopeA2A:
-        return embedded_test_server()->GetURL(kDestinationPageScopeA);
+        return GetDestinationUrlPageA();
       case Destination::kScopeA2B:
-        return embedded_test_server()->GetURL(kDestinationPageScopeB);
+        return GetDestinationUrlPageB();
       case Destination::kScopeA2X:
-        return embedded_test_server()->GetURL(kDestinationPageScopeX);
+        return GetDestinationUrlPageX();
     }
   }
 
@@ -1061,7 +1092,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
         blink::Manifest::LaunchHandler(GetClientMode());
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
-    web_app_info->user_display_mode = GetUserDisplayMode();
+    web_app_info->user_display_mode = GetUserDisplayMode(start_url);
     const webapps::AppId app_id =
         test::InstallWebApp(profile(), std::move(web_app_info));
     apps::AppReadinessWaiter(profile(), app_id).Await();
@@ -1167,7 +1198,13 @@ class WebAppLinkCapturingParameterizedBrowserTest
         LOG(INFO) << "Removing " << shortened_name;
         expectations.Remove(shortened_name);
       }
-      SaveExpectations(file_config);
+      if (file_read_success_ || expectations.size() > 0) {
+        SaveExpectations(file_config);
+      } else {
+        LOG(INFO)
+            << "File " << GetExpectationsFile(file_config).value()
+            << " didn't exist and will not have tests, so not saving anything.";
+      }
     } else {
       EXPECT_THAT(tests_to_remove, testing::ElementsAre())
           << "Run this test with --rebaseline-link-capturing-test to clean "
@@ -1233,6 +1270,19 @@ class WebAppLinkCapturingParameterizedBrowserTest
             launch_future.Get<base::WeakPtr<content::WebContents>>().get();
         content::WaitForLoadStop(contents_a);
       } else {
+        // Ensure that if a fixture ended up loading a different page in the
+        // starting tab, create a new tab for the navigation.
+        GURL last_committed_url = browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetLastCommittedURL();
+        bool is_at_new_tab_page =
+            IsNewTabOrAboutBlankUrl(browser(), last_committed_url);
+        if (!is_at_new_tab_page) {
+          LOG(ERROR) << "opening new tab due to "
+                     << last_committed_url.possibly_invalid_spec();
+          chrome::NewTab(browser());
+        }
         ASSERT_TRUE(ui_test_utils::NavigateToURL(
             browser(), embedded_test_server()->GetURL(kStartPageScopeA)));
         contents_a = browser()->tab_strip_model()->GetActiveWebContents();
@@ -1391,19 +1441,29 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
     std::string json_data;
     // To help with rebaseline conflicts, try a couple times.
-    bool success = false;
-    for (int i = 0; i < 3 && !success; ++i) {
-      success = ReadFileToString(GetExpectationsFile(file_config), &json_data);
+    file_read_success_ = false;
+    for (int i = 0; i < 3 && !file_read_success_; ++i) {
+      file_read_success_ =
+          ReadFileToString(GetExpectationsFile(file_config), &json_data);
     }
-    if (!ShouldRebaseline()) {
-      ASSERT_TRUE(success) << "Failed to read test baselines from "
-                           << GetExpectationsFile(file_config).value();
+    // If we're doing a normal test (AKA not doing a rebaseline and not cleaning
+    // up expectations), then fail early if the expectation file cannot be read.
+    // Cleanup tests will call this with every combination of file
+    // configuration, and if no tests exist then the load will fail.
+    if (!ShouldRebaseline() &&
+        !base::Contains(std::string(::testing::UnitTest::GetInstance()
+                                        ->current_test_info()
+                                        ->name()),
+                        "Cleanup")) {
+      ASSERT_TRUE(file_read_success_)
+          << "Failed to read test baselines from "
+          << GetExpectationsFile(file_config).value();
     }
-    if (!success) {
-      json_data = R"(
-          "tests": {
-          }
-        )";
+    if (!file_read_success_) {
+      LOG(ERROR) << "Could not read file, loading empty json.";
+      json_data = R"({
+          "tests": {}
+        })";
     }
     test_expectations_ = base::JSONReader::Read(json_data);
     ASSERT_TRUE(test_expectations_) << "Unable to read test expectation file";
@@ -1415,6 +1475,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 
   // Current expectations for this test (parsed from the test json file).
+  bool file_read_success_ = false;
   std::optional<base::Value> test_expectations_;
 
   // Prevent multiple redirections from triggering for an intermediate step in a
@@ -1446,13 +1507,17 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedBrowserTest,
                        MAYBE_CleanupExpectations) {
   PerformTestCleanupIfNeeded(
-      {AppUserDisplayMode::kBrowser, LinkCapturing::kEnabled});
+      {AppUserDisplayMode::kBothBrowser, LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded(
-      {AppUserDisplayMode::kStandalone, LinkCapturing::kEnabled});
+      {AppUserDisplayMode::kBothStandalone, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded({AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                              LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded(
-      {AppUserDisplayMode::kBrowser, LinkCapturing::kDisabled});
+      {AppUserDisplayMode::kBothBrowser, LinkCapturing::kDisabled});
   PerformTestCleanupIfNeeded(
-      {AppUserDisplayMode::kStandalone, LinkCapturing::kDisabled});
+      {AppUserDisplayMode::kBothStandalone, LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded({AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                              LinkCapturing::kDisabled});
 }
 
 std::string LinkCaptureTestParamToString(
@@ -1470,7 +1535,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
                         LinkCapturing::kDisabled  // LinkCapturing turned off.
                         ),
@@ -1509,7 +1574,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         // ClientMode::kAuto defaults to NavigateNew on all platforms.
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
@@ -1541,7 +1606,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         // TODO(https://crbug.com/371513459): Test more client modes.
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         // There is really only one combination that makes sense for the rest of
         // the values, since the IntentPicker is not affected by LinkCapturing,
         // it only shows in a Tab (not an App), it always stays within the same
@@ -1562,7 +1627,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(AppUserDisplayMode::kBrowser),
+        testing::Values(AppUserDisplayMode::kBothBrowser),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kTab),
         testing::Values(Destination::kScopeA2A),
@@ -1578,7 +1643,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
                         LinkCapturing::kDisabled  // LinkCapturing turned off.
                         ),
@@ -1602,7 +1667,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
             blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
                         LinkCapturing::kDisabled  // LinkCapturing turned off.
                         ),
@@ -1626,7 +1691,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2X),
@@ -1646,7 +1711,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2A, Destination::kScopeA2B),
@@ -1664,7 +1729,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2A),
@@ -1683,7 +1748,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2B),
@@ -1703,7 +1768,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
         testing::Values(Destination::kScopeA2B),
@@ -1752,7 +1817,20 @@ class NavigationCapturingTestWithAppBLaunched
                         const webapps::AppId& app_b) override {
     DLOG(INFO) << "Launching App B.";
     content::DOMMessageQueue message_queue;
-    web_app::LaunchWebAppBrowserAndWait(profile(), app_b);
+    ui_test_utils::UrlLoadObserver url_observer(
+        WebAppProvider::GetForTest(profile())
+            ->registrar_unsafe()
+            .GetAppLaunchUrl(app_b));
+    base::test::TestFuture<base::WeakPtr<Browser>,
+                           base::WeakPtr<content::WebContents>,
+                           apps::LaunchContainer>
+        launch_future;
+    // Note: this respects the user display mode for this app, so this can open
+    // in a browser tab or in an app window.
+    provider().scheduler().LaunchApp(app_b, /*url=*/std::nullopt,
+                                     launch_future.GetCallback());
+    ASSERT_TRUE(launch_future.Wait());
+    url_observer.Wait();
     // Launching a web app should listen to a single navigation message.
     WaitForNavigationFinishedMessages(&message_queue);
   }
@@ -1770,13 +1848,13 @@ IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithAppBLaunched,
 IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithAppBLaunched,
                        MAYBE_CleanupExpectations) {
   PerformTestCleanupIfNeeded(
-      {AppUserDisplayMode::kBrowser, LinkCapturing::kEnabled});
+      {AppUserDisplayMode::kBothBrowser, LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded(
-      {AppUserDisplayMode::kStandalone, LinkCapturing::kEnabled});
+      {AppUserDisplayMode::kBothStandalone, LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded(
-      {AppUserDisplayMode::kBrowser, LinkCapturing::kDisabled});
+      {AppUserDisplayMode::kBothBrowser, LinkCapturing::kDisabled});
   PerformTestCleanupIfNeeded(
-      {AppUserDisplayMode::kStandalone, LinkCapturing::kDisabled});
+      {AppUserDisplayMode::kBothStandalone, LinkCapturing::kDisabled});
 }
 
 // TODO(crbug.com/373495871): Fix flaky tests for kNavigateExisting and enable
@@ -1788,7 +1866,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
             blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
-        testing::Values(AppUserDisplayMode::kStandalone),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.

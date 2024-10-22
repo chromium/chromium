@@ -164,7 +164,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   NavigationHandlingInitialResult initial_nav_handling_result =
       redirection_info.initial_nav_handling_result;
   std::optional<webapps::AppId> source_app_id =
-      redirection_info.app_id_initial_browser;
+      redirection_info.app_id_source_browser;
   std::optional<webapps::AppId> navigation_handling_first_stage_app =
       redirection_info.first_navigation_app_id;
 
@@ -221,7 +221,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
       (link_click_disposition == WindowOpenDisposition::NEW_WINDOW);
   if (initial_nav_handling_result ==
       NavigationHandlingInitialResult::kAppWindowForcedNewContext) {
-    CHECK(redirection_info.app_id_initial_browser.has_value());
+    CHECK(redirection_info.app_id_source_browser.has_value());
     // Note:
     // - kAppWindowForcedNewContext implies we started from an app window, and
     // the intermediary container must be an app.

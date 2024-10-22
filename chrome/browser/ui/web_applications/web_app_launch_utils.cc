@@ -1005,11 +1005,11 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
   // Populate the app_id of the current app browser window before
   // `params.browser` is changed by Navigate().
-  std::optional<webapps::AppId> current_browser_app_id =
+  std::optional<webapps::AppId> source_browser_app_id =
       params.browser && web_app::AppBrowserController::IsWebApp(params.browser)
           ? std::optional(params.browser->app_controller()->app_id())
           : std::nullopt;
-  redirection_info.app_id_initial_browser = current_browser_app_id;
+  redirection_info.app_id_source_browser = source_browser_app_id;
 
   if (!AreWebAppsEnabled(profile)) {
     return {.redirection_info = redirection_info};
@@ -1122,7 +1122,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   // logic in `OnWebAppNavigationAfterWebContentsCreation()` is skipped when not
   // needed.
   if (!IsNavigationCapturingReimplExperimentEnabled(
-          current_browser_app_id, params.url, controlling_app_id)) {
+          source_browser_app_id, params.url, controlling_app_id)) {
     return {.redirection_info = redirection_info};
   }
   redirection_info.capturing_enabled = true;
@@ -1136,7 +1136,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   debug_data.Set("params.contents_to_insert",
                  base::ToString(params.contents_to_insert.get()));
   debug_data.Set("current_browser_app_id",
-                 current_browser_app_id.value_or("<none>"));
+                 source_browser_app_id.value_or("<none>"));
 
   const bool is_user_modified_click =
       params.disposition == WindowOpenDisposition::NEW_WINDOW ||
@@ -1149,14 +1149,14 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   // app browser.
   if (IsAuxiliaryBrowsingContext(params)) {
     debug_data.Set("is_auxiliary_browsing_context", true);
-    if (current_browser_app_id.has_value()) {
+    if (source_browser_app_id.has_value()) {
       // Populate the `redirection_info` for auxiliary contexts.
       redirection_info.initial_nav_handling_result =
           NavigationHandlingInitialResult::kAppWindowAuxContext;
-      redirection_info.first_navigation_app_id = *current_browser_app_id;
+      redirection_info.first_navigation_app_id = *source_browser_app_id;
 
       Browser* app_window = CreateWebAppWindowFromNavigationParams(
-          *current_browser_app_id, params,
+          *source_browser_app_id, params,
           params.disposition == WindowOpenDisposition::NEW_POPUP);
 
       return {
@@ -1178,7 +1178,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
   // Case: User-modified clicks.
   if (is_user_modified_click) {
-    if (current_browser_app_id.has_value()) {
+    if (source_browser_app_id.has_value()) {
       // Case: Shift-clicks with a new top level browsing context.
       if (params.disposition == WindowOpenDisposition::NEW_WINDOW &&
           controlling_app_id.has_value() &&
@@ -1199,7 +1199,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
             .debug_value = std::move(debug_data)};
       }
 
-      const webapps::AppId& current_app_id = *current_browser_app_id;
+      const webapps::AppId& current_app_id = *source_browser_app_id;
 
       // Case: Middle clicks with a new top level browsing context.
       if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&

@@ -73,7 +73,10 @@ struct NavigationCapturingRedirectionInfo {
   // and this object will not be attached to the NavigationHandle (via
   // `NavigationCapturingRedirectionInfo`).
   bool capturing_enabled = false;
-  std::optional<webapps::AppId> app_id_initial_browser;
+  // `std::nullopt` if the navigation occurred in a browser tab. If the
+  // navigation occurred in a standalone PWA window, then this is the app_id of
+  // that PWA.
+  std::optional<webapps::AppId> app_id_source_browser;
   NavigationHandlingInitialResult initial_nav_handling_result =
       NavigationHandlingInitialResult::kBrowserTab;
   std::optional<webapps::AppId> first_navigation_app_id;
