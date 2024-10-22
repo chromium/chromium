@@ -270,6 +270,15 @@ void PhishingClassifier::RunCallback(const ClientPhishingRequest& verdict,
 }
 
 void PhishingClassifier::RunFailureCallback(Result failure_event) {
+  // Note that cancelling the feature extractors is simply a no-op if they
+  // were not running. We reset the extractors at failure callback because the
+  // raw_ptr objects held by these extractors such as bitmap, features, and
+  // shingle_hashes can be dangling.
+  dom_extractor_.reset();
+  term_extractor_.reset();
+  visual_extractor_.reset();
+  weak_factory_.InvalidateWeakPtrs();
+
   ClientPhishingRequest verdict;
   // In this case we're not guaranteed to have a valid URL.  Just set it
   // to the empty string to make sure we have a valid protocol buffer.
