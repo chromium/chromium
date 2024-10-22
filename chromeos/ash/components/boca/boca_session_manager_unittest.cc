@@ -636,7 +636,7 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionRosterSame) {
                                     base::Seconds(1));
 }
 
-TEST_F(BocaSessionManagerTest, DoNotPollSessionWhenNoNetwork) {
+TEST_F(BocaSessionManagerTest, DISABLED_DoNotPollSessionWhenNoNetwork) {
   ToggleOffline();
   EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
 

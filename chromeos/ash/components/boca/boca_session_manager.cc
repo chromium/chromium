@@ -100,9 +100,9 @@ void BocaSessionManager::StartSessionPolling() {
 }
 
 void BocaSessionManager::LoadCurrentSession() {
-  if (!is_network_conntected_) {
-    return;
-  }
+  // TODO(crbug.com/374788934): Currently always try fetching regardless of
+  // network status as we've seen inconsistent behavior between machines
+  // regarding network config, revisit this.
 
   // TODO(b/361852484): We should ideally listen to user switch events. But
   // since we'll remove polling after we have FCM, leave it as it is now.
