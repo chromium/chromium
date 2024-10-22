@@ -53,12 +53,12 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
 
   void TearDown() override { AshTestBase::TearDown(); }
 
-  AccessibilityController* GetAccessibilitController() {
+  AccessibilityController* GetAccessibilityController() {
     return Shell::Get()->accessibility_controller();
   }
 
   SelectToSpeakMenuBubbleController* GetBubbleController() {
-    return GetAccessibilitController()
+    return GetAccessibilityController()
         ->GetSelectToSpeakMenuBubbleControllerForTest();
   }
 
@@ -84,8 +84,8 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
 
   void ShowSelectToSpeakPanel(bool is_paused) {
     gfx::Rect anchor_rect(10, 10, 0, 0);
-    GetAccessibilitController()->ShowSelectToSpeakPanel(anchor_rect, is_paused,
-                                                        /*speech_rate=*/1.2);
+    GetAccessibilityController()->ShowSelectToSpeakPanel(anchor_rect, is_paused,
+                                                         /*speech_rate=*/1.2);
   }
 
   void ExpectButtonHistogramCount(SelectToSpeakPanelAction action,
@@ -150,7 +150,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest,
 TEST_F(SelectToSpeakMenuBubbleControllerTest, HideSelectToSpeakPanel) {
   ShowSelectToSpeakPanel(/*is_paused=*/false);
   ExpectTotalMenuBubbleDurationSamples(0);
-  GetAccessibilitController()->HideSelectToSpeakPanel();
+  GetAccessibilityController()->HideSelectToSpeakPanel();
   EXPECT_TRUE(GetMenuView());
   EXPECT_FALSE(GetBubbleWidget()->IsVisible());
   ExpectTotalMenuBubbleDurationSamples(1);
