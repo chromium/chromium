@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
+#include "chrome/browser/autofill_prediction_improvements/autofill_prediction_improvements_util.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -166,31 +167,6 @@ void ChromeAutofillPredictionImprovementsClient::
 }
 
 bool ChromeAutofillPredictionImprovementsClient::IsUserEligible() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager) {
-    return false;
-  }
-
-  // The user needs to be in a syncing or signed-in state.
-  const signin_util::SignedInState state =
-      signin_util::GetSignedInState(identity_manager);
-  if (state != signin_util::SignedInState::kSignedIn &&
-      state != signin_util::SignedInState::kSyncing) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(optimization_guide::features::internal::
-                                        kModelExecutionCapabilityDisable) &&
-      identity_manager
-              ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
-                  signin::ConsentLevel::kSignin))
-              .capabilities.can_use_model_execution_features() !=
-          signin::Tribool::kTrue) {
-    return false;
-  }
-
-  return true;
+  return autofill_prediction_improvements::IsUserEligible(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }
