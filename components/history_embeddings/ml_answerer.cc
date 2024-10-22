@@ -97,6 +97,7 @@ class MlAnswerer::SessionManager {
     const auto barrier_cb =
         base::BarrierCallback<SessionScoreType>(num_sessions, std::move(cb));
     for (size_t s_index = 0; s_index < num_sessions; s_index++) {
+      VLOG(3) << "Running Score for session " << s_index;
       sessions_[s_index]->Score(
           kPassageIdToken, base::BindOnce(
                                [](size_t index, std::optional<float> score) {
@@ -167,6 +168,7 @@ class MlAnswerer::SessionManager {
       passage->set_passage_id(GetPassageIdStr(i));
     }
 
+    VLOG(3) << "Running AddContext for query: `" << request.query() << "`";
     session->AddContext(request);
     AddSession(std::move(session), url);
     std::move(session_added_cb).Run(1);
@@ -204,9 +206,14 @@ class MlAnswerer::SessionManager {
     float max_score = 0.0;
     for (size_t i = 0; i < session_scores.size(); i++) {
       const std::optional<float> score = std::get<1>(session_scores[i]);
-      if (score.has_value() && *score > max_score) {
-        max_score = *score;
-        max_index = i;
+      if (score.has_value()) {
+        VLOG(3) << "Session: " << std::get<0>(session_scores[i])
+                << " Score: " << *score;
+        VLOG(3) << "URL: " << urls_[std::get<0>(session_scores[i])];
+        if (*score > max_score) {
+          max_score = *score;
+          max_index = i;
+        }
       }
     }
 
@@ -229,6 +236,7 @@ class MlAnswerer::SessionManager {
     if (!sessions_.empty()) {
       optimization_guide::proto::HistoryAnswerRequest request;
       const size_t session_index = std::get<0>(session_scores[max_index]);
+      VLOG(3) << "Running ExecuteModel for session " << session_index;
       sessions_[session_index]->ExecuteModel(
           request,
           base::BindRepeating(&SessionManager::StreamingExecutionCallback,
@@ -319,6 +327,7 @@ void MlAnswerer::StartAndAddSession(
 
   // Get token count for passages, and assign their index + 1 to make
   // ModelInput, in order to reserve index 0 for query.
+  VLOG(3) << "Running GetSizeInTokens for " << passages.size() << " passages..";
   for (size_t i = 0; i < passages.size(); ++i) {
     raw_session->GetSizeInTokens(
         passages[i], base::BindOnce(make_model_input, passages[i], i + 1)
