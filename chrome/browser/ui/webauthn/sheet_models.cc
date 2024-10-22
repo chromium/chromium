@@ -9,17 +9,16 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
@@ -28,7 +27,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/render_frame_host.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
@@ -38,7 +36,6 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
 #include "crypto/scoped_lacontext.h"
 #include "device/fido/mac/util.h"
 #endif
@@ -1233,6 +1230,47 @@ std::vector<std::u16string> AuthenticatorQRSheetModel::GetSecurityKeyLabels()
           IDS_WEBAUTHN_QR_USE_PASSKEY_ON_SECURITY_KEY_LABEL,
           GetRelyingPartyIdString(dialog_model()))};
   }
+}
+
+// AuthenticatorHybridAndSecurityKeySheetModel --------------------------------
+
+AuthenticatorHybridAndSecurityKeySheetModel::
+    AuthenticatorHybridAndSecurityKeySheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {}
+AuthenticatorHybridAndSecurityKeySheetModel::
+    ~AuthenticatorHybridAndSecurityKeySheetModel() = default;
+
+std::u16string AuthenticatorHybridAndSecurityKeySheetModel::GetStepTitle()
+    const {
+  return l10n_util::GetStringUTF16(dialog_model()->show_security_key_on_qr_sheet
+                                       ? IDS_WEBAUTHN_PASSKEYS_AND_SECURITY_KEYS
+                                       : IDS_WEBAUTHN_PASSKEYS);
+}
+
+std::u16string AuthenticatorHybridAndSecurityKeySheetModel::GetStepDescription()
+    const {
+  return u"";
+}
+
+std::u16string
+AuthenticatorHybridAndSecurityKeySheetModel::GetOtherMechanismButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_BACK);
+}
+
+std::optional<std::u16string>
+AuthenticatorHybridAndSecurityKeySheetModel::GetAttestationWarning() const {
+  if (dialog_model()->show_security_key_on_qr_sheet &&
+      (dialog_model()->request_type ==
+       device::FidoRequestType::kMakeCredential)) {
+    std::u16string warning = PossibleAttestationWarning(dialog_model());
+    if (!warning.empty()) {
+      return warning;
+    }
+  }
+  return std::nullopt;
 }
 
 // AuthenticatorConnectingSheetModel ------------------------------------------

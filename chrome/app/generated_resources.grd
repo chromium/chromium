@@ -16671,6 +16671,30 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_SOURCE_PHONE" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in their phone.">
         From "<ph name="PHONE_NAME">$1<ex>Pixel 7</ex></ph>"
       </message>
+      <message name="IDS_WEBAUTHN_PASSKEYS_AND_SECURITY_KEYS" desc="The title of a dialog prompting the user to create or use a passkey on their phones by scanning a QR code or on a security key. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        Passkeys &amp; Security Keys
+      </message>
+      <message name="IDS_WEBAUTHN_PASSKEYS" desc="The title of a dialog prompting the user to create or use a passkey on their phones by scanning a QR code. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        Passkeys
+      </message>
+      <message name="IDS_WEBAUTHN_USE_YOUR_PHONE_OR_TABLET" desc="The header of a section prompting the user to create or use a passkey on their phone or tablet by scanning a QR code.">
+        Use your phone or tablet
+      </message>
+      <message name="IDS_WEBAUTHN_USE_YOUR_PHONE_OR_TABLET_CREATE_DESCRIPTION" desc="The description of a section prompting the user to create a passkey on their phone or tablet by scanning a QR code.">
+        Scan this QR code with the camera on the device where you want to create and save your passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
+      </message>
+      <message name="IDS_WEBAUTHN_USE_YOUR_PHONE_OR_TABLET_SIGN_IN_DESCRIPTION" desc="The description of a section prompting the user to use a passkey on their phone or tablet by scanning a QR code.">
+        Scan this QR code with the camera on the device that has your passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
+      </message>
+      <message name="IDS_WEBAUTHN_USE_YOUR_SECURITY_KEY" desc="The header of a section prompting the user to create or use a passkey on a security key.">
+        Use your security key
+      </message>
+      <message name="IDS_WEBAUTHN_USE_YOUR_SECURITY_KEY_CREATE_DESCRIPTION" desc="The description of a section prompting the user to create a passkey on a security key.">
+        Insert and touch your security key to set it up for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
+      </message>
+      <message name="IDS_WEBAUTHN_USE_YOUR_SECURITY_KEY_SIGN_IN_DESCRIPTION" desc="The description of a section prompting the user to use a passkey on a security key.">
+        Insert and touch your security key to use it for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
+      </message>
 
       <!-- WebAuthn GPM desktop passkeys -->
       <message name="IDS_WEBAUTHN_CREATE" desc="Text link that appears on a button to create a passkey.">

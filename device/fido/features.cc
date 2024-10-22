@@ -151,4 +151,9 @@ BASE_FEATURE(kWebAuthnUpdateLastUsed,
              "WebAuthenticationUpdateLastUsed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Default enabled in M132. Remove in or after M135.
+BASE_FEATURE(kWebAuthnSecurityKeyAndQrCodeUiRefresh,
+             "WebAuthenticationSecurityKeyAndQrCodeUiRefresh",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

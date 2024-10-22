@@ -209,6 +209,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "user_account_avatar.icon",
     "user_account_avatar_refresh.icon",
     "web.icon",
+    "webauthn/camera.icon",
     "webauthn/icloud_keychain.icon",
     "webauthn/passkey_aoa.icon",
     "webauthn/passkey_aoa_dark.icon",

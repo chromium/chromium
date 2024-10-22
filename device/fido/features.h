@@ -117,6 +117,10 @@ BASE_DECLARE_FEATURE(kWebAuthnHybridLinking);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnUpdateLastUsed);
 
+// Enables the refreshed UI for QR codes and security keys.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnSecurityKeyAndQrCodeUiRefresh);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
