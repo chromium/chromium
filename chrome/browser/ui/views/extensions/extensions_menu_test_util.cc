@@ -41,49 +41,13 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-// A view wrapper class that owns the ExtensionsToolbarContainer.
-// This is used when we don't have a "real" browser window, because the
-// TestBrowserWindow does not have a view instantiated for the container.
-class ExtensionsMenuTestUtil::Wrapper {
- public:
-  explicit Wrapper(Browser* browser)
-      : extensions_container_(new ExtensionsToolbarContainer(browser)) {
-    extensions_toolbar_coordinator_ =
-        std::make_unique<ExtensionsToolbarCoordinator>(browser,
-                                                       extensions_container_);
-    container_parent_.SetSize(gfx::Size(1000, 1000));
-    container_parent_.DeprecatedLayoutImmediately();
-    container_parent_.AddChildView(extensions_container_.get());
-  }
-  ~Wrapper() = default;
-
-  Wrapper(const Wrapper& other) = delete;
-  Wrapper& operator=(const Wrapper& other) = delete;
-
-  ExtensionsToolbarContainer* extensions_container() {
-    return extensions_container_;
-  }
-
- private:
-  views::View container_parent_;
-  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
-  std::unique_ptr<ExtensionsToolbarCoordinator>
-      extensions_toolbar_coordinator_ = nullptr;
-};
-
-ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser,
-                                               bool is_real_window)
+ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser)
     : scoped_allow_extensions_menu_instances_(
           ExtensionsMenuView::AllowInstancesForTesting()),
       browser_(browser) {
-  if (is_real_window) {
-    extensions_container_ = BrowserView::GetBrowserViewForBrowser(browser_)
-                                ->toolbar()
-                                ->extensions_container();
-  } else {
-    wrapper_ = std::make_unique<Wrapper>(browser);
-    extensions_container_ = wrapper_->extensions_container();
-  }
+  extensions_container_ = BrowserView::GetBrowserViewForBrowser(browser_)
+                              ->toolbar()
+                              ->extensions_container();
 
   std::unique_ptr<views::BubbleDialogDelegate> bubble_dialog;
   if (base::FeatureList::IsEnabled(
@@ -103,9 +67,7 @@ ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser,
     menu_view_->View::AddObserver(this);
   }
 
-  if (is_real_window) {
-    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_dialog));
-  }
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_dialog));
 }
 
 ExtensionsMenuTestUtil::~ExtensionsMenuTestUtil() {
@@ -230,7 +192,6 @@ ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
 
 // static
 std::unique_ptr<ExtensionActionTestHelper> ExtensionActionTestHelper::Create(
-    Browser* browser,
-    bool is_real_window) {
-  return std::make_unique<ExtensionsMenuTestUtil>(browser, is_real_window);
+    Browser* browser) {
+  return std::make_unique<ExtensionsMenuTestUtil>(browser);
 }

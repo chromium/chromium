@@ -25,12 +25,7 @@ class Size;
 // the platform-abstract ExtensionsContainer class.
 class ExtensionActionTestHelper {
  public:
-  // Constructs a ExtensionActionTestHelper which, if |is_real_window| is false,
-  // will create its own browser actions container. This is useful in unit
-  // tests, when the |browser|'s window doesn't create platform-specific views.
-  static std::unique_ptr<ExtensionActionTestHelper> Create(
-      Browser* browser,
-      bool is_real_window = true);
+  static std::unique_ptr<ExtensionActionTestHelper> Create(Browser* browser);
 
   ExtensionActionTestHelper(const ExtensionActionTestHelper&) = delete;
   ExtensionActionTestHelper& operator=(const ExtensionActionTestHelper&) =
