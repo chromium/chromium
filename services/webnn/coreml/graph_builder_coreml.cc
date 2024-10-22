@@ -125,6 +125,7 @@ constexpr char kOpConvTranspose2dTypeName[] = "conv_transpose";
 constexpr char kOpCumulativeSumTypeName[] = "cumsum";
 constexpr char kOpEluTypeName[] = "elu";
 constexpr char kOpExpandTypeName[] = "tile";
+constexpr char kOpGatherElementsTypeName[] = "gather_along_axis";
 constexpr char kOpGatherTypeName[] = "gather";
 constexpr char kOpGeluTypeName[] = "gelu";
 constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
@@ -201,10 +202,12 @@ constexpr char kOpParamBeta[] = "beta";
 constexpr char kOpParamDataTypeName[] = "dtype";
 constexpr char kOpParamEpsilon[] = "epsilon";
 constexpr char kOpParamGamma[] = "gamma";
+constexpr char kOpParamIndices[] = "indices";
 constexpr char kOpParamKeepDims[] = "keep_dims";
 constexpr char kOpParamMode[] = "mode";
 constexpr char kOpParamPad[] = "pad";
 constexpr char kOpParamReps[] = "reps";
+constexpr char kOpParamValidateIndices[] = "validate_indices";
 constexpr char kOpParamX[] = "x";
 constexpr char kOpParamY[] = "y";
 // Hard coded path used in the model file to point at the weight path.
@@ -762,11 +765,12 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // does not have corresponding types. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather
        /*gather_input=*/kFloat16To32Int8To32AndUint8,
-       /*gather_indices=*/
-       kGatherIndicesSupportedDataTypes,
-       // GatherElements is not implemented.
-       /*gather_elements_input=*/{},
-       /*gather_elements_indices=*/{},
+       /*gather_indices=*/kGatherIndicesSupportedDataTypes,
+       // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
+       // does not have corresponding types. See docs here:
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather_along_axis
+       /*gather_elements_input=*/kFloat16To32Int8To32AndUint8,
+       /*gather_elements_indices=*/kGatherIndicesSupportedDataTypes,
        // GatherND is not implemented.
        /*gather_nd_input=*/{},
        /*gather_nd_indices=*/{},
@@ -972,7 +976,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kGather: {
-        RETURN_IF_ERROR(AddOperationForGather(*operation->get_gather(), block));
+        AddOperationForGather(*operation->get_gather(), block);
+        break;
+      }
+      case mojom::Operation::Tag::kGatherElements: {
+        AddOperationForGatherElements(*operation->get_gather_elements(), block);
         break;
       }
       case mojom::Operation::Tag::kGelu: {
@@ -1110,7 +1118,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kDequantizeLinear:
-      case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGatherNd:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
@@ -2060,7 +2067,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForExpand(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGather(
+void GraphBuilderCoreml::AddOperationForGather(
     const mojom::Gather& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -2073,25 +2080,50 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGather(
   CHECK(context_properties_.data_type_limits.gather_indices.Has(
       MILDataTypeToOperandType(indices_operand_info.mil_data_type)));
 
-  static constexpr char kParamIndices[] = "indices";
-  static constexpr char kParamValidateIndices[] = "validate_indices";
-
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpGatherTypeName);
   SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
                       operation.input_operand_id);
 
-  SetInputFromOperand(*op->mutable_inputs(), kParamIndices,
+  // TODO(crbug.com/339087333): Handle negative and out-of-bounds indices.
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamIndices,
                       operation.indices_operand_id);
 
   SetInputsWithValues(
       *op->mutable_inputs(),
       {{kOpParamAxis, CreateScalarImmediateValue(
                           base::checked_cast<int32_t>(operation.axis))},
-       {kParamValidateIndices, CreateScalarImmediateValue(false)}});
+       {kOpParamValidateIndices, CreateScalarImmediateValue(false)}});
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
-  return base::ok();
+}
+
+void GraphBuilderCoreml::AddOperationForGatherElements(
+    const mojom::GatherElements& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  CHECK(context_properties_.data_type_limits.gather_input.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.input_operand_id).mil_data_type)));
+  CHECK(context_properties_.data_type_limits.gather_indices.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.indices_operand_id).mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpGatherElementsTypeName);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
+
+  // TODO(crbug.com/339087333): Handle negative and out-of-bounds indices.
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamIndices,
+                      operation.indices_operand_id);
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kOpParamAxis, CreateScalarImmediateValue(
+                          base::checked_cast<int32_t>(operation.axis))},
+       {kOpParamValidateIndices, CreateScalarImmediateValue(false)}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
 }
 
 void GraphBuilderCoreml::AddOperationForGelu(
