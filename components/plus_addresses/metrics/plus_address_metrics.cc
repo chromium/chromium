@@ -48,14 +48,6 @@ void RecordAutofillSuggestionEvent(
                                 plus_address_autofill_suggestion_event);
 }
 
-void RecordNetErrorCode(PlusAddressNetworkRequestType type, int net_error) {
-  base::UmaHistogramSparse(base::ReplaceStringPlaceholders(
-                               "PlusAddresses.NetworkRequest.$1.NetErrorCode",
-                               {PlusAddressNetworkRequestTypeToString(type)},
-                               /*offsets=*/nullptr),
-                           net_error);
-}
-
 void RecordNetworkRequestLatency(
     PlusAddressNetworkRequestType type,
     base::TimeDelta request_latency) {
