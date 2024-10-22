@@ -626,9 +626,10 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   }
 
   if (ash::features::IsBootAnimationEnabled()) {
-    auto* welcome_screen = GetWizardController()->GetScreen<WelcomeScreen>();
     const bool should_show =
-        wizard_controller_->current_screen() == welcome_screen;
+        wizard_controller_->HasScreen(WelcomeView::kScreenId) &&
+        wizard_controller_->current_screen() ==
+            GetWizardController()->GetScreen<WelcomeScreen>();
     if (should_show) {
       ash::Shell::Get()
           ->booting_animation_controller()
