@@ -12772,6 +12772,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "jump_start_max_away_time_minutes": "960",
+                        "jump_start_memory_threshold_kb": "2097152",
+                        "jump_start_min_away_time_minutes": "120"
+                    },
                     "enable_features": [
                         "JumpStartOmnibox"
                     ]
