@@ -15,6 +15,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -64,7 +65,11 @@ void RegisterInterfaces(const std::vector<std::string>& interfaces,
 
 class IPCInterfacesDumper : public InProcessBrowserTest {
  public:
-  IPCInterfacesDumper() = default;
+  IPCInterfacesDumper()
+      : sync_run_loop_timeout_(FROM_HERE, base::TimeDelta::Max()) {}
+
+ private:
+  base::test::ScopedRunLoopTimeout sync_run_loop_timeout_;
 };
 
 IN_PROC_BROWSER_TEST_F(IPCInterfacesDumper, DumperTest) {
