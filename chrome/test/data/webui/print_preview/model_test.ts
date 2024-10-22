@@ -586,20 +586,6 @@ suite('ModelTest', function() {
     assertEquals(false, model.getSettingValue('duplex'));
   });
 
-  // <if expr="is_chromeos">
-  // Tests that printToGoogleDrive is set correctly on the print ticket for Save
-  // to Drive CrOS.
-  test('PrintToGoogleDriveCros', function() {
-    const driveDestination = new Destination(
-        GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS, DestinationOrigin.LOCAL,
-        'Save to Google Drive');
-    initializeModel();
-    model.destination = driveDestination;
-    const ticket = model.createPrintTicket(driveDestination, false, false);
-    assertTrue(JSON.parse(ticket).printToGoogleDrive);
-  });
-  // </if>
-
   /**
    * Tests the behaviour of the CDD attribute `reset_to_default`, specifically
    * that when a setting has a default value in CDD and the user selects another
@@ -745,7 +731,46 @@ suite('ModelTest', function() {
         stickyMediaSizeDisplayName);
   });
 
+  /**
+   * Tests that setStickySettings() stores custom margins as integers.
+   */
+  test('CustomMarginsAreInts', function() {
+    // Sets to true, but doesn't mark as controlled by a policy.
+    model.setStickySettings(JSON.stringify({
+      version: 2,
+      customMargins: {
+        marginTop: 100.5,
+        marginRight: 200,
+        marginBottom: 333.333333,
+        marginLeft: 400,
+      },
+      marginsType: MarginsType.CUSTOM,
+    }));
+    model.applyStickySettings();
+    assertEquals(model.settings.margins.value, MarginsType.CUSTOM);
+    assertTrue('marginTop' in model.settings.customMargins.value);
+    assertTrue('marginRight' in model.settings.customMargins.value);
+    assertTrue('marginBottom' in model.settings.customMargins.value);
+    assertTrue('marginLeft' in model.settings.customMargins.value);
+    assertEquals(model.settings.customMargins.value.marginTop, 101);
+    assertEquals(model.settings.customMargins.value.marginRight, 200);
+    assertEquals(model.settings.customMargins.value.marginBottom, 333);
+    assertEquals(model.settings.customMargins.value.marginLeft, 400);
+  });
+
   // <if expr="is_chromeos">
+  // Tests that printToGoogleDrive is set correctly on the print ticket for Save
+  // to Drive CrOS.
+  test('PrintToGoogleDriveCros', function() {
+    const driveDestination = new Destination(
+        GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS, DestinationOrigin.LOCAL,
+        'Save to Google Drive');
+    initializeModel();
+    model.destination = driveDestination;
+    const ticket = model.createPrintTicket(driveDestination, false, false);
+    assertTrue(JSON.parse(ticket).printToGoogleDrive);
+  });
+
   test('PolicyDefaultsOverrideDestinationDefaults', function() {
     const testDestination1 = new Destination(
         /*id_=*/ 'TestDestination1',

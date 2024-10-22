@@ -378,6 +378,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, CddResetToDefault) {
   RunTestCase("CddResetToDefault");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, CustomMarginsAreInts) {
+  RunTestCase("CustomMarginsAreInts");
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, PrintToGoogleDriveCros) {
   RunTestCase("PrintToGoogleDriveCros");
