@@ -153,13 +153,15 @@ Config::Config() {
           "proactive_nudge_field_per_navigation",
           proactive_nudge_field_per_navigation);
 
-  saved_state_timeout_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
-      features::kEnableComposeSavedStateNotification,
-      "saved_state_timeout_milliseconds", saved_state_timeout_milliseconds);
+  saved_state_timeout =
+      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+          features::kEnableComposeSavedStateNotification,
+          "saved_state_timeout_milliseconds",
+          saved_state_timeout.InMilliseconds()));
 
-  focus_lost_delay_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+  focus_lost_delay = base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
       features::kEnableComposeSavedStateNotification,
-      "focus_lost_delay_milliseconds", focus_lost_delay_milliseconds);
+      "focus_lost_delay_milliseconds", focus_lost_delay.InMilliseconds()));
 
   stay_in_window_bounds = base::GetFieldTrialParamByFeatureAsBool(
       features::kComposeUiParams, "stay_in_window_bounds",
@@ -170,9 +172,11 @@ Config::Config() {
           features::kComposeUiParams, "positioning_strategy",
           base::to_underlying(positioning_strategy)));
 
-  request_latency_timeout_seconds = base::GetFieldTrialParamByFeatureAsInt(
-      features::kComposeRequestLatencyTimeout,
-      "request_latency_timeout_seconds", request_latency_timeout_seconds);
+  request_latency_timeout =
+      base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
+          features::kComposeRequestLatencyTimeout,
+          "request_latency_timeout_seconds",
+          request_latency_timeout.InSeconds()));
 
   // The "enabled_countries" field trial param must contain a list of lowercase
   // country codes, following the format described in the documentation for the

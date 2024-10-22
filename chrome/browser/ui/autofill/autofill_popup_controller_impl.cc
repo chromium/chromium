@@ -298,8 +298,7 @@ void AutofillPopupControllerImpl::Show(
             SuggestionType::kComposeSavedStateNotification) {
       const compose::Config& config = compose::GetComposeConfig();
       fading_popup_timer_.Start(
-          FROM_HERE,
-          base::Milliseconds(config.saved_state_timeout_milliseconds),
+          FROM_HERE, config.saved_state_timeout,
           base::BindOnce(&AutofillSuggestionController::Hide, GetWeakPtr(),
                          SuggestionHidingReason::kFadeTimerExpired));
     }

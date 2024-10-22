@@ -124,11 +124,11 @@ struct Config {
 
   // The duration that the saved state notification is shown before
   // auto-dismissal.
-  unsigned int saved_state_timeout_milliseconds = 2000;
+  base::TimeDelta saved_state_timeout = base::Milliseconds(2000);
 
   // The delay to wait to show the saved state notification after the compose
   // dialog loses focus.
-  unsigned int focus_lost_delay_milliseconds = 100;
+  base::TimeDelta focus_lost_delay = base::Milliseconds(100);
 
   // Whether the dialog should prioritize staying within bounds of the browser
   // window above visibility of the anchor rect.
@@ -141,7 +141,7 @@ struct Config {
 
   // The threshold for Compose request latency before showing a client-side
   // error message.
-  unsigned int request_latency_timeout_seconds = 20;
+  base::TimeDelta request_latency_timeout = base::Seconds(20);
 
   // Finch-controllable list of countries where Compose should be enabled. The
   // default value contains countries where it was already fully launched.

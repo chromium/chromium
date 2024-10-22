@@ -530,8 +530,7 @@ void ComposeSession::RequestWithSession(
   request_id_++;
 
   auto timeout = std::make_unique<base::OneShotTimer>();
-  timeout->Start(FROM_HERE,
-                 base::Seconds(config.request_latency_timeout_seconds),
+  timeout->Start(FROM_HERE, config.request_latency_timeout,
                  base::BindOnce(&ComposeSession::ComposeRequestTimeout,
                                 base::Unretained(this), request_id_));
   request_timeouts_.emplace(request_id_, std::move(timeout));

@@ -1412,7 +1412,7 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
 TEST_F(ChromeComposeClientTest, TestComposeRequestTimeout) {
   // Set config such that requests time out immediately.
   compose::Config& config = compose::GetMutableConfigForTesting();
-  config.request_latency_timeout_seconds = 0;
+  config.request_latency_timeout = base::Seconds(0);
 
   ShowDialogAndBindMojo();
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
