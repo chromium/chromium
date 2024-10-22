@@ -302,10 +302,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     }
   }
   // StatefulSSLHostStateDelegate can be null during tests.
-  if (state &&
-      state->IsHttpsEnforcedForUrl(tentative_resource_request.url,
-                                   storage_partition) &&
-      !MustDisableSiteEngagementHeuristic(profile)) {
+  if (state && state->IsHttpsEnforcedForUrl(tentative_resource_request.url,
+                                            storage_partition)) {
     interstitial_state_->enabled_by_engagement_heuristic = true;
   }
   if (IsBalancedModeEnabled(prefs) && state &&

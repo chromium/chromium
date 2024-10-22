@@ -18,7 +18,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/common/chrome_features.h"
@@ -282,7 +281,9 @@ void HttpsFirstModeService::AfterStartup() {
 
 void HttpsFirstModeService::
     CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode() {
-  if (MustDisableTypicallySecureUserHeuristic(profile_)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForTypicallySecureUsers) ||
+      !IsBalancedModeAvailable()) {
     return;
   }
 
@@ -344,7 +345,9 @@ void HttpsFirstModeService::OnAdvancedProtectionStatusChanged(bool enabled) {
 
 bool HttpsFirstModeService::
     IsInterstitialEnabledByTypicallySecureUserHeuristic() const {
-  return !MustDisableTypicallySecureUserHeuristic(profile_) &&
+  return base::FeatureList::IsEnabled(
+             features::kHttpsFirstModeV2ForTypicallySecureUsers) &&
+         IsBalancedModeAvailable() &&
          profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled) &&
          profile_->GetPrefs()->GetBoolean(prefs::kHttpsFirstBalancedMode);
 }
@@ -359,13 +362,7 @@ bool HttpsFirstModeService::IsUserTypicallySecure() {
 
 bool HttpsFirstModeService::UpdateFallbackEntries(bool add_new_entry) {
   if (!base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeV2ForTypicallySecureUsers) ||
-      !IsBalancedModeAvailable()) {
-    // Normally we'd use MustDisableTypicallySecureUserHeuristic() here, but
-    // we want to record fallback entries even on enterprise devices. Otherwise,
-    // if an enterprise managed device becomes unmanaged, the heuristic would
-    // have zero fallback entries recorded. It would then try to enable the
-    // interstitial because the user would appear typically secure.
+          features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
     return false;
   }
   // Profile shouldn't be too new.
@@ -454,7 +451,9 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
     base::OnceClosure done_callback) {
   // If HFM or the auto-enable prefs were previously set, do not modify HFM
   // status.
-  if (MustDisableSiteEngagementHeuristic(profile_) ||
+  if (!base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForEngagedSites) ||
+      !IsBalancedModeAvailable() ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode) ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
