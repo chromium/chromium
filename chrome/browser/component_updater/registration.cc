@@ -21,6 +21,7 @@
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
+#include "chrome/browser/component_updater/cookie_readiness_list_component_installer.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
@@ -243,6 +244,8 @@ void RegisterComponentsForUpdate() {
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
   RegisterOpenCookieDatabaseComponent(cus);
+
+  RegisterCookieReadinessListComponent(cus);
 }
 
 }  // namespace component_updater
