@@ -399,7 +399,7 @@ const CGFloat kMenuSymbolSize = 18;
   if (![self isUICreated]) {
     return;
   }
-  [self lockOrientationInPortrait:YES];
+  [self lockOrientationInPortrait:NO];
 
   // Add the foreground duration and reset the timer.
   _foregroundDuration =
