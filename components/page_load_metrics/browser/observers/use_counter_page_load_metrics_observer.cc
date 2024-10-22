@@ -470,6 +470,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kEditContext, WebDXFeature::kEditContext},
           {WebFeature::kInertAttribute, WebDXFeature::kInert},
           {WebFeature::kSegmenter, WebDXFeature::kIntlSegmenter},
+          {WebFeature::kEyeDropperOpen, WebDXFeature::kEyedropper},
       }};
 
   return *kMap;
