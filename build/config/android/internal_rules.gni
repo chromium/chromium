@@ -1802,6 +1802,8 @@ if (enable_java_templates) {
         invoker.output_jar_path,
       ]
       args = [
+        "--root-build-dir",
+        root_build_dir,
         "--input-path",
         rebase_path(invoker.input_jar_path, root_build_dir),
         "--output-path",
