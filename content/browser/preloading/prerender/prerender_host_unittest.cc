@@ -286,10 +286,8 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
         /*embedder_histogram_suffix=*/"",
         blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
         blink::mojom::SpeculationEagerness::kEager,
-        /*no_vary_search_expected=*/std::nullopt, rfh->GetLastCommittedOrigin(),
-        rfh->GetProcess()->GetID(), contents()->GetWeakPtr(),
-        rfh->GetFrameToken(), rfh->GetFrameTreeNodeId(),
-        rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+        /*no_vary_search_expected=*/std::nullopt, rfh, contents()->GetWeakPtr(),
+        ui::PAGE_TRANSITION_LINK,
         /*should_warm_up_compositor=*/false, std::move(url_match_predicate),
         /*prerender_navigation_handle_callback=*/{},
         base::MakeRefCounted<PreloadPipelineInfo>());

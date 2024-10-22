@@ -11124,12 +11124,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       /*target_hint=*/std::nullopt, content::Referrer(),
       /*eagerness=*/std::nullopt,
       /*no_vary_search_expected=*/std::nullopt,
-      /*initiator_origin=*/std::nullopt,
-      content::ChildProcessHost::kInvalidUniqueID, GetWeakPtr(),
-      /*initiator_frame_token=*/std::nullopt,
-      /*initiator_frame_tree_node_id=*/FrameTreeNodeId(), ukm::kInvalidSourceId,
-      page_transition, should_warm_up_compositor,
-      std::move(url_match_predicate),
+      /*initiato_render_frame_host=*/nullptr, GetWeakPtr(), page_transition,
+      should_warm_up_compositor, std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback),
       base::MakeRefCounted<PreloadPipelineInfo>());
   attributes.holdback_status_override = holdback_status_override;

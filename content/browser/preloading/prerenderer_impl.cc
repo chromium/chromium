@@ -284,15 +284,12 @@ bool PrerendererImpl::MaybePrerender(
       /*embedder_histogram_suffix=*/"",
       candidate->target_browsing_context_name_hint,
       Referrer{*candidate->referrer}, candidate->eagerness,
-      no_vary_search_expected, rfhi.GetLastCommittedOrigin(),
-      rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
-      rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
-      rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      no_vary_search_expected, &rfhi, web_contents->GetWeakPtr(),
+      ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
-      base::MakeRefCounted<PreloadPipelineInfo>(),
-      rfhi.GetDevToolsNavigationToken());
+      base::MakeRefCounted<PreloadPipelineInfo>());
 
   PreloadingTriggerType trigger_type =
       PreloadingTriggerTypeFromSpeculationInjectionType(
