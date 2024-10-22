@@ -326,9 +326,7 @@ std::optional<OSVERSIONINFOEX> GetOSVersion();
 bool CompareOSVersions(const OSVERSIONINFOEX& os, BYTE oper);
 
 // This function calls ::SetDefaultDllDirectories to restrict DLL loads to
-// either full paths or %SYSTEM32%. ::SetDefaultDllDirectories is available on
-// Windows 8.1 and above, and on Windows Vista and above when KB2533623 is
-// applied.
+// either full paths or %SYSTEM32%.
 [[nodiscard]] bool EnableSecureDllLoading();
 
 // Enables metadata protection in the heap manager. This allows for the process

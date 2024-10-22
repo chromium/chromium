@@ -215,10 +215,12 @@ midl_user_system_idl("updater_legacy_idl") {
 # Windows versions.
 config("winver") {
   defines = [
-    "NTDDI_VERSION=NTDDI_WIN7",
+    "NTDDI_VERSION=NTDDI_WIN10_NI",
 
-    # Hardcoding version 0x0601, since _WIN32_WINNT_WIN7 may not be defined.
-    "_WIN32_WINNT=0x0601",
-    "WINVER=0x0601",
+    # We can't say `=_WIN32_WINNT_WIN10` here because some files do
+    # `#if WINVER < 0x0600` without including windows.h before,
+    # and then _WIN32_WINNT_WIN10 isn't yet known to be 0x0A00.
+    "_WIN32_WINNT=0x0A00",
+    "WINVER=0x0A00",
   ]
 }

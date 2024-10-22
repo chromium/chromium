@@ -27,8 +27,7 @@ bool AllowBackgroundUpdatesOnMeteredNetwork() {
 }
 
 bool IsConnectionedMetered() {
-  // No NLM before Win 8.1. Connections will be considered non-metered. Also,
-  // because NLM could deadlock in Win10 versions pre-RS5, don't run the code
+  // Because NLM could deadlock in Win10 versions pre-RS5, don't run the code
   // for those versions (see crbug.com/1254492).
   if (base::win::GetVersion() < base::win::Version::WIN10_RS5) {
     return false;
