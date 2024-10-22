@@ -38,6 +38,12 @@ constexpr float kGammaMultiplier = 1000;
 }  // namespace
 
 TEST_F(FontRenderParamsTest, SystemFontSettingsDisabled) {
+  // TODO(crbug.com/40037626)
+  // Disable IncreaseWindowsTextContrast until SK_GAMMA_CONTRAST is set to 1.0f.
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures({},
+                                   {features::kIncreaseWindowsTextContrast});
+
   // Ensure that without the feature enabled, the values of `FontRenderParams`
   // match Skia default values.
   FontRenderParams params =
@@ -49,8 +55,12 @@ TEST_F(FontRenderParamsTest, SystemFontSettingsDisabled) {
 TEST_F(FontRenderParamsTest, DefaultRegistryState) {
   // Ensure that with the feature enabled, the values of `FontRenderParams`
   // match the associated registry key values.
-  base::test::ScopedFeatureList scoped_features(
-      features::kUseGammaContrastRegistrySettings);
+  base::test::ScopedFeatureList scoped_features;
+  // TODO(crbug.com/40037626)
+  // Disable IncreaseWindowsTextContrast until SK_GAMMA_CONTRAST is set to 1.0f.
+  scoped_features.InitWithFeatures(
+      {features::kUseGammaContrastRegistrySettings},
+      {features::kIncreaseWindowsTextContrast});
 
   FontRenderParams params =
       GetFontRenderParams(FontRenderParamsQuery(), nullptr);
@@ -119,9 +129,7 @@ TEST_F(FontRenderParamsTest, OverrideRegistryValuesAndIncreaseContrast) {
   // flag.
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
-      {features::kIncreaseWindowsTextContrast,
-       features::kUseGammaContrastRegistrySettings},
-      {});
+      {features::kUseGammaContrastRegistrySettings}, {});
 
   // Override the registry to maintain test machine state.
   ASSERT_NO_FATAL_FAILURE(
@@ -147,12 +155,15 @@ TEST_F(FontRenderParamsTest, OverrideRegistryValuesAndIncreaseContrast) {
 }
 
 TEST_F(FontRenderParamsTest, TextGammaContrast) {
+  // TODO(crbug.com/40037626)
+  // Disable IncreaseWindowsTextContrast until SK_GAMMA_CONTRAST is set to 1.0f.
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures({},
+                                   {features::kIncreaseWindowsTextContrast});
   EXPECT_EQ(FontUtilWin::TextGammaContrast(), SK_GAMMA_CONTRAST);
 }
 
 TEST_F(FontRenderParamsTest, IncreasedContrast) {
-  base::test::ScopedFeatureList scoped_features(
-      features::kIncreaseWindowsTextContrast);
   EXPECT_EQ(FontUtilWin::TextGammaContrast(), 1.0f);
 }
 
