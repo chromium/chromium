@@ -907,4 +907,7 @@ BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);
 // Feature to control resyncing the omaha ping timer on foregrounding.
 BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
 
+// Feature to support post-profile switch actions support.
+BASE_DECLARE_FEATURE(kPostProfileSwitchActions);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

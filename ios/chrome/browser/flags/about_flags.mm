@@ -2063,8 +2063,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordSuggestionBottomSheetV2Name,
      flag_descriptions::kPasswordSuggestionBottomSheetV2Description,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kIOSPasswordBottomSheetV2)}};
+     FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordBottomSheetV2)},
+    {"ios-post-profile-switch-actions",
+     flag_descriptions::kPostProfileSwitchActionsName,
+     flag_descriptions::kPostProfileSwitchActionsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kPostProfileSwitchActions)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

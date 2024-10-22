@@ -291,6 +291,11 @@ extern const char kDetectMainThreadFreezeDescription[];
 extern const char kDisableFullscreenScrollingName[];
 extern const char kDisableFullscreenScrollingDescription[];
 
+// Title and description for the flag to enable the opening of PDF files in
+// Chrome.
+extern const char kDownloadedPDFOpeningName[];
+extern const char kDownloadedPDFOpeningDescription[];
+
 // Title and description for the flag to enable the color Lens and voice icons
 // in the home screen widget.
 extern const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetName[];
@@ -794,10 +799,9 @@ extern const char kPasswordReuseDetectionDescription[];
 extern const char kPasswordSharingName[];
 extern const char kPasswordSharingDescription[];
 
-// Title and description for the flag to enable the opening of PDF files in
-// Chrome.
-extern const char kDownloadedPDFOpeningName[];
-extern const char kDownloadedPDFOpeningDescription[];
+// Title and description for the flag to enable post profile switch actions.
+extern const char kPostProfileSwitchActionsName[];
+extern const char kPostProfileSwitchActionsDescription[];
 
 // Title and description for the flag to enable the Price Tracking Notification
 // Promo card.
