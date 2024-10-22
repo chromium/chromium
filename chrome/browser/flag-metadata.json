@@ -5100,7 +5100,7 @@
       "meacer@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "https-first-mode-incognito",
@@ -5140,7 +5140,7 @@
       "meacer@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "https-upgrades",
