@@ -157,12 +157,13 @@ int ImpressionsCount(const base::Value::List& impressions,
       if (_profileState.initStage > ProfileInitStage::kUIReady &&
           _profileState.firstSceneHasInitializedUI &&
           _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
-        // When the Safety Check Notifications feature is enabled, the Magic
-        // Stack should never initiate a Safety Check run.
+        // When the Safety Check Manager can automatically trigger Safety
+        // Checks, the Magic Stack should never initiate a Safety Check run.
         //
         // TODO(crbug.com/354727175): Remove `StartSafetyCheck()` from the Magic
-        // Stack once Safety Check Notifications fully launches.
-        if (!IsSafetyCheckNotificationsEnabled()) {
+        // Stack once the Safety Check Manager can reliably automatically
+        // trigger runs.
+        if (!IsSafetyCheckAutorunByManagerEnabled()) {
           safetyCheckManager->StartSafetyCheck();
         }
       }
@@ -295,12 +296,13 @@ int ImpressionsCount(const base::Value::List& impressions,
       nextInitStage == ProfileInitStage::kFinal &&
       profileState.firstSceneHasInitializedUI &&
       _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
-    // When the Safety Check Notifications feature is enabled, the Magic
-    // Stack should never initiate a Safety Check run.
+    // When the Safety Check Manager can automatically trigger Safety Checks,
+    // the Magic Stack should never initiate a Safety Check run.
     //
     // TODO(crbug.com/354727175): Remove `StartSafetyCheck()` from the Magic
-    // Stack once Safety Check Notifications fully launches.
-    if (!IsSafetyCheckNotificationsEnabled()) {
+    // Stack once the Safety Check Manager can reliably automatically trigger
+    // runs.
+    if (!IsSafetyCheckAutorunByManagerEnabled()) {
       _safetyCheckManager->StartSafetyCheck();
     }
   }
