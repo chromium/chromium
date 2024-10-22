@@ -4,6 +4,9 @@
 
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 
+#include <sys/mman.h>
+#include <sys/utsname.h>
+
 #include <optional>
 #include <string>
 
@@ -15,12 +18,14 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base::android {
 namespace {
@@ -102,6 +107,29 @@ std::optional<uint64_t> Diff(std::optional<uint64_t> before,
   const uint64_t after_value = after.value();
 
   return after_value < before_value ? before_value - after_value : 0;
+}
+
+bool IsMadvisePageoutSupported() {
+  static bool supported = []() -> bool {
+#if defined(MADV_PAGEOUT)
+    // To determine if MADV_PAGEOUT is supported we will try calling it with an
+    // invalid memory area.
+    // madvise(2) first checks the mode first, returning -EINVAL if it's
+    // unknown. Next, it will always return 0 for a zero length VMA before
+    // validating if it's mapped.
+    // So, in this case, we can test for support with any page aligned address
+    // with a zero length.
+    int res =
+        madvise(reinterpret_cast<void*>(base::GetPageSize()), 0, MADV_PAGEOUT);
+    if (res < 0 && errno == -EINVAL)
+      return false;
+    PLOG_IF(ERROR, res < 0) << "Unexpected return from madvise";
+    if (res == 0)
+      return true;
+#endif
+    return false;
+  }();
+  return supported;
 }
 
 }  // namespace
@@ -314,6 +342,91 @@ void PreFreezeBackgroundMemoryTrimmer::UnregisterMemoryMetricInternal(
     values_before_.erase(values_before_.begin() + index);
   }
   metrics_.erase(metrics_.begin() + index);
+}
+
+// static
+bool PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported() {
+  return IsMadvisePageoutSupported();
+}
+
+// static
+std::optional<int64_t> PreFreezeBackgroundMemoryTrimmer::CompactSelf() {
+  // MADV_PAGEOUT was only added in Linux 5.4, so do nothing in earlier
+  // versions.
+  if (!SelfCompactionIsSupported()) {
+    return std::nullopt;
+  }
+
+  std::vector<debug::MappedMemoryRegion> regions;
+
+  std::string proc_maps;
+  if (!debug::ReadProcMaps(&proc_maps) || !ParseProcMaps(proc_maps, &regions)) {
+    return std::nullopt;
+  }
+
+  if (regions.size() == 0) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/344547190): This may run for a long time. Add a way to
+  // cancel this part-way through if we return to the foreground while this is
+  // running.
+  return CompactMemory(std::move(regions));
+}
+
+// static
+std::optional<int64_t> PreFreezeBackgroundMemoryTrimmer::CompactRegion(
+    debug::MappedMemoryRegion region) {
+#if defined(MADV_PAGEOUT)
+  // Skip file-backed regions
+  if (region.inode != 0 || region.dev_major != 0) {
+    return 0;
+  }
+  // Skip shared regions
+  if ((region.permissions & debug::MappedMemoryRegion::Permission::PRIVATE) ==
+      0) {
+    return 0;
+  }
+
+  TRACE_EVENT1("base", __PRETTY_FUNCTION__, "size", region.end - region.start);
+
+  int error = madvise(reinterpret_cast<void*>(region.start),
+                      region.end - region.start, MADV_PAGEOUT);
+
+  if (error < 0) {
+    // We may fail on some regions, such as [vvar], or a locked region. It's
+    // not worth it to try to filter these all out, so we just skip them, and
+    // rely on metrics to verify that this is working correctly for most
+    // regions.
+    //
+    // EINVAL could be [vvar] or a locked region. ENOMEM would be a moved or
+    // unmapped region.
+    if (errno != EINVAL && errno != ENOMEM) {
+      PLOG(ERROR) << "Unexpected error from madvise.";
+      return std::nullopt;
+    }
+    return 0;
+  }
+
+  return region.end - region.start;
+#else
+  return std::nullopt;
+#endif
+}
+
+// static
+std::optional<int64_t> PreFreezeBackgroundMemoryTrimmer::CompactMemory(
+    std::vector<debug::MappedMemoryRegion> regions) {
+  TRACE_EVENT1("base", __PRETTY_FUNCTION__, "count", regions.size());
+  int64_t total_bytes_processed = 0;
+  for (const auto& region : regions) {
+    const auto bytes_processed = CompactRegion(region);
+    if (!bytes_processed) {
+      return std::nullopt;
+    }
+    total_bytes_processed += bytes_processed.value();
+  }
+  return total_bytes_processed;
 }
 
 void PreFreezeBackgroundMemoryTrimmer::PostMetricsTasksIfModern() {
