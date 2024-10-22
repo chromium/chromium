@@ -146,7 +146,8 @@ void PageDiscardingHelper::DiscardMultiplePages(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   LOG(WARNING) << "Discarding multiple pages with target (kb): "
-               << (reclaim_target ? reclaim_target->target_kb : 0);
+               << (reclaim_target ? reclaim_target->target_kb : 0)
+               << ", discard_protected_tabs: " << discard_protected_tabs;
 
   if (reclaim_target) {
     unnecessary_discard_monitor_.OnReclaimTargetBegin(*reclaim_target);
