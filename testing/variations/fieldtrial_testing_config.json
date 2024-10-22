@@ -19871,6 +19871,26 @@
             ]
         }
     ],
+    "ReuseDetectionBasedOnPasswordHashes": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReuseDetectionBasedOnPasswordHashes"
+                    ]
+                }
+            ]
+        }
+    ],
     "RichInlineAutocompleteAndroid": [
         {
             "platforms": [
