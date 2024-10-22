@@ -1153,7 +1153,7 @@ if (!is_robolectric && enable_java_templates) {
       output_manifest = _android_manifest
       build_config = _build_config
       min_sdk_version = default_min_sdk_version
-      target_sdk_version = android_sdk_version
+      target_sdk_version = default_target_sdk_version
       deps = _non_java_deps + _java_assetres_deps +
              [ ":$_build_config_target_name" ]
       if (defined(invoker.android_manifest_dep)) {
@@ -1174,7 +1174,7 @@ if (!is_robolectric && enable_java_templates) {
       android_manifest = _android_manifest
       arsc_output = _resource_arsc_output
       min_sdk_version = default_min_sdk_version
-      target_sdk_version = android_sdk_version
+      target_sdk_version = default_target_sdk_version
       forward_variables_from(invoker, [ "override_target_sdk" ])
     }
 
@@ -2136,7 +2136,7 @@ if (!is_robolectric && enable_java_templates) {
   #   min_sdk_version: The minimum Android SDK version this target supports.
   #     Optional, default $default_min_sdk_version.
   #   target_sdk_version: The target Android SDK version for this target.
-  #     Optional, default to android_sdk_version.
+  #     Optional, default to default_target_sdk_version.
   #   max_sdk_version: The maximum Android SDK version this target supports.
   #     Optional, default not set.
   #   require_native_mocks: Enforce that any native calls using
@@ -2172,7 +2172,7 @@ if (!is_robolectric && enable_java_templates) {
     _java_target_name = "${_template_name}__java"
 
     _min_sdk_version = default_min_sdk_version
-    _target_sdk_version = android_sdk_version
+    _target_sdk_version = default_target_sdk_version
     if (defined(invoker.min_sdk_version)) {
       _min_sdk_version = invoker.min_sdk_version
     }

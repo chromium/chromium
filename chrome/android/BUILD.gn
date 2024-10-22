@@ -3090,7 +3090,6 @@ if (current_toolchain == default_toolchain) {
     apk_name = "ChromeSmokeTest"
     android_manifest =
         "javatests/src/org/chromium/chrome/test/smoke/AndroidManifest.xml"
-    target_sdk_version = android_sdk_version
     testonly = true
     sources = [
       "javatests/src/org/chromium/chrome/test/smoke/ChromeTabSwitcherTest.java",
@@ -3158,7 +3157,6 @@ if (current_toolchain == default_toolchain) {
   android_test_apk("chrome_bundle_smoke_test_apk") {
     apk_name = "ChromeBundleSmokeTest"
     android_manifest = "javatests/src/org/chromium/chrome/test/smoke/AndroidManifest_bundle.xml"
-    target_sdk_version = android_sdk_version
     testonly = true
     sources = [
       "javatests/src/org/chromium/chrome/test/smoke/ChromeBundleSmokeTest.java",

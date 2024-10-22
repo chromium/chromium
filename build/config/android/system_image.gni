@@ -54,7 +54,7 @@ template("system_image_stub_apk") {
     }
   }
 
-  _target_sdk_version = default_android_sdk_version
+  _target_sdk_version = default_target_sdk_version
   if (defined(invoker.override_target_sdk)) {
     _target_sdk_version = invoker.override_target_sdk
   }
