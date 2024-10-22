@@ -96,6 +96,11 @@ public class SafetyHubModuleProperties {
         SAFE_STATE_BUTTON_LISTENER
     };
 
+    /**
+     * If `COMMON_SAFETY_HUB_MODULE_KEYS.IS_SIGNED_IN` is false, then
+     * `PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS.COMPROMISED_PASSWORDS_COUNT` must be populated to the
+     * invalid value, -1.
+     */
     public static final PropertyKey[] PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS =
             PropertyModel.concatKeys(
                     COMMON_SAFETY_HUB_MODULE_KEYS,
@@ -120,6 +125,7 @@ public class SafetyHubModuleProperties {
                     COMMON_SAFETY_HUB_MODULE_KEYS, new PropertyKey[] {SAFE_BROWSING_STATE});
 
     public static final PropertyKey[] BROWSER_STATE_MODULE_KEYS = {
+        IS_SIGNED_IN,
         COMPROMISED_PASSWORDS_COUNT,
         TOTAL_PASSWORDS_COUNT,
         UPDATE_STATUS,

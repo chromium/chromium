@@ -180,6 +180,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 new PropertyModel.Builder(SafetyHubModuleProperties.BROWSER_STATE_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.UPDATE_STATUS, mDelegate.getUpdateStatus())
                         .with(
+                                SafetyHubModuleProperties.IS_SIGNED_IN,
+                                SafetyHubUtils.isSignedIn(getProfile()))
+                        .with(
                                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
                                 compromisedPasswordsCount)
                         .with(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount)
@@ -201,12 +204,19 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void setUpAccountPasswordCheckModule() {
+        boolean isSignedIn = SafetyHubUtils.isSignedIn(getProfile());
+        int compromisedPasswordsCount =
+                UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
         SafetyHubExpandablePreference passwordCheckPreference = findPreference(PREF_PASSWORDS);
 
         mPasswordCheckPropertyModel =
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
+                        .with(SafetyHubModuleProperties.IS_SIGNED_IN, isSignedIn)
+                        .with(
+                                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                                compromisedPasswordsCount)
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -684,6 +694,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                     });
         }
 
+        mBrowserStateModule.set(
+                SafetyHubModuleProperties.IS_SIGNED_IN, SafetyHubUtils.isSignedIn(getProfile()));
         mBrowserStateModule.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mBrowserStateModule.set(

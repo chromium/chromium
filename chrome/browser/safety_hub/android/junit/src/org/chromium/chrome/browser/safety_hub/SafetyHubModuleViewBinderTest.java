@@ -130,10 +130,10 @@ public class SafetyHubModuleViewBinderTest {
     @Test
     public void testPasswordCheckModule_NoCompromisedPasswords() {
         int totalPasswordsCount = 5;
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
 
@@ -169,11 +169,11 @@ public class SafetyHubModuleViewBinderTest {
     public void testPasswordCheckModule_CompromisedPasswordsExist() {
         int totalPasswordsCount = 10;
         int compromisedPasswordsCount = 5;
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
 
         String expectedTitle =
                 mActivity
@@ -218,8 +218,8 @@ public class SafetyHubModuleViewBinderTest {
 
     @Test
     public void testPasswordCheckModule_NoPasswordsSaved() {
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, 0);
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, 0);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_no_passwords_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_no_passwords_summary);
@@ -251,11 +251,11 @@ public class SafetyHubModuleViewBinderTest {
     public void testPasswordCheckModule_CompromisedCountUnavailable() {
         int totalPasswordsCount = 10;
         int compromisedPasswordsCount = -1;
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
 
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_password_check_unavailable_title);
@@ -563,6 +563,7 @@ public class SafetyHubModuleViewBinderTest {
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 5;
 
+        mBrowserStatePropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
@@ -636,6 +637,7 @@ public class SafetyHubModuleViewBinderTest {
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 0;
 
+        mBrowserStatePropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
@@ -664,6 +666,7 @@ public class SafetyHubModuleViewBinderTest {
         int sitesWithUnusedPermissionsCount = 0;
         int notificationPermissionsForReviewCount = 0;
 
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mSafeBrowsingPropertyModel.set(
                 SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
@@ -709,6 +712,7 @@ public class SafetyHubModuleViewBinderTest {
         int notificationPermissionsForReviewCount = 5;
 
         // Unmanaged warning state should rank first.
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(

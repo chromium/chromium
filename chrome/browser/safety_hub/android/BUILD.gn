@@ -45,6 +45,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinder.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsPreference.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPasswordModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsPreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubSubpageFragment.java",

@@ -209,6 +209,9 @@ public final class SafetyHubTest {
 
         mActivityTestRule.startMainActivityOnBlankPage();
         mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
+
+        // Make sure the compromised passwords count is reset at the beginning of the test suite.
+        clearCompromisedPasswordsCount();
     }
 
     @Test
@@ -473,10 +476,14 @@ public final class SafetyHubTest {
         // Click the button at the bottom of the page.
         onView(withText(R.string.safety_hub_notifications_reset_all_button)).perform(click());
 
-        // Verify tha the notifications subpage has been dismissed and the state of the
+        // Verify that the notifications subpage has been dismissed and the state of the
         // notification module has changed.
-        onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
-                .check(matches(isDisplayed()));
+        String okNotificationTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getString(R.string.safety_hub_notifications_review_ok_title);
+        scrollToExpandedPreference(okNotificationTitle);
+        onViewWaiting(withText(okNotificationTitle)).check(matches(isDisplayed()));
 
         // Click on the snackbar action button and verify that the info state is displayed
         // again.
@@ -719,6 +726,9 @@ public final class SafetyHubTest {
 
         scrollToExpandedPreference(notificationsTitle);
         verifyButtonsNextToTextVisibility(notificationsTitle, true);
+
+        // Make sure the compromised passwords count is reset at the end of the test.
+        clearCompromisedPasswordsCount();
     }
 
     @Test
@@ -835,11 +845,14 @@ public final class SafetyHubTest {
         // warning states.
         verifyButtonsNextToTextVisibility(notificationsTitle, true);
 
-        // Click on the reset all button and verify the notification module has changed to a
-        // safe state.
+        // Click on the reset all button.
         clickOnPrimaryButtonNextToText(notificationsTitle);
-        onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
-                .check(matches(isDisplayed()));
+
+        // Verify the notification module has changed to a safe state.
+        String okNotificationsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_notifications_review_ok_title);
+        scrollToExpandedPreference(okNotificationsTitle);
+        onViewWaiting(withText(okNotificationsTitle)).check(matches(isDisplayed()));
 
         // Click on the snackbar action button and verify that the notifications are allowed
         // again and the info state is displayed.
@@ -1146,6 +1159,13 @@ public final class SafetyHubTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(mProfile).setInteger(Pref.BREACHED_CREDENTIALS_COUNT, count);
+                });
+    }
+
+    private void clearCompromisedPasswordsCount() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
                 });
     }
 
