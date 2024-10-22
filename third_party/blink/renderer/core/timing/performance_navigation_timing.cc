@@ -304,6 +304,12 @@ NotRestoredReasons* PerformanceNavigationTiming::notRestoredReasons() const {
 }
 
 PerformanceTimingConfidence* PerformanceNavigationTiming::confidence() const {
+  if (DomWindow()) {
+    blink::UseCounter::Count(
+        DomWindow()->document(),
+        WebFeature::kPerformanceNavigationTimingConfidence);
+  }
+
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
   if (!timing) {
     return nullptr;
