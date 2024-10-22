@@ -75,8 +75,6 @@ static_library("crosapi") {
     "chrome_app_kiosk_service_ash.h",
     "chrome_app_window_tracker_ash.cc",
     "chrome_app_window_tracker_ash.h",
-    "clipboard_ash.cc",
-    "clipboard_ash.h",
     "clipboard_history_ash.cc",
     "clipboard_history_ash.h",
     "content_protection_ash.cc",

@@ -24,7 +24,6 @@ import "chromeos/crosapi/mojom/cert_database.mojom";
 import "chromeos/crosapi/mojom/cert_provisioning.mojom";
 import "chromeos/crosapi/mojom/chaps_service.mojom";
 import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
-import "chromeos/crosapi/mojom/clipboard.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
@@ -278,9 +277,7 @@ interface Crosapi {
   [MinVersion=44]
   BindChromeAppWindowTracker@49(pending_receiver<AppWindowTracker> receiver);
 
-  // Bind the clipboard interface to allow lacros-chrome to interact with the
-  // system clipboard.
-  [MinVersion=10] BindClipboard@15(pending_receiver<Clipboard> receiver);
+  // BindClipboard@15 was removed.
 
   // Bind the ClipboardHistory interface to allow lacros-chrome to show
   // ClipboardHistory.

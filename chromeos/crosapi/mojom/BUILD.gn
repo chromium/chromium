@@ -24,7 +24,6 @@ mojom("mojom") {
     "cert_provisioning.mojom",
     "chaps_service.mojom",
     "chrome_app_kiosk_service.mojom",
-    "clipboard.mojom",
     "clipboard_history.mojom",
     "content_protection.mojom",
     "cros_display_config.mojom",
