@@ -18,6 +18,7 @@ static_library("cloud_storage") {
   ]
 
   deps = [
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/chromeos/extensions/odfs_config_private",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/extensions",

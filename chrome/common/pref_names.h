@@ -2288,6 +2288,10 @@ inline constexpr char kLocalUserFilesMigrationDestination[] =
 
 // Whether the user can remove OneDrive.
 inline constexpr char kAllowUserToRemoveODFS[] = "allow_user_to_remove_odfs";
+
+// Whether M365 has been already been set as default to open supported links.
+inline constexpr char kM365SupportedLinkDefaultSet[] =
+    "filebrowser.m365_supported_link_default_set";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
