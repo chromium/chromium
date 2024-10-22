@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
+#include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"

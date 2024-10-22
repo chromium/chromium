@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_ACTIVITY_ACTIVE_TAB_TRACKER_H_
-#define CHROMEOS_ASH_COMPONENTS_BOCA_ACTIVITY_ACTIVE_TAB_TRACKER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ACTIVITY_ACTIVE_TAB_TRACKER_H_
+#define CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ACTIVITY_ACTIVE_TAB_TRACKER_H_
 
 #include <string>
 
@@ -21,4 +21,4 @@ class ActiveTabTracker : public boca::BocaWindowObserver {
 };
 
 }  // namespace ash::boca
-#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_ACTIVITY_ACTIVE_TAB_TRACKER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ACTIVITY_ACTIVE_TAB_TRACKER_H_

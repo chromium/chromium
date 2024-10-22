@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_extensions_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"

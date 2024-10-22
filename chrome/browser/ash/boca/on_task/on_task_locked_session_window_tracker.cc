@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
+#include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 

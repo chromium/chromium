@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
+#include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "components/sessions/core/session_id.h"

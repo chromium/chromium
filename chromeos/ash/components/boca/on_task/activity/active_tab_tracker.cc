@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
+#include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 
 #include "chromeos/ash/components/boca/boca_app_client.h"
 

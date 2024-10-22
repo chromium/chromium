@@ -19,10 +19,10 @@ static_library("on_task") {
   ]
 
   deps = [
+    ":activity",
     "//ash/constants:constants",
     "//base",
     "//chromeos/ash/components/boca",
-    "//chromeos/ash/components/boca:activity",
     "//chromeos/ash/components/boca/proto",
     "//components/google/core/common",
     "//components/policy/core/browser",
@@ -33,12 +33,24 @@ static_library("on_task") {
   ]
 }
 
+static_library("activity") {
+  sources = [
+    "activity/active_tab_tracker.cc",
+    "activity/active_tab_tracker.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/boca",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [ "on_task_session_manager_unittest.cc" ]
 
   deps = [
+    ":activity",
     ":on_task",
     "//base",
     "//chrome/test:test_support",

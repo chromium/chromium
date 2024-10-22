@@ -43,8 +43,8 @@ static_library("on_task") {
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chromeos/ash/components/boca",
-    "//chromeos/ash/components/boca:activity",
     "//chromeos/ash/components/boca/on_task",
+    "//chromeos/ash/components/boca/on_task:activity",
     "//chromeos/ash/components/browser_context_helper",
     "//components/keyed_service/content",
     "//components/policy/core/browser",
@@ -81,6 +81,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca:boca",
+    "//chromeos/ash/components/boca/on_task:activity",
     "//content/test:test_support",
   ]
 }
