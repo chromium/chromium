@@ -19,11 +19,6 @@
 
 namespace ui {
 
-// Encodes DataTransferEndpoints into a JSON string in the format as described
-// above.
-COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY)
-std::string ConvertDataTransferEndpointToJson(const DataTransferEndpoint& dte);
-
 // Decodes JSON strings into DataTransferEndpoint objects.
 // If no type or url found, nullptr is returned.
 COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY)
