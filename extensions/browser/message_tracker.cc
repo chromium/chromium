@@ -25,15 +25,13 @@ namespace {
 MessageTracker::TestObserver* g_test_observer = nullptr;
 
 std::string GetBackgroundStringForBackgroundType(
-    MessageTracker::MessageDestinationBackgroundType& type) {
+    MessageTracker::MessageDestinationType& type) {
   switch (type) {
-    case MessageTracker::MessageDestinationBackgroundType::kNone:
-      return "None";
-    case MessageTracker::MessageDestinationBackgroundType::kPersistentPage:
-      return "PersistentBackgroundPage";
-    case MessageTracker::MessageDestinationBackgroundType::kEventPage:
-      return "EventPage";
-    case MessageTracker::MessageDestinationBackgroundType::kServiceWorker:
+    case MessageTracker::MessageDestinationType::kUnknown:
+      return "Unknown";
+    case MessageTracker::MessageDestinationType::kNonServiceWorker:
+      return "NonServiceWorker";
+    case MessageTracker::MessageDestinationType::kServiceWorker:
       return "ServiceWorker";
   }
 }
@@ -83,7 +81,7 @@ MessageTrackerFactory::BuildServiceInstanceForBrowserContext(
 
 MessageTracker::TrackedMessage::TrackedMessage(
     const MessageDeliveryStage status,
-    const MessageDestinationBackgroundType destination_background_type)
+    const MessageDestinationType destination_background_type)
     : stage_(status),
       destination_background_type_(destination_background_type) {
   start_time_ = base::Time::Now();
@@ -97,7 +95,7 @@ MessageTracker::MessageDeliveryStage& MessageTracker::TrackedMessage::stage() {
   return stage_;
 }
 
-MessageTracker::MessageDestinationBackgroundType&
+MessageTracker::MessageDestinationType&
 MessageTracker::TrackedMessage::destination_background_type() {
   return destination_background_type_;
 }
@@ -124,7 +122,7 @@ BrowserContextKeyedServiceFactory* MessageTracker::GetFactory() {
 void MessageTracker::NotifyStartTrackingMessageDelivery(
     const base::UnguessableToken& message_id,
     const MessageDeliveryStage stage,
-    const MessageDestinationBackgroundType destination_background_type) {
+    const MessageDestinationType destination_background_type) {
   CHECK(!base::Contains(tracked_messages_, message_id));
   tracked_messages_.emplace(message_id,
                             TrackedMessage(stage, destination_background_type));

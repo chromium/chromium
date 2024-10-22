@@ -72,7 +72,7 @@ TEST_F(MessageTrackerUnitTest, NotifyStartTrackingMessageDelivery) {
   base::UnguessableToken message_id = base::UnguessableToken::Create();
   message_tracker()->NotifyStartTrackingMessageDelivery(
       message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      MessageTracker::MessageDestinationBackgroundType::kServiceWorker);
+      MessageTracker::MessageDestinationType::kServiceWorker);
 
   message_tracker()->NotifyUpdateMessageDelivery(
       message_id,
@@ -86,7 +86,7 @@ TEST_F(MessageTrackerUnitTest, NotifyStartTrackingMessageDelivery) {
 class MessageTrackerMultiBackgroundDestinationUnitTest
     : public MessageTrackerUnitTest,
       public testing::WithParamInterface<
-          MessageTracker::MessageDestinationBackgroundType> {};
+          MessageTracker::MessageDestinationType> {};
 
 // Tests that the tracker correctly records and reports metrics when an
 // extension message finishes its delivery and stops being tracked.
@@ -95,7 +95,7 @@ TEST_P(MessageTrackerMultiBackgroundDestinationUnitTest,
   base::UnguessableToken message_id = base::UnguessableToken::Create();
   MessageTrackerTestObserver observer(message_id);
   message_tracker()->SetMessageStaleTimeoutForTest(base::Seconds(1));
-  MessageTracker::MessageDestinationBackgroundType destination_background_type =
+  MessageTracker::MessageDestinationType destination_background_type =
       GetParam();
   message_tracker()->NotifyStartTrackingMessageDelivery(
       message_id, MessageTracker::MessageDeliveryStage::kUnknown,
@@ -112,43 +112,29 @@ TEST_P(MessageTrackerMultiBackgroundDestinationUnitTest,
   EXPECT_EQ(message_tracker()->GetNumberOfTrackedMessagesForTest(), 0u);
 
   switch (destination_background_type) {
-    case MessageTracker::MessageDestinationBackgroundType::kNone:
+    case MessageTracker::MessageDestinationType::kUnknown:
       histogram_tester().ExpectBucketCount(
-          "Extensions.MessagePipeline.MessageCompleted.None", /*sample=*/true,
-          /*expected_count=*/1);
-      histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageCompletedTime.None",
-          /*expected_count=*/1);
-      histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageStaleAtStage.None",
-          /*expected_count=*/0);
-      break;
-    case MessageTracker::MessageDestinationBackgroundType::kPersistentPage:
-      histogram_tester().ExpectBucketCount(
-          "Extensions.MessagePipeline.MessageCompleted."
-          "PersistentBackgroundPage",
+          "Extensions.MessagePipeline.MessageCompleted.Unknown",
           /*sample=*/true, /*expected_count=*/1);
       histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageCompletedTime."
-          "PersistentBackgroundPage",
+          "Extensions.MessagePipeline.MessageCompletedTime.Unknown",
           /*expected_count=*/1);
       histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageStaleAtStage."
-          "PersistentBackgroundPage",
+          "Extensions.MessagePipeline.MessageStaleAtStage.Unknown",
           /*expected_count=*/0);
       break;
-    case MessageTracker::MessageDestinationBackgroundType::kEventPage:
+    case MessageTracker::MessageDestinationType::kNonServiceWorker:
       histogram_tester().ExpectBucketCount(
-          "Extensions.MessagePipeline.MessageCompleted.EventPage",
-          /*sample=*//*sample=*/true, /*expected_count=*/1);
+          "Extensions.MessagePipeline.MessageCompleted.NonServiceWorker",
+          /*sample=*/true, /*expected_count=*/1);
       histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageCompletedTime.EventPage",
+          "Extensions.MessagePipeline.MessageCompletedTime.NonServiceWorker",
           /*expected_count=*/1);
       histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageStaleAtStage.EventPage",
+          "Extensions.MessagePipeline.MessageStaleAtStage.NonServiceWorker",
           /*expected_count=*/0);
       break;
-    case MessageTracker::MessageDestinationBackgroundType::kServiceWorker:
+    case MessageTracker::MessageDestinationType::kServiceWorker:
       histogram_tester().ExpectBucketCount(
           "Extensions.MessagePipeline.MessageCompleted.ServiceWorker",
           /*sample=*/true, /*expected_count=*/1);
@@ -165,11 +151,8 @@ TEST_P(MessageTrackerMultiBackgroundDestinationUnitTest,
 INSTANTIATE_TEST_SUITE_P(
     BackgroundDestination,
     MessageTrackerMultiBackgroundDestinationUnitTest,
-    testing::Values(
-        MessageTracker::MessageDestinationBackgroundType::kNone,
-        MessageTracker::MessageDestinationBackgroundType::kPersistentPage,
-        MessageTracker::MessageDestinationBackgroundType::kEventPage,
-        MessageTracker::MessageDestinationBackgroundType::kServiceWorker));
+    testing::Values(MessageTracker::MessageDestinationType::kNonServiceWorker,
+                    MessageTracker::MessageDestinationType::kServiceWorker));
 
 // Tests that the tracker correctly records and reports metrics when an
 // extension message becomes stale.
@@ -179,7 +162,7 @@ TEST_F(MessageTrackerUnitTest, NotifyStaleMessage) {
   message_tracker()->SetMessageStaleTimeoutForTest(base::Microseconds(1));
   message_tracker()->NotifyStartTrackingMessageDelivery(
       message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      MessageTracker::MessageDestinationBackgroundType::kServiceWorker);
+      MessageTracker::MessageDestinationType::kServiceWorker);
 
   {
     SCOPED_TRACE(
@@ -205,7 +188,7 @@ TEST_F(MessageTrackerUnitTest, NotifyStaleMessageAfterUpdateToNewStage) {
   message_tracker()->SetMessageStaleTimeoutForTest(base::Seconds(1));
   message_tracker()->NotifyStartTrackingMessageDelivery(
       message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      MessageTracker::MessageDestinationBackgroundType::kServiceWorker);
+      MessageTracker::MessageDestinationType::kServiceWorker);
   message_tracker()->NotifyUpdateMessageDelivery(
       message_id,
       MessageTracker::MessageDeliveryStage::kOpenChannelRequestReceived);
@@ -243,7 +226,7 @@ TEST_F(MessageTrackerUnitTest, NotifyStaleMessageBeforeUpdateToNewStage) {
   message_tracker()->SetMessageStaleTimeoutForTest(base::Microseconds(1));
   message_tracker()->NotifyStartTrackingMessageDelivery(
       message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      MessageTracker::MessageDestinationBackgroundType::kServiceWorker);
+      MessageTracker::MessageDestinationType::kServiceWorker);
 
   {
     SCOPED_TRACE(
@@ -273,7 +256,7 @@ TEST_F(MessageTrackerUnitTest, NotifyStaleMessageWithLateStop) {
   message_tracker()->SetMessageStaleTimeoutForTest(base::Microseconds(1));
   message_tracker()->NotifyStartTrackingMessageDelivery(
       message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      MessageTracker::MessageDestinationBackgroundType::kServiceWorker);
+      MessageTracker::MessageDestinationType::kServiceWorker);
 
   {
     SCOPED_TRACE(

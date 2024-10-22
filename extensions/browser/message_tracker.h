@@ -28,14 +28,19 @@ namespace extensions {
 // the message process for too long and becomes "stale".
 class MessageTracker : public KeyedService {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum MessageDestinationBackgroundType {
-    kNone = 0,
-    kPersistentPage = 1,
-    kEventPage = 2,
-    kServiceWorker = 3,
-    kMaxValue = kServiceWorker,
+  // Although this enum isn't directly used as a histogram value, it is used to
+  // name histograms. If the values change in any way, then the usages should be
+  // updated in this class and histograms.xml.
+  enum class MessageDestinationType {
+    // The message destination is not currently at the current point in the
+    // messaging processing.
+    kUnknown = 0,
+    // Extension contexts that are not a service worker (persistent background
+    // pages, event pages, content scripts, popup scripts, etc).
+    kNonServiceWorker = 1,
+    // An extension's background service worker context (script).
+    kServiceWorker = 2,
+
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -64,18 +69,18 @@ class MessageTracker : public KeyedService {
    public:
     explicit TrackedMessage(
         const MessageDeliveryStage stage,
-        const MessageDestinationBackgroundType destination_background_type);
+        const MessageDestinationType destination_background_type);
     ~TrackedMessage() = default;
 
     void ResetTimeout();
     MessageDeliveryStage& stage();
-    MessageDestinationBackgroundType& destination_background_type();
+    MessageDestinationType& destination_background_type();
     const base::Time& start_time() { return start_time_; }
 
    private:
     MessageDeliveryStage stage_ = MessageDeliveryStage::kUnknown;
-    MessageDestinationBackgroundType destination_background_type_ =
-        MessageDestinationBackgroundType::kNone;
+    MessageDestinationType destination_background_type_ =
+        MessageDestinationType::kNonServiceWorker;
     base::Time start_time_;
   };
 
@@ -88,7 +93,7 @@ class MessageTracker : public KeyedService {
   void NotifyStartTrackingMessageDelivery(
       const base::UnguessableToken& message_id,
       const MessageDeliveryStage stage,
-      const MessageDestinationBackgroundType destination_background_type_);
+      const MessageDestinationType destination_background_type_);
 
   // Notifies the tracker that a message has moved to the next stage in the
   // messaging process. The message is tracked until it is delivered or becomes

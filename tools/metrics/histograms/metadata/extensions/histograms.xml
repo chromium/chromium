@@ -43,14 +43,6 @@ chromium-metrics-reviews@google.com.
   <variant name="DeveloperModeOn" summary="developer mode on"/>
 </variants>
 
-<variants name="ExtensionBackgroundType">
-  <variant name="EventPage" summary="event page"/>
-  <variant name="None" summary="no background page"/>
-  <variant name="PersistentBackgroundPage"
-      summary="persistent background page"/>
-  <variant name="ServiceWorker" summary="service worker"/>
-</variants>
-
 <variants name="ExtensionFunctionExecutionTime">
   <variant name=".1msTo5ms"
       summary="Execution took between 1ms and 5ms (tolerable)."/>
@@ -116,6 +108,12 @@ of interesting buckets, such as "internal + external".
   <variant name="Unpacked"
       summary="unpacked and developer extension(s) (ManifestLocations
                kCommandLine and kUnpacked)"/>
+</variants>
+
+<variants name="MessageDestinationType">
+  <variant name="NonServiceWorker" summary="not a service worker"/>
+  <variant name="ServiceWorker" summary="service worker"/>
+  <variant name="Unknown" summary="unknown type"/>
 </variants>
 
 <!--
@@ -3916,14 +3914,13 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.MessagePipeline.MessageCompleted.{ExtensionBackgroundType}"
+    name="Extensions.MessagePipeline.MessageCompleted.{MessageDestinationType}"
     enum="Boolean" expires_after="2025-04-10">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Tracks the overall success/failure of messages as they progress through the
-    messaging process to background page destination type
-    {ExtensionBackgroundType}.
+    messaging process to destination type {MessageDestinationType}.
 
     It is emitted either:
 
@@ -3933,18 +3930,17 @@ This is emitted for two scenarios when a worker may be unregistered:
     *) when a message has stayed in a given stage for ~30 seconds (false) and is
     now considered &quot;stale&quot;
   </summary>
-  <token key="ExtensionBackgroundType" variants="ExtensionBackgroundType"/>
+  <token key="MessageDestinationType" variants="MessageDestinationType"/>
 </histogram>
 
 <histogram
-    name="Extensions.MessagePipeline.MessageCompletedTime.{ExtensionBackgroundType}"
+    name="Extensions.MessagePipeline.MessageCompletedTime.{MessageDestinationType}"
     units="microseconds" expires_after="2025-04-10">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Tracks how long it took for an extension message to successfully complete
-    the messaging process to background page destination type
-    {ExtensionBackgroundType}.
+    the messaging process to destination type {MessageDestinationType}.
 
     It is emitted when
     Extensions.ServiceWorkerBackground.Extensions.ServiceWorkerBackground.MessageStagesCompleted
@@ -3952,23 +3948,23 @@ This is emitted for two scenarios when a worker may be unregistered:
 
     This is only emitted for users with high resolution clocks.
   </summary>
-  <token key="ExtensionBackgroundType" variants="ExtensionBackgroundType"/>
+  <token key="MessageDestinationType" variants="MessageDestinationType"/>
 </histogram>
 
 <histogram
-    name="Extensions.MessagePipeline.MessageStaleAtStage.{ExtensionBackgroundType}"
+    name="Extensions.MessagePipeline.MessageStaleAtStage.{MessageDestinationType}"
     enum="MessageDeliveryStage" expires_after="2025-04-10">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Tracks the stage where the an extension message to the background context
-    became stale to background page destination type {ExtensionBackgroundType}.
+    became stale to destination type {MessageDestinationType}.
 
     It is emitted when
     Extensions.ServiceWorkerBackground.Extensions.ServiceWorkerBackground.MessageStagesCompleted
     is false.
   </summary>
-  <token key="ExtensionBackgroundType" variants="ExtensionBackgroundType"/>
+  <token key="MessageDestinationType" variants="MessageDestinationType"/>
 </histogram>
 
 <histogram
