@@ -13658,21 +13658,6 @@
             ]
         }
     ],
-    "MacAllowBackgroundingRenderProcesses": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MacAllowBackgroundingRenderProcesses"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacImmersiveFullscreenAlwaysOnTrafficLights": [
         {
             "platforms": [
@@ -16176,6 +16161,26 @@
                     "enable_features": [
                         "PMProcessPriorityPolicy",
                         "PriorityOverridePendingViews"
+                    ]
+                },
+                {
+                    "name": "EnabledWithMacBackgrounding",
+                    "enable_features": [
+                        "MacAllowBackgroundingRenderProcesses",
+                        "PMProcessPriorityPolicy",
+                        "PriorityOverridePendingViews"
+                    ]
+                },
+                {
+                    "name": "EnabledWithTriStatePriority",
+                    "enable_features": [
+                        "MacAllowBackgroundingRenderProcesses",
+                        "PMProcessPriorityPolicy",
+                        "PriorityOverridePendingViews",
+                        "RestrictThreadPoolInBackground",
+                        "SetIsolatesPriority",
+                        "UnimportantFramesPriority",
+                        "UserVisibleProcessPriority"
                     ]
                 }
             ]
