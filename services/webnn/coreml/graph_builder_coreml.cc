@@ -126,6 +126,7 @@ constexpr char kOpCumulativeSumTypeName[] = "cumsum";
 constexpr char kOpEluTypeName[] = "elu";
 constexpr char kOpExpandTypeName[] = "tile";
 constexpr char kOpGatherElementsTypeName[] = "gather_along_axis";
+constexpr char kOpGatherNdTypeName[] = "gather_nd";
 constexpr char kOpGatherTypeName[] = "gather";
 constexpr char kOpGeluTypeName[] = "gelu";
 constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
@@ -767,8 +768,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*tan_input=*/DataTypeConstraint::kFloat16To32,
        /*elu_input=*/DataTypeConstraint::kFloat16To32,
        /*expand_input=*/kFloatsAndInt32,
-       // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
-       // does not have corresponding types. See docs here:
+       // Note that INT16, and UINT16 is also supported by CoreML for all gather
+       // operators, but WebNN does not have corresponding types. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather
        /*gather_input=*/kFloat16To32Int8To32AndUint8,
        /*gather_indices=*/kGatherIndicesSupportedDataTypes,
@@ -777,9 +778,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather_along_axis
        /*gather_elements_input=*/kFloat16To32Int8To32AndUint8,
        /*gather_elements_indices=*/kGatherIndicesSupportedDataTypes,
-       // GatherND is not implemented.
-       /*gather_nd_input=*/{},
-       /*gather_nd_indices=*/{},
+       /*gather_nd_input=*/kFloat16To32Int8To32AndUint8,
+       /*gather_nd_indices=*/kGatherIndicesSupportedDataTypes,
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
        /*gemm_input=*/DataTypeConstraint::kFloat16To32,
        // Gru is not implemented.
@@ -988,6 +988,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         AddOperationForGatherElements(*operation->get_gather_elements(), block);
         break;
       }
+      case mojom::Operation::Tag::kGatherNd: {
+        AddOperationForGatherND(*operation->get_gather_nd(), block);
+        break;
+      }
       case mojom::Operation::Tag::kGelu: {
         AddOperationForGelu(*operation->get_gelu(), block);
         break;
@@ -1128,7 +1132,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kDequantizeLinear:
-      case mojom::Operation::Tag::kGatherNd:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kLstm:
@@ -2165,6 +2168,31 @@ void GraphBuilderCoreml::AddOperationForGatherElements(
       {{kOpParamAxis, CreateScalarImmediateValue(
                           base::checked_cast<int32_t>(operation.axis))},
        {kOpParamValidateIndices, CreateScalarImmediateValue(false)}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+}
+
+void GraphBuilderCoreml::AddOperationForGatherND(
+    const mojom::GatherND& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  CHECK(context_properties_.data_type_limits.gather_input.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.input_operand_id).mil_data_type)));
+  CHECK(context_properties_.data_type_limits.gather_indices.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.indices_operand_id).mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpGatherNdTypeName);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                      operation.input_operand_id);
+
+  // TODO(crbug.com/339087333): Handle negative and out-of-bounds indices.
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamIndices,
+                      operation.indices_operand_id);
+
+  SetInputWithValue(*op->mutable_inputs(), kOpParamValidateIndices,
+                    CreateScalarImmediateValue(false));
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
 }
