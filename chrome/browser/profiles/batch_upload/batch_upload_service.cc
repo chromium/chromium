@@ -7,7 +7,6 @@
 #include <array>
 #include <map>
 
-#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
@@ -41,75 +40,6 @@ const std::array<syncer::DataType, 2> kBatchUploadOrderedAvailableTypes{
     syncer::DataType::PASSWORDS,
     syncer::DataType::CONTACT_INFO,
 };
-
-// Returns a dummy implementation of local_data_description through
-// `on_local_description_ready`.
-// TODO(b/359146556): remove when actual providers are implemented.
-void MakeDummyLocalDataDescriptionGetter(
-    syncer::DataType type,
-    int title_id,
-    int item_count,
-    base::OnceCallback<void(syncer::LocalDataDescription)>
-        on_local_description_ready) {
-  syncer::LocalDataDescription local_data_description;
-  local_data_description.type = type;
-  for (int i = 0; i < item_count; ++i) {
-    syncer::LocalDataItemModel item;
-    item.id = syncer::LocalDataItemModel::DataId(base::ToString(i));
-    item.icon_url = type == syncer::DataType::PASSWORDS
-                        ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
-                        : GURL();
-    item.title = "title_" + base::UTF16ToUTF8(base::FormatNumber(i));
-    item.subtitle = "subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i));
-    local_data_description.local_data_models.push_back(std::move(item));
-  }
-
-  std::move(on_local_description_ready).Run(std::move(local_data_description));
-}
-
-void OnGetLocalDataDescription(
-    base::OnceCallback<void(syncer::LocalDataDescription)>
-        on_local_description_ready,
-    std::map<syncer::DataType, syncer::LocalDataDescription> local_data_map) {
-  if (local_data_map.empty()) {
-    return std::move(on_local_description_ready)
-        .Run(syncer::LocalDataDescription());
-  }
-
-  CHECK_EQ(local_data_map.size(), 1u);
-  auto first_it = local_data_map.begin();
-  std::move(on_local_description_ready).Run(std::move(first_it->second));
-}
-
-// Triggers the asynchronous request of `syncer::LocalDataDescription` for
-// `type`. `on_local_description_ready` should always return a value even if
-// empty.
-// // TODO(crbug.com/362707041): Use a single call to
-// `GetLocalDataDescriptions()` with multiple types in `syncer::DataTypeSet`
-// when adding addresses real implementation.
-void RequestLocalDataDescription(
-    syncer::SyncService& sync_service,
-    syncer::DataType type,
-    base::OnceCallback<void(syncer::LocalDataDescription)>
-        on_local_description_ready) {
-  switch (type) {
-    case syncer::DataType::PASSWORDS:
-      sync_service.GetLocalDataDescriptions(
-          syncer::DataTypeSet{type},
-          base::BindOnce(&OnGetLocalDataDescription,
-                         std::move(on_local_description_ready)));
-      break;
-    case syncer::DataType::CONTACT_INFO:
-      // TODO(crbug.com/359146556): real implementations to be added per
-      // data type and linked to the sync service underlying type.
-      MakeDummyLocalDataDescriptionGetter(
-          type, IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES, 20,
-          std::move(on_local_description_ready));
-      break;
-    default:
-      NOTREACHED();
-  }
-}
 
 }  // namespace
 
@@ -151,36 +81,29 @@ void BatchUploadService::OpenBatchUpload(
 }
 
 void BatchUploadService::RequestLocalDataDescriptions() {
-  auto barrier_callback = base::BarrierCallback<syncer::LocalDataDescription>(
-      kBatchUploadOrderedAvailableTypes.size(),
-      base::BindOnce(&BatchUploadService::OnLocalDataDescriptionsReady,
-                     base::Unretained(this)));
-
-  // Iterate over all available enums. Should not use
-  // `requested_data_types_remaining_count_` to iterate as it may be changed
-  // during the loop execution if the callback is called synchronously.
+  syncer::DataTypeSet data_types;
+  // Iterate over all available enums.
   for (syncer::DataType type : kBatchUploadOrderedAvailableTypes) {
-    RequestLocalDataDescription(sync_service_.get(), type, barrier_callback);
+    data_types.Put(type);
   }
+
+  sync_service_->GetLocalDataDescriptions(
+      data_types,
+      base::BindOnce(&BatchUploadService::OnGetLocalDataDescriptionsReady,
+                     base::Unretained(this)));
 }
 
-void BatchUploadService::OnLocalDataDescriptionsReady(
-    std::vector<syncer::LocalDataDescription> local_data_descriptions) {
-  std::map<syncer::DataType, syncer::LocalDataDescription>
-      local_data_descriptions_map;
-  for (syncer::LocalDataDescription& local_data_description :
-       local_data_descriptions) {
-    if (local_data_description.local_data_models.empty()) {
-      continue;
-    }
-
-    local_data_descriptions_map.insert_or_assign(
-        local_data_description.type, std::move(local_data_description));
+void BatchUploadService::OnGetLocalDataDescriptionsReady(
+    std::map<syncer::DataType, syncer::LocalDataDescription> local_data_map) {
+  if (local_data_map.empty()) {
+    Reset();
+    std::move(dialog_shown_callback_).Run(false);
+    return;
   }
 
   bool opened = controller_->ShowDialog(
       *delegate_, browser_,
-      std::move(local_data_descriptions_map), /*selected_items_callback=*/
+      std::move(local_data_map), /*selected_items_callback=*/
       base::BindOnce(&BatchUploadService::OnBatchUplaodDialogResult,
                      base::Unretained(this)));
   std::move(dialog_shown_callback_).Run(opened);
@@ -193,9 +116,7 @@ void BatchUploadService::OnBatchUplaodDialogResult(
   CHECK(controller_);
 
   Browser* browser = browser_.get();
-  // Reset the state of the service.
-  controller_.reset();
-  browser_ = nullptr;
+  Reset();
 
   if (item_ids_to_move.empty()) {
     return;
@@ -251,4 +172,9 @@ void BatchUploadService::OnAvatarOverrideTextTimeout() {
 
 bool BatchUploadService::IsDialogOpened() const {
   return controller_ != nullptr;
+}
+
+void BatchUploadService::Reset() {
+  controller_.reset();
+  browser_ = nullptr;
 }

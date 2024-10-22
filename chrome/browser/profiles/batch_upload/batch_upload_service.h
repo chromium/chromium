@@ -52,16 +52,14 @@ class BatchUploadService : public KeyedService {
 
  private:
   // Iterates over all available types that can be displayed in the dialog and
-  // request the local data description. Result of each local data descriptions
-  // is returned in `OnLocalDataDescriptionsReady()` asynchronously.
+  // request the `syncer::LocalDataDescription that contains the list of items.
+  // The result is returned asynchronously.
   void RequestLocalDataDescriptions();
 
-  // Barrier callback aggregating the `syncer::LocalDataDescription`s. It is
-  // expected to return a local data description per data type for the available
-  // data types even if the returned local data description is empty. Once all
-  // the local data descriptions are available, triggers showing the dialog.
-  void OnLocalDataDescriptionsReady(
-      std::vector<syncer::LocalDataDescription> local_data_descriptions);
+  // Callback that returns a map of `syncer::LocalDataDescription` for the data
+  // types that can be shown in the Batch Upload dialog.
+  void OnGetLocalDataDescriptionsReady(
+      std::map<syncer::DataType, syncer::LocalDataDescription> local_data_map);
 
   // Callback of the dialog view closing, contains the IDs of the selected items
   // per data type. Selected items will be processed to be moved to the account
@@ -81,6 +79,9 @@ class BatchUploadService : public KeyedService {
 
   // Callback to clear the overridden avatar text on timeout.
   void OnAvatarOverrideTextTimeout();
+
+  // Resets the state of the service related to the dialog.
+  void Reset();
 
   raw_ref<signin::IdentityManager> identity_manager_;
   raw_ref<syncer::SyncService> sync_service_;

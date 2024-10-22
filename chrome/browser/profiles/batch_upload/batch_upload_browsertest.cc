@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/profiles/batch_upload_ui_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -25,6 +26,9 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/service/local_data_description.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -38,6 +42,16 @@ AvatarToolbarButton* GetAvatarToolbarButton(Browser* browser) {
       ->toolbar_button_provider()
       ->GetAvatarToolbarButton();
 }
+
+syncer::LocalDataItemModel MakeDummyLocalDataModel(size_t id) {
+  syncer::LocalDataItemModel model;
+  std::string id_string = base::ToString(id);
+  model.id = id_string;
+  model.title = "title_" + id_string;
+  model.subtitle = "subtitle" + id_string;
+  return model;
+}
+
 }  // namespace
 
 class BatchUploadWithFeatureOffBrowserTest : public InProcessBrowserTest {
@@ -56,6 +70,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFeatureOffBrowserTest, BatchUploadNull) {
   EXPECT_FALSE(batch_upload);
 }
 
+// TODO(crbug.com/374134588): Make these tests as unit tests. No need for
+// browser tests.
 class BatchUploadBrowserTest : public InProcessBrowserTest {
  public:
   BatchUploadBrowserTest() {
@@ -65,6 +81,23 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
         /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
                               switches::kBatchUploadDesktop},
         /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    BatchUploadServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        browser()->profile(),
+        base::BindOnce(&BatchUploadBrowserTest::CreateBatchUploadService,
+                       base::Unretained(this)));
+
+    ON_CALL(*GetSyncServiceMock(), GetLocalDataDescriptions)
+        .WillByDefault(
+            [this](
+                syncer::DataTypeSet types,
+                base::OnceCallback<void(
+                    std::map<syncer::DataType, syncer::LocalDataDescription>)>
+                    callback) {
+              std::move(callback).Run(returned_descriptions_);
+            });
   }
 
   // Opens the batch upload dialog using `batch_upload_service` in `browser.
@@ -108,11 +141,41 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 
+  syncer::MockSyncService* GetSyncServiceMock() { return &mock_sync_service_; }
+
+  // Overrides `SyncService::GetLocalDataDescriptions()` by returned type in the
+  // map by constructing dummy models.
+  void SetReturnDescriptions(syncer::DataType type, size_t item_count) {
+    syncer::LocalDataDescription& description = returned_descriptions_[type];
+    description.type = type;
+    description.local_data_models.clear();
+    for (size_t i = 0; i < item_count; ++i) {
+      description.local_data_models.push_back(MakeDummyLocalDataModel(i));
+    }
+  }
+
+  // Overrides `SyncService::GetLocalDataDescriptions()` by emptying the
+  // returned value.
+  void ClearReturnDescriptions() { returned_descriptions_.clear(); }
+
  private:
   void OnBatchUploadShownResult(base::OnceClosure closure, bool shown) {
     dialog_shown_ = shown;
     std::move(closure).Run();
   }
+
+  // May be overridden to in child test suite.
+  virtual std::unique_ptr<KeyedService> CreateBatchUploadService(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    return std::make_unique<BatchUploadService>(
+        IdentityManagerFactory::GetForProfile(profile), GetSyncServiceMock(),
+        std::make_unique<BatchUploadUIDelegate>());
+  }
+
+  syncer::MockSyncService mock_sync_service_;
+  std::map<syncer::DataType, syncer::LocalDataDescription>
+      returned_descriptions_;
 
   bool dialog_shown_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -120,6 +183,7 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenBatchUpload) {
   SigninWithFullInfo();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
 
   BatchUploadService* batch_upload =
       BatchUploadServiceFactory::GetForProfile(browser()->profile());
@@ -133,6 +197,7 @@ IN_PROC_BROWSER_TEST_F(
     BatchUploadBrowserTest,
     ClosingBrowserWithBatchUploadShouldStillAlowYouToOpenANewOne) {
   SigninWithFullInfo();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
 
   Profile* profile = browser()->profile();
   Browser* browser_2 = CreateBrowser(profile);
@@ -161,6 +226,8 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
                        SignedOutUserShouldNotBeAbleToOpenTheDialog) {
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
+
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
   ASSERT_FALSE(
@@ -176,6 +243,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
                        SycningUserShouldNotBeAbleToOpenTheDialog) {
   SigninWithFullInfo(signin::ConsentLevel::kSync);
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
 
   BatchUploadService* batch_upload =
       BatchUploadServiceFactory::GetForProfile(browser()->profile());
@@ -187,6 +255,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
                        SigninPendingUserShouldNotBeAbleToOpenTheDialog) {
   SigninWithFullInfo();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
@@ -209,6 +278,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSigninPending) {
   SigninWithFullInfo();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
@@ -238,6 +308,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSigninPending) {
 
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSignout) {
   SigninWithFullInfo();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
@@ -262,6 +333,44 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSignout) {
   // Sign in again.
   SigninWithFullInfo();
   // Opening the dialog should now be possible again.
+  EXPECT_TRUE(OpenBatchUpload(batch_upload, browser()));
+}
+
+IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
+                       EmptyDescriptionsDoNotOpenDialog) {
+  SigninWithFullInfo();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
+
+  BatchUploadService* batch_upload =
+      BatchUploadServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(batch_upload);
+
+  ClearReturnDescriptions();
+  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
+
+  // Setting 1 element should open the dialog now.
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
+  EXPECT_TRUE(OpenBatchUpload(batch_upload, browser()));
+}
+
+IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
+                       DescriptionsWithEmptyModelsDoNotOpenDialog) {
+  SigninWithFullInfo();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
+
+  BatchUploadService* batch_upload =
+      BatchUploadServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(batch_upload);
+
+  // Set empty return data models per type.
+  ClearReturnDescriptions();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 0);
+  SetReturnDescriptions(syncer::DataType::CONTACT_INFO, 0);
+  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
+
+  // Setting 1 element should open the dialog now.
+  ClearReturnDescriptions();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
   EXPECT_TRUE(OpenBatchUpload(batch_upload, browser()));
 }
 
@@ -318,12 +427,11 @@ class BatchUploadDelegateFake : public BatchUploadDelegate {
 // of the service real implementation is tested.
 class BatchUploadServiceFake : public BatchUploadService {
  public:
-  BatchUploadServiceFake(Profile& profile,
+  BatchUploadServiceFake(signin::IdentityManager* identity_manager,
+                         syncer::SyncService* sync_service,
                          std::unique_ptr<BatchUploadDelegate> delegate,
                          base::OnceClosure clear_test_callback)
-      : BatchUploadService(IdentityManagerFactory::GetForProfile(&profile),
-                           SyncServiceFactory::GetForProfile(&profile),
-                           std::move(delegate)),
+      : BatchUploadService(identity_manager, sync_service, std::move(delegate)),
         clear_test_callback_(std::move(clear_test_callback)) {}
 
   // BatchUploadService:
@@ -335,17 +443,6 @@ class BatchUploadServiceFake : public BatchUploadService {
 
 class BatchUploadWithFakeDelegateBrowserTest : public BatchUploadBrowserTest {
  public:
-  void SetUpOnMainThread() override {
-    // Batch Upload can only be opened if the user is signed in.
-    SigninWithFullInfo();
-
-    BatchUploadServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        browser()->profile(),
-        base::BindOnce(&BatchUploadWithFakeDelegateBrowserTest::
-                           CreateBatchUploadServiceWithFakeDelegate,
-                       base::Unretained(this)));
-  }
-
   BatchUploadDelegateFake* GetFakeDelegate() { return delegate_; }
 
   // The fake delegate will never show the actual content, so we should not wait
@@ -358,13 +455,15 @@ class BatchUploadWithFakeDelegateBrowserTest : public BatchUploadBrowserTest {
 
  private:
   // Override the creation of the BatchUploadService to use the fake delegate.
-  std::unique_ptr<KeyedService> CreateBatchUploadServiceWithFakeDelegate(
-      content::BrowserContext* context) {
+  std::unique_ptr<KeyedService> CreateBatchUploadService(
+      content::BrowserContext* context) override {
     std::unique_ptr<BatchUploadDelegateFake> fake_delegate =
         std::make_unique<BatchUploadDelegateFake>();
     delegate_ = fake_delegate.get();
     return std::make_unique<BatchUploadServiceFake>(
-        *Profile::FromBrowserContext(context), std::move(fake_delegate),
+        IdentityManagerFactory::GetForProfile(
+            Profile::FromBrowserContext(context)),
+        GetSyncServiceMock(), std::move(fake_delegate),
         base::BindOnce(&BatchUploadWithFakeDelegateBrowserTest::ClearDelegate,
                        base::Unretained(this)));
   }
@@ -376,6 +475,10 @@ class BatchUploadWithFakeDelegateBrowserTest : public BatchUploadBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
                        CloseDialogWithCancelButton) {
+  SigninWithFullInfo();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
+  SetReturnDescriptions(syncer::DataType::CONTACT_INFO, 1);
+
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar_button->GetText(), std::u16string());
 
@@ -396,6 +499,10 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
                        CloseDialogWithSaveButtonAllSelected) {
+  SigninWithFullInfo();
+  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
+  SetReturnDescriptions(syncer::DataType::CONTACT_INFO, 1);
+
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar_button->GetText(), std::u16string());
 

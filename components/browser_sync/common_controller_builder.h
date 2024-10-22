@@ -24,6 +24,7 @@ class SharingMessageBridge;
 class TemplateURLService;
 
 namespace autofill {
+class AddressDataManager;
 class AutofillWebDataService;
 }  // namespace autofill
 
@@ -129,6 +130,9 @@ class CommonControllerBuilder {
 
   // Setters to inject dependencies. Each of these setters must be invoked
   // before invoking `Build()`. In some cases it is allowed to inject nullptr.
+  void SetAddressDataManagerGetter(
+      base::RepeatingCallback<autofill::AddressDataManager*()>
+          address_data_manager_getter);
   void SetAutofillWebDataService(
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
       const scoped_refptr<autofill::AutofillWebDataService>&
@@ -242,6 +246,8 @@ class CommonControllerBuilder {
 
   // For all above, nullopt indicates the corresponding setter wasn't invoked.
   // nullptr indicates the setter was invoked with nullptr.
+  base::RepeatingCallback<autofill::AddressDataManager*()>
+      address_data_manager_getter_;
   SafeOptional<raw_ptr<signin::IdentityManager>> identity_manager_;
   SafeOptional<raw_ptr<consent_auditor::ConsentAuditor>> consent_auditor_;
   SafeOptional<raw_ptr<syncer::DeviceInfoSyncService>>
