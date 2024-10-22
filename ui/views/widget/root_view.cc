@@ -138,6 +138,7 @@ class AnnounceTextView : public View {
     }
 
     UpdateAccessibleRole(announce_role);
+    GetViewAccessibility().SetIsInvisible(true);
     GetViewAccessibility().SetLiveAtomic(true);
     GetViewAccessibility().SetLiveStatus("polite");
 

@@ -943,6 +943,7 @@ TEST_F(RootViewTest, AnnounceTextAsTest) {
 #else
   EXPECT_EQ(node_data.role, ax::mojom::Role::kAlert);
 #endif
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kInvisible));
 
   const std::u16string kPoliteText = u"Something polite";
   root_view->AnnounceTextAs(kPoliteText,
