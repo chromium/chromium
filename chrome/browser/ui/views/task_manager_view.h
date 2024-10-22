@@ -110,7 +110,7 @@ class TaskManagerView : public TableViewDelegate,
 
   // Creates all corresponding subcomponents for the header.
   std::unique_ptr<views::Textfield> CreateSearchBar(const gfx::Insets& margins);
-  std::unique_ptr<views::MdTextButton> CreateEndTaskButton(
+  std::unique_ptr<views::MdTextButton> CreateEndProcessButton(
       const gfx::Insets& margins);
   std::unique_ptr<views::Separator> CreateSeparator(const gfx::Insets& margins);
   std::unique_ptr<views::ScrollView> CreateProcessView(
@@ -133,6 +133,9 @@ class TaskManagerView : public TableViewDelegate,
   // Restores saved "always on top" state from a previous session.
   void RetrieveSavedAlwaysOnTopState();
 
+  void EndSelectedProcess();
+  bool IsEndProcessButtonEnabled() const;
+
   std::unique_ptr<TaskManagerTableModel> table_model_;
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
@@ -146,6 +149,10 @@ class TaskManagerView : public TableViewDelegate,
 
   // all possible columns, not necessarily visible.
   std::vector<ui::TableColumn> columns_;
+
+  // This button is not the same as the dialog button. It is only non-null if
+  // task manager refresh is enabled.
+  raw_ptr<views::MdTextButton> end_process_btn_;
 
   // The first time this instance of the task manager was initialized.
   const base::TimeTicks start_time_ = base::TimeTicks::Now();

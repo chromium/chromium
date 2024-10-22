@@ -13,6 +13,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -241,11 +242,7 @@ std::string TaskManagerView::GetWindowName() const {
 }
 
 bool TaskManagerView::Accept() {
-  using SelectedIndices = ui::ListSelectionModel::SelectedIndices;
-  SelectedIndices selection(tab_table_->selection_model().selected_indices());
-  for (int index : base::Reversed(selection)) {
-    table_model_->KillTask(index);
-  }
+  EndSelectedProcess();
 
   // Just kill the process, don't close the task manager dialog.
   return false;
@@ -253,14 +250,7 @@ bool TaskManagerView::Accept() {
 
 bool TaskManagerView::IsDialogButtonEnabled(
     ui::mojom::DialogButton button) const {
-  const ui::ListSelectionModel::SelectedIndices& selections(
-      tab_table_->selection_model().selected_indices());
-  for (const auto& selection : selections) {
-    if (!table_model_->IsTaskKillable(selection))
-      return false;
-  }
-
-  return !selections.empty() && TaskManagerInterface::IsEndProcessEnabled();
+  return IsEndProcessButtonEnabled();
 }
 
 void TaskManagerView::WindowClosing() {
@@ -282,6 +272,9 @@ void TaskManagerView::GetGroupRange(size_t model_index,
 
 void TaskManagerView::OnSelectionChanged() {
   DialogModelChanged();
+  if (end_process_btn_) {
+    end_process_btn_->SetEnabled(IsEndProcessButtonEnabled());
+  }
 }
 
 void TaskManagerView::OnDoubleClick() {
@@ -334,9 +327,6 @@ TaskManagerView::TaskManagerView()
       is_always_on_top_(false) {
   task_manager::RecordNewOpenEvent(StartAction::kAnyDebug);
   set_use_custom_frame(false);
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
-  SetButtonLabel(ui::mojom::DialogButton::kOk,
-                 l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
   SetHasWindowSizeControls(true);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, the widget's frame should not show the window title.
@@ -376,7 +366,7 @@ void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
   auto empty_view = std::make_unique<views::View>();
   std::unique_ptr<views::Textfield> search_bar = CreateSearchBar(
       gfx::Insets::TLBR(0, 0, vertical_spacing, horizontal_spacing));
-  std::unique_ptr<views::MdTextButton> end_task_btn = CreateEndTaskButton(
+  std::unique_ptr<views::MdTextButton> end_process_btn = CreateEndProcessButton(
       gfx::Insets::TLBR(0, horizontal_spacing, vertical_spacing, 0));
   std::unique_ptr<views::Separator> separator =
       CreateSeparator(gfx::Insets::TLBR(0, 0, separator_spacing, 0));
@@ -391,7 +381,7 @@ void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
   // Compose all parts into header.
   container->AddChildView(std::move(empty_view));
   container->AddChildView(std::move(search_bar));
-  container->AddChildView(std::move(end_task_btn));
+  end_process_btn_ = container->AddChildView(std::move(end_process_btn));
 
   // Attach header to the top of the dialog contents.
   AddChildView(std::move(container));
@@ -411,7 +401,7 @@ std::unique_ptr<views::Textfield> TaskManagerView::CreateSearchBar(
   return search_bar;
 }
 
-std::unique_ptr<views::MdTextButton> TaskManagerView::CreateEndTaskButton(
+std::unique_ptr<views::MdTextButton> TaskManagerView::CreateEndProcessButton(
     const gfx::Insets& margins) {
   auto button = std::make_unique<views::MdTextButton>();
   button->SetText(l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
@@ -419,6 +409,8 @@ std::unique_ptr<views::MdTextButton> TaskManagerView::CreateEndTaskButton(
       l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL_ACCESSIBILITY_NAME));
   button->SetStyle(ui::ButtonStyle::kProminent);
   button->SetProperty(views::kMarginsKey, margins);
+  button->SetCallback(base::BindRepeating(&TaskManagerView::EndSelectedProcess,
+                                          base::Unretained(this)));
   return button;
 }
 
@@ -479,7 +471,16 @@ void TaskManagerView::Init() {
   bool table_has_border = !tm_refresh_enabled,
        header_padding = tm_refresh_enabled,
        scroll_view_rounded = tm_refresh_enabled,
-       layout_refresh = tm_refresh_enabled;
+       layout_refresh = tm_refresh_enabled,
+       dialog_button_disabled = tm_refresh_enabled;
+
+  if (dialog_button_disabled) {
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  } else {
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
+                   l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
+  }
 
   if (header_padding) {
     views::TableHeaderStyle header_style = {
@@ -565,6 +566,26 @@ void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
   const base::Value::Dict& dictionary =
       g_browser_process->local_state()->GetDict(GetWindowName());
   is_always_on_top_ = dictionary.FindBool("always_on_top").value_or(false);
+}
+
+void TaskManagerView::EndSelectedProcess() {
+  using SelectedIndices = ui::ListSelectionModel::SelectedIndices;
+  SelectedIndices selection(tab_table_->selection_model().selected_indices());
+  for (int index : base::Reversed(selection)) {
+    table_model_->KillTask(index);
+  }
+}
+
+bool TaskManagerView::IsEndProcessButtonEnabled() const {
+  const ui::ListSelectionModel::SelectedIndices& selections(
+      tab_table_->selection_model().selected_indices());
+  for (const auto& selection : selections) {
+    if (!table_model_->IsTaskKillable(selection)) {
+      return false;
+    }
+  }
+
+  return !selections.empty() && TaskManagerInterface::IsEndProcessEnabled();
 }
 
 BEGIN_METADATA(TaskManagerView)
