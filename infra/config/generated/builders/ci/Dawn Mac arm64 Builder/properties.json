@@ -136,7 +136,8 @@
           "builder": "mac-arm64-dawn-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Mac arm64 Builder/targets"
     }
   },
   "$build/reclient": {

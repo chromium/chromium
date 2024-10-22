@@ -77,7 +77,8 @@
           "builder": "dawn-try-win10-x64-nvidia-asan",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Win10 x64 ASAN Release (NVIDIA)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -75,7 +75,8 @@
           "builder": "win-dawn-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Win10 x64 Release (Intel)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

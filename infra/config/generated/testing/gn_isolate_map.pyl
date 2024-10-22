@@ -785,6 +785,7 @@
     "label": "//third_party/dawn/src/dawn/tests:dawn_perf_tests",
     "type": "script",
     "script": "//testing/scripts/run_performance_tests.py",
+    "skip_usage_check": True,
     "args": [
       "dawn_perf_tests",
       "--non-telemetry=true",
@@ -1975,6 +1976,7 @@
   "webgpu_blink_web_tests": {
     "label": "//:webgpu_blink_web_tests",
     "type": "generated_script",
+    "skip_usage_check": True,
     "args": [
       "--results-directory",
       "${ISOLATED_OUTDIR}",

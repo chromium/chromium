@@ -42,7 +42,8 @@
           "builder": "Dawn Linux TSAN Release",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-try-linux-tsan-rel/targets"
     }
   },
   "$build/reclient": {

@@ -782,6 +782,8 @@ targets.binaries.script(
     name = "dawn_perf_tests",
     label = "//third_party/dawn/src/dawn/tests:dawn_perf_tests",
     script = "//testing/scripts/run_performance_tests.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "dawn_perf_tests",
         "--non-telemetry=true",
@@ -2177,6 +2179,8 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "webgpu_blink_web_tests",
     label = "//:webgpu_blink_web_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "--results-directory",
         "${ISOLATED_OUTDIR}",

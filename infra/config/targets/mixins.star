@@ -820,6 +820,7 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_samsung_s24_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             # Unfortunately, "s24" is not exposed as a dimension. "e2s" appears
@@ -1081,6 +1082,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_intel_uhd_770_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "gpu": "8086:4680-23.2.1",
@@ -1317,6 +1319,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_arm64_apple_m2_retina_gpu_experimental",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1332,6 +1335,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_arm64_apple_m2_retina_gpu_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1850,6 +1854,7 @@ targets.mixin(
 
 targets.mixin(
     name = "webgpu_cts",
+    generate_pyl_entry = False,
     args = [
         # crbug.com/953991 Ensure WebGPU is ready before running tests
         "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
@@ -1942,6 +1947,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_intel_uhd_630_experimental",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
@@ -1980,6 +1986,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_nvidia_gtx_1660_experimental",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",

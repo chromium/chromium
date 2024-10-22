@@ -1,0 +1,13 @@
+{
+  "Dawn Win11 arm64 DEPS Builder": {
+    "additional_compile_targets": [
+      "dawn_end2end_tests",
+      "dawn_perf_tests",
+      "gl_tests",
+      "gl_unittests",
+      "telemetry_gpu_integration_test",
+      "telemetry_gpu_unittests",
+      "webgpu_blink_web_tests"
+    ]
+  }
+}

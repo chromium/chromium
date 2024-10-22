@@ -75,7 +75,8 @@
           "builder": "linux-dawn-intel-exp-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Linux x64 Experimental Release (Intel UHD 630)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

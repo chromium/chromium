@@ -114,7 +114,8 @@
           "builder": "Dawn Android arm DEPS Release (Pixel 4)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-android-arm-deps-rel/targets"
     }
   },
   "$build/reclient": {

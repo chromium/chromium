@@ -2095,6 +2095,442 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_dawn_android_compat_telemetry_tests",
+    targets = [
+        "gpu_dawn_webgpu_compat_cts",
+        "gpu_dawn_webgpu_cts",
+    ],
+)
+
+# Same as gpu_dawn_isolated_scripts, but with some suites removed:
+# * telemetry_gpu_unittests since those aren't built for Android
+# * SwiftShader-related tests since SwiftShader is not used on Android.
+targets.bundle(
+    name = "gpu_dawn_android_isolated_scripts",
+    targets = [
+        "gpu_dawn_perf_smoke_isolated_scripts",
+        "gpu_dawn_webgpu_blink_web_tests",
+    ],
+)
+
+# Same as gpu_dawn_compat_telemetry_tests, but without SwiftShader tests since
+# SwiftShader is not used on Android.
+targets.bundle(
+    name = "gpu_dawn_android_telemetry_tests",
+    targets = [
+        "gpu_dawn_webgpu_cts",
+    ],
+)
+
+# Same as gpu_dawn_telemetry_tests, but without SwiftShader tests since
+# SwiftShader is not used on Android.
+targets.bundle(
+    name = "gpu_dawn_asan_isolated_scripts",
+    targets = [
+        "gpu_dawn_common_isolated_scripts",
+        "gpu_dawn_perf_smoke_isolated_scripts",
+        "gpu_dawn_webgpu_blink_web_tests",
+        "gpu_dawn_webgpu_blink_web_tests_force_swiftshader",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_common_isolated_scripts",
+    targets = [
+        "telemetry_gpu_unittests",
+    ],
+    per_test_modifications = {
+        # Test that expectations files are well-formed.
+        "telemetry_gpu_unittests": targets.mixin(
+            swarming = targets.swarming(
+                # https://crbug.com/549140
+                idempotent = False,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_compat_telemetry_tests",
+    targets = [
+        "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
+        "gpu_dawn_webgpu_compat_cts",
+        "gpu_dawn_webgpu_cts",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_gtests_no_dxc",
+    targets = [
+        "dawn_end2end_no_dxc_tests",
+    ],
+    per_test_modifications = {
+        "dawn_end2end_no_dxc_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_gtests_no_dxc_with_validation",
+    targets = [
+        "dawn_end2end_no_dxc_validation_layers_tests",
+    ],
+    per_test_modifications = {
+        "dawn_end2end_no_dxc_validation_layers_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_gtests_use_tint_ir",
+    targets = [
+        "dawn_end2end_use_tint_ir_tests",
+    ],
+    per_test_modifications = {
+        "dawn_end2end_use_tint_ir_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_integration_asan_gtests_passthrough",
+    targets = [
+        "gpu_common_gtests_passthrough",
+        "gpu_dawn_gtests",
+        "gpu_dawn_gtests_no_dxc",
+    ],
+)
+
+# GPU gtests that test Dawn and integration with Chromium
+# These tests are run both on the CI and trybots which test DEPS Dawn.
+targets.bundle(
+    name = "gpu_dawn_integration_gtests_passthrough",
+    targets = [
+        "gpu_common_gtests_passthrough",
+        "gpu_dawn_gtests",
+        "gpu_dawn_gtests_with_validation",
+    ],
+)
+
+# TODO(crbug.com/364675466): Remove this when Tint IR is launched on macOS.
+targets.bundle(
+    name = "gpu_dawn_integration_gtests_passthrough_macos",
+    targets = [
+        "gpu_common_gtests_passthrough",
+        "gpu_dawn_gtests",
+        "gpu_dawn_gtests_use_tint_ir",
+        "gpu_dawn_gtests_with_validation",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_integration_gtests_passthrough_win_x64",
+    targets = [
+        "gpu_common_gtests_passthrough",
+        "gpu_dawn_gtests",
+        "gpu_dawn_gtests_no_dxc",
+        "gpu_dawn_gtests_no_dxc_with_validation",
+        "gpu_dawn_gtests_with_validation",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_isolated_scripts",
+    targets = [
+        "gpu_dawn_common_isolated_scripts",
+        "gpu_dawn_perf_smoke_isolated_scripts",
+        "gpu_dawn_webgpu_blink_web_tests",
+        "gpu_dawn_webgpu_blink_web_tests_force_swiftshader",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_perf_smoke_isolated_scripts",
+    targets = [
+        "dawn_perf_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_telemetry_tests",
+    targets = [
+        "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
+        "gpu_dawn_webgpu_cts",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_telemetry_tests_fxc",
+    targets = [
+        "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
+        "gpu_dawn_webgpu_cts_fxc",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_telemetry_win_x64_tests",
+    targets = [
+        "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
+        "gpu_dawn_webgpu_cts",
+        "gpu_dawn_webgpu_cts_fxc",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_tsan_gtests",
+    targets = [
+        "gpu_dawn_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
+    targets = [
+        "webgpu_swiftshader_web_platform_cts_tests",
+        "webgpu_swiftshader_web_platform_cts_with_validation_tests",
+    ],
+    per_test_modifications = {
+        # We intentionally do not have worker versions of these tests since
+        # non-SwiftShader coverage should be sufficient.
+        "webgpu_swiftshader_web_platform_cts_tests": [
+            targets.mixin(
+                args = [
+                    "--use-webgpu-adapter=swiftshader",
+                    "--test-filter=*web_platform*",
+                ],
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+        "webgpu_swiftshader_web_platform_cts_with_validation_tests": [
+            targets.mixin(
+                args = [
+                    "--use-webgpu-adapter=swiftshader",
+                    "--test-filter=*web_platform*",
+                    "--enable-dawn-backend-validation",
+                ],
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_webgpu_blink_web_tests",
+    targets = [
+        "webgpu_blink_web_tests",
+        "webgpu_blink_web_tests_with_backend_validation",
+    ],
+    per_test_modifications = {
+        "webgpu_blink_web_tests": [
+            targets.mixin(
+                args = [
+                    "--flag-specific=webgpu",
+                ],
+            ),
+            "webgpu_cts",
+        ],
+        "webgpu_blink_web_tests_with_backend_validation": [
+            targets.mixin(
+                args = [
+                    "--flag-specific=webgpu-with-backend-validation",
+                    # Increase the timeout when using backend validation layers (crbug.com/1208253)
+                    "--timeout-ms=30000",
+                ],
+            ),
+            "webgpu_cts",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_webgpu_blink_web_tests_force_swiftshader",
+    targets = [
+        "webgpu_swiftshader_blink_web_tests",
+        "webgpu_swiftshader_blink_web_tests_with_backend_validation",
+    ],
+    per_test_modifications = {
+        "webgpu_swiftshader_blink_web_tests": [
+            targets.mixin(
+                args = [
+                    "--flag-specific=webgpu-swiftshader",
+                ],
+            ),
+            "webgpu_cts",
+        ],
+        "webgpu_swiftshader_blink_web_tests_with_backend_validation": [
+            targets.mixin(
+                args = [
+                    "--flag-specific=webgpu-swiftshader-with-backend-validation",
+                    # Increase the timeout when using backend validation layers (crbug.com/1208253)
+                    "--timeout-ms=30000",
+                ],
+            ),
+            "webgpu_cts",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_webgpu_compat_cts",
+    targets = [
+        "webgpu_cts_compat_tests",
+    ],
+    per_test_modifications = {
+        # Worker versions of compat tests intentionally omitted since it is
+        # unlikely that the compat path will interact with workers.
+        "webgpu_cts_compat_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles",
+                ],
+                android_args = [
+                    "--extra-browser-args=--use-angle=gles --disable-features=Vulkan",
+                ],
+                linux_args = [
+                    "--extra-browser-args=--use-angle=gl",
+                ],
+                swarming = targets.swarming(
+                    shards = 14,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 36,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_webgpu_cts_asan",
+    # We intentionally do not have fxc + worker tests since dxc + worker
+    # should provide sufficient coverage.
+    targets = [
+        "webgpu_cts_dedicated_worker_tests",
+        "webgpu_cts_fxc_tests",
+        "webgpu_cts_service_worker_tests",
+        "webgpu_cts_shared_worker_tests",
+        "webgpu_cts_tests",
+    ],
+    per_test_modifications = {
+        "webgpu_cts_dedicated_worker_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 1,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+        "webgpu_cts_fxc_tests": [
+            targets.mixin(
+                args = [
+                    "--use-fxc",
+                ],
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+        "webgpu_cts_service_worker_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 1,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+        "webgpu_cts_shared_worker_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 1,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+        "webgpu_cts_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_dawn_webgpu_cts_fxc",
+    # We intentionally do not have fxc + worker tests since dxc + worker
+    # should provide sufficient coverage.
+    targets = [
+        "webgpu_cts_fxc_tests",
+        "webgpu_cts_fxc_with_validation_tests",
+    ],
+    per_test_modifications = {
+        "webgpu_cts_fxc_tests": [
+            targets.mixin(
+                args = [
+                    "--use-fxc",
+                ],
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 14,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+        "webgpu_cts_fxc_with_validation_tests": [
+            targets.mixin(
+                args = [
+                    "--enable-dawn-backend-validation",
+                    "--use-fxc",
+                ],
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 14,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+            "linux_vulkan",
+        ],
+    },
+)
+
+targets.bundle(
     name = "gpu_desktop_passthrough_gtests",
     targets = [
         "gpu_angle_unit_gtests",

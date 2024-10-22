@@ -39,7 +39,8 @@
           "builder": "Dawn Win11 arm64 DEPS Builder",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-win11-arm64-deps-rel/targets"
     }
   },
   "$build/reclient": {

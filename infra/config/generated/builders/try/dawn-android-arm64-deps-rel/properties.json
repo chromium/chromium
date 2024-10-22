@@ -77,7 +77,8 @@
           "builder": "Dawn Android arm64 DEPS Release (Pixel 6)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-android-arm64-deps-rel/targets"
     }
   },
   "$build/reclient": {

@@ -83,7 +83,8 @@
           "builder": "dawn-android-arm64-deps-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Android arm64 DEPS Builder/targets"
     }
   },
   "$build/reclient": {

@@ -81,7 +81,8 @@
           "builder": "Dawn Mac x64 Experimental Release (AMD)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-try-mac-amd-exp/targets"
     }
   },
   "$build/reclient": {

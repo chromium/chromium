@@ -117,7 +117,8 @@
           "builder": "dawn-win10-x64-deps-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Win10 x64 DEPS Builder/targets"
     }
   },
   "$build/reclient": {

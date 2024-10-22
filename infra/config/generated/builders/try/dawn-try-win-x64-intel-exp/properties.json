@@ -79,7 +79,8 @@
           "builder": "Dawn Win10 x64 Experimental Release (Intel)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-try-win-x64-intel-exp/targets"
     }
   },
   "$build/reclient": {

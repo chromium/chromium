@@ -75,7 +75,8 @@
           "builder": "dawn-try-win-x64-nvidia-exp",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Win10 x64 Experimental Release (NVIDIA)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

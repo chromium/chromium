@@ -75,7 +75,8 @@
           "builder": "dawn-try-linux-x64-intel-uhd770-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Linux x64 Release (Intel UHD 770)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

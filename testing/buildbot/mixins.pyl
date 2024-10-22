@@ -315,17 +315,6 @@
       },
     },
   },
-  'gpu_samsung_s24_stable': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'e2s',
-        'device_os': 'UP1A.231005.007',
-        'device_os_type': 'user',
-        'os': 'Android',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
   'has_native_resultdb_integration': {
     'resultdb': {
       'enable': True,
@@ -458,16 +447,6 @@
       },
     },
   },
-  'linux_intel_uhd_770_stable': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '8086:4680-23.2.1',
-        'os': 'Ubuntu-22.04.4',
-        'display_attached': '1',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
   'linux_nvidia_gtx_1660_experimental': {
     'fail_if_unused': False,
     'swarming': {
@@ -589,32 +568,6 @@
       'dimensions': {
         'cpu': 'x86-64',
         'os': 'Mac-15',
-      },
-    },
-  },
-  'mac_arm64_apple_m2_retina_gpu_experimental': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'gpu': 'apple:m2',
-        'mac_model': 'Mac14,7',
-        'os': 'Mac-14.4.1',
-        'pool': 'chromium.tests.gpu',
-        'display_attached': '1',
-        'hidpi': '1',
-      },
-    },
-  },
-  'mac_arm64_apple_m2_retina_gpu_stable': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'gpu': 'apple:m2',
-        'mac_model': 'Mac14,7',
-        'os': 'Mac-14.4.1',
-        'pool': 'chromium.tests.gpu',
-        'display_attached': '1',
-        'hidpi': '1',
       },
     },
   },
@@ -872,30 +825,6 @@
       '--enable-leak-detection',
     ],
   },
-  'webgpu_cts': {
-    'args': [
-      '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
-    ],
-    'linux_args': [
-      '--no-xvfb',
-      '--additional-driver-flag=--enable-features=Vulkan',
-    ],
-    'mac_args': [
-      '--platform=mac-mac11',
-    ],
-    'win64_args': [
-      '--target=Release_x64',
-    ],
-    'merge': {
-      'script': '//third_party/blink/tools/merge_web_test_results.py',
-      'args': [
-        '--verbose',
-      ],
-    },
-    'resultdb': {
-      'enable': True,
-    },
-  },
   'webgpu_telemetry_cts': {
     'args': [
       '--extra-browser-args=--force_high_performance_gpu',
@@ -947,16 +876,6 @@
       },
     },
   },
-  'win10_intel_uhd_630_experimental': {
-    'swarming': {
-      'dimensions': {
-        'display_attached': '1',
-        'gpu': '8086:9bc5-31.0.101.2127',
-        'os': 'Windows-10',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
   'win10_intel_uhd_630_stable': {
     'fail_if_unused': False,
     'swarming': {
@@ -975,16 +894,6 @@
         'display_attached': '1',
         'gpu': '8086:4680-31.0.101.5333',
         'os': 'Windows-10-19045.3930',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
-  'win10_nvidia_gtx_1660_experimental': {
-    'swarming': {
-      'dimensions': {
-        'display_attached': '1',
-        'gpu': '10de:2184-31.0.15.4601',
-        'os': 'Windows-10-19045',
         'pool': 'chromium.tests.gpu',
       },
     },

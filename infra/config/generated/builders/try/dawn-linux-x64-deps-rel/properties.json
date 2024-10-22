@@ -111,7 +111,8 @@
           "builder": "Dawn Linux x64 DEPS Release (NVIDIA)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-linux-x64-deps-rel/targets"
     }
   },
   "$build/reclient": {

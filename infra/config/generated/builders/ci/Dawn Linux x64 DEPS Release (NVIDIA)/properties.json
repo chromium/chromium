@@ -72,7 +72,8 @@
           "builder": "dawn-linux-x64-deps-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Linux x64 DEPS Release (NVIDIA)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

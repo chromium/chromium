@@ -79,7 +79,8 @@
           "builder": "Dawn Linux x64 Experimental Release (Intel UHD 630)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-dawn-intel-exp-rel/targets"
     }
   },
   "$build/reclient": {

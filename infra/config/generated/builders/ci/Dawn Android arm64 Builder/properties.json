@@ -167,7 +167,8 @@
           "builder": "android-dawn-arm64-s24-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Android arm64 Builder/targets"
     }
   },
   "$build/reclient": {
