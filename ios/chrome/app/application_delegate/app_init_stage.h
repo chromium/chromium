@@ -45,8 +45,9 @@ enum class AppInitStage {
   // on this because the policies might have an effect on later init stages.
   kEnterprise,
 
-  // The app is initializing the browser objects for the browser UI (e.g., the
-  // profile).
+  // TODO(crbug.com/333863468): code should no longer check this enum value,
+  // instead it should use ProfileInitStage::kPrepareUI. The enum will be
+  // removed once the AppInitStage and ProfileInitStage are fully decoupled.
   kBrowserObjectsForUI,
 
   // TODO(crbug.com/333863468): code should no longer check this enum value,
