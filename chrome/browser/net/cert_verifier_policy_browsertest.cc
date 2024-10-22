@@ -59,9 +59,41 @@
 #include "crypto/sha2.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
+namespace {
+class CertVerifierServicePolicyTest : public policy::PolicyTest {
+ public:
+  // In some cases, we may need to wait until the certificate policy updates
+  // propagate.
+  void UpdateProviderPolicyAndWaitForUpdate(const policy::PolicyMap& policies) {
+    // If features::kEnableCertManagementUIV2Write is enabled, the cert verifier
+    // service update is asynchronous and the test needs to wait for the update
+    // to complete.
+    // Otherwise, cert changes may not make it to the verifier in time to clear
+    // the cert verification cache.
+    // This is safe to do in other cases, as long as the test is expecting the
+    // cert verifier to get updated certificates.
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+    base::test::TestFuture<void> cert_verifier_service_update_waiter;
+    browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
+        ->GetCertVerifierServiceUpdater()
+        ->WaitUntilNextUpdateForTesting(
+            cert_verifier_service_update_waiter.GetCallback());
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
+    // Update policy with root
+    UpdateProviderPolicy(policies);
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+    ASSERT_TRUE(cert_verifier_service_update_waiter.Wait());
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  }
+};
+}  // namespace
+
 // Testing the CACertificates policy
 class CertVerifierServiceCACertificatesPolicyTest
-    : public policy::PolicyTest,
+    : public CertVerifierServicePolicyTest,
       public testing::WithParamInterface<bool> {
  public:
   void SetUpInProcessBrowserTestFixture() override {
@@ -112,7 +144,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Test update of CACertificates policy after verifier is already
 // created.
 class CertVerifierServiceCACertificatesUpdatePolicyTest
-    : public policy::PolicyTest {
+    : public CertVerifierServicePolicyTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
@@ -152,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierServiceCACertificatesUpdatePolicyTest,
     policy::PolicyMap policies;
     SetPolicy(&policies, policy::key::kCACertificates,
               std::make_optional(std::move(certs_value)));
-    UpdateProviderPolicy(policies);
+    UpdateProviderPolicyAndWaitForUpdate(policies);
 
     ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
     // Updated with policy, root should be trusted.
@@ -163,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierServiceCACertificatesUpdatePolicyTest,
 
 // Testing the CADistrutedCertificates policy
 class CertVerifierServiceCADistrustedCertificatesPolicyTest
-    : public policy::PolicyTest {
+    : public CertVerifierServicePolicyTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
@@ -203,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierServiceCADistrustedCertificatesPolicyTest,
 }
 
 class CertVerifierServiceCATrustedDistrustedCertificatesPolicyTest
-    : public policy::PolicyTest {
+    : public CertVerifierServicePolicyTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
@@ -255,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(
 // Test update of CADistrustedCertificates policy after verifier is already
 // created.
 class CertVerifierServiceCADistrustedCertificatesUpdatePolicyTest
-    : public policy::PolicyTest {
+    : public CertVerifierServicePolicyTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
@@ -291,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(
     certs_value.GetList().Append(std::move(b64_cert));
     SetPolicy(&policies, policy::key::kCADistrustedCertificates,
               std::make_optional(std::move(certs_value)));
-    UpdateProviderPolicy(policies);
+    UpdateProviderPolicyAndWaitForUpdate(policies);
 
     ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
     // Updated with policy, root should no longer be trusted.
@@ -302,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Testing the CAHintCertificate policy
 class CertVerifierServiceCAHintCertificatesPolicyTest
-    : public policy::PolicyTest,
+    : public CertVerifierServicePolicyTest,
       public testing::WithParamInterface<bool> {
  public:
   void SetUpInProcessBrowserTestFixture() override {
@@ -356,7 +388,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Test update of CAHintCertificates policy after verifier is already
 // created.
 class CertVerifierServiceCAHintCertificatesUpdatePolicyTest
-    : public policy::PolicyTest {
+    : public CertVerifierServicePolicyTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
@@ -396,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierServiceCAHintCertificatesUpdatePolicyTest,
     policy::PolicyMap policies;
     SetPolicy(&policies, policy::key::kCAHintCertificates,
               std::make_optional(std::move(certs_value)));
-    UpdateProviderPolicy(policies);
+    UpdateProviderPolicyAndWaitForUpdate(policies);
 
     ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
     // Updated with policy, intermediate is used so chain can be built.
@@ -413,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierServiceCAHintCertificatesUpdatePolicyTest,
 // store in an integration test without possibly messing up other tests.
 // Except on Linux.
 class CertVerifierServiceCAPlatformIntegrationPolicyBaseTest
-    : public policy::PolicyTest {
+    : public CertVerifierServicePolicyTest {
  public:
   void SetUpOnMainThread() override {
     policy::PolicyTest::SetUpOnMainThread();
@@ -460,7 +492,7 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceCAPlatformIntegrationPolicyTest,
   policy::PolicyMap policies;
   SetPolicy(&policies, policy::key::kCAPlatformIntegrationEnabled,
             std::optional<base::Value>(platform_root_store_enabled()));
-  UpdateProviderPolicy(policies);
+  UpdateProviderPolicyAndWaitForUpdate(policies);
 
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
@@ -508,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierServiceCAPlatformIntegrationPolicyBaseTest,
   policy::PolicyMap policies;
   SetPolicy(&policies, policy::key::kCAPlatformIntegrationEnabled,
             std::optional<base::Value>(false));
-  UpdateProviderPolicy(policies);
+  UpdateProviderPolicyAndWaitForUpdate(policies);
 
   ASSERT_TRUE(NavigateToUrl(https_test_server.GetURL("/simple.html"), this));
   // Platform integration is false, request should fail to verify cert.
@@ -520,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierServiceCAPlatformIntegrationPolicyBaseTest,
 
 // Test the CACertificatesWithConstraints policy
 class CertVerifierServiceCACertsWithConstraintsPolicyTest
-    : public policy::PolicyTest,
+    : public CertVerifierServicePolicyTest,
       public testing::WithParamInterface<bool> {
  public:
   void SetUpInProcessBrowserTestFixture() override {
@@ -581,7 +613,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 
 class CertVerifierServiceCACertsWithCIDRConstraintsPolicyTest
-    : public policy::PolicyTest,
+    : public CertVerifierServicePolicyTest,
       public testing::WithParamInterface<bool> {
  public:
   void SetUpInProcessBrowserTestFixture() override {
@@ -640,7 +672,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Bool());
 
 class CertVerifierServiceCACertsWithInvalidCIDRConstraintsPolicyTest
-    : public policy::PolicyTest {
+    : public CertVerifierServicePolicyTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
@@ -691,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class CertVerifierServiceCACertsWithConstraintsUpdatePolicyTest
-    : public policy::PolicyTest {
+    : public CertVerifierServicePolicyTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
@@ -734,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(
     SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
               std::make_optional(
                   base::Value(std::move(certs_with_constraints_value))));
-    UpdateProviderPolicy(policies);
+    UpdateProviderPolicyAndWaitForUpdate(policies);
 
     ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
     // invalid CIDR constraint means the root cert isn't trusted.
@@ -757,7 +789,7 @@ IN_PROC_BROWSER_TEST_F(
     SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
               std::make_optional(
                   base::Value(std::move(certs_with_constraints_value))));
-    UpdateProviderPolicy(policies);
+    UpdateProviderPolicyAndWaitForUpdate(policies);
 
     ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
     // Updated with a valid CIDR constraint, cert should be trusted.
@@ -771,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(
 // and the new CACertificates/CAHintCertificates policies, that they are both
 // honored.
 class CertVerifierServiceNewAndOncCertificatePoliciesTest
-    : public policy::PolicyTest,
+    : public CertVerifierServicePolicyTest,
       public testing::WithParamInterface<bool> {
  public:
   bool add_cert_to_policy() const { return GetParam(); }
@@ -852,7 +884,7 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceNewAndOncCertificatePoliciesTest,
               std::make_optional(base::Value(std::move(new_ca_certs))));
     SetPolicy(&policies, policy::key::kCAHintCertificates,
               std::make_optional(base::Value(std::move(new_hint_certs))));
-    UpdateProviderPolicy(policies);
+    UpdateProviderPolicyAndWaitForUpdate(policies);
   }
 
   ASSERT_TRUE(
@@ -878,7 +910,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // added certs database and the new CACertificates/CAHintCertificates policies,
 // that they are both honored.
 class CertVerifierServicePolicyAndUserRootsTest
-    : public policy::PolicyTest,
+    : public CertVerifierServicePolicyTest,
       public testing::WithParamInterface<bool> {
  public:
   CertVerifierServicePolicyAndUserRootsTest() {
@@ -965,7 +997,7 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServicePolicyAndUserRootsTest,
               std::make_optional(base::Value(std::move(policy_hint_certs))));
     // Policy updates will also trigger an update to the Cert Verifier, pulling
     // in the certs from ServerCertificateDatabase.
-    UpdateProviderPolicy(policies);
+    UpdateProviderPolicyAndWaitForUpdate(policies);
   }
 
   ASSERT_TRUE(

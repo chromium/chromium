@@ -784,12 +784,12 @@ void ProfileNetworkContextService::UpdateAdditionalCertificates() {
     cert_db_service->GetAllCertificatesMigrateFromNSSFirstIfNeeded(
         base::BindOnce(&ProfileNetworkContextService::
                            UpdateAdditionalCertificatesWithUserAddedCerts,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
 #else
     cert_db_service->GetAllCertificates(
         base::BindOnce(&ProfileNetworkContextService::
                            UpdateAdditionalCertificatesWithUserAddedCerts,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
 #endif
   } else {
     profile_->ForEachLoadedStoragePartition(

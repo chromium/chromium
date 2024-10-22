@@ -64,6 +64,8 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
   // mojom::CertVerifierServiceUpdater implementation:
   void UpdateAdditionalCertificates(
       mojom::AdditionalCertificatesPtr additional_certificates) override;
+  void WaitUntilNextUpdateForTesting(
+      WaitUntilNextUpdateForTestingCallback callback) override;
 
   // Set a pointer to the CertVerifierServiceFactory so that it may be notified
   // when we are deleted.
@@ -110,6 +112,7 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
   bool waiting_for_update_;
   base::TimeTicks wait_start_time_;
   std::vector<QueuedCertVerifyRequest> queued_requests_;
+  WaitUntilNextUpdateForTestingCallback update_complete_callback_;
 };
 
 }  // namespace internal

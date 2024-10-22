@@ -163,6 +163,15 @@ void CertVerifierServiceImpl::UpdateAdditionalCertificates(
   }
 
   queued_requests_.clear();
+
+  if (update_complete_callback_) {
+    std::move(update_complete_callback_).Run();
+  }
+}
+
+void CertVerifierServiceImpl::WaitUntilNextUpdateForTesting(
+    WaitUntilNextUpdateForTestingCallback callback) {
+  update_complete_callback_ = std::move(callback);
 }
 
 void CertVerifierServiceImpl::SetCertVerifierServiceFactory(

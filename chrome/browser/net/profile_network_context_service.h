@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
@@ -242,6 +243,8 @@ class ProfileNetworkContextService
   // Used for testing.
   base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>
       client_cert_store_factory_;
+
+  base::WeakPtrFactory<ProfileNetworkContextService> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NET_PROFILE_NETWORK_CONTEXT_SERVICE_H_

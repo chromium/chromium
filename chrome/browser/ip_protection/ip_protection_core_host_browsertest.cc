@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
@@ -45,6 +46,10 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/common/chrome_features.h"
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
 using ::ip_protection::BlindSignedAuthToken;
 using ::ip_protection::GeoHint;
 
@@ -52,9 +57,24 @@ namespace {
 class ScopedIpProtectionFeatureList {
  public:
   ScopedIpProtectionFeatureList() {
-    feature_list_.InitWithFeatures({net::features::kEnableIpProtectionProxy,
-                                    network::features::kMaskedDomainList},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+            // Use of IpProtectionCoreHostFactory::GetInstance() in the test
+            // constructor means that the KeyedService Factory instances get
+            // created before feature overrides in
+            // testing/variations/fieldtrial_testing_config.json get applied;
+            // this is needed to ensure that the factory in
+            // chrome/browser/net/server_certificate_database_service_factory is
+            // created consistent with the rest of the code.
+            //
+            // See http://g/chrome-secure-web-and-net/Qre0HqS0hgA for more info.
+            ::features::kEnableCertManagementUIV2Write,
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
+            net::features::kEnableIpProtectionProxy,
+            network::features::kMaskedDomainList},
+        {});
   }
 
  private:

@@ -507,6 +507,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "SendTabToSelfSyncService",
     "SerialConnectionManager",
     "SerialPortManager",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    "ServerCertificateDatabaseService",
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     "SessionDataService",
     "SessionProtoDBFactory",
     "SessionsAPI",

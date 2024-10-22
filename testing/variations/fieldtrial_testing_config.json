@@ -9102,6 +9102,22 @@
             ]
         }
     ],
+    "EnableCertManagementUIV2Write": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableCertManagementUIV2Write"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableChromeFatalCrashEventsObserver": [
         {
             "platforms": [

@@ -59,4 +59,11 @@ interface CertVerifierServiceUpdater {
   // via previous calls to UpdateCertVerifier or that were specified in
   // cert_verifier.mojom.CertVerifierCreationParams.
   UpdateAdditionalCertificates(AdditionalCertificates certificates);
+
+  // Called when you need to wait for the Update call to Cert Verifier to
+  // finish.
+  //
+  // When the next UpdateAdditionalCertificates call is completed, it will call
+  // the return callback.
+  WaitUntilNextUpdateForTesting() => ();
 };
