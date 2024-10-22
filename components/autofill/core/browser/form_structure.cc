@@ -18,6 +18,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -824,8 +825,7 @@ void FormStructure::ProcessExtractedFields() {
 void FormStructure::ExtractParseableFieldLabels() {
   std::vector<std::u16string_view> field_labels;
   field_labels.reserve(field_count());
-  for (const auto& field : *this) {
-    // Skip fields that are not a text input or not visible.
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
     if (!field->IsTextInputElement() || !field->IsFocusable()) {
       continue;
     }
@@ -833,23 +833,23 @@ void FormStructure::ExtractParseableFieldLabels() {
   }
 
   // Determine the parsable labels and write them back.
-  std::optional<std::vector<std::u16string>> parsable_labels =
-      GetParseableLabels(field_labels);
-  // If not single label was split, the function can return, because the
-  // |parsable_label_| is assigned to |label| by default.
-  if (!parsable_labels.has_value()) {
-    return;
-  }
-
-  size_t idx = 0;
-  for (auto& field : *this) {
+  std::vector<std::u16string_view> parsable_labels =
+      GetParseableLabels(std::move(field_labels));
+  // Iterating through the fields in reverse order is necessary for memory
+  // safety: `field_labels` contains string_views pointing to the labels of the
+  // `fields_`. By splitting shared labels, `field_labels[i]` might reference
+  // `field_labels[i-1]`, meaning that earlier labels need to be overwritten
+  // later.
+  auto it = parsable_labels.rbegin();
+  for (const std::unique_ptr<AutofillField>& field : base::Reversed(fields_)) {
     if (!field->IsTextInputElement() || !field->IsFocusable()) {
-      // For those fields, set the original label.
-      field->set_parseable_label(field->label());
       continue;
     }
-    DCHECK(idx < parsable_labels->size());
-    field->set_parseable_label(parsable_labels->at(idx++));
+    CHECK(it != parsable_labels.rend());
+    if (field->label() != *it) {
+      field->set_parseable_label(std::u16string(*it));
+    }
+    it++;
   }
 }
 
