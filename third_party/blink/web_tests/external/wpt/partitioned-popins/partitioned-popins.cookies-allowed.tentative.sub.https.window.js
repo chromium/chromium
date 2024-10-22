@@ -1,5 +1,6 @@
 // META: script=/resources/testdriver.js
 // META: script=/resources/testdriver-vendor.js
+// META: script=/storage-access-api/helpers.js
 
 'use strict';
 
@@ -39,6 +40,8 @@ async_test(t => {
     }
   }));
 
-  // Step 2
-  window.open("https://{{hosts[alt][]}}:{{ports[https][0]}}/partitioned-popins/resources/partitioned-popins.cookies-window.html?id="+id, '_blank', 'popup');
-}, "Verify Partitioned Popins only have access to third-party cookies");
+  MaybeSetStorageAccess("*", "*", "allowed").then(() => {
+    // Step 2
+    window.open("https://{{hosts[alt][]}}:{{ports[https][0]}}/partitioned-popins/resources/partitioned-popins.cookies-window.html?id="+id, '_blank', 'popup');
+  });
+}, "Verify Partitioned Popins cookie access when third-party cookie access allowed");
