@@ -287,6 +287,7 @@ class EmptyWebWorkerFetchContext : public WebWorkerFetchContext {
     return std::nullopt;
   }
   blink::WebString GetAcceptLanguages() const override { return ""; }
+  void SetIsOfflineMode(bool is_offline_mode) override {}
   bool IsDedicatedWorkerOrSharedWorkerFetchContext() const override {
     return true;
   }
