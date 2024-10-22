@@ -346579,11 +346579,11 @@
       []
      ],
      "keyword-sizes-on-floated-element-expected.txt": [
-      "aa0fbd85d1e66e471f22a997727fbb28831946ce",
+      "bbc253d90b6f296787615d60557f7e48aeeb564f",
       []
      ],
      "keyword-sizes-on-inline-block-expected.txt": [
-      "aa0fbd85d1e66e471f22a997727fbb28831946ce",
+      "bbc253d90b6f296787615d60557f7e48aeeb564f",
       []
      ],
      "max-content-input-001-ref.html": [
@@ -414156,6 +414156,12 @@
          []
         ]
        },
+       "history_updated": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
+       },
        "load": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -478061,7 +478067,7 @@
       ]
      ],
      "getclientrects-001.html": [
-      "630e5ee0f77166a14a911dbf11c68ec41aeabc68",
+      "48a31d901fa79c9ca9aa12b7b9e8f7c0f51af0f8",
       [
        null,
        {}
@@ -485038,14 +485044,14 @@
       ]
      ],
      "keyword-sizes-on-floated-element.html": [
-      "adfffba8061aa983800822746a0cd5fc8f6f0fa8",
+      "e3da8bee7eb7b613e457d00eb88a677c35698d08",
       [
        null,
        {}
       ]
      ],
      "keyword-sizes-on-inline-block.html": [
-      "d91d8e6ed9cd2ab7c7f0e418b7715fc88a03b4e1",
+      "519081349c61e63da5f0a261da74dc985afb7c49",
       [
        null,
        {}
@@ -778595,13 +778601,6 @@
           null,
           {}
          ]
-        ],
-        "history_api.py": [
-         "8ae06d28904e06196abf60b9336cb26b598d58a7",
-         [
-          null,
-          {}
-         ]
         ]
        },
        "get_tree": {
@@ -778651,6 +778650,15 @@
         ],
         "invalid.py": [
          "fd3c31a78647cfd9adc4c599f473d435703cec80",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "history_updated": {
+        "history_updated.py": [
+         "9fbb0f26c9e445663b509f6e304134e9ace0e147",
          [
           null,
           {}

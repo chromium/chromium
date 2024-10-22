@@ -1,0 +1,24 @@
+This is a wdspec test.
+[FAIL] test_history_url_update[-#foo-pushState]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+[FAIL] test_history_url_update[#foo-#bar-pushState]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+[FAIL] test_history_url_update[#foo-#foo-pushState]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+[FAIL] test_history_url_update[#bar--pushState]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+[FAIL] test_history_url_update[-#foo-replaceState]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+[FAIL] test_history_url_update[#foo-#bar-replaceState]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+[FAIL] test_history_url_update[#foo-#foo-replaceState]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+[FAIL] test_history_url_update[#bar--replaceState]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+[FAIL] test_history_state_update[pushState]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+[FAIL] test_history_state_update[replaceState]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+[FAIL] test_history_document_open
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.historyUpdated)
+Harness: the test ran to completion.
