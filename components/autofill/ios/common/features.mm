@@ -23,6 +23,13 @@ BASE_FEATURE(kAutofillIsolatedWorldForJavascriptIos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_isolated_content_world)
 
+// Enables the second version of the payments suggestion bottom sheet to prevent
+// bugs that we've seen in production on other transaction sheets (e.g. some
+// fields becoming unresponsive).
+BASE_FEATURE(kAutofillPaymentsSheetV2Ios,
+             "AutofillPaymentsSheetV2Ios",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Makes the autofill and password infobars sticky on iOS. The sticky infobar
 // sticks there until navigating from an explicit user gesture (e.g. reload or
 // load a new page from the omnibox). This includes the infobar UI and the

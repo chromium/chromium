@@ -172,6 +172,13 @@ class AutofillBottomSheetTabHelper
   // This value is moved and should only be retrieved once per bottom sheet.
   autofill::VirtualCardEnrollmentCallbacks GetVirtualCardEnrollmentCallbacks();
 
+  // Attaches the listeners for the payments form corresponding to `form_id`.
+  // Only attaches the listeners on newly discovered renderer ids if `only_new`
+  // is true.
+  void AttachListenersForPaymentsForm(autofill::AutofillManager& manager,
+                                      autofill::FormGlobalId form_id,
+                                      bool only_new);
+
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
 
@@ -190,7 +197,8 @@ class AutofillBottomSheetTabHelper
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       std::set<autofill::FieldRendererId>& registered_renderer_ids,
       const std::string& frame_id,
-      bool allow_autofocus);
+      bool allow_autofocus,
+      bool only_new);
 
   // Detach listeners, which will deactivate the associated bottom sheet.
   void DetachListenersForFrame(
