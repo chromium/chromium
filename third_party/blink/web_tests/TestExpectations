@@ -2635,9 +2635,6 @@ crbug.com/374787320 external/wpt/css/css-inline/text-box-trim/text-box-trim-not-
 crbug.com/374822355 external/wpt/svg/animations/animate-display-to-none-001.html [ Failure ]
 crbug.com/374822356 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-040.html [ Failure ]
 crbug.com/374822356 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-050.html [ Failure ]
-crbug.com/374822357 [ Win11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-share.https.html [ Timeout ]
-crbug.com/374822357 [ Win10.20h2 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-share.https.html [ Timeout ]
-crbug.com/373959867 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-bluetooth.https.html [ Timeout ]
 crbug.com/372287206 [ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Crash ]
 crbug.com/372103377 [ Webview ] external/wpt/visual-viewport/scroll-event-order.html [ Crash ]
 crbug.com/371659899 [ Mac ] external/wpt/selection/caret/editing-host-has-only-invisible-br.html [ Timeout ]
@@ -8235,9 +8232,6 @@ crbug.com/366261815 external/wpt/signed-exchange/subresource/sxg-subresource-hea
 crbug.com/40279363 [ Linux ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Pass ]
 
 # Gardener 2024-10-21
-crbug.com/374384731 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-share.https.html [ Crash ]
-crbug.com/374384731 [ Mac ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-share.https.html [ Crash ]
-crbug.com/374384731 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/web-share.https.html [ Crash ]
 crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/print/frame_tentative.py [ Failure Pass ]
 
 # Gardener 2024-10-22
