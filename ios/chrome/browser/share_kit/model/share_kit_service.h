@@ -12,6 +12,7 @@
 
 @protocol ApplicationCommands;
 @class ShareKitFacePileConfiguration;
+@class ShareKitJoinConfiguration;
 @class ShareKitShareGroupConfiguration;
 class TabGroup;
 
@@ -36,6 +37,10 @@ class ShareKitService : public KeyedService {
   virtual void ShareGroup(const TabGroup* group,
                           UIViewController* base_view_controller,
                           id<ApplicationCommands> commandsHandler);
+
+  // TODO(crbug.com/373825718): Make it pure virtual.
+  // Initiates the flow to join the group, using `configuration`.
+  virtual void JoinGroup(ShareKitJoinConfiguration* configuration);
 
   // Returns a new FacePile view controller for the given `config`.
   virtual UIViewController* FacePile(ShareKitFacePileConfiguration* config);

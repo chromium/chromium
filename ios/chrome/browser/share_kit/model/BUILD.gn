@@ -6,6 +6,8 @@ source_set("model") {
   sources = [
     "share_kit_face_pile_configuration.h",
     "share_kit_face_pile_configuration.mm",
+    "share_kit_join_configuration.h",
+    "share_kit_join_configuration.mm",
     "share_kit_service.h",
     "share_kit_service.mm",
     "share_kit_service_configuration.h",
@@ -17,6 +19,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//ios/chrome/browser/saved_tab_groups/favicon/coordinator",
     "//ios/chrome/browser/saved_tab_groups/favicon/ui",
+    "//url",
   ]
   public_deps = [ "//base" ]
 }

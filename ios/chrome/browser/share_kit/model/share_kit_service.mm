@@ -29,3 +29,5 @@ UIViewController* ShareKitService::FacePile(
     ShareKitFacePileConfiguration* config) {
   return FacePile(config.collabID);
 }
+
+void ShareKitService::JoinGroup(ShareKitJoinConfiguration* configuration) {}
