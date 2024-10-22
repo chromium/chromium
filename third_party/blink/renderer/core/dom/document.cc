@@ -51,6 +51,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
+#include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
@@ -868,6 +869,8 @@ Document::Document(const DocumentInit& initializer,
         !frame->IsOutermostMainFrame() &&
         !dom_window_->IsFeatureEnabled(
             mojom::blink::PermissionsPolicyFeature::kVerticalScroll);
+    cached_top_frame_site_for_visited_links_ =
+        net::SchemefulSite(TopFrameOrigin()->ToUrlOrigin());
   } else {
     // We disable fetches for frame-less Documents.
     // See https://crbug.com/961614 for details.
@@ -9349,6 +9352,15 @@ VisitedLinkState& Document::GetVisitedLinkState() {
     visited_link_state_ = MakeGarbageCollected<VisitedLinkState>(*this);
   }
   return *visited_link_state_;
+}
+
+net::SchemefulSite Document::GetCachedTopFrameSite(VisitedLinkPassKey) {
+  // NOTE: frame-less Documents will have a value of std::nullopt, HOWEVER,
+  // since this function can only be called from a Document associated with a
+  // valid VisitedLinkState or HTMLAnchorElement, we are guaranteed to have a
+  // top frame and thus a value for top frame site.
+  DCHECK(cached_top_frame_site_for_visited_links_.has_value());
+  return cached_top_frame_site_for_visited_links_.value();
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;
