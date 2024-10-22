@@ -911,7 +911,7 @@ DirectRenderer::CalculateRenderPassRequirements(
   requirements.scanout_dcomp_surface =
       requirements.is_scanout && render_pass->needs_synchronous_dcomp_commit;
 #else
-  // On macOS and Lacros, the root render pass is handled by |BufferQueue| and
+  // On macOS the root render pass is handled by |BufferQueue| and
   // RPDQ overlays are handled by |PrepareRenderPassOverlay|.
   requirements.is_scanout = is_root;
 #endif
@@ -1255,21 +1255,9 @@ SharedImageFormat DirectRenderer::GetColorSpaceSharedImageFormat(
     gfx::ColorSpace color_space) const {
   gpu::Capabilities caps;
   caps.texture_format_bgra8888 = SupportsBGRA();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto gfx_hdr_format =
-      current_frame()->display_color_spaces.GetOutputBufferFormat(
-          gfx::ContentColorUsage::kHDR, /*needs_alpha=*/true);
-  auto viz_hdr_format = gfx_hdr_format == gfx::BufferFormat::RGBA_F16
-                            ? SinglePlaneFormat::kRGBA_F16
-                            : SinglePlaneFormat::kRGBA_1010102;
-  auto format = color_space.IsHDR()
-                    ? viz_hdr_format
-                    : PlatformColor::BestSupportedTextureFormat(caps);
-#else
   auto format = color_space.IsHDR()
                     ? SinglePlaneFormat::kRGBA_F16
                     : PlatformColor::BestSupportedTextureFormat(caps);
-#endif
   return format;
 }
 

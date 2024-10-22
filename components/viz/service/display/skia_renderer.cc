@@ -1120,7 +1120,7 @@ void SkiaRenderer::FinishDrawingFrame() {
       // They'll be recreated when we need them again when GetCurrentBuffer() is
       // called. On Mac the primary plane buffers are marked as purgeable so the
       // OS can decide if they should be destroyed or not.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
       buffer_queue_->DestroyBuffers();
 #elif BUILDFLAG(IS_APPLE)
       buffer_queue_->SetBuffersPurgeable();

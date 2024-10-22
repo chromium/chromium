@@ -89,12 +89,7 @@ const char kMaxOverlaysParam[] = "max_overlays";
 
 BASE_FEATURE(kDelegatedCompositing,
              "DelegatedCompositing",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kDrawQuadSplit[] = "num_of_splits";
 
@@ -135,14 +130,10 @@ BASE_FEATURE(kDCompSurfacesForDelegatedInk,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Note: This feature is actively being finched (Oct, 2024).
 BASE_FEATURE(kRenderPassDrawnRect,
              "RenderPassDrawnRect",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // When wide color gamut content from the web is encountered, promote our
@@ -254,7 +245,7 @@ const base::FeatureParam<int> kNumPendingFrames{&kVSyncAlignedPresent,
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
              "AllowUndamagedNonrootRenderPassToSkip",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -275,12 +266,7 @@ BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
 // OnBeginFrame we will send the Ack immediately, rather than batching it.
 BASE_FEATURE(kOnBeginFrameAcks,
              "OnBeginFrameAcks",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // if enabled, Any CompositorFrameSink of type video that defines a preferred
 // framerate that is below the display framerate will throttle OnBeginFrame

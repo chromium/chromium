@@ -151,14 +151,8 @@ bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
     SharedImageFormat format) {
   CHECK(format.is_single_plane());
   return (format == SinglePlaneFormat::kBGRA_8888 ||
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-          // TODO(crbug.com/40828687): On ARM devices LaCrOS can't create RED_8
-          // GpuMemoryBuffer Objects with GBM device. This capability should be
-          // plumbed and known by clients requesting shared images as overlay
-          // candidate.
           format == SinglePlaneFormat::kR_8 ||
           format == SinglePlaneFormat::kRG_88 ||
-#endif
 #if BUILDFLAG(IS_APPLE)
           format == SinglePlaneFormat::kBGRX_8888 ||
           format == SinglePlaneFormat::kRGBX_8888 ||

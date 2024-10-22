@@ -286,9 +286,7 @@ bool OverlayProcessorOzone::NeedsSurfaceDamageRectList() const {
 
 bool OverlayProcessorOzone::SupportsFlipRotateTransform() const {
   // TODO(petermcneeley): Test and enable for ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return false;
-#elif BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_CASTOS)
   return false;
 #else
   return false;
