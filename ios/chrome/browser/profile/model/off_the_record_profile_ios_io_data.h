@@ -17,15 +17,15 @@
 class IOSChromeURLRequestContextGetter;
 class ProfileIOS;
 
-// OffTheRecordChromeBrowserState owns a
+// OffTheRecordProfileIOS owns a
 // OffTheRecordProfileIOSIOData::Handle, which holds a reference to the
 // OffTheRecordProfileIOSIOData.
 // OffTheRecordProfileIOSIOData is intended to own all the objects owned
-// by OffTheRecordChromeBrowserState which live on the IO thread, such as, but
+// by OffTheRecordProfileIOS which live on the IO thread, such as, but
 // not limited to, network objects like CookieMonster, HttpTransactionFactory,
 // etc.
 // OffTheRecordProfileIOSIOData is owned by the
-// OffTheRecordChromeBrowserState and OffTheRecordProfileIOSIOData's
+// OffTheRecordProfileIOS and OffTheRecordProfileIOSIOData's
 // IOSChromeURLRequestContexts. When all of them go away, then
 // ProfileIOSIOData will be deleted. Note that the
 // OffTheRecordProfileIOSIOData will typically outlive the profile

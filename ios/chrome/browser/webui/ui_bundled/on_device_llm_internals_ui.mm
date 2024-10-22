@@ -129,7 +129,7 @@ void OnDeviceLlmInternalsHandler::InitAndGenerateResponse(
   VLOG(1) << "Init LLM and generate response...";
   VLOG(1) << "query: " << input;
 
-  ChromeBrowserState* profile = ChromeBrowserState::FromWebUIIOS(web_ui());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   OptimizationGuideService* service =
       OptimizationGuideServiceFactory::GetForProfile(profile);
 

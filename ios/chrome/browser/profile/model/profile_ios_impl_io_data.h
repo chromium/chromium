@@ -41,9 +41,9 @@ class ProfileIOSImplIOData : public ProfileIOSIOData {
               const base::FilePath& profile_path);
 
     // These Create*ContextGetter() functions are only exposed because the
-    // circular relationship between ChromeBrowserState,
+    // circular relationship between ProfileIOS,
     // ProfileIOSIOData::Handle, and the
-    // IOSChromeURLRequestContextGetter factories requires ChromeBrowserState be
+    // IOSChromeURLRequestContextGetter factories requires ProfileIOS be
     // able to call these functions.
     scoped_refptr<IOSChromeURLRequestContextGetter>
     CreateMainRequestContextGetter(ProtocolHandlerMap* protocol_handlers,

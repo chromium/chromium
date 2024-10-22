@@ -11,11 +11,6 @@
 namespace enterprise_idle {
 
 // static
-IdleService* IdleServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 IdleService* IdleServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<IdleService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

@@ -12,7 +12,7 @@ class ProfileIOS;
 class TextToSpeechPlaybackController;
 
 // TextToSpeechPlaybackControllerFactory attaches
-// TextToSpeechPlaybackControllers to ChromeBrowserStates.
+// TextToSpeechPlaybackControllers to ProfileIOSs.
 class TextToSpeechPlaybackControllerFactory
     : public BrowserStateKeyedServiceFactory {
  public:

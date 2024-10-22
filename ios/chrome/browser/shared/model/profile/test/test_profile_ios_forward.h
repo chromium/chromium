@@ -14,6 +14,5 @@
 // complete.
 
 class TestProfileIOS;
-using TestChromeBrowserState = TestProfileIOS;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TEST_PROFILE_IOS_FORWARD_H_
