@@ -3098,9 +3098,6 @@ extern const char kMainNodeAnnotationsDescription[];
 extern const char kOmniboxDriveSuggestionsName[];
 extern const char kOmniboxDriveSuggestionsDescription[];
 
-extern const char kOmniboxDriveSuggestionsNoSettingName[];
-extern const char kOmniboxDriveSuggestionsNoSettingDescription[];
-
 extern const char kOmniboxDriveSuggestionsNoSyncRequirementName[];
 extern const char kOmniboxDriveSuggestionsNoSyncRequirementDescription[];
 

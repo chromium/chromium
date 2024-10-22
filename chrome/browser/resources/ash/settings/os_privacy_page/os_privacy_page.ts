@@ -326,7 +326,6 @@ export class OsSettingsPrivacyPageElement extends
       this.supportedSettingIds.add(Setting.kNonSplitSyncEncryptionOptions);
       this.supportedSettingIds.add(Setting.kImproveSearchSuggestions);
       this.supportedSettingIds.add(Setting.kMakeSearchesAndBrowsingBetter);
-      this.supportedSettingIds.add(Setting.kGoogleDriveSearchSuggestions);
     }
 
     this.browserProxy_.isThunderboltSupported().then(enabled => {
@@ -407,15 +406,6 @@ export class OsSettingsPrivacyPageElement extends
               this.shadowRoot!.querySelector('os-settings-sync-subpage');
           return syncPage && syncPage.getPersonalizationOptions() &&
               syncPage.getPersonalizationOptions()!.getUrlCollectionToggle();
-        });
-        return false;
-
-      case Setting.kGoogleDriveSearchSuggestions:
-        this.afterRenderShowDeepLink_(settingId, () => {
-          const syncPage =
-              this.shadowRoot!.querySelector('os-settings-sync-subpage');
-          return syncPage && syncPage.getPersonalizationOptions() &&
-              syncPage.getPersonalizationOptions()!.getDriveSuggestToggle();
         });
         return false;
 

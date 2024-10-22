@@ -162,7 +162,6 @@ export class OsSettingsPeoplePageElement extends
           Setting.kNonSplitSyncEncryptionOptions,
           Setting.kImproveSearchSuggestions,
           Setting.kMakeSearchesAndBrowsingBetter,
-          Setting.kGoogleDriveSearchSuggestions,
         ]),
       },
 
@@ -332,15 +331,6 @@ export class OsSettingsPeoplePageElement extends
               this.shadowRoot!.querySelector('os-settings-sync-subpage');
           return syncPage && syncPage.getPersonalizationOptions() &&
               syncPage.getPersonalizationOptions()!.getUrlCollectionToggle();
-        });
-        return false;
-
-      case Setting.kGoogleDriveSearchSuggestions:
-        this.afterRenderShowDeepLink_(settingId, () => {
-          const syncPage =
-              this.shadowRoot!.querySelector('os-settings-sync-subpage');
-          return syncPage && syncPage.getPersonalizationOptions() &&
-              syncPage.getPersonalizationOptions()!.getDriveSuggestToggle();
         });
         return false;
 

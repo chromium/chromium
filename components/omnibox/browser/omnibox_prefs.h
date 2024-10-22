@@ -57,10 +57,6 @@ inline constexpr char kGroupIdToggledOnHistogram[] =
 // Alphabetical list of preference names specific to the omnibox component.
 // Keep alphabetized, and document each.
 
-// A client-side toggle for document (Drive) suggestions.
-// Also gated by a feature and server-side Admin Panel controls.
-inline constexpr char kDocumentSuggestEnabled[] = "documentsuggest.enabled";
-
 // Enum specifying the active behavior for the intranet redirect detector.
 // The browser pref kDNSInterceptionChecksEnabled also impacts the redirector.
 // Values are defined in omnibox::IntranetRedirectorBehavior.

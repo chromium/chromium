@@ -46,14 +46,6 @@ export class OsSettingsPersonalizationOptionsElement extends
         '#urlCollectionToggle');
   }
 
-  /**
-   * the Drive suggestions CrToggleElement.
-   */
-  getDriveSuggestToggle(): SettingsToggleButtonElement|null {
-    return this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#driveSuggestControl');
-  }
-
   // <if expr="_google_chrome">
   private onUseSpellingServiceToggle_(event: Event): void {
     // If turning on using the spelling service, automatically turn on

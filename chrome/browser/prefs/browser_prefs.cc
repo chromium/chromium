@@ -1148,6 +1148,9 @@ inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
 const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
     "policy.beforeunload_event_cancel_by_prevent_default_enabled";
 
+// Deprecated 10/2024.
+inline constexpr char kDocumentSuggestEnabled[] = "documentsuggest.enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1631,6 +1634,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 10/2024
   registry->RegisterBooleanPref(kLiveCaptionBubblePinned, false);
+
+  // Deprecated 10/2024
+  registry->RegisterBooleanPref(kDocumentSuggestEnabled, true);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -1992,7 +1998,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chrome_browser_net::NetErrorTabHelper::RegisterProfilePrefs(registry);
   chrome_prefs::RegisterProfilePrefs(registry);
   commerce::RegisterPrefs(registry);
-  DocumentProvider::RegisterProfilePrefs(registry);
   enterprise::RegisterIdentifiersProfilePrefs(registry);
   enterprise_connectors::RegisterProfilePrefs(registry);
   enterprise_reporting::RegisterProfilePrefs(registry);
@@ -3004,6 +3009,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 10/2024
   profile_prefs->ClearPref(kLiveCaptionBubblePinned);
+
+  // Added 10/2024
+  profile_prefs->ClearPref(kDocumentSuggestEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

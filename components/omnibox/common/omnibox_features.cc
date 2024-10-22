@@ -188,12 +188,6 @@ BASE_FEATURE(kDocumentProvider,
              "OmniboxDocumentProvider",
              enable_if(!IS_ANDROID && !IS_IOS));
 
-// If enabled, the 'Show Google Drive Suggestions' setting is removed and Drive
-// suggestions are available to all clients who meet the other requirements.
-BASE_FEATURE(kDocumentProviderNoSetting,
-             "OmniboxDocumentProviderNoSetting",
-             ENABLED);
-
 // If enabled, the requirement to be in an active Sync state is removed and
 // Drive suggestions are available to all clients who meet the other
 // requirements.

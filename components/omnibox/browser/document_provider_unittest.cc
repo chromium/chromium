@@ -28,11 +28,8 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,9 +49,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   FakeAutocompleteProviderClient() {
     set_template_url_service(
         search_engines_test_environment_.template_url_service());
-    search_engines_test_environment_.pref_service()
-        .registry()
-        ->RegisterBooleanPref(omnibox::kDocumentSuggestEnabled, true);
   }
 
   ~FakeAutocompleteProviderClient() {
@@ -70,10 +64,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
       const FakeAutocompleteProviderClient&) = delete;
 
   bool SearchSuggestEnabled() const override { return true; }
-
-  PrefService* GetPrefs() const override {
-    return &search_engines_test_environment_.pref_service();
-  }
 
   std::string ProfileUserName() const override { return "goodEmail@gmail.com"; }
 
@@ -234,31 +224,6 @@ TEST_F(DocumentProviderTest, IsDocumentProviderAllowed) {
   EXPECT_FALSE(provider_->IsDocumentProviderAllowed(ac_input));
   EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(true));
   EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
-
-  // Client-side toggle must be enabled. This should be enabled by default; i.e.
-  // we didn't explicitly enable this above.
-  PrefService* fake_prefs = client_->GetPrefs();
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(omnibox::kDocumentProviderNoSetting);
-
-    fake_prefs->SetBoolean(omnibox::kDocumentSuggestEnabled, false);
-    EXPECT_FALSE(provider_->IsDocumentProviderAllowed(ac_input));
-    fake_prefs->SetBoolean(omnibox::kDocumentSuggestEnabled, true);
-    EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
-  }
-
-  // Unless the "no setting" Feature is enabled, in which case the setting state
-  // shouldn't matter.
-  {
-    base::test::ScopedFeatureList feature_list{
-        omnibox::kDocumentProviderNoSetting};
-
-    fake_prefs->SetBoolean(omnibox::kDocumentSuggestEnabled, false);
-    EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
-    fake_prefs->SetBoolean(omnibox::kDocumentSuggestEnabled, true);
-    EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
-  }
 
   // Should not be an incognito window.
   EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(true));

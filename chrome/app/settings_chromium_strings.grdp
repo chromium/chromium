@@ -344,9 +344,6 @@
   <message name="IDS_SETTINGS_SUGGEST_PREF_DESC" desc="The description of the checkbox to enable/disable sending omnibox input to the user's default search engine to get additional suggestions.">
     When you type in the address bar or search box, Chromium sends what you type to your default search engine to get better suggestions. This is off in Incognito.
   </message>
-  <message name="IDS_SETTINGS_DRIVE_SUGGEST_PREF_DESC" desc="The description of the checkbox to enable/disable sending omnibox input to Google Drive to get suggestions for files.">
-    When you type in the address bar or search box, Chromium sends what you type to Google Drive to get item suggestions. This is off in Incognito.
-  </message>
   <message name="IDS_SETTINGS_SYNC_SIGN_IN_PROMPT_WITH_NO_ACCOUNT" desc="The text displayed to prompt users to sign in to Chromium.">
     Sign in to sync and personalize Chromium across your devices
   </message>

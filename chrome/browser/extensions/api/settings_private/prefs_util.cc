@@ -390,8 +390,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
           settings_api::PrefType::kBoolean;
   (*s_allowlist)[unified_consent::prefs::kPageContentCollectionEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::omnibox::kDocumentSuggestEnabled] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::commerce::kPriceEmailNotificationsEnabled] =
       settings_api::PrefType::kBoolean;
 
