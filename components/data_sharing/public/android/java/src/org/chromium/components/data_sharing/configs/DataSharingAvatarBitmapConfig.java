@@ -7,12 +7,13 @@ package org.chromium.components.data_sharing.configs;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import org.chromium.components.data_sharing.GroupMember;
+
 /** Config class for getting avatar as bitmap. */
 public final class DataSharingAvatarBitmapConfig {
 
     private final Context mContext;
-    private final String mPhotoUrl;
-    private final String mDisplayName;
+    private final GroupMember mGroupMember;
     private final boolean mIsDarkMode;
     private final int mAvatarSizeInPixels;
     private final DataSharingAvatarCallback mDataSharingAvatarCallback;
@@ -23,15 +24,15 @@ public final class DataSharingAvatarBitmapConfig {
         /**
          * Called when the avatar bitmap is ready.
          *
-         * @param bitmap The loaded avatar bitmap.
+         * @param bitmap The loaded avatar bitmap. If might return null, if group member is
+         *               invalid.
          */
         default void onAvatarLoaded(Bitmap bitmap) {}
     }
 
     private DataSharingAvatarBitmapConfig(Builder builder) {
         this.mContext = builder.mContext;
-        this.mPhotoUrl = builder.mPhotoUrl;
-        this.mDisplayName = builder.mDisplayName;
+        this.mGroupMember = builder.mGroupMember;
         this.mIsDarkMode = builder.mIsDarkMode;
         this.mAvatarSizeInPixels = builder.mAvatarSizeInPixels;
         this.mDataSharingAvatarCallback = builder.mDataSharingAvatarCallback;
@@ -41,12 +42,8 @@ public final class DataSharingAvatarBitmapConfig {
         return mContext;
     }
 
-    public String getPhotoUrl() {
-        return mPhotoUrl;
-    }
-
-    public String getDisplayName() {
-        return mDisplayName;
+    public GroupMember getGroupMember() {
+        return mGroupMember;
     }
 
     public boolean isDarkMode() {
@@ -64,14 +61,13 @@ public final class DataSharingAvatarBitmapConfig {
     /** Builder class for {@link DataSharingAvatarBitmapConfig}. */
     public static final class Builder {
         private Context mContext;
-        private String mPhotoUrl;
-        private String mDisplayName;
+        private GroupMember mGroupMember;
         private boolean mIsDarkMode;
         private int mAvatarSizeInPixels;
         private DataSharingAvatarCallback mDataSharingAvatarCallback;
 
         /**
-         * Sets the {@link Context} to use for loading resources.
+         * Sets the application context.
          *
          * @param context The {@link Context}.
          */
@@ -81,22 +77,12 @@ public final class DataSharingAvatarBitmapConfig {
         }
 
         /**
-         * Sets the URL of the photo to load.
+         * Sets the group member whose avatar should be fetched.
          *
-         * @param photoUrl The URL of the photo.
+         * @param groupMember The group member object.
          */
-        public Builder setPhotoUrl(String photoUrl) {
-            this.mPhotoUrl = photoUrl;
-            return this;
-        }
-
-        /**
-         * Sets the display name associated with the avatar.
-         *
-         * @param displayName The display name.
-         */
-        public Builder setDisplayName(String displayName) {
-            this.mDisplayName = displayName;
+        public Builder setGroupMember(GroupMember groupMember) {
+            this.mGroupMember = groupMember;
             return this;
         }
 
