@@ -773,7 +773,7 @@ void ContentSubresourceFilterThrottleManager::SetIsAdFrame(
   CHECK(base::Contains(tracked_ad_evidence_, frame_tree_node_id),
         base::NotFatalUntil::M129);
   CHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdFrame(),
-           is_ad_frame, base::NotFatalUntil::M129);
+           is_ad_frame, base::NotFatalUntil::M134);
   CHECK(render_frame_host->GetParentOrOuterDocument(),
         base::NotFatalUntil::M129);
 
