@@ -30,6 +30,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -2445,10 +2446,8 @@ void WizardController::OnPasswordSelectionScreenExit(
       ShowFingerprintSetupScreen();
       return;
     case PasswordSelectionScreen::Result::BACK: {
-      // TODO(b/291808449): It should not be possible to go back
-      const bool did_go_back = MaybeSetToPreviousScreen();
-      DCHECK(did_go_back);
-      return;
+      // TODO(b/365059362): Implement back button for PIN-only flow.
+      NOTREACHED();
     }
     case PasswordSelectionScreen::Result::LOCAL_PASSWORD_CHOICE:
     case PasswordSelectionScreen::Result::LOCAL_PASSWORD_FORCED:
