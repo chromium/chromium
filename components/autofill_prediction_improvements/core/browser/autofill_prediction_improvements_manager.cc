@@ -4,6 +4,7 @@
 
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 
+#include <string>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -84,9 +85,11 @@ constexpr autofill::DenseSet<autofill::FieldFillingSkipReason>
     kIgnoreableSkipReasons = {
         autofill::FieldFillingSkipReason::kNoFillableGroup};
 
-// Returns a field-by-field filling suggestion for `filled_field`, meant to be
-// added to another suggestion's `autofill::Suggestion::children`.
-autofill::Suggestion CreateChildSuggestionForFilling(
+// Creates a child suggestion for `suggestion` given `prediction` and adds it to
+// its list of children in case it didn't exist before. Returns true if a new
+// child suggestion was added and false otherwise.
+void AddChildFillingSuggestion(
+    autofill::Suggestion& suggestion,
     const AutofillPredictionImprovementsFillingEngine::Prediction& prediction) {
   const std::u16string& value_to_fill = prediction.select_option_text
                                             ? *prediction.select_option_text
@@ -94,9 +97,67 @@ autofill::Suggestion CreateChildSuggestionForFilling(
   autofill::Suggestion child_suggestion(
       value_to_fill, autofill::SuggestionType::kFillPredictionImprovements);
   child_suggestion.payload = autofill::Suggestion::ValueToFill(value_to_fill);
-  child_suggestion.labels.emplace_back();
-  child_suggestion.labels.back().emplace_back(prediction.label);
-  return child_suggestion;
+  child_suggestion.labels = {{autofill::Suggestion::Text(prediction.label)}};
+
+  // Ensure that a similar child suggestion was not added before, as this would
+  // create unnecessary UI noise.
+  if (std::ranges::find_if(
+          suggestion.children,
+          [&child_suggestion](const autofill::Suggestion& previous_child) {
+            return previous_child.main_text == child_suggestion.main_text &&
+                   previous_child.labels == child_suggestion.labels;
+          }) == suggestion.children.end()) {
+    suggestion.children.push_back(std::move(child_suggestion));
+  }
+}
+
+autofill::Suggestion CreateFillAllSuggestion(
+    const autofill::Suggestion::PredictionImprovementsPayload& payload) {
+  autofill::Suggestion fill_all_suggestion(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT),
+      autofill::SuggestionType::kFillPredictionImprovements);
+  fill_all_suggestion.payload = payload;
+  return fill_all_suggestion;
+}
+
+void AddLabelToFillingSuggestion(autofill::Suggestion& suggestion) {
+  std::u16string label =
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_TEXT) +
+      u" ";
+  size_t num_valid_labels = 0;
+  for (const autofill::Suggestion& child_suggestion : suggestion.children) {
+    if (child_suggestion.type ==
+            autofill::SuggestionType::kFillPredictionImprovements &&
+        !child_suggestion.labels.empty() &&
+        !child_suggestion.labels.front().empty()) {
+      if (num_valid_labels > 0 &&
+          num_valid_labels < kNumberFieldsToShowInSuggestionLabel) {
+        label += l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_SEPARATOR);
+      }
+      if (num_valid_labels < kNumberFieldsToShowInSuggestionLabel) {
+        label += child_suggestion.labels.front().front().value;
+      }
+      ++num_valid_labels;
+    }
+  }
+  if (num_valid_labels > kNumberFieldsToShowInSuggestionLabel) {
+    // When more than `kNumberFieldsToShowInSuggestionLabel` are filled,
+    // include the "& More".
+    size_t number_of_more_fields_to_fill =
+        num_valid_labels - kNumberFieldsToShowInSuggestionLabel;
+    const std::u16string more_fields_label_substr =
+        number_of_more_fields_to_fill > 1
+            ? l10n_util::GetStringFUTF16(
+                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_N_MORE_FIELDS,
+                  base::NumberToString16(number_of_more_fields_to_fill))
+            : l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_ONE_MORE_FIELD);
+    label = base::StrCat({label, u" ", more_fields_label_substr});
+  }
+  suggestion.labels = {{autofill::Suggestion::Text(label)}};
 }
 
 autofill::Suggestion CreateTriggerSuggestion() {
@@ -342,78 +403,37 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
     const std::vector<autofill::Suggestion>& autofill_suggestions) {
-  if (!cache_) {
-    return {};
-  }
-  if (!cache_->contains(field.global_id())) {
-    return {};
-  }
+  CHECK(HasImprovedPredictionsForField(field));
   const AutofillPredictionImprovementsFillingEngine::Prediction& prediction =
       cache_->at(field.global_id());
-
   autofill::Suggestion suggestion(
       prediction.value, autofill::SuggestionType::kFillPredictionImprovements);
   auto payload = autofill::Suggestion::PredictionImprovementsPayload(
       GetValuesToFill(), GetFieldTypesToFill(), kIgnoreableSkipReasons);
   suggestion.payload = payload;
   suggestion.icon = GetAutofillPredictionImprovementsIcon();
+
   // Add a `kFillPredictionImprovements` suggestion with a separator to
   // `suggestion.children` before the field-by-field filling entries.
-  {
-    autofill::Suggestion fill_all_child(
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT),
-        autofill::SuggestionType::kFillPredictionImprovements);
-    fill_all_child.payload = payload;
-    suggestion.children.emplace_back(fill_all_child);
-    suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
-  }
-  // Add the child suggestion for the triggering field on top.
-  suggestion.children.emplace_back(CreateChildSuggestionForFilling(prediction));
-  // Initialize as 1 because of the suggestion added above.
-  size_t n_fields_to_fill = 1;
-  // The label depends on the fields that will be filled.
-  std::u16string label =
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_TEXT) +
-      u" " + prediction.label;
+  suggestion.children.emplace_back(CreateFillAllSuggestion(payload));
+  suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
+
+  // Add the child suggestion for the triggering field on top, then for the
+  // remaining fields in no particular order.
+  AddChildFillingSuggestion(suggestion, prediction);
   for (const auto& [child_field_global_id, child_prediction] : *cache_) {
     // Only add a child suggestion if the field is not the triggering field
     // and the value to fill is not empty.
-    if (child_field_global_id == field.global_id() ||
-        child_prediction.value.empty()) {
-      continue;
-    }
-    suggestion.children.emplace_back(
-        CreateChildSuggestionForFilling(child_prediction));
-    ++n_fields_to_fill;
-    if (n_fields_to_fill == 2) {
-      label += l10n_util::GetStringUTF16(
-                   IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_SEPARATOR) +
-               child_prediction.label;
+    if (child_field_global_id != field.global_id() &&
+        !child_prediction.value.empty()) {
+      AddChildFillingSuggestion(suggestion, child_prediction);
     }
   }
+  AddLabelToFillingSuggestion(suggestion);
 
   suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
   suggestion.children.emplace_back(
       CreateEditPredictionImprovementsInformation());
-
-  if (n_fields_to_fill > kNumberFieldsToShowInSuggestionLabel) {
-    // When more than `kNumberFieldsToShowInSuggestionLabel` are filled,
-    // include the "& More".
-    size_t number_of_more_fields_to_fill =
-        n_fields_to_fill - kNumberFieldsToShowInSuggestionLabel;
-    const std::u16string more_fields_label_substr =
-        number_of_more_fields_to_fill > 1
-            ? l10n_util::GetStringFUTF16(
-                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_N_MORE_FIELDS,
-                  base::NumberToString16(number_of_more_fields_to_fill))
-            : l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_ONE_MORE_FIELD);
-    label = base::StrCat({label, u" ", more_fields_label_substr});
-  }
-  suggestion.labels.emplace_back();
-  suggestion.labels.back().emplace_back(label);
 
   // TODO(crbug.com/365512352): Figure out how to handle Undo suggestion.
   std::vector<autofill::Suggestion> filling_suggestions = {suggestion};
@@ -430,10 +450,7 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
 
 bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
     const autofill::FormFieldData& field) {
-  if (!cache_) {
-    return false;
-  }
-  return cache_->contains(field.global_id());
+  return cache_ && cache_->contains(field.global_id());
 }
 
 bool AutofillPredictionImprovementsManager::IsPredictionImprovementsEligible(
@@ -595,12 +612,11 @@ void AutofillPredictionImprovementsManager::
         const autofill::FormFieldData& trigger_field) {
   switch (prediction_retrieval_state_) {
     case PredictionRetrievalState::kDoneSuccess:
-      // TODO(crbug.com/365512352): CHECK that `cache_` should not be null here.
-      if (cache_ && !cache_->contains(trigger_field.global_id())) {
-        OnFailedToGenerateSuggestions();
-      } else {
+      if (HasImprovedPredictionsForField(trigger_field)) {
         UpdateSuggestions(CreateFillingSuggestions(form, trigger_field,
                                                    autofill_suggestions_));
+      } else {
+        OnFailedToGenerateSuggestions();
       }
       break;
     case PredictionRetrievalState::kDoneError:

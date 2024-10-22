@@ -159,8 +159,7 @@ class AutofillPredictionImprovementsManager
   // Updates currently shown suggestions via `update_suggestions_callback_`.
   void UpdateSuggestions(const std::vector<autofill::Suggestion>& suggestions);
 
-  // Returns whether improved predictions exist for the `field`. Used to decide
-  // whether a context menu entry is displayed or not.
+  // Returns whether improved predictions exist for the `field`.
   bool HasImprovedPredictionsForField(const autofill::FormFieldData& field);
 
   void OnReceivedAXTreeForFormImport(
