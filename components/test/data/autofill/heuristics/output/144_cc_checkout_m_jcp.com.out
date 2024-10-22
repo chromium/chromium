@@ -9,10 +9,10 @@ ADDRESS_HOME_COUNTRY | country-guest | + Company (optional) | 1 | billingAsShipp
 COMPANY_NAME | company-guest | Company (Optional) |  | billingAsShipping_2
 ADDRESS_HOME_LINE1 | address-1-guest | Street address |  | billingAsShipping_2
 ADDRESS_HOME_LINE2 | address-2-guest | Street address 2 (optional) |  | billingAsShipping_2
-UNKNOWN_TYPE | military-address-type |  |  | billingAsShipping_2
+UNKNOWN_TYPE | military-address-type | select APO/FPO/DPO |  | billingAsShipping_2
 ADDRESS_HOME_ZIP | zip-guest | Zip |  | billingAsShipping_2
-ADDRESS_HOME_STATE | state-guest |  |  | billingAsShipping_2
-UNKNOWN_TYPE | military-state |  |  | billingAsShipping_2
+ADDRESS_HOME_STATE | state-guest | State |  | billingAsShipping_2
+ADDRESS_HOME_STATE | military-state | select a military state |  | billingAsShipping_2
 ADDRESS_HOME_CITY | city-guest | City |  | billingAsShipping_2
 EMAIL_ADDRESS | email | Email address |  | billingAsShipping_2
 PHONE_HOME_CITY_AND_NUMBER | phone-guest | Phone number |  | billingAsShipping_2
