@@ -40,7 +40,8 @@
 
 #subtitle {
   color: var(--cr-secondary-text-color);
-  font-size: 1rem;
+  font-size: 0.8125rem;
+  line-height: 20px;
   margin-bottom: 16px;
 }
 
