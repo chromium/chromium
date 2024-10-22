@@ -1376,9 +1376,9 @@ ServiceWorkerGlobalScope::GetServiceWorkerHost() {
   return service_worker_host_.get();
 }
 
-void ServiceWorkerGlobalScope::OnBeforeStartEvent() {
+void ServiceWorkerGlobalScope::OnBeforeStartEvent(bool is_offline_event) {
   DCHECK(IsContextThread());
-  SetIsOfflineMode(/*is_offline_event=*/false);
+  SetIsOfflineMode(is_offline_event);
 }
 
 void ServiceWorkerGlobalScope::OnIdleTimeout() {
