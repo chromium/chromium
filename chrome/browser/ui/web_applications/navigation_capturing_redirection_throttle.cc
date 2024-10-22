@@ -23,6 +23,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -91,18 +92,6 @@ LaunchHandler::ClientMode GetLaunchHandlerMode(WebAppRegistrar& registrar,
   }
   return client_mode;
 }
-
-// TODO(msiem): Support use-case where NavigateExisting also opens a new app
-// window.
-bool ShouldAlwaysOpenNewAppWindow(WebAppRegistrar& registrar,
-                                  const webapps::AppId& intermediary_app_id,
-                                  const webapps::AppId& target_app_id) {
-  return GetLaunchHandlerMode(registrar, intermediary_app_id) ==
-             LaunchHandler::ClientMode::kNavigateNew &&
-         GetLaunchHandlerMode(registrar, target_app_id) ==
-             LaunchHandler::ClientMode::kNavigateNew;
-}
-
 }  // namespace
 
 // static
@@ -275,20 +264,38 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // needs to be corrected. See the table at
   // bit.ly/pwa-navigation-handling-dd?tab=t.0#bookmark=id.hnvzj4iwiviz
 
-  // TODO(msiem): Support use-case where NavigateExisting also opens a new app
-  // window.
   // Handle the use-case where the first result was navigation captured
   // into an app window and both apps had NavigateNew as launch handlers,
   // triggered via a non user modified.
+  std::optional<std::pair<Browser*, int>> existing_app_host = std::nullopt;
+  Browser* main_browser =
+      chrome::FindBrowserWithTab(web_contents_for_navigation);
+  if (target_app_id) {
+    std::optional<mojom::UserDisplayMode> requested_app_user_display_mode =
+        registrar.GetAppUserDisplayMode(target_app_id.value());
+    CHECK(requested_app_user_display_mode.has_value());
+    existing_app_host =
+        GetAppHostForCapturing(*main_browser->profile(), *target_app_id,
+                               requested_app_user_display_mode.value());
+  }
   if (initial_nav_handling_result ==
           NavigationHandlingInitialResult::kAppWindowNavigationCaptured &&
-      target_app_id.has_value() &&
-      navigation_handling_first_stage_app.has_value() &&
-      ShouldAlwaysOpenNewAppWindow(
-          registrar, *navigation_handling_first_stage_app, *target_app_id)) {
-    ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
-                                            *target_app_id, final_url);
-    return content::NavigationThrottle::PROCEED;
+      redirection_info.effective_launch_handling_mode ==
+          InitialNavigationCapturedBehavior::kNavigatedNew) {
+    if (!target_app_id) {
+      ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
+                                         link_click_disposition);
+      return content::NavigationThrottle::PROCEED;
+    }
+
+    if (target_app_id &&
+        ((GetLaunchHandlerMode(registrar, target_app_id.value()) ==
+          LaunchHandler::ClientMode::kNavigateNew) ||
+         !existing_app_host)) {
+      ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
+                                              *target_app_id, final_url);
+      return content::NavigationThrottle::PROCEED;
+    }
   }
 
   return content::NavigationThrottle::PROCEED;

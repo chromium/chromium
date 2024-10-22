@@ -1771,9 +1771,31 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
-        testing::Values(Destination::kScopeA2B),
+        testing::Values(Destination::kScopeA2B, Destination::kScopeA2X),
         testing::Values(RedirectType::kServerSideViaA,
                         RedirectType::kServerSideViaB),
+        testing::Values(NavigationElement::kElementLink,
+                        NavigationElement::kElementButton),
+        testing::Values(test::ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// Use-case where redirection happens via a capturable navigation for a navigate
+// existing or focus existing launch handler that do not have an app window
+// opened already, triggered via a left click.
+INSTANTIATE_TEST_SUITE_P(
+    Redirection_Capturable_Navigate_And_Focus_Existing_Reparenting,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting,
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2B, Destination::kScopeA2X),
+        testing::Values(RedirectType::kServerSideViaA),
         testing::Values(NavigationElement::kElementLink,
                         NavigationElement::kElementButton),
         testing::Values(test::ClickMethod::kLeftClick),
