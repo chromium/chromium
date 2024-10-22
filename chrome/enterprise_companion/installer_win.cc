@@ -69,17 +69,6 @@ bool Install() {
       HKEY_LOCAL_MACHINE, kAppRegKey, KEY_WOW64_32KEY, kRegValueName,
       L"" PRODUCT_FULLNAME_STRING, /*overwrite=*/true);
 
-  std::optional<base::FilePath> alternate_arch_install_dir =
-      GetInstallDirectoryForAlternateArch();
-  if (alternate_arch_install_dir &&
-      base::PathExists(*alternate_arch_install_dir)) {
-    VLOG(1) << "Found an existing installation for a different architecture at "
-            << *alternate_arch_install_dir
-            << ". It will be removed by this install.";
-    install_list->AddDeleteTreeWorkItem(*alternate_arch_install_dir,
-                                        temp_dir.GetPath());
-  }
-
   if (!install_list->Do()) {
     LOG(ERROR) << "Install failed, rolling back...";
     install_list->Rollback();
@@ -96,10 +85,6 @@ bool Uninstall() {
     LOG(ERROR) << "Failed to get install directory";
     return false;
   }
-  std::optional<base::FilePath> alternate_arch_install_dir =
-      GetInstallDirectoryForAlternateArch();
-
-  base::DeletePathRecursively(*alternate_arch_install_dir);
   base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey, KEY_WOW64_32KEY)
       .DeleteKey(L"");
 

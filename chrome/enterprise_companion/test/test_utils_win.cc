@@ -48,16 +48,6 @@ class TestMethodsWin : public TestMethods {
   void Clean() override {
     TestMethods::Clean();
 
-    std::optional<base::FilePath> alt_install_dir =
-        GetInstallDirectoryForAlternateArch();
-    if (alt_install_dir) {
-      EXPECT_TRUE(WaitFor(
-          [&] { return base::DeletePathRecursively(*alt_install_dir); },
-          [&] {
-            VLOG(1) << "Waiting to delete " << *alt_install_dir << "...";
-          }));
-    }
-
     EXPECT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey,
                                 KEY_ALL_ACCESS | KEY_WOW64_32KEY)
                   .DeleteKey(L""),

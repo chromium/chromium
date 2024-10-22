@@ -403,11 +403,6 @@ template <typename T, typename I, typename... TArgs>
                                        std::forward<TArgs>(args)...);
 }
 
-// Returns the base install directory for the x86 versions of the updater.
-// Does not create the directory if it does not exist.
-[[nodiscard]] std::optional<base::FilePath> GetInstallDirectoryX86(
-    UpdaterScope scope);
-
 // Gets the contents under a given registry key.
 std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key);
 

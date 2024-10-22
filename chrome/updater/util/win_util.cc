@@ -934,8 +934,9 @@ std::optional<base::CommandLine> CommandLineForLegacyFormat(
 
 std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
   base::FilePath app_data_dir;
-  if (!base::PathService::Get(IsSystemInstall(scope) ? base::DIR_PROGRAM_FILES
-                                                     : base::DIR_LOCAL_APP_DATA,
+  if (!base::PathService::Get(IsSystemInstall(scope)
+                                  ? base::DIR_PROGRAM_FILESX86
+                                  : base::DIR_LOCAL_APP_DATA,
                               &app_data_dir)) {
     LOG(ERROR) << "Can't retrieve app data directory.";
     return std::nullopt;
@@ -1089,19 +1090,6 @@ void LogClsidEntries(REFCLSID clsid) {
       }
     }
   }
-}
-
-std::optional<base::FilePath> GetInstallDirectoryX86(UpdaterScope scope) {
-  if (!IsSystemInstall(scope)) {
-    return GetInstallDirectory(scope);
-  }
-  base::FilePath install_dir;
-  if (!base::PathService::Get(base::DIR_PROGRAM_FILESX86, &install_dir)) {
-    LOG(ERROR) << "Can't retrieve directory for DIR_PROGRAM_FILESX86.";
-    return std::nullopt;
-  }
-  return install_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
 std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key) {
