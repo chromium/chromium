@@ -277,23 +277,24 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests the blocked site main frame re-authentication interstitial.
 IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
-                       DISABLED_TestBlockedSiteMainFrameReauthInterstitial) {
+                       TestBlockedSiteMainFrameReauthInterstitial) {
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
   supervision_mixin_.SetPendingStateForPrimaryAccount();
   // Navigate to the requested URL and wait for the interstitial.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/supervised_user/simple.html")));
   ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
 
   // Verify that the blocked site interstitial is displayed.
   WaitForReauthenticationInterstitial();
 
+  auto* interstitial_contents = contents();
   // Interact with the "Next" button, starting re-authentication.
-  ASSERT_TRUE(content::ExecJs(
-      contents(), "window.certificateErrorPageController.openLogin();"));
+  ASSERT_TRUE(StartSignInFlowFromContent(interstitial_contents));
 
   // Sign in a supervised user, which completes re-authentication.
-  SignInSupervisedUserAndWaitForInterstitialReload(contents());
+  SignInSupervisedUserAndWaitForInterstitialReload(interstitial_contents);
 
   // UKM should not be recorded for the blocked site interstitial.
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
