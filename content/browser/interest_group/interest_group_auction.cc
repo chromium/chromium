@@ -3048,9 +3048,11 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
       // If there are no component auctions, request the seller worklet if we
       // may need it. (The case for component auctions is handled below, there
       // the seller worklet will be requested once all component auctions have
-      // received their own seller worklets).
+      // received their own seller worklets). We request the worklet
+      // asynchronously because we want to request all buyer worklets before
+      // requesting any seller worklets.
       if (!buyer_helpers_.empty() || MayHaveAdditionalBids()) {
-        RequestSellerWorklet();
+        RequestSellerWorkletAsync();
       }
     }
   } else {
@@ -3088,7 +3090,7 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
     // seller worklet. In the case where there are any local auctions this will
     // happen when all local component auctions complete.
     if (local_auctions == 0) {
-      RequestSellerWorklet();
+      RequestSellerWorkletAsync();
     }
   }
 
@@ -4806,8 +4808,19 @@ void InterestGroupAuction::OnComponentSellerWorkletReceived() {
   }
 }
 
+void InterestGroupAuction::RequestSellerWorkletAsync() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&InterestGroupAuction::RequestSellerWorklet,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
 void InterestGroupAuction::RequestSellerWorklet() {
-  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
+  // When requesting seller worklets asynchronously, it may be possible for the
+  // auction to have failed or even to have completed before this method is
+  // invoked, depending on ordering of tasks.
+  if (bidding_and_scoring_phase_state_ != PhaseState::kDuring) {
+    return;
+  }
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_seller_worklet",
                                     *trace_id_);
   auction_worklet_manager_->RequestSellerWorklet(

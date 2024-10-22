@@ -925,6 +925,9 @@ class CONTENT_EXPORT InterestGroupAuction
   // See StartBiddingAndScoringPhase() for discussion of this.
   void OnComponentSellerWorkletReceived();
 
+  // Posts a task to request a seller worklet from the AuctionWorkletManager.
+  void RequestSellerWorkletAsync();
+
   // Requests a seller worklet from the AuctionWorkletManager.
   void RequestSellerWorklet();
 
