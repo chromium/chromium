@@ -35,8 +35,14 @@ class TabResourceUsageCollectorBrowserTest : public InProcessBrowserTest {
   TabStripModel* GetTabStripModel() { return browser()->tab_strip_model(); }
 };
 
+// TODO(https://crbug.com/368862390): This test fails on ChromeOS builds.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RefreshAllTabMemory DISABLED_RefreshAllTabMemory
+#else
+#define MAYBE_RefreshAllTabMemory RefreshAllTabMemory
+#endif
 IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
-                       RefreshAllTabMemory) {
+                       MAYBE_RefreshAllTabMemory) {
   AddAndWaitForTabReady();
   AddAndWaitForTabReady();
   TabStripModel* const model = GetTabStripModel();
