@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/command_line.h"
+#import "base/ios/block_types.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
@@ -84,6 +85,10 @@ UIColor* BackgroundColor() {
 @property(nonatomic, strong)
     PasskeyKeychainProviderBridge* passkeyKeychainProviderBridge;
 
+// Completion block to be run after a successful reauthentication to create a
+// passkey.
+@property(nonatomic, copy) ProceduralBlock createPasskeyBlock;
+
 @end
 
 @implementation CredentialProviderViewController {
@@ -105,13 +110,15 @@ UIColor* BackgroundColor() {
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
+
+  __weak __typeof__(self) weakSelf = self;
+
   // If identifiers were stored in
   // `-prepareCredentialListForServiceIdentifiers:`, handle that now.
   if (self.serviceIdentifiers) {
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers =
         self.serviceIdentifiers;
     self.serviceIdentifiers = nil;
-    __weak __typeof__(self) weakSelf = self;
     [self validateUserWithCompletion:^(BOOL userIsValid) {
       if (!userIsValid) {
         [weakSelf showStaleCredentials];
@@ -126,6 +133,31 @@ UIColor* BackgroundColor() {
         }
       }];
     }];
+
+    return;
+  }
+
+  // If `createPasskeyBlock` was initialized, handle it now.
+  if (self.createPasskeyBlock) {
+    ProceduralBlock createPasskeyBlock = self.createPasskeyBlock;
+    self.createPasskeyBlock = nil;
+    [self validateUserWithCompletion:^(BOOL userIsValid) {
+      if (!userIsValid) {
+        [weakSelf
+            exitWithErrorCode:ASExtensionErrorCodeUserInteractionRequired];
+        return;
+      }
+      [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
+                    ReauthenticationResult result) {
+        if (result != ReauthenticationResult::kFailure) {
+          createPasskeyBlock();
+        } else {
+          [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
+        }
+      }];
+    }];
+
+    return;
   }
 }
 
@@ -237,16 +269,25 @@ UIColor* BackgroundColor() {
     return;
   }
 
-  // TODO(crbug.com/330355124): Handle
-  // passkeyCredentialRequest.userVerificationPreference.
   ASPasskeyCredentialIdentity* identity =
       base::apple::ObjCCastStrict<ASPasskeyCredentialIdentity>(
           passkeyCredentialRequest.credentialIdentity);
 
-  [self createPasskeyForClient:passkeyCredentialRequest.clientDataHash
-        relyingPartyIdentifier:identity.relyingPartyIdentifier
-                      username:identity.userName
-                    userHandle:identity.userHandle];
+  if ([self shouldPerformUserVerificationForPreference:
+                passkeyCredentialRequest.userVerificationPreference]) {
+    __weak __typeof(self) weakSelf = self;
+    self.createPasskeyBlock = ^{
+      [weakSelf createPasskeyForClient:passkeyCredentialRequest.clientDataHash
+                relyingPartyIdentifier:identity.relyingPartyIdentifier
+                              username:identity.userName
+                            userHandle:identity.userHandle];
+    };
+  } else {
+    [self createPasskeyForClient:passkeyCredentialRequest.clientDataHash
+          relyingPartyIdentifier:identity.relyingPartyIdentifier
+                        username:identity.userName
+                      userHandle:identity.userHandle];
+  }
 }
 
 #pragma mark - Properties
@@ -402,6 +443,14 @@ UIColor* BackgroundColor() {
   [self.reauthenticationHandler
       verifyUserWithCompletionHandler:completionHandler
       presentReminderOnViewController:self];
+}
+
+// Returns whether or not the user should be asked to re-authenticate depending
+// on the provided `userVerificationPreference`.
+- (BOOL)shouldPerformUserVerificationForPreference:
+    (NSString*)userVerificationPreference {
+  // TODO(crbug.com/355043266): Implement logic.
+  return YES;
 }
 
 - (void)provideCredentialWithoutUserInteractionForIdentifier:
