@@ -244,6 +244,34 @@ TEST_F(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
   EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
 }
 
+TEST_F(WebAppInstallFinalizerUnitTest, ManifestUpdateOsIntegrationDefaultApps) {
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+  options.install_state = proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
+  options.add_to_applications_menu = false;
+  options.add_to_quick_launch_bar = false;
+  options.add_to_desktop = false;
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  EXPECT_TRUE(registrar().IsInstallState(
+      result.installed_app_id,
+      {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      update_future;
+  finalizer().FinalizeUpdate(*info, update_future.GetCallback());
+  ASSERT_TRUE(update_future.Wait());
+  EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
+
+  // Post manifest update, OS integration is not triggered for default apps.
+  EXPECT_TRUE(registrar().IsInstallState(
+      result.installed_app_id,
+      {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+}
+
 TEST_F(WebAppInstallFinalizerUnitTest,
        NonLocalThenLocalInstallSetsBothInstallTime) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(

@@ -183,8 +183,6 @@ class WebAppInstallFinalizer {
                               webapps::AppId app_id);
   void NotifyWebAppInstalledWithOsHooks(webapps::AppId app_id);
 
-  bool ShouldUpdateOsHooks(const webapps::AppId& app_id);
-
   void OnDatabaseCommitCompletedForUpdate(
       InstallFinalizedCallback callback,
       webapps::AppId app_id,

@@ -202,12 +202,6 @@ class WebAppRegistrar {
   // other install sources.
   bool IsInstalledByPolicy(const webapps::AppId& app_id) const;
 
-  // Returns true if the app was preinstalled and NOT installed via any other
-  // mechanism.
-  // TODO(crbug.com/340952100): Remove after os integration isn't based on
-  // management.
-  bool WasInstalledByDefaultOnly(const webapps::AppId& app_id) const;
-
   // Returns true if the app was installed by user, false if default installed.
   bool WasInstalledByUser(const webapps::AppId& app_id) const;
 

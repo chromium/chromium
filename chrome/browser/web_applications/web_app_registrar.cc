@@ -931,12 +931,6 @@ bool WebAppRegistrar::IsInstalledByPolicy(const webapps::AppId& app_id) const {
   return sources.Has(WebAppManagement::Type::kPolicy);
 }
 
-bool WebAppRegistrar::WasInstalledByDefaultOnly(
-    const webapps::AppId& app_id) const {
-  const WebApp* web_app = GetAppById(app_id);
-  return web_app && web_app->HasOnlySource(WebAppManagement::Type::kDefault);
-}
-
 bool WebAppRegistrar::WasInstalledByUser(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->WasInstalledByUser();

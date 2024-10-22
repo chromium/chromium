@@ -680,17 +680,6 @@ void WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks(
   provider_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 }
 
-bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const webapps::AppId& app_id) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // OS integration should always be enabled on ChromeOS.
-  return true;
-#else
-  // If the app being updated was installed by default and not also manually
-  // installed by the user or an enterprise policy, disable os integration.
-  return !provider_->registrar_unsafe().WasInstalledByDefaultOnly(app_id);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     InstallFinalizedCallback callback,
     webapps::AppId app_id,
@@ -705,7 +694,17 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  if (!ShouldUpdateOsHooks(app_id)) {
+  // OS integration should always be enabled on ChromeOS for manifest updates.
+  bool should_skip_os_integration_on_manifest_update = false;
+#if !BUILDFLAG(IS_CHROMEOS)
+  // If the app being updated was installed by default and not also manually
+  // installed by the user or an enterprise policy, disable os integration.
+  should_skip_os_integration_on_manifest_update =
+      provider_->registrar_unsafe().IsInstallState(
+          app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION});
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  if (should_skip_os_integration_on_manifest_update) {
     provider_->install_manager().NotifyWebAppManifestUpdated(app_id);
     std::move(callback).Run(
         app_id, webapps::InstallResultCode::kSuccessAlreadyInstalled);
