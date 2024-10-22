@@ -334,7 +334,7 @@ public class OmniboxFeatures {
         sPrefs.edit().putBoolean(KEY_JUMP_START_OMNIBOX, isEnabled).apply();
     }
 
-    /** Returns the time ellapsed since the user exited Chrome, expressed in miliiseconds. */
+    /** Returns the time elapsed since the user exited Chrome, expressed in milliseconds. */
     public static long getTimeSinceLastExit() {
         return TimeUtils.currentTimeMillis() - sPrefs.getLong(KEY_LAST_EXIT_TIMESTAMP, 0L);
     }
@@ -342,5 +342,9 @@ public class OmniboxFeatures {
     /** Record the current time as the time the User exited Chrome. */
     public static void updateLastExitTimestamp() {
         sPrefs.edit().putLong(KEY_LAST_EXIT_TIMESTAMP, TimeUtils.currentTimeMillis()).apply();
+    }
+
+    public static boolean shouldJumpStartOmnibox() {
+        return isJumpStartOmniboxEnabled();
     }
 }

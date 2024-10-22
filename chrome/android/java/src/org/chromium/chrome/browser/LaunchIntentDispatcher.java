@@ -47,11 +47,14 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
+import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.widget.Toast;
+import org.chromium.url.GURL;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.lang.annotation.Retention;
@@ -106,10 +109,20 @@ public class LaunchIntentDispatcher {
         return new LaunchIntentDispatcher(currentActivity, intent).dispatchToTabbedActivity();
     }
 
+    public static @Action int dispatchToSearchActivity(Activity currentActivity, Intent intent) {
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(
+                        currentActivity,
+                        new GURL(UrlConstants.NTP_URL),
+                        IntentOrigin.LAUNCHER,
+                        /* referrer= */ null,
+                        /* isIncognito= */ false);
+        return Action.CONTINUE;
+    }
+
     /**
-     * Dispatches the intent to proper tabbed activity.
-     * This method is similar to {@link #dispatch()}, but only handles intents that result in
-     * starting a custom tab activity.
+     * Dispatches the intent to proper tabbed activity. This method is similar to {@link
+     * #dispatch()}, but only handles intents that result in starting a custom tab activity.
      */
     public static @Action int dispatchToCustomTabActivity(Activity currentActivity, Intent intent) {
         LaunchIntentDispatcher dispatcher = new LaunchIntentDispatcher(currentActivity, intent);

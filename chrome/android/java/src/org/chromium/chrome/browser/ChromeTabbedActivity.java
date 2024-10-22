@@ -253,6 +253,7 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -589,6 +590,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (getClass().equals(ChromeTabbedActivity.class)
                 && Intent.ACTION_MAIN.equals(intent.getAction())) {
+            if (OmniboxFeatures.shouldJumpStartOmniboxEngage()) {
+                return LaunchIntentDispatcher.dispatchToSearchActivity(this, intent);
+            }
             // Call dispatchToTabbedActivity() for MAIN intents to activate proper multi-window
             // TabbedActivity (i.e. if CTA2 is currently running and Chrome is started, CTA2
             // should be brought to front). Don't call dispatchToTabbedActivity() for non-MAIN
@@ -3568,6 +3572,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (SearchActivityClientImpl.isOmniboxResult(requestCode, data)) {
+            // This path is taken by the Jump-start Omnibox, after the user finished interaction
+            // with the SearchActivity.
+            // The absence of LoadUrlParams signifies that the user has made no selection, in which
+            // case we take the user back to the most recently visited website.
+            LoadUrlParams params =
+                    SearchActivityClientImpl.getOmniboxResult(requestCode, resultCode, data);
+            if (params != null) {
+                getActivityTab().loadUrl(params);
+            }
+            return;
+        }
+
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onActivityResult")) {
             super.onActivityResult(requestCode, resultCode, data);
         }

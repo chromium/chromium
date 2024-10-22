@@ -429,6 +429,14 @@ public class SearchActivity extends AsyncInitializationActivity
                 setHubSearchBoxVisualElements();
                 break;
 
+            case IntentOrigin.LAUNCHER:
+                mLocationBarUiOverrides
+                        .setLensEntrypointAllowed(true)
+                        .setVoiceEntrypointAllowed(true);
+                mSearchBoxDataProvider.setPageClassification(
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+                break;
+
             case IntentOrigin.SEARCH_WIDGET:
                 // fallthrough
 
@@ -673,7 +681,7 @@ public class SearchActivity extends AsyncInitializationActivity
     /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
         recordNavigationTargetType(new GURL(params.url));
 
-        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
+        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB || mIntentOrigin == IntentOrigin.LAUNCHER) {
             SearchActivityUtils.resolveOmniboxRequestForResult(this, params);
         } else {
             loadUrlInChromeBrowser(params);
@@ -733,7 +741,9 @@ public class SearchActivity extends AsyncInitializationActivity
         if (isFinishing()) return;
 
         var exitAnimationRes = 0;
-        if (mIntentOrigin != null && mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
+        if (mIntentOrigin != null
+                && (mIntentOrigin == IntentOrigin.CUSTOM_TAB
+                        || mIntentOrigin == IntentOrigin.LAUNCHER)) {
             if (reason != TerminationReason.NAVIGATION) {
                 SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
             }
