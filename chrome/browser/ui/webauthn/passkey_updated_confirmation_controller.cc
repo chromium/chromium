@@ -11,8 +11,10 @@
 
 PasskeyUpdatedConfirmationController::PasskeyUpdatedConfirmationController(
     base::WeakPtr<PasswordsModelDelegate> delegate,
-    password_manager::metrics_util::UIDisplayDisposition display_disposition)
-    : PasswordBubbleControllerBase(std::move(delegate), display_disposition) {}
+    password_manager::metrics_util::UIDisplayDisposition display_disposition,
+    std::string passkey_rp_id)
+    : PasswordBubbleControllerBase(std::move(delegate), display_disposition),
+      passkey_rp_id_(std::move(passkey_rp_id)) {}
 
 PasskeyUpdatedConfirmationController::~PasskeyUpdatedConfirmationController() {
   OnBubbleClosing();
@@ -26,9 +28,9 @@ void PasskeyUpdatedConfirmationController::
     OnGooglePasswordManagerLinkClicked() {
   dismissal_reason_ = password_manager::metrics_util::CLICKED_MANAGE;
   if (delegate_) {
-    delegate_->NavigateToPasswordManagerSettingsPage(
-        password_manager::ManagePasswordsReferrer::
-            kPasskeyUpdatedConfirmationBubble);
+    delegate_->NavigateToPasswordDetailsPageInPasswordManager(
+        passkey_rp_id_, password_manager::ManagePasswordsReferrer::
+                            kPasskeyUpdatedConfirmationBubble);
   }
 }
 

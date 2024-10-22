@@ -11,8 +11,10 @@
 
 PasskeyNotAcceptedBubbleController::PasskeyNotAcceptedBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate,
-    password_manager::metrics_util::UIDisplayDisposition display_disposition)
-    : PasswordBubbleControllerBase(std::move(delegate), display_disposition) {}
+    password_manager::metrics_util::UIDisplayDisposition display_disposition,
+    std::string passkey_rp_id)
+    : PasswordBubbleControllerBase(std::move(delegate), display_disposition),
+      passkey_rp_id_(std::move(passkey_rp_id)) {}
 
 PasskeyNotAcceptedBubbleController::~PasskeyNotAcceptedBubbleController() {
   OnBubbleClosing();
@@ -25,7 +27,8 @@ std::u16string PasskeyNotAcceptedBubbleController::GetTitle() const {
 void PasskeyNotAcceptedBubbleController::OnGooglePasswordManagerLinkClicked() {
   dismissal_reason_ = password_manager::metrics_util::CLICKED_MANAGE;
   if (delegate_) {
-    delegate_->NavigateToPasswordManagerSettingsPage(
+    delegate_->NavigateToPasswordDetailsPageInPasswordManager(
+        passkey_rp_id_,
         password_manager::ManagePasswordsReferrer::kPasskeyNotAcceptedBubble);
   }
 }

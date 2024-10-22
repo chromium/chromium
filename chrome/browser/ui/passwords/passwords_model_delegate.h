@@ -95,6 +95,10 @@ class PasswordsModelDelegate {
   // flow, applicable for PASSKEY_SAVED_CONFIRMATION_STATE only.
   virtual bool GpmPinCreatedDuringRecentPasskeyCreation() const = 0;
 
+  // Returns the passkey relying party during the most recent passkey flow, or
+  // the empty string if there isn't one.
+  virtual const std::string& PasskeyRpId() const = 0;
+
   // Called from the model when the bubble is displayed.
   virtual void OnBubbleShown() = 0;
 

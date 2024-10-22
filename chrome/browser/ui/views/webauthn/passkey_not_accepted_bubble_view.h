@@ -29,7 +29,8 @@ class PasskeyNotAcceptedBubbleView : public PasswordBubbleViewBase {
  public:
   PasskeyNotAcceptedBubbleView(content::WebContents* web_contents,
                                views::View* anchor_view,
-                               DisplayReason display_reason);
+                               DisplayReason display_reason,
+                               std::string passkey_rp_id);
   ~PasskeyNotAcceptedBubbleView() override;
   PasskeyNotAcceptedBubbleView(const PasskeyNotAcceptedBubbleView&) = delete;
   PasskeyNotAcceptedBubbleView& operator=(const PasskeyNotAcceptedBubbleView&) =

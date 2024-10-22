@@ -126,7 +126,8 @@ class PasswordsClientUIDelegate {
   // Called when a passkey has just been saved to display a confirmation of that
   // to the user. If GPM pin was created in the same flow, then the confirmation
   // of that is also displayed in the title.
-  virtual void OnPasskeySaved(bool gpm_pin_created) = 0;
+  virtual void OnPasskeySaved(bool gpm_pin_created,
+                              std::string passkey_rp_id) = 0;
 
   // Called when a passkey has just been deleted to display a confirmation of
   // that to the user.
@@ -134,11 +135,11 @@ class PasswordsClientUIDelegate {
 
   // Called when a passkey has just been updated to display a confirmation of
   // that to the user.
-  virtual void OnPasskeyUpdated() = 0;
+  virtual void OnPasskeyUpdated(std::string passkey_rp_id) = 0;
 
   // Called when a passkey has just been deleted because it was not present on
   // an all accepted credentials report.
-  virtual void OnPasskeyNotAccepted() = 0;
+  virtual void OnPasskeyNotAccepted(std::string passkey_rp_id) = 0;
 
  protected:
   virtual ~PasswordsClientUIDelegate() = default;

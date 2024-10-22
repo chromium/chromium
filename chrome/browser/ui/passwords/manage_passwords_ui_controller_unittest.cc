@@ -94,6 +94,7 @@ MATCHER_P3(MatchesLoginAndURL,
 // A random URL.
 constexpr char kExampleUrl[] = "http://example.com";
 constexpr char16_t kExampleUsername[] = u"Bob";
+constexpr char kExampleRpId[] = "example.com";
 
 // Number of dismissals that for sure suppresses the bubble.
 constexpr int kGreatDissmisalCount = 10;
@@ -2046,7 +2047,8 @@ TEST_F(ManagePasswordsUIControllerTest, IsDeviceAuthenticatorObtained) {
 
 TEST_F(ManagePasswordsUIControllerTest, PasskeySavedWithoutGpmPinCreation) {
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnPasskeySaved(/*gpm_pin_created=*/false);
+  controller()->OnPasskeySaved(/*gpm_pin_created=*/false, kExampleRpId);
+  EXPECT_EQ(controller()->PasskeyRpId(), kExampleRpId);
   EXPECT_TRUE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(
       password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
@@ -2055,7 +2057,8 @@ TEST_F(ManagePasswordsUIControllerTest, PasskeySavedWithoutGpmPinCreation) {
 
 TEST_F(ManagePasswordsUIControllerTest, PasskeySavedWithGpmPinCreation) {
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnPasskeySaved(/*gpm_pin_created=*/true);
+  controller()->OnPasskeySaved(/*gpm_pin_created=*/true, kExampleRpId);
+  EXPECT_EQ(controller()->PasskeyRpId(), kExampleRpId);
   EXPECT_TRUE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(
       password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
@@ -2071,16 +2074,20 @@ TEST_F(ManagePasswordsUIControllerTest, InvalidPasskeyDeleted) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyUpdatedBubble) {
+  std::string rp_id = "touhou.example.com";
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnPasskeyUpdated();
+  controller()->OnPasskeyUpdated(rp_id);
   EXPECT_TRUE(controller()->opened_automatic_bubble());
+  EXPECT_EQ(controller()->PasskeyRpId(), rp_id);
   ExpectIconAndControllerStateIs(
       password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyNotAcceptedBubble) {
+  std::string rp_id = "touhou.example.com";
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnPasskeyNotAccepted();
+  controller()->OnPasskeyNotAccepted(rp_id);
+  EXPECT_EQ(controller()->PasskeyRpId(), rp_id);
   EXPECT_TRUE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(
       password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);

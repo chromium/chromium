@@ -689,7 +689,7 @@ void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
     PasswordsClientUIDelegate* manage_passwords_ui_controller =
         PasswordsClientUIDelegateFromWebContents(web_contents);
     if (manage_passwords_ui_controller) {
-      manage_passwords_ui_controller->OnPasskeyNotAccepted();
+      manage_passwords_ui_controller->OnPasskeyNotAccepted(relying_party_id);
     }
   }
   base::UmaHistogramEnumeration(
@@ -738,7 +738,7 @@ void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
     PasswordsClientUIDelegate* manage_passwords_ui_controller =
         PasswordsClientUIDelegateFromWebContents(web_contents);
     if (manage_passwords_ui_controller) {
-      manage_passwords_ui_controller->OnPasskeyUpdated();
+      manage_passwords_ui_controller->OnPasskeyUpdated(relying_party_id);
     }
   }
   LogSignalCurrentUserDetailsUpdated(

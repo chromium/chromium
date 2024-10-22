@@ -534,8 +534,9 @@ void ManagePasswordsUIController::OnKeychainError() {
 #endif
 }
 
-void ManagePasswordsUIController::OnPasskeySaved(bool gpm_pin_created) {
-  passwords_data_.OnPasskeySaved(gpm_pin_created);
+void ManagePasswordsUIController::OnPasskeySaved(bool gpm_pin_created,
+                                                 std::string passkey_rp_id) {
+  passwords_data_.OnPasskeySaved(gpm_pin_created, std::move(passkey_rp_id));
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }
@@ -546,14 +547,15 @@ void ManagePasswordsUIController::OnPasskeyDeleted() {
   UpdateBubbleAndIconVisibility();
 }
 
-void ManagePasswordsUIController::OnPasskeyUpdated() {
-  passwords_data_.OnPasskeyUpdated();
+void ManagePasswordsUIController::OnPasskeyUpdated(std::string passkey_rp_id) {
+  passwords_data_.OnPasskeyUpdated(std::move(passkey_rp_id));
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }
 
-void ManagePasswordsUIController::OnPasskeyNotAccepted() {
-  passwords_data_.OnPasskeyNotAccepted();
+void ManagePasswordsUIController::OnPasskeyNotAccepted(
+    std::string passkey_rp_id) {
+  passwords_data_.OnPasskeyNotAccepted(std::move(passkey_rp_id));
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }
@@ -732,6 +734,10 @@ bool ManagePasswordsUIController::GpmPinCreatedDuringRecentPasskeyCreation()
     const {
   CHECK_EQ(GetState(), password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
   return passwords_data_.gpm_pin_created_during_recent_passkey_creation();
+}
+
+const std::string& ManagePasswordsUIController::PasskeyRpId() const {
+  return passwords_data_.passkey_rp_id();
 }
 
 void ManagePasswordsUIController::OnBubbleShown() {

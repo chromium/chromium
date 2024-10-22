@@ -23,6 +23,7 @@ namespace {
 using ::testing::Return;
 
 constexpr char kUIDismissalReasonMetric[] = "PasswordManager.UIDismissalReason";
+constexpr char kRpId[] = "touhou.example.com";
 
 }  // namespace
 
@@ -51,7 +52,7 @@ class PasskeySavedConfirmationControllerTest : public ::testing::Test {
   void CreateController() {
     EXPECT_CALL(*delegate(), OnBubbleShown());
     controller_ = std::make_unique<PasskeySavedConfirmationController>(
-        mock_delegate_->AsWeakPtr());
+        mock_delegate_->AsWeakPtr(), kRpId);
     ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(delegate()));
   }
 
@@ -96,9 +97,10 @@ TEST_F(PasskeySavedConfirmationControllerTest,
        OnGooglePasswordManagerLinkClicked) {
   base::HistogramTester histogram_tester;
   CreateController();
-  EXPECT_CALL(*delegate(), NavigateToPasswordManagerSettingsPage(
-                               password_manager::ManagePasswordsReferrer::
-                                   kPasskeySavedConfirmationBubble));
+  EXPECT_CALL(*delegate(),
+              NavigateToPasswordDetailsPageInPasswordManager(
+                  kRpId, password_manager::ManagePasswordsReferrer::
+                             kPasskeySavedConfirmationBubble));
   controller()->OnGooglePasswordManagerLinkClicked();
   DestroyController();
   histogram_tester.ExpectUniqueSample(

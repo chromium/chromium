@@ -20,11 +20,13 @@
 
 PasskeySavedConfirmationView::PasskeySavedConfirmationView(
     content::WebContents* web_contents,
-    views::View* anchor_view)
+    views::View* anchor_view,
+    std::string passkey_rp_id)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/true),
-      controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
+      controller_(PasswordsModelDelegateFromWebContents(web_contents),
+                  std::move(passkey_rp_id)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowIcon(true);
   SetTitle(controller_.GetTitle());

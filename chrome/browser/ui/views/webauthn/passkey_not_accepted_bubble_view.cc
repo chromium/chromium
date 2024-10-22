@@ -26,7 +26,8 @@
 PasskeyNotAcceptedBubbleView::PasskeyNotAcceptedBubbleView(
     content::WebContents* web_contents,
     views::View* anchor_view,
-    DisplayReason display_reason)
+    DisplayReason display_reason,
+    std::string passkey_rp_id)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/true),
@@ -35,7 +36,8 @@ PasskeyNotAcceptedBubbleView::PasskeyNotAcceptedBubbleView(
                       ? password_manager::metrics_util::
                             AUTOMATIC_PASSKEY_NOT_ACCEPTED_BUBBLE
                       : password_manager::metrics_util::
-                            MANUAL_PASSKEY_NOT_ACCEPTED_BUBBLE) {
+                            MANUAL_PASSKEY_NOT_ACCEPTED_BUBBLE,
+                  std::move(passkey_rp_id)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowIcon(true);
   SetTitle(controller_.GetTitle());

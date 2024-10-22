@@ -21,6 +21,7 @@ namespace {
 using ::testing::Return;
 
 constexpr char kUIDismissalReasonMetric[] = "PasswordManager.UIDismissalReason";
+constexpr char kRpId[] = "touhou.example.com";
 
 class PasskeyNotAcceptedBubbleControllerTest : public ::testing::Test {
  public:
@@ -38,7 +39,8 @@ class PasskeyNotAcceptedBubbleControllerTest : public ::testing::Test {
     EXPECT_CALL(*delegate(), OnBubbleShown());
     controller_ = std::make_unique<PasskeyNotAcceptedBubbleController>(
         mock_delegate_->AsWeakPtr(),
-        password_manager::metrics_util::AUTOMATIC_PASSKEY_NOT_ACCEPTED_BUBBLE);
+        password_manager::metrics_util::AUTOMATIC_PASSKEY_NOT_ACCEPTED_BUBBLE,
+        kRpId);
     ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(delegate()));
   }
 
@@ -58,9 +60,10 @@ TEST_F(PasskeyNotAcceptedBubbleControllerTest,
        OnGooglePasswordManagerButtonClicked) {
   base::HistogramTester histogram_tester;
   CreateController();
-  EXPECT_CALL(*delegate(), NavigateToPasswordManagerSettingsPage(
-                               password_manager::ManagePasswordsReferrer::
-                                   kPasskeyNotAcceptedBubble));
+  EXPECT_CALL(*delegate(),
+              NavigateToPasswordDetailsPageInPasswordManager(
+                  kRpId, password_manager::ManagePasswordsReferrer::
+                             kPasskeyNotAcceptedBubble));
   controller()->OnGooglePasswordManagerLinkClicked();
   DestroyController();
   histogram_tester.ExpectUniqueSample(

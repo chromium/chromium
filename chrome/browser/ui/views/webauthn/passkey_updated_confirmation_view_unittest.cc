@@ -8,6 +8,10 @@
 
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 
+namespace {
+
+constexpr char kRpId[] = "touhou.example.com";
+
 class PasskeyUpdatedConfirmationViewTest : public PasswordBubbleViewTestBase {
  public:
   PasskeyUpdatedConfirmationViewTest() = default;
@@ -16,8 +20,8 @@ class PasskeyUpdatedConfirmationViewTest : public PasswordBubbleViewTestBase {
   void CreateViewAndShow() {
     CreateAnchorViewAndShow();
     view_ = new PasskeyUpdatedConfirmationView(
-        web_contents(), anchor_view(),
-        LocationBarBubbleDelegateView::AUTOMATIC);
+        web_contents(), anchor_view(), LocationBarBubbleDelegateView::AUTOMATIC,
+        kRpId);
     views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
   }
 
@@ -39,3 +43,5 @@ TEST_F(PasskeyUpdatedConfirmationViewTest, ShowsTitle) {
   EXPECT_TRUE(view()->ShouldShowWindowTitle());
   EXPECT_FALSE(view()->GetWindowTitle().empty());
 }
+
+}  // namespace

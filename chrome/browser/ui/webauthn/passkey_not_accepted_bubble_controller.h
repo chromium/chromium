@@ -14,7 +14,8 @@ class PasskeyNotAcceptedBubbleController : public PasswordBubbleControllerBase {
  public:
   PasskeyNotAcceptedBubbleController(
       base::WeakPtr<PasswordsModelDelegate> delegate,
-      password_manager::metrics_util::UIDisplayDisposition display_disposition);
+      password_manager::metrics_util::UIDisplayDisposition display_disposition,
+      std::string passkey_rp_id);
   ~PasskeyNotAcceptedBubbleController() override;
 
   // PasswordBubbleControllerBase:
@@ -31,6 +32,9 @@ class PasskeyNotAcceptedBubbleController : public PasswordBubbleControllerBase {
   // Dismissal reason for a password bubble.
   password_manager::metrics_util::UIDismissalReason dismissal_reason_ =
       password_manager::metrics_util::NO_DIRECT_INTERACTION;
+
+  // The passkey relying party identifier.
+  std::string passkey_rp_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_NOT_ACCEPTED_BUBBLE_CONTROLLER_H_

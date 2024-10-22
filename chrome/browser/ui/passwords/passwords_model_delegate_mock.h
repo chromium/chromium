@@ -65,6 +65,7 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               GpmPinCreatedDuringRecentPasskeyCreation,
               (),
               (const override));
+  MOCK_METHOD(const std::string&, PasskeyRpId, (), (const override));
   MOCK_METHOD(void, OnBubbleShown, (), (override));
   MOCK_METHOD(void, OnBubbleHidden, (), (override));
   MOCK_METHOD(void, OnNoInteraction, (), (override));
