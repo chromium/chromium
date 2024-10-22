@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -64,7 +65,7 @@ std::vector<gfx::Size> ParseSupportedCursorSizes(drmModePropertyBlobPtr blob) {
 std::string IdSetToString(const base::flat_set<uint32_t>& ids) {
   std::vector<std::string> string_ids;
   for (auto id : ids)
-    string_ids.push_back(std::to_string(id));
+    string_ids.push_back(base::NumberToString(id));
   return "[" + base::JoinString(string_ids, ", ") + "]";
 }
 

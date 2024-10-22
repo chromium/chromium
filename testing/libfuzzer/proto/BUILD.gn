@@ -46,7 +46,10 @@ if (!is_cronet_build) {
       "url_proto_converter.cc",
       "url_proto_converter.h",
     ]
-    deps = [ ":url_proto" ]
+    deps = [
+      ":url_proto",
+      "//base",
+    ]
   }
 
   proto_library("skia_image_filter_proto") {

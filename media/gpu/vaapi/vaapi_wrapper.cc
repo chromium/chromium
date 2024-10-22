@@ -42,6 +42,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -3180,7 +3181,7 @@ void VaapiWrapper::PreSandboxInitialization(bool allow_disabling_global_lock) {
 
   VADisplayStateSingleton::PreSandboxInitialization();
 
-  const std::string va_suffix(std::to_string(VA_MAJOR_VERSION + 1));
+  const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
   StubPathMap paths;
 
   paths[kModuleVa].push_back(std::string("libva.so.") + va_suffix);

@@ -372,7 +372,7 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
     return false;
   }
   if (gpu_count.IsSpecified()) {
-    if (!gpu_count.Contains(std::to_string(gpu_info.GpuCount()))) {
+    if (!gpu_count.Contains(base::NumberToString(gpu_info.GpuCount()))) {
       return false;
     }
   }

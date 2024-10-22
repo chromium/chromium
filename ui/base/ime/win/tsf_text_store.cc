@@ -18,6 +18,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
 #include "components/stylus_handwriting/win/features.h"
@@ -372,8 +373,9 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
     return TS_E_INVALIDPOS;
   }
 
-  TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "start, end",
-               std::to_string(acp_start) + ", " + std::to_string(acp_end));
+  TRACE_EVENT1(
+      "ime", "TSFTextStore::GetTextExt", "start, end",
+      base::NumberToString(acp_start) + ", " + base::NumberToString(acp_end));
 
   // According to a behavior of notepad.exe and wordpad.exe, top left corner of
   // rect indicates a first character's one, and bottom right corner of rect
@@ -1354,8 +1356,8 @@ void TSFTextStore::CalculateTextandSelectionDiffAndNotifyIfNeeded() {
     if (notify_text_change && text_changed) {
       TRACE_EVENT2(
           "ime", "TSFTextStore::CalculateTextandSelectionDiffAndNotifyIfNeeded",
-          "text_change_start", std::to_string(text_change.acpStart),
-          "text_change_end", std::to_string(text_change.acpNewEnd));
+          "text_change_start", base::NumberToString(text_change.acpStart),
+          "text_change_end", base::NumberToString(text_change.acpNewEnd));
       text_store_acp_sink_->OnTextChange(0, &text_change);
     }
 

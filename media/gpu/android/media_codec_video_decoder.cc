@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -1076,7 +1077,7 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
   }
   DVLOG(3) << "DequeueOutputBuffer(): pts="
            << (eos ? "EOS"
-                   : std::to_string(presentation_time.InMilliseconds()));
+                   : base::NumberToString(presentation_time.InMilliseconds()));
 
   if (eos) {
     if (eos_decode_cb_) {

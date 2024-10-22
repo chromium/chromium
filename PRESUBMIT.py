@@ -752,23 +752,11 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         [
             # TODO(crbug.com/335672557): Please do not add to this list. Existing
             # uses should removed.
-            "base/linux_util.cc",
-            "device/fido/mock_fido_device.cc",
-            "gpu/command_buffer/tests/gl_webgl_multi_draw_test.cc",
-            "gpu/config/gpu_control_list.cc",
-            "media/audio/win/core_audio_util_win.cc",
-            "media/gpu/android/media_codec_video_decoder.cc",
-            "media/gpu/vaapi/vaapi_wrapper.cc",
-            "remoting/host/linux/certificate_watcher_unittest.cc",
-            "testing/libfuzzer/fuzzers/url_parse_proto_fuzzer.cc",
-            "testing/libfuzzer/proto/url_proto_converter.cc",
             "third_party/blink/renderer/core/css/parser/css_proto_converter.cc",
             "third_party/blink/renderer/core/editing/ime/edit_context.cc",
             "third_party/blink/renderer/platform/graphics/bitmap_image_test.cc",
             "tools/binary_size/libsupersize/viewer/caspian/diff_test.cc",
             "tools/binary_size/libsupersize/viewer/caspian/tree_builder_test.cc",
-            "ui/base/ime/win/tsf_text_store.cc",
-            "ui/ozone/platform/drm/gpu/hardware_display_plane.cc",
             _THIRD_PARTY_EXCEPT_BLINK
         ],
     ),
