@@ -50,13 +50,16 @@ def main(options):
     if validate(options.input) != 0:
         logging.error('Code signing validation failed')
         return 1
-    if options.notarization_tool is not None:
-        if notarize(options.notarization_tool, options.input) != 0:
-            logging.error('Notarization tool failed')
-            return 1
     if create_dmg(options.input, options.output) != 0:
         logging.error('DMG packaging failed')
         return 1
+    if options.notarization_tool is not None:
+        if notarize(
+                options.notarization_tool,
+                os.path.join(options.output,
+                             'ChromeEnterpriseCompanion.dmg')) != 0:
+            logging.error('Notarization tool failed')
+            return 1
     return 0
 
 
