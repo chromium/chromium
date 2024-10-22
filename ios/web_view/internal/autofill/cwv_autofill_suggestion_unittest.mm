@@ -25,7 +25,7 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
        displayDescription:@"TestDisplayDescription"
                      icon:nil
                      type:autofill::SuggestionType::kAddressEntry
-        backendIdentifier:autofill::Suggestion::Payload()
+                  payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
   CWVAutofillSuggestion* suggestion =
       [[CWVAutofillSuggestion alloc] initWithFormSuggestion:formSuggestion

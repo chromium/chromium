@@ -368,17 +368,16 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
           suggestion.fieldByFieldFillingTypeUsed;
       const std::string guid =
           absl::holds_alternative<autofill::Suggestion::AutofillProfilePayload>(
-              suggestion.backendIdentifier)
+              suggestion.payload)
               ? absl::get<autofill::Suggestion::AutofillProfilePayload>(
-                    suggestion.backendIdentifier)
+                    suggestion.payload)
                     .guid.value()
-              : absl::get<autofill::Suggestion::Guid>(
-                    suggestion.backendIdentifier)
+              : absl::get<autofill::Suggestion::Guid>(suggestion.payload)
                     .value();
       if (guid.empty()) {
         autofill_suggestion.payload = autofill::Suggestion::Payload();
       } else {
-        autofill_suggestion.payload = suggestion.backendIdentifier;
+        autofill_suggestion.payload = suggestion.payload;
       }
 
       _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion,
@@ -680,7 +679,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                          displayDescription:displayDescription
                                        icon:icon
                                        type:popup_suggestion.type
-                          backendIdentifier:popup_suggestion.payload
+                                    payload:popup_suggestion.payload
                 fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
                              requiresReauth:NO
                  acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];

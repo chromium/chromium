@@ -426,7 +426,7 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
                    displayDescription:suggestion.displayDescription
                                  icon:defaultIcon
                                  type:suggestion.type
-                    backendIdentifier:suggestion.backendIdentifier
+                              payload:suggestion.payload
           fieldByFieldFillingTypeUsed:suggestion.fieldByFieldFillingTypeUsed
                        requiresReauth:suggestion.requiresReauth
            acceptanceA11yAnnouncement:suggestion.acceptanceA11yAnnouncement];

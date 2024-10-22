@@ -668,7 +668,7 @@ CGFloat GPayIconTopAnchorOffset() {
                displayDescription:nil
                              icon:nil
                              type:type
-                backendIdentifier:autofill::Suggestion::Guid(
+                          payload:autofill::Suggestion::Guid(
                                       base::SysNSStringToUTF8([self.card GUID]))
       fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
                    requiresReauth:NO

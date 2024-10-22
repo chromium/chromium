@@ -280,7 +280,7 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
                                              kVirtualCreditCardEntry
                                        : autofill::SuggestionType::
                                              kCreditCardEntry)
-                backendIdentifier:autofill::Suggestion::Guid(
+                          payload:autofill::Suggestion::Guid(
                                       base::SysNSStringToUTF8(
                                           [creditCardData backendIdentifier]))
       fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE

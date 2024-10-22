@@ -744,7 +744,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
                displayDescription:nil
                              icon:nil
                              type:autofill::SuggestionType::kAddressEntry
-                backendIdentifier:autofill::Suggestion::AutofillProfilePayload(
+                          payload:autofill::Suggestion::AutofillProfilePayload(
                                       autofill::Suggestion::Guid(
                                           base::SysNSStringToUTF8(
                                               [self.address GUID])))

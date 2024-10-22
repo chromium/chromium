@@ -217,7 +217,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
                                         icon:nil
                                         type:autofill::SuggestionType::
                                                  kPasswordEntry
-                           backendIdentifier:autofill::Suggestion::Payload()
+                                     payload:autofill::Suggestion::Payload()
                               requiresReauth:YES
                   acceptanceA11yAnnouncement:nil
                                     metadata:std::move(metadata)]];
