@@ -136,10 +136,6 @@ void SigninReauthViewController::OnModalDialogClosed() {
 
   DCHECK(ui_state_ == UIState::kConfirmationDialog ||
          ui_state_ == UIState::kGaiaReauthDialog);
-  UserAction action = ui_state_ == UIState::kConfirmationDialog
-                          ? UserAction::kCloseConfirmationDialog
-                          : UserAction::kCloseGaiaReauthDialog;
-  signin_ui_util::RecordTransactionalReauthUserAction(access_point_, action);
 
   CompleteReauth(signin::ReauthResult::kDismissedByUser);
 }
@@ -159,7 +155,6 @@ void SigninReauthViewController::OnReauthConfirmed(
 }
 
 void SigninReauthViewController::OnReauthDismissed() {
-  RecordClickOnce(UserAction::kClickCancelButton);
   CompleteReauth(signin::ReauthResult::kDismissedByUser);
 }
 
@@ -189,24 +184,6 @@ void SigninReauthViewController::OnGaiaReauthPageComplete(
   }
   gaia_reauth_page_state_ = GaiaReauthPageState::kDone;
   gaia_reauth_page_result_ = result;
-
-  if (ui_state_ == UIState::kGaiaReauthDialog ||
-      ui_state_ == UIState::kGaiaReauthTab) {
-    std::optional<UserAction> action;
-    if (gaia_reauth_page_result_ == signin::ReauthResult::kSuccess) {
-      action = UserAction::kPassGaiaReauth;
-    }
-    if (gaia_reauth_page_result_ == signin::ReauthResult::kDismissedByUser) {
-      action = ui_state_ == UIState::kGaiaReauthDialog
-                   ? UserAction::kCloseGaiaReauthDialog
-                   : UserAction::kCloseGaiaReauthTab;
-    }
-
-    if (action) {
-      signin_ui_util::RecordTransactionalReauthUserAction(access_point_,
-                                                          *action);
-    }
-  }
 
   OnStateChanged();
 }
@@ -251,7 +228,6 @@ void SigninReauthViewController::CompleteReauth(signin::ReauthResult result) {
         ->RecordAccountPasswordsConsent(account_id_, *consent_);
   }
 
-  signin_ui_util::RecordTransactionalReauthResult(access_point_, result);
   if (reauth_callback_) {
     std::move(reauth_callback_).Run(result);
   }
@@ -268,7 +244,6 @@ void SigninReauthViewController::CompleteReauth(signin::ReauthResult result) {
 void SigninReauthViewController::OnStateChanged() {
   if (user_confirmed_reauth_ &&
       gaia_reauth_page_state_ == GaiaReauthPageState::kNavigated) {
-    RecordClickOnce(UserAction::kClickNextButton);
     ShowGaiaReauthPage();
     return;
   }
@@ -276,7 +251,6 @@ void SigninReauthViewController::OnStateChanged() {
   if (user_confirmed_reauth_ &&
       gaia_reauth_page_state_ == GaiaReauthPageState::kDone) {
     DCHECK(gaia_reauth_page_result_);
-    RecordClickOnce(UserAction::kClickConfirmButton);
     CompleteReauth(*gaia_reauth_page_result_);
     return;
   }
@@ -290,16 +264,6 @@ void SigninReauthViewController::OnGaiaReauthTypeDetermined(
   for (auto& observer : observer_list_) {
     observer.OnGaiaReauthTypeDetermined(reauth_type);
   }
-}
-
-void SigninReauthViewController::RecordClickOnce(UserAction click_action) {
-  if (has_recorded_click_) {
-    return;
-  }
-
-  signin_ui_util::RecordTransactionalReauthUserAction(access_point_,
-                                                      click_action);
-  has_recorded_click_ = true;
 }
 
 signin::ReauthTabHelper* SigninReauthViewController::GetReauthTabHelper() {

@@ -125,26 +125,6 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
   base::TimeTicks animated_identity_last_shown_;
 };
 
-std::string GetReauthAccessPointHistogramSuffix(
-    signin_metrics::ReauthAccessPoint access_point) {
-  switch (access_point) {
-    case signin_metrics::ReauthAccessPoint::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
-    case signin_metrics::ReauthAccessPoint::kAutofillDropdown:
-      return "ToFillPassword";
-    case signin_metrics::ReauthAccessPoint::kPasswordSaveBubble:
-      return "ToSaveOrUpdatePassword";
-    case signin_metrics::ReauthAccessPoint::kPasswordSettings:
-      return "ToManageInSettings";
-    case signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown:
-    case signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu:
-      return "ToGeneratePassword";
-    case signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble:
-      return "ToSavePasswordLocallyThenMove";
-  }
-}
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 SigninUiDelegate* g_signin_ui_delegate_for_testing = nullptr;
@@ -634,36 +614,6 @@ void RecordProfileMenuClick(Profile* profile) {
   } else if (profile->IsIncognitoProfile()) {
     base::RecordAction(
         base::UserMetricsAction("ProfileMenu_ActionableItemClicked_Incognito"));
-  }
-}
-
-void RecordTransactionalReauthResult(
-    signin_metrics::ReauthAccessPoint access_point,
-    signin::ReauthResult result) {
-  const char kHistogramName[] = "Signin.TransactionalReauthResult";
-  base::UmaHistogramEnumeration(kHistogramName, result);
-
-  std::string access_point_suffix =
-      GetReauthAccessPointHistogramSuffix(access_point);
-  if (!access_point_suffix.empty()) {
-    std::string suffixed_histogram_name =
-        base::StrCat({kHistogramName, ".", access_point_suffix});
-    base::UmaHistogramEnumeration(suffixed_histogram_name, result);
-  }
-}
-
-void RecordTransactionalReauthUserAction(
-    signin_metrics::ReauthAccessPoint access_point,
-    SigninReauthViewController::UserAction user_action) {
-  const char kHistogramName[] = "Signin.TransactionalReauthUserAction";
-  base::UmaHistogramEnumeration(kHistogramName, user_action);
-
-  std::string access_point_suffix =
-      GetReauthAccessPointHistogramSuffix(access_point);
-  if (!access_point_suffix.empty()) {
-    std::string suffixed_histogram_name =
-        base::StrCat({kHistogramName, ".", access_point_suffix});
-    base::UmaHistogramEnumeration(suffixed_histogram_name, user_action);
   }
 }
 

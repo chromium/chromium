@@ -4249,23 +4249,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Settings.TrackedPreferenceUnchanged"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="TransactionalReauthEntryPoint" separator=".">
-  <suffix name="ToFillPassword"
-      label="The reauth happened to fill an account-stored password."/>
-  <suffix name="ToGeneratePassword"
-      label="The reauth happened to trigger the password generation."/>
-  <suffix name="ToManageInSettings"
-      label="The reauth happened to manage account-stored passwords in
-             settings."/>
-  <suffix name="ToSaveOrUpdatePassword"
-      label="The reauth happened to save a password to the account store."/>
-  <suffix name="ToSavePasswordLocallyThenMove"
-      label="The reauth happened to move a just-locally-saved password to the
-             account store."/>
-  <affected-histogram name="Signin.TransactionalReauthResult"/>
-  <affected-histogram name="Signin.TransactionalReauthUserAction"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="TrustTokenOperationSuccess" separator=".">
   <suffix name="Failure"
       label="The operation or partial operation failed: for ServerTime, this

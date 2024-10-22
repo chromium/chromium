@@ -2701,32 +2701,6 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.TransactionalReauthResult" enum="SigninReauthResult"
-    expires_after="2024-11-03">
-<!-- Name completed by histogram_suffixes
-name="TransactionalReauthEntryPoint" -->
-
-  <owner>alexilin@chromium.org</owner>
-  <owner>friedrichh@chromium.org</owner>
-  <summary>
-    Recorded whenever the user interacts with reauthentication to complete a
-    transaction (like interacting with the account store for passwords) and
-    whether the reauth challenge was cleared.
-  </summary>
-</histogram>
-
-<histogram name="Signin.TransactionalReauthUserAction"
-    enum="SigninReauthUserAction" expires_after="2024-10-06">
-<!-- Name completed by histogram_suffixes
-name="TransactionalReauthEntryPoint" -->
-
-  <owner>alexilin@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records user actions performed in the reauthentication dialog/tab.
-  </summary>
-</histogram>
-
 <histogram name="Signin.UserRequestedWipeDataOnSignout" enum="BooleanRequested"
     expires_after="2024-09-01">
   <owner>triploblastic@google.com</owner>

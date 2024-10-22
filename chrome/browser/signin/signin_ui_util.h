@@ -155,17 +155,6 @@ void RecordProfileMenuViewShown(Profile* profile);
 // Called when a button/link in the profile menu was clicked.
 void RecordProfileMenuClick(Profile* profile);
 
-// Records the result of a re-auth challenge to finish a transaction (like
-// unlocking the account store for passwords).
-void RecordTransactionalReauthResult(
-    signin_metrics::ReauthAccessPoint access_point,
-    signin::ReauthResult result);
-
-// Records user action performed in a transactional reauth dialog/tab.
-void RecordTransactionalReauthUserAction(
-    signin_metrics::ReauthAccessPoint access_point,
-    SigninReauthViewController::UserAction user_action);
-
 }  // namespace signin_ui_util
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_UI_UTIL_H_

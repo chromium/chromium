@@ -725,16 +725,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Unexpected server response"/>
 </enum>
 
-<enum name="SigninReauthUserAction">
-  <int value="0" label="Click confirm button"/>
-  <int value="1" label="Click next button"/>
-  <int value="2" label="Click cancel button"/>
-  <int value="3" label="Close confirmation dialog"/>
-  <int value="4" label="Close Gaia dialog"/>
-  <int value="5" label="Close Gaia tab"/>
-  <int value="6" label="Pass Gaia reauth"/>
-</enum>
-
 <enum name="SigninReconcilerOperation">
   <int value="0" label="No-op"/>
   <int value="1" label="Logout"/>

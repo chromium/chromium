@@ -458,8 +458,6 @@ SigninViewController::ShowReauthPrompt(
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
   if (account_id != primary_account_id) {
-    signin_ui_util::RecordTransactionalReauthResult(
-        access_point, signin::ReauthResult::kAccountNotSignedIn);
     std::move(wrapped_reauth_callback)
         .Run(signin::ReauthResult::kAccountNotSignedIn);
     return abort_handle;
