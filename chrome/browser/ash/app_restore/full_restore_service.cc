@@ -158,7 +158,7 @@ CollectRestoreIDsForNormalBrowserWindows(
 }
 
 bool IsFactoryTestRunningMayBlock() {
-  return base::PathExists(base::FilePath("/use/local/factory/enabled"));
+  return base::PathExists(base::FilePath("/usr/local/factory/enabled"));
 }
 
 }  // namespace
