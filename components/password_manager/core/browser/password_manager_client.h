@@ -474,6 +474,11 @@ class PasswordManagerClient {
   // pointer.
   virtual FirstCctPageLoadPasswordsUkmRecorder*
   GetFirstCctPageLoadUkmRecorder() = 0;
+
+  // Signals that a password form eligible for saving was submitted. Note that
+  // this gets called for form submissions that might not necessarily be
+  // successful logins.
+  virtual void PotentialSaveFormSubmitted() = 0;
 #endif
   // Gets the PasswordRequirementsService associated with the client. It is
   // valid that this method returns a nullptr if the PasswordRequirementsService

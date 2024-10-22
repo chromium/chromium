@@ -158,6 +158,9 @@ FirstCctPageLoadPasswordsUkmRecorder*
 StubPasswordManagerClient::GetFirstCctPageLoadUkmRecorder() {
   return nullptr;
 }
+
+void StubPasswordManagerClient::PotentialSaveFormSubmitted() {}
+
 #endif
 
 signin::IdentityManager* StubPasswordManagerClient::GetIdentityManager() {

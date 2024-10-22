@@ -274,8 +274,8 @@ void MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(
 
 // Records the form submission if the user has saving enabled and
 // the password is eligible for saving.
-void LogFormSubmissionIfEligibleForSaving(PasswordFormManager* manager,
-                                          PasswordManagerClient* client) {
+void SignalFormSubmissionIfEligibleForSaving(PasswordFormManager* manager,
+                                             PasswordManagerClient* client) {
   if (!password_manager_util::IsAbleToSavePasswords(client)) {
     return;
   }
@@ -297,6 +297,8 @@ void LogFormSubmissionIfEligibleForSaving(PasswordFormManager* manager,
   }
 
   manager->GetMetricsRecorder()->set_form_submission_reached(true);
+
+  client->PotentialSaveFormSubmitted();
 }
 
 #endif
@@ -646,7 +648,7 @@ void PasswordManager::OnPasswordFormSubmitted(PasswordManagerDriver* driver,
   PasswordFormManager* form_manager =
       ProvisionallySaveForm(form_data, driver, false);
   if (form_manager) {
-    LogFormSubmissionIfEligibleForSaving(form_manager, client_);
+    SignalFormSubmissionIfEligibleForSaving(form_manager, client_);
   }
 #else
   ProvisionallySaveForm(form_data, driver, false);
@@ -695,7 +697,7 @@ void PasswordManager::OnDynamicFormSubmission(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  LogFormSubmissionIfEligibleForSaving(submitted_manager, client_);
+  SignalFormSubmissionIfEligibleForSaving(submitted_manager, client_);
 #endif
 
   submitted_manager->UpdateSubmissionIndicatorEvent(event);
@@ -724,7 +726,7 @@ void PasswordManager::OnPasswordFormCleared(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
 
 #if BUILDFLAG(IS_ANDROID)
-    LogFormSubmissionIfEligibleForSaving(manager, client_);
+    SignalFormSubmissionIfEligibleForSaving(manager, client_);
 #endif
     OnLoginSuccessful();
     return;
@@ -739,7 +741,7 @@ void PasswordManager::OnPasswordFormCleared(
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
 #if BUILDFLAG(IS_ANDROID)
-    LogFormSubmissionIfEligibleForSaving(manager, client_);
+    SignalFormSubmissionIfEligibleForSaving(manager, client_);
 #endif
     OnLoginSuccessful();
   }

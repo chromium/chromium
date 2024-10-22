@@ -149,13 +149,16 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     /** An interface to notify listeners of the changes in activity state. */
     public interface ActivityStateObserver {
         /** Called when the activity goes into paused state. */
-        void onActivityPaused();
+        default void onActivityPaused() {}
 
         /** Called when the activity goes into resumed state. */
-        void onActivityResumed();
+        default void onActivityResumed() {}
+
+        /** Called when the activity goes into stopped state. */
+        default void onActivityStopped() {}
 
         /** Called when the activity goes into destroyed state. */
-        void onActivityDestroyed();
+        default void onActivityDestroyed() {}
     }
 
     private ObserverList<ActivityStateObserver> mActivityStateObservers = new ObserverList<>();
@@ -537,11 +540,12 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     }
 
     /**
-     * For window instances associated with an activity, notifies any listeners
-     * that the activity has been stopped.
+     * For window instances associated with an activity, notifies any listeners that the activity
+     * has been stopped.
      */
     protected void onActivityStopped() {
         if (mNativeWindowAndroid == 0) return;
+        for (ActivityStateObserver observer : mActivityStateObservers) observer.onActivityStopped();
         WindowAndroidJni.get().onActivityStopped(mNativeWindowAndroid, WindowAndroid.this);
     }
 

@@ -102,6 +102,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
 #if BUILDFLAG(IS_ANDROID)
   FirstCctPageLoadPasswordsUkmRecorder* GetFirstCctPageLoadUkmRecorder()
       override;
+  void PotentialSaveFormSubmitted() override;
 #endif
   signin::IdentityManager* GetIdentityManager() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;

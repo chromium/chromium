@@ -1142,6 +1142,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.CctFormSubmissionToActivityStopTime"
+    units="ms" expires_after="2025-02-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the time elapsed between a form submission that should result in a
+    save prompt being shown and the CCT ctivity stopping as a result of a
+    redirect to another app. Only recorded if there was no password save prompt
+    shown in the meantime.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CctFormSubmissionToRedirectTime" units="ms"
+    expires_after="2025-02-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the time elapsed between a form submission that should result in a
+    save prompt being shown and a redirect from the CCT to another app. Only
+    recorded if there was no save prompt shown in the meantime.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CctRedirectToActivityStopTime" units="ms"
+    expires_after="2025-02-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the time elapsed between external navigation and the CCT activity
+    stopping. Only recorded after a form submission that should result in a save
+    prompt being shown, but only if the save prompt didn't actually show.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.ClassificationCorrectness.ConfirmationPassword"
     enum="PasswordManagerClassificationCorrectness" expires_after="2025-04-30">
