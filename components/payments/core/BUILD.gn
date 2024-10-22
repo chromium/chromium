@@ -171,6 +171,7 @@ source_set("unit_tests") {
     "android_app_description_tools_unittest.cc",
     "const_csp_checker_unittest.cc",
     "currency_formatter_unittest.cc",
+    "error_message_util_unittest.cc",
     "has_enrolled_instrument_query_unittest.cc",
     "journey_logger_unittest.cc",
     "payment_currency_amount_unittest.cc",
