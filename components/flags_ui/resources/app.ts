@@ -8,7 +8,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './experiment.js';
 
 import {assert} from 'chrome://resources/js/assert.js';

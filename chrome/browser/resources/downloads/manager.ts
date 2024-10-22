@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import './bypass_warning_confirmation_dialog.js';
 import './dangerous_download_interstitial.js';
 import './item.js';

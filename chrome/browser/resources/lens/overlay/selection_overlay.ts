@@ -8,7 +8,7 @@ import './region_selection.js';
 import './post_selection_renderer.js';
 import './overlay_shimmer.js';
 import './overlay_shimmer_canvas.js';
-import './strings.m.js';
+import '/strings.m.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 

@@ -16,7 +16,7 @@ import './destination_select_style.css.js';
 import './icons.html.js';
 import './print_preview_shared.css.js';
 import './throbber.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {IconsetMap} from 'chrome://resources/cr_elements/cr_icon/iconset_map.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './support_tool_shared.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';

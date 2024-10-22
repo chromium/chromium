@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './icons.html.js';
 import './destination_list_item_style.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './textarea.js';
 import './result_text.js';
 import '//resources/cr_elements/cr_button/cr_button.js';

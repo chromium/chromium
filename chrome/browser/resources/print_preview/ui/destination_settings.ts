@@ -21,7 +21,7 @@ import './print_preview_shared.css.js';
 import './print_preview_vars.css.js';
 import './throbber.css.js';
 import './settings_section.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

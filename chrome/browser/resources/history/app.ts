@@ -17,7 +17,7 @@ import './history_toolbar.js';
 import './query_manager.js';
 import './shared_style.css.js';
 import './side_bar.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './product_specifications_lists.js';
 
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';

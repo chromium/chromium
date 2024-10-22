@@ -14,7 +14,7 @@ import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './host_permissions_toggle_list.js';
 import './runtime_host_permissions.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './toggle_row.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';

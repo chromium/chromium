@@ -4,7 +4,7 @@
 
 import './print_preview_shared.css.js';
 import './settings_section.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import './settings_select.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

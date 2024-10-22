@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './selectable_lazy_list.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './tab_search_group_item.js';
 import './tab_search_item.js';
 import './title_item.js';

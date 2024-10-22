@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './read_anything_toolbar.js';
-import './strings.m.js';
+import '/strings.m.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';

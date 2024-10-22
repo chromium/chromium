@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/js/action_link.js';
 import './icons.html.js';
-import './strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';

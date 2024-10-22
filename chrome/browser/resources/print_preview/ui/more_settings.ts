@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {assert} from 'chrome://resources/js/assert.js';

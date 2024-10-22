@@ -9,7 +9,7 @@ import './landing_view.js';
 import './ntp_background/nux_ntp_background.js';
 import './set_as_default/nux_set_as_default.js';
 import './signin_view.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';

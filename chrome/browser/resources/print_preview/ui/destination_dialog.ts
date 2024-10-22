@@ -14,7 +14,7 @@ import './destination_list.js';
 import './print_preview_search_box.js';
 import './print_preview_shared.css.js';
 import './print_preview_vars.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import './throbber.css.js';
 import './destination_list_item.js';
 

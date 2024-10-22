@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './activity_log_stream.js';
 import './activity_log_history.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import '../shared_style.css.js';
 import '../shared_vars.css.js';
 

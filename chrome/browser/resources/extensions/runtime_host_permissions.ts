@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './runtime_hosts_dialog.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';

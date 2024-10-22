@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import './auto_tab_groups_failure.js';
 import './auto_tab_groups_in_progress.js';
 import './auto_tab_groups_not_started.js';

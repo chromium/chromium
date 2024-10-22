@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';

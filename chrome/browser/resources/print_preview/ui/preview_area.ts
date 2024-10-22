@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './printer_setup_info_cros.js';
 // </if>
 import './print_preview_vars.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';

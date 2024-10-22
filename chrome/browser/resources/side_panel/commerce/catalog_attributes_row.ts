@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';

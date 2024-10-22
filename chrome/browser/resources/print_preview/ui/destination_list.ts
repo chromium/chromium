@@ -12,7 +12,7 @@ import './destination_list_item.js';
 import './destination_list_item_cros.js';
 // </if>
 import './print_preview_vars.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import './throbber.css.js';
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';

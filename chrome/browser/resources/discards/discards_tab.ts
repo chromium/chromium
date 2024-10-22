@@ -4,7 +4,7 @@
 
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';

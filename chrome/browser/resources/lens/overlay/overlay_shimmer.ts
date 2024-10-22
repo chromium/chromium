@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './shimmer_circle.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assert, assertInstanceof, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';

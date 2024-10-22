@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
 import './catalog_attributes_row.js';
 import './history_graph.js';
 import './insights_comment_row.js';

@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import './site_permissions_edit_permissions_dialog.js';
 import './site_permissions_edit_url_dialog.js';
 
