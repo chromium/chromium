@@ -118,25 +118,33 @@ class BaseSearchProvider : public AutocompleteProvider {
   static bool PageURLIsEligibleForSuggestRequest(
       const GURL& page_url,
       metrics::OmniboxEventProto::PageClassification page_classification);
-  // Returns whether a suggest request can be made without the current page URL.
-  // It requires that all the following to hold:
-  // * The suggest request is sent over HTTPS. This avoids leaking the current
-  //   page URL or personal data in unencrypted network traffic.
+  // Returns whether a suggest request can be made.
+  // It requires that all the following hold:
+  // * Suggest URL is not empty or misconfigured.
   // * The user has suggest enabled in their settings.
   //   * Or the request is being made from the Lens searchboxes which have their
   //     own privacy model.
   // * The user is not in incognito mode. Incognito disables suggest entirely.
+  static bool CanSendSuggestRequest(
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      const TemplateURL* template_url,
+      const AutocompleteProviderClient* client);
+  // Returns whether a secure suggest request can be made.
+  // It requires that all the following to hold:
+  // * CanSendSuggestRequest() returns true.
+  // * The suggest request is sent over HTTPS. This avoids leaking the current
+  //   page URL or personal data in unencrypted network traffic.
   // * The user's suggest provider is Google. We might want to allow other
   //   providers to see this data someday, but for now this has only been
   //   implemented for Google.
-  static bool CanSendSuggestRequestWithoutPageURL(
+  static bool CanSendSecureSuggestRequest(
       metrics::OmniboxEventProto::PageClassification page_classification,
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data,
       const AutocompleteProviderClient* client);
   // Returns whether a suggest request can be made with the current page URL.
   // It requires that all the following hold:
-  // * CanSendSuggestRequestWithoutPageURL() returns true.
+  // * CanSendSecureSuggestRequest() returns true.
   // * Either one of:
   //   * The user consented to sending URLs of current page to Google and have
   //     them associated with their Google account.

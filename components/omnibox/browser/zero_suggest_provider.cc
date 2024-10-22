@@ -314,15 +314,14 @@ ZeroSuggestProvider::GetResultTypeAndEligibility(
   const auto result_type = ResultTypeForInput(input);
 
   const auto* template_url_service = client->GetTemplateURLService();
-  if (!template_url_service ||
-      !template_url_service->GetDefaultSearchProvider()) {
+  if (!template_url_service) {
     return std::make_pair(result_type, /*eligibility=*/false);
   }
 
   auto eligibility = true;
   switch (result_type) {
     case ResultType::kRemoteNoURL: {
-      if (!CanSendSuggestRequestWithoutPageURL(
+      if (!CanSendSecureSuggestRequest(
               input.current_page_classification(),
               template_url_service->GetDefaultSearchProvider(),
               template_url_service->search_terms_data(), client)) {

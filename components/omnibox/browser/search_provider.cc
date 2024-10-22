@@ -698,8 +698,18 @@ base::TimeDelta SearchProvider::GetSuggestQueryDelay() const {
 }
 
 void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
-  bool query_is_private = false;
-  if (!IsQuerySuitableForSuggest(&query_is_private)) {
+  // Make sure the current query can be sent to at least one suggest service.
+  // Don't send potentially private data to the default search provider. It's
+  // okay to send potentially private data to a keyword suggest server, if any.
+  const bool query_is_private = IsQueryPotentiallyPrivate();
+  const auto page_classification = input_.current_page_classification();
+  const TemplateURL* default_turl = providers_.GetDefaultProviderURL();
+  const TemplateURL* keyword_turl = providers_.GetKeywordProviderURL();
+  const bool can_send_any_suggest_request =
+      (!query_is_private &&
+       CanSendSuggestRequest(page_classification, default_turl, client())) ||
+      CanSendSuggestRequest(page_classification, keyword_turl, client());
+  if (!can_send_any_suggest_request) {
     StopSuggest();
     ClearAllResults();
     return;
@@ -750,30 +760,6 @@ void SearchProvider::CancelLoader(
     LogOmniboxSuggestRequest(RemoteRequestEvent::kRequestInvalidated);
     loader->reset();
   }
-}
-
-bool SearchProvider::IsQuerySuitableForSuggest(bool* query_is_private) const {
-  *query_is_private = IsQueryPotentiallyPrivate();
-
-  // Don't make a suggest request if in incognito mode.
-  if (client()->IsOffTheRecord()) {
-    return false;
-  }
-
-  // Don't make a suggest request if suggest is not enabled; unless for the Lens
-  // searchboxes which have their own privacy model.
-  if (!client()->SearchSuggestEnabled() &&
-      !omnibox::IsLensSearchbox(input_.current_page_classification())) {
-    return false;
-  }
-
-  // Don't send potentially private data to the default search provider. It's
-  // okay to send explicit keyword input to a keyword suggest server, if any.
-  const TemplateURL* default_url = providers_.GetDefaultProviderURL();
-  const TemplateURL* keyword_url = providers_.GetKeywordProviderURL();
-  return ((default_url && !default_url->suggestions_url().empty() &&
-           !*query_is_private) ||
-          (keyword_url && !keyword_url->suggestions_url().empty()));
 }
 
 bool SearchProvider::IsQueryPotentiallyPrivate() const {
@@ -879,19 +865,9 @@ void SearchProvider::ApplyCalculatedNavigationRelevance(
 std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     const TemplateURL* template_url,
     const AutocompleteInput& input) {
-  if (!template_url || template_url->suggestions_url().empty())
+  if (!template_url) {
     return nullptr;
-
-  // Setting SuggestUrl the same as SearchUrl is a typical misconfiguration.
-  // It's not possible for a URL to both provide a search results page and
-  // suggested queries response (at least they have different format).  Most
-  // like the user set the search URL correctly; it would be obvious if they did
-  // not. Thus, it's likely that the suggest URL is wrong.  Because it would not
-  // give a valid query suggestion response, don't bother sending queries to it
-  // (otherwise user will quickly hit rate-limit for search queries, that will
-  // harm valid search queries as well).
-  if (template_url->suggestions_url() == template_url->url())
-    return nullptr;
+  }
 
   TemplateURLRef::SearchTermsArgs search_term_args(input.text());
   search_term_args.input_type = input.type();
