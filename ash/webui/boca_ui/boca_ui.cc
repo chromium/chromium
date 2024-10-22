@@ -31,7 +31,8 @@ namespace ash::boca {
 
 namespace {
 content::WebUIDataSource* CreateAndAddHostDataSource(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    BocaUIDelegate* delegate) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeBocaAppUntrustedURL);
 
@@ -45,19 +46,14 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
   return source;
 }
 
-void PopulateLoadTimeData(content::WebUIDataSource* source) {
-  source->AddBoolean("isProducer", ash::boca_util::IsProducer());
-  source->AddBoolean("isConsumer", ash::boca_util::IsConsumer());
-}
-
 }  // namespace
 
-BocaUI::BocaUI(content::WebUI* web_ui)
+BocaUI::BocaUI(content::WebUI* web_ui, std::unique_ptr<BocaUIDelegate> delegate)
     : UntrustedWebUIController(web_ui), web_ui_(web_ui) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* host_source =
-      CreateAndAddHostDataSource(browser_context);
+      CreateAndAddHostDataSource(browser_context, delegate.get());
 
   // Allow styles to include inline styling needed for Polymer elements and
   // the material 3 dynamic palette.
@@ -94,7 +90,7 @@ BocaUI::BocaUI(content::WebUI* web_ui)
                             ContentSettingsType::JAVASCRIPT,
                             ContentSettingsType::SOUND,
                         });
-  PopulateLoadTimeData(host_source);
+  delegate->PopulateLoadTimeData(host_source);
   host_source->UseStringsJs();
 
 #if !DCHECK_IS_ON()
