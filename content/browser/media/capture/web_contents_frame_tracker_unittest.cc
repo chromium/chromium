@@ -43,6 +43,7 @@ constexpr gfx::Size kSizeWsxgaPlus{1680, 1050};
 
 class SimpleContext : public WebContentsFrameTracker::Context {
  public:
+  SimpleContext() = default;
   ~SimpleContext() override = default;
 
   // WebContentsFrameTracker::Context overrides.
@@ -57,10 +58,10 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   }
   void DecrementCapturerCount() override { --capturer_count_; }
 
-  void SetScaleOverrideForCapture(float scale) override {
+  void SetCaptureScaleOverride(float scale) override {
     scale_override_ = scale;
   }
-  float GetScaleOverrideForCapture() const override { return scale_override_; }
+  float GetCaptureScaleOverride() const override { return scale_override_; }
   int capturer_count() const { return capturer_count_; }
   const gfx::Size& last_capture_size() const { return last_capture_size_; }
 
