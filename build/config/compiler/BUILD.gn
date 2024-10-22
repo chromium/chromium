@@ -619,7 +619,8 @@ config("compiler") {
 
     # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF
     # (excluding toolchains that use an older version of LLVM).
-    if (is_linux && !llvm_android_mainline) {
+    if (is_linux && !llvm_android_mainline &&
+        default_toolchain != "//build/toolchain/cros:target") {
       cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
     }
   }
