@@ -276,7 +276,13 @@ void MaybeDismissNotification() {
 }
 
 // Tests that the Lens Promo appears when tapping on the Lens notification.
-- (void)testLensNotification {
+// TODO(crbug.com/375031915): Re-enable this test on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testLensNotification DISABLED_testLensNotification
+#else
+#define MAYBE_testLensNotification testLensNotification
+#endif
+- (void)MAYBE_testLensNotification {
   MaybeDismissNotification();
   [ChromeEarlGreyUI waitForAppToIdle];
   [self optInToTipsNotifications:{}];
