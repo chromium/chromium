@@ -89,22 +89,20 @@ _NEGATIVE_FILTER = [
     'ChromeDriverTest.testEmulateNetworkConditionsNameSpeed',
     'ChromeDriverTest.testEmulateNetworkConditionsSpeed',
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=833
-    # The test fails reliably.
     'ChromeDriverTest.testAlertOnNewWindow',
     # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1143940
     'ChromeDriverTest.testTakeLargeElementFullPageScreenshot',
-    # crbug.com/40096991. Reliable page crash.
     'BidiTest.testOpenMultipleTabsInJavaScript',
-    # Flaky crbug.com/350916212
+    # crbug.com/350916212
     'BidiTest.testFocusInFirstTab',
-    # crbug.com/372153090. The feature is not yet supported.
+    # crbug.com/372153090
     'ChromeDriverTest.testCreateWindowFromScript',
 ]
 
 
 _OS_SPECIFIC_FILTER = {}
 _OS_SPECIFIC_FILTER['win'] = [
-    # crbug.com/42322046. The feature is not yet implemented.
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=299
     'ChromeLogPathCapabilityTest.testChromeLogPath',
     # TODO(https://crbug.com/360058651): Flaky on win11.
     'ChromeDriverTest.testClickElementObscuredByScrollBar',
@@ -113,7 +111,7 @@ _OS_SPECIFIC_FILTER['win'] = [
 _OS_SPECIFIC_FILTER['linux'] = [
 ]
 _OS_SPECIFIC_FILTER['mac'] = [
-    # Flaky: crbug.com/40651570
+    # https://bugs.chromium.org/p/chromium/issues/detail?id=1011225
     'ChromeDriverTest.testActionsMultiTouchPoint',
     # Flaky: https://crbug.com/1156576.
     'ChromeDriverTestLegacy.testContextMenuEventFired',
@@ -187,6 +185,7 @@ _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['mac'] = [
     'ChromeLogPathCapabilityTest.testChromeLogPath',
     # https://crbug.com/chromedriver/4631
     # chrome-headless-shell does not set the window rect as requested.
+    'ChromeDriverTest.testWindowMinimize',
     'ChromeDriverTest.testWindowPosition',
     'ChromeDriverTest.testWindowRect',
     'ChromeDriverTest.testWindowSize',
