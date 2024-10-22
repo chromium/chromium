@@ -292,6 +292,10 @@ TEST_F(InputDeviceStateNotifierTest, BluetoothKeyboardTest) {
   ui::DeviceDataManagerTestApi()
       .NotifyObserversKeyboardDeviceConfigurationChanged();
   ASSERT_EQ(2u, devices_to_add_.size());
+
+  // Clear `bluetooth_adapter_` mock so that it would not return dangling
+  // pointers after return.
+  ASSERT_TRUE(testing::Mock::VerifyAndClear(bluetooth_adapter_.get()));
 }
 
 class InputDeviceStateLoginScreenNotifierTest : public NoSessionAshTestBase {
@@ -697,11 +701,9 @@ TEST_F(InputDeviceMouseNotifierTest, BluetoothMouseTest) {
       .NotifyObserversMouseDeviceConfigurationChanged();
   ASSERT_EQ(2u, devices_to_add_.size());
 
-  // Needed to reset the `bluetooth_adapter_`.
-  ON_CALL(*bluetooth_adapter_, GetDevices)
-      .WillByDefault(testing::Return(
-          std::vector<
-              raw_ptr<const device::BluetoothDevice, VectorExperimental>>()));
+  // Clear `bluetooth_adapter_` mock so that it would not return dangling
+  // pointers after return.
+  ASSERT_TRUE(testing::Mock::VerifyAndClear(bluetooth_adapter_.get()));
 }
 
 TEST_F(InputDeviceMouseNotifierTest, ImpostersRemoved) {
