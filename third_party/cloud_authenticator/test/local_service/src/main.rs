@@ -306,8 +306,10 @@ impl EnclaveServer {
             })
             .unwrap_or(ClientState::Initial);
 
+        let mut metrics = processor::MetricsUpdate::default();
         let cbor_response = match processor::process_client_msg(
             client_state,
+            &mut metrics,
             processor::ExternalContext {
                 // This timestamp is fixed so that any XML files submitted by tests will be
                 // considered unexpired.

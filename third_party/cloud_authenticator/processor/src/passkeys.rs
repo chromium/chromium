@@ -25,7 +25,7 @@ use super::{
     KEY_PURPOSE_SECURITY_DOMAIN_SECRET, PUB_KEY, VAULT_HANDLE_WITHOUT_TYPE_KEY,
     WRAPPED_PIN_DATA_KEY, WRAPPED_SECRET_KEY,
 };
-use crate::pin;
+use crate::{pin, MetricsUpdate};
 use alloc::collections::BTreeMap;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -88,6 +88,7 @@ fn key(k: &str) -> MapKey {
 }
 
 pub(crate) fn do_assert(
+    metrics: &mut MetricsUpdate,
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -160,10 +161,12 @@ pub(crate) fn do_assert(
         response.insert(key(PRF), prf_result);
     }
 
+    metrics.passkeys_assert += 1;
     Ok(Value::Map(response))
 }
 
 pub(crate) fn do_create(
+    metrics: &mut MetricsUpdate,
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -225,6 +228,7 @@ pub(crate) fn do_create(
     if let Some(prf_result) = handle_prf(webauthn_request, &hmac_secret, None)? {
         result.insert(MapKey::String(String::from(PRF)), prf_result);
     }
+    metrics.passkeys_create += 1;
     Ok(Value::Map(result))
 }
 
@@ -422,6 +426,7 @@ fn validate_pin(
 }
 
 pub(crate) fn do_wrap_pin(
+    metrics: &mut MetricsUpdate,
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -473,6 +478,7 @@ pub(crate) fn do_wrap_pin(
             .try_into()
             .map_err(|_| RequestError::Debug("incorrect length vault handle"))?,
     };
+    metrics.passkeys_wrap_pin += 1;
     Ok(Value::from(pin_data.encrypt(&security_domain_secret)))
 }
 
@@ -614,9 +620,7 @@ pub mod tests {
 
         assert!(EcdsaKeyPair::from_pkcs8(&pkcs8).is_ok());
 
-        assert!(
-            decrypt(&[0u8; 8], SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), &[]).is_err()
-        );
+        assert!(decrypt(&[0u8; 8], SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), &[]).is_err());
     }
 
     #[test]
