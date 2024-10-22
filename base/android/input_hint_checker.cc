@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 
@@ -304,9 +305,23 @@ InputHintChecker::ScopedOverrideInstance::~ScopedOverrideInstance() {
   g_test_instance = nullptr;
 }
 
+// static
+void InputHintChecker::RecordInputHintResult(InputHintResult result) {
+  UMA_HISTOGRAM_ENUMERATION("Android.InputHintChecker.InputHintResult", result);
+}
+
 void JNI_InputHintChecker_SetView(_JNIEnv* env,
                                   const jni_zero::JavaParamRef<jobject>& v) {
   InputHintChecker::GetInstance().SetView(env, v);
+}
+
+void JNI_InputHintChecker_OnCompositorViewHolderTouchEvent(_JNIEnv* env) {
+  auto& checker = InputHintChecker::GetInstance();
+  if (checker.is_after_input_yield()) {
+    InputHintChecker::RecordInputHintResult(
+        InputHintResult::kCompositorViewTouchEvent);
+  }
+  checker.set_is_after_input_yield(false);
 }
 
 jboolean JNI_InputHintChecker_IsInitializedForTesting(_JNIEnv* env) {
@@ -326,6 +341,12 @@ jboolean JNI_InputHintChecker_HasInputForTesting(_JNIEnv* env) {
 jboolean JNI_InputHintChecker_HasInputWithThrottlingForTesting(_JNIEnv* env) {
   InputHintChecker& checker = InputHintChecker::GetInstance();
   return checker.HasInputImplWithThrottlingForTesting(env);  // IN-TEST
+}
+
+void JNI_InputHintChecker_SetIsAfterInputYieldForTesting(  // IN-TEST
+    _JNIEnv* env,
+    jboolean after) {
+  InputHintChecker::GetInstance().set_is_after_input_yield(after);
 }
 
 }  // namespace base::android

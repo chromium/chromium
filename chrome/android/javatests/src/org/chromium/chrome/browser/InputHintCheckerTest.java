@@ -103,6 +103,47 @@ public final class InputHintCheckerTest {
 
     @Test
     @MediumTest
+    public void testInputHintResultHistogram() {
+        // Start InputHintChecker asynchronous initialization by calling setView().
+        TestTextView view =
+                new TestTextView(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InputHintChecker.setAllowSetViewForTesting(true);
+                    InputHintChecker.setView(view);
+                });
+        CriteriaHelper.pollUiThread(InputHintChecker::isInitializedForTesting);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Simulate input event pending.
+                    view.mReturnValue = true;
+                    InputHintChecker.setView(view);
+                    Assert.assertTrue(InputHintChecker.hasInputForTesting());
+                    InputHintChecker.setIsAfterInputYieldForTesting(true);
+
+                    // Check that the histogram is recorded as a result of handling of the input
+                    // event in web contents.
+                    int compositorViewTouchEventResult = 0; // from input_hint_checker.h
+                    try (HistogramWatcher ignored =
+                            HistogramWatcher.newSingleRecordWatcher(
+                                    "Android.InputHintChecker.InputHintResult",
+                                    compositorViewTouchEventResult)) {
+                        InputHintChecker.onCompositorViewHolderTouchEvent();
+                    }
+
+                    // Check that no histogram is recorded after the yield state is reset.
+                    try (var ignored =
+                            HistogramWatcher.newBuilder()
+                                    .expectNoRecords("Android.InputHintChecker.InputHintResult")
+                                    .build()) {
+                        InputHintChecker.onCompositorViewHolderTouchEvent();
+                    }
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testInitFailureReturnsFalse() {
         // Start InputHintChecker asynchronous initialization in a way to fail on a helper thread.
         ThreadUtils.runOnUiThreadBlocking(

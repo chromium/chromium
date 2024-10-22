@@ -46,6 +46,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.InputHintChecker;
+import org.chromium.base.InputHintCheckerJni;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -142,6 +144,7 @@ public class CompositorViewHolderUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private OnscreenContentProvider.Natives mOnscreenContentProviderJni;
     @Mock private ContentCaptureFeatures.Natives mContentCaptureFeaturesJni;
+    @Mock private InputHintChecker.Natives mInputHintCheckerJni;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -160,6 +163,7 @@ public class CompositorViewHolderUnitTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(OnscreenContentProviderJni.TEST_HOOKS, mOnscreenContentProviderJni);
         mJniMocker.mock(ContentCaptureFeaturesJni.TEST_HOOKS, mContentCaptureFeaturesJni);
+        mJniMocker.mock(InputHintCheckerJni.TEST_HOOKS, mInputHintCheckerJni);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 

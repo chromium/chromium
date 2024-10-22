@@ -2038,6 +2038,19 @@ chromium-metrics-reviews@google.com.
   <owner>pasko@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <summary>
+    Every time the native message loop yields to the Looper record whether it
+    dispatches some input event referring to touch in the content area before
+    returning back to the native message loop. The latter scenario may mean that
+    the touch event was dispatched to the Android UI views. Alternatively, it
+    can happen when the Looper decided to run the message loop handler first.
+  </summary>
+</histogram>
+
+<histogram name="Android.InputHintChecker.InputHintResult"
+    enum="InputHintResult" expires_after="2025-03-30">
+  <owner>pasko@chromium.org</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <summary>
     Records the status of the InputHintChecker initialization. This
     initialization procedure is required to be able to later poll for
     availability of unhandled input events queued. Recorded immediately after

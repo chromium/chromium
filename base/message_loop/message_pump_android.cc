@@ -27,6 +27,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
+using base::android::InputHintChecker;
+using base::android::InputHintResult;
+
 namespace base {
 
 namespace {
@@ -117,6 +120,7 @@ void MessagePumpAndroid::InitializeFeatures() {
 }
 
 void MessagePumpAndroid::OnDelayedLooperCallback() {
+  OnReturnFromLooper();
   // There may be non-Chromium callbacks on the same ALooper which may have left
   // a pending exception set, and ALooper does not check for this between
   // callbacks. Check here, and if there's already an exception, just skip this
@@ -166,6 +170,7 @@ void MessagePumpAndroid::DoDelayedLooperWork() {
 }
 
 void MessagePumpAndroid::OnNonDelayedLooperCallback() {
+  OnReturnFromLooper();
   // There may be non-Chromium callbacks on the same ALooper which may have left
   // a pending exception set, and ALooper does not check for this between
   // callbacks. Check here, and if there's already an exception, just skip this
@@ -222,7 +227,8 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
     // multi-window cases, or when a previous value is cached to throttle
     // polling the input channel.
     if (is_type_ui_ && next_work_info.is_immediate() &&
-        android::InputHintChecker::HasInput()) {
+        InputHintChecker::HasInput()) {
+      InputHintChecker::GetInstance().set_is_after_input_yield(true);
       ScheduleWork();
       return;
     }
@@ -337,6 +343,17 @@ void MessagePumpAndroid::ScheduleWorkInternal(bool do_idle_work) {
   uint64_t value = do_idle_work ? kTryNativeWorkBeforeIdleBit : 1;
   long ret = write(non_delayed_fd_, &value, sizeof(value));
   DPCHECK(ret >= 0);
+}
+
+void MessagePumpAndroid::OnReturnFromLooper() {
+  if (!is_type_ui_) {
+    return;
+  }
+  auto& checker = InputHintChecker::GetInstance();
+  if (checker.is_after_input_yield()) {
+    InputHintChecker::RecordInputHintResult(InputHintResult::kBackToNative);
+  }
+  checker.set_is_after_input_yield(false);
 }
 
 void MessagePumpAndroid::ScheduleDelayedWork(
