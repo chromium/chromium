@@ -245,6 +245,13 @@ config("default_sanitizer_ldflags") {
       } else {
         ldflags += [ "-fsanitize-coverage=$sanitizer_coverage_flags" ]
       }
+      if (is_mac && use_centipede) {
+        # OS X linking doesn't allow undefined symbols at link time
+        # and in a component build, component shared objects will
+        # need to use this symbol to report control flow coverage
+        # to the main binary
+        ldflags += [ "-Wl,-undefined,dynamic_lookup" ]
+      }
     }
 
     if (is_cfi && current_toolchain == default_toolchain) {

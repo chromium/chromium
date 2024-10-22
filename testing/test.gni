@@ -149,7 +149,7 @@ template("mixed_test") {
   }
 
   _building_fuzztest_fuzzer =
-      defined(invoker.fuzztests) && use_fuzzing_engine && is_linux
+      defined(invoker.fuzztests) && use_fuzzing_engine && (is_linux || is_mac)
 
   # Fuzz tests are small fuzzers that do not require particularly-powerful
   # machines to run, so we do not build them when `high_end_fuzzer_targets`
