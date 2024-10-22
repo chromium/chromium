@@ -4069,6 +4069,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.ResourceRequest.DeferedRequestWaitingOnCodeCache"
+    enum="Boolean" expires_after="2025-10-22">
+  <owner>olivierli@chromium.org</owner>
+  <owner>leszeks@chromium.org</owner>
+  <summary>
+    Measured on resource request completion for requests that queried the code
+    cache. True if one of these operations was delayed waiting on a response
+    from the code cache:
+
+    1) Receiving a response 2) Receiving a redirect 3) Completing the request.
+  </summary>
+</histogram>
+
 <histogram name="Blink.ResourceRequest.RedirectDelay2" units="ms"
     expires_after="2025-03-09">
   <owner>horo@chromium.org</owner>
