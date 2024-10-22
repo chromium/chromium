@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindoublerange_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainpoint2dparameters_point2dsequence.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/imagecapture/image_capture.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
@@ -1620,8 +1621,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfLiveTrackIsFulfilled) {
   track_->setEnabled(true);
   track_->SetMuted(false);
 
-  ScriptPromiseUntyped result =
-      image_capture_->grabFrame(scope.GetScriptState());
+  auto result = image_capture_->grabFrame(scope.GetScriptState());
 
   ScriptPromiseTester tester(scope.GetScriptState(), result);
   tester.WaitUntilSettled();
@@ -1635,8 +1635,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackIsFulfilled) {
   track_->setEnabled(true);
   track_->SetMuted(true);
 
-  ScriptPromiseUntyped result =
-      image_capture_->grabFrame(scope.GetScriptState());
+  auto result = image_capture_->grabFrame(scope.GetScriptState());
 
   ScriptPromiseTester tester(scope.GetScriptState(), result);
   tester.WaitUntilSettled();
@@ -1650,8 +1649,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackWithoutFramesIsRejected) {
   track_->setEnabled(true);
   track_->SetMuted(true);
 
-  ScriptPromiseUntyped result =
-      image_capture_->grabFrame(scope.GetScriptState());
+  auto result = image_capture_->grabFrame(scope.GetScriptState());
 
   ScriptPromiseTester tester(scope.GetScriptState(), result);
   tester.WaitUntilSettled();
@@ -1664,8 +1662,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfEndedTrackRejects) {
   track_->setEnabled(true);
   track_->SetMuted(false);
 
-  ScriptPromiseUntyped result =
-      image_capture_->grabFrame(scope.GetScriptState());
+  auto result = image_capture_->grabFrame(scope.GetScriptState());
 
   ScriptPromiseTester tester(scope.GetScriptState(), result);
   tester.WaitUntilSettled();
@@ -1678,8 +1675,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfDisabledTrackRejects) {
   track_->setEnabled(false);
   track_->SetMuted(false);
 
-  ScriptPromiseUntyped result =
-      image_capture_->grabFrame(scope.GetScriptState());
+  auto result = image_capture_->grabFrame(scope.GetScriptState());
 
   ScriptPromiseTester tester(scope.GetScriptState(), result);
   tester.WaitUntilSettled();

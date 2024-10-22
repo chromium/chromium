@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
+#include "third_party/blink/renderer/modules/payments/payment_response.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -69,32 +70,12 @@ class PaymentRequestForInvalidOriginOrSslTest : public testing::Test {
   PaymentRequestForInvalidOriginOrSslTest()
       : payment_provider_(std::make_unique<MockPaymentProvider>()) {}
 
-  ScriptValue GetRejectValue(ScriptState* script_state,
-                             ScriptPromiseUntyped& promise) {
-    ScriptPromiseTester tester(script_state, promise);
-    tester.WaitUntilSettled();
-    EXPECT_TRUE(tester.IsRejected());
-    return tester.Value();
-  }
-
   bool ResolvePromise(ScriptState* script_state,
-                      ScriptPromiseUntyped& promise) {
+                      ScriptPromise<IDLBoolean>& promise) {
     ScriptPromiseTester tester(script_state, promise);
     tester.WaitUntilSettled();
     return tester.Value().V8Value()->IsTrue();
   }
-
-  std::string GetRejectString(ScriptState* script_state,
-                              ScriptPromiseUntyped& promise) {
-    ScriptValue on_reject = GetRejectValue(script_state, promise);
-    return ToCoreString(script_state->GetIsolate(),
-                        on_reject.V8Value()
-                            ->ToString(script_state->GetContext())
-                            .ToLocalChecked())
-        .Ascii()
-        .data();
-  }
-
   PaymentRequest* CreatePaymentRequest(PaymentRequestV8TestingScope& scope) {
     return MakeGarbageCollected<PaymentRequest>(
         scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
@@ -113,13 +94,18 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   PaymentRequest* request = CreatePaymentRequest(scope);
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  ScriptPromiseUntyped promise =
-      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  auto promise = request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
   EXPECT_EQ("NotSupportedError: mock error message",
-            GetRejectString(scope.GetScriptState(), promise));
+            ToCoreString(scope.GetIsolate(), tester.Value()
+                                                 .V8Value()
+                                                 ->ToString(scope.GetContext())
+                                                 .ToLocalChecked()));
 }
 
 TEST_F(PaymentRequestForInvalidOriginOrSslTest,
@@ -131,7 +117,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
 
   // The show() will be rejected before user activation is checked, so there is
   // no need to trigger user-activation here.
-  ScriptPromiseUntyped promise =
+  auto promise =
       request->show(scope.GetScriptState(), scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
@@ -149,8 +135,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // no need to trigger user-activation here.
   {
     DummyExceptionStateForTesting exception_state;
-    ScriptPromiseUntyped promise1 =
-        request->show(scope.GetScriptState(), exception_state);
+    auto promise1 = request->show(scope.GetScriptState(), exception_state);
     EXPECT_TRUE(exception_state.HadException());
     EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
               exception_state.CodeAs<DOMExceptionCode>());
@@ -158,8 +143,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
 
   {
     DummyExceptionStateForTesting exception_state;
-    ScriptPromiseUntyped promise2 =
-        request->show(scope.GetScriptState(), exception_state);
+    auto promise2 = request->show(scope.GetScriptState(), exception_state);
     EXPECT_TRUE(exception_state.HadException());
     EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
               exception_state.CodeAs<DOMExceptionCode>());
@@ -173,7 +157,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 
-  ScriptPromiseUntyped promise =
+  auto promise =
       request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   EXPECT_FALSE(ResolvePromise(scope.GetScriptState(), promise));
 }
@@ -182,7 +166,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
        CanMakePaymentIsRejected_CheckBeforeIdle) {
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = CreatePaymentRequest(scope);
-  ScriptPromiseUntyped promise =
+  auto promise =
       request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
@@ -197,8 +181,8 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 
-  ScriptPromiseUntyped promise = request->hasEnrolledInstrument(
-      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  auto promise = request->hasEnrolledInstrument(scope.GetScriptState(),
+                                                ASSERT_NO_EXCEPTION);
   EXPECT_FALSE(ResolvePromise(scope.GetScriptState(), promise));
 }
 
@@ -206,8 +190,8 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
        HasEnrolledInstrument_CheckBeforeIdle) {
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = CreatePaymentRequest(scope);
-  ScriptPromiseUntyped promise = request->hasEnrolledInstrument(
-      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  auto promise = request->hasEnrolledInstrument(scope.GetScriptState(),
+                                                ASSERT_NO_EXCEPTION);
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 

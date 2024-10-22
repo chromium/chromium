@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
@@ -33,8 +34,7 @@ std::tuple<String, bool> ReadString(ReadableStreamDefaultReader* reader,
                                     V8TestingScope& scope) {
   String result;
   bool done = false;
-  ScriptPromiseUntyped read_promise =
-      reader->read(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(scope.GetScriptState(), read_promise);
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
@@ -247,8 +247,7 @@ TEST(CreateModelExecutionStreamingResponder, ErrorPermissionDenied) {
   // Check that the NotAllowedError is passed to the stream.
   auto* reader =
       stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromiseUntyped read_promise =
-      reader->read(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(scope.GetScriptState(), read_promise);
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsRejected());
@@ -283,8 +282,7 @@ TEST(CreateModelExecutionStreamingResponder, AbortWithoutResponse) {
   // Check that the AbortError is passed to the stream.
   auto* reader =
       stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromiseUntyped read_promise =
-      reader->read(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(scope.GetScriptState(), read_promise);
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsRejected());
@@ -323,8 +321,7 @@ TEST(CreateModelExecutionStreamingResponder, AbortAfterResponse) {
   // Check that the AbortError is passed to the stream.
   auto* reader =
       stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromiseUntyped read_promise =
-      reader->read(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(scope.GetScriptState(), read_promise);
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsRejected());

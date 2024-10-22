@@ -159,7 +159,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessage) {
   message->setData(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
 
-  ScriptPromiseUntyped result =
+  auto result =
       writer->write(script_state, ScriptValue::From(script_state, message),
                     ASSERT_NO_EXCEPTION);
 
@@ -192,7 +192,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
   message->setData(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
       NotShared<DOMUint8Array>(chunk)));
 
-  ScriptPromiseUntyped result =
+  auto result =
       writer->write(script_state, ScriptValue::From(script_state, message),
                     ASSERT_NO_EXCEPTION);
 
@@ -226,7 +226,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataFieldFails) {
   message->setData(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
 
-  ScriptPromiseUntyped result =
+  auto result =
       writer->write(script_state, ScriptValue::From(script_state, message),
                     ASSERT_NO_EXCEPTION);
 
@@ -255,7 +255,7 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {
     message->setData(
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
 
-    ScriptPromiseUntyped result =
+    auto result =
         writer->write(script_state, ScriptValue::From(script_state, message),
                       ASSERT_NO_EXCEPTION);
 
@@ -288,7 +288,7 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterClose) {
   message->setData(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
 
-  ScriptPromiseUntyped write_result =
+  auto write_result =
       writer->write(script_state, ScriptValue::From(script_state, message),
                     ASSERT_NO_EXCEPTION);
   ScriptPromiseTester write_tester(script_state, write_result);
@@ -296,8 +296,7 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterClose) {
 
   ASSERT_TRUE(write_tester.IsFulfilled());
 
-  ScriptPromiseUntyped close_result =
-      writer->close(script_state, ASSERT_NO_EXCEPTION);
+  auto close_result = writer->close(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester close_tester(script_state, close_result);
   close_tester.WaitUntilSettled();
 
@@ -306,7 +305,7 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterClose) {
   ASSERT_EQ(udp_writable_stream_wrapper->GetState(),
             StreamWrapper::State::kClosed);
 
-  ScriptPromiseUntyped write_after_close_result =
+  auto write_after_close_result =
       writer->write(script_state, ScriptValue::From(script_state, message),
                     ASSERT_NO_EXCEPTION);
   ScriptPromiseTester write_after_close_tester(script_state,
@@ -340,7 +339,7 @@ TEST(UDPWritableStreamWrapperTest, WriteFailed) {
   message->setData(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
 
-  ScriptPromiseUntyped write_result =
+  auto write_result =
       writer->write(script_state, ScriptValue::From(script_state, message),
                     ASSERT_NO_EXCEPTION);
   ScriptPromiseTester write_tester(script_state, write_result);

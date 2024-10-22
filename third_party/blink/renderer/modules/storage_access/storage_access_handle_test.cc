@@ -10,10 +10,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/broadcastchannel/broadcast_channel.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -249,7 +251,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   }
   {
     V8TestingScope scope;
-    ScriptPromiseUntyped promise = storage_access_handle->getDirectory(
+    auto promise = storage_access_handle->getDirectory(
         scope.GetScriptState(), scope.GetExceptionState());
     ScriptPromiseTester tester(scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
@@ -265,8 +267,8 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   }
   {
     V8TestingScope scope;
-    ScriptPromiseUntyped promise = storage_access_handle->estimate(
-        scope.GetScriptState(), scope.GetExceptionState());
+    auto promise = storage_access_handle->estimate(scope.GetScriptState(),
+                                                   scope.GetExceptionState());
     ScriptPromiseTester tester(scope.GetScriptState(), promise);
     if (all() || estimate()) {
       EXPECT_FALSE(tester.IsFulfilled());

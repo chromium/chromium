@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_capabilities_decoding_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_capabilities_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_decoding_configuration.h"
@@ -607,7 +608,7 @@ base::FieldTrialParams MakeMlParams(double bad_window_threshold,
 MediaCapabilitiesInfo* DecodingInfo(
     const MediaDecodingConfiguration* decoding_config,
     MediaCapabilitiesTestContext* context) {
-  ScriptPromiseUntyped promise = context->GetMediaCapabilities()->decodingInfo(
+  auto promise = context->GetMediaCapabilities()->decodingInfo(
       context->GetScriptState(), decoding_config, context->GetExceptionState());
 
   ScriptPromiseTester tester(context->GetScriptState(), promise);
@@ -625,7 +626,7 @@ MediaCapabilitiesInfo* DecodingInfo(
 MediaCapabilitiesInfo* EncodingInfo(
     const MediaEncodingConfiguration* encoding_config,
     MediaCapabilitiesTestContext* context) {
-  ScriptPromiseUntyped promise = context->GetMediaCapabilities()->encodingInfo(
+  auto promise = context->GetMediaCapabilities()->encodingInfo(
       context->GetScriptState(), encoding_config, context->GetExceptionState());
 
   ScriptPromiseTester tester(context->GetScriptState(), promise);
@@ -1098,7 +1099,7 @@ void RunCallbackPermutationTest(std::vector<PredictionType> callback_order) {
   }
 
   // Call decodingInfo() to kick off the calls to prediction services.
-  ScriptPromiseUntyped promise = context.GetMediaCapabilities()->decodingInfo(
+  auto promise = context.GetMediaCapabilities()->decodingInfo(
       context.GetScriptState(), kDecodingConfig, context.GetExceptionState());
   ScriptPromiseTester tester(context.GetScriptState(), promise);
 
