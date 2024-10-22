@@ -95,16 +95,17 @@ void OpticalCharacterRecognizer::OnOCRInitializationCallback(
     bool successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  RunCallback(std::move(status_callback), successful && profile_);
+
   // If the profile is already destroyed, stop here.
   if (!profile_) {
     ready_ = false;
-  } else {
-    // This should be called only once.
-    DCHECK(!is_ready());
-    ready_ = successful;
+    return;
   }
 
-  RunCallback(std::move(status_callback), *ready_);
+  // This should be called only once.
+  DCHECK(!is_ready());
+  ready_ = successful;
 }
 
 void OpticalCharacterRecognizer::MaybeConnectToOcrService() {
