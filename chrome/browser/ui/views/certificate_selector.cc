@@ -41,8 +41,6 @@
 #include "extensions/browser/extension_registry_factory.h"
 #endif
 
-namespace chrome {
-
 const int CertificateSelector::kTableViewWidth = 500;
 const int CertificateSelector::kTableViewHeight = 150;
 
@@ -297,5 +295,3 @@ void CertificateSelector::OnDoubleClick() {
 
 BEGIN_METADATA(CertificateSelector)
 END_METADATA
-
-}  // namespace chrome
