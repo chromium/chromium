@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_COMPUTE_PRESSURE_PRESSURE_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_COMPUTE_PRESSURE_PRESSURE_OBSERVER_H_
 
+#include <array>
+
 #include "services/device/public/mojom/pressure_manager.mojom-blink.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -115,19 +117,22 @@ class MODULES_EXPORT PressureObserver final : public ScriptWrappable {
   // https://w3c.github.io/compute-pressure/#dfn-sampleinterval
   uint32_t sample_interval_ = 0;
 
-  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>
-      pending_resolvers_[V8PressureSource::kEnumSize];
+  std::array<HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>,
+             V8PressureSource::kEnumSize>
+      pending_resolvers_;
 
   // Manages rate obfuscation mitigation parameters.
   ChangeRateMonitor change_rate_monitor_;
 
   // Last received valid record from PressureClientImpl.
   // Stored to avoid sending updates whenever the new record is the same.
-  Member<PressureRecord> last_record_map_[V8PressureSource::kEnumSize];
+  std::array<Member<PressureRecord>, V8PressureSource::kEnumSize>
+      last_record_map_;
 
   // Last received valid record from PressureClientImpl during
   // the penalty duration, to restore when the penalty duration is over.
-  Member<PressureRecord> after_penalty_records_[V8PressureSource::kEnumSize];
+  std::array<Member<PressureRecord>, V8PressureSource::kEnumSize>
+      after_penalty_records_;
 
   // Last received records from the platform collector.
   // The records are only collected when there is a change in the status.
@@ -137,7 +142,8 @@ class MODULES_EXPORT PressureObserver final : public ScriptWrappable {
   TaskHandle pending_report_to_callback_;
 
   // Task handle array to check if the posted task is still pending.
-  TaskHandle pending_delayed_report_to_callback_[V8PressureSource::kEnumSize];
+  std::array<TaskHandle, V8PressureSource::kEnumSize>
+      pending_delayed_report_to_callback_;
 };
 
 }  // namespace blink
