@@ -560,7 +560,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   bool should_use_web_rtc_ = true;
   bool should_use_wifilan_ = false;
-  bool should_use_wifidirect_ = false;
+  bool should_use_wifidirect_ = true;
   NearbyConnectionsManager::DataUsage default_data_usage_ =
       NearbyConnectionsManager::DataUsage::kWifiOnly;
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_ =
@@ -1782,7 +1782,7 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
       /*ble=*/use_ble,
       /*web_rtc=*/should_use_web_rtc_,
       /*wifi_lan=*/false,
-      /*wifi_direct=*/false);
+      /*wifi_direct=*/true);
 
   base::RunLoop run_loop;
   const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),
