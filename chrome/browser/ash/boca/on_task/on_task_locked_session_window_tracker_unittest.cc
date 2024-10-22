@@ -1540,3 +1540,64 @@ TEST_F(OnTaskNavigationThrottleTest, BlockNavigationForPostMethodRequest) {
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             simulator->GetLastThrottleCheckResult());
 }
+
+TEST_F(OnTaskNavigationThrottleTest,
+       OauthStartedInTheMiddleOfAnotherOAuthProcess) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL url_a(kTabUrl1);
+  AddTab(browser(), url_a);
+  const auto* const main_browser_tab_strip_model = browser()->tab_strip_model();
+  ash::TestWindowBuilder builder;
+  const std::unique_ptr<aura::Window> native_window =
+      builder.SetTestWindowDelegate().AllowAllWindowStates().Build();
+  static_cast<TestBrowserWindow*>(window())->SetNativeWindow(
+      native_window.get());
+  PinWindow(window()->GetNativeWindow(), /*trusted=*/true);
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const on_task_blocklist = window_tracker->on_task_blocklist();
+  on_task_blocklist->SetParentURLRestrictionLevel(
+      main_browser_tab_strip_model->GetWebContentsAt(0), url_a,
+      OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
+  window_tracker->RefreshUrlBlocklist();
+
+  // Set OAuth to be in process before firing off another OAuth process within
+  // the same popup.
+  window_tracker->set_oauth_in_progress(true);
+  const std::unique_ptr<Browser> popup_browser(
+      CreateTestBrowser(/*popup=*/true));
+  task_environment()->RunUntilIdle();
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_FALSE(
+      static_cast<TestBrowserWindow*>(popup_browser->window())->IsClosed());
+  EXPECT_FALSE(window_tracker->CanOpenNewPopup());
+  AddTab(popup_browser.get(), url_a);
+  const auto* const popup_tab_strip_model =
+      popup_browser.get()->tab_strip_model();
+  std::unique_ptr<content::NavigationSimulator> simulator = StartNavigation(
+      url_a, popup_tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  const std::vector<GURL>& redirect_chain = {
+      GURL("https://oauth.com/authenticate?client_id=123"),
+      GURL("https://foo.com/redirect?code=secret")};
+  for (const GURL& redirect_url : redirect_chain) {
+    simulator->Redirect(redirect_url);
+  }
+  simulator->Commit();
+
+  // The `popup_browser` in reality should close once the login flow is
+  // completed. We are simulating this here since normally a redirect with a
+  // auto close window query is called, but not in test.
+  window_tracker->set_oauth_in_progress(false);
+  ASSERT_TRUE(base::test::RunUntil([&popup_browser]() {
+    return static_cast<TestBrowserWindow*>(popup_browser->window())->IsClosed();
+  }));
+  EXPECT_TRUE(
+      static_cast<TestBrowserWindow*>(popup_browser->window())->IsClosed());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult());
+
+  // Close all tabs to avoid a DCHECK in the destructor.
+  popup_browser->tab_strip_model()->CloseAllTabs();
+}
