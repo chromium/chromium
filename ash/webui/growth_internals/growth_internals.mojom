@@ -11,4 +11,7 @@ interface PageHandler {
   // string, which may contains useful information, such as campaign id, and
   // targeting result, for debug.
   GetCampaignsLogs() => (array<string> logs);
+
+  // Clear all the growth framework events stored in the feature engagement DB.
+  ClearAllEvents();
 };

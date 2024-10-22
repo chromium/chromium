@@ -19,6 +19,7 @@ class GrowthInternalsPageHandler : public growth::mojom::PageHandler {
 
   // mojom::PageHandler:
   void GetCampaignsLogs(GetCampaignsLogsCallback callback) override;
+  void ClearAllEvents() override;
 
  private:
   mojo::Receiver<growth::mojom::PageHandler> page_handler_;

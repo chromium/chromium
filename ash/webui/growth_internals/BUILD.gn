@@ -31,6 +31,7 @@ static_library("growth_internals") {
     "//ash/webui/common:chrome_os_webui_config",
     "//base",
     "//chromeos/ash/components/growth",
+    "//chromeos/ash/components/growth:utils",
   ]
 }
 

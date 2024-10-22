@@ -34,7 +34,8 @@ namespace growth {
 // as it is used for logging metrics as well. Please keep in sync with
 // "CampaignSlot" in tools/metrics/histograms/metadata/ash_growth/enums.xml.
 enum class Slot {
-  kDemoModeApp = 0,
+  kMinValue = 0,
+  kDemoModeApp = kMinValue,
   kDemoModeFreePlayApps = 1,
   kNudge = 2,
   kNotification = 3,
@@ -436,7 +437,7 @@ class RuntimeTargeting : public TargetingBase {
 
   const std::vector<std::string> GetActiveUrlRegexes() const;
 
-  std::unique_ptr<EventsTargeting> GetEventsConfig() const;
+  std::unique_ptr<EventsTargeting> GetEventsTargeting() const;
 
   // Returns a list of triggers against the current trigger, e.g. `kAppOpened`.
   const std::vector<std::unique_ptr<TriggerTargeting>> GetTriggers() const;

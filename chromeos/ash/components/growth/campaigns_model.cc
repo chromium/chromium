@@ -719,7 +719,7 @@ const std::vector<std::string> RuntimeTargeting::GetActiveUrlRegexes() const {
   return active_urls_regexs;
 }
 
-std::unique_ptr<EventsTargeting> RuntimeTargeting::GetEventsConfig() const {
+std::unique_ptr<EventsTargeting> RuntimeTargeting::GetEventsTargeting() const {
   auto* config = GetDictCriteria(kEventsTargetings);
   if (!config) {
     return nullptr;

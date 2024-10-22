@@ -112,6 +112,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   void ClearEvent(CampaignEvent event, std::string_view id);
   void ClearEvent(std::string_view event);
 
+  // Clear all events associated by all the campaigns.
+  // Only used by the `growth-internals` page.
+  void ClearAllEvents();
+
   // Record event to the Feature Engagement framework. Event will be stored and
   // could be used for targeting.
   // If `trigger campaigns` is true, it will try to trigger the campaign if the
@@ -168,6 +172,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // Register synthetic trial for growth. It will not work if campaign is
   // incomplete, i.e. missing id.
   void RegisterTrialForCampaign(const Campaign* campaign) const;
+
+  // Clear events used in `events_targeting` from the DB of feature engagement
+  // framework. Only used by `growth-internals` page.
+  void ClearEventsByTargeting(const EventsTargeting& events_targeting,
+                              int campaign_id,
+                              std::optional<int> group_id);
 
   raw_ptr<CampaignsManagerClient> client_ = nullptr;
 

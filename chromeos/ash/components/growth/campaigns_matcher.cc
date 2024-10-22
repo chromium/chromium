@@ -18,7 +18,6 @@
 #include "base/features.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -355,19 +354,6 @@ bool IsCampaignValid(const Campaign* campaign) {
   }
 
   return true;
-}
-
-std::map<std::string, std::string> CreateBasicConditionParams() {
-  std::map<std::string, std::string> conditions_params;
-  // `event_used` and `event_trigger` are required for feature_engagement
-  // config, although they are not used in campaign matching.
-  static constexpr char kTemplate[] =
-      "name:ChromeOSAshGrowthCampaigns_Event%s;comparator:any;window:1;storage:"
-      "1";
-  conditions_params["event_used"] = base::StringPrintf(kTemplate, "Used");
-  conditions_params["event_trigger"] = base::StringPrintf(kTemplate, "Trigger");
-
-  return conditions_params;
 }
 
 }  // namespace
@@ -803,10 +789,8 @@ bool CampaignsMatcher::ReachCap(base::cstring_view campaign_type,
       CreateBasicConditionParams();
   // Event can be put in any key starting with `event_`.
   // Please see `components/feature_engagement/README.md#featureconfig`.
-  conditions_params[kEventKey] = base::StringPrintf(
-      "name:ChromeOSAshGrowthCampaigns_%s%d_%s;comparator:<%d;window:3650;"
-      "storage:3650",
-      campaign_type.c_str(), id, event_type.c_str(), cap.value());
+  conditions_params[kEventKey] =
+      CreateConditionParamForCap(campaign_type, id, event_type, cap.value());
 
   const bool reach_cap = !client_->WouldTriggerHelpUI(conditions_params);
   if (reach_cap) {
@@ -1061,7 +1045,8 @@ bool CampaignsMatcher::MatchRuntimeTargeting(
     return false;
   }
 
-  is_matched = MatchEvents(targeting.GetEventsConfig(), campaign_id, group_id);
+  is_matched =
+      MatchEvents(targeting.GetEventsTargeting(), campaign_id, group_id);
   if (!is_matched) {
     return false;
   }

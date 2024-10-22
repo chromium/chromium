@@ -5,10 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_UTILS_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_UTILS_H_
 
+#include <map>
 #include <string>
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/strings/cstring_view.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 
 class GURL;
@@ -35,6 +37,17 @@ std::string_view GetAppGroupId(std::string_view app_id);
 // configuration.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
 std::string_view GetAppGroupId(const GURL& url);
+
+// Returns the base conditions to query feature engagement framework.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
+std::map<std::string, std::string> CreateBasicConditionParams();
+
+// Returns the query string to check the impression/dismissal cap.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
+std::string CreateConditionParamForCap(base::cstring_view campaign_type,
+                                       int id,
+                                       base::cstring_view event_type,
+                                       int cap);
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
 std::string ToString(bool value);
