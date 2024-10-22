@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
 
+#include <vector>
+
 #include "base/callback_list.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/page_navigator.h"
@@ -111,6 +113,8 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Whether the window is active.
   // This definition needs to be more precise, as "active" has different
   // semantics and nuance on each platform.
+  // Note that this does not work correctly for mac PWA windows, as those are
+  // hosted in a separate application with a stub in the browser process.
   virtual bool IsActive() = 0;
 
   // Register for these two callbacks to detect changes to IsActive().
@@ -178,6 +182,10 @@ class BrowserWindowInterface : public content::PageNavigator {
   virtual BrowserUserEducationInterface* GetUserEducationInterface() = 0;
 
   virtual web_app::AppBrowserController* GetAppBrowserController() = 0;
+
+  // This is used by features that need to operate on most or all tabs in the
+  // browser window. Do not use this method to find a specific tab.
+  virtual std::vector<tabs::TabInterface*> GetAllTabInterfaces() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

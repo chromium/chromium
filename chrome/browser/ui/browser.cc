@@ -1202,6 +1202,14 @@ web_app::AppBrowserController* Browser::GetAppBrowserController() {
   return app_controller_.get();
 }
 
+std::vector<tabs::TabInterface*> Browser::GetAllTabInterfaces() {
+  std::vector<tabs::TabInterface*> results;
+  for (int index = 0; index < tab_strip_model_->count(); ++index) {
+    results.push_back(tab_strip_model_->GetTabAtIndex(index));
+  }
+  return results;
+}
+
 void Browser::DidBecomeActive() {
   BrowserList::SetLastActive(this);
   did_become_active_callback_list_.Notify(this);

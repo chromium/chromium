@@ -58,6 +58,10 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               GetAppBrowserController,
               (),
               (override));
+  MOCK_METHOD(std::vector<tabs::TabInterface*>,
+              GetAllTabInterfaces,
+              (),
+              (override));
 
   // PageNavigator methods
   MOCK_METHOD(content::WebContents*,

@@ -443,8 +443,12 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
-    Whether the foreground window, foreground tab is a PWA. This metric is
-    recorded every 5 minutes.
+    Whether the foreground window is a PWA, or if a foreground tab is in scope
+    of an installed PWA. Installed PWAs can be from the user, from sources like
+    administrator policies, and also preinstalled for all Chrome users. On
+    non-ChromeOS, preinstalled apps will open in a browser tab by default (and
+    are likely the majority of this count). See preinstalled_web_apps.cc. This
+    metric is recorded every 5 minutes.
   </summary>
 </histogram>
 
@@ -455,8 +459,145 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
-    The number of PWAs that are running. This includes backgrounded tab PWAs.
-    This metric is recorded every 5 minutes.
+    The number of PWA windows that are running, including any browser tabs whose
+    urls are in scope of an installed PWA. Installed PWAs can be from the user,
+    from sources like administrator policies, and also preinstalled for all
+    Chrome users. On non-ChromeOS, preinstalled apps will open in a browser tab
+    by default (and are likely the majority of this count). See
+    preinstalled_web_apps.cc. This metric is recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Standalone.Active" enum="BooleanValid"
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Whether the foreground window is a standalone PWA. This metric is recorded
+    every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Standalone.Count" units="count"
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of standalone PWAs that are running. This metric is recorded
+    every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Tabbed.Active" enum="BooleanValid"
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Whether the foreground window is a normal browser window whose foreground
+    tab is a url in scope of a PWA. This includes PWAs installed to open as a
+    standalone window, as well as PWAs installed to open in a browser tab.
+    Installed PWAs can be from the user, from sources like administrator
+    policies, and also preinstalled for all Chrome users. On non-ChromeOS,
+    preinstalled apps will open in a browser tab by default (and are likely the
+    majority of this count). See preinstalled_web_apps.cc. This metric is
+    recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Tabbed.Count" units="count"
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of browser tabs that have urls in scope of an installed PWA. This
+    includes PWAs installed to open as a standalone window, as well as PWAs
+    installed to open in a browser tab. Installed PWAs can be from the user,
+    from sources like administrator policies, and also preinstalled for all
+    Chrome users. On non-ChromeOS, preinstalled apps will open in a browser tab
+    by default (and are likely the majority of this count). See
+    preinstalled_web_apps.cc. This metric is recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Tabbed.UserDisplayModeBrowser.Count"
+    units="count" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of browser tabs that have urls in scope of an installed PWA which
+    is configured to open in a browser tab. Installed PWAs can be from the user,
+    from sources like administrator policies, and also preinstalled for all
+    Chrome users. On non-ChromeOS, preinstalled apps will open in a browser tab
+    by default (and are likely the majority of this count). See
+    preinstalled_web_apps.cc. This metric is recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebApp.Engagement2.Tabbed.UserDisplayModeBrowserInstalledByUser.Count"
+    units="count" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of browser tabs that have urls in scope of an installed PWA which
+    is configured to open in a browser tab and also installed by the user. While
+    the app could be installed via admin or preinstalled too, this will filter
+    out all apps that aren't explicitly installed by the user in this profile.
+    Currently to get an app into this state, the user has to install the app,
+    and then go to chrome://apps and turn off the &quot;open in a window&quot;
+    setting. This metric is recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Tabbed.UserDisplayModeStandalone.Count"
+    units="count" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of browser tabs that have urls in scope of an installed PWA which
+    is configured to open in a standalone window. Installed PWAs can be from the
+    user, from sources like administrator policies, and also preinstalled for
+    all Chrome users. On non-ChromeOS, preinstalled apps will open in a browser
+    tab by default. See preinstalled_web_apps.cc. This metric is recorded every
+    5 minutes.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebApp.Engagement2.Tabbed.UserDisplayModeStandaloneInstalledByUser.Count"
+    units="count" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of browser tabs that have urls in scope of an installed PWA which
+    is configured to open in a standalone window and also installed by the user.
+    While the app could be installed via admin or preinstalled too, this will
+    filter out all apps that aren't explicitly installed by the user in this
+    profile. This metric is recorded every 5 minutes.
   </summary>
 </histogram>
 
