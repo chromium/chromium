@@ -543,7 +543,7 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
     : BubbleDialogDelegateView(anchor_button, views::BubbleBorder::TOP_RIGHT),
       browser_(browser),
       anchor_button_(anchor_button),
-      close_bubble_helper_(this, browser) {
+      close_bubble_helper_(this, browser->tab_strip_model()) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   // TODO(tluk): Remove when fixing https://crbug.com/822075
   // The sign in webview will be clipped on the bottom corners without these
