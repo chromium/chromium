@@ -233,7 +233,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
     return std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
   }
 
-  void SendLatencyGen204IfEnabled(int64_t latency_ms,
+  void SendLatencyGen204IfEnabled(base::TimeDelta latency_ms,
                                   bool is_translate_query) override {
     if (is_translate_query) {
       num_full_page_translate_gen204_pings_sent_++;
