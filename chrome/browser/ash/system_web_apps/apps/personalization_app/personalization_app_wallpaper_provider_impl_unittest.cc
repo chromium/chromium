@@ -24,6 +24,7 @@
 #include "ash/webui/common/mojom/sea_pen_generated.mojom-shared.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -85,9 +86,9 @@ std::string CreateJpgBytes() {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(1, 1);
   bitmap.eraseARGB(255, 31, 63, 127);
-  std::vector<unsigned char> data;
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
-  return std::string(data.begin(), data.end());
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
+  return std::string(base::as_string_view(data.value()));
 }
 
 TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {

@@ -421,14 +421,14 @@ TEST_F(PersonalizationAppUserProviderImplTest, EncodesUserImageToPngBuffer) {
   auto encoded_png = base::MakeRefCounted<base::RefCountedBytes>(
       current_user_image()->get_external_image());
 
-  std::vector<unsigned char> expected_data;
-  ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(
-      *test_image.bitmap(), /*discard_transparency=*/false, &expected_data));
+  std::optional<std::vector<uint8_t>> expected_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(*test_image.bitmap(),
+                                        /*discard_transparency=*/false);
 
   // The BigBuffer data received from the observer should be equal to the test
   // image encoded to png.
-  ASSERT_GT(expected_data.size(), 0u);
-  EXPECT_EQ(expected_data, base::span(*encoded_png));
+  ASSERT_GT(expected_data->size(), 0u);
+  EXPECT_EQ(expected_data.value(), base::span(*encoded_png));
 }
 
 TEST_F(PersonalizationAppUserProviderImplTest,

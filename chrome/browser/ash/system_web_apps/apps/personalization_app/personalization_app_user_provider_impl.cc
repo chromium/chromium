@@ -60,11 +60,11 @@ std::vector<unsigned char> ImageSkiaToPngBytes(const gfx::ImageSkia& image) {
   }
 
   // Encode the image as png.
-  std::vector<unsigned char> output;
-  if (gfx::PNGCodec::EncodeBGRASkBitmap(*image.bitmap(),
-                                        /*discard_transparency=*/false,
-                                        &output)) {
-    return output;
+  std::optional<std::vector<uint8_t>> output =
+      gfx::PNGCodec::EncodeBGRASkBitmap(*image.bitmap(),
+                                        /*discard_transparency=*/false);
+  if (output) {
+    return output.value();
   }
 
   // Return empty vector if case encoding failed.

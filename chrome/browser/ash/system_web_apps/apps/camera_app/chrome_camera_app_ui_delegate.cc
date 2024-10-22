@@ -320,9 +320,11 @@ void ChromeCameraAppUIDelegate::PdfServiceManager::GotThumbnail(
     mojo::RemoteSetElementId pdf_service_id,
     mojo::RemoteSetElementId pdf_thumbnailer_id,
     const SkBitmap& bitmap) {
-  std::vector<uint8_t> jpeg_data;
-  if (gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &jpeg_data)) {
-    ConsumeGotThumbnailCallback(std::move(jpeg_data), pdf_thumbnailer_id);
+  std::optional<std::vector<uint8_t>> jpeg_data =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
+  if (jpeg_data) {
+    ConsumeGotThumbnailCallback(std::move(jpeg_data.value()),
+                                pdf_thumbnailer_id);
   } else {
     LOG(ERROR) << "Failed to encode bitmap to JPEG";
     ConsumeGotThumbnailCallback({}, pdf_thumbnailer_id);
@@ -400,9 +402,8 @@ void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::
     LOG(ERROR) << "Failed to add new page to PDF";
     return;
   }
-  std::unique_ptr<SkBitmap> bitmap =
-      gfx::JPEGCodec::Decode(jpg.data(), jpg.size());
-  pdf_searchifier_->AddPage(std::move(*bitmap), index);
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(jpg);
+  pdf_searchifier_->AddPage(std::move(bitmap), index);
 }
 
 void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::DeletePage(
@@ -799,10 +800,9 @@ void ChromeCameraAppUIDelegate::RenderPdfAsJpeg(
 void ChromeCameraAppUIDelegate::PerformOcr(
     base::span<const uint8_t> jpeg_data,
     base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)> callback) {
-  std::unique_ptr<SkBitmap> bitmap =
-      gfx::JPEGCodec::Decode(jpeg_data.data(), jpeg_data.size());
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(jpeg_data);
   optical_character_recognizer_->PerformOCR(
-      std::move(*bitmap),
+      std::move(bitmap),
       base::BindOnce(
           [](base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)>
                  callback,
