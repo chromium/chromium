@@ -22,6 +22,7 @@ class GraduationAppDelegate : public ash::SystemWebAppDelegate {
 
   // ash::SystemWebAppDelegate:
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
+  gfx::Size GetMinimumWindowSize() const override;
   bool ShouldShowInLauncher() const override;
   bool IsAppEnabled() const override;
   bool ShouldCaptureNavigations() const override;

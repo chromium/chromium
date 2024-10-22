@@ -1,4 +1,19 @@
 <style include="cr-shared-style cros-color-overrides">
+  :host {
+    --illustration-size: 464px;
+    --illustration-padding-top: 84px;
+    --main-content-gap: 80px;
+    --main-content-padding-top: 108px;
+  }
+
+  @media (max-width: 1040px) {
+    :host {
+      --illustration-size: 380px;
+      --illustration-padding-top: 64px;
+      --main-content-gap: 24px;
+    }
+  }
+
   html,
   body {
     height: 100%;
@@ -15,11 +30,10 @@
     bottom: 0;
     display: flex;
     flex: 1;
-    gap: 80px;
+    gap: var(--main-content-gap);
     height: 85%;
     margin: 0 40px;
-    /* min-height matches the height of the illustration plus the top padding */
-    min-height: 572px;
+    min-height: calc(var(--illustration-size) + var(--main-content-padding-top));
   }
 
   .main-content {
@@ -29,8 +43,8 @@
     gap: 24px;
     height: 100%;
     /* Prevents the element from overflowing the parent container. */
-    max-height: 464px;
-    padding-top: 108px;
+    max-height: var(--illustration-size);
+    padding-top: var(--main-content-padding-top);
   }
 
   #title {
@@ -62,10 +76,14 @@
   }
 
   .illustration {
-    height: 100%;
-    /* Prevents the element from overflowing the parent container. */
-    max-height: 464px;
-    padding-top: 108px;
+    height: var(--illustration-size);
+    padding-top: var(--illustration-padding-top);
+    width: var(--illustration-size);
+  }
+
+  #illustration {
+    height: var(--illustration-size);
+    width: var(--illustration-size);
   }
 
   .button-container {

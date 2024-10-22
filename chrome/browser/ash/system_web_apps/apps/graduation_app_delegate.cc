@@ -27,6 +27,11 @@
 
 namespace ash::graduation {
 
+namespace {
+constexpr int kGraduationMinWindowWidth = 800;
+constexpr int kGraduationMinWindowHeight = 480;
+}  // namespace
+
 GraduationAppDelegate::GraduationAppDelegate(Profile* profile)
     : SystemWebAppDelegate(SystemWebAppType::GRADUATION,
                            "Graduation",
@@ -60,6 +65,10 @@ GraduationAppDelegate::GetWebAppInfo() const {
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 
   return info;
+}
+
+gfx::Size GraduationAppDelegate::GetMinimumWindowSize() const {
+  return {kGraduationMinWindowWidth, kGraduationMinWindowHeight};
 }
 
 bool GraduationAppDelegate::ShouldShowInLauncher() const {
