@@ -329,18 +329,6 @@ void RecordSTSHistograms(net::SSLUpgradeDecision upgrade_decision,
       GetMetricForSSLUpgradeDecision(upgrade_decision, is_secure));
 }
 
-char const* GetSecFetchStorageAccessHeaderValue(
-    net::cookie_util::StorageAccessStatus storage_access_status) {
-  switch (storage_access_status) {
-    case net::cookie_util::StorageAccessStatus::kInactive:
-      return "inactive";
-    case net::cookie_util::StorageAccessStatus::kActive:
-      return "active";
-    case net::cookie_util::StorageAccessStatus::kNone:
-      return "none";
-  }
-}
-
 }  // namespace
 
 namespace net {
@@ -480,15 +468,6 @@ bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
 }
 
 }  // namespace
-
-void URLRequestHttpJob::MaybeSetSecFetchStorageAccessHeader() {
-  if (request_->storage_access_status()) {
-    request_info_.extra_headers.SetHeader(
-        HttpRequestHeaders::kSecFetchStorageAccess,
-        GetSecFetchStorageAccessHeaderValue(
-            request_->storage_access_status().value()));
-  }
-}
 
 void URLRequestHttpJob::OnGotFirstPartySetMetadata(
     FirstPartySetMetadata first_party_set_metadata,
@@ -791,7 +770,6 @@ void URLRequestHttpJob::AddExtraHeaders() {
           accept_language);
     }
   }
-  MaybeSetSecFetchStorageAccessHeader();
 }
 
 void URLRequestHttpJob::AddCookieHeaderAndStart() {

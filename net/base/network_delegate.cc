@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 
 namespace net {
@@ -136,9 +137,11 @@ bool NetworkDelegate::CanSetCookie(
 }
 
 std::optional<cookie_util::StorageAccessStatus>
-NetworkDelegate::GetStorageAccessStatus(const URLRequest& request) const {
+NetworkDelegate::GetStorageAccessStatus(
+    const URLRequest& request,
+    base::optional_ref<const RedirectInfo> redirect_info) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return OnGetStorageAccessStatus(request);
+  return OnGetStorageAccessStatus(request, redirect_info);
 }
 
 bool NetworkDelegate::IsStorageAccessHeaderEnabled(

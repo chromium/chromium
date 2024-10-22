@@ -1085,9 +1085,19 @@ void URLRequest::RetryWithStorageAccess() {
     network_delegate()->NotifyBeforeRetry(this);
   }
 
+  // TODO(https://crbug.com/366284840): this state mutation should reuse the
+  // Sec- header helpers at a higher layer, not within //net.
   cookie_setting_overrides().Put(
       CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
   set_storage_access_status(CalculateStorageAccessStatus());
+  // This code is only reachable if the status was previously "inactive", which
+  // implies that the URL is "potentially trustworthy" and that adding the
+  // `kStorageAccessGrantEligibleViaHeader` override is sufficient to make the
+  // status "active".
+  CHECK(storage_access_status());
+  CHECK_EQ(static_cast<int>(storage_access_status().value()),
+           static_cast<int>(cookie_util::StorageAccessStatus::kActive));
+  extra_request_headers_.SetHeader("Sec-Fetch-Storage-Access", "active");
 
   if (!final_upload_progress_.position() && upload_data_stream_) {
     final_upload_progress_ = upload_data_stream_->GetUploadProgress();
@@ -1364,9 +1374,10 @@ void URLRequest::set_socket_tag(const SocketTag& socket_tag) {
   socket_tag_ = socket_tag;
 }
 std::optional<net::cookie_util::StorageAccessStatus>
-URLRequest::CalculateStorageAccessStatus() const {
+URLRequest::CalculateStorageAccessStatus(
+    base::optional_ref<const RedirectInfo> redirect_info) const {
   std::optional<net::cookie_util::StorageAccessStatus> storage_access_status =
-      network_delegate()->GetStorageAccessStatus(*this);
+      network_delegate()->GetStorageAccessStatus(*this, redirect_info);
 
   auto get_storage_access_value_outcome_if_omitted = [&]()
       -> std::optional<net::cookie_util::SecFetchStorageAccessValueOutcome> {

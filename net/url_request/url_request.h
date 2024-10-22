@@ -875,7 +875,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // TODO(https://crbug.com/366284840): Move this to URLLoader once the
   // "Activate-Storage-Access: retry" header is handled in URLLoader.
   std::optional<net::cookie_util::StorageAccessStatus>
-  CalculateStorageAccessStatus() const;
+  CalculateStorageAccessStatus(
+      base::optional_ref<const RedirectInfo> redirect_info =
+          base::optional_ref<const RedirectInfo>(std::nullopt)) const;
 
   base::WeakPtr<URLRequest> GetWeakPtr();
 

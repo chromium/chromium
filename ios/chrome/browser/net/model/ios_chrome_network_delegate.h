@@ -67,7 +67,8 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
       const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieInclusionStatus* inclusion_status) override;
   std::optional<net::cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
-      const net::URLRequest& request) const override;
+      const net::URLRequest& request,
+      base::optional_ref<const net::RedirectInfo> redirect_info) const override;
   net::NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const net::URLRequest& request) const override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(

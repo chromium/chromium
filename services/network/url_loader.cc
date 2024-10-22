@@ -1591,6 +1591,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   net::cookie_util::AddOrRemoveStorageAccessApiOverride(
       redirect_info.new_url, storage_access_api_status_,
       url_request_->initiator(), url_request_->cookie_setting_overrides());
+  url_request_->cookie_setting_overrides().Remove(
+      net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
 
   // Note: There are some ordering dependencies here.
   // `CalculateStorageAccessStatus` depends on
@@ -1598,7 +1600,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   // depend on `url_request_->storage_access_status()`, once
   // https://crbug.com/366284840 is fixed.
   url_request_->set_storage_access_status(
-      url_request_->CalculateStorageAccessStatus());
+      url_request_->CalculateStorageAccessStatus(redirect_info));
 
   // We may need to clear out old Sec- prefixed request headers. We'll attempt
   // to do this before we re-add any.

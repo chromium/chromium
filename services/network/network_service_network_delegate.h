@@ -72,7 +72,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
                    int net_error) override;
   void OnPACScriptError(int line_number, const std::u16string& error) override;
   std::optional<net::cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
-      const net::URLRequest& request) const override;
+      const net::URLRequest& request,
+      base::optional_ref<const net::RedirectInfo> redirect_info) const override;
   bool OnIsStorageAccessHeaderEnabled(const url::Origin* top_frame_origin,
                                       const GURL& url) const override;
   bool OnAnnotateAndMoveUserBlockedCookies(

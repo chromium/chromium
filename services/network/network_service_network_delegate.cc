@@ -191,7 +191,16 @@ void NetworkServiceNetworkDelegate::OnPACScriptError(
 
 std::optional<net::cookie_util::StorageAccessStatus>
 NetworkServiceNetworkDelegate::OnGetStorageAccessStatus(
-    const net::URLRequest& request) const {
+    const net::URLRequest& request,
+    base::optional_ref<const net::RedirectInfo> redirect_info) const {
+  if (redirect_info) {
+    return network_context_->cookie_manager()
+        ->cookie_settings()
+        .GetStorageAccessStatus(redirect_info->new_url,
+                                redirect_info->new_site_for_cookies,
+                                request.isolation_info().top_frame_origin(),
+                                request.cookie_setting_overrides());
+  }
   return network_context_->cookie_manager()
       ->cookie_settings()
       .GetStorageAccessStatus(request.url(), request.site_for_cookies(),

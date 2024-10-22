@@ -212,6 +212,7 @@ using net::CreateTestURLRequestContextBuilder;
 using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::Key;
 using ::testing::Not;
@@ -221,6 +222,7 @@ using ::testing::Pair;
 constexpr char kMockHost[] = "mock.host";
 constexpr char kTopFrameOriginForFetchRequest[] = "https://abc.com";
 constexpr char kFrameOriginForFetchRequest[] = "https://xyz.com";
+constexpr char kSecFetchStorageAccess[] = "Sec-Fetch-Storage-Access";
 
 #if BUILDFLAG(ENABLE_REPORTING)
 const base::FilePath::CharType kFilename[] =
@@ -10234,10 +10236,23 @@ class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
  public:
   StorageAccessHeaderNetworkContextTest() = default;
 
+  ~StorageAccessHeaderNetworkContextTest() override {
+    EXPECT_TRUE(test_server_.ShutdownAndWaitUntilComplete());
+    {
+      base::AutoLock auto_lock(lock_);
+      EXPECT_THAT(retry_response_sequence_, IsEmpty());
+    }
+  }
+
   struct PatternsAndSetting {
     ContentSettingsPattern primary;
     ContentSettingsPattern secondary;
     ContentSetting value;
+  };
+
+  enum class ResponseKind {
+    kOk,
+    kRedirect,
   };
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRetryRequest(
@@ -10251,13 +10266,43 @@ class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
     http_response->AddCustomHeader("Activate-Storage-Access",
                                    "retry; allowed-origin=*");
     http_response->set_content("");
-    http_response->set_code(net::HTTP_OK);
+
+    ResponseKind response_kind;
+    {
+      base::AutoLock auto_lock(lock_);
+
+      CHECK(!retry_response_sequence_.empty());
+      response_kind = retry_response_sequence_.front();
+      retry_response_sequence_.erase(retry_response_sequence_.begin());
+    }
+
+    switch (response_kind) {
+      case ResponseKind::kOk:
+        http_response->set_code(net::HTTP_OK);
+        break;
+      case ResponseKind::kRedirect: {
+        http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+        std::string dest =
+            base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
+        http_response->AddCustomHeader("Location", dest);
+        break;
+      }
+      default:
+        NOTREACHED();
+    }
+
     return http_response;
   }
 
   std::vector<std::string> cookie_headers() const {
     base::AutoLock auto_lock(lock_);
     return cookie_headers_;
+  }
+
+  void set_retry_response_sequence(
+      const std::initializer_list<ResponseKind>& kinds) {
+    base::AutoLock auto_lock(lock_);
+    retry_response_sequence_ = kinds;
   }
 
   void StartTestServerWithRequestHeaderMonitorAndRetryHandler() {
@@ -10346,6 +10391,7 @@ class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
   std::vector<net::test_server::HttpRequest::HeaderMap>
       most_recent_request_headers_ GUARDED_BY(lock_);
   std::vector<std::string> cookie_headers_ GUARDED_BY(lock_);
+  std::vector<ResponseKind> retry_response_sequence_ GUARDED_BY(lock_);
   net::test_server::EmbeddedTestServer test_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 
@@ -10380,7 +10426,7 @@ class StorageAccessHeaderNetworkContextOriginTrialTest
 };
 
 TEST_F(StorageAccessHeaderNetworkContextOriginTrialTest,
-       SecFetchStorageAccessRequestHeaderAbsentWhenNoOTSetting) {
+       RequestHeaderAbsentWhenNoOTSetting) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   ResourceRequest request;
@@ -10404,8 +10450,8 @@ TEST_F(StorageAccessHeaderNetworkContextOriginTrialTest,
                          request);
 
   EXPECT_THAT(most_recent_request_headers(),
-              testing::ElementsAre(testing::Not(testing::Contains(testing::Key(
-                  net::HttpRequestHeaders::kSecFetchStorageAccess)))));
+              testing::ElementsAre(testing::Not(
+                  testing::Contains(testing::Key(kSecFetchStorageAccess)))));
   histogram_tester.ExpectUniqueSample(
       "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome", /*sample=*/
       net::cookie_util::SecFetchStorageAccessValueOutcome::
@@ -10458,6 +10504,7 @@ INSTANTIATE_TEST_SUITE_P(,
 // retrying the request would be a waste of time).
 TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
        RetryWithoutContentSetting) {
+  set_retry_response_sequence({ResponseKind::kOk});
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL request_url =
@@ -10500,7 +10547,8 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 // the request since cookies are not blocked (and therefore retrying the request
 // would be a waste of time).
 TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       StorageAccessHeader_Retry_WithoutBlockingCookies) {
+       Retry_WithoutBlockingCookies) {
+  set_retry_response_sequence({ResponseKind::kOk});
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL request_url =
@@ -10545,6 +10593,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 // response still includes the header, but the browser ignores it the second
 // time, since retrying would not make any difference.
 TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, Retry) {
+  set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL request_url =
@@ -10594,9 +10643,156 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, Retry) {
   EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
 }
 
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
+       RetryThen1pRedirect) {
+  set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kRedirect});
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  GURL::Replacements replacements;
+  const GURL redirect_dest =
+      test_server_.GetURL("b.test", "/echoheader?cookie");
+  replacements.SetQueryStr(redirect_dest.spec());
+  const GURL request_url =
+      test_server_.GetURL("a.test", kStorageAccessRetryPath)
+          .ReplaceComponents(replacements);
+  const GURL top_level_url = test_server_.GetURL("b.test", "/");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  if (is_origin_trial_test()) {
+    SeedStorageAccessHeaderOriginTrialToken(request_url, top_level_url,
+                                            network_context.get());
+  }
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), top_level_url, "1PCookie", "1"));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  SetContentSettings(
+      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
+      {
+          {
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  request_url),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  top_level_url),
+              CONTENT_SETTING_ALLOW,
+          },
+      });
+
+  ResourceRequest request;
+  request.url = request_url;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  TestURLLoaderClient client;
+  mojo::Remote<mojom::URLLoader> loader;
+  loader_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  client.RunUntilRedirectReceived();
+  loader->FollowRedirect({}, {}, {}, {});
+
+  client.RunUntilComplete();
+
+  EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1", "None"));
+  EXPECT_THAT(most_recent_request_headers(),
+              ElementsAre(Contains(Pair(kSecFetchStorageAccess, "inactive")),
+                          Contains(Pair(kSecFetchStorageAccess, "active")),
+                          Contains(Pair(kSecFetchStorageAccess, "inactive"))));
+}
+
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
+       RetryThen3pRedirect) {
+  set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kRedirect});
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  GURL::Replacements replacements;
+  const GURL redirect_dest =
+      test_server_.GetURL("c.test", "/echoheader?cookie");
+  replacements.SetQueryStr(redirect_dest.spec());
+  const GURL request_url =
+      test_server_.GetURL("a.test", kStorageAccessRetryPath)
+          .ReplaceComponents(replacements);
+  const GURL top_level_url = test_server_.GetURL("b.test", "/");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  if (is_origin_trial_test()) {
+    SeedStorageAccessHeaderOriginTrialToken(request_url, top_level_url,
+                                            network_context.get());
+  }
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
+  ASSERT_TRUE(SetCookieHelper(network_context.get(), redirect_dest,
+                              "Other3PCookie", "1"));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  SetContentSettings(
+      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
+      {
+          {
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  request_url),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  top_level_url),
+              CONTENT_SETTING_ALLOW,
+          },
+      });
+
+  ResourceRequest request;
+  request.url = request_url;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  TestURLLoaderClient client;
+  mojo::Remote<mojom::URLLoader> loader;
+  loader_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  client.RunUntilRedirectReceived();
+  loader->FollowRedirect({}, {}, {}, {});
+
+  client.RunUntilComplete();
+
+  EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1", "None"));
+  EXPECT_THAT(most_recent_request_headers(),
+              ElementsAre(Contains(Pair(kSecFetchStorageAccess, "inactive")),
+                          Contains(Pair(kSecFetchStorageAccess, "active")),
+                          Contains(Pair(kSecFetchStorageAccess, "none"))));
+}
+
 // Regression test for https://crbug.com/352722603.
 TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       RetryABAWithStorageAccess) {
+       RetryABAWithResourceRequestOptIn) {
+  set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL request_url =
@@ -10662,7 +10858,9 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 // StorageAccessApiStatus weren't taken into account. This ensures that
 // CorsURLLoader uses the same logic as the rest of the stack when determining
 // the StorageAccessStatus.
-TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, OptedInViaJsApi) {
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
+       OptedInViaResourceRequest) {
+  set_retry_response_sequence({ResponseKind::kOk});
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL request_url =
@@ -10713,11 +10911,10 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, OptedInViaJsApi) {
   client->RunUntilComplete();
 
   EXPECT_THAT(cookie_headers(), ElementsAre("3PCookie=1"));
-  EXPECT_THAT(most_recent_request_headers(),
-              ElementsAre(AllOf(
-                  Not(Contains(Key(net::HttpRequestHeaders::kOrigin))),
-                  Contains(Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
-                                "active")))));
+  EXPECT_THAT(
+      most_recent_request_headers(),
+      ElementsAre(AllOf(Not(Contains(Key(net::HttpRequestHeaders::kOrigin))),
+                        Contains(Pair(kSecFetchStorageAccess, "active")))));
 }
 
 TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, Load) {
@@ -10841,7 +11038,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RedirectWithLoad) {
 }
 
 TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       SecFetchStorageAccessRequestHeaderFirstPartyRequest) {
+       RequestHeaderOmittedFirstPartyRequest) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   ResourceRequest request;
@@ -10868,8 +11065,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
                          request);
 
   EXPECT_THAT(most_recent_request_headers(),
-              ElementsAre(Not(Contains(
-                  Key(net::HttpRequestHeaders::kSecFetchStorageAccess)))));
+              ElementsAre(Not(Contains(Key(kSecFetchStorageAccess)))));
   histogram_tester.ExpectUniqueSample(
       "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome", /*sample=*/
       net::cookie_util::SecFetchStorageAccessValueOutcome::kOmittedSameSite,
@@ -10877,7 +11073,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 }
 
 TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       SecFetchStorageAccessRequestHeaderCookiesBlocked) {
+       RequestHeaderOmittedCookiesBlocked) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   ResourceRequest request;
@@ -10906,8 +11102,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 
   // Since credentials are blocked, no header should be attached.
   EXPECT_THAT(most_recent_request_headers(),
-              ElementsAre(Not(Contains(
-                  Key(net::HttpRequestHeaders::kSecFetchStorageAccess)))));
+              ElementsAre(Not(Contains(Key(kSecFetchStorageAccess)))));
 
   histogram_tester.ExpectUniqueSample(
       "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome", /*sample=*/
@@ -10916,52 +11111,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       SecFetchStorageAccessRequestHeaderNoCookieHeader) {
-  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
-
-  ResourceRequest request;
-  request.url = test_server_.GetURL("/defaultresponse");
-  const url::Origin kTopFrameOrigin =
-      url::Origin::Create(GURL("https://b.test"));
-
-  mojom::URLLoaderFactoryParamsPtr params =
-      mojom::URLLoaderFactoryParams::New();
-  params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, kTopFrameOrigin,
-      url::Origin::Create(request.url), request.site_for_cookies);
-  // Setting the request's `credentials_mode` to `kOmit` should cause
-  // URLRequestHttpJob::ShouldAddCookieHeader() to return false.
-  request.credentials_mode = mojom::CredentialsMode::kOmit;
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  if (is_origin_trial_test()) {
-    SeedStorageAccessHeaderOriginTrialToken(
-        request.url, kTopFrameOrigin.GetURL(), network_context.get());
-  }
-
-  network_context->cookie_manager()->BlockThirdPartyCookies(true);
-  base::HistogramTester histogram_tester;
-
-  RunRequestToCompletion(std::move(network_context), std::move(params),
-                         request);
-
-  // Since URLRequestHttpJob::ShouldAddCookieHeader() was false, the
-  // `SecFetchStorageAccess` header was not attached to the request.
-  EXPECT_THAT(most_recent_request_headers(),
-              testing::ElementsAre(testing::Not(testing::Contains(testing::Key(
-                  net::HttpRequestHeaders::kSecFetchStorageAccess)))));
-  histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome", /*sample=*/
-      net::cookie_util::SecFetchStorageAccessValueOutcome::
-          kOmittedRequestOmitsCredentials,
-      /*expected_bucket_count=*/1);
-}
-
-TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       SecFetchStorageAccessRequestHeaderNone) {
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RequestHeader_None) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   ResourceRequest request;
@@ -10989,8 +11139,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
   RunRequestToCompletion(std::move(network_context), std::move(params),
                          request);
   EXPECT_THAT(most_recent_request_headers(),
-              ElementsAre(Contains(Pair(
-                  net::HttpRequestHeaders::kSecFetchStorageAccess, "none"))));
+              ElementsAre(Contains(Pair(kSecFetchStorageAccess, "none"))));
   histogram_tester.ExpectUniqueSample(
       "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
       /*sample=*/
@@ -10999,7 +11148,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 }
 
 TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       SecFetchStorageAccessRequestHeaderInactive) {
+       RequestHeader_Inactive) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   ResourceRequest request;
@@ -11035,12 +11184,11 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
   RunRequestToCompletion(std::move(network_context), std::move(params),
                          request);
 
-  EXPECT_THAT(
-      most_recent_request_headers(),
-      ElementsAre(IsSupersetOf({
-          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "inactive"),
-          Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
-      })));
+  EXPECT_THAT(most_recent_request_headers(),
+              ElementsAre(IsSupersetOf({
+                  Pair(kSecFetchStorageAccess, "inactive"),
+                  Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
+              })));
   histogram_tester.ExpectUniqueSample(
       "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
       /*sample=*/
@@ -11049,7 +11197,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 }
 
 TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       SecFetchStorageAccessRequestHeaderActive) {
+       RequestHeader_Active) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   ResourceRequest request;
@@ -11088,8 +11236,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
                          request);
 
   EXPECT_THAT(most_recent_request_headers(),
-              ElementsAre(Contains(Pair(
-                  net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
+              ElementsAre(Contains(Pair(kSecFetchStorageAccess, "active"))));
   histogram_tester.ExpectUniqueSample(
       "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
       /*sample=*/
@@ -11100,8 +11247,8 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 // This test recreates the case of StorageAccessHeaderRetry, with the
 // additional logic of demonstrating an initial call that receives an inactive
 // response.
-TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       StorageAccessHeaderRetryAfterInactive) {
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RetryAfterInactive) {
+  set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   ResourceRequest request;
@@ -11144,13 +11291,11 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 
   EXPECT_THAT(
       most_recent_request_headers(),
-      ElementsAre(
-          IsSupersetOf({
-              Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "inactive"),
-              Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
-          }),
-          Contains(Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
-                        "active"))));
+      ElementsAre(IsSupersetOf({
+                      Pair(kSecFetchStorageAccess, "inactive"),
+                      Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
+                  }),
+                  Contains(Pair(kSecFetchStorageAccess, "active"))));
   // Values we expect after the request has been retried
   EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
 

@@ -117,6 +117,8 @@ constexpr char kQueryStorageAccessPermission[] =
 
 constexpr char kHeaderNotProvidedSentinel[] = "HEADER_NOT_PROVIDED";
 
+constexpr char kSecFetchStorageAccess[] = "Sec-Fetch-Storage-Access";
+
 enum class TestType { kFrame, kWorker };
 
 // Helpers to express expected
@@ -207,9 +209,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRetryRequest(
       base::StrCat({"retry; allowed-origin=", allowed_origin}));
   SetCORSHeaders(request, *http_response);
 
-  std::optional<std::string> storage_access_header =
-      base::OptionalFromPtr(base::FindOrNull(
-          request.headers, net::HttpRequestHeaders::kSecFetchStorageAccess));
+  std::optional<std::string> storage_access_header = base::OptionalFromPtr(
+      base::FindOrNull(request.headers, kSecFetchStorageAccess));
   if (storage_access_header == "inactive") {
     std::optional<std::string> origin_header = base::OptionalFromPtr(
         base::FindOrNull(request.headers, net::HttpRequestHeaders::kOrigin));
@@ -232,8 +233,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRetryRequest(
   http_response->set_content(base::JoinString(
       {
           serialize_header_name_and_value(net::HttpRequestHeaders::kCookie),
-          serialize_header_name_and_value(
-              net::HttpRequestHeaders::kSecFetchStorageAccess),
+          serialize_header_name_and_value(kSecFetchStorageAccess),
       },
       "\n"));
 
@@ -3024,8 +3024,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersDisabledBrowserTest, RetryHeader) {
       ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
       HeadersAre(UnorderedElementsAre(
           Pair(net::HttpRequestHeaders::kCookie, kHeaderNotProvidedSentinel),
-          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
-               kHeaderNotProvidedSentinel))));
+          Pair(kSecFetchStorageAccess, kHeaderNotProvidedSentinel))));
   EXPECT_EQ(retry_path_fetch_count_, 1);
 }
 
@@ -3052,11 +3051,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, RetryHeader) {
   // Now attempt to use that permission grant for a B subresource fetched by an
   // A document, without invoking the Storage Access API.
   NavigateToPage(kHostA, "/empty.html");
-  EXPECT_THAT(
-      ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
-      HeadersAre(UnorderedElementsAre(
-          Pair(net::HttpRequestHeaders::kCookie, "cross-site=b.test"),
-          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
+  EXPECT_THAT(ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
+              HeadersAre(UnorderedElementsAre(
+                  Pair(net::HttpRequestHeaders::kCookie, "cross-site=b.test"),
+                  Pair(kSecFetchStorageAccess, "active"))));
   EXPECT_EQ(retry_path_fetch_count_, 2);
 }
 
@@ -3074,11 +3072,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, RetryHeader_Wildcard) {
   // Now attempt to use that permission grant for a B subresource fetched by an
   // A document, without invoking the Storage Access API.
   NavigateToPage(kHostA, "/empty.html");
-  EXPECT_THAT(
-      ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
-      HeadersAre(UnorderedElementsAre(
-          Pair(net::HttpRequestHeaders::kCookie, "cross-site=b.test"),
-          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
+  EXPECT_THAT(ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
+              HeadersAre(UnorderedElementsAre(
+                  Pair(net::HttpRequestHeaders::kCookie, "cross-site=b.test"),
+                  Pair(kSecFetchStorageAccess, "active"))));
   EXPECT_EQ(retry_path_fetch_count_, 2);
 }
 
@@ -3096,7 +3093,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
       ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
       HeadersAre(UnorderedElementsAre(
           Pair(net::HttpRequestHeaders::kCookie, kHeaderNotProvidedSentinel),
-          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "none"))));
+          Pair(kSecFetchStorageAccess, "none"))));
   EXPECT_EQ(retry_path_fetch_count_, 1);
 }
 
@@ -3112,11 +3109,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
   // boundary, which the header opt-in disables.
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(GetURL(kHostB, "/empty.html"));
-  EXPECT_THAT(
-      ContentFromFetch(GetFrame(), kHostA, kRetryPath),
-      HeadersAre(UnorderedElementsAre(
-          Pair(net::HttpRequestHeaders::kCookie, "cross-site=a.test"),
-          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
+  EXPECT_THAT(ContentFromFetch(GetFrame(), kHostA, kRetryPath),
+              HeadersAre(UnorderedElementsAre(
+                  Pair(net::HttpRequestHeaders::kCookie, "cross-site=a.test"),
+                  Pair(kSecFetchStorageAccess, "active"))));
   EXPECT_EQ(retry_path_fetch_count_, 2);
 }
 
@@ -3135,11 +3131,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
       permissions::PermissionRequestManager::ACCEPT_ALL);
   ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
-  EXPECT_THAT(
-      ContentFromFetch(GetFrame(), kHostA, kRetryPath),
-      HeadersAre(UnorderedElementsAre(
-          Pair(net::HttpRequestHeaders::kCookie, "cross-site=a.test"),
-          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
+  EXPECT_THAT(ContentFromFetch(GetFrame(), kHostA, kRetryPath),
+              HeadersAre(UnorderedElementsAre(
+                  Pair(net::HttpRequestHeaders::kCookie, "cross-site=a.test"),
+                  Pair(kSecFetchStorageAccess, "active"))));
   EXPECT_EQ(retry_path_fetch_count_, 2);
 }
 
@@ -3181,10 +3176,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(GetURL(kHostA));
-  EXPECT_THAT(
-      ObservedRequestHeaders(),
-      Each(Pair(_, Not(Contains(Key(
-                       net::HttpRequestHeaders::kSecFetchStorageAccess))))));
+  EXPECT_THAT(ObservedRequestHeaders(),
+              Each(Pair(_, Not(Contains(Key(kSecFetchStorageAccess))))));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
@@ -3203,18 +3196,13 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
       ObservedRequestHeaders(),
       IsSupersetOf<C>({
           // The top-level page and the `fetch` call both omit the header.
-          Pair("/iframe.html",
-               Not(Contains(
-                   Key(net::HttpRequestHeaders::kSecFetchStorageAccess)))),
-          Pair("/",
-               AllOf(Contains(Pair("Host", StartsWith(kHostB))),
-                     Not(Contains(Key(
-                         net::HttpRequestHeaders::kSecFetchStorageAccess))))),
+          Pair("/iframe.html", Not(Contains(Key(kSecFetchStorageAccess)))),
+          Pair("/", AllOf(Contains(Pair("Host", StartsWith(kHostB))),
+                          Not(Contains(Key(kSecFetchStorageAccess))))),
           // The iframe subresource fetch includes the header.
           Pair("/", IsSupersetOf<HM>({
                         Pair("Host", StartsWith(kHostB)),
-                        Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
-                             "none"),
+                        Pair(kSecFetchStorageAccess, "none"),
                     })),
       }));
 }
@@ -3226,14 +3214,11 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, RequestHeadersNone) {
   NavigateFrameTo(GetURL(kHostB));
   using C = std::initializer_list<
       testing::Matcher<std::pair<std::string, std::string>>>;
-  EXPECT_THAT(
-      ObservedRequestHeaders(),
-      Contains(Pair(
-          "/",
-          IsSupersetOf<C>({
-              Pair("Host", StartsWith(kHostB)),
-              Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "none"),
-          }))));
+  EXPECT_THAT(ObservedRequestHeaders(),
+              Contains(Pair("/", IsSupersetOf<C>({
+                                     Pair("Host", StartsWith(kHostB)),
+                                     Pair(kSecFetchStorageAccess, "none"),
+                                 }))));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
@@ -3253,25 +3238,19 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
   EXPECT_EQ(CookiesFromFetch(GetPrimaryMainFrame(), kHostB), "None");
   using C = std::initializer_list<testing::Matcher<
       std::pair<std::string, net::test_server::HttpRequest::HeaderMap>>>;
-  EXPECT_THAT(
-      ObservedRequestHeaders(),
-      IsSupersetOf<C>({
-          Pair("/",
-               Contains(Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
-                             "none"))),
-          Pair("/echocookieswithcors",
-               Contains(Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
-                             "inactive"))),
-      }));
+  EXPECT_THAT(ObservedRequestHeaders(),
+              IsSupersetOf<C>({
+                  Pair("/", Contains(Pair(kSecFetchStorageAccess, "none"))),
+                  Pair("/echocookieswithcors",
+                       Contains(Pair(kSecFetchStorageAccess, "inactive"))),
+              }));
 
   // Subsequent navigation should be `inactive`.
   NavigateFrameTo(GetURL(kHostB));
 
   EXPECT_THAT(
       ObservedRequestHeaders(),
-      Contains(Pair(
-          "/", Contains(Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
-                             "inactive")))));
+      Contains(Pair("/", Contains(Pair(kSecFetchStorageAccess, "inactive")))));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
@@ -3292,16 +3271,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
   EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostB), "None");
   using C = std::initializer_list<testing::Matcher<
       std::pair<std::string, net::test_server::HttpRequest::HeaderMap>>>;
-  EXPECT_THAT(
-      ObservedRequestHeaders(),
-      IsSupersetOf<C>({
-          Pair("/",
-               Contains(Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
-                             "none"))),
-          Pair("/echocookieswithcors",
-               Contains(Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
-                             "inactive"))),
-      }));
+  EXPECT_THAT(ObservedRequestHeaders(),
+              IsSupersetOf<C>({
+                  Pair("/", Contains(Pair(kSecFetchStorageAccess, "none"))),
+                  Pair("/echocookieswithcors",
+                       Contains(Pair(kSecFetchStorageAccess, "inactive"))),
+              }));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
@@ -3319,11 +3294,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
   ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
   // Top-level subresource fetches can benefit from the permission.
-  EXPECT_THAT(
-      ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
-      HeadersAre(UnorderedElementsAre(
-          Pair(net::HttpRequestHeaders::kCookie, "cross-site=b.test"),
-          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
+  EXPECT_THAT(ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
+              HeadersAre(UnorderedElementsAre(
+                  Pair(net::HttpRequestHeaders::kCookie, "cross-site=b.test"),
+                  Pair(kSecFetchStorageAccess, "active"))));
 
   // Next navigation would be inactive, but with the `kRetryPath` we end up
   // opting into `storage-access`, making it `active`.
@@ -3332,9 +3306,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
   // eventually.
   EXPECT_THAT(ObservedRequestHeaders(),
               Contains(Pair(kRetryPath,
-                            Contains(Pair(
-                                net::HttpRequestHeaders::kSecFetchStorageAccess,
-                                "active"))))
+                            Contains(Pair(kSecFetchStorageAccess, "active"))))
                   .Times(2));
 }
 
@@ -3359,11 +3331,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersWithThirdPartyCookiesBrowserTest,
   // Now attempt to use the `retry` header for a B subresource fetched by an A
   // document, without invoking the Storage Access API.
   NavigateToPage(kHostA, "/empty.html");
-  EXPECT_THAT(
-      ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
-      HeadersAre(UnorderedElementsAre(
-          Pair(net::HttpRequestHeaders::kCookie, "cross-site=b.test"),
-          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
+  EXPECT_THAT(ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
+              HeadersAre(UnorderedElementsAre(
+                  Pair(net::HttpRequestHeaders::kCookie, "cross-site=b.test"),
+                  Pair(kSecFetchStorageAccess, "active"))));
   EXPECT_EQ(retry_path_fetch_count_, 1);
 }
 
@@ -3397,7 +3368,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersWithFedCMBrowserTest, RetryHeader) {
       ContentFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
       HeadersAre(UnorderedElementsAre(
           Pair(net::HttpRequestHeaders::kCookie, kHeaderNotProvidedSentinel),
-          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "none"))));
+          Pair(kSecFetchStorageAccess, "none"))));
   EXPECT_EQ(retry_path_fetch_count_, 1);
 }
 

@@ -71,7 +71,9 @@ bool NetworkDelegateImpl::OnCanSetCookie(
 }
 
 std::optional<cookie_util::StorageAccessStatus>
-NetworkDelegateImpl::OnGetStorageAccessStatus(const URLRequest& request) const {
+NetworkDelegateImpl::OnGetStorageAccessStatus(
+    const URLRequest& request,
+    base::optional_ref<const RedirectInfo> redirect_info) const {
   return std::nullopt;
 }
 

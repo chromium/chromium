@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_request_headers.h"
@@ -24,10 +25,11 @@ namespace network {
 
 namespace {
 
-const char kSecFetchMode[] = "Sec-Fetch-Mode";
-const char kSecFetchSite[] = "Sec-Fetch-Site";
-const char kSecFetchUser[] = "Sec-Fetch-User";
-const char kSecFetchDest[] = "Sec-Fetch-Dest";
+constexpr std::string_view kSecFetchMode = "Sec-Fetch-Mode";
+constexpr std::string_view kSecFetchSite = "Sec-Fetch-Site";
+constexpr std::string_view kSecFetchUser = "Sec-Fetch-User";
+constexpr std::string_view kSecFetchDest = "Sec-Fetch-Dest";
+constexpr std::string_view kSecFetchStorageAccess = "Sec-Fetch-Storage-Access";
 
 // Sec-Fetch-Site infrastructure:
 //
@@ -116,6 +118,19 @@ SecFetchSiteValue GetHeaderValueForRequest(
   return header_value;
 }
 
+char const* GetSecFetchStorageAccessHeaderValue(
+    net::cookie_util::StorageAccessStatus storage_access_status) {
+  switch (storage_access_status) {
+    case net::cookie_util::StorageAccessStatus::kInactive:
+      return "inactive";
+    case net::cookie_util::StorageAccessStatus::kActive:
+      return "active";
+    case net::cookie_util::StorageAccessStatus::kNone:
+      return "none";
+  }
+  NOTREACHED();
+}
+
 // Sec-Fetch-Site
 void SetSecFetchSiteHeader(net::URLRequest* request,
                            const GURL* pending_redirect_url,
@@ -156,6 +171,19 @@ void SetSecFetchDestHeader(net::URLRequest* request,
   request->SetExtraRequestHeaderByName(kSecFetchDest, header_value, true);
 }
 
+// Sec-Fetch-Storage-Access
+void SetSecFetchStorageAccessHeader(net::URLRequest& request) {
+  if (!request.storage_access_status()) {
+    request.RemoveRequestHeaderByName(kSecFetchStorageAccess);
+    return;
+  }
+  request.SetExtraRequestHeaderByName(
+      kSecFetchStorageAccess,
+      GetSecFetchStorageAccessHeaderValue(
+          request.storage_access_status().value()),
+      /*overwrite=*/true);
+}
+
 }  // namespace
 
 void SetFetchMetadataHeaders(
@@ -180,6 +208,7 @@ void SetFetchMetadataHeaders(
   SetSecFetchModeHeader(request, mode);
   SetSecFetchUserHeader(request, has_user_activation);
   SetSecFetchDestHeader(request, dest);
+  SetSecFetchStorageAccessHeader(*request);
 }
 
 void MaybeRemoveSecHeaders(net::URLRequest* request,

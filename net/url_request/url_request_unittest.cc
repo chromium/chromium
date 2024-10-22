@@ -13507,6 +13507,13 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, StorageAccessHeaderRetry) {
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           pattern,
           /*enable_storage_access_header=*/true));
+  if (test.expect_retry) {
+    // The network delegate is only consulted for the Storage Access status
+    // during a retry; it should claim that storage access is active at that
+    // point.
+    network_delegate.set_storage_access_status(
+        cookie_util::StorageAccessStatus::kActive);
+  }
   auto context = context_builder->Build();
   TestDelegate d;
   base::HistogramTester histogram_tester;
@@ -13643,6 +13650,8 @@ TEST_F(StorageAccessHeaderURLRequestTest,
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true, false}),
           /*enable_storage_access_header=*/true));
+  network_delegate.set_storage_access_status(
+      cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
   TestDelegate d;
 
@@ -13689,6 +13698,8 @@ TEST_F(StorageAccessHeaderURLRequestTest,
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true}),
           /*enable_storage_access_header=*/true));
+  network_delegate.set_storage_access_status(
+      cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
   TestDelegate d;
   d.set_credentials(AuthCredentials(kUser, kSecret));
@@ -13731,6 +13742,8 @@ TEST_F(StorageAccessHeaderURLRequestTest,
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true}),
           /*enable_storage_access_header=*/true));
+  network_delegate.set_storage_access_status(
+      cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
   TestDelegate d;
   d.set_credentials(AuthCredentials(kUser, kSecret));
@@ -13768,6 +13781,8 @@ TEST_F(StorageAccessHeaderURLRequestTest,
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true}),
           /*enable_storage_access_header=*/true));
+  network_delegate.set_storage_access_status(
+      cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
   TestDelegate d;
   d.set_credentials(AuthCredentials(kUser, kSecret));

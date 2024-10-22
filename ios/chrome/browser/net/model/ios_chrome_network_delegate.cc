@@ -115,10 +115,18 @@ bool IOSChromeNetworkDelegate::OnCanSetCookie(
 // experimental).
 std::optional<net::cookie_util::StorageAccessStatus>
 IOSChromeNetworkDelegate::OnGetStorageAccessStatus(
-    const net::URLRequest& request) const {
+    const net::URLRequest& request,
+    base::optional_ref<const net::RedirectInfo> redirect_info) const {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_.get()) {
     return std::nullopt;
+  }
+
+  if (redirect_info) {
+    return cookie_settings_->GetStorageAccessStatus(
+        redirect_info->new_url, redirect_info->new_site_for_cookies,
+        request.isolation_info().top_frame_origin(),
+        request.cookie_setting_overrides());
   }
 
   return cookie_settings_->GetStorageAccessStatus(
