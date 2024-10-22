@@ -245,6 +245,8 @@ def _update_starlark(
       ('targets.builder_defaults.set', targets_builder_defaults),
       ('targets.settings_defaults.set', targets_settings_defaults),
   ):
+    if not defaults:
+      continue
     defaults_target = create_defaults(kind)
     for attr, value in defaults.items():
       buildozer.run(f'set {attr} {_escape_spaces(value)}', defaults_target)
