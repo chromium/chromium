@@ -2452,12 +2452,32 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     SCOPED_CRASH_KEY_BOOL("OriginCalc", "origin_local", origin->IsLocal());
     SCOPED_CRASH_KEY_BOOL("OriginCalc", "origin_to_commit_local",
                           origin_to_commit_->IsLocal());
+    SCOPED_CRASH_KEY_BOOL("OriginCalc", "origin_opaque", origin->IsOpaque());
+    SCOPED_CRASH_KEY_BOOL("OriginCalc", "origin_to_commit_opaque",
+                          origin_to_commit_->IsOpaque());
     SCOPED_CRASH_KEY_BOOL("OriginCalc", "origin_block",
                           origin->block_local_access_from_local_origin());
     SCOPED_CRASH_KEY_BOOL(
         "OriginCalc", "origin_to_commit_block",
         origin_to_commit_->block_local_access_from_local_origin());
-    CHECK(origin->IsSameOriginWith(origin_to_commit_.get()));
+    if (origin->IsLocal() && !origin->IsOpaque() &&
+        origin->block_local_access_from_local_origin() &&
+        origin != origin_to_commit_) {
+      // For local non-opaque origins that block local access, we can't use the
+      // IsSameOrigin check directly if the ptr is not the same (e.g. when the
+      // origin is inherited from the owner, instead of using
+      // `origin_to_commit_`), since the blocking will apply within that check.
+      // Instead, check that all the important properties are the same.
+      CHECK(owner_document && owner_document->domWindow());
+      CHECK(origin_to_commit_->IsLocal());
+      CHECK(origin_to_commit_->IsOpaque());
+      CHECK(origin_to_commit_->block_local_access_from_local_origin());
+      CHECK_EQ(origin->Protocol(), origin_to_commit_->Protocol());
+      CHECK_EQ(origin->Host(), origin_to_commit_->Host());
+      CHECK_EQ(origin->Domain(), origin_to_commit_->Domain());
+    } else {
+      CHECK(origin->IsSameOriginWith(origin_to_commit_.get()));
+    }
   }
   return origin;
 }
