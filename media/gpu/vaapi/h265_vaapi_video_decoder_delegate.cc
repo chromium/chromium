@@ -82,6 +82,16 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitFrameMetadata(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!last_slice_data_);
 
+  drop_frame_ = false;
+  if (pic->no_rasl_output_flag_ &&
+      (slice_hdr->nal_unit_type == H265NALU::RASL_N ||
+       slice_hdr->nal_unit_type == H265NALU::RASL_R)) {
+    // Drop this RASL frame as this is not decodable.
+    DVLOGF(3) << "Drop RASL frame";
+    drop_frame_ = true;
+    return DecodeStatus::kOk;
+  }
+
   VAPictureParameterBufferHEVC pic_param;
   memset(&pic_param, 0, sizeof(pic_param));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -321,6 +331,11 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (drop_frame_) {
+    return DecodeStatus::kOk;
+  }
+
   if (!SubmitPriorSliceDataIfPresent(false)) {
     DLOG(ERROR) << "Failure submitting prior slice data";
     return DecodeStatus::kFail;
@@ -481,6 +496,10 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitDecode(
     scoped_refptr<H265Picture> pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (drop_frame_) {
+    return DecodeStatus::kOk;
+  }
+
   if (!SubmitPriorSliceDataIfPresent(true)) {
     DLOG(ERROR) << "Failure submitting prior slice data";
     return DecodeStatus::kFail;
@@ -528,6 +547,7 @@ void H265VaapiVideoDecoderDelegate::Reset() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  drop_frame_ = false;
   last_slice_data_ = nullptr;
   last_slice_size_ = 0;
   last_transcrypt_params_.clear();

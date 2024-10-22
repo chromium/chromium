@@ -99,6 +99,10 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   size_t last_slice_size_{0};
   std::string last_transcrypt_params_;
 
+  // Indicate that a frame is dropped because it's not decodable
+  // (RASL frame). This is updated every SubmitFrameMetadata().
+  bool drop_frame_ = false;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // We need to hold onto this memory here because it's referenced by the
   // mapped buffer in libva across calls. It is filled in SubmitSlice() and
