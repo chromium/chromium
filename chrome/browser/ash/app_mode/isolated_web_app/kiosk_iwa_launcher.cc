@@ -68,8 +68,8 @@ void KioskIwaLauncher::InstallIsolatedWebApp() {
   CHECK(provider);
 
   iwa_installer_ = web_app::IwaInstallerFactory::Create(
-      install_options.value(), profile()->GetURLLoaderFactory(),
-      iwa_install_log_, provider,
+      install_options.value(), web_app::IwaInstaller::InstallSourceType::kKiosk,
+      profile()->GetURLLoaderFactory(), iwa_install_log_, provider,
       base::BindOnce(&KioskIwaLauncher::OnInstallComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 

@@ -28,6 +28,13 @@ IsolatedWebAppInstallSource IsolatedWebAppInstallSource::FromExternalPolicy(
 }
 
 // static
+IsolatedWebAppInstallSource IsolatedWebAppInstallSource::FromKiosk(
+    IwaSourceProdModeWithFileOp source) {
+  return IsolatedWebAppInstallSource(std::move(source),
+                                     webapps::WebappInstallSource::KIOSK);
+}
+
+// static
 IsolatedWebAppInstallSource IsolatedWebAppInstallSource::FromShimlessRma(
     IwaSourceProdModeWithFileOp source) {
   return IsolatedWebAppInstallSource(

@@ -48,6 +48,7 @@ class TestIwaInstallerFactory {
   std::unique_ptr<IwaInstaller> CreateIwaInstaller(
       Profile* profile,
       IsolatedWebAppExternalInstallOptions install_options,
+      IwaInstaller::InstallSourceType install_source_type,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::Value::List& log,
       WebAppProvider* provider,

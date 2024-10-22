@@ -60,6 +60,11 @@ class IwaInstaller {
   using Result = IwaInstallerResult;
   using ResultCallback = base::OnceCallback<void(Result)>;
 
+  enum class InstallSourceType {
+    kPolicy = 0,  // App listed in IsolatedWebAppInstallForceList policy.
+    kKiosk = 1,   // Kiosk app defined via DeviceLocalAccount policy.
+  };
+
   // This pure virtual class represents the IWA installation logic.
   // It is introduced primarily for testability reasons.
   class IwaInstallCommandWrapper {
@@ -95,6 +100,7 @@ class IwaInstaller {
 
   IwaInstaller(
       IsolatedWebAppExternalInstallOptions install_options,
+      InstallSourceType install_source_type,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<IwaInstallCommandWrapper> install_command_wrapper,
       base::Value::List& log,
@@ -138,6 +144,7 @@ class IwaInstaller {
   void Finish(Result result);
 
   IsolatedWebAppExternalInstallOptions install_options_;
+  InstallSourceType install_source_type_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<IwaInstallCommandWrapper> install_command_wrapper_;
   raw_ref<base::Value::List> log_;
@@ -156,6 +163,7 @@ class IwaInstallerFactory {
   using IwaInstallerFactoryCallback =
       base::RepeatingCallback<std::unique_ptr<IwaInstaller>(
           IsolatedWebAppExternalInstallOptions,
+          IwaInstaller::InstallSourceType,
           scoped_refptr<network::SharedURLLoaderFactory>,
           base::Value::List&,
           WebAppProvider*,
@@ -163,6 +171,7 @@ class IwaInstallerFactory {
 
   static std::unique_ptr<IwaInstaller> Create(
       IsolatedWebAppExternalInstallOptions install_options,
+      IwaInstaller::InstallSourceType install_source_type,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::Value::List& log,
       WebAppProvider* provider,

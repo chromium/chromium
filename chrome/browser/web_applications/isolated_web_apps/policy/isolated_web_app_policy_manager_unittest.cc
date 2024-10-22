@@ -328,8 +328,10 @@ TEST_P(IwaInstallerTest, MgsRegularFlow) {
             HandleInstallBasedOnId(install_source, url_info, expected_version,
                                    std::move(callback));
           }));
-  IwaInstaller installer(install_options_, shared_url_loader_factory_,
-                         std::move(install_command), log, future.GetCallback());
+  IwaInstaller installer(install_options_,
+                         IwaInstaller::InstallSourceType::kPolicy,
+                         shared_url_loader_factory_, std::move(install_command),
+                         log, future.GetCallback());
   installer.Start();
 
   EXPECT_THAT(future.Get(),
@@ -357,8 +359,10 @@ TEST_P(IwaInstallerTest, NotMgs) {
             HandleInstallBasedOnId(install_source, url_info, expected_version,
                                    std::move(callback));
           }));
-  IwaInstaller installer(install_options_, shared_url_loader_factory_,
-                         std::move(install_command), log, future.GetCallback());
+  IwaInstaller installer(install_options_,
+                         IwaInstaller::InstallSourceType::kPolicy,
+                         shared_url_loader_factory_, std::move(install_command),
+                         log, future.GetCallback());
   installer.Start();
 
   EXPECT_THAT(future.Get(), Property("type", &IwaInstallerResult::type,

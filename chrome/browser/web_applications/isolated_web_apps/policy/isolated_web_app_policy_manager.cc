@@ -452,7 +452,8 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
                       .Then(action_done_callback);
 
               auto installer = IwaInstallerFactory::Create(
-                  action.options, profile_->GetURLLoaderFactory(),
+                  action.options, IwaInstaller::InstallSourceType::kPolicy,
+                  profile_->GetURLLoaderFactory(),
                   *current_process_log_.EnsureDict("install_progress")
                        ->EnsureList(base::ToString(web_bundle_id)),
                   provider_, std::move(callback));
