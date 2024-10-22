@@ -195,21 +195,6 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   provider->SetURL(url, lines[1]);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Parses |data| as if it was an encoded custom mime type DataTransferEndpoint.
-// Used to synchronize the drag source metadata between Ash and Lacros.
-void AddSource(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
-  DCHECK(provider);
-
-  if (data->as_vector().empty()) {
-    return;
-  }
-
-  std::string source_dte = BytesTo<std::string>(data);
-  provider->SetSource(ConvertJsonToDataTransferEndpoint(source_dte));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 }  // namespace
 
 WaylandExchangeDataProvider::WaylandExchangeDataProvider() = default;
@@ -284,11 +269,6 @@ void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
     case OSExchangeData::FILE_CONTENTS:
       AddFileContents(GetApplicationOctetStreamName(mime_type), data, this);
       break;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    case OSExchangeData::DATA_TRANSFER_ENDPOINT:
-      AddSource(data, this);
-      break;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 }
 

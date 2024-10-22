@@ -60,9 +60,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
 #if defined(USE_AURA)
     HTML = 1 << 5,
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
-    DATA_TRANSFER_ENDPOINT = 1 << 6,
-#endif
   };
 
   OSExchangeData();
