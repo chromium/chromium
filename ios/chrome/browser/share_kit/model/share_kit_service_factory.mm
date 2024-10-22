@@ -61,6 +61,7 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
           IdentityManagerFactory::GetForProfile(profile),
           AuthenticationServiceFactory::GetForProfile(profile),
           data_sharing::DataSharingServiceFactory::GetForProfile(profile),
+          sync_service,
           std::make_unique<TabGroupFaviconsGridConfigurator>(sync_service,
                                                              favicon_loader));
   return ios::provider::CreateShareKitService(std::move(configuration));
