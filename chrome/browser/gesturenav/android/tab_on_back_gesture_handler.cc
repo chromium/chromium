@@ -4,6 +4,8 @@
 
 #include "chrome/browser/gesturenav/android/tab_on_back_gesture_handler.h"
 
+#include <iomanip>
+
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -62,21 +64,38 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
                                                float progress,
                                                int edge,
                                                bool forward) {
-  CHECK(is_in_progress_);
-
-  content::WebContents* web_contents = tab_android_->web_contents();
-  AssertHasWindowAndCompositor(web_contents);
-
-  // Ideally the edge value should not be changed during a navigation however,
-  // we see multiple instances with different edge values from start to
-  // progress. See crbug.com/370105609.
-  if (started_edge_ != static_cast<ui::BackGestureEventSwipeEdge>(edge)) {
+  if (
+      // http://crbug.com/373617224. Gracefully handle this case until the
+      // upstream is fixed.
+      !is_in_progress_ ||
+      // Ideally the edge value should not be changed during a navigation
+      // however, we see multiple instances with different edge values from
+      // start to progress. See crbug.com/370105609.
+      started_edge_ != static_cast<ui::BackGestureEventSwipeEdge>(edge)) {
+    std::ostringstream strs;
+    strs << std::fixed << std::setprecision(6) << progress;
+    SCOPED_CRASH_KEY_STRING64("OnBackProgressed", "progress", strs.str());
+    SCOPED_CRASH_KEY_STRING32(
+        "OnBackProgressed", "started edge",
+        started_edge_ == ui::BackGestureEventSwipeEdge::LEFT ? "left"
+                                                             : "right");
+    SCOPED_CRASH_KEY_STRING32("OnBackProgressed", "edge",
+                              edge == 0 ? "left" : "right");
+    SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "forward", forward);
+    SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "is in progress",
+                          is_in_progress_);
     base::debug::DumpWithoutCrashing();
+
     OnBackCancelled(env);
     CHECK(!is_in_progress_);
     OnBackStarted(env, progress, edge, forward);
     return;
   }
+
+  CHECK(is_in_progress_);
+
+  content::WebContents* web_contents = tab_android_->web_contents();
+  AssertHasWindowAndCompositor(web_contents);
 
   if (progress > 1.f) {
     // TODO(crbug.com/41483519): Happens in fling. Should figure out why
