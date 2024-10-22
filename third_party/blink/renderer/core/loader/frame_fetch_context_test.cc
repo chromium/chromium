@@ -148,7 +148,7 @@ class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
       : policy_(policy), filtered_load_counter_(filtered_load_counter) {}
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                           mojom::blink::RequestContextType) override {
+                           network::mojom::RequestDestination) override {
     return policy_;
   }
 
@@ -583,8 +583,7 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
                                    public testing::WithParamInterface<bool> {
  public:
   FrameFetchContextHintsTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-    };
+    std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (GetParam()) {
       enabled_features.push_back(
@@ -1678,8 +1677,9 @@ class FrameFetchContextDisableReduceAcceptLanguageTest
 
     document->GetFrame()->SetReducedAcceptLanguage(AtomicString("en-GB"));
 
-    if (is_detached)
+    if (is_detached) {
       dummy_page_holder = nullptr;
+    }
 
     GetFetchContext()->UpgradeResourceRequestForLoader(
         ResourceType::kRaw, std::nullopt /* resource_width */, request,

@@ -10,10 +10,10 @@
 
 namespace subresource_filter {
 
-// Converts from blink `RequestContextType` to an `ElementType` that can be used
-// to determine `LoadPolicy` via a `DocumentSubresourceFilter`.
+// Converts from network `RequestDestination` to an `ElementType` that can be
+// used to determine `LoadPolicy` via a `DocumentSubresourceFilter`.
 url_pattern_index::proto::ElementType ToElementType(
-    blink::mojom::RequestContextType request_context);
+    network::mojom::RequestDestination request_context);
 
 }  // namespace subresource_filter
 

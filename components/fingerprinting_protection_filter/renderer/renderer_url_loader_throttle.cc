@@ -36,65 +36,6 @@ namespace {
 using ::subresource_filter::mojom::ActivationLevel;
 using ::subresource_filter::mojom::ActivationState;
 
-// TODO(https://crbug.com/40280666): Refactor `DocumentSubresourceFilter` to
-// use the newer `network::mojom::RequestDestination`, particularly to support
-// WebBundles.
-blink::mojom::RequestContextType ToRequestContextType(
-    network::mojom::RequestDestination request_destination) {
-  switch (request_destination) {
-    case network::mojom::RequestDestination::kAudio:
-      return blink::mojom::RequestContextType::AUDIO;
-    case network::mojom::RequestDestination::kEmbed:
-      return blink::mojom::RequestContextType::EMBED;
-    case network::mojom::RequestDestination::kFont:
-      return blink::mojom::RequestContextType::FONT;
-    case network::mojom::RequestDestination::kFrame:
-    case network::mojom::RequestDestination::kFencedframe:
-      return blink::mojom::RequestContextType::FRAME;
-    case network::mojom::RequestDestination::kIframe:
-      return blink::mojom::RequestContextType::IFRAME;
-    case network::mojom::RequestDestination::kImage:
-      return blink::mojom::RequestContextType::IMAGE;
-    case network::mojom::RequestDestination::kManifest:
-      return blink::mojom::RequestContextType::MANIFEST;
-    case network::mojom::RequestDestination::kObject:
-      return blink::mojom::RequestContextType::OBJECT;
-    case network::mojom::RequestDestination::kReport:
-      return blink::mojom::RequestContextType::CSP_REPORT;
-    case network::mojom::RequestDestination::kScript:
-      return blink::mojom::RequestContextType::SCRIPT;
-    case network::mojom::RequestDestination::kServiceWorker:
-    case network::mojom::RequestDestination::kAudioWorklet:
-    case network::mojom::RequestDestination::kPaintWorklet:
-    case network::mojom::RequestDestination::kSharedStorageWorklet:
-      // Treat worklets like workers in the context of filtering.
-      return blink::mojom::RequestContextType::SERVICE_WORKER;
-    case network::mojom::RequestDestination::kSharedWorker:
-      return blink::mojom::RequestContextType::SHARED_WORKER;
-    case network::mojom::RequestDestination::kStyle:
-      return blink::mojom::RequestContextType::STYLE;
-    case network::mojom::RequestDestination::kTrack:
-      return blink::mojom::RequestContextType::TRACK;
-    case network::mojom::RequestDestination::kVideo:
-      return blink::mojom::RequestContextType::VIDEO;
-    case network::mojom::RequestDestination::kWorker:
-      return blink::mojom::RequestContextType::WORKER;
-    case network::mojom::RequestDestination::kXslt:
-      return blink::mojom::RequestContextType::XSLT;
-    case network::mojom::RequestDestination::kSpeculationRules:
-      return blink::mojom::RequestContextType::SPECULATION_RULES;
-    case network::mojom::RequestDestination::kJson:
-      return blink::mojom::RequestContextType::JSON;
-    case network::mojom::RequestDestination::kEmpty:
-    case network::mojom::RequestDestination::kDocument:
-    case network::mojom::RequestDestination::kWebBundle:
-    case network::mojom::RequestDestination::kWebIdentity:
-    case network::mojom::RequestDestination::kDictionary:
-    default:
-      return blink::mojom::RequestContextType::UNSPECIFIED;
-  }
-}
-
 }  // namespace
 
 RendererURLLoaderThrottle::RendererURLLoaderThrottle(
@@ -187,8 +128,7 @@ void RendererURLLoaderThrottle::CheckCurrentResourceRequest() {
       FROM_HERE,
       base::BindOnce(
           check_url_task, renderer_agent_, current_url_,
-          subresource_filter::ToElementType(
-              ToRequestContextType(request_destination_)),
+          subresource_filter::ToElementType(request_destination_),
           base::BindPostTask(
               task_runner_,
               base::BindOnce(&RendererURLLoaderThrottle::OnLoadPolicyCalculated,

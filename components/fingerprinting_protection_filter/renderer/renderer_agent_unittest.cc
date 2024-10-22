@@ -154,11 +154,11 @@ class RendererAgentTest : public ::testing::Test {
   void ExpectLoadPolicy(std::string_view url_spec,
                         subresource_filter::LoadPolicy expected_policy) {
     blink::WebURL url = GURL(url_spec);
-    blink::mojom::RequestContextType request_context =
-        blink::mojom::RequestContextType::IMAGE;
+    network::mojom::RequestDestination request_destination =
+        network::mojom::RequestDestination::kImage;
     subresource_filter::LoadPolicy actual_policy =
         agent()->filter()->GetLoadPolicy(
-            url, subresource_filter::ToElementType(request_context));
+            url, subresource_filter::ToElementType(request_destination));
     EXPECT_EQ(expected_policy, actual_policy);
 
     // If the load policy indicated the load was filtered, simulate a filtered

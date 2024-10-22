@@ -68,8 +68,8 @@ WebDocumentSubresourceFilterImpl::WebDocumentSubresourceFilterImpl(
 
 WebLoadPolicy WebDocumentSubresourceFilterImpl::GetLoadPolicy(
     const blink::WebURL& resourceUrl,
-    blink::mojom::RequestContextType request_context) {
-  return getLoadPolicyImpl(resourceUrl, ToElementType(request_context));
+    network::mojom::RequestDestination request_destination) {
+  return getLoadPolicyImpl(resourceUrl, ToElementType(request_destination));
 }
 
 WebLoadPolicy
@@ -87,8 +87,9 @@ WebDocumentSubresourceFilterImpl::GetLoadPolicyForWebTransportConnect(
 }
 
 void WebDocumentSubresourceFilterImpl::ReportDisallowedLoad() {
-  if (!first_disallowed_load_callback_.is_null())
+  if (!first_disallowed_load_callback_.is_null()) {
     std::move(first_disallowed_load_callback_).Run();
+  }
 }
 
 bool WebDocumentSubresourceFilterImpl::ShouldLogToConsole() {
@@ -126,8 +127,9 @@ WebDocumentSubresourceFilterImpl::BuilderImpl::Build() {
   CHECK(ruleset_file_.IsValid(), base::NotFatalUntil::M129);
   scoped_refptr<MemoryMappedRuleset> ruleset =
       MemoryMappedRuleset::CreateAndInitialize(std::move(ruleset_file_));
-  if (!ruleset)
+  if (!ruleset) {
     return nullptr;
+  }
   return std::make_unique<WebDocumentSubresourceFilterImpl>(
       document_origin_, activation_state_, std::move(ruleset),
       base::BindOnce(&ProxyToTaskRunner, main_task_runner_,

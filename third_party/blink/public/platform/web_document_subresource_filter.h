@@ -25,7 +25,7 @@ class WebDocumentSubresourceFilter {
 
   virtual ~WebDocumentSubresourceFilter() = default;
   virtual LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                                   mojom::RequestContextType) = 0;
+                                   network::mojom::RequestDestination) = 0;
   virtual LoadPolicy GetLoadPolicyForWebSocketConnect(const WebURL&) = 0;
   virtual LoadPolicy GetLoadPolicyForWebTransportConnect(const WebURL&) = 0;
 
