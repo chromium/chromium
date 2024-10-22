@@ -235,6 +235,10 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
   source->AddLocalizedString("m1ConsentLearnMoreLink",
                              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK);
 
+  source->AddBoolean("isPrivacySandboxAdsApiUxEnhancementsEnabled",
+                     base::FeatureList::IsEnabled(
+                         privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements));
+
   // Dark mode support.
   ThemeService::BrowserColorScheme color_scheme =
       ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))

@@ -63,6 +63,17 @@ export class PrivacySandboxDialogConsentStepElement extends
         type: Boolean,
         value: false,
       },
+
+      /**
+       * If true, the Ads API UX Enhancement should be shown.
+       */
+      shouldShowV2_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'isPrivacySandboxAdsApiUxEnhancementsEnabled');
+        },
+      },
     };
   }
 
@@ -71,6 +82,7 @@ export class PrivacySandboxDialogConsentStepElement extends
   private isPrivacyPolicyLinkEnabled_: boolean;
   private hideConsentNoticePage_: boolean;
   private isDarkMode_: boolean;
+  private shouldShowV2_: boolean;
 
   override ready() {
     super.ready();
