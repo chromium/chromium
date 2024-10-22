@@ -98,7 +98,7 @@ void FlushCookieStoreOnIOThread(
 
 #pragma mark - AppState
 
-@interface AppState () <AppStateObserver>
+@interface AppState ()
 
 // Container for observers.
 @property(nonatomic, strong) AppStateObserverList* observers;
@@ -119,9 +119,6 @@ void FlushCookieStoreOnIOThread(
 // INITIALIZATION_STAGE_BACKGROUND so this
 // step cannot be included in the `startUpBrowserToStage:` method.
 - (void)initializeUIPreSafeMode;
-
-// Complete the browser initialization for a regular startup.
-- (void)completeUIInitialization;
 
 // Saves the current launch details to user defaults.
 - (void)saveLaunchDetailsToDefaults;
@@ -192,8 +189,6 @@ void FlushCookieStoreOnIOThread(
                name:UIAccessibilityVoiceOverStatusDidChangeNotification
              object:nil];
     crash_keys::SetVoiceOverRunning(UIAccessibilityIsVoiceOverRunning());
-
-    [self addObserver:self];
   }
   return self;
 }
@@ -590,10 +585,6 @@ void FlushCookieStoreOnIOThread(
   [self queueTransitionToNextInitStage];
 }
 
-- (void)completeUIInitialization {
-  DCHECK([self.startupInformation isColdStart]);
-}
-
 #pragma mark - Internal methods.
 
 - (void)saveLaunchDetailsToDefaults {
@@ -749,18 +740,6 @@ void FlushCookieStoreOnIOThread(
 
 - (void)voiceOverStatusDidChange:(NSNotification*)notification {
   crash_keys::SetVoiceOverRunning(UIAccessibilityIsVoiceOverRunning());
-}
-
-#pragma mark - AppStateObserver
-
-// TODO(crbug.com/40756629): Move this logic to a specific agent.
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(AppInitStage)previousInitStage {
-  if (previousInitStage != AppInitStage::kBrowserObjectsForUI) {
-    return;
-  }
-
-  [self completeUIInitialization];
 }
 
 #pragma mark - Private

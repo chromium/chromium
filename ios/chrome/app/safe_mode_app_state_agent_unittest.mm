@@ -69,21 +69,22 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
         safe_mode_swizzle_block_));
   }
 
-  AppState* getAppStateWithMock() {
-    if (!app_state_) {
+  id GetMockAppStateWithMock() {
+    if (!app_state_mock_) {
       // The swizzle block needs the scene state before app_state is created,
       // but the scene state needs the app state. So this alloc before swizzling
       // and initiate after app state is created.
       main_scene_state_ = [FakeSceneState alloc];
 
-      app_state_ = [[AppState alloc]
+      AppState* app_state = [[AppState alloc]
           initWithStartupInformation:startup_information_mock_];
+      app_state_mock_ = OCMPartialMock(app_state);
 
-      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_
+      main_scene_state_ = [main_scene_state_ initWithAppState:app_state
                                                       profile:profile_.get()];
       main_scene_state_.window = GetWindowMock();
     }
-    return app_state_;
+    return app_state_mock_;
   }
 
   id GetWindowMock() { return window_; }
@@ -93,7 +94,7 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
  private:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
-  AppState* app_state_;
+  id app_state_mock_;
   FakeSceneState* main_scene_state_;
 
   std::unique_ptr<ScopedBlockSwizzler> safe_mode_swizzler_;
@@ -110,15 +111,15 @@ TEST_F(SafeModeAppStateAgentTest, startSafeMode) {
   [[[windowMock stub] andReturn:nil] rootViewController];
   [[windowMock stub] setRootViewController:[OCMArg any]];
 
-  AppState* appState = getAppStateWithMock();
+  id appStateMock = GetMockAppStateWithMock();
 
   swizzleSafeModeShouldStart(YES);
 
   SafeModeAppAgent* agent = [[SafeModeAppAgent alloc] init];
-  [agent setAppState:appState];
+  [agent setAppState:appStateMock];
 
   IterateToStage(AppInitStage::kStart, AppInitStage::kSafeMode, agent,
-                 appState);
+                 appStateMock);
 
   SceneState* sceneState = GetSceneState();
 
@@ -137,11 +138,8 @@ TEST_F(SafeModeAppStateAgentTest, startSafeMode) {
 }
 
 TEST_F(SafeModeAppStateAgentTest, dontStartSafeModeBecauseNotNeeded) {
-  AppState* appState = getAppStateWithMock();
-  id appStateMock = OCMPartialMock(appState);
+  id appStateMock = GetMockAppStateWithMock();
   [[appStateMock expect] queueTransitionToNextInitStage];
-  [[appStateMock expect] appState:appState
-       didTransitionFromInitStage:AppInitStage::kSafeMode];
 
   swizzleSafeModeShouldStart(NO);
 
@@ -158,8 +156,7 @@ TEST_F(SafeModeAppStateAgentTest, dontStartSafeModeBecauseNotNeeded) {
 }
 
 TEST_F(SafeModeAppStateAgentTest, dontStartSafeModeBecauseNotActiveLevel) {
-  AppState* appState = getAppStateWithMock();
-  id appStateMock = OCMPartialMock(appState);
+  id appStateMock = GetMockAppStateWithMock();
   [[appStateMock reject] queueTransitionToNextInitStage];
 
   swizzleSafeModeShouldStart(YES);
@@ -178,9 +175,8 @@ TEST_F(SafeModeAppStateAgentTest, dontStartSafeModeBecauseNotActiveLevel) {
 
 TEST_F(SafeModeAppStateAgentTest,
        dontStartSafeModeBecauseFirstSceneHasAlreadyActivated) {
-  AppState* appState = getAppStateWithMock();
+  id appStateMock = GetMockAppStateWithMock();
 
-  id appStateMock = OCMPartialMock(appState);
   [[appStateMock reject] queueTransitionToNextInitStage];
 
   swizzleSafeModeShouldStart(YES);
