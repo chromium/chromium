@@ -59,6 +59,8 @@ class SupervisedUserVerificationPageForBlockedSites
 
  private:
   void RecordReauthStatusMetrics(Status status) override;
+  void RecordSignInTabUmaMetrics(int closed_tab_count,
+                                 int skipped_tab_count) override;
   int GetBlockMessageReasonId();
   supervised_user::FilteringBehaviorReason block_reason_;
   bool is_main_frame_;

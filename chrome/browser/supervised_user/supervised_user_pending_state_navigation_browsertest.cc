@@ -60,6 +60,12 @@ using ::testing::_;
 static constexpr std::string_view kUmaReauthenticationHistogramName =
     "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
 
+static constexpr std::string_view kUmaClosedSignInTabsHistogramName =
+    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialSigninTab.ClosedCount";
+static constexpr std::string_view kUmaSkippedSignInTabsHistogramName =
+    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialSigninTab."
+    "SkippedClosingCount";
+
 class ThrottleTestParam {
  public:
   enum class FeatureStatus : bool {
@@ -365,6 +371,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
       static_cast<int>(
           SupervisedUserVerificationPage::Status::REAUTH_COMPLETED),
       1);
+  histogram_tester.ExpectBucketCount(kUmaClosedSignInTabsHistogramName,
+                                     /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUmaSkippedSignInTabsHistogramName,
+                                     /*sample=*/1, /*expected_count=*/1);
   EXPECT_EQ(2, GetTabCount());
 
   // TODO(b/370115099): Re-introduce a check that the blocked url interstitial

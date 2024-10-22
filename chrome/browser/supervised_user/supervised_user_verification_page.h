@@ -66,6 +66,8 @@ class SupervisedUserVerificationPage
   void OnInterstitialClosing() override;
   int GetHTMLTemplateId() override;
   virtual void RecordReauthStatusMetrics(Status status) = 0;
+  virtual void RecordSignInTabUmaMetrics(int closed_tab_count,
+                                         int skipped_tab_count) = 0;
   void PopulateCommonStrings(base::Value::Dict& load_time_data);
   bool IsReauthCompleted();
 

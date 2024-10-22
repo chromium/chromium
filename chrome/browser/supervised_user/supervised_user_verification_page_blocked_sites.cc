@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
@@ -18,6 +19,8 @@
 namespace {
 constexpr char kBlockedSiteVerifyItsYouInterstitialStateHistogramName[] =
     "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
+constexpr char kSignInTabHistogramPrefix[] =
+    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialSigninTab.";
 }  // namespace
 
 // static
@@ -120,6 +123,17 @@ void SupervisedUserVerificationPageForBlockedSites::RecordReauthStatusMetrics(
   }
   base::UmaHistogramEnumeration(
       kBlockedSiteVerifyItsYouInterstitialStateHistogramName, state);
+}
+
+void SupervisedUserVerificationPageForBlockedSites::RecordSignInTabUmaMetrics(
+    int closed_tab_count,
+    int skipped_tab_count) {
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      std::string(kSignInTabHistogramPrefix) + "ClosedCount", closed_tab_count,
+      /*minimum=*/1, /*maximum=*/20, /*bucket_count=*/20);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      std::string(kSignInTabHistogramPrefix) + "SkippedClosingCount",
+      skipped_tab_count, /*minimum=*/1, /*maximum=*/20, /*bucket_count=*/20);
 }
 
 int SupervisedUserVerificationPageForBlockedSites::GetBlockMessageReasonId() {
