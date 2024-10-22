@@ -64,14 +64,16 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
       return ColorProviderKey::ForcedColors::kNone;
     }
     static constexpr auto kForcedColorsMap =
-        base::MakeFixedFlatMap<PageColors, ColorProviderKey::ForcedColors>(
-            {{PageColors::kOff, ColorProviderKey::ForcedColors::kNone},
-             {PageColors::kDusk, ColorProviderKey::ForcedColors::kDusk},
-             {PageColors::kDesert, ColorProviderKey::ForcedColors::kDesert},
-             {PageColors::kNightSky, ColorProviderKey::ForcedColors::kNightSky},
-             {PageColors::kWhite, ColorProviderKey::ForcedColors::kWhite},
-             {PageColors::kHighContrast,
-              ColorProviderKey::ForcedColors::kActive}});
+        base::MakeFixedFlatMap<PageColors, ColorProviderKey::ForcedColors>({
+            {PageColors::kOff, ColorProviderKey::ForcedColors::kNone},
+            {PageColors::kDusk, ColorProviderKey::ForcedColors::kDusk},
+            {PageColors::kDesert, ColorProviderKey::ForcedColors::kDesert},
+            {PageColors::kNightSky, ColorProviderKey::ForcedColors::kNightSky},
+            {PageColors::kWhite, ColorProviderKey::ForcedColors::kWhite},
+            {PageColors::kHighContrast,
+             ColorProviderKey::ForcedColors::kActive},
+            {PageColors::kAquatic, ColorProviderKey::ForcedColors::kAquatic},
+        });
 
     return kForcedColorsMap.at(page_colors);
   };
@@ -383,11 +385,11 @@ bool NativeTheme::UpdateContrastRelatedStates(
       preferred_contrast = PreferredContrast::kNoPreference;
     } else if (page_colors != PageColors::kHighContrast) {
       // Set other states based on the selected theme (i.e. `kDusk`, `kDesert`,
-      // `kNightSky`, or `kWhite`). This block is only executed when one of
-      // these themes is chosen. `kHighContrast` is not a valid theme here, as
-      // it is only available in forced colors mode.
-      CHECK_GE(page_colors, ui::NativeTheme::PageColors::kDusk);
-      CHECK_LE(page_colors, ui::NativeTheme::PageColors::kWhite);
+      // `kNightSky`, `kWhite`, or `kAquatic`). This block is only executed when
+      // one of these themes is chosen. `kHighContrast` is not a valid theme
+      // here, as it is only available in forced colors mode.
+      CHECK_NE(page_colors, ui::NativeTheme::PageColors::kOff);
+      CHECK_NE(page_colors, ui::NativeTheme::PageColors::kHighContrast);
       forced_colors = true;
       preferred_contrast = PreferredContrast::kMore;
     }
@@ -403,7 +405,8 @@ bool NativeTheme::UpdateContrastRelatedStates(
     if (page_colors != PageColors::kOff &&
         page_colors != PageColors::kHighContrast) {
       bool is_dark_color = page_colors == PageColors::kNightSky ||
-                           page_colors == PageColors::kDusk;
+                           page_colors == PageColors::kDusk ||
+                           page_colors == PageColors::kAquatic;
       PreferredColorScheme page_colors_theme_scheme =
           is_dark_color ? PreferredColorScheme::kDark
                         : PreferredColorScheme::kLight;

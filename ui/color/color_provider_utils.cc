@@ -178,6 +178,8 @@ std::string_view ForcedColorsName(
       return "kNightSky";
     case ColorProviderKey::ForcedColors::kWhite:
       return "kWhite";
+    case ColorProviderKey::ForcedColors::kAquatic:
+      return "kAquatic";
     default:
       return "<invalid>";
   }

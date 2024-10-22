@@ -128,7 +128,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kNightSky = 3,
     kWhite = 4,
     kHighContrast = 5,
-    kMaxValue = kHighContrast,
+    kAquatic = 6,
+    kMaxValue = kAquatic,
   };
 
   // OS-level preferred color scheme. (Ex. high contrast or dark mode color
