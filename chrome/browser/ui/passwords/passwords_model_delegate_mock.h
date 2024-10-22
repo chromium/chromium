@@ -60,7 +60,6 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               (),
               (const override));
   MOCK_METHOD(size_t, GetTotalNumberCompromisedPasswords, (), (const override));
-  MOCK_METHOD(bool, DidAuthForAccountStoreOptInFail, (), (const override));
   MOCK_METHOD(bool, BubbleIsManualFallbackForSaving, (), (const override));
   MOCK_METHOD(bool,
               GpmPinCreatedDuringRecentPasskeyCreation,

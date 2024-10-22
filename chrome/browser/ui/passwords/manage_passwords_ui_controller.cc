@@ -724,10 +724,6 @@ size_t ManagePasswordsUIController::GetTotalNumberCompromisedPasswords() const {
   return post_save_compromised_helper_->compromised_count();
 }
 
-bool ManagePasswordsUIController::DidAuthForAccountStoreOptInFail() const {
-  return passwords_data_.auth_for_account_storage_opt_in_failed();
-}
-
 bool ManagePasswordsUIController::BubbleIsManualFallbackForSaving() const {
   return save_fallback_timer_.IsRunning();
 }
@@ -1266,7 +1262,6 @@ void ManagePasswordsUIController::
         const std::u16string& password,
         password_manager::PasswordManagerClient::ReauthSucceeded
             reauth_succeeded) {
-  passwords_data_.set_auth_for_account_storage_opt_in_failed(!reauth_succeeded);
   if (reauth_succeeded) {
     // Save the password only if it is the same origin and same form manager.
     // Otherwise it can be dangerous (e.g. saving the credentials against

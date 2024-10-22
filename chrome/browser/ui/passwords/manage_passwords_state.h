@@ -166,13 +166,6 @@ class ManagePasswordsState {
     return single_credential_mode_credential_;
   }
 
-  bool auth_for_account_storage_opt_in_failed() const {
-    return auth_for_account_storage_opt_in_failed_;
-  }
-  void set_auth_for_account_storage_opt_in_failed(bool failed) {
-    auth_for_account_storage_opt_in_failed_ = failed;
-  }
-
   bool gpm_pin_created_during_recent_passkey_creation() const {
     return gpm_pin_created_during_recent_passkey_creation_;
   }
@@ -226,10 +219,6 @@ class ManagePasswordsState {
   // The client used for logging.
   raw_ptr<password_manager::PasswordManagerClient, AcrossTasksDanglingUntriaged>
       client_;
-
-  // Whether the last attempt to authenticate to opt-in using password account
-  // storage failed.
-  bool auth_for_account_storage_opt_in_failed_ = false;
 
   // Whether GPM pin was created in the same flow as recent passkey creation.
   bool gpm_pin_created_during_recent_passkey_creation_ = false;

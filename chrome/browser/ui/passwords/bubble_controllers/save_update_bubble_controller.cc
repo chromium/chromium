@@ -273,10 +273,6 @@ bool SaveUpdateBubbleController::IsAccountStorageOptInRequiredBeforeSave() {
   return true;
 }
 
-bool SaveUpdateBubbleController::DidAuthForAccountStoreOptInFail() const {
-  return delegate_->DidAuthForAccountStoreOptInFail();
-}
-
 std::u16string SaveUpdateBubbleController::GetTitle() const {
   PasswordTitleType type = IsCurrentStateUpdate()
                                ? PasswordTitleType::UPDATE_PASSWORD
