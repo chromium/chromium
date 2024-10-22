@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -30,11 +27,11 @@ struct CommandNameEntry {
   EditingCommandType type;
 };
 
-const CommandNameEntry kCommandNameEntries[] = {
+const auto kCommandNameEntries = std::to_array<CommandNameEntry>({
 #define V(name) {#name, EditingCommandType::k##name},
     FOR_EACH_BLINK_EDITING_COMMAND_NAME(V)
 #undef V
-};
+});
 // Test all commands except EditingCommandType::Invalid.
 static_assert(
     std::size(kCommandNameEntries) + 1 ==

@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 
 #include <tuple>
@@ -167,7 +162,7 @@ int CalculateBeforeDeletionLengthsInCodePoints(
   DCHECK_GE(selection_start, 0);
   DCHECK_LE(selection_start, static_cast<int>(text.length()));
 
-  const UChar* u_text = text.Characters16();
+  base::span<const UChar> u_text = text.Span16();
   BackwardCodePointStateMachine backward_machine;
   int counter = before_length_in_code_points;
   int deletion_start = selection_start;
@@ -200,7 +195,7 @@ int CalculateAfterDeletionLengthsInCodePoints(
   const int length = text.length();
   DCHECK_LE(selection_end, length);
 
-  const UChar* u_text = text.Characters16();
+  base::span<const UChar> u_text = text.Span16();
   ForwardCodePointStateMachine forward_machine;
   int counter = after_length_in_code_points;
   int deletion_end = selection_end;

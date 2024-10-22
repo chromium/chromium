@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 
 #include "third_party/blink/public/platform/web_spell_check_panel_host_client.h"
@@ -581,7 +576,7 @@ Vector<TextCheckingResult> SpellChecker::FindMisspellings(const String& text) {
       // SpellCheckWord will write (0, 0) into the output vars, which is what
       // our caller expects if the word is spelled correctly.
       text_checker_client->CheckSpelling(
-          String(characters.data() + word_start, word_length),
+          String(base::span(characters).subspan(word_start, word_length)),
           misspelling_location, misspelling_length, nullptr);
     } else {
       misspelling_location = 0;

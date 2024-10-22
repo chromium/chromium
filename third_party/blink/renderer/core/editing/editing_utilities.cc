@@ -23,12 +23,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+
+#include <array>
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
@@ -106,12 +103,11 @@ using mojom::blink::FormControlType;
 namespace {
 
 std::ostream& operator<<(std::ostream& os, PositionMoveType type) {
-  static const char* const kTexts[] = {"CodeUnit", "BackwardDeletion",
-                                       "GraphemeCluster"};
-  auto* const* const it = std::begin(kTexts) + static_cast<size_t>(type);
-  DCHECK_GE(it, std::begin(kTexts)) << "Unknown PositionMoveType value";
-  DCHECK_LT(it, std::end(kTexts)) << "Unknown PositionMoveType value";
-  return os << *it;
+  static const std::array<const char*, 3> kTexts = {
+      "CodeUnit", "BackwardDeletion", "GraphemeCluster"};
+  DCHECK_LT(static_cast<size_t>(type), kTexts.size())
+      << "Unknown PositionMoveType value";
+  return os << kTexts[static_cast<size_t>(type)];
 }
 
 UChar WhitespaceRebalancingCharToAppend(const String& string,
