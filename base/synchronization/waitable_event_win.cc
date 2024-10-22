@@ -19,6 +19,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -101,15 +102,21 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
       continue;
     }
 
-    // The only other documented result values are `WAIT_ABANDONED` and
-    // `WAIT_FAILED`. Neither of these nor any other result should ever be
-    // emitted unless there is a double free or another entity is tampering
-    // with this instance's event handle. Only fails if the timeout was
-    // INFINITE.
     if (wait_delta.is_max()) {
+      // Failures are likely due to ERROR_INVALID_HANDLE. This unrecoverable
+      // error likely means that the waited-on object has been closed elsewhere,
+      // possibly due to a double-close on an unrelated HANDLE. Crash
+      // immediately since it is not possible to reason about the state of the
+      // process in this case.
+      if (result == WAIT_FAILED) {
+        const auto error = ::GetLastError();
+        SCOPED_CRASH_KEY_NUMBER("win", "WaitError", error);
+        CHECK(false);
+      }
+
+      // The only other documented result value is `WAIT_ABANDONED`. This nor
+      // any other result should ever be emitted.
       ReportInvalidWaitableEventResult(result);
-      // The code may infinite loop and then hang if the returned value
-      // continues being `WAIT_FAILED`.
     }
   }
   return false;
