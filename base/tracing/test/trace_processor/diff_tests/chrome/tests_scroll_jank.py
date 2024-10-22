@@ -307,3 +307,48 @@ class ChromeScrollJankStdlib(TestSuite):
         "BrowserMainToRendererCompositor","[NULL]",22.250000,50230,"GESTURE_SCROLL_UPDATE"
         "SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",22.267000,50517,"GESTURE_SCROLL_UPDATE"
         """))
+
+  def test_chrome_event_latencies(self):
+    return DiffTestBlueprint(
+        trace=DataPath('chrome_input_with_frame_view_new.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.event_latency;
+
+        SELECT
+          id,
+          name,
+          ts,
+          dur,
+          scroll_update_id,
+          is_presented,
+          event_type,
+          track_id,
+          vsync_interval_ms,
+          is_janky_scrolled_frame,
+          buffer_available_timestamp,
+          buffer_ready_timestamp,
+          latch_timestamp,
+          swap_end_timestamp,
+          presentation_timestamp
+        FROM chrome_event_latencies
+        WHERE
+          (
+            event_type = 'GESTURE_SCROLL_UPDATE'
+            OR event_type = 'INERTIAL_GESTURE_SCROLL_UPDATE')
+          AND is_presented
+        ORDER BY id
+        LIMIT 10;
+        """,
+        out=Csv("""
+        "id","name","ts","dur","scroll_update_id","is_presented","event_type","track_id","vsync_interval_ms","is_janky_scrolled_frame","buffer_available_timestamp","buffer_ready_timestamp","latch_timestamp","swap_end_timestamp","presentation_timestamp"
+        69,"EventLatency",4488833086777189,49497000,10,1,"GESTURE_SCROLL_UPDATE",14,11.111000,0,4488833114547189,4488833114874189,4488833119872189,4488833126765189,4488833136274189
+        431,"EventLatency",4488833114107189,33292000,14,1,"INERTIAL_GESTURE_SCROLL_UPDATE",27,11.111000,0,"[NULL]",4488833122361189,4488833137159189,4488833138924189,4488833147399189
+        480,"EventLatency",4488833125213189,33267000,15,1,"INERTIAL_GESTURE_SCROLL_UPDATE",29,11.111000,0,4488833131905189,4488833132275189,4488833148524189,4488833150809189,4488833158480189
+        531,"EventLatency",4488833142387189,27234000,16,1,"INERTIAL_GESTURE_SCROLL_UPDATE",32,11.111000,0,4488833147322189,4488833147657189,4488833159447189,4488833161654189,4488833169621189
+        581,"EventLatency",4488833153584189,27225000,17,1,"INERTIAL_GESTURE_SCROLL_UPDATE",34,11.111000,0,4488833158111189,4488833158333189,4488833170433189,4488833171562189,4488833180809189
+        630,"EventLatency",4488833164707189,27227000,18,1,"INERTIAL_GESTURE_SCROLL_UPDATE",36,11.111000,0,4488833169215189,4488833169529189,4488833181700189,4488833183880189,4488833191934189
+        679,"EventLatency",4488833175814189,27113000,19,1,"INERTIAL_GESTURE_SCROLL_UPDATE",38,11.111000,0,4488833180589189,4488833180876189,4488833192722189,4488833194160189,4488833202927189
+        728,"EventLatency",4488833186929189,38217000,20,1,"INERTIAL_GESTURE_SCROLL_UPDATE",40,11.111000,1,4488833201398189,4488833201459189,4488833215357189,4488833217727189,4488833225146189
+        772,"EventLatency",4488833198068189,38185000,21,1,"INERTIAL_GESTURE_SCROLL_UPDATE",42,11.111000,0,4488833211744189,4488833212097189,4488833226028189,4488833227246189,4488833236253189
+        819,"EventLatency",4488833209202189,38170000,22,1,"INERTIAL_GESTURE_SCROLL_UPDATE",43,11.111000,0,4488833223115189,4488833223308189,4488833237115189,4488833238196189,4488833247372189
+        """))
