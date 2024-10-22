@@ -304,7 +304,8 @@ TEST_F(AccountMenuViewControllerTest, TestAddAccount) {
   fake_system_identity_manager_->AddIdentity(kSecondaryIdentity2);
   [view_controller_
       updateAccountListWithGaiaIDsToAdd:@[ kSecondaryIdentity2.gaiaID ]
-                        gaiaIDsToRemove:@[]];
+                        gaiaIDsToRemove:@[]
+                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]];
   EXPECT_EQ(2, TableView().numberOfSections);
   // The secondary accounts and Add Account...
   EXPECT_EQ(3, [TableView() numberOfRowsInSection:0]);
@@ -317,7 +318,8 @@ TEST_F(AccountMenuViewControllerTest, TestAddAccount) {
 TEST_F(AccountMenuViewControllerTest, TestRemoveAccount) {
   [view_controller_
       updateAccountListWithGaiaIDsToAdd:@[]
-                        gaiaIDsToRemove:@[ kSecondaryIdentity.gaiaID ]];
+                        gaiaIDsToRemove:@[ kSecondaryIdentity.gaiaID ]
+                          gaiaIDsToKeep:@[]];
   EXPECT_EQ(2, TableView().numberOfSections);
   // No Secondary account. Just Add Account...
   EXPECT_EQ(1, [TableView() numberOfRowsInSection:0]);

@@ -105,6 +105,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   // The index path of the cell on which the user tapped while account switching
   // is in progress. It should be reset to nil before any table content occurs.
   NSIndexPath* _selectedIndexPath;
+  // Set to true when the content is set and it is possible to compute the size
+  // of the popover.
+  // If preferredContentSize is set with different values in the same runloop,
+  // UIKit will pick the biggest or the first one (but not the last one).
   BOOL _resizeReady;
 }
 
@@ -177,6 +181,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [self.sheetPresentationController invalidateDetents];
   // Update the popover height.
   [_identityAccountView updateTopPadding:[self navigationBarHeight]];
+  // Force the layout of the TableView to make sure that it has the right width
+  // before using its contentSize.
   [self.tableView setNeedsLayout];
   [self.tableView layoutIfNeeded];
   CGFloat height = self.tableView.contentSize.height;
@@ -454,11 +460,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 // Returns preferred height according to the container view width.
 - (CGFloat)preferredHeightForSheetContent {
-  // Get the size of the container view which is the maximum available size.
-  CGFloat height = self.tableView.contentSize.height;
-  // Add the navigation bar.
-  height += [self navigationBarHeight];
-  return height;
+  // This is the size of the content of the table view and the navigation bar.
+  return self.tableView.contentSize.height + [self navigationBarHeight];
 }
 
 #pragma mark - UITableViewDelegate
@@ -511,7 +514,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
   if (section == [self.tableView numberOfSections] - 1) {
-    //  No footer space for last section.
+    //  The last footer’s height is the margin between the table and the bottom
+    // of the popover/sheet.
     return kSideMargins;
   }
   return kFooterHeight;
@@ -593,7 +597,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 - (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)indicesToAdd
-                          gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove {
+                          gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove
+                            gaiaIDsToKeep:(NSArray<NSString*>*)gaiaIDsToKeep {
   CHECK(!_selectedIndexPath, base::NotFatalUntil::M135);
   [self.tableView deselectRowAtIndexPath:_selectedIndexPath animated:YES];
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
@@ -610,9 +615,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     [accountsIdentifiersToRemove addObject:gaiaID];
   }
   [snapshot deleteItemsWithIdentifiers:accountsIdentifiersToRemove];
-  [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
 
-  [self.tableView reloadData];
+  [snapshot reconfigureItemsWithIdentifiers:gaiaIDsToKeep];
+  [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
   [self resize];
 }
 

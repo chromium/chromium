@@ -170,7 +170,8 @@ TEST_F(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
   const FakeSystemIdentity* thirdIdentity = [FakeSystemIdentity fakeIdentity3];
   OCMExpect([consumer_
       updateAccountListWithGaiaIDsToAdd:@[ thirdIdentity.gaiaID ]
-                        gaiaIDsToRemove:@[]]);
+                        gaiaIDsToRemove:@[]
+                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   fake_system_identity_manager_->AddIdentity(thirdIdentity);
 }
 
@@ -178,15 +179,20 @@ TEST_F(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
 // consumer.
 TEST_F(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
   // Expectations due to ChromeAccountManagerServiceObserver updates.
-  OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
-                                         gaiaIDsToRemove:@[]]);
+  OCMExpect([consumer_
+      updateAccountListWithGaiaIDsToAdd:@[]
+                        gaiaIDsToRemove:@[]
+                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   OCMExpect([consumer_ updatePrimaryAccount]);
-  OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
-                                         gaiaIDsToRemove:@[]]);
+  OCMExpect([consumer_
+      updateAccountListWithGaiaIDsToAdd:@[]
+                        gaiaIDsToRemove:@[]
+                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
 
   OCMExpect([consumer_
       updateAccountListWithGaiaIDsToAdd:@[]
-                        gaiaIDsToRemove:@[ kSecondaryIdentity.gaiaID ]]);
+                        gaiaIDsToRemove:@[ kSecondaryIdentity.gaiaID ]
+                          gaiaIDsToKeep:@[]]);
   {
     base::RunLoop run_loop;
     base::RepeatingClosure closure = run_loop.QuitClosure();
@@ -312,8 +318,10 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
                           targetRect:target];
   VerifyMock();
 
-  OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
-                                         gaiaIDsToRemove:@[]]);
+  OCMExpect([consumer_
+      updateAccountListWithGaiaIDsToAdd:@[]
+                        gaiaIDsToRemove:@[]
+                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   OCMExpect([delegate_ unblockOtherScenesIfPossible]);
   OCMExpect([consumer_ switchingStopped]);
   // Simulate a sign-out failure
@@ -365,8 +373,10 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   // The delegate should not receive any message. The mediator directly sign the
   // user back in the previous account.
   OCMExpect([delegate_ unblockOtherScenesIfPossible]);
-  OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
-                                         gaiaIDsToRemove:@[]]);
+  OCMExpect([consumer_
+      updateAccountListWithGaiaIDsToAdd:@[]
+                        gaiaIDsToRemove:@[]
+                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   OCMExpect([consumer_ updatePrimaryAccount]);
   OCMExpect([consumer_ switchingStopped]);
   onSigninSuccess(SigninCoordinatorResult::SigninCoordinatorResultInterrupted);

@@ -445,21 +445,23 @@
 
   NSMutableArray<NSString*>* gaiaIDsToRemove = [NSMutableArray array];
   NSMutableArray<NSString*>* gaiaIDsToAdd = [NSMutableArray array];
-
+  NSMutableArray<NSString*>* gaiaIDsToKeep = [NSMutableArray array];
   for (id<SystemIdentity> secondaryIdentity : allIdentities) {
+    NSString* gaiaID = secondaryIdentity.gaiaID;
     if (secondaryIdentity == _primaryIdentity) {
       continue;
     }
     BOOL mustAdd = YES;
     for (id<SystemIdentity> displayedIdentity : _identities) {
-      if (secondaryIdentity.gaiaID == displayedIdentity.gaiaID) {
+      if (gaiaID == displayedIdentity.gaiaID) {
+        [gaiaIDsToKeep addObject:gaiaID];
         mustAdd = NO;
         break;
       }
     }
     if (mustAdd) {
       [_identities addObject:secondaryIdentity];
-      [gaiaIDsToAdd addObject:secondaryIdentity.gaiaID];
+      [gaiaIDsToAdd addObject:gaiaID];
     }
   }
 
@@ -474,7 +476,8 @@
   }
 
   [self.consumer updateAccountListWithGaiaIDsToAdd:gaiaIDsToAdd
-                                   gaiaIDsToRemove:gaiaIDsToRemove];
+                                   gaiaIDsToRemove:gaiaIDsToRemove
+                                     gaiaIDsToKeep:gaiaIDsToKeep];
   // In case the primary account information changed.
   if ([self primaryAccountInfoChanged]) {
     [self.consumer updatePrimaryAccount];
