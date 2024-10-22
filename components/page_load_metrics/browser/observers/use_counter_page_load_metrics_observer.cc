@@ -525,6 +525,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kMaskMode, WebDXFeature::kMasks},
           {CSSSampleId::kMask, WebDXFeature::kMasks},
           {CSSSampleId::kPaintOrder, WebDXFeature::kPaintOrder},
+          {CSSSampleId::kBackgroundClip, WebDXFeature::kBackgroundClipText},
       }};
 
   return *kMap;
