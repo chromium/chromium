@@ -39,10 +39,10 @@ constexpr char kEncodedAnalyticsId[] = "test";
 constexpr char kEncodedAnalyticsIdParameter[] = "cad";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kSemanticEventTimestampParameter[] = "zx";
-constexpr char kSemanticEventIdParameter[] = "rid";
 constexpr char kLatencyRequestTypeQueryParameter[] = "rt";
-constexpr char kUserActionIdParameter[] = "rcid";
 constexpr char kUserActionParameter[] = "uact";
+// Event id param used for both semantic events and task completions.
+constexpr char kEventIdParameter[] = "rcid";
 
 // Task completion ids.
 constexpr int kCopyAsImageTaskCompletionID = 233325;
@@ -76,7 +76,7 @@ class LensOverlayGen204ControllerTest : public testing::Test {
  public:
   std::optional<lens::mojom::UserAction> GetTaskCompletionIdFromUrl(GURL url) {
     std::string event_id_param;
-    EXPECT_TRUE(net::GetValueForKeyInQuery(url, kUserActionIdParameter,
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url, kEventIdParameter,
                                            &event_id_param));
     int event_id;
     base::StringToInt(event_id_param, &event_id);
@@ -103,7 +103,7 @@ class LensOverlayGen204ControllerTest : public testing::Test {
 
   std::optional<lens::mojom::SemanticEvent> GetSemanticEventFromUrl(GURL url) {
     std::string event_id_param;
-    EXPECT_TRUE(net::GetValueForKeyInQuery(url, kSemanticEventIdParameter,
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url, kEventIdParameter,
                                            &event_id_param));
     int event_id;
     base::StringToInt(event_id_param, &event_id);

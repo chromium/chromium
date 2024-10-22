@@ -42,8 +42,8 @@ constexpr int kTextGleamsViewEndSemanticEventID = 234180;
 constexpr char kEncodedAnalyticsIdParameter[] = "cad";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kLatencyRequestTypeQueryParameter[] = "rt";
-constexpr char kSemanticEventIdParameter[] = "rid";
-constexpr char kUserActionIdParameter[] = "rcid";
+// Event id param used for both semantic events and task completions.
+constexpr char kEventIdParameter[] = "rcid";
 
 // Request type parameter values.
 constexpr char kFullPageObjectsFetchRequestType[] = "fpof";
@@ -174,7 +174,7 @@ void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
     }
     std::string query = base::StringPrintf(
         "gen_204?uact=4&%s=%" PRIu64 "&%s=%d&%s=%s",
-        kGen204IdentifierQueryParameter, gen204_id_, kUserActionIdParameter,
+        kGen204IdentifierQueryParameter, gen204_id_, kEventIdParameter,
         task_id, kEncodedAnalyticsIdParameter, encoded_analytics_id.c_str());
     auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                               ->search_terms_data()
@@ -200,7 +200,7 @@ void LensOverlayGen204Controller::SendSemanticEventGen204IfEnabled(
     }
     std::string query =
         base::StringPrintf("gen_204?uact=1&%s=%d&zx=%" PRId64 "&%s=%" PRIu64,
-                           kSemanticEventIdParameter, event_id,
+                           kEventIdParameter, event_id,
                            base::Time::Now().InMillisecondsSinceUnixEpoch(),
                            kGen204IdentifierQueryParameter, gen204_id_);
     auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
