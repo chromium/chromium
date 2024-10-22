@@ -153,7 +153,27 @@ public class RecordHistogram {
 
     /**
      * Records a sample in a histogram of times. Useful for recording medium durations. This is the
+     * Java equivalent of the UMA_HISTOGRAM_MEDIUM_TIMES C++ macro.
+     *
+     * <p>Note that histogram samples will always be converted to milliseconds when logged.
+     *
+     * @param name name of the histogram
+     * @param durationMs duration to be recorded in milliseconds
+     */
+    public static void recordMediumTimesHistogram(String name, long durationMs) {
+        recordCustomTimesHistogramMilliseconds(
+                name, durationMs, 1, DateUtils.MINUTE_IN_MILLIS * 3, 50);
+    }
+
+    /**
+     * Records a sample in a histogram of times. Useful for recording medium durations. This is the
      * Java equivalent of the DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES C++ macro.
+     *
+     * <p>Warning: This method has been deprecated in order to be consistent with this function:
+     * https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/histogram_functions.h?q=UmaHistogramMediumTimes
+     * If you modify your logging to use the new method, you will be making a meaningful semantic
+     * change to your data, and should change your histogram's name, as per the guidelines at
+     * https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#revising-histograms.
      *
      * <p>Note that histogram samples will always be converted to milliseconds when logged.
      *

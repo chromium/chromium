@@ -230,6 +230,11 @@
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
                              base::Seconds(10), 50)
 
+// Medium timings - up to 3 minutes.
+#define UMA_HISTOGRAM_MEDIUM_TIMES(name, sample)                  \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Minutes(3), 50)
+
 // Long timings - up to an hour.
 #define UMA_HISTOGRAM_LONG_TIMES(name, sample)                    \
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
