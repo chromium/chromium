@@ -1380,13 +1380,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.MeanEngagement" units="units"
-    expires_after="2022-03-12">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
+    expires_after="2025-03-12">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
     The mean site engagement per origin accumulated by this profile, recorded at
     startup per non-incognito profile, and then upon the first
     engagement-increasing event every hour thereafter.
+
+    Warning: this histogram was expired from 2022-03-12 to 2024-10-22; data may
+    be missing.
   </summary>
 </histogram>
 
