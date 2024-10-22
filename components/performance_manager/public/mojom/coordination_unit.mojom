@@ -5,6 +5,7 @@
 module performance_manager.mojom;
 
 import "mojo/public/mojom/base/process_id.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "components/performance_manager/public/mojom/lifecycle.mojom";
 import "components/performance_manager/public/mojom/v8_contexts.mojom";
@@ -118,4 +119,20 @@ interface ProcessCoordinationUnit {
   // by OnRemoteIframeAttached.
   OnRemoteIframeDetached(blink.mojom.LocalFrameToken parent_frame_token,
                          blink.mojom.RemoteFrameToken remote_frame_token);
+
+  // Called immediately after the interface is connected, to request shared
+  // memory regions that communicate state values between the browser and the
+  // renderer. If any returned region handle is invalid, the renderer will use
+  // default state instead of reading from that memory region.
+  //
+  // `global_region` should contain a list of `std::atomic` enums representing
+  // global scenarios that the renderer should use when making performance
+  // decisions.
+  //
+  // `process_region` should contain a list of `std::atomic` enums representing
+  // scenarios local to the renderer process that it should use when making
+  // performance decisions.
+  RequestSharedPerformanceScenarioRegions() =>
+      (mojo_base.mojom.ReadOnlySharedMemoryRegion? global_region,
+       mojo_base.mojom.ReadOnlySharedMemoryRegion? process_region);
 };

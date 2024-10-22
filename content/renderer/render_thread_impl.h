@@ -57,7 +57,6 @@
 #include "net/nqe/effective_connection_type.h"
 #include "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
@@ -378,8 +377,8 @@ class CONTENT_EXPORT RenderThreadImpl
 #endif
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(RenderThreadImplBrowserTest,
-                           TransferSharedMemoryRegions);
+  FRIEND_TEST_ALL_PREFIXES(RenderThreadImplBrowserDeathTest,
+                           TransferSharedLastForegroundTime);
   friend class RenderThreadImplBrowserTest;
   friend class AgentSchedulingGroup;
 
@@ -413,11 +412,8 @@ class CONTENT_EXPORT RenderThreadImpl
   void CreateAssociatedAgentSchedulingGroup(
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
           agent_scheduling_group) override;
-  void TransferSharedMemoryRegions(
-      base::ReadOnlySharedMemoryRegion last_foreground_time_region,
-      base::ReadOnlySharedMemoryRegion performance_scenario_region,
-      base::ReadOnlySharedMemoryRegion global_performance_scenario_region)
-      override;
+  void TransferSharedLastForegroundTime(
+      base::ReadOnlySharedMemoryRegion last_foreground_time_region) override;
   void OnNetworkConnectionChanged(
       net::NetworkChangeNotifier::ConnectionType type,
       double max_bandwidth_mbps) override;
@@ -502,11 +498,6 @@ class CONTENT_EXPORT RenderThreadImpl
   // delayed) for use cases that require that precision.
   std::optional<base::AtomicSharedMemory<base::TimeTicks>::ReadOnlyMapping>
       last_foreground_time_mapping_;
-
-  std::optional<blink::performance_scenarios::ScopedReadOnlyScenarioMemory>
-      performance_scenario_memory_;
-  std::optional<blink::performance_scenarios::ScopedReadOnlyScenarioMemory>
-      global_performance_scenario_memory_;
 
   blink::WebString user_agent_;
   blink::UserAgentMetadata user_agent_metadata_;

@@ -102,6 +102,8 @@ class ProcessNodeImpl
   void OnRemoteIframeDetached(
       const blink::LocalFrameToken& parent_frame_token,
       const blink::RemoteFrameToken& remote_frame_token) override;
+  void RequestSharedPerformanceScenarioRegions(
+      RequestSharedPerformanceScenarioRegionsCallback callback) override;
 
   // Partial ProcessNode implementation:
   content::ProcessType GetProcessType() const override;

@@ -7,17 +7,21 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/trace_event/named_trigger.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/scenarios/performance_scenarios.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_switches.h"
 
 namespace performance_manager {
 
@@ -31,6 +35,12 @@ content::ProcessType ValidateBrowserChildProcessType(
   CHECK_NE(process_type, content::PROCESS_TYPE_BROWSER);
   CHECK_NE(process_type, content::PROCESS_TYPE_RENDERER);
   return process_type;
+}
+
+base::ReadOnlySharedMemoryRegion GetProcessSharedScenarioRegionOnUI(
+    const RenderProcessHostProxy& proxy) {
+  return proxy.Get() ? GetSharedScenarioRegionForProcess(proxy.Get())
+                     : base::ReadOnlySharedMemoryRegion();
 }
 
 }  // namespace
@@ -171,6 +181,26 @@ void ProcessNodeImpl::OnRemoteIframeDetached(
           remote_frame_token);
     }
   }
+}
+
+void ProcessNodeImpl::RequestSharedPerformanceScenarioRegions(
+    RequestSharedPerformanceScenarioRegionsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSingleProcess)) {
+    // The "child process" is actually running in the same process space. The
+    // global shared memory region is already mapped in, and the per-process
+    // shared memory region can't be used because regions for different
+    // "processes" would overwrite each other.
+    std::move(callback).Run(base::ReadOnlySharedMemoryRegion(),
+                            base::ReadOnlySharedMemoryRegion());
+    return;
+  }
+  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GetProcessSharedScenarioRegionOnUI,
+                     GetRenderProcessHostProxy()),
+      base::BindOnce(std::move(callback), GetGlobalSharedScenarioRegion()));
 }
 
 content::ProcessType ProcessNodeImpl::GetProcessType() const {

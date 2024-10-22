@@ -7,17 +7,23 @@
 #include <optional>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/task_environment.h"
 #include "base/trace_event/named_trigger.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "components/performance_manager/public/scenarios/performance_scenarios.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "content/public/browser/background_tracing_config.h"
+#include "content/public/common/content_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -270,6 +276,51 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
     const FrameNode* public_frame_node = frame_node;
     EXPECT_TRUE(base::Contains(public_frame_nodes, public_frame_node));
   }
+}
+
+TEST_F(ProcessNodeImplTest, RequestSharedPerformanceScenarioRegions) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+
+  // No memory mapped.
+  process_node->RequestSharedPerformanceScenarioRegions(
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_FALSE(global_region.IsValid());
+            EXPECT_FALSE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
+  task_env().RunUntilQuit();
+
+  // Map global memory.
+  ScopedGlobalScenarioMemory global_shared_memory;
+  process_node->RequestSharedPerformanceScenarioRegions(
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_TRUE(global_region.IsValid());
+            EXPECT_FALSE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
+  task_env().RunUntilQuit();
+
+  // TODO(crbug.com/365586676): Mapping process memory needs a RenderProcessHost
+  // so can't be tested here.
+
+  // In single process mode, memory shouldn't be shared even if it's mapped,
+  // because the request isn't actually sent from a different process.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kSingleProcess);
+  process_node->RequestSharedPerformanceScenarioRegions(
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_FALSE(global_region.IsValid());
+            EXPECT_FALSE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
+  task_env().RunUntilQuit();
 }
 
 }  // namespace performance_manager
