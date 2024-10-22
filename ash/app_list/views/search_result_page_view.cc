@@ -109,8 +109,8 @@ void SearchResultPageView::InitializeContainers(
     SearchBoxView* search_box_view) {
   DCHECK(view_delegate);
 
-  // For productivity launcher, the dialog will be anchored to the search box
-  // to keep the position of dialogs consistent.
+  // The dialog will be anchored to the search box to keep the position of
+  // dialogs consistent.
   dialog_controller_ =
       std::make_unique<SearchResultPageDialogController>(search_box_view);
   std::unique_ptr<AppListSearchView> search_view_ptr =

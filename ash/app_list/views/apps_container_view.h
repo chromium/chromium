@@ -41,8 +41,8 @@ class SearchResultPageAnchoredDialog;
 
 // AppsContainerView contains a root level AppsGridView to render the root level
 // app items, and a AppListFolderView to render the app items inside the active
-// folder. With productivity launcher, it also contains the continue section,
-// recent apps, and an optional separator.
+// folder. It also contains the continue section, recent apps, and an optional
+// separator.
 class ASH_EXPORT AppsContainerView
     : public AppListPage,
       public AppListModelProvider::Observer,
@@ -83,8 +83,7 @@ class ASH_EXPORT AppsContainerView
 
   // The minimal top margin for the apps grid (measured from the top of the
   // search box to the top of the apps grid). This margin includes space for
-  // search box and suggestion chips.
-  // For productivity launcher UI, this will not include space for continue
+  // search box and suggestion chips. This will not include space for continue
   // section and recent apps.
   int GetMinTopMarginForAppsGrid(const gfx::Size& search_box_size) const;
 
