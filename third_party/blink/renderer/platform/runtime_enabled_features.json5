@@ -1750,7 +1750,7 @@
     {
       name: "FastNonCompositedScrollHitTest",
       depends_on: ["HitTestOpaqueness", "RasterInducingScroll"],
-      status: "test",
+      status: "stable",
     },
     // Kill switch.
     {
@@ -2267,7 +2267,7 @@
     },
     {
       name: "HitTestOpaqueness",
-      status: "experimental",
+      status: "stable",
     },
     // This is a kill switch for a fix that disables painting of line box hit
     // test data with HitTestOpaqueness.
