@@ -356,16 +356,6 @@ struct SVGAttributeHashTranslator {
   }
 };
 
-template <typename T>
-bool IsElementOfType(const SVGElement&);
-template <>
-inline bool IsElementOfType<const SVGElement>(const SVGElement&) {
-  return true;
-}
-template <>
-inline bool IsElementOfType<const SVGElement>(const Node& node) {
-  return IsA<SVGElement>(node);
-}
 template <>
 struct DowncastTraits<SVGElement> {
   static bool AllowFrom(const Node& node) { return node.IsSVGElement(); }

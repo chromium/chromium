@@ -1979,21 +1979,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   Member<ElementData> element_data_;
 };
 
-template <typename T>
-bool IsElementOfType(const Node&);
-template <>
-inline bool IsElementOfType<const Element>(const Node& node) {
-  return node.IsElementNode();
-}
-template <typename T>
-inline bool IsElementOfType(const Element& element) {
-  return IsElementOfType<T>(static_cast<const Node&>(element));
-}
-template <>
-inline bool IsElementOfType<const Element>(const Element&) {
-  return true;
-}
-
 template <>
 struct DowncastTraits<Element> {
   static bool AllowFrom(const Node& node) { return node.IsElementNode(); }

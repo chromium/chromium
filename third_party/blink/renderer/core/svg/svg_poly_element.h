@@ -55,10 +55,6 @@ class SVGPolyElement : public SVGGeometryElement {
 };
 
 template <>
-inline bool IsElementOfType<const SVGPolyElement>(const Node& node) {
-  return IsA<SVGPolyElement>(node);
-}
-template <>
 struct DowncastTraits<SVGPolyElement> {
   static bool AllowFrom(const Node& node) {
     auto* svg_element = DynamicTo<SVGElement>(node);

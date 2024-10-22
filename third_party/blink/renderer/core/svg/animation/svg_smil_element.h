@@ -315,10 +315,6 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
 };
 
 template <>
-inline bool IsElementOfType<const SVGSMILElement>(const Node& node) {
-  return IsA<SVGSMILElement>(node);
-}
-template <>
 struct DowncastTraits<SVGSMILElement> {
   static bool AllowFrom(const Node& node) {
     auto* svg_element = DynamicTo<SVGElement>(node);

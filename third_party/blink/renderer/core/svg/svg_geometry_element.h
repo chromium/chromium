@@ -84,10 +84,6 @@ class SVGGeometryElement : public SVGGraphicsElement {
 };
 
 template <>
-inline bool IsElementOfType<const SVGGeometryElement>(const Node& node) {
-  return IsA<SVGGeometryElement>(node);
-}
-template <>
 struct DowncastTraits<SVGGeometryElement> {
   static bool AllowFrom(const Node& node) {
     auto* svg_element = DynamicTo<SVGElement>(node);
