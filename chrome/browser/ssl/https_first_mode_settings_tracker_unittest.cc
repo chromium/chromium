@@ -12,6 +12,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -60,6 +61,8 @@ class HttpsFirstModeSettingsTrackerTest : public testing::Test {
         HttpsFirstModeServiceFactory::GetDefaultFactoryForTesting());
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(builder);
+
+    ChromeSecurityBlockingPageFactory::SetEnterpriseManagedForTesting(false);
   }
 
   void TearDown() override {
@@ -183,6 +186,40 @@ TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
   engagement_service->ResetBaseScoreForURL(GURL("https://example.com:8443"),
                                            90);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+}
+
+// Check that Site Engagement heuristic is never enabled on enterprise
+// managed devices.
+TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
+       EnterpriseManaged_ShouldNotEnable) {
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histograms;
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile());
+  ASSERT_TRUE(engagement_service);
+
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+
+  ChromeSecurityBlockingPageFactory::SetEnterpriseManagedForTesting(true);
+
+  // Set the https score high. HTTPS shouldn't be enforced because the device
+  // is managed.
+  engagement_service->ResetBaseScoreForURL(GURL("https://example.com"), 90);
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+
   EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
       GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
@@ -1058,6 +1095,78 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
   // allowlist.
   EXPECT_TRUE(
       state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
+}
+
+// Same as DontEnablePrefWhenObservedForLongEnoughWithManyWarnings, but with
+// an enterprise managed device. Should never enable HFM.
+TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
+       EnterpriseManaged_ShouldNotEnable) {
+  ChromeSecurityBlockingPageFactory::SetEnterpriseManagedForTesting(true);
+
+  base::Time now = clock()->Now();
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
+
+  clock()->SetNow(now + base::Days(3));
+  RecordFallbackEventAndMaybeEnableHttpsFirstMode();
+  // Fallback entries are recorded even on enterprise managed devices.
+  EXPECT_EQ(1u, hfm_service()->GetFallbackEntryCountForTesting());
+
+  // We haven't observed the profile for long enough. HFM shouldn't be enabled
+  // yet.
+  EXPECT_FALSE(
+      hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
+  // Prefs shouldn't be modified yet.
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
+
+  clock()->SetNow(now + base::Days(8));
+  RecordFallbackEventAndMaybeEnableHttpsFirstMode();
+  // Fallback entries are recorded even on enterprise managed devices.
+  EXPECT_EQ(2u, hfm_service()->GetFallbackEntryCountForTesting());
+
+  // We have observed for long enough, and we don't have too many fallback
+  // events (2). However, last fallback event was too recent, don't enable just
+  // yet.
+  EXPECT_FALSE(
+      hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
+
+  clock()->SetNow(now + base::Days(9) + base::Hours(1));
+  hfm_service()
+      ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  EXPECT_EQ(2u, hfm_service()->GetFallbackEntryCountForTesting());
+
+  // Last fallback event is now a day old, but we don't have enough recent
+  // navigations. Don't enable yet.
+  EXPECT_FALSE(
+      hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Do lots of navigations. Should still not enable HFM because the device is
+  // managed.
+  IncrementRecentNavigationCount(100u);
+  hfm_service()
+      ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  EXPECT_FALSE(
+      hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsFirstBalancedMode));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+  // Shouldn't modify strict mode pref:
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
 }
 
 // Tests that the correct setting at startup is logged, when the Balanced Mode

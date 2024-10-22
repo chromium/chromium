@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/api/settings_private/generated_prefs.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/generated_https_first_mode_pref.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
@@ -175,6 +176,13 @@ class HttpsUpgradesBrowserTest
   ~HttpsUpgradesBrowserTest() override = default;
 
   void SetUp() override {
+    // HFM heuristics are disabled on enterprise managed machines, so some of
+    // the tests may fail on bots. Explicitly set management status to false.
+    // Some of the tests check enterprise policies, so this configuration is
+    // unusual because non-enterprise machines are unlikely to have an
+    // enterprise allowlist, but it's good for test coverage.
+    ChromeSecurityBlockingPageFactory::SetEnterpriseManagedForTesting(false);
+
     // HFM is controlled by a pref (configured in SetUpOnMainThread).
     switch (https_upgrades_test_type()) {
       case HttpsUpgradesTestType::kHttpsFirstModeOnly:
