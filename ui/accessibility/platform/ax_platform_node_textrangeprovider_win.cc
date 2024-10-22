@@ -659,6 +659,20 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
     if (FAILED(hr))
       return E_FAIL;
 
+    if (attribute_id == UIA_AnnotationTypesAttributeId &&
+        current_value.Type() == VT_EMPTY) {
+      // This attribute UIA_AnnotationTypesAttributeId is different than others
+      // in the sense that its default value is null. When it gets queried for a
+      // text range that contains both a spelling error and other words without
+      // annotations, the returned value should solely be the spelling
+      // annotation, not the mixed attribute.
+      //
+      // Example: "The quik[spelling error] brown fox.". This text range
+      // contains only one annotation (quik) because the other segments would
+      // return VT_EMPTY.
+      continue;
+    }
+
     if (attribute_value.Type() == VT_EMPTY) {
       attribute_value = std::move(current_value);
     } else if (attribute_value != current_value) {

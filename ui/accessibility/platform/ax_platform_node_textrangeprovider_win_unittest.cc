@@ -4616,6 +4616,37 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   }
 
   {
+    // |heading_text_node| = "more text" (without quotes)
+    // In this, 'text' is annotated with a spelling error.
+    //
+    // We want to test for spelling errors in 'text' selection combined with
+    // character(s) from adjacent anchor(s) which do not have any such
+    // annotations.
+    //
+    // start: TextPosition, anchor_id=4, text_offset=5,
+    //        annotated_text=more <t>ext marked text
+    // end  : TextPosition, anchor_id=6, text_offset=9,
+    //        annotated_text=more text m<a>rked text
+    AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+        AXPlatformNodeFromNode(heading_text_node));
+    ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
+    CreateTextRangeProviderWin(
+        range_with_annotations, owner,
+        /*start_anchor=*/heading_text_node, /*start_offset=*/5,
+        /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+        /*end_anchor=*/mark_text_node, /*end_offset=*/1,
+        /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+    base::win::ScopedVariant annotation_types_variant;
+    EXPECT_HRESULT_SUCCEEDED(range_with_annotations->GetAttributeValue(
+        UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
+
+    std::vector<int> expected_annotations = {AnnotationType_SpellingError};
+    EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
+                            expected_annotations);
+  }
+
+  {
     base::win::ScopedVariant empty_variant;
     EXPECT_UIA_TEXTATTRIBUTE_EQ(mark_text_range_provider,
                                 UIA_AnnotationTypesAttributeId, empty_variant);
