@@ -136,6 +136,7 @@ constexpr char kOpMatmulTypeName[] = "matmul";
 constexpr char kOpPadTypeName[] = "pad";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpReshapeTypeName[] = "reshape";
+constexpr char kOpScatterElementsTypeName[] = "scatter_along_axis";
 constexpr char kOpSigmoidTypeName[] = "sigmoid";
 constexpr char kOpSliceTypeName[] = "slice_by_size";
 constexpr char kOpSoftmaxTypeName[] = "softmax";
@@ -202,6 +203,7 @@ constexpr char kOpParamAlpha[] = "alpha";
 constexpr char kOpParamAxes[] = "axes";
 constexpr char kOpParamAxis[] = "axis";
 constexpr char kOpParamBeta[] = "beta";
+constexpr char kOpParamData[] = "data";
 constexpr char kOpParamDataTypeName[] = "dtype";
 constexpr char kOpParamEpsilon[] = "epsilon";
 constexpr char kOpParamGamma[] = "gamma";
@@ -210,6 +212,8 @@ constexpr char kOpParamKeepDims[] = "keep_dims";
 constexpr char kOpParamMode[] = "mode";
 constexpr char kOpParamPad[] = "pad";
 constexpr char kOpParamReps[] = "reps";
+constexpr char kOpParamUpdates[] = "updates";
+constexpr char kOpParamScatterModeValue[] = "update";
 constexpr char kOpParamValidateIndices[] = "validate_indices";
 constexpr char kOpParamX[] = "x";
 constexpr char kOpParamY[] = "y";
@@ -820,9 +824,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_transformation.reshape
        /*reshape_input=*/kFloatsAndInt32,
-       // TODO(crbug.com/370535834): Implement ScatterElements.
-       /*scatter_elements_input=*/{},
-       /*scatter_elements_indices=*/{},
+       /*scatter_elements_input=*/kFloatsAndInt32,
+       /*scatter_elements_indices=*/{OperandDataType::kInt32},
        // TODO(crbug.com/363544348): Implement ScatterND.
        /*scatter_nd_input=*/{},
        /*scatter_nd_indices=*/{},
@@ -1056,6 +1059,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
             AddOperationForReshape(*operation->get_reshape(), block));
         break;
       }
+      case mojom::Operation::Tag::kScatterElements: {
+        AddOperationForScatterElements(*operation->get_scatter_elements(),
+                                       block);
+        break;
+      }
       case mojom::Operation::Tag::kSigmoid: {
         CHECK(context_properties_.data_type_limits.sigmoid_input.Has(
             MILDataTypeToOperandType(
@@ -1127,7 +1135,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kScatterElements:
       case mojom::Operation::Tag::kScatterNd:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
@@ -2857,6 +2864,41 @@ GraphBuilderCoreml::AddOperationForReshape(
     CoreML::Specification::MILSpec::Block& block) {
   return AddOperationForReshape(operation.input_operand_id,
                                 operation.output_operand_id, block);
+}
+
+void GraphBuilderCoreml::AddOperationForScatterElements(
+    const mojom::ScatterElements& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  CHECK(context_properties_.data_type_limits.gather_input.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.input_operand_id).mil_data_type)));
+  CHECK(context_properties_.data_type_limits.gather_indices.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.indices_operand_id).mil_data_type)));
+  CHECK(context_properties_.data_type_limits.gather_input.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.updates_operand_id).mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpScatterElementsTypeName);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamData,
+                      operation.input_operand_id);
+
+  // TODO(crbug.com/370535834): Handle negative and out-of-bounds indices.
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamIndices,
+                      operation.indices_operand_id);
+
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamUpdates,
+                      operation.updates_operand_id);
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kOpParamAxis, CreateScalarImmediateValue(
+                          base::checked_cast<int32_t>(operation.axis))},
+       {kOpParamMode, CreateStringImmediateValue(kOpParamScatterModeValue)},
+       {kOpParamValidateIndices, CreateScalarImmediateValue(false)}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
 }
 
 void GraphBuilderCoreml::AddOperationForSlice(
