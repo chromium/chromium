@@ -115,7 +115,6 @@ NSData* GetSecurityDomainSecret(
                 completion:fetchSecurityDomainSecretCompletion
                      error:nil];
   } else {
-    // TODO(crbug.com/355042392): Show enroll UI.
     __weak __typeof(self) weakSelf = self;
     auto enrollCompletion = ^(NSError* enroll_error) {
       [weakSelf fetchKeysForGaia:gaia
@@ -123,7 +122,9 @@ NSData* GetSecurityDomainSecret(
                       completion:fetchSecurityDomainSecretCompletion
                            error:enroll_error];
     };
-    [self enrollForGaia:gaia completion:enrollCompletion];
+    [self.delegate showEnrollmentWelcomeScreen:^{
+      [weakSelf enrollForGaia:gaia completion:enrollCompletion];
+    }];
   }
 }
 
@@ -185,8 +186,12 @@ NSData* GetSecurityDomainSecret(
   if (keyList.size() == 0 && _navigationController) {
     // A valid navigation controller is needed to show the reauthentication UI.
     // Otherwise, it won't be possible to perform reauthentication.
-    // TODO(crbug.com/355042392): Show reauth UI.
-    [self reauthenticateForGaia:gaia purpose:purpose completion:completion];
+    __weak __typeof(self) weakSelf = self;
+    [self.delegate showReauthenticationWelcomeScreen:^{
+      [weakSelf reauthenticateForGaia:gaia
+                              purpose:purpose
+                           completion:completion];
+    }];
   } else {
     completion(GetSecurityDomainSecret(keyList));
   }

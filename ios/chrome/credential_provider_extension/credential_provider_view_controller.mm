@@ -39,9 +39,11 @@ UIColor* BackgroundColor() {
 }
 }
 
-@interface CredentialProviderViewController () <ConfirmationAlertActionHandler,
-                                                CredentialResponseHandler,
-                                                SuccessfulReauthTimeAccessor>
+@interface CredentialProviderViewController () <
+    ConfirmationAlertActionHandler,
+    CredentialResponseHandler,
+    PasskeyKeychainProviderBridgeDelegate,
+    SuccessfulReauthTimeAccessor>
 
 // Interface for the persistent credential store.
 @property(nonatomic, strong) id<CredentialStore> credentialStore;
@@ -73,6 +75,10 @@ UIColor* BackgroundColor() {
 // the next time this view appears.
 @property(nonatomic, strong)
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
+
+// Navigation controller to present passkey-related UIs.
+@property(nonatomic, strong)
+    UINavigationController* passkeyNavigationController;
 
 // Bridge to the PasskeyKeychainProvider that manages passkey vault keys.
 @property(nonatomic, strong)
@@ -285,12 +291,21 @@ UIColor* BackgroundColor() {
   return _accountVerificator;
 }
 
+- (UINavigationController*)passkeyNavigationController {
+  if (!_passkeyNavigationController) {
+    self.passkeyNavigationController = [[UINavigationController alloc] init];
+    self.passkeyNavigationController.modalPresentationStyle =
+        UIModalPresentationCurrentContext;
+  }
+  return _passkeyNavigationController;
+}
+
 - (PasskeyKeychainProviderBridge*)passkeyKeychainProviderBridge {
   if (!_passkeyKeychainProviderBridge) {
-    // TODO(crbug.com/355047459): Add navigation controller.
     _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
         initWithEnableLogging:[self metricsAreEnabled]
-         navigationController:nil];
+         navigationController:self.passkeyNavigationController];
+    _passkeyKeychainProviderBridge.delegate = self;
   }
   return _passkeyKeychainProviderBridge;
 }
@@ -349,6 +364,28 @@ UIColor* BackgroundColor() {
   [self.consentCoordinator stop];
   self.consentCoordinator = nil;
   [self.extensionContext completeExtensionConfigurationRequest];
+}
+
+#pragma mark - PasskeyKeychainProviderBridgeDelegate
+
+- (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock {
+  // TODO(crbug.com/355042392): Start the relevant coordinator and present the
+  // enrollment welcome screen. `enrollBlock` is the block that should be
+  // executed if the user do decide to proceed with the enrollment from the
+  // welcome screen.
+  [self.presentingView presentViewController:self.passkeyNavigationController
+                                    animated:YES
+                                  completion:enrollBlock];
+}
+
+- (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock {
+  // TODO(crbug.com/355042392): Start the relevant coordinator and present the
+  // reauthentication welcome screen. `reauthenticateBlock` is the block that
+  // should be executed if the user do decide to proceed with the
+  // reauthentication from the welcome screen.
+  [self.presentingView presentViewController:self.passkeyNavigationController
+                                    animated:YES
+                                  completion:reauthenticateBlock];
 }
 
 #pragma mark - SuccessfulReauthTimeAccessor
@@ -686,6 +723,12 @@ UIColor* BackgroundColor() {
   // If it is not set, metrics are disabled.
   return [app_group::GetGroupUserDefaults()
              objectForKey:@(app_group::kChromeAppClientID)] != nil;
+}
+
+// Returns the view currently being presented, which should therefore be the new
+// view to present the next one.
+- (UIViewController*)presentingView {
+  return self.presentedViewController ? self.presentedViewController : self;
 }
 
 @end

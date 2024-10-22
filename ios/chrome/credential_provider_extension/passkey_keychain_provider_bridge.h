@@ -9,6 +9,17 @@
 #import "ios/chrome/credential_provider_extension/passkey_keychain_provider.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 
+// Delegate for the PasskeyKeychainProviderBridge.
+@protocol PasskeyKeychainProviderBridgeDelegate
+
+// Presents the passkey enrollment welcome screen.
+- (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock;
+
+// Presents the passkey reauthentication weclome screen.
+- (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock;
+
+@end
+
 // Class to bridge the CredentialProviderViewController with the
 // PasskeyKeychainProvider.
 @interface PasskeyKeychainProviderBridge : NSObject
@@ -21,6 +32,8 @@
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+@property(nonatomic, weak) id<PasskeyKeychainProviderBridgeDelegate> delegate;
 
 // Initiates the process to fetch the security domain secret and calls the
 // completion block with the security domain secret the input argument.
