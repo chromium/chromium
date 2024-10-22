@@ -68,6 +68,10 @@ class FacilitatedPaymentsController {
  private:
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsControllerTest, OnDismissed);
 
+  // Clears any native references from the Java view components, and then clears
+  // the pointers to the Java objects.
+  void ClearJavaViewComponents();
+
   // View that displays the surface.
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
       view_;

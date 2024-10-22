@@ -26,11 +26,7 @@ FacilitatedPaymentsController::FacilitatedPaymentsController(
           this)) {}
 
 FacilitatedPaymentsController::~FacilitatedPaymentsController() {
-  if (java_object_) {
-    payments::facilitated::
-        Java_FacilitatedPaymentsPaymentMethodsControllerBridge_onNativeDestroyed(
-            base::android::AttachCurrentThread(), java_object_);
-  }
+  ClearJavaViewComponents();
 }
 
 bool FacilitatedPaymentsController::IsInLandscapeMode() {
@@ -46,8 +42,7 @@ bool FacilitatedPaymentsController::Show(
   }
 
   if (!view_->RequestShowContent(std::move(bank_account_suggestions))) {
-    view_->OnDismissed();
-    java_object_.Reset();
+    ClearJavaViewComponents();
     return false;
   }
 
@@ -62,8 +57,7 @@ bool FacilitatedPaymentsController::ShowForEwallet(
   }
 
   if (!view_->RequestShowContentForEwallet(ewallet_suggestions)) {
-    view_->OnDismissed();
-    java_object_.Reset();
+    ClearJavaViewComponents();
     return false;
   }
 
@@ -83,8 +77,7 @@ void FacilitatedPaymentsController::Dismiss() {
 }
 
 void FacilitatedPaymentsController::OnDismissed(JNIEnv* env) {
-  view_->OnDismissed();
-  java_object_.Reset();
+  ClearJavaViewComponents();
 
   if (on_user_decision_callback_) {
     std::move(on_user_decision_callback_).Run(false, kFakeInstrumentId);
@@ -113,4 +106,14 @@ void FacilitatedPaymentsController::SetViewForTesting(
     std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
         view) {
   view_ = std::move(view);
+}
+
+void FacilitatedPaymentsController::ClearJavaViewComponents() {
+  view_->OnDismissed();
+  if (java_object_) {
+    payments::facilitated::
+        Java_FacilitatedPaymentsPaymentMethodsControllerBridge_onNativeDestroyed(
+            base::android::AttachCurrentThread(), java_object_);
+  }
+  java_object_.Reset();
 }

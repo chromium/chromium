@@ -96,10 +96,11 @@ TEST_F(FacilitatedPaymentsControllerTest, Show_BridgeWasNotAbleToShow) {
   ON_CALL(*mock_view_, RequestShowContent).WillByDefault(Return(false));
 
   // The bottom sheet could not be shown, verify that the view is informed about
-  // this failure.
+  // this failure. The second OnDismissed call is triggered when the test
+  // fixture destroys the `controller`.
   EXPECT_CALL(*mock_view_,
               RequestShowContent(testing::ElementsAreArray(bank_accounts_)));
-  EXPECT_CALL(*mock_view_, OnDismissed);
+  EXPECT_CALL(*mock_view_, OnDismissed).Times(2);
 
   // The call should return false when bridge fails to show a bottom sheet.
   EXPECT_FALSE(controller_->Show(bank_accounts_, base::DoNothing()));
@@ -122,8 +123,10 @@ TEST_F(FacilitatedPaymentsControllerTest, OnDismissed) {
   controller_->Show(bank_accounts_, mock_on_user_decision_callback.Get());
 
   // Verify that dismissal event is forwarded to the view. Also verify that the
-  // manager is informed of the diamissal via the callback.
-  EXPECT_CALL(*mock_view_, OnDismissed);
+  // manager is informed of the diamissal via the callback. The second
+  // OnDismissed call is triggered when the test fixture destroys the
+  // `controller`.
+  EXPECT_CALL(*mock_view_, OnDismissed).Times(2);
   EXPECT_CALL(mock_on_user_decision_callback,
               Run(/*is_selected=*/false, /*selected_bank_account_id=*/-1L));
 
@@ -209,10 +212,11 @@ TEST_F(FacilitatedPaymentsControllerTest,
       .WillByDefault(Return(false));
 
   // The bottom sheet could not be shown, verify that the view is informed about
-  // this failure.
+  // this failure. The second OnDismissed call is triggered when the test
+  // fixture destroys the `controller`.
   EXPECT_CALL(*mock_view_, RequestShowContentForEwallet(
                                testing::ElementsAreArray(ewallets_)));
-  EXPECT_CALL(*mock_view_, OnDismissed);
+  EXPECT_CALL(*mock_view_, OnDismissed).Times(2);
 
   // The call should return false when bridge fails to show a bottom sheet.
   EXPECT_FALSE(controller_->ShowForEwallet(ewallets_));
