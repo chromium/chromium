@@ -154,25 +154,16 @@ void InstallIsolatedWebAppCommand::StartWithLock(
   lock_ = std::move(lock);
   url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
 
-  auto weak_ptr = weak_factory_.GetWeakPtr();
-  RunChainedCallbacks(
-      base::BindOnce(&InstallIsolatedWebAppCommand::CopyToProfileDirectory,
-                     weak_ptr),
-      base::BindOnce(&InstallIsolatedWebAppCommand::CheckTrustAndSignatures,
-                     weak_ptr),
-      base::BindOnce(&InstallIsolatedWebAppCommand::CreateStoragePartition,
-                     weak_ptr),
-      base::BindOnce(&InstallIsolatedWebAppCommand::LoadInstallUrl, weak_ptr),
-      base::BindOnce(
-          &InstallIsolatedWebAppCommand::CheckInstallabilityAndRetrieveManifest,
-          weak_ptr),
-      base::BindOnce(
-          &InstallIsolatedWebAppCommand::ValidateManifestAndCreateInstallInfo,
-          weak_ptr),
-      base::BindOnce(
-          &InstallIsolatedWebAppCommand::RetrieveIconsAndPopulateInstallInfo,
-          weak_ptr),
-      base::BindOnce(&InstallIsolatedWebAppCommand::FinalizeInstall, weak_ptr));
+  RunChainedWeakCallbacks(
+      weak_factory_.GetWeakPtr(),
+      &InstallIsolatedWebAppCommand::CopyToProfileDirectory,
+      &InstallIsolatedWebAppCommand::CheckTrustAndSignatures,
+      &InstallIsolatedWebAppCommand::CreateStoragePartition,
+      &InstallIsolatedWebAppCommand::LoadInstallUrl,
+      &InstallIsolatedWebAppCommand::CheckInstallabilityAndRetrieveManifest,
+      &InstallIsolatedWebAppCommand::ValidateManifestAndCreateInstallInfo,
+      &InstallIsolatedWebAppCommand::RetrieveIconsAndPopulateInstallInfo,
+      &InstallIsolatedWebAppCommand::FinalizeInstall);
 }
 
 void InstallIsolatedWebAppCommand::CopyToProfileDirectory(

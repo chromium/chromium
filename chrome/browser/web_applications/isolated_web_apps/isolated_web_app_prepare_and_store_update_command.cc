@@ -130,34 +130,19 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::StartWithLock(
   lock_ = std::move(lock);
   url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
 
-  auto weak_ptr = weak_factory_.GetWeakPtr();
-  RunChainedCallbacks(
-      base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::
-                         CheckIfUpdateIsStillApplicable,
-                     weak_ptr),
-      base::BindOnce(
-          &IsolatedWebAppUpdatePrepareAndStoreCommand::CopyToProfileDirectory,
-          weak_ptr),
-      base::BindOnce(
-          &IsolatedWebAppUpdatePrepareAndStoreCommand::CheckTrustAndSignatures,
-          weak_ptr),
-      base::BindOnce(
-          &IsolatedWebAppUpdatePrepareAndStoreCommand::CreateStoragePartition,
-          weak_ptr),
-      base::BindOnce(
-          &IsolatedWebAppUpdatePrepareAndStoreCommand::LoadInstallUrl,
-          weak_ptr),
-      base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::
-                         CheckInstallabilityAndRetrieveManifest,
-                     weak_ptr),
-      base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::
-                         ValidateManifestAndCreateInstallInfo,
-                     weak_ptr),
-      base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::
-                         RetrieveIconsAndPopulateInstallInfo,
-                     weak_ptr),
-      base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize,
-                     weak_ptr));
+  using PrepareAndStoreUpdateCommand =
+      IsolatedWebAppUpdatePrepareAndStoreCommand;
+  RunChainedWeakCallbacks(
+      weak_factory_.GetWeakPtr(),
+      &PrepareAndStoreUpdateCommand::CheckIfUpdateIsStillApplicable,
+      &PrepareAndStoreUpdateCommand::CopyToProfileDirectory,
+      &PrepareAndStoreUpdateCommand::CheckTrustAndSignatures,
+      &PrepareAndStoreUpdateCommand::CreateStoragePartition,
+      &PrepareAndStoreUpdateCommand::LoadInstallUrl,
+      &PrepareAndStoreUpdateCommand::CheckInstallabilityAndRetrieveManifest,
+      &PrepareAndStoreUpdateCommand::ValidateManifestAndCreateInstallInfo,
+      &PrepareAndStoreUpdateCommand::RetrieveIconsAndPopulateInstallInfo,
+      &PrepareAndStoreUpdateCommand::Finalize);
 }
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(

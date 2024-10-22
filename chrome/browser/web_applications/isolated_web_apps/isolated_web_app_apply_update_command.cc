@@ -98,26 +98,16 @@ void IsolatedWebAppApplyUpdateCommand::StartWithLock(
   url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
 
   auto weak_ptr = weak_factory_.GetWeakPtr();
-  RunChainedCallbacks(
-      base::BindOnce(
-          &IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending,
-          weak_ptr),
-      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures,
-                     weak_ptr),
-      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::CreateStoragePartition,
-                     weak_ptr),
-      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::LoadInstallUrl,
-                     weak_ptr),
-      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::
-                         CheckInstallabilityAndRetrieveManifest,
-                     weak_ptr),
-      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::
-                         ValidateManifestAndCreateInstallInfo,
-                     weak_ptr),
-      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::
-                         RetrieveIconsAndPopulateInstallInfo,
-                     weak_ptr),
-      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::Finalize, weak_ptr));
+  RunChainedWeakCallbacks(
+      weak_factory_.GetWeakPtr(),
+      &IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending,
+      &IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures,
+      &IsolatedWebAppApplyUpdateCommand::CreateStoragePartition,
+      &IsolatedWebAppApplyUpdateCommand::LoadInstallUrl,
+      &IsolatedWebAppApplyUpdateCommand::CheckInstallabilityAndRetrieveManifest,
+      &IsolatedWebAppApplyUpdateCommand::ValidateManifestAndCreateInstallInfo,
+      &IsolatedWebAppApplyUpdateCommand::RetrieveIconsAndPopulateInstallInfo,
+      &IsolatedWebAppApplyUpdateCommand::Finalize);
 }
 
 void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(

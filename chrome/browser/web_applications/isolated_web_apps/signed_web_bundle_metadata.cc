@@ -55,22 +55,14 @@ class WebAppInstallInfoFetcher {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     callback_ = std::move(callback);
 
-    auto weak_ptr = weak_factory_.GetWeakPtr();
-    RunChainedCallbacks(
-        base::BindOnce(&WebAppInstallInfoFetcher::CheckTrustAndSignatures,
-                       weak_ptr),
-        base::BindOnce(&WebAppInstallInfoFetcher::LoadInstallUrl, weak_ptr),
-        base::BindOnce(
-            &WebAppInstallInfoFetcher::CheckInstallabilityAndRetrieveManifest,
-            weak_ptr),
-        base::BindOnce(
-            &WebAppInstallInfoFetcher::ValidateManifestAndCreateInstallInfo,
-            weak_ptr),
-        base::BindOnce(
-            &WebAppInstallInfoFetcher::RetrieveIconsAndPopulateInstallInfo,
-            weak_ptr),
-        base::BindOnce(&WebAppInstallInfoFetcher::CreateSignedWebBundleMetadata,
-                       weak_ptr));
+    RunChainedWeakCallbacks(
+        weak_factory_.GetWeakPtr(),
+        &WebAppInstallInfoFetcher::CheckTrustAndSignatures,
+        &WebAppInstallInfoFetcher::LoadInstallUrl,
+        &WebAppInstallInfoFetcher::CheckInstallabilityAndRetrieveManifest,
+        &WebAppInstallInfoFetcher::ValidateManifestAndCreateInstallInfo,
+        &WebAppInstallInfoFetcher::RetrieveIconsAndPopulateInstallInfo,
+        &WebAppInstallInfoFetcher::CreateSignedWebBundleMetadata);
   }
 
  private:
