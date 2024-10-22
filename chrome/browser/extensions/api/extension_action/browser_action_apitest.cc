@@ -496,8 +496,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
 
   // Test there is a browser action in the toolbar.
   ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
-  gfx::Image initial_bar_icon =
-      GetBrowserActionsBar()->GetIcon(extension->id());
+  ToolbarActionView* action_view =
+      extensions_container()->GetViewForId(extension->id());
+  gfx::Image initial_bar_icon = gfx::Image(action_view->GetIconForTest());
 
   ExtensionHost* background_page =
       ProcessManager::Get(profile())->GetBackgroundHostForExtension(
@@ -512,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
                      base::StringPrintf(kScript, "invisibleImageData")));
     // The icon should not have changed.
     EXPECT_TRUE(gfx::test::AreImagesEqual(
-        initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
+        initial_bar_icon, gfx::Image(action_view->GetIconForTest())));
   }
 
   {
@@ -520,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
                          base::StringPrintf(kScript, "visibleImageData")));
     // The icon should have changed.
     EXPECT_FALSE(gfx::test::AreImagesEqual(
-        initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
+        initial_bar_icon, gfx::Image(action_view->GetIconForTest())));
   }
 }
 
@@ -984,7 +985,9 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   // gfx::Image.
   TestIconImageObserver::WaitForExtensionActionIcon(extension, profile());
 
-  gfx::Image first_icon = GetBrowserActionsBar()->GetIcon(extension->id());
+  ToolbarActionView* action_view =
+      extensions_container()->GetViewForId(extension->id());
+  gfx::Image first_icon = gfx::Image(action_view->GetIconForTest());
   ASSERT_FALSE(first_icon.IsEmpty());
 
   TestExtensionActionAPIObserver observer(profile(), extension->id());
@@ -994,7 +997,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   // Wait for extension action to be updated.
   observer.Wait();
 
-  gfx::Image next_icon = GetBrowserActionsBar()->GetIcon(extension->id());
+  gfx::Image next_icon = gfx::Image(action_view->GetIconForTest());
   ASSERT_FALSE(next_icon.IsEmpty());
   EXPECT_FALSE(gfx::test::AreImagesEqual(first_icon, next_icon));
 }
