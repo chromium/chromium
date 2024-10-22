@@ -206,6 +206,8 @@ targets.binaries.script(
     name = "blink_pytype",
     label = "//third_party/blink/tools:blink_pytype",
     script = "//third_party/blink/tools/run_pytype.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(
@@ -940,6 +942,8 @@ targets.binaries.script(
     name = "fuchsia_pytype",
     label = "//testing:fuchsia_pytype",
     script = "//build/fuchsia/test/run_pytype.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
@@ -999,6 +1003,8 @@ targets.binaries.script(
     name = "gold_common_pytype",
     label = "//build:gold_common_pytype",
     script = "//build/skia_gold_common/run_pytype.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(
@@ -1023,6 +1029,8 @@ targets.binaries.script(
     name = "gpu_pytype",
     label = "//content/test:gpu_pytype",
     script = "//content/test/gpu/run_pytype.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
@@ -1895,6 +1903,8 @@ targets.binaries.script(
     name = "testing_pytype",
     label = "//testing:testing_pytype",
     script = "//testing/run_pytype.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(

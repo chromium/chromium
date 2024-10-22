@@ -47,7 +47,8 @@
           "builder": "linux-chromeos-annotator-rel",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-chromeos-annotator-rel/targets"
     }
   },
   "$build/reclient": {

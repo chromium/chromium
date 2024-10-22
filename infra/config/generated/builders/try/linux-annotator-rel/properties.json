@@ -38,7 +38,8 @@
           "builder": "linux-annotator-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-annotator-rel/targets"
     }
   },
   "$build/reclient": {

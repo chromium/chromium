@@ -1,0 +1,24 @@
+{
+  "linux-multiscreen-fyi-rel": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--gtest_filter=*MultiScreen*:*VirtualDisplayUtil*"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "multiscreen_interactive_ui_tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-24.04",
+            "pool": "chromium.tests.multiscreen"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      }
+    ]
+  }
+}

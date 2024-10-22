@@ -38,7 +38,8 @@
           "builder": "Linux Viz",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-viz-rel/targets"
     }
   },
   "$build/reclient": {

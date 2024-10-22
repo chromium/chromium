@@ -1238,6 +1238,20 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_linux_rel_isolated_scripts",
+    targets = [
+        "chromedriver_py_tests_isolated_scripts",
+        "chromium_web_tests_high_dpi_isolated_scripts",
+        "desktop_chromium_isolated_scripts",
+        "linux_specific_chromium_isolated_scripts",
+        "mojo_python_unittests_isolated_scripts",
+        "pytype_tests",
+        "telemetry_perf_unittests_isolated_scripts",
+        "vulkan_swiftshader_isolated_scripts",
+    ],
+)
+
+targets.bundle(
     name = "chromium_linux_rel_isolated_scripts_code_coverage",
     targets = [
         "chromedriver_py_tests_isolated_scripts",
@@ -1318,6 +1332,34 @@ targets.bundle(
         "mac_specific_isolated_scripts",
         "mojo_python_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
+# Multiscreen tests for desktop platforms. See: crbug.com/346565331.
+targets.bundle(
+    name = "chromium_multiscreen_gtests",
+    targets = [
+        "multiscreen_interactive_ui_tests",
+    ],
+    per_test_modifications = {
+        "multiscreen_interactive_ui_tests": targets.mixin(
+            args = [
+                "--gtest_filter=*MultiScreen*:*VirtualDisplayUtil*",
+            ],
+            swarming = targets.swarming(
+                dimensions = {
+                    "pool": "chromium.tests.multiscreen",
+                },
+            ),
+        ),
+    },
+)
+
+# Multiscreen tests for desktop platforms. See: crbug.com/346565331.
+targets.bundle(
+    name = "chromium_multiscreen_gtests_fyi",
+    targets = [
+        "chromium_multiscreen_gtests",
     ],
 )
 
@@ -2922,6 +2964,14 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "headless_browser_gtests",
+    targets = [
+        "headless_browsertests",
+        "headless_unittests",
+    ],
+)
+
+targets.bundle(
     name = "ios_clang_tot_device_tests",
     targets = [
         targets.bundle(
@@ -3196,6 +3246,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "linux_viz_gtests",
+    targets = [
+        "gpu_fyi_vulkan_swiftshader_gtests",
+    ],
+)
+
+targets.bundle(
     name = "monochrome_public_apk_checker_isolated_script",
     targets = [
         "monochrome_public_apk_checker",
@@ -3265,6 +3322,17 @@ targets.bundle(
     name = "public_build_scripts",
     targets = [
         "checkbins",
+    ],
+)
+
+targets.bundle(
+    name = "pytype_tests",
+    targets = [
+        "blink_pytype",
+        "fuchsia_pytype",
+        "gold_common_pytype",
+        "gpu_pytype",
+        "testing_pytype",
     ],
 )
 

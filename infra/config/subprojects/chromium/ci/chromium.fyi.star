@@ -123,6 +123,18 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "linux_viz_gtests",
+            "vulkan_swiftshader_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "viz",
@@ -183,6 +195,11 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "test_traffic_annotation_auditor_script",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "network|traffic|annotations",
@@ -223,6 +240,50 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "linux_chromeos_gtests",
+            "linux_chromeos_isolated_scripts",
+        ],
+        mixins = [
+            "x86-64",
+            "linux-jammy",
+            "chromium-tests-oslogin",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 110,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 16,
+                ),
+            ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+            "net_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "pthreadpool_unittests": targets.remove(
+                reason = "pthreadpool is not built for ChromeOS currently.",
+            ),
+            "unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "wayland_client_perftests": targets.remove(
+                reason = "https://crbug.com/859307",
+            ),
+        },
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
@@ -257,6 +318,11 @@ ci.builder(
             "remoteexec",
             "use_cups",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "test_traffic_annotation_auditor_script",
         ],
     ),
     builderless = True,
@@ -295,6 +361,34 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_webkit_isolated_scripts",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                args = [
+                    "--additional-driver-flag=--force-browsing-instance-reset-between-tests",
+                ],
+                # The flag above will slow the tests down, and we don't want
+                # the bot to timeout, so set a higher timeout here.
+                # TODO(wjmaclean): It would be nice if we could somehow specify
+                # a delta to the default/inherited timeout instead of an
+                # absolute.
+                swarming = targets.swarming(
+                    hard_timeout_sec = 1500,
+                ),
+            ),
+            "blink_wpt_tests": targets.mixin(
+                args = [
+                    "--additional-driver-flag=--force-browsing-instance-reset-between-tests",
+                ],
+            ),
+        },
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux|blink",
@@ -323,6 +417,15 @@ ci.builder(
             "dcheck_always_on",
             "linux",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_gtests",
+            "chromium_webkit_isolated_scripts",
+        ],
+        mixins = [
+            "linux-jammy",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -354,6 +457,14 @@ ci.builder(
             "minimal_symbols",
             "linux",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "fieldtrial_browser_tests",
+        ],
+        mixins = [
+            "linux-jammy",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -420,6 +531,14 @@ ci.builder(
             "minimal_symbols",
             "linux",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_multiscreen_gtests_fyi",
+        ],
+        mixins = [
+            "linux-noble",
         ],
     ),
     builderless = True,
@@ -571,6 +690,17 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "perfetto_gtests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
@@ -707,6 +837,33 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "headless_shell_wpt_tests_isolated_scripts",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "headless_shell_wpt_tests_include_all": targets.mixin(
+                args = [
+                    "--test-type",
+                    "testharness",
+                    "reftest",
+                    "crashtest",
+                    "print-reftest",
+                    "--exit-after-n-crashes-or-timeouts=10000",
+                    "--exit-after-n-failures=10000",
+                    "--no-retry-failures",
+                ],
+                experiment_percentage = 100,
+                swarming = targets.swarming(
+                    shards = 15,
+                ),
+            ),
+        },
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
@@ -820,6 +977,14 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "headless_browser_gtests",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
@@ -843,6 +1008,32 @@ ci.builder(
             "linux",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_linux_gtests",
+            "chromium_linux_rel_isolated_scripts",
+        ],
+        mixins = [
+            targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "pool": "chromium.tests.no-external-ip",
+                    },
+                    expiration_sec = 43200,
+                ),
+            ),
+            "isolate_profile_data",
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "telemetry_perf_unittests": targets.mixin(
+                args = [
+                    "--xvfb",
+                    "--jobs=1",
+                ],
+            ),
+        },
     ),
     builderless = False,
     os = os.LINUX_DEFAULT,
@@ -933,6 +1124,17 @@ ci.builder(
             "linux",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "upload_perfetto",
+        ],
+        additional_compile_targets = [
+            "trace_processor_shell",
+        ],
+    ),
+    targets_settings = targets.settings(
+        use_swarming = False,
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(

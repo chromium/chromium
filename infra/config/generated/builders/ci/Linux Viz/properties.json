@@ -44,7 +44,8 @@
           "builder": "linux-viz-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Viz/targets"
     }
   },
   "$build/reclient": {

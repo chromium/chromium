@@ -546,6 +546,7 @@ targets.mixin(
 
 targets.mixin(
     name = "chromium-tests-oslogin",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "pool": "chromium.tests.oslogin",
@@ -1035,6 +1036,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux-noble",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "Ubuntu-24.04",

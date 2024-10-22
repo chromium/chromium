@@ -44,7 +44,8 @@
           "builder": "linux-fieldtrial-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-fieldtrial-rel/targets"
     }
   },
   "$build/reclient": {

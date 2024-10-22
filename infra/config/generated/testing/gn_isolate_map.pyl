@@ -188,6 +188,7 @@
     "label": "//third_party/blink/tools:blink_pytype",
     "type": "script",
     "script": "//third_party/blink/tools/run_pytype.py",
+    "skip_usage_check": True,
   },
   "blink_tests": {
     "label": "//:blink_tests",
@@ -891,6 +892,7 @@
     "label": "//testing:fuchsia_pytype",
     "type": "script",
     "script": "//build/fuchsia/test/run_pytype.py",
+    "skip_usage_check": True,
   },
   "fuchsia_sizes": {
     "label": "//tools/fuchsia/size_tests:fuchsia_sizes",
@@ -940,6 +942,7 @@
     "label": "//build:gold_common_pytype",
     "type": "script",
     "script": "//build/skia_gold_common/run_pytype.py",
+    "skip_usage_check": True,
   },
   "google_apis_unittests": {
     "label": "//google_apis:google_apis_unittests",
@@ -961,6 +964,7 @@
     "label": "//content/test:gpu_pytype",
     "type": "script",
     "script": "//content/test/gpu/run_pytype.py",
+    "skip_usage_check": True,
   },
   "gpu_unittests": {
     "label": "//gpu:gpu_unittests",
@@ -1710,6 +1714,7 @@
     "label": "//testing:testing_pytype",
     "type": "script",
     "script": "//testing/run_pytype.py",
+    "skip_usage_check": True,
   },
   "touch_to_fill_junit_tests": {
     "label": "//chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests",

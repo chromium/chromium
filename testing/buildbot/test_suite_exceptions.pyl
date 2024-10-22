@@ -116,18 +116,6 @@
           'hard_timeout': 2400,
         },
       },
-      'linux-blink-wpt-reset-rel': {
-        'args': [
-          '--additional-driver-flag=--force-browsing-instance-reset-between-tests',
-        ],
-        # The flag above will slow the tests down, and we don't want the bot to
-        # timeout, so set a higher timeout here.
-        # TODO(wjmaclean): It would be nice if we could somehow specify a delta
-        # to the default/inherited timeout instead of an absolute.
-        'swarming': {
-          'hard_timeout': 1500,
-        },
-      },
       'linux-layout-tests-edit-ng': {
         'args': [
           '--flag-specific=enable-editing-ng',
@@ -236,11 +224,6 @@
         'swarming': {
           'hard_timeout': 2400,
         },
-      },
-      'linux-blink-wpt-reset-rel': {
-        'args': [
-          '--additional-driver-flag=--force-browsing-instance-reset-between-tests',
-        ],
       },
       'linux-layout-tests-edit-ng': {
         'args': [
@@ -381,11 +364,6 @@
       'linux-chromeos-dbg': {
         'swarming': {
           'shards': 140,
-        },
-      },
-      'linux-chromeos-dbg-oslogin': {
-        'swarming': {
-          'shards': 110,
         },
       },
       'linux-chromeos-rel': {
@@ -593,11 +571,6 @@
         },
       },
       'linux-chromeos-dbg': {
-        'swarming': {
-          'shards': 16,
-        },
-      },
-      'linux-chromeos-dbg-oslogin': {
         'swarming': {
           'shards': 16,
         },
@@ -856,22 +829,6 @@
   },
   'headless_shell_wpt_tests_include_all': {
     'modifications': {
-      'linux-wpt-chromium-rel': {
-        'args': [
-          '--test-type',
-          'testharness',
-          'reftest',
-          'crashtest',
-          'print-reftest',
-          '--exit-after-n-crashes-or-timeouts=10000',
-          '--exit-after-n-failures=10000',
-          '--no-retry-failures',
-        ],
-        'swarming': {
-          'shards': 15,
-        },
-        'experiment_percentage': 100,
-      },
       'mac13-wpt-chromium-rel': {
         'args': [
           '--test-type',
@@ -983,11 +940,6 @@
           'shards': 12,
         },
       },
-      'linux-chromeos-dbg-oslogin': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
       'linux-chromeos-rel': {
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
@@ -1082,11 +1034,6 @@
         }
       },
       'linux-chromeos-dbg': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'linux-chromeos-dbg-oslogin': {
         'swarming': {
           'shards': 2,
         },
@@ -1269,7 +1216,6 @@
     'remove_from': [
       # pthreadpool is not built for ChromeOS currently.
       'linux-chromeos-dbg',
-      'linux-chromeos-dbg-oslogin',
       'linux-chromeos-rel',
     ],
   },
@@ -1349,12 +1295,6 @@
         'args': [
           # TODO(crbug.com/40756418): Re-enable.
           '--skip=benchmarks.benchmark_smoke_unittest.BenchmarkSmokeTest.wasmpspdfkit',
-        ],
-      },
-      'linux-rel-no-external-ip': {
-        'args': [
-          '--xvfb',
-          '--jobs=1',
         ],
       },
     },
@@ -1437,11 +1377,6 @@
           'shards': 4,
         },
       },
-      'linux-chromeos-dbg-oslogin': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
       'linux-chromeos-rel': {
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
@@ -1516,7 +1451,6 @@
   'wayland_client_perftests': {
     'remove_from': [
       'linux-chromeos-dbg',  # https://crbug.com/859307
-      'linux-chromeos-dbg-oslogin',
     ],
   },
   'webgl2_conformance_d3d11_passthrough_tests': {

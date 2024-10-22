@@ -44,7 +44,8 @@
           "builder": "linux-annotator-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-annotator-rel/targets"
     }
   },
   "$build/reclient": {

@@ -891,20 +891,6 @@
       },
     },
 
-    'chromium_multiscreen_gtests': {
-      'multiscreen_interactive_ui_tests': {
-        'test': 'interactive_ui_tests',
-        'args': [
-          '--gtest_filter=*MultiScreen*:*VirtualDisplayUtil*',
-        ],
-        'swarming': {
-          'dimensions': {
-            'pool': 'chromium.tests.multiscreen',
-          },
-        },
-      },
-    },
-
     'chromium_web_tests_high_dpi_isolated_scripts': {
       'high_dpi_blink_web_tests': {
         'test_common': {
@@ -2934,11 +2920,6 @@
       },
     },
 
-    'headless_browser_gtests': {
-      'headless_browsertests': {},
-      'headless_unittests': {},
-    },
-
     'headless_shell_wpt_tests_isolated_scripts': {
       'headless_shell_wpt_tests_include_all': {
         'test_common': {
@@ -3789,44 +3770,6 @@
       },
     },
 
-    'pytype_tests': {
-      'blink_pytype': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-        },
-      },
-      'fuchsia_pytype': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-        },
-      },
-      'gold_common_pytype': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-        },
-      },
-      'gpu_pytype': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-        },
-      },
-      'testing_pytype': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-        },
-      },
-    },
-
     'site_isolation_android_fyi_gtests': {
       'site_per_process_android_browsertests': {
         'test_common': {
@@ -4520,17 +4463,6 @@
       'vr_platform_specific_chromium_gtests',
     ],
 
-    'chromium_linux_rel_isolated_scripts': [
-      'chromedriver_py_tests_isolated_scripts',
-      'chromium_web_tests_high_dpi_isolated_scripts',
-      'desktop_chromium_isolated_scripts',
-      'linux_specific_chromium_isolated_scripts',
-      'mojo_python_unittests_isolated_scripts',
-      'pytype_tests',
-      'telemetry_perf_unittests_isolated_scripts',
-      'vulkan_swiftshader_isolated_scripts',
-    ],
-
     'chromium_mac_gtests': [
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
@@ -4566,10 +4498,6 @@
       'mac_specific_isolated_scripts',
       'mojo_python_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
-    ],
-
-    'chromium_multiscreen_gtests_fyi': [
-      'chromium_multiscreen_gtests',
     ],
 
     'chromium_win10_gtests': [
@@ -4715,10 +4643,6 @@
       'linux_flavor_specific_chromium_gtests',
       'non_android_chromium_gtests',
       'pixel_experimental_browser_tests_gtests',
-    ],
-
-    'linux_viz_gtests': [
-      'gpu_fyi_vulkan_swiftshader_gtests',
     ],
 
     'network_service_extra_gtests': [

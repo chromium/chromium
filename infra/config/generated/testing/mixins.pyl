@@ -175,13 +175,6 @@
       'service_account': 'chromium-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
-  'chromium-tests-oslogin': {
-    'swarming': {
-      'dimensions': {
-        'pool': 'chromium.tests.oslogin',
-      },
-    },
-  },
   'chromium_nexus_5x_oreo': {
     'swarming': {
       'dimensions': {
@@ -398,13 +391,6 @@
     'swarming': {
       'dimensions': {
         'os': 'Ubuntu-22.04',
-      },
-    },
-  },
-  'linux-noble': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-24.04',
       },
     },
   },

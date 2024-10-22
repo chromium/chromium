@@ -790,6 +790,19 @@
     # The following builders in this group have been migrated to set their
     # targets in the builders' declarations in
     # //infra/config/subprojects/ci/chromium.fyi.star
+    #   Linux Viz
+    #   linux-annotator-rel
+    #   linux-blink-heap-verification
+    #   linux-blink-wpt-reset-rel
+    #   linux-chromeos-annotator-rel
+    #   linux-chromeos-dbg-oslogin
+    #   linux-fieldtrial-rel
+    #   linux-headless-shell-rel
+    #   linux-multiscreen-fyi-rel
+    #   linux-perfetto-rel
+    #   linux-rel-no-external-ip
+    #   linux-upload-perfetto
+    #   linux-wpt-chromium-rel
     #   mac-fieldtrial-tester
     'name': 'chromium.fyi',
     'mixins': ['chromium-tester-service-account'],
@@ -853,18 +866,6 @@
           'xcode_16_main',
           'xctest',
         ],
-      },
-      'Linux Viz': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_viz_gtests',
-          'isolated_scripts': 'vulkan_swiftshader_isolated_scripts',
-        },
       },
       'Mac Builder (reclient compare)': {
         'additional_compile_targets': [
@@ -1158,109 +1159,6 @@
         ],
         'test_suites': {
           'isolated_scripts': 'ios18_sdk_simulator_tests'
-        },
-      },
-      'linux-annotator-rel': {
-        'test_suites': {
-          'scripts': 'test_traffic_annotation_auditor_script',
-        },
-      },
-      'linux-blink-heap-verification': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_gtests',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'linux-blink-wpt-reset-rel': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'linux-chromeos-annotator-rel': {
-        'test_suites': {
-          'scripts': 'test_traffic_annotation_auditor_script'
-        },
-      },
-      'linux-chromeos-dbg-oslogin': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'chromium-tests-oslogin',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_chromeos_gtests',
-          'isolated_scripts': 'linux_chromeos_isolated_scripts',
-        },
-      },
-      'linux-fieldtrial-rel': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fieldtrial_browser_tests',
-        },
-      },
-      'linux-headless-shell-rel': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'headless_browser_gtests',
-        },
-      },
-      'linux-multiscreen-fyi-rel': {
-        'mixins': [
-          'linux-noble',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_multiscreen_gtests_fyi',
-        },
-      },
-      'linux-perfetto-rel': {
-        'additional_compile_targets': [ 'all' ],
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'perfetto_gtests',
-        },
-      },
-      'linux-rel-no-external-ip': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-jammy',
-        ],
-        'swarming': {
-          'dimensions': {
-            'pool': 'chromium.tests.no-external-ip',
-          },
-          'expiration': 43200,
-        },
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
-        },
-      },
-      'linux-upload-perfetto': {
-        'additional_compile_targets': [ 'trace_processor_shell' ],
-        'test_suites': {
-          'isolated_scripts': 'upload_perfetto',
-        },
-        'use_swarming': False,
-      },
-      'linux-wpt-chromium-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'headless_shell_wpt_tests_isolated_scripts',
         },
       },
       'mac-osxbeta-rel': {

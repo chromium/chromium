@@ -41,7 +41,8 @@
           "builder": "linux-chromeos-dbg-oslogin",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-chromeos-dbg-oslogin/targets"
     }
   },
   "$build/reclient": {

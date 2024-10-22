@@ -44,7 +44,8 @@
           "builder": "linux-blink-heap-verification-try",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-blink-heap-verification/targets"
     }
   },
   "$build/reclient": {

@@ -788,23 +788,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# Multiscreen tests for desktop platforms. See: crbug.com/346565331.
-targets.legacy_basic_suite(
-    name = "chromium_multiscreen_gtests",
-    tests = {
-        "multiscreen_interactive_ui_tests": targets.legacy_test_config(
-            args = [
-                "--gtest_filter=*MultiScreen*:*VirtualDisplayUtil*",
-            ],
-            swarming = targets.swarming(
-                dimensions = {
-                    "pool": "chromium.tests.multiscreen",
-                },
-            ),
-        ),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "chromium_mac_scripts",
     tests = {
@@ -2233,14 +2216,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "headless_browser_gtests",
-    tests = {
-        "headless_browsertests": targets.legacy_test_config(),
-        "headless_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "ios_blink_tests",
     tests = {
         "absl_hardening_tests": targets.legacy_test_config(),
@@ -3013,17 +2988,6 @@ targets.legacy_basic_suite(
         "pixel_experimental_browser_tests": targets.legacy_test_config(
             experiment_percentage = 100,
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "pytype_tests",
-    tests = {
-        "blink_pytype": targets.legacy_test_config(),
-        "fuchsia_pytype": targets.legacy_test_config(),
-        "gold_common_pytype": targets.legacy_test_config(),
-        "gpu_pytype": targets.legacy_test_config(),
-        "testing_pytype": targets.legacy_test_config(),
     },
 )
 

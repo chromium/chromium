@@ -38,7 +38,8 @@
           "builder": "linux-upload-perfetto",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-upload-perfetto/targets"
     }
   },
   "$build/reclient": {

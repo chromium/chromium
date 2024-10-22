@@ -135,20 +135,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "chromium_linux_rel_isolated_scripts",
-    basic_suites = [
-        "chromedriver_py_tests_isolated_scripts",
-        "desktop_chromium_isolated_scripts",
-        "linux_specific_chromium_isolated_scripts",
-        "mojo_python_unittests_isolated_scripts",
-        "pytype_tests",
-        "telemetry_perf_unittests_isolated_scripts",
-        "vulkan_swiftshader_isolated_scripts",
-        "chromium_web_tests_high_dpi_isolated_scripts",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "chromium_mac_gtests",
     basic_suites = [
         "chromium_gtests",
@@ -197,14 +183,6 @@ targets.legacy_compound_suite(
         "mac_specific_isolated_scripts",
         "mojo_python_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts",
-    ],
-)
-
-# Multiscreen tests for desktop platforms. See: crbug.com/346565331.
-targets.legacy_compound_suite(
-    name = "chromium_multiscreen_gtests_fyi",
-    basic_suites = [
-        "chromium_multiscreen_gtests",
     ],
 )
 
@@ -413,13 +391,6 @@ targets.legacy_compound_suite(
         "non_android_chromium_gtests",
         "pixel_experimental_browser_tests_gtests",
         "ash_pixel_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "linux_viz_gtests",
-    basic_suites = [
-        "gpu_fyi_vulkan_swiftshader_gtests",
     ],
 )
 

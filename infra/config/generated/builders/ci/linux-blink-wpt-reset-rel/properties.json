@@ -37,7 +37,8 @@
           "builder": "linux-blink-wpt-reset-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-blink-wpt-reset-rel/targets"
     }
   },
   "$build/reclient": {
