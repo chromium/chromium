@@ -2046,11 +2046,36 @@ TEST_F(DataTypeManagerImplTest,
 
   // Only the controller for bookmarks should be exercised, because reading list
   // is not active.
-  EXPECT_CALL(*GetBatchUploader(READING_LIST), TriggerLocalDataMigration)
+  EXPECT_CALL(*GetBatchUploader(READING_LIST), TriggerLocalDataMigration())
       .Times(0);
-  EXPECT_CALL(*GetBatchUploader(BOOKMARKS), TriggerLocalDataMigration);
+  EXPECT_CALL(*GetBatchUploader(BOOKMARKS), TriggerLocalDataMigration());
 
-  dtm_->TriggerLocalDataMigration({BOOKMARKS, READING_LIST});
+  dtm_->TriggerLocalDataMigration(DataTypeSet{BOOKMARKS, READING_LIST});
+}
+
+TEST_F(DataTypeManagerImplTest,
+       ShouldOnlyMigrateActiveTypesUponTriggerLocalDataMigrationWithItems) {
+  InitDataTypeManager(
+      /*types_without_transport_mode_support=*/{},
+      /*types_with_transport_mode_support=*/{PASSWORDS, READING_LIST},
+      /*types_with_batch_uploader=*/{PASSWORDS, READING_LIST});
+  Configure({PASSWORDS});
+  FinishAllDownloadsUntilIdle();
+  ASSERT_EQ(dtm_->GetActiveDataTypes(), AddControlTypesTo({PASSWORDS}));
+
+  // Only the controller for passwords should be exercised, because reading list
+  // is not active.
+  EXPECT_CALL(*GetBatchUploader(READING_LIST),
+              TriggerLocalDataMigration(testing::_))
+      .Times(0);
+  std::vector<syncer::LocalDataItemModel::DataId> password_ids{"p1", "p2"};
+  std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items{
+      {DataType::PASSWORDS, password_ids},
+      {DataType::READING_LIST, {"rl1", "rl2"}}};
+  EXPECT_CALL(*GetBatchUploader(PASSWORDS),
+              TriggerLocalDataMigration(password_ids));
+
+  dtm_->TriggerLocalDataMigration(items);
 }
 
 }  // namespace

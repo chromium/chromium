@@ -14,6 +14,7 @@ static_library("service") {
     "data_type_controller.cc",
     "data_type_controller.h",
     "data_type_encryption_handler.h",
+    "data_type_local_data_batch_uploader.cc",
     "data_type_local_data_batch_uploader.h",
     "data_type_manager.cc",
     "data_type_manager.h",

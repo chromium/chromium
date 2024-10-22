@@ -63,6 +63,9 @@ class DataTypeManagerImpl : public DataTypeManager,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
   void TriggerLocalDataMigration(DataTypeSet types) override;
+  void TriggerLocalDataMigration(
+      std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items)
+      override;
   State state() const override;
   TypeStatusMapForDebugging GetTypeStatusMapForDebugging(
       DataTypeSet throttled_types,

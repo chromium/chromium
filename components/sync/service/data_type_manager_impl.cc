@@ -10,6 +10,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"
+#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -953,6 +954,25 @@ void DataTypeManagerImpl::TriggerLocalDataMigration(DataTypeSet types) {
     controllers_.at(type)
         ->GetLocalDataBatchUploader()
         ->TriggerLocalDataMigration();
+  }
+}
+
+void DataTypeManagerImpl::TriggerLocalDataMigration(
+    std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items) {
+  DataTypeSet supported_types = base::Intersection(
+      GetDataTypesWithLocalDataBatchUploader(), GetActiveDataTypes());
+  for (auto it = items.cbegin(); it != items.cend(); /* no increment */) {
+    if (!supported_types.Has(it->first)) {
+      it = items.erase(it);  // `erase` returns the next element.
+    } else {
+      ++it;
+    }
+  }
+
+  for (auto& [type, item_list] : items) {
+    controllers_.at(type)
+        ->GetLocalDataBatchUploader()
+        ->TriggerLocalDataMigration(std::move(item_list));
   }
 }
 
