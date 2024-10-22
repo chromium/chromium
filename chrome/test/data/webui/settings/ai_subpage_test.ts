@@ -4,30 +4,37 @@
 
 // clang-format off
 import type {SettingsAiCompareSubpageElement, SettingsAiTabOrganizationSubpageElement, SettingsHistorySearchPageElement} from 'chrome://settings/lazy_load.js';
-import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
+import {AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {AiPageCompareInteractions, AiPageHistorySearchInteractions, AiPageTabOrganizationInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
 // clang-format on
 
 suite('TabOrganizationSubpage', function() {
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
   let subpage: SettingsAiTabOrganizationSubpageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
 
   function createPage() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-ai-tab-organization-subpage');
-    subpage.prefs = settingsPrefs.prefs;
     document.body.appendChild(subpage);
     return flushTasks();
+  }
+
+  async function assertFeatureInteractionMetrics(
+      interaction: AiPageTabOrganizationInteractions, action: AiPageActions) {
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordAiPageTabOrganizationInteractions');
+    assertEquals(interaction, result);
+
+    assertEquals(action, await metricsBrowserProxy.whenCalled('recordAction'));
   }
 
   test('tabOrganizationLearnMore', async () => {
@@ -38,10 +45,16 @@ suite('TabOrganizationSubpage', function() {
     assertEquals(
         learnMoreLink.href,
         loadTimeData.getString('tabOrganizationLearnMoreUrl'));
+
+    learnMoreLink.click();
+    await assertFeatureInteractionMetrics(
+        AiPageTabOrganizationInteractions.LEARN_MORE_LINK_CLICKED,
+        AiPageActions.TAB_ORGANIZATION_LEARN_MORE_CLICKED);
   });
 });
 
 suite('HistorySearchSubpage', function() {
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let subpage: SettingsHistorySearchPageElement;
   let settingsPrefs: SettingsPrefsElement;
@@ -54,11 +67,22 @@ suite('HistorySearchSubpage', function() {
   });
 
   function createPage() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-history-search-page');
     subpage.prefs = settingsPrefs.prefs;
     document.body.appendChild(subpage);
     return flushTasks();
+  }
+
+  async function assertFeatureInteractionMetrics(
+      interaction: AiPageHistorySearchInteractions, action: string) {
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordAiPageHistorySearchInteractions');
+    assertEquals(interaction, result);
+
+    assertEquals(action, await metricsBrowserProxy.whenCalled('recordAction'));
   }
 
   test('historySearchToggle', async () => {
@@ -75,13 +99,21 @@ suite('HistorySearchSubpage', function() {
 
     // Check ENABLED case.
     toggle.click();
+    await assertFeatureInteractionMetrics(
+        AiPageHistorySearchInteractions.HISTORY_SEARCH_ENABLED,
+        AiPageActions.HISTORY_SEARCH_ENABLED);
     assertEquals(
         FeatureOptInState.ENABLED,
         subpage.getPref(PrefName.HISTORY_SEARCH).value);
     assertTrue(toggle.checked);
 
+    metricsBrowserProxy.reset();
+
     // Check DISABLED case.
     toggle.click();
+    await assertFeatureInteractionMetrics(
+        AiPageHistorySearchInteractions.HISTORY_SEARCH_DISABLED,
+        AiPageActions.HISTORY_SEARCH_DISABLED);
     assertEquals(
         FeatureOptInState.DISABLED,
         subpage.getPref(PrefName.HISTORY_SEARCH).value);
@@ -95,6 +127,9 @@ suite('HistorySearchSubpage', function() {
     assertTrue(!!linkout);
 
     linkout.click();
+    await assertFeatureInteractionMetrics(
+        AiPageHistorySearchInteractions.FEATURE_LINK_CLICKED,
+        AiPageActions.HISTORY_SEARCH_FEATURE_LINK_CLICKED);
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('historySearchDataHomeUrl'));
   });
@@ -107,10 +142,16 @@ suite('HistorySearchSubpage', function() {
     assertEquals(
         learnMoreLink.href,
         loadTimeData.getString('historySearchLearnMoreUrl'));
+
+    learnMoreLink.click();
+    await assertFeatureInteractionMetrics(
+        AiPageHistorySearchInteractions.LEARN_MORE_LINK_CLICKED,
+        AiPageActions.HISTORY_SEARCH_LEARN_MORE_CLICKED);
   });
 });
 
 suite('CompareSubpage', function() {
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let subpage: SettingsAiCompareSubpageElement;
 
@@ -120,10 +161,21 @@ suite('CompareSubpage', function() {
   });
 
   function createPage() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-ai-compare-subpage');
     document.body.appendChild(subpage);
     return flushTasks();
+  }
+
+  async function assertFeatureInteractionMetrics(
+      interaction: AiPageCompareInteractions, action: string) {
+    const result =
+        await metricsBrowserProxy.whenCalled('recordAiPageCompareInteractions');
+    assertEquals(interaction, result);
+
+    assertEquals(action, await metricsBrowserProxy.whenCalled('recordAction'));
   }
 
   test('compareLinkout', async function() {
@@ -133,6 +185,9 @@ suite('CompareSubpage', function() {
     assertTrue(!!linkout);
 
     linkout.click();
+    await assertFeatureInteractionMetrics(
+        AiPageCompareInteractions.FEATURE_LINK_CLICKED,
+        AiPageActions.COMPARE_FEATURE_LINK_CLICKED);
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('compareDataHomeUrl'));
   });
@@ -144,5 +199,10 @@ suite('CompareSubpage', function() {
     assertTrue(!!learnMoreLink);
     assertEquals(
         learnMoreLink.href, loadTimeData.getString('compareLearnMoreUrl'));
+
+    learnMoreLink.click();
+    await assertFeatureInteractionMetrics(
+        AiPageCompareInteractions.LEARN_MORE_LINK_CLICKED,
+        AiPageActions.COMPARE_LEARN_MORE_CLICKED);
   });
 });

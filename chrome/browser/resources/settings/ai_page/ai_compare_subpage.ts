@@ -8,7 +8,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {AiPageCompareInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+
 import {getTemplate} from './ai_compare_subpage.html.js';
+import {AiPageActions} from './constants.js';
 
 export class SettingsAiCompareSubpageElement extends PolymerElement {
   static get is() {
@@ -19,7 +23,20 @@ export class SettingsAiCompareSubpageElement extends PolymerElement {
     return getTemplate();
   }
 
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+
+  private recordInteractionMetrics_(
+      interaction: AiPageCompareInteractions, action: string) {
+    this.metricsBrowserProxy_.recordAiPageCompareInteractions(interaction);
+    this.metricsBrowserProxy_.recordAction(action);
+  }
+
   private onCompareLinkoutClick_() {
+    this.recordInteractionMetrics_(
+        AiPageCompareInteractions.FEATURE_LINK_CLICKED,
+        AiPageActions.COMPARE_FEATURE_LINK_CLICKED);
+
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('compareDataHomeUrl'));
   }
@@ -29,6 +46,9 @@ export class SettingsAiCompareSubpageElement extends PolymerElement {
     // won't trigger the external linkout action on the parent cr-link-row
     // element.
     event.stopPropagation();
+    this.recordInteractionMetrics_(
+        AiPageCompareInteractions.LEARN_MORE_LINK_CLICKED,
+        AiPageActions.COMPARE_LEARN_MORE_CLICKED);
   }
 }
 

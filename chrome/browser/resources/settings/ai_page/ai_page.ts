@@ -174,7 +174,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
   private onHistorySearchRowClick_() {
     if (this.enableAiSettingsPageRefresh_) {
-      this.recordInteractionMetrics(
+      this.recordInteractionMetrics_(
           AiPageInteractions.HISTORY_SEARCH_CLICK,
           'Settings.AiPage.HistorySearchEntryPointClick');
     }
@@ -184,7 +184,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private onCompareRowClick_() {
-    this.recordInteractionMetrics(
+    this.recordInteractionMetrics_(
         AiPageInteractions.COMPARE_CLICK,
         'Settings.AiPage.CompareEntryPointClick');
 
@@ -193,7 +193,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private onComposeRowClick_() {
-    this.recordInteractionMetrics(
+    this.recordInteractionMetrics_(
         AiPageInteractions.COMPOSE_CLICK,
         'Settings.AiPage.ComposeEntryPointClick');
 
@@ -202,7 +202,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private onTabOrganizationRowClick_() {
-    this.recordInteractionMetrics(
+    this.recordInteractionMetrics_(
         AiPageInteractions.TAB_ORGANIZATION_CLICK,
         'Settings.AiPage.TabOrganizationEntryPointClick');
 
@@ -211,7 +211,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private onWallpaperSearchRowClick_() {
-    this.recordInteractionMetrics(
+    this.recordInteractionMetrics_(
         AiPageInteractions.WALLPAPER_SEARCH_CLICK,
         'Settings.AiPage.ThemesEntryPointClick');
 
@@ -219,7 +219,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         loadTimeData.getString('wallpaperSearchLearnMoreUrl'));
   }
 
-  private recordInteractionMetrics(
+  private recordInteractionMetrics_(
       interaction: AiPageInteractions, action: string) {
     this.metricsBrowserProxy_.recordAiPageInteractions(interaction);
     this.metricsBrowserProxy_.recordAction(action);

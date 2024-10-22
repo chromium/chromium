@@ -113,7 +113,7 @@ export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.j
 
 export {SettingsAiCompareSubpageElement} from './ai_page/ai_compare_subpage.js';
 export {SettingsAiTabOrganizationSubpageElement} from './ai_page/ai_tab_organization_subpage.js';
-export {FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
+export {AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
 export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';
 export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, SettingsOfferWritingHelpPageElement} from './ai_page/offer_writing_help_page.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
