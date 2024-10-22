@@ -597,35 +597,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "plz-dedicated-worker-disabled",
-    "platforms": ["Linux"],
-    "bases": ["external/wpt/content-security-policy/inside-worker",
-              "external/wpt/content-security-policy/worker-src",
-              "external/wpt/content-security-policy/gen",
-              "external/wpt/fetch/",
-              "external/wpt/html/cross-origin-embedder-policy",
-              "external/wpt/html/semantics/scripting-1/the-script-element/module/import-meta",
-              "external/wpt/referrer-policy",
-              "external/wpt/resource-timing",
-              "external/wpt/service-workers",
-              "external/wpt/upgrade-insecure-requests",
-              "external/wpt/workers",
-              "external/wpt/xhr",
-              "fast/workers",
-              "http/tests/devtools",
-              "http/tests/inspector-protocol",
-              "http/tests/origin_trials",
-              "http/tests/workers",
-              "inspector-protocol/worker"
-            ],
-    "args": ["--disable-features=PlzDedicatedWorker,DeprecateUnload"],
-    "owners": [
-      "yyanagisawa@chromium.org",
-      "kouhei@chromium.org"
-    ],
-    "expires": "Nov 10, 2024"
-  },
-  {
     "prefix": "isolated-context",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/isolated-permissions-policy"],

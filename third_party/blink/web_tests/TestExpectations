@@ -2957,8 +2957,6 @@ crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-l
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-004.html [ Failure ]
 crbug.com/334026778 external/wpt/workers/Worker-creation-happens-in-parallel.https.html [ Pass Timeout ]
 crbug.com/334026778 external/wpt/workers/Worker-postMessage-happens-in-parallel.https.html [ Timeout ]
-crbug.com/334026778 virtual/plz-dedicated-worker-disabled/external/wpt/workers/Worker-creation-happens-in-parallel.https.html [ Pass Timeout ]
-crbug.com/334026778 virtual/plz-dedicated-worker-disabled/external/wpt/workers/Worker-postMessage-happens-in-parallel.https.html [ Timeout ]
 crbug.com/333225369 [ Mac14 ] external/wpt/IndexedDB/idbindex_getAllKeys.any.html [ Timeout ]
 crbug.com/333225369 [ Mac13 ] external/wpt/IndexedDB/idbindex_getAllKeys.any.html [ Timeout ]
 crbug.com/333225369 [ Mac14 ] external/wpt/IndexedDB/idbobjectstore_getKey.any.worker.html [ Timeout ]
@@ -2993,9 +2991,6 @@ crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.worker.h
 crbug.com/332370892 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/332370892 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/332370892 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
-crbug.com/332370892 virtual/plz-dedicated-worker-disabled/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
-crbug.com/332370892 virtual/plz-dedicated-worker-disabled/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
-crbug.com/332370892 virtual/plz-dedicated-worker-disabled/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
 crbug.com/332370892 virtual/produce-compile-hints/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/332370892 virtual/produce-compile-hints/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/332370892 virtual/produce-compile-hints/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
@@ -6991,7 +6986,6 @@ crbug.com/1510005 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effec
 # TODO(crbug.com/1511492): Re-enable these tests.
 crbug.com/1511492 [ Linux ] external/wpt/event-timing/first-input-interactionid-tap.html [ Crash Failure Pass Timeout ]
 crbug.com/1511492 [ Debug Linux ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Crash Failure Pass Timeout ]
-[ Debug Linux ] virtual/plz-dedicated-worker-disabled/http/tests/devtools/device-orientation-success.js [ Failure Pass ]
 
 # TODO(crbug.com/1496375): Re-enable these tests.
 crbug.com/1496375 [ Linux ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]

@@ -53,7 +53,6 @@ external/wpt/WebCryptoAPI/*
 
 virtual/gpu/external/wpt/*
 virtual/longtask-from-loaf/external/wpt/*
-virtual/plz-dedicated-worker-disabled/external/wpt/resource-timing/*
 virtual/single-renderer-process/external/wpt/*
 virtual/split-http-cache/external/wpt/signed-exchange/*
 virtual/threaded/external/wpt/scheduler/*
