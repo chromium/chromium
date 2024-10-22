@@ -46,6 +46,13 @@ export enum ScreenSwitchEvents {
   OFFLINE = 'offline',
 }
 
+/**
+ * The event that is fired on the current screen signaling that the app has
+ * switched to it. Screens can listen for this event and perform actions on
+ * becoming active.
+ */
+export const ScreenSwitchedEvent: string = 'on-screen-switched';
+
 export interface GraduationApp {
   $: {
     viewManager: CrViewManagerElement,
@@ -128,6 +135,8 @@ export class GraduationApp extends PolymerElement {
         getGraduationUiHandler().onScreenSwitched(GraduationScreen.kError);
         break;
     }
+    this.shadowRoot!.querySelector(screen)!.dispatchEvent(
+        new CustomEvent(ScreenSwitchedEvent));
   }
 }
 customElements.define(GraduationApp.is, GraduationApp);

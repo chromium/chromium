@@ -29,7 +29,6 @@
   }
 
   #webview[hidden],
-  #backButton[hidden],
   #doneButton[hidden],
   .spinner-container[hidden] {
     display: none;
@@ -68,8 +67,7 @@
 </style>
 <div id="graduationDiv" role="application">
   <div class="back-button-container">
-    <cr-button id="backButton" class="cancel-button" on-click="onBackClicked_"
-        hidden$="[[webviewLoading]]">
+    <cr-button id="backButton" class="cancel-button" on-click="onBackClicked_">
       <iron-icon icon="[[getBackButtonIcon_()]]"></iron-icon>
       $i18n{backButtonLabel}
     </cr-button>

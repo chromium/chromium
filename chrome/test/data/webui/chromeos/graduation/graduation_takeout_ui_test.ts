@@ -10,7 +10,7 @@ import {GraduationTakeoutUi} from 'chrome://graduation/js/graduation_takeout_ui.
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 
 suite('GraduationTakeoutUiTest', function() {
@@ -60,12 +60,12 @@ suite('GraduationTakeoutUiTest', function() {
   test('HideSpinnerAndShowUiOnContentLoad', function() {
     assertFalse(getSpinner().hidden);
     assertTrue(getWebview().hidden);
-    assertTrue(getBackButton().hidden);
+    assertNotEquals('none', getComputedStyle(getBackButton()).display);
     assertTrue(getDoneButton().hidden);
     getWebview().dispatchEvent(new CustomEvent('contentload'));
     assertTrue(getSpinner().hidden);
     assertFalse(getWebview().hidden);
-    assertFalse(getBackButton().hidden);
+    assertNotEquals('none', getComputedStyle(getBackButton()).display);
     assertFalse(getDoneButton().hidden);
     assertTrue(getDoneButton().disabled);
     assertEquals(
@@ -89,7 +89,7 @@ suite('GraduationTakeoutUiTest', function() {
   test('TriggerWelcomePageOnBackButtonClick', function() {
     let welcomePageTriggered = false;
     getWebview().dispatchEvent(new CustomEvent('contentload'));
-    assertFalse(getBackButton().hidden);
+    assertNotEquals('none', getComputedStyle(getBackButton()).display);
 
     graduationUi.addEventListener(ScreenSwitchEvents.SHOW_WELCOME, () => {
       welcomePageTriggered = true;

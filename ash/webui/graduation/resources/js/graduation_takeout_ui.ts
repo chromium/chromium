@@ -14,7 +14,7 @@ import {isRTL} from '//resources/js/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ScreenSwitchEvents} from './graduation_app.js';
+import {ScreenSwitchedEvent, ScreenSwitchEvents} from './graduation_app.js';
 import {getTemplate} from './graduation_takeout_ui.html.js';
 import {getGraduationUiHandler} from './graduation_ui_handler.js';
 
@@ -65,10 +65,23 @@ export class GraduationTakeoutUi extends PolymerElement {
 
   override ready() {
     super.ready();
-    const webviewUrl = loadTimeData.getString('webviewUrl');
+
     this.webview =
         this.shadowRoot!.querySelector<chrome.webviewTag.WebView>('webview')!;
 
+    this.configureWebviewListeners_();
+
+    this.addEventListener(ScreenSwitchedEvent, () => {
+      this.shadowRoot!.querySelector<HTMLElement>('#backButton')!.focus();
+    });
+
+    // The webview source should be set after all event listeners are created
+    // because the webview starts loading immediately after it is set.
+    const webviewUrl = loadTimeData.getString('webviewUrl');
+    this.webview.src = webviewUrl.toString();
+  }
+
+  private configureWebviewListeners_(): void {
     this.webview.addEventListener('contentload', () => {
       this.webviewLoading = false;
     });
@@ -98,8 +111,6 @@ export class GraduationTakeoutUi extends PolymerElement {
         this.takeoutFlowCompleted = true;
       }
     }, {urls: ['<all_urls>']});
-
-    this.webview.src = webviewUrl.toString();
   }
 
   private getBackButtonIcon_(): string {
