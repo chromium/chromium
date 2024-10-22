@@ -291,7 +291,7 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
 
   const std::string gaia_id = "123";
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -389,7 +389,7 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullConsumerInputAndSucceed) {
 
   const std::string gaia_id = "123";
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), false, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -455,7 +455,7 @@ TEST_F(GetSessionRequestTest, CreateSessionWithDefaultInputAndSucceed) {
 
   const std::string gaia_id = "123";
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -513,7 +513,7 @@ TEST_F(GetSessionRequestTest, CreateSessionWithEmptyInputAndSucceed) {
 
   const std::string gaia_id = "123";
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -537,7 +537,7 @@ TEST_F(GetSessionRequestTest, CreateSessionWithFailedResponse) {
 
   const std::string gaia_id = "123";
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));

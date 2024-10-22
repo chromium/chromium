@@ -132,14 +132,15 @@ void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
 }
 
 void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
-                                     ::boca::Session* session) {
+                                     ::boca::Session* session,
+                                     bool is_producer) {
   if (!session_dict->FindDict(kStudentGroupsConfig)) {
     return;
   }
   auto* student_groups = session->mutable_student_group_configs();
 
   base::Value::Dict* config;
-  if (ash::boca_util::IsProducer()) {
+  if (is_producer) {
     config = session_dict->FindDict(kStudentGroupsConfig)
                  ->FindDict(kMainStudentGroupName);
   } else {
@@ -246,7 +247,8 @@ void ParseStudentStatusProtoFromJson(
   }
 }
 
-std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json) {
+std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json,
+                                                         bool is_producer) {
   std::unique_ptr<base::Value> raw_value = google_apis::ParseJson(json);
   if (!raw_value) {
     return nullptr;
@@ -300,7 +302,7 @@ std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json) {
 
   ParseRosterProtoFromJson(session_dict, session.get());
 
-  ParseSessionConfigProtoFromJson(session_dict, session.get());
+  ParseSessionConfigProtoFromJson(session_dict, session.get(), is_producer);
 
   ParseStudentStatusProtoFromJson(session_dict, session.get());
 

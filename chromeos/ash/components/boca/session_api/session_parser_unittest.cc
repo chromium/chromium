@@ -197,7 +197,7 @@ TEST_F(SessionParserTest, TestParseRosterProtoFromJson) {
 TEST_F(SessionParserTest, TestParseSessionConfigProtoFromJson) {
   // For producer.
   ParseSessionConfigProtoFromJson(session_dict_full->GetIfDict(),
-                                  session_full.get());
+                                  session_full.get(), true);
   ASSERT_EQ(1u, session_full->student_group_configs().size());
   EXPECT_TRUE(session_full->student_group_configs()
                   .at(kMainStudentGroupName)
@@ -234,7 +234,7 @@ TEST_F(SessionParserTest, TestParseSessionConfigProtoFromJson) {
             content_config[1].locked_navigation_options().navigation_type());
 
   ParseSessionConfigProtoFromJson(session_dict_partial->GetIfDict(),
-                                  session_partial.get());
+                                  session_partial.get(), true);
   ASSERT_EQ(1u, session_partial->student_group_configs().size());
 
   auto content_config_1 = std::move(session_partial->student_group_configs()

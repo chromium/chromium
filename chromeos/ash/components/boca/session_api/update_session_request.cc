@@ -125,7 +125,8 @@ void UpdateSessionRequest::ProcessURLFetchResults(
     case google_apis::HTTP_SUCCESS:
       blocking_task_runner()->PostTaskAndReplyWithResult(
           FROM_HERE,
-          base::BindOnce(&GetSessionProtoFromJson, std::move(response_body)),
+          base::BindOnce(&GetSessionProtoFromJson, std::move(response_body),
+                         true),
           base::BindOnce(&UpdateSessionRequest::OnDataParsed,
                          weak_ptr_factory_.GetWeakPtr()));
       break;

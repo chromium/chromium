@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
@@ -110,7 +111,8 @@ void BocaSessionManager::LoadCurrentSession() {
     return;
   }
   auto request = std::make_unique<GetSessionRequest>(
-      session_client_impl_->sender(), account_id_.GetGaiaId(),
+      session_client_impl_->sender(), boca_util::IsProducer(),
+      account_id_.GetGaiaId(),
       base::BindOnce(&BocaSessionManager::ParseSessionResponse,
                      weak_factory_.GetWeakPtr()));
   session_client_impl_->GetSession(std::move(request));
