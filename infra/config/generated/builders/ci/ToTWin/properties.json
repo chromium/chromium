@@ -27,7 +27,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "clang_tot"
+                  "clang_tot",
+                  "siso_latest"
                 ],
                 "config": "chromium"
               }

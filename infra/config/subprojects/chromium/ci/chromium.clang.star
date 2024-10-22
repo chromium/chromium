@@ -1280,7 +1280,11 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["clang_tot"],
+            apply_configs = [
+                "clang_tot",
+                # TODO(373478546): revert this once fixed siso is rolled out.
+                "siso_latest",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium_win_clang_tot",
@@ -1326,7 +1330,11 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["clang_tot"],
+            apply_configs = [
+                "clang_tot",
+                # TODO(373478546): revert this once fixed siso is rolled out.
+                "siso_latest",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium_win_clang_tot",
@@ -1374,7 +1382,11 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["clang_tot"],
+            apply_configs = [
+                "clang_tot",
+                # TODO(373478546): revert this once fixed siso is rolled out.
+                "siso_latest",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium_win_clang_tot",
@@ -1421,7 +1433,11 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["clang_tot"],
+            apply_configs = [
+                "clang_tot",
+                # TODO(373478546): revert this once fixed siso is rolled out.
+                "siso_latest",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium_win_clang_tot",
@@ -1467,7 +1483,11 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["clang_tot"],
+            apply_configs = [
+                "clang_tot",
+                # TODO(373478546): revert this once fixed siso is rolled out.
+                "siso_latest",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium_win_clang_tot",
@@ -1514,7 +1534,11 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["clang_tot"],
+            apply_configs = [
+                "clang_tot",
+                # TODO(373478546): revert this once fixed siso is rolled out.
+                "siso_latest",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium_win_clang_tot",
@@ -1562,7 +1586,11 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["clang_tot"],
+            apply_configs = [
+                "clang_tot",
+                # TODO(373478546): revert this once fixed siso is rolled out.
+                "siso_latest",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium_win_clang_asan_tot",
@@ -1610,6 +1638,8 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "clang_tot",
+                # TODO(373478546): revert this once fixed siso is rolled out.
+                "siso_latest",
             ],
         ),
         chromium_config = builder_config.chromium_config(
