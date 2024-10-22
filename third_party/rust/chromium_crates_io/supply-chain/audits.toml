@@ -1599,6 +1599,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.22.1 -> 0.22.3"
 notes = "Support for the hdmx table, inlining optimizations. Crate has no unsafe code."
 
+[[audits.read-fonts]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.22.3 -> 0.22.5"
+notes = "Minimal fixes for integer overflow in CFF processing."
+
 [[audits.regex]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -2168,6 +2174,12 @@ who = "Dominik Röttsches <drott@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.22.3 -> 0.23.0"
 notes = "Incremental Font Transfer patchset implementation removed, important fixes for path retrievel from CFF fonts with empty PrivateDict."
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.23.0 -> 0.23.1"
+notes = "Minimal changes for fix in integer overflow in CFF processing."
 
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
