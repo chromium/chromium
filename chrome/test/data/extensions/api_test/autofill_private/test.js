@@ -822,6 +822,13 @@ var availableTests = [
       chrome.test.succeed();
     });
   },
+
+  function logServerIbanLinkClicked() {
+    chrome.autofillPrivate.logServerIbanLinkClicked();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  }
+
 ];
 
 /** @const */
@@ -876,6 +883,7 @@ var TESTS_FOR_CONFIG = {
       ['triggerAnnotationsBootstrapping_ExpectTrue'],
   'TriggerAnnotationsBootstrapping_Failure':
       ['triggerAnnotationsBootstrapping_ExpectFalse'],
+  'logServerIbanLinkClicked': ['logServerIbanLinkClicked'],
 };
 
 var testConfig = window.location.search.substring(1);

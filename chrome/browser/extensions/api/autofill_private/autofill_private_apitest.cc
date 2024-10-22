@@ -298,6 +298,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, isValidIban) {
   EXPECT_TRUE(RunAutofillSubtest("isValidIban")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, logServerIbanLinkClicked) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(RunAutofillSubtest("logServerIbanLinkClicked")) << message_;
+
+  histogram_tester.ExpectTotalCount("Autofill.ServerIbanLinkClicked", 1u);
+}
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                        authenticateUserAndFlipMandatoryAuthToggle) {
