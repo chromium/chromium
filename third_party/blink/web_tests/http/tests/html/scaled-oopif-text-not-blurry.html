@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <link rel=author href="mailto:wjmaclean@chromium.org">
+  <link rel=match href="scaled-oopif-text-not-blurry-expected.html">
+  <!-- The pixel differences below appear to be text kerning changes
+       between same-process and cross-process iframes. -->
+  <meta name="fuzzy" content="maxDifference=0-255; totalPixels=0-750">
+  <body style="transform: scale(0.9)">
+    <h1>Mainframe with text and an out-of-process iframe</h1>
+    This is some mainframe text.<p>
+    <!--  use of localhost below will make the iframe an OOPIF -->
+    <iframe src="http://localhost:8080/html/resources/scaled-oopif-text.html"
+            style="border: 1px solid black; scrolling="no""></iframe>
+  </body>
+</html>
