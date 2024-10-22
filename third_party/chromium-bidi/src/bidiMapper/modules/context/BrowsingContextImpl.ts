@@ -427,24 +427,41 @@ export class BrowsingContextImpl {
       if (this.id !== params.frameId) {
         return;
       }
+      if (params.navigationType === 'historyApi') {
+        this.#url = params.url;
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: 'browsingContext.historyUpdated',
+            params: {
+              context: this.id,
+              url: this.#url,
+            },
+          },
+          this.id,
+        );
+        return;
+      }
       this.#pendingNavigationUrl = undefined;
       const timestamp = BrowsingContextImpl.getTimestamp();
       this.#url = params.url;
       this.#navigation.withinDocument.resolve();
 
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-          params: {
-            context: this.id,
-            navigation: this.#navigationId,
-            timestamp,
-            url: this.#url,
+      if (params.navigationType === 'fragment') {
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+            params: {
+              context: this.id,
+              navigation: this.#navigationId,
+              timestamp,
+              url: this.#url,
+            },
           },
-        },
-        this.id,
-      );
+          this.id,
+        );
+      }
     });
 
     this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
