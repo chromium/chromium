@@ -407,4 +407,17 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
                     uri, mContext, MediaStore.MediaColumns.DISPLAY_NAME);
         }
     }
+
+    /** Handle zoom in/zoom out for ctrl + mouse wheel. */
+    @Override
+    public void contentsZoomChange(boolean zoomIn) {
+        boolean supportsZoom = mAwContents.getSettings().supportZoom();
+        if (supportsZoom) {
+            if (zoomIn) {
+                mAwContents.zoomIn();
+            } else {
+                mAwContents.zoomOut();
+            }
+        }
+    }
 }
