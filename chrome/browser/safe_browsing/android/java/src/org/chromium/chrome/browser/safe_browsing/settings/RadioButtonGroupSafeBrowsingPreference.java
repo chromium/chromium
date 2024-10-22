@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
@@ -98,6 +99,12 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
         }
         mEnhancedProtection.setVisibility(View.VISIBLE);
         mEnhancedProtection.setAuxButtonClickedListener(this);
+        // Update the description to mention use of AI based on flag value.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ESB_AI_STRING_UPDATE)) {
+            mEnhancedProtection.setDescriptionText(
+                    getContext()
+                            .getString(R.string.safe_browsing_enhanced_protection_summary_updated));
+        }
         mStandardProtection =
                 (RadioButtonWithDescriptionAndAuxButton)
                         holder.findViewById(R.id.standard_protection);

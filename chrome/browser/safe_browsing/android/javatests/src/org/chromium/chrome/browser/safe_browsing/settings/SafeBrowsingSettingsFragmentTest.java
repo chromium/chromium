@@ -493,6 +493,56 @@ public class SafeBrowsingSettingsFragmentTest {
                 });
     }
 
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @DisableFeatures({ChromeFeatureList.ESB_AI_STRING_UPDATE})
+    public void testEnhancedProtectionDescriptionWithoutAiUpdate() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+                });
+        startSettings();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    String enhancedProtectionDescription =
+                            mSafeBrowsingSettingsFragment
+                                    .getContext()
+                                    .getString(R.string.safe_browsing_enhanced_protection_summary);
+                    Assert.assertEquals(
+                            enhancedProtectionDescription,
+                            mSafeBrowsingPreference
+                                    .getEnhancedProtectionButtonForTesting()
+                                    .getDescriptionText());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @EnableFeatures({ChromeFeatureList.ESB_AI_STRING_UPDATE})
+    public void testEnhancedProtectionDescriptionWithAiUpdate() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+                });
+        startSettings();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    String enhancedProtectionDescription =
+                            mSafeBrowsingSettingsFragment
+                                    .getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_summary_updated);
+                    Assert.assertEquals(
+                            enhancedProtectionDescription,
+                            mSafeBrowsingPreference
+                                    .getEnhancedProtectionButtonForTesting()
+                                    .getDescriptionText());
+                });
+    }
+
     private @SafeBrowsingState int getSafeBrowsingUiState() {
         return mSafeBrowsingPreference.getSafeBrowsingStateForTesting();
     }
