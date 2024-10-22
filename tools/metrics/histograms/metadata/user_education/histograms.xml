@@ -64,10 +64,14 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="WhatsNewModule">
+  <variant name="EnhancedProtection"
+      summary="the module for Enhanced Protection"/>
   <variant name="FamilyLink" summary="the module for Family Link"/>
   <variant name="GANslate" summary="the module for GANslate"/>
+  <variant name="GeminiShortcut" summary="the module for Gemini Shortcut"/>
   <variant name="GeminiSiteSearchShortcut"
       summary="the module for Gemini Site Search Shortcut"/>
+  <variant name="GenerativeThemes" summary="the module for Generative Themes"/>
   <variant name="GenerativeTheming"
       summary="the module for Generative Theming"/>
   <variant name="GoogleLens" summary="the module for Google Lens"/>
@@ -75,6 +79,7 @@ chromium-metrics-reviews@google.com.
   <variant name="HelpMeWrite" summary="the module for Help Me Write"/>
   <variant name="HistoryEmbeddings"
       summary="the module for History Embeddings Search"/>
+  <variant name="Passkeys" summary="the module for Passkeys"/>
   <variant name="SafetyCheck" summary="the module for Safety Check"/>
   <variant name="SaveTabGroups" summary="the module for Saved Tab Groups"/>
   <variant name="SearchBoxSuggestions"
