@@ -1691,7 +1691,12 @@ if (is_android) {
     }
 
     if (enable_desktop_android_extensions) {
-      sources += [ "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc" ]
+      sources += [
+        "../browser/extensions/api/alarms/alarms_apitest.cc",
+        "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
+      ]
+
+      deps += [ "//extensions/common/api" ]
     }
   }
 

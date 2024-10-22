@@ -203,6 +203,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_names.h"
@@ -219,7 +220,6 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
 #include "extensions/browser/api/audio/audio_api.h"
-#include "extensions/browser/api/runtime/runtime_api.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/device_name/device_name_store.h"
 #include "chrome/browser/ash/extensions/extensions_permissions_tracker.h"
@@ -2088,6 +2088,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::PermissionsManager::RegisterProfilePrefs(registry);
   extensions::ExtensionPrefs::RegisterProfilePrefs(registry);
+  extensions::RuntimeAPI::RegisterPrefs(registry);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -2099,7 +2100,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::shared_storage::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  extensions::RuntimeAPI::RegisterPrefs(registry);
   // TODO(devlin): This would be more inline with the other calls here if it
   // were nested in either a class or separate namespace with a simple
   // Register[Profile]Prefs() name.

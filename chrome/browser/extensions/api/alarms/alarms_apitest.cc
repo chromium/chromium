@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "content/public/test/browser_test.h"
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,10 +17,13 @@
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-
-using extensions::ResultCatcher;
+#endif
 
 namespace extensions {
+
+#if !BUILDFLAG(IS_ANDROID)
+
+using extensions::ResultCatcher;
 
 class AlarmsApiTest : public ExtensionApiTest {
  public:
@@ -103,8 +110,15 @@ IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSpanning) {
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(AlarmsApiTest, Count) {
+#if BUILDFLAG(IS_ANDROID)
+using AlarmsPlatformApiTest = ExtensionPlatformApiTest;
+#else
+using AlarmsPlatformApiTest = ExtensionApiTest;
+#endif
+
+IN_PROC_BROWSER_TEST_F(AlarmsPlatformApiTest, Count) {
   EXPECT_TRUE(RunExtensionTest("alarms/count")) << message_;
 }
 
