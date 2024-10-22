@@ -80,12 +80,8 @@ const device::DiscoverableCredentialMetadata user2{
         kUserName2,
         /*display_name=*/std::nullopt)};
 const device::DiscoverableCredentialMetadata userGpm{
-#if BUILDFLAG(IS_CHROMEOS)
-    device::AuthenticatorType::kChromeOSPasskeys,
-#else
-    device::AuthenticatorType::kEnclave,
-#endif
-    kRpId, device::fido_parsing_utils::Materialize(kCredIdGpm),
+    device::AuthenticatorType::kEnclave, kRpId,
+    device::fido_parsing_utils::Materialize(kCredIdGpm),
     device::PublicKeyCredentialUserEntity(
         device::fido_parsing_utils::Materialize(kUserId),
         kUserName1,
@@ -307,13 +303,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
 class GpmPasskeyChromeWebAuthnCredentialsDelegateTest
     : public ChromeWebAuthnCredentialsDelegateTest {
  private:
-  base::test::ScopedFeatureList enabled{
-#if BUILDFLAG(IS_CHROMEOS)
-      device::kChromeOsPasskeys
-#else
-      device::kWebAuthnEnclaveAuthenticator
-#endif
-  };
+  base::test::ScopedFeatureList enabled{device::kWebAuthnEnclaveAuthenticator};
 };
 
 // Regression test for crbug.com/346263461.

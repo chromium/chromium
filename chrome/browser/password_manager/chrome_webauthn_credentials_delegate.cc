@@ -39,8 +39,7 @@ using device::AuthenticatorType;
 constexpr base::TimeDelta kFlickerDuration = base::Milliseconds(300);
 
 bool IsGpmPasskeyAuthenticatorType(AuthenticatorType type) {
-  return type == AuthenticatorType::kEnclave ||
-         type == AuthenticatorType::kChromeOSPasskeys;
+  return type == AuthenticatorType::kEnclave;
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

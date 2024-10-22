@@ -58,7 +58,6 @@ AuthenticatorCategory CategoryFromMechanism(const Mechanism& mechanism) {
         return AuthenticatorCategory::kWindows;
       case AuthenticatorType::kChromeOS:
       case AuthenticatorType::kPhone:
-      case AuthenticatorType::kChromeOSPasskeys:
       case AuthenticatorType::kOther:
         return AuthenticatorCategory::kOther;
     }

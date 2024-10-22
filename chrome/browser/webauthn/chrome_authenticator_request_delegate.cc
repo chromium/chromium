@@ -140,10 +140,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/webauthn/chromeos/passkey_dialog_controller.h"
-#include "chrome/browser/webauthn/chromeos/passkey_discovery.h"
-#include "chrome/browser/webauthn/chromeos/passkey_service.h"
-#include "chrome/browser/webauthn/chromeos/passkey_service_factory.h"
 #include "chromeos/components/webauthn/webauthn_request_registrar.h"
 #include "ui/aura/window.h"
 #endif
@@ -950,15 +946,6 @@ ChromeAuthenticatorRequestDelegate::enclave_controller_for_testing() const {
   return enclave_controller_.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-chromeos::PasskeyDialogController&
-ChromeAuthenticatorRequestDelegate::chromeos_passkey_controller_for_testing()
-    const {
-  CHECK(chromeos_passkey_controller_);
-  return *chromeos_passkey_controller_;
-}
-#endif
-
 void ChromeAuthenticatorRequestDelegate::SetRelyingPartyId(
     const std::string& rp_id) {
   dialog_model_->relying_party_id = rp_id;
@@ -1084,18 +1071,6 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
       bluetooth_adapter_power_on_callback);
   dialog_controller_->SetRequestBlePermissionCallback(
       request_ble_permission_callback);
-}
-
-std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
-ChromeAuthenticatorRequestDelegate::CreatePlatformDiscoveries() {
-  std::vector<std::unique_ptr<device::FidoDiscoveryBase>> discoveries;
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(device::kChromeOsPasskeys)) {
-    discoveries.push_back(
-        std::make_unique<chromeos::PasskeyDiscovery>(GetRenderFrameHost()));
-  }
-#endif
-  return discoveries;
 }
 
 void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(

@@ -464,8 +464,6 @@ class AuthenticatorRequestDialogController
 
   void OnUserConfirmedPriorityMechanism() override;
 
-  void OnChromeOSGPMRequestReady() override;
-
   // Returns true if this request could pick the enclave authenticator by
   // default. This only makes sense for a create() call.
   bool CanDefaultToEnclave(Profile* profile);

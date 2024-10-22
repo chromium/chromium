@@ -192,7 +192,6 @@ password_manager::PasskeyCredential::Source ToPasswordManagerSource(
     case AuthenticatorType::kICloudKeychain:
       return password_manager::PasskeyCredential::Source::kICloudKeychain;
     case AuthenticatorType::kEnclave:
-    case AuthenticatorType::kChromeOSPasskeys:
       return password_manager::PasskeyCredential::Source::
           kGooglePasswordManager;
     case AuthenticatorType::kChromeOS:
@@ -250,10 +249,7 @@ std::u16string GetMechanismDescription(
                                       base::UTF8ToUTF16(*priority_phone_name));
   }
   int message;
-  bool gpm_enabled =
-#if BUILDFLAG(IS_CHROMEOS)
-      base::FeatureList::IsEnabled(device::kChromeOsPasskeys) ||
-#endif
+  const bool gpm_enabled =
       base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
   switch (type) {
     case AuthenticatorType::kWinNative:
@@ -271,7 +267,6 @@ std::u16string GetMechanismDescription(
                             : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
       break;
     case AuthenticatorType::kEnclave:
-    case AuthenticatorType::kChromeOSPasskeys:
       CHECK(gpm_enabled);
       message = IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
       break;
@@ -298,8 +293,6 @@ int GetHybridButtonLabel(bool has_security_key, bool specific_phones_listed) {
 // user ID.
 int SourcePriority(AuthenticatorType source) {
   switch (source) {
-    case AuthenticatorType::kChromeOSPasskeys:
-      return 5;
     case AuthenticatorType::kEnclave:
       return 4;
     case AuthenticatorType::kICloudKeychain:
@@ -388,7 +381,6 @@ bool IsChromeImplemented(AuthenticatorType type) {
     case AuthenticatorType::kPhone:
     case AuthenticatorType::kEnclave:
     case AuthenticatorType::kICloudKeychain:
-    case AuthenticatorType::kChromeOSPasskeys:
       return false;
     case AuthenticatorType::kTouchID:
     case AuthenticatorType::kChromeOS:
@@ -1331,16 +1323,12 @@ AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
   model_->preselected_cred = *cred;
 
   if (source != AuthenticatorType::kPhone &&
-      source != AuthenticatorType::kEnclave &&
-      source != AuthenticatorType::kChromeOSPasskeys) {
+      source != AuthenticatorType::kEnclave) {
     HideDialogAndDispatchToPlatformAuthenticator(source);
     return source;
   }
 
   const bool use_gpm =
-#if BUILDFLAG(IS_CHROMEOS)
-      base::FeatureList::IsEnabled(device::kChromeOsPasskeys) ||
-#endif
       base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
   // `source` should not be `kPhone` here except in some tests, which don't
   // configure the enclave.
@@ -2509,11 +2497,6 @@ void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(
   PopulateMechanisms();
   model_->priority_mechanism_index = IndexOfPriorityMechanism();
   StartConditionalMediationRequest();
-}
-
-void AuthenticatorRequestDialogController::OnChromeOSGPMRequestReady() {
-  HideDialogAndDispatchToPlatformAuthenticator(
-      AuthenticatorType::kChromeOSPasskeys);
 }
 
 bool AuthenticatorRequestDialogController::CanDefaultToEnclave(

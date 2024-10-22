@@ -66,12 +66,6 @@ const char kWebAuthnGpmPinFeatureParameterName[] = "WebAuthenticationGpmPin";
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::FeatureParam<bool> kWebAuthnGpmPin;
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enable ChromeOS native passkey support.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kChromeOsPasskeys);
-#endif
-
 // Use insecure software unexportable keys to authenticate to the enclave.
 // For development purposes only.
 COMPONENT_EXPORT(DEVICE_FIDO)

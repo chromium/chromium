@@ -92,13 +92,6 @@ const base::FeatureParam<bool> kWebAuthnGpmPin{
     /*default_value=*/true};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Not yet enabled by default.
-BASE_FEATURE(kChromeOsPasskeys,
-             "WebAuthenticationCrosPasskeys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Development flag. Must not be enabled by default once
 // kWebAuthnEnclaveAuthenticator is enabled.
 BASE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys,

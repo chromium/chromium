@@ -528,7 +528,6 @@ bool IsPlatformAuthenticatorForInvalidStateError(
     case device::AuthenticatorType::kChromeOS:
     case device::AuthenticatorType::kICloudKeychain:
     case device::AuthenticatorType::kEnclave:
-    case device::AuthenticatorType::kChromeOSPasskeys:
       return true;
     // kWinNative can be a platform authenticator but, in the context where this
     // function is used, Windows returns a specific error when InvalidStateError
@@ -545,7 +544,6 @@ AuthenticatorCommonImpl::CredentialRequestResult
 CredentialRequestResultFromCode(bool success, device::AuthenticatorType type) {
   switch (type) {
     case device::AuthenticatorType::kChromeOS:
-    case device::AuthenticatorType::kChromeOSPasskeys:
       return success ? AuthenticatorCommonImpl::CredentialRequestResult::
                            kChromeOSSuccess
                      : AuthenticatorCommonImpl::CredentialRequestResult::

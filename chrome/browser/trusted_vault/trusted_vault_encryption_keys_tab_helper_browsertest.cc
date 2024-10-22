@@ -278,11 +278,6 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
          { site_isolation::features::
                kPartialSiteIsolationMemoryThresholdParamName,
            "0" }});
-#elif BUILDFLAG(IS_CHROMEOS)
-    feature_list_.InitWithFeatureStates(
-        {{device::kChromeOsPasskeys, true},
-         { trusted_vault::kSetClientEncryptionKeysJsApi,
-           true }});
 #else
     feature_list_.InitAndEnableFeature(
         trusted_vault::kSetClientEncryptionKeysJsApi);
