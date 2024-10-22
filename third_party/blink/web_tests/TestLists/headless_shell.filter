@@ -49,8 +49,11 @@ external/wpt/signed-exchange/*
 external/wpt/wasm/*
 external/wpt/webauthn/*
 external/wpt/WebCryptoAPI/*
+external/wpt/xhr/*
 
+virtual/float16array-enabled/external/wpt/xhr/*
 virtual/gpu/external/wpt/*
+virtual/keepalive-in-browser-migration/external/wpt/xhr/*
 virtual/longtask-from-loaf/external/wpt/*
 virtual/single-renderer-process/external/wpt/*
 virtual/split-http-cache/external/wpt/signed-exchange/*
