@@ -50,6 +50,8 @@ class TranslateKitClient {
   };
 
   static TranslateKitClient* Get();
+  static std::unique_ptr<TranslateKitClient> CreateForTest(
+      const base::FilePath& library_path);
 
   TranslateKitClient(const base::FilePath& library_path,
                      base::PassKey<TranslateKitClient>);
@@ -135,24 +137,6 @@ class TranslateKitClient {
   // WARNING:
   // Changes to the below interfaces must be backwards compatible and
   // reflected in the Google3-side definition.
-
-  typedef bool (*FileExistsFn)(const char* file_name,
-                               size_t file_name_size,
-                               bool* is_directory,
-                               std::uintptr_t user_data);
-  typedef std::uintptr_t (*OpenForReadOnlyMemoryMapFn)(
-      const char* file_name,
-      size_t file_name_size,
-      std::uintptr_t user_data);
-  typedef void (*DeleteReadOnlyMemoryRegionFn)(std::uintptr_t memory_map_ptr,
-                                               std::uintptr_t user_data);
-  typedef const void* (*ReadOnlyMemoryRegionDataFn)(
-      std::uintptr_t memory_map_ptr,
-      std::uintptr_t user_data);
-  typedef uint64_t (*ReadOnlyMemoryRegionLengthFn)(
-      std::uintptr_t memory_map_ptr,
-      std::uintptr_t user_data);
-
   typedef void (*InitializeStorageBackendFn)(
       FileExistsFn file_exists,
       OpenForReadOnlyMemoryMapFn open_for_read_only_memory_map,

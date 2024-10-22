@@ -65,7 +65,7 @@ uint64_t ReadOnlyMemoryRegionLength(std::uintptr_t memory_map_ptr,
   return reinterpret_cast<base::MemoryMappedFile*>(memory_map_ptr)->length();
 }
 
-bool ParseFilePath(const char* file_name,
+void ParseFilePath(const char* file_name,
                    size_t file_name_size,
                    uint32_t& package_index,
                    base::FilePath& relative_path) {
@@ -99,7 +99,6 @@ bool ParseFilePath(const char* file_name,
     result = result.Append(components[component_idx]);
   }
   relative_path = result;
-  return true;
 }
 
 }  // namespace
@@ -111,6 +110,13 @@ TranslateKitClient* TranslateKitClient::Get() {
           GetTranslateKitBinaryPathFromCommandLine(),
           base::PassKey<TranslateKitClient>()));
   return client->get();
+}
+
+// static
+std::unique_ptr<TranslateKitClient> TranslateKitClient::CreateForTest(
+    const base::FilePath& library_path) {
+  return std::make_unique<TranslateKitClient>(
+      library_path, base::PassKey<TranslateKitClient>());
 }
 
 TranslateKitClient::TranslateKitClient(const base::FilePath& library_path,
@@ -182,9 +188,7 @@ void TranslateKitClient::SetConfig(
   // When `file_operation_proxy_` is set, need to reset `file_operation_proxy_`
   // before binding the new one. This happens when SetConfig() is called again
   // for the new config.
-  if (file_operation_proxy_) {
-    file_operation_proxy_.reset();
-  }
+  file_operation_proxy_.reset();
   file_operation_proxy_.Bind(std::move(config->file_operation_proxy));
   chrome::on_device_translation::TranslateKitLanguagePackageConfig config_proto;
   size_t index = 0;
@@ -223,7 +227,7 @@ TranslateKitClient::~TranslateKitClient() {
 
 bool TranslateKitClient::CanTranslate(const std::string& source_lang,
                                       const std::string& target_lang) {
-  if (!MaybeInitialize()) {
+  if (!MaybeInitialize() || !file_operation_proxy_) {
     return false;
   }
   return !!TranslateKitClient::GetTranslator(source_lang, target_lang);
@@ -232,7 +236,7 @@ bool TranslateKitClient::CanTranslate(const std::string& source_lang,
 TranslateKitClient::Translator* TranslateKitClient::GetTranslator(
     const std::string& source_lang,
     const std::string& target_lang) {
-  if (!MaybeInitialize()) {
+  if (!MaybeInitialize() || !file_operation_proxy_) {
     return nullptr;
   }
 
@@ -306,15 +310,11 @@ bool TranslateKitClient::FileExists(const char* file_name,
 bool TranslateKitClient::FileExistsImpl(const char* file_name,
                                         size_t file_name_size,
                                         bool* is_directory) {
-  if (!file_operation_proxy_) {
-    return false;
-  }
   uint32_t package_index = 0;
   base::FilePath relative_path;
-  if (!ParseFilePath(file_name, file_name_size, package_index, relative_path)) {
-    return false;
-  }
+  ParseFilePath(file_name, file_name_size, package_index, relative_path);
   bool exists = false;
+  CHECK(file_operation_proxy_);
   file_operation_proxy_->FileExists(package_index, relative_path, &exists,
                                     is_directory);
   return exists;
@@ -334,25 +334,19 @@ std::uintptr_t TranslateKitClient::OpenForReadOnlyMemoryMap(
 std::uintptr_t TranslateKitClient::OpenForReadOnlyMemoryMapImpl(
     const char* file_name,
     size_t file_name_size) {
-  if (!file_operation_proxy_) {
-    return 0;
-  }
   uint32_t package_index = 0;
   base::FilePath relative_path;
-  if (!ParseFilePath(file_name, file_name_size, package_index, relative_path)) {
-    return 0;
-  }
+  ParseFilePath(file_name, file_name_size, package_index, relative_path);
   base::File file;
+  CHECK(file_operation_proxy_);
   file_operation_proxy_->Open(package_index, relative_path, &file);
   if (!file.IsValid()) {
     return 0;
   }
   std::unique_ptr<base::MemoryMappedFile> mapped_file =
       std::make_unique<base::MemoryMappedFile>();
-  if (mapped_file->Initialize(std::move(file))) {
-    return reinterpret_cast<std::uintptr_t>(mapped_file.release());
-  }
-  return 0;
+  CHECK(mapped_file->Initialize(std::move(file)));
+  return reinterpret_cast<std::uintptr_t>(mapped_file.release());
 }
 
 }  // namespace on_device_translation

@@ -36,7 +36,12 @@ source_set("on_device_translation_service") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "on_device_translation_service_unittest.cc" ]
+  sources = [
+    "on_device_translation_service_unittest.cc",
+    "test/test_util.cc",
+    "test/test_util.h",
+    "translate_kit_client_unittest.cc",
+  ]
   deps = [
     "//base/test:test_support",
     "//components/services/on_device_translation:on_device_translation_service",
@@ -45,13 +50,33 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  data_deps = [ ":mock_translate_kit_lib" ]
+  data_deps = [
+    ":mock_failing_translate_kit_lib",
+    ":mock_invalid_function_pointer_lib",
+    ":mock_translate_kit_lib",
+  ]
 }
 
 shared_library("mock_translate_kit_lib") {
   testonly = true
   sources = [
-    "mock_translate_kit_lib.cc",
+    "test/mock_translate_kit_lib.cc",
+    "translate_kit_structs.h",
+  ]
+  deps = [ ":translate_kit_api_proto" ]
+  public_deps = [ "//base" ]
+}
+
+shared_library("mock_invalid_function_pointer_lib") {
+  testonly = true
+  sources = [ "test/mock_invalid_function_pointer_lib.cc" ]
+  public_deps = [ "//base" ]
+}
+
+shared_library("mock_failing_translate_kit_lib") {
+  testonly = true
+  sources = [
+    "test/mock_failing_translate_kit_lib.cc",
     "translate_kit_structs.h",
   ]
   public_deps = [ "//base" ]

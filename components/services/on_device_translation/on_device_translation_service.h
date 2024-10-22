@@ -7,16 +7,29 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 
 namespace on_device_translation {
 
+class TranslateKitClient;
+
 class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
  public:
+  static std::unique_ptr<OnDeviceTranslationService> CreateForTesting(
+      mojo::PendingReceiver<mojom::OnDeviceTranslationService> receiver,
+      std::unique_ptr<TranslateKitClient> client);
+
   explicit OnDeviceTranslationService(
       mojo::PendingReceiver<mojom::OnDeviceTranslationService> receiver);
+  OnDeviceTranslationService(
+      mojo::PendingReceiver<mojom::OnDeviceTranslationService> receiver,
+      std::unique_ptr<TranslateKitClient> client,
+      base::PassKey<OnDeviceTranslationService>);
 
   ~OnDeviceTranslationService() override;
 
@@ -38,6 +51,11 @@ class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
 
  private:
   mojo::Receiver<mojom::OnDeviceTranslationService> receiver_;
+  std::unique_ptr<TranslateKitClient> owning_client_for_testing_;
+  raw_ptr<TranslateKitClient> client_;
+
+  mojo::UniqueReceiverSet<on_device_translation::mojom::Translator>
+      translators_;
 };
 
 }  // namespace on_device_translation
