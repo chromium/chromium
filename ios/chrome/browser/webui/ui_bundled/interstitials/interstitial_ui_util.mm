@@ -14,6 +14,7 @@
 #import "components/security_interstitials/core/ssl_error_options_mask.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "crypto/rsa_private_key.h"
+#import "ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -185,4 +186,30 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
   return SafeBrowsingBlockingPage::Create(resource);
+}
+
+std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
+CreateEnterpriseBlockPage(web::WebState* web_state, const GURL& url) {
+  security_interstitials::UnsafeResource resource;
+  resource.url = url;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK;
+  resource.weak_web_state = web_state->GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  return enterprise_connectors::IOSEnterpriseInterstitial::CreateBlockingPage(
+      resource);
+}
+
+std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
+CreateEnterpriseWarnPage(web::WebState* web_state, const GURL& url) {
+  security_interstitials::UnsafeResource resource;
+  resource.url = url;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
+  resource.weak_web_state = web_state->GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  return enterprise_connectors::IOSEnterpriseInterstitial::CreateWarningPage(
+      resource);
 }

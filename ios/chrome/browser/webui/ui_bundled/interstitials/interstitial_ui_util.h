@@ -28,4 +28,12 @@ CreateCaptivePortalBlockingPage(web::WebState* web_state);
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
 CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url);
 
+// Creates an interstitial page for chrome://interstitials/enterprise-block.
+std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
+CreateEnterpriseBlockPage(web::WebState* web_state, const GURL& url);
+
+// Creates an interstitial page for chrome://interstitials/enterprise-warn.
+std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
+CreateEnterpriseWarnPage(web::WebState* web_state, const GURL& url);
+
 #endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_INTERSTITIALS_INTERSTITIAL_UI_UTIL_H_

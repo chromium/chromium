@@ -24,19 +24,42 @@ source_set("connectors") {
   ]
 }
 
+source_set("interstitials") {
+  sources = [
+    "ios_enterprise_interstitial.h",
+    "ios_enterprise_interstitial.mm",
+  ]
+
+  deps = [
+    "//components/enterprise/connectors/core",
+    "//components/keyed_service/core",
+    "//components/resources:components_resources_grit",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/security_interstitials/core",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/components/security_interstitials",
+    "//ui/base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "connectors_service_unittest.mm" ]
-
-  public_deps = [ ":connectors" ]
+  sources = [
+    "connectors_service_unittest.mm",
+    "ios_enterprise_interstitial_unittest.mm",
+  ]
 
   deps = [
+    ":connectors",
+    ":interstitials",
     "//base",
     "//components/enterprise:test_support",
     "//components/enterprise/connectors/core",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/security_interstitials/core",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
