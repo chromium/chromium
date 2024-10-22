@@ -536,6 +536,8 @@ class BuildConfigGenerator extends DefaultTask {
                 gnTarget = '//third_party/android_deps:guava_android_java'
             } else if (aliasedLib) {
                 gnTarget = aliasedLib
+            } else if (depTargetName.startsWith('google_play_services_') || depTargetName.startsWith('google_firebase_')) {
+                gnTarget = '$google_play_services_package:' + depTargetName
             } else if (isInDifferentRepo(dep)) {
                 String thirdPartyDir = (dep.id.startsWith('androidx')) ? 'androidx' : 'android_deps'
                 gnTarget = "//third_party/${thirdPartyDir}:${depTargetName}"
@@ -548,9 +550,6 @@ class BuildConfigGenerator extends DefaultTask {
                     gnTarget == ':com_google_guava_guava_java')) {
                 // Prevent circular dep caused by having listenablefuture aliased to guava_android.
                 return
-            }
-            if (gnTarget.startsWith(':google_play_services_') || gnTarget.startsWith(':google_firebase_')) {
-              gnTarget = '$google_play_services_package' + gnTarget
             }
             // Target aliases can cause dupes.
             if (addedDeps.add(gnTarget)) {
