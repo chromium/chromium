@@ -5,9 +5,12 @@
 #include "components/viz/service/display/frame_interval_matchers.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/typed_macros.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "media/filters/video_cadence_estimator.h"
 
 namespace viz {
@@ -146,6 +149,35 @@ FrameIntervalMatcher::Inputs::~Inputs() = default;
 FrameIntervalMatcher::Inputs::Inputs(const Inputs& other) = default;
 FrameIntervalMatcher::Inputs& FrameIntervalMatcher::Inputs::operator=(
     const Inputs& other) = default;
+
+void FrameIntervalMatcher::Inputs::WriteIntoTrace(
+    perfetto::TracedValue trace_context) const {
+  auto dict = std::move(trace_context).WriteDictionary();
+  for (const auto& [frame_sink_id, interval_inputs] : inputs_map) {
+    auto frame_sink_dict =
+        dict.AddDictionary(perfetto::DynamicString(frame_sink_id.ToString()));
+    frame_sink_dict.Add(
+        "time_diff_us",
+        (aggregated_frame_time - interval_inputs.frame_time).InMicroseconds());
+    frame_sink_dict.Add("has_input", interval_inputs.has_input);
+    frame_sink_dict.Add(
+        "only_content",
+        interval_inputs.has_only_content_frame_interval_updates);
+
+    int index = 0;
+    for (const ContentFrameIntervalInfo& content_info :
+         interval_inputs.content_interval_info) {
+      auto content_info_dict = dict.AddDictionary(perfetto::DynamicString(
+          base::StringPrintf("content_info_%d", index)));
+      content_info_dict.Add(
+          "type", ContentFrameIntervalTypeToString(content_info.type));
+      content_info_dict.Add("interval_us",
+                            content_info.frame_interval.InMicroseconds());
+      content_info_dict.Add("duplicate_count", content_info.duplicate_count);
+      index++;
+    }
+  }
+}
 
 // static
 std::string FrameIntervalMatcher::ResultToString(const Result& result) {
