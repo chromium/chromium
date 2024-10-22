@@ -342,7 +342,6 @@ public class StripLayoutHelper
     // Internal State
     private StripLayoutView[] mStripViews = new StripLayoutView[0];
     private StripLayoutTab[] mStripTabs = new StripLayoutTab[0];
-    private StripLayoutTab[] mStripTabsVisuallyOrdered = new StripLayoutTab[0];
     private StripLayoutTab[] mStripTabsToRender = new StripLayoutTab[0];
     private StripLayoutGroupTitle[] mStripGroupTitles = new StripLayoutGroupTitle[0];
     private StripLayoutGroupTitle[] mStripGroupTitlesToRender = new StripLayoutGroupTitle[0];
@@ -1168,7 +1167,6 @@ public class StripLayoutHelper
         if (stripTab == null) {
             tabCreated(time, id, prevId, true, false, false);
         } else {
-            updateVisualTabOrdering();
             updateCloseButtons();
 
             Tab tab = getTabById(id);
@@ -1191,16 +1189,14 @@ public class StripLayoutHelper
 
     /**
      * Called when a tab has been moved in the tabModel.
-     * @param time     The current time of the app in ms.
-     * @param id       The id of the Tab.
+     *
+     * @param time The current time of the app in ms.
+     * @param id The id of the Tab.
      * @param oldIndex The old index of the tab in the {@link TabModel}.
      * @param newIndex The new index of the tab in the {@link TabModel}.
      */
     public void tabMoved(long time, int id, int oldIndex, int newIndex) {
         reorderTab(id, oldIndex, newIndex, false);
-
-        updateVisualTabOrdering();
-        mUpdateHost.requestUpdate();
     }
 
     /**
@@ -1390,7 +1386,6 @@ public class StripLayoutHelper
 
         // 2. Initialize the draw parameters.
         computeAndUpdateTabWidth(false, false, null);
-        updateVisualTabOrdering();
 
         // 3. Scroll the strip to bring the selected tab to view and ensure that the active tab
         // container is visible.
@@ -2626,7 +2621,6 @@ public class StripLayoutHelper
             animationList = resizeTabStrip(true, delayResize, deferAnimations);
         }
 
-        updateVisualTabOrdering();
         return animationList;
     }
 
@@ -3103,15 +3097,6 @@ public class StripLayoutHelper
         return animationList;
     }
 
-    private void updateVisualTabOrdering() {
-        if (mStripTabs.length != mStripTabsVisuallyOrdered.length) {
-            mStripTabsVisuallyOrdered = new StripLayoutTab[mStripTabs.length];
-        }
-
-        mStripStacker.createVisualOrdering(
-                getSelectedStripTabIndex(), mStripTabs, mStripTabsVisuallyOrdered);
-    }
-
     private StripLayoutTab createPlaceholderStripTab() {
         StripLayoutTab tab =
                 new StripLayoutTab(
@@ -3453,7 +3438,7 @@ public class StripLayoutHelper
 
     private void createRenderList() {
         // 1. Figure out how many tabs will need to be rendered.
-        int tabRenderCount = getVisibleViewCount(mStripTabsVisuallyOrdered);
+        int tabRenderCount = getVisibleViewCount(mStripTabs);
         int groupTitleRenderCount = getVisibleViewCount(mStripGroupTitles);
 
         // 2. Reallocate the render list if necessary.
@@ -3465,7 +3450,7 @@ public class StripLayoutHelper
         }
 
         // 3. Populate it with the visible tabs.
-        populateVisibleViews(mStripTabsVisuallyOrdered, mStripTabsToRender);
+        populateVisibleViews(mStripTabs, mStripTabsToRender);
         populateVisibleViews(mStripGroupTitles, mStripGroupTitlesToRender);
     }
 
@@ -3672,27 +3657,6 @@ public class StripLayoutHelper
         }
 
         return null;
-    }
-
-    /**
-     * @param tab The StripLayoutTab to look for.
-     * @return The index of the tab in the visual ordering.
-     */
-    public int visualIndexOfTabForTesting(StripLayoutTab tab) {
-        for (int i = 0; i < mStripTabsVisuallyOrdered.length; i++) {
-            if (mStripTabsVisuallyOrdered[i] == tab) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * @param tab The StripLayoutTab you're looking at.
-     * @return Whether or not this tab is the foreground tab.
-     */
-    public boolean isForegroundTabForTesting(StripLayoutTab tab) {
-        return tab == mStripTabsVisuallyOrdered[mStripTabsVisuallyOrdered.length - 1];
     }
 
     @VisibleForTesting
@@ -4295,9 +4259,6 @@ public class StripLayoutHelper
 
             // 4.e. Update our curIndex as we have just moved the tab.
             curIndex = destIndex > curIndex ? destIndex - 1 : destIndex;
-
-            // 4.f. Update visual tab ordering.
-            updateVisualTabOrdering();
         }
 
         // 5. Limit offset based on tab position. First tab can't drag left, last tab can't drag
