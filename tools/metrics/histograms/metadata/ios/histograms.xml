@@ -3911,7 +3911,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.ApplicationSupportSize" units="MB"
-    expires_after="2024-11-03">
+    expires_after="2024-03-09">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -3956,7 +3956,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.ChromeTempSize" units="MB"
-    expires_after="2024-11-03">
+    expires_after="2024-03-09">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -3979,7 +3979,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.FaviconsSize" units="KB"
-    expires_after="2024-11-03">
+    expires_after="2024-03-09">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
