@@ -99,7 +99,8 @@ public abstract class TabModelSelectorBase
         mIncognitoTabModel = incognitoModel;
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
-        mTabGroupModelFilterProvider.init(TabGroupModelFilterImpl::new, this, getModels());
+        mTabGroupModelFilterProvider.init(
+                TabGroupModelFilterImpl::new, TabUngrouperImpl::new, this, getModels());
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
@@ -419,6 +420,7 @@ public abstract class TabModelSelectorBase
 
     /**
      * Notifies all the listeners that a tab has been hidden to switch to another.
+     *
      * @param tab The tab that has been hidden.
      */
     protected void notifyTabHidden(Tab tab) {

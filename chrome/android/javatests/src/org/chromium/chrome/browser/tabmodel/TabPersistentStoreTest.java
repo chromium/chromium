@@ -187,6 +187,12 @@ public class TabPersistentStoreTest {
                     new Callable<TabModelImpl>() {
                         @Override
                         public TabModelImpl call() {
+                            TabRemover tabRemover =
+                                    new TabRemoverImpl(
+                                            () ->
+                                                    getTabGroupModelFilterProvider()
+                                                            .getTabGroupModelFilter(
+                                                                    /* isIncognito= */ false));
                             return new TabModelImpl(
                                     ProfileManager.getLastUsedRegularProfile(),
                                     NO_RESTORE_TYPE,
@@ -197,11 +203,17 @@ public class TabPersistentStoreTest {
                                     nextTabPolicySupplier,
                                     AsyncTabParamsManagerSingleton.getInstance(),
                                     TestTabModelSelector.this,
+                                    tabRemover,
                                     /* supportUndo= */ true,
                                     /* trackInNativeModelList= */ true);
                         }
                     };
             TabModelImpl regularTabModel = ThreadUtils.runOnUiThreadBlocking(callable);
+            TabRemover incognitoTabRemover =
+                    new TabRemoverImpl(
+                            () ->
+                                    getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(/* isIncognito= */ true));
             IncognitoTabModelImpl incognitoTabModel =
                     new IncognitoTabModelImpl(
                             new IncognitoTabModelImplCreator(
@@ -213,7 +225,8 @@ public class TabPersistentStoreTest {
                                     nextTabPolicySupplier,
                                     AsyncTabParamsManagerSingleton.getInstance(),
                                     NO_RESTORE_TYPE,
-                                    this));
+                                    this,
+                                    incognitoTabRemover));
             initialize(regularTabModel, incognitoTabModel);
         }
 

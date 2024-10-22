@@ -120,6 +120,7 @@ public class UndoTabModelUnitTest {
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
         TabModelOrderControllerImpl orderController =
                 new TabModelOrderControllerImpl(mTabModelSelector);
+        TabRemover tabRemover = new TabRemoverImpl(() -> mTabGroupModelFilter);
         TabModelImpl tabModel;
         final boolean supportUndo = !isIncognito;
         if (isIncognito) {
@@ -135,6 +136,7 @@ public class UndoTabModelUnitTest {
                             () -> NextTabPolicy.HIERARCHICAL,
                             realAsyncTabParamsManager,
                             mTabModelDelegate,
+                            tabRemover,
                             supportUndo,
                             /* trackInNativeModelList= */ true);
             when(mTabModelSelector.getModel(true)).thenReturn(tabModel);
@@ -150,6 +152,7 @@ public class UndoTabModelUnitTest {
                             () -> NextTabPolicy.HIERARCHICAL,
                             realAsyncTabParamsManager,
                             mTabModelDelegate,
+                            tabRemover,
                             supportUndo,
                             /* trackInNativeModelList= */ true);
             when(mTabModelSelector.getModel(false)).thenReturn(tabModel);

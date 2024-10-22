@@ -66,6 +66,7 @@ public class TabModelImpl extends TabModelJniBridge {
     private final TabModelOrderController mOrderController;
     private final TabContentManager mTabContentManager;
     private final TabModelDelegate mModelDelegate;
+    private final TabRemover mTabRemover;
     private final ObserverList<TabModelObserver> mObservers;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
@@ -161,6 +162,7 @@ public class TabModelImpl extends TabModelJniBridge {
             NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager,
             TabModelDelegate modelDelegate,
+            @NonNull TabRemover tabRemover,
             boolean supportUndo,
             boolean isArchivedTabModel) {
         super(profile, activityType, isArchivedTabModel);
@@ -172,6 +174,7 @@ public class TabModelImpl extends TabModelJniBridge {
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mModelDelegate = modelDelegate;
+        mTabRemover = tabRemover;
         mTabCountSupplier.set(0);
         if (supportUndo && !isIncognito()) {
             mPendingTabClosureManager =
@@ -620,6 +623,12 @@ public class TabModelImpl extends TabModelJniBridge {
     @Override
     public @Nullable Tab getTabById(int tabId) {
         return mTabIdToTabs.get(tabId);
+    }
+
+    @Override
+    public @NonNull TabRemover getTabRemover() {
+        assert mTabRemover != null;
+        return mTabRemover;
     }
 
     @Override

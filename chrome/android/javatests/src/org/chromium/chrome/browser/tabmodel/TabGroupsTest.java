@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -401,6 +402,35 @@ public class TabGroupsTest {
         List<Tab> finalTabs = getCurrentTabs();
         assertEquals(5, finalTabs.size());
         assertEquals(tabs, finalTabs);
+    }
+
+    @Test
+    @SmallTest
+    public void testTabUngrouper() {
+        int tabCount = 2;
+        prepareTabs(Arrays.asList(new Integer[] {tabCount}));
+
+        // Tab 0
+        // Tab group 1, 2
+        List<Tab> tabs = getCurrentTabs();
+        assertEquals(tabCount + 1, tabs.size());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(0)));
+                    assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
+                    assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(2)));
+
+                    mTabGroupModelFilter
+                            .getTabUngrouper()
+                            .ungroupTabs(
+                                    tabs.subList(1, 3),
+                                    /* trailing= */ true,
+                                    /* allowDialog= */ false);
+
+                    assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
+                    assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(2)));
+                });
     }
 
     private void assertOrderValid(boolean expectedState) {

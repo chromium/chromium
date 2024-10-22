@@ -112,6 +112,11 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(true);
         mRecentlyClosedBridge =
                 new RecentlyClosedBridge(profileProvider.getOriginalProfile(), this);
+        TabRemover regularTabRemover =
+                new TabRemoverImpl(
+                        () ->
+                                getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ false));
         TabModelImpl normalModel =
                 new TabModelImpl(
                         profileProvider.getOriginalProfile(),
@@ -123,10 +128,16 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         mNextTabPolicySupplier,
                         mAsyncTabParamsManager,
                         this,
+                        regularTabRemover,
                         mIsUndoSupported,
                         /* isArchivedTabModel= */ false);
         regularTabCreator.setTabModel(normalModel, mOrderController);
 
+        TabRemover incognitoTabRemover =
+                new TabRemoverImpl(
+                        () ->
+                                getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ true));
         IncognitoTabModelImpl incognitoModel =
                 new IncognitoTabModelImpl(
                         new IncognitoTabModelImplCreator(
@@ -138,7 +149,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                                 mNextTabPolicySupplier,
                                 mAsyncTabParamsManager,
                                 mActivityType,
-                                this));
+                                this,
+                                incognitoTabRemover));
         incognitoTabCreator.setTabModel(incognitoModel, mOrderController);
         onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
     }

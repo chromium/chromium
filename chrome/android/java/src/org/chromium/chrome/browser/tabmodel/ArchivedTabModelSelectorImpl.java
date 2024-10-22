@@ -24,7 +24,6 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
     private final AtomicBoolean mSessionRestoreCompleted = new AtomicBoolean(true);
 
     private final Profile mProfile;
-    private final TabModelOrderController mOrderController;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
 
@@ -45,7 +44,6 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
             AsyncTabParamsManager asyncTabParamsManager) {
         super(tabCreatorManager, /* startIncognito= */ false);
         mProfile = profile;
-        mOrderController = new TabModelOrderControllerImpl(this);
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
     }
@@ -72,6 +70,12 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
         assert mTabContentManager == null : "onNativeLibraryReady called twice!";
 
         TabCreator tabCreator = getTabCreatorManager().getTabCreator(false);
+        TabModelOrderController orderController = new TabModelOrderControllerImpl(this);
+        TabRemover tabRemover =
+                new TabRemoverImpl(
+                        () ->
+                                getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ false));
         // TODO(crbug.com/331688951): Consider using a custom TabModel.
         TabModelImpl normalModel =
                 new TabModelImpl(
@@ -79,11 +83,12 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                         ActivityType.TABBED,
                         tabCreator,
                         /* incognitoTabCreator= */ null,
-                        mOrderController,
+                        orderController,
                         tabContentProvider,
                         mNextTabPolicySupplier,
                         mAsyncTabParamsManager,
                         this,
+                        tabRemover,
                         /* supportUndo= */ true,
                         /* isArchivedTabModel= */ true) {
                     @Override

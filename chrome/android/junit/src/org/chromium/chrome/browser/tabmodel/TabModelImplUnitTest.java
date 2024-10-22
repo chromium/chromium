@@ -71,6 +71,8 @@ public class TabModelImplUnitTest {
     /** Required to handle some tab lookup actions. */
     @Mock private TabModelDelegate mTabModelDelegate;
 
+    @Mock private TabRemover mTabRemover;
+
     /** Required to handle some actions and initialize {@link TabModelOrderControllerImpl}. */
     @Mock private TabModelSelector mTabModelSelector;
 
@@ -157,6 +159,7 @@ public class TabModelImplUnitTest {
                         () -> NextTabPolicy.HIERARCHICAL,
                         realAsyncTabParamsManager,
                         mTabModelDelegate,
+                        mTabRemover,
                         /* supportUndo= */ true,
                         /* trackInNativeModelList= */ true);
         when(mTabModelSelector.getModel(isIncognito)).thenReturn(tabModel);

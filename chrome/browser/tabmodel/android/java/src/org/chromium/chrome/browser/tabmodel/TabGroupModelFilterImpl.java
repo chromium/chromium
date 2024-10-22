@@ -77,12 +77,13 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
     }
 
-    private final TabModel mTabModel;
     private final ObserverList<TabModelObserver> mFilteredObservers = new ObserverList<>();
     private final ObserverList<TabGroupModelFilterObserver> mGroupFilterObserver =
             new ObserverList<>();
     private final Map<Integer, Integer> mRootIdToGroupIndexMap = new HashMap<>();
     private final Map<Integer, TabGroup> mRootIdToGroupMap = new HashMap<>();
+    private final TabModel mTabModel;
+    private final TabUngrouper mTabUngrouper;
 
     /**
      * The set of tab group IDs that are currently hiding. This cannot be stored on {@link TabGroup}
@@ -101,8 +102,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     /**
      * @param tabModel The tab model to filter.
      */
-    public TabGroupModelFilterImpl(TabModel tabModel) {
+    TabGroupModelFilterImpl(@NonNull TabModel tabModel, @NonNull TabUngrouper tabUngrouper) {
         mTabModel = tabModel;
+        mTabUngrouper = tabUngrouper;
         mTabModel.addObserver(this);
     }
 
@@ -528,6 +530,12 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                         removedGroup.first, removedGroup.second, DidRemoveTabGroupReason.MERGE);
             }
         }
+    }
+
+    @Override
+    public @NonNull TabUngrouper getTabUngrouper() {
+        assert mTabUngrouper != null;
+        return mTabUngrouper;
     }
 
     @Override

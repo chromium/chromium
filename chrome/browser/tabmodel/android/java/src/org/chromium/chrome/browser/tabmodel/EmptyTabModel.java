@@ -68,6 +68,11 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
+    public @NonNull TabRemover getTabRemover() {
+        return new EmptyTabRemover();
+    }
+
+    @Override
     public boolean closeTabs(TabClosureParams tabClosureParams) {
         return false;
     }

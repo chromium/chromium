@@ -83,6 +83,7 @@ public class TabPersistentStoreUnitTest {
     @Mock private TabCreator mNormalTabCreator;
     @Mock private TabCreator mIncognitoTabCreator;
     @Mock private TabWindowManager mTabWindowManager;
+    @Mock private TabUngrouper mTabUngrouper;
 
     private TabGroupModelFilter mNormalTabGroupModelFilter;
     private TabGroupModelFilter mIncognitoTabGroupModelFilter;
@@ -105,8 +106,9 @@ public class TabPersistentStoreUnitTest {
 
         when(mTabModelSelector.getTabGroupModelFilterProvider())
                 .thenReturn(mTabGroupModelFilterProvider);
-        mNormalTabGroupModelFilter = new TabGroupModelFilterImpl(mNormalTabModel);
-        mIncognitoTabGroupModelFilter = new TabGroupModelFilterImpl(mIncognitoTabModel);
+        mNormalTabGroupModelFilter = new TabGroupModelFilterImpl(mNormalTabModel, mTabUngrouper);
+        mIncognitoTabGroupModelFilter =
+                new TabGroupModelFilterImpl(mIncognitoTabModel, mTabUngrouper);
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
                 .thenReturn(mNormalTabGroupModelFilter);
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(true))
