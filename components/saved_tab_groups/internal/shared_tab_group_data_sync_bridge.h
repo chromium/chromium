@@ -11,6 +11,8 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
@@ -118,11 +120,11 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
       const sync_pb::SharedTabGroupDataSpecifics& specifics,
       const std::string& collaboration_id,
       syncer::MetadataChangeList* metadata_change_list,
-      syncer::DataTypeStore::WriteBatch* write_batch);
+      syncer::DataTypeStore::WriteBatch& write_batch);
   std::optional<syncer::ModelError> ApplyRemoteTabUpdate(
       const sync_pb::SharedTabGroupDataSpecifics& specifics,
       syncer::MetadataChangeList* metadata_change_list,
-      syncer::DataTypeStore::WriteBatch* write_batch,
+      syncer::DataTypeStore::WriteBatch& write_batch,
       const std::set<base::Uuid>& tab_ids_with_pending_model_update,
       std::string_view collaboration_id);
 
@@ -131,7 +133,7 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // tabs will be removed in addition to the group.
   void DeleteDataFromLocalStorage(
       const std::string& storage_key,
-      syncer::DataTypeStore::WriteBatch* write_batch);
+      syncer::DataTypeStore::WriteBatch& write_batch);
 
   // Inform the processor of a new or updated Shared Tab Group or Tab.
   void SendToSync(sync_pb::SharedTabGroupDataSpecifics specific,
@@ -142,11 +144,11 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // position.
   void ProcessTabLocalChange(const SavedTabGroup& group,
                              const base::Uuid& tab_id,
-                             syncer::DataTypeStore::WriteBatch* write_batch);
+                             syncer::DataTypeStore::WriteBatch& write_batch);
 
   // Removes the specifics pointed to by `guid` from the `store_`.
   void RemoveEntitySpecifics(const base::Uuid& guid,
-                             syncer::DataTypeStore::WriteBatch* write_batch);
+                             syncer::DataTypeStore::WriteBatch& write_batch);
 
   // Returns unique position for the given tab in the `group`. `tab_index` must
   // be valid.
@@ -162,10 +164,36 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
       const SavedTabGroup& group,
       const std::set<base::Uuid>& tab_ids_to_ignore) const;
 
+  // Creates `ongoing_write_batch_` if needed and returns a scoped closure
+  // runner that will destroy the batch if needed when it goes out of scope.
+  // When `store_write_batch_on_destroy` is false, the write batch is not
+  // committed to the store when destroyed, and the caller is responsible for
+  // committing it when needed. `store_write_batch_on_destroy` has no impact if
+  // there is an ongoing write batch.
+  base::ScopedClosureRunner CreateWriteBatchWithDestroyClosure(
+      bool store_write_batch_on_destroy);
+
+  // Destroys the ongoing write batch and commits it to the store if
+  // `store_write_batch_on_destroy` is true.
+  void DestroyOngoingWriteBatch(bool store_write_batch_on_destroy);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.
   std::unique_ptr<syncer::DataTypeStore> store_;
+
+  // The write batch used to allow reentrancy calls during the processing of
+  // remote updates. If `ongoing_write_batch_` is not null, it means that there
+  // is likely an ongoing remote update processing. In this case methods should
+  // reuse this object instead of creating a new write batch. Otherwise, the
+  // write batch from processing remote updates may overwrite the changes once
+  // committed.
+  //
+  // Use CreateWriteBatchWithDestroyClosure() to create this object because it
+  // returns a scoped closure runner that will destroy the batch when it goes
+  // out of scope. DestroyOngoingWriteBatch() can be called to destroy the batch
+  // explicitly, but this is normally required only during remote updates.
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> ongoing_write_batch_;
 
   // The model wrapper used to access and mutate SavedTabGroupModel.
   raw_ptr<SyncBridgeTabGroupModelWrapper> model_wrapper_;

@@ -7,6 +7,7 @@
 #include <array>
 #include <initializer_list>
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
@@ -69,6 +70,10 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
 
+MATCHER_P(HasLocalGroupId, local_group_id, "") {
+  return arg.local_group_id() == local_group_id;
+}
+
 MATCHER_P(HasTabUrl, url, "") {
   return arg.url() == GURL(url);
 }
@@ -119,6 +124,7 @@ class MockTabGroupModelObserver : public SavedTabGroupModelObserver {
   void ObserveModel(SavedTabGroupModel* model) { observation_.Observe(model); }
   void Reset() { observation_.Reset(); }
 
+  MOCK_METHOD(void, SavedTabGroupAddedFromSync, (const base::Uuid&));
   MOCK_METHOD(void, SavedTabGroupRemovedFromSync, (const SavedTabGroup&));
   MOCK_METHOD(void,
               SavedTabGroupUpdatedFromSync,
@@ -1615,6 +1621,39 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   EXPECT_NE(ApplySingleEntityChange(CreateUpdateEntityChange(
                 tab_update_specifics, "unexpected_collaboration_id")),
             std::nullopt);
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldStoreLocalIdOnRemoteUpdate) {
+  if (!AreLocalIdsPersisted()) {
+    // This test is only relevant if local IDs are persisted.
+    return;
+  }
+
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  const std::string kCollaborationId = "collaboration";
+  const LocalTabGroupID kLocalGroupId = test::GenerateRandomTabGroupID();
+
+  // Simulate a reentrant call during applying remote updates.
+  EXPECT_CALL(mock_model_observer(), SavedTabGroupAddedFromSync)
+      .WillOnce(Invoke([this, &kLocalGroupId](const base::Uuid& group_guid) {
+        model()->OnGroupOpenedInTabStrip(group_guid, kLocalGroupId);
+      }));
+  ApplySingleEntityChange(CreateAddEntityChange(
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::RED),
+      kCollaborationId));
+  ASSERT_THAT(model()->saved_tab_groups(),
+              UnorderedElementsAre(HasLocalGroupId(kLocalGroupId)));
+  testing::Mock::VerifyAndClearExpectations(&mock_model_observer());
+
+  // Verify that the model is destroyed to simulate browser restart.
+  StoreMetadataAndReset(kCollaborationId);
+  ASSERT_EQ(model(), nullptr);
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  // Verify that the local group ID is persisted.
+  EXPECT_THAT(model()->saved_tab_groups(),
+              UnorderedElementsAre(HasLocalGroupId(kLocalGroupId)));
 }
 
 // The number of tabs to test the correct ordering of remote updates.
