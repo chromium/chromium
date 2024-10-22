@@ -15,11 +15,13 @@
 
 namespace ui::wayland {
 
+// TODO(crbug.com/374244480): consider removing these once exo is cleaned up.
+
 // Coverts zcr_extended_text_input::input_type into ui::TextInputType.
 // Returns nullopt if unknown type is given.
-// This can happen if wayland client (e.g. Lacros) and wayland compositor
-// (e.g. exo) have version skew, so that the wayland client sends a new
-// type that the wayland compositor cannot understand.
+// This can happen if wayland client and wayland compositor (e.g. exo) have
+// version skew, so that the wayland client sends a new type that the wayland
+// compositor cannot understand.
 std::optional<TextInputType> ConvertToTextInputType(
     zcr_extended_text_input_v1_input_type wayland_input_type);
 
