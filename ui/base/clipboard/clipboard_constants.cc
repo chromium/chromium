@@ -33,12 +33,6 @@ const char kMimeTypeLinuxSourceUrl[] = "chromium/x-source-url";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Used to sync clipboard source metadata between Ash and LaCrOS.
-const char kMimeTypeDataTransferEndpoint[] =
-    "chromium/x-data-transfer-endpoint";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if !BUILDFLAG(IS_APPLE)
 const char kMimeTypeDataTransferCustomData[] = "chromium/x-web-custom-data";
 const char kMimeTypeWebkitSmartPaste[] = "chromium/x-webkit-paste";
