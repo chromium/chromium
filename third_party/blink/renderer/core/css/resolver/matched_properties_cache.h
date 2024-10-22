@@ -65,8 +65,12 @@ class CORE_EXPORT CachedMatchedProperties final
 
   void Set(const ComputedStyle* style,
            const ComputedStyle* parent_style,
-           const MatchedPropertiesVector&,
-           unsigned clock);
+           unsigned clock) {
+    computed_style = style;
+    parent_computed_style = parent_style;
+    last_used = clock;
+  }
+
   void Clear();
 
   bool DependenciesEqual(const StyleResolverState&) const;
@@ -94,11 +98,7 @@ class CORE_EXPORT MatchedPropertiesCache {
    public:
     explicit Key(const MatchResult&);
 
-    bool IsValid() const {
-      // If hash_ happens to compute to the empty value or the deleted value,
-      // the corresponding MatchResult can't be cached.
-      return !WTF::IsHashTraitsEmptyOrDeletedValue<HashTraits<unsigned>>(hash_);
-    }
+    bool IsCacheable() const { return result_.IsCacheable(); }
 
    private:
     friend class MatchedPropertiesCache;
@@ -127,6 +127,14 @@ class CORE_EXPORT MatchedPropertiesCache {
   // The cache is mapping a hash to a cached entry where the entry is kept as
   // long as *all* properties referred to by the entry are alive. This requires
   // custom weakness which is managed through |CleanMatchedPropertiesCache|.
+  //
+  // Note that this cache is keyed somewhat funny; the actual key is stored
+  // in the value (the first entries of CachedMatchedProperties), while the
+  // HashMap key is the hash of these values. This is because it turned out
+  // to be hard to make this performant in any other way; HashMap does not deal
+  // well with complex keys. Of course, it means we are vulnerable to hash
+  // collisions, in that we cannot store more than one different cache entry
+  // with the same hash.
   using Cache = HeapHashMap<unsigned, Member<CachedMatchedProperties>>;
 
   void CleanMatchedPropertiesCache(const LivenessBroker&);

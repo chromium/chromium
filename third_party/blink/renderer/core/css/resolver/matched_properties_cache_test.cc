@@ -88,26 +88,6 @@ class MatchedPropertiesCacheTest : public PageTestBase {
   }
 };
 
-TEST_F(MatchedPropertiesCacheTest, AllowedKeyValues) {
-  unsigned empty = HashTraits<unsigned>::EmptyValue();
-  unsigned deleted = std::numeric_limits<unsigned>::max();
-
-  ASSERT_EQ(0u, HashTraits<unsigned>::EmptyValue());
-  ASSERT_EQ(deleted, HashTraits<unsigned>::DeletedValue());
-
-  EXPECT_FALSE(TestKey("left:0", empty, GetDocument()).InnerKey().IsValid());
-  EXPECT_TRUE(TestKey("left:0", empty + 1, GetDocument()).InnerKey().IsValid());
-  EXPECT_TRUE(
-      TestKey("left:0", deleted - 1, GetDocument()).InnerKey().IsValid());
-  EXPECT_FALSE(TestKey("left:0", deleted, GetDocument()).InnerKey().IsValid());
-}
-
-TEST_F(MatchedPropertiesCacheTest, InvalidKeyForUncacheableMatchResult) {
-  MatchResult result;
-  result.SetIsCacheable(false);
-  EXPECT_FALSE(MatchedPropertiesCache::Key(result).IsValid());
-}
-
 TEST_F(MatchedPropertiesCacheTest, Miss) {
   TestCache cache(GetDocument());
   TestKey key("color:red", 1, GetDocument());

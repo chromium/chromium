@@ -2494,7 +2494,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
 
   MatchedPropertiesCache::Key key(match_result);
 
-  bool can_use_cache = key.IsValid();
+  bool can_use_cache = match_result.IsCacheable();
   // NOTE: Do not add anything here without also adding it to
   // MatchedPropertiesCache::IsCacheable(); you would be inserting
   // elements that can never be fetched.
@@ -2618,7 +2618,7 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
   // from there because it's never replaced. (Or, similarly, a partial
   // hit where we have to reapply the inherited properties, or where we trash
   // the “partner cache” in StyleInheritedVariables.)
-  if (cache_success.key.IsValid() &&
+  if (cache_success.key.IsCacheable() &&
       MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_added, 1);

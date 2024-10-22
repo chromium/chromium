@@ -44,6 +44,7 @@
 namespace blink {
 
 static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
+  DCHECK(result.IsCacheable());
   const MatchedPropertiesHashVector& hashes = result.GetMatchedPropertiesHash();
   DCHECK(!std::any_of(hashes.begin(), hashes.end(),
                       [](const MatchedPropertiesHash& hash) {
@@ -51,8 +52,16 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
                                WTF::HashTraits<unsigned>::DeletedValue();
                       }))
       << "This should have been checked in AddMatchedProperties()";
-  return StringHasher::HashMemory(hashes.data(),
-                                  sizeof(hashes[0]) * hashes.size());
+  unsigned hash = StringHasher::HashMemory(hashes.data(),
+                                           sizeof(hashes[0]) * hashes.size());
+
+  // See CSSPropertyValueSet::ComputeHash() for asserts that this is safe.
+  if (hash == WTF::HashTraits<unsigned>::EmptyValue() ||
+      hash == WTF::HashTraits<unsigned>::DeletedValue()) {
+    hash ^= 0x80000000;
+  }
+
+  return hash;
 }
 
 CachedMatchedProperties::CachedMatchedProperties(
@@ -64,21 +73,6 @@ CachedMatchedProperties::CachedMatchedProperties(
       parent_computed_style(parent_style),
       last_used(clock) {
   matched_properties.ReserveInitialCapacity(properties.size());
-  for (const auto& new_matched_properties : properties) {
-    matched_properties.emplace_back(new_matched_properties.properties,
-                                    new_matched_properties.data_);
-  }
-}
-
-void CachedMatchedProperties::Set(const ComputedStyle* style,
-                                  const ComputedStyle* parent_style,
-                                  const MatchedPropertiesVector& properties,
-                                  unsigned clock) {
-  computed_style = style;
-  parent_computed_style = parent_style;
-  last_used = clock;
-
-  matched_properties.clear();
   for (const auto& new_matched_properties : properties) {
     matched_properties.emplace_back(new_matched_properties.properties,
                                     new_matched_properties.data_);
@@ -142,8 +136,6 @@ MatchedPropertiesCache::Key::Key(const MatchResult& result, unsigned hash)
 const CachedMatchedProperties* MatchedPropertiesCache::Find(
     const Key& key,
     const StyleResolverState& style_resolver_state) {
-  DCHECK(key.IsValid());
-
   // Matches the corresponding test in IsStyleCacheable().
   if (style_resolver_state.TextAutosizingMultiplier() != 1.0f) {
     return nullptr;
@@ -154,12 +146,15 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
     return nullptr;
   }
   CachedMatchedProperties* cache_item = it->value.Get();
-  if (!cache_item) {
-    return nullptr;
-  }
   if (!cache_item->CorrespondsTo(key.result_.GetMatchedProperties())) {
+    // A hash collision (rare), or the key is not usable anymore.
+    // Take out the existing entry entirely and start anew.
+    // (We could possibly have reused its memory, but for simplicity,
+    // we just treat it as a miss.)
+    cache_.erase(it);
     return nullptr;
   }
+
   if (IsAtShadowBoundary(&style_resolver_state.GetElement()) &&
       cache_item->parent_computed_style->UserModify() !=
           ComputedStyleInitialValues::InitialUserModify()) {
@@ -215,8 +210,6 @@ bool CachedMatchedProperties::CorrespondsTo(
 void MatchedPropertiesCache::Add(const Key& key,
                                  const ComputedStyle* style,
                                  const ComputedStyle* parent_style) {
-  DCHECK(key.IsValid());
-
   Member<CachedMatchedProperties>& cache_item =
       cache_.insert(key.hash_, nullptr).stored_value->value;
 
@@ -224,8 +217,9 @@ void MatchedPropertiesCache::Add(const Key& key,
     cache_item = MakeGarbageCollected<CachedMatchedProperties>(
         style, parent_style, key.result_.GetMatchedProperties(), clock_++);
   } else {
-    cache_item->Set(style, parent_style, key.result_.GetMatchedProperties(),
-                    clock_++);
+    // Note that we don't need to update the properties; they were already
+    // verified to be correct in Find().
+    cache_item->Set(style, parent_style, clock_++);
   }
 }
 
