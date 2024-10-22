@@ -51,7 +51,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
 - (void)configureView:(StandaloneModuleItem*)config {
   CHECK(config);
-  CHECK(self.subviews.count != 0);
+  CHECK(self.subviews.count == 0);
   _moduleType = config.type;
   _config = config;
 
