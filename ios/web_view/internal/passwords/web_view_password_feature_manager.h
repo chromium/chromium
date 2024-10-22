@@ -34,8 +34,6 @@ class WebViewPasswordFeatureManager
   bool ShouldShowAccountStorageReSignin(
       const GURL& current_page_url) const override;
 
-  bool ShouldShowAccountStorageBubbleUi() const override;
-
   password_manager::PasswordForm::Store GetDefaultPasswordStore()
       const override;
   bool IsDefaultPasswordStoreSet() const override;

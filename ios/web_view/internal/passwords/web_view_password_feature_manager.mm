@@ -36,10 +36,6 @@ bool WebViewPasswordFeatureManager::ShouldShowAccountStorageReSignin(
   return false;
 }
 
-bool WebViewPasswordFeatureManager::ShouldShowAccountStorageBubbleUi() const {
-  return false;
-}
-
 password_manager::PasswordForm::Store
 WebViewPasswordFeatureManager::GetDefaultPasswordStore() const {
   // ios/web_view should never write to the profile password store.

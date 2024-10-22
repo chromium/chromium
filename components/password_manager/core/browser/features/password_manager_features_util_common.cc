@@ -151,12 +151,6 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
   return true;
 }
 
-bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service) {
-  // Opted in implies eligible, so that case is covered here too.
-  return internal::IsUserEligibleForAccountStorage(pref_service, sync_service);
-}
-
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {

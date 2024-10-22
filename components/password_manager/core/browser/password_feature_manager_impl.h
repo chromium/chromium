@@ -39,7 +39,6 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
   bool ShouldShowAccountStorageOptIn() const override;
   bool ShouldShowAccountStorageReSignin(
       const GURL& current_page_url) const override;
-  bool ShouldShowAccountStorageBubbleUi() const override;
   PasswordForm::Store GetDefaultPasswordStore() const override;
   bool IsDefaultPasswordStoreSet() const override;
   features_util::PasswordAccountStorageUsageLevel

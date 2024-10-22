@@ -116,19 +116,6 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service,
                                       const GURL& current_page_url);
 
-// Whether it makes sense to ask the user to move a password to their account or
-// in which store to save a password (i.e. profile or account store). This
-// is true if the user has opted in already, or hasn't opted in but all other
-// requirements are met (i.e. there is a signed-in user, Sync-the-feature is not
-// enabled, etc). |pref_service| must not be null. |sync_service| may be null
-// (commonly the case in incognito mode), in which case this will simply return
-// false. See PasswordFeatureManager::ShouldShowPasswordStorePicker.
-// TODO(crbug.com/40261471): This predicate is kinda confusing, especially on
-// mobile. Consider splitting it in two, "should offer move" and "should offer
-// store choice".
-bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service);
-
 // Returns the default storage location for signed-in but non-syncing users
 // (i.e. will new passwords be saved to locally or to the account by default).
 // Always returns an actual value, never kNotSet.

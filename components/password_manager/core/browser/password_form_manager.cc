@@ -408,9 +408,11 @@ bool PasswordFormManager::IsBlocklisted() const {
 }
 
 bool PasswordFormManager::IsMovableToAccountStore() const {
-  DCHECK(
-      client_->GetPasswordFeatureManager()->ShouldShowAccountStorageBubbleUi())
-      << "Ensure that the client supports moving passwords for this user!";
+  if (client_->GetPasswordFeatureManager()->GetDefaultPasswordStore() !=
+      PasswordForm::Store::kAccountStore) {
+    return false;
+  }
+
   signin::IdentityManager* identity_manager = client_->GetIdentityManager();
   DCHECK(identity_manager);
   const std::string gaia_id =

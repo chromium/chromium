@@ -496,9 +496,6 @@ class PasswordFormManagerTest : public testing::Test,
         .WillRepeatedly(Return(&crowdsourcing_manager()));
     ON_CALL(client_, GetPrefs()).WillByDefault(Return(&pref_service_));
     ON_CALL(client_, IsCommittedMainFrameSecure()).WillByDefault(Return(true));
-    ON_CALL(*client_.GetPasswordFeatureManager(),
-            ShouldShowAccountStorageBubbleUi)
-        .WillByDefault(Return(true));
     ON_CALL(crowdsourcing_manager(), StartUploadRequest)
         .WillByDefault(Return(true));
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
@@ -4116,6 +4113,8 @@ TEST_P(PasswordFormManagerTest, MovableToAccountStore) {
                                        signin::ConsentLevel::kSync);
   ON_CALL(client_, GetIdentityManager())
       .WillByDefault(Return(identity_test_env_.identity_manager()));
+  ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
+      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
   EXPECT_TRUE(form_manager_->IsMovableToAccountStore());
 }
 
@@ -4989,6 +4988,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
 
   ON_CALL(client_, GetIdentityManager())
       .WillByDefault(Return(identity_test_env_.identity_manager()));
+  ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
+      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
 
   identity_test_env_.SetPrimaryAccount(kEmail, signin::ConsentLevel::kSync);
 

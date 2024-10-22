@@ -112,8 +112,6 @@ TEST_F(PasswordSaveUpdateViewTest, HasTitleAndTwoButtons) {
 }
 
 TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
-  ON_CALL(*feature_manager_mock(), ShouldShowAccountStorageBubbleUi)
-      .WillByDefault(Return(true));
   ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
       .WillByDefault(
           Return(password_manager::PasswordForm::Store::kAccountStore));
@@ -123,8 +121,6 @@ TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
 }
 
 TEST_F(PasswordSaveUpdateViewTest, ShouldSelectProfileStoreByDefault) {
-  ON_CALL(*feature_manager_mock(), ShouldShowAccountStorageBubbleUi)
-      .WillByDefault(Return(true));
   ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
       .WillByDefault(
           Return(password_manager::PasswordForm::Store::kProfileStore));
