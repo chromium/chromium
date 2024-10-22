@@ -12,6 +12,8 @@ assert(
 component("input") {
   defines = [ "IS_INPUT_IMPL" ]
   sources = [
+    "child_frame_input_helper.cc",
+    "child_frame_input_helper.h",
     "cursor_manager.cc",
     "cursor_manager.h",
     "event_with_latency_info.h",

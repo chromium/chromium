@@ -221,93 +221,22 @@ void CrossProcessFrameConnector::SynchronizeVisualProperties(
   render_widget_host->UpdateVisualProperties(propagate);
 }
 
+input::RenderWidgetHostViewInput*
+CrossProcessFrameConnector::GetParentViewInput() {
+  return GetParentRenderWidgetHostView();
+}
+
+input::RenderWidgetHostViewInput*
+CrossProcessFrameConnector::GetRootViewInput() {
+  return GetRootRenderWidgetHostView();
+}
+
 void CrossProcessFrameConnector::UpdateCursor(const ui::Cursor& cursor) {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
   // UpdateCursor messages are ignored if the root view does not support
   // cursors.
   if (root_view && root_view->GetCursorManager())
     root_view->GetCursorManager()->UpdateCursor(view_, cursor);
-}
-
-gfx::PointF CrossProcessFrameConnector::TransformPointToRootCoordSpace(
-    const gfx::PointF& point,
-    const viz::SurfaceId& surface_id) {
-  gfx::PointF transformed_point;
-  TransformPointToCoordSpaceForView(point, GetRootRenderWidgetHostView(),
-                                    surface_id, &transformed_point);
-  return transformed_point;
-}
-
-bool CrossProcessFrameConnector::TransformPointToCoordSpaceForView(
-    const gfx::PointF& point,
-    input::RenderWidgetHostViewInput* target_view,
-    const viz::SurfaceId& local_surface_id,
-    gfx::PointF* transformed_point) {
-  RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
-  if (!root_view)
-    return false;
-
-  // It is possible that neither the original surface or target surface is an
-  // ancestor of the other in the RenderWidgetHostView tree (e.g. they could
-  // be siblings). To account for this, the point is first transformed into the
-  // root coordinate space and then the root is asked to perform the conversion.
-  if (!root_view->TransformPointToLocalCoordSpace(
-          point, local_surface_id.frame_sink_id(), transformed_point)) {
-    return false;
-  }
-
-  if (target_view == root_view)
-    return true;
-
-  return root_view->TransformPointToCoordSpaceForView(
-      *transformed_point, target_view, transformed_point);
-}
-
-void CrossProcessFrameConnector::ForwardAckedTouchpadZoomEvent(
-    const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultSource ack_source,
-    blink::mojom::InputEventResultState ack_result) {
-  auto* root_view = GetRootRenderWidgetHostView();
-  if (!root_view)
-    return;
-
-  blink::WebGestureEvent root_event(event);
-  const gfx::PointF root_point =
-      view_->TransformPointToRootCoordSpaceF(event.PositionInWidget());
-  root_event.SetPositionInWidget(root_point);
-  root_view->GestureEventAck(root_event, ack_source, ack_result);
-}
-
-bool CrossProcessFrameConnector::BubbleScrollEvent(
-    const blink::WebGestureEvent& event) {
-  TRACE_EVENT1("input", "CrossProcessFrameConnector::BubbleScrollEvent", "type",
-               blink::WebInputEvent::GetName(event.GetType()));
-  DCHECK(event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin ||
-         event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate ||
-         event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd);
-  auto* parent_view = GetParentRenderWidgetHostView();
-
-  if (!parent_view)
-    return false;
-
-  auto* event_router = parent_view->host()->delegate()->GetInputEventRouter();
-
-  // We will only convert the coordinates back to the root here. The
-  // RenderWidgetHostInputEventRouter will determine which ancestor view will
-  // receive a resent gesture event, so it will be responsible for converting to
-  // the coordinates of the target view.
-  blink::WebGestureEvent resent_gesture_event(event);
-  const gfx::PointF root_point =
-      view_->TransformPointToRootCoordSpaceF(event.PositionInWidget());
-  resent_gesture_event.SetPositionInWidget(root_point);
-  // When a gesture event is bubbled to the parent frame, set the allowed touch
-  // action of the parent frame to Auto so that this gesture event is allowed.
-  parent_view->host()->input_router()->ForceSetTouchActionAuto();
-
-  TRACE_EVENT_INSTANT0("input", "Did_Bubble_To_InputEventRouter",
-                       TRACE_EVENT_SCOPE_THREAD);
-  return event_router->BubbleScrollEvent(parent_view, view_,
-                                         resent_gesture_event);
 }
 
 CrossProcessFrameConnector::RootViewFocusState
@@ -526,16 +455,6 @@ bool CrossProcessFrameConnector::IsHidden() const {
 void CrossProcessFrameConnector::DidUpdateVisualProperties(
     const cc::RenderFrameMetadata& metadata) {
   frame_proxy_in_parent_renderer_->DidUpdateVisualProperties(metadata);
-}
-
-void CrossProcessFrameConnector::DidAckGestureEvent(
-    const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
-  auto* root_view = GetRootRenderWidgetHostView();
-  if (!root_view)
-    return;
-
-  root_view->ChildDidAckGestureEvent(event, ack_result);
 }
 
 void CrossProcessFrameConnector::SetVisibilityForChildViews(

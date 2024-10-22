@@ -232,6 +232,8 @@ viz_component("service") {
     "input/render_input_router_delegate_impl.h",
     "input/render_input_router_support_base.cc",
     "input/render_input_router_support_base.h",
+    "input/render_input_router_support_child_frame.cc",
+    "input/render_input_router_support_child_frame.h",
     "layers/layer_context_impl.cc",
     "layers/layer_context_impl.h",
     "performance_hint/boost_manager.cc",

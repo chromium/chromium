@@ -10,4 +10,7 @@ specific_include_rules = {
     "+gpu/ipc/common/gpu_surface_lookup.h",
     "+ui/gl/android/scoped_a_native_window.h",
   ],
+  "render_input_router_support_child_frame.cc": [
+     "+third_party/blink/public/common/frame/frame_visual_properties.h"
+  ],
 }
