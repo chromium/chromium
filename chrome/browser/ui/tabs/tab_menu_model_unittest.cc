@@ -57,6 +57,8 @@ TEST_F(TabMenuModelTest, Basics) {
 
 TEST_F(TabMenuModelTest, OrganizeTabs) {
   TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kTabOrganization}, {});
 
   chrome::NewTab(browser());
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),

@@ -357,6 +357,10 @@ TEST_F(AppMenuModelTest, CustomizeChromeLogMetrics) {
 }
 
 TEST_F(AppMenuModelTest, OrganizeTabsItem) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {features::kTabOrganization, features::kTabOrganizationAppMenuItem}, {});
+
   TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   AppMenuModel model(this, browser());
   model.Init();

@@ -81,6 +81,7 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
 
  private:
   void SetUp() override {
+    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
     profile_ = std::make_unique<TestingProfile>();
     service_ = std::make_unique<TabOrganizationService>(profile_.get());

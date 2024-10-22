@@ -49,6 +49,7 @@ class BrowserCommandsTest : public InProcessBrowserTest {
   BrowserCommandsTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatures(
         {
+            features::kTabOrganization,
             features::kTabstripDeclutter,
             toast_features::kToastFramework,
             toast_features::kReadingListToast,

@@ -39,7 +39,8 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
-    scoped_feature_list_.InitWithFeatures({features::kTabstripDeclutter}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kTabstripDeclutter}, {});
 
     tab_strip_controller_ =
         std::make_unique<FakeBaseTabStripControllerWithProfile>();

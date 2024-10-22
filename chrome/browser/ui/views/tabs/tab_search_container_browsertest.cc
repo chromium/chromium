@@ -31,7 +31,8 @@
 class TabSearchContainerBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchContainerBrowserTest() {
-    feature_list_.InitWithFeatures({features::kTabstripDeclutter}, {});
+    feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kTabstripDeclutter}, {});
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   }
 

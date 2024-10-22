@@ -157,6 +157,9 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     if (tab_organization_service) {
       AddItemWithStringId(TabStripModel::CommandOrganizeTabs,
                           IDS_TAB_CXMENU_ORGANIZE_TABS);
+      SetIsNewFeatureAt(GetItemCount() - 1,
+                        UserEducationService::MaybeShowNewBadge(
+                            tab_strip->profile(), features::kTabOrganization));
     }
   }
 
