@@ -150,6 +150,49 @@ export class DeclutterPageElement extends CrLitElement {
     this.logCtrValue(DeclutterCTREvent.kCloseTabsClicked);
   }
 
+  protected onTabFocus_(e: FocusEvent) {
+    if (e.target instanceof HTMLElement) {
+      e.target.classList.toggle('selected', true);
+    } else {
+      throw new Error('Invalid onTabFocus_ target type: ' + typeof e.target);
+    }
+  }
+
+  protected onTabBlur_(e: FocusEvent) {
+    if (e.target instanceof HTMLElement) {
+      e.target.classList.toggle('selected', false);
+    } else {
+      throw new Error('Invalid onTabBlur_ target type: ' + typeof e.target);
+    }
+  }
+
+  protected onTabKeyDown_(e: KeyboardEvent) {
+    if ((e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) {
+      return;
+    }
+    const tabSearchItems =
+        Array.from(this.shadowRoot!.querySelectorAll('tab-search-item'));
+    const tabSearchItemCount = tabSearchItems.length;
+    const focusedIndex =
+        tabSearchItems.findIndex((element) => element.matches(':focus'));
+    if (focusedIndex < 0) {
+      return;
+    }
+    let nextFocusedIndex = 0;
+    if (e.key === 'ArrowUp') {
+      nextFocusedIndex =
+          (focusedIndex + tabSearchItemCount - 1) % tabSearchItemCount;
+    } else if (e.key === 'ArrowDown') {
+      nextFocusedIndex = (focusedIndex + 1) % tabSearchItemCount;
+    }
+    const selectedItem = tabSearchItems[nextFocusedIndex]!;
+    const focusableElement =
+        selectedItem.shadowRoot!.querySelector(`cr-icon-button`)!;
+    focusableElement.focus();
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
   protected onTabRemove_(e: Event) {
     const index = getEventTargetIndex(e);
     const tabData = this.staleTabDatas_[index]!;

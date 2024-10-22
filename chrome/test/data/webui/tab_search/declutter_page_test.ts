@@ -94,4 +94,69 @@ suite('DeclutterPageTest', () => {
     assertTrue(!!emptyState);
     assertTrue(isVisible(emptyState));
   });
+
+  test('Focus gives item selected class', async () => {
+    await declutterPageSetup(2);
+
+    const tabRows =
+        declutterPage.shadowRoot!.querySelectorAll('tab-search-item');
+    assertTrue(!!tabRows);
+    assertEquals(2, tabRows.length);
+
+    const closeButton0 =
+        tabRows[0]!.shadowRoot!.querySelector(`cr-icon-button`);
+    assertTrue(!!closeButton0);
+    const closeButton1 =
+        tabRows[1]!.shadowRoot!.querySelector(`cr-icon-button`);
+    assertTrue(!!closeButton1);
+
+    closeButton0.focus();
+
+    assertTrue(tabRows[0]!.classList.contains('selected'));
+    assertFalse(tabRows[1]!.classList.contains('selected'));
+
+    closeButton1.focus();
+
+    assertFalse(tabRows[0]!.classList.contains('selected'));
+    assertTrue(tabRows[1]!.classList.contains('selected'));
+  });
+
+  test('Arrow keys traverse focus in tab list', async () => {
+    await declutterPageSetup(3);
+
+    const tabRows =
+        declutterPage.shadowRoot!.querySelectorAll('tab-search-item');
+    assertTrue(!!tabRows);
+    assertEquals(3, tabRows.length);
+
+    const closeButton0 =
+        tabRows[0]!.shadowRoot!.querySelector(`cr-icon-button`);
+    assertTrue(!!closeButton0);
+    const closeButton1 =
+        tabRows[1]!.shadowRoot!.querySelector(`cr-icon-button`);
+    assertTrue(!!closeButton1);
+    const closeButton2 =
+        tabRows[2]!.shadowRoot!.querySelector(`cr-icon-button`);
+    assertTrue(!!closeButton2);
+
+    closeButton0.focus();
+
+    assertTrue(closeButton0.matches(':focus'));
+    assertFalse(closeButton1.matches(':focus'));
+    assertFalse(closeButton2.matches(':focus'));
+
+    tabRows[0]!.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
+    await microtasksFinished();
+
+    assertFalse(closeButton0.matches(':focus'));
+    assertFalse(closeButton1.matches(':focus'));
+    assertTrue(closeButton2.matches(':focus'));
+
+    tabRows[2]!.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    await microtasksFinished();
+
+    assertTrue(closeButton0.matches(':focus'));
+    assertFalse(closeButton1.matches(':focus'));
+    assertFalse(closeButton2.matches(':focus'));
+  });
 });

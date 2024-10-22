@@ -40,7 +40,10 @@ export function getHtml(this: DeclutterPageElement) {
                   close-button-icon="tab-search:remove"
                   role="option"
                   data-index="${index}"
+                  @keydown="${this.onTabKeyDown_}"
                   @close="${this.onTabRemove_}"
+                  @focus="${this.onTabFocus_}"
+                  @blur="${this.onTabBlur_}"
                   hide-url>
               </tab-search-item>
           `)}
