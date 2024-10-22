@@ -8,7 +8,6 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
-#include <presentation-time-client-protocol.h>
 #include <memory>
 #include <utility>
 
@@ -26,6 +25,7 @@
 #include "ui/gfx/linux/dmabuf_uapi.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
+#include "ui/ozone/platform/wayland/host/drm_syncobj_ioctl_wrapper.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_dmabuf.h"
@@ -578,6 +578,11 @@ bool WaylandBufferManagerHost::SupportsImplicitSyncInterop() {
   static const bool can_import_export_sync_file = CheckImportExportFence();
 
   return can_import_export_sync_file;
+}
+
+void WaylandBufferManagerHost::SetDrmSyncobjWrapper(
+    std::unique_ptr<DrmSyncobjIoctlWrapper> wrapper) {
+  drm_syncobj_wrapper_ = std::move(wrapper);
 }
 
 void WaylandBufferManagerHost::TerminateGpuProcess() {

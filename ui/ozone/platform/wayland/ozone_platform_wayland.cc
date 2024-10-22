@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
@@ -33,11 +34,13 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/common/base_keyboard_hook.h"
 #include "ui/ozone/common/features.h"
+#include "ui/ozone/platform/wayland/common/drm_render_node_handle.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_gl_egl_utility.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_manager.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
+#include "ui/ozone/platform/wayland/host/drm_syncobj_ioctl_wrapper.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -265,15 +268,29 @@ class OzonePlatformWayland : public OzonePlatform,
     // event.
     bool use_threaded_polling = args.single_process;
 
+    base::ScopedFD drm_render_node_fd;
 #if defined(WAYLAND_GBM)
+    DrmRenderNodeHandle drm_render_node;
+    base::FilePath drm_node_path = path_finder_.GetDrmRenderNodePath();
+    if (drm_node_path.empty() || !drm_render_node.Initialize(drm_node_path)) {
+      LOG(WARNING) << "Failed to initialize drm render node handle.";
+    } else {
+      drm_render_node_fd = drm_render_node.PassFD();
+    }
     if (use_threaded_polling) {
       // If gbm is used, wl_egl is not used so threaded polling is not required.
-      use_threaded_polling = path_finder_.GetDrmRenderNodePath().empty();
+      use_threaded_polling = drm_node_path.empty();
     }
 #endif
     if (!connection_->Initialize(use_threaded_polling)) {
       LOG(ERROR) << "Failed to initialize Wayland platform";
       return false;
+    }
+
+    if (drm_render_node_fd.is_valid()) {
+      connection_->buffer_manager_host()->SetDrmSyncobjWrapper(
+          std::make_unique<DrmSyncobjIoctlWrapper>(
+              std::move(drm_render_node_fd)));
     }
 
     buffer_manager_connector_ = std::make_unique<WaylandBufferManagerConnector>(
