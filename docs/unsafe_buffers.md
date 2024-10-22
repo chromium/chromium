@@ -448,6 +448,9 @@ entirely by using ranges. `span()` allows us to take a subset of a contiguous
 range without having to use iterators that we move with arithmetic or
 `std::next()`.
 
+Likewise, `std::advance()` can silence the warning but does not add any safety
+to the pointer arithmetic and should be avoided.
+
 Instead of using pointer/iterator arithmetic:
 ```cc
 // Unsafe buffers warning on the unchecked arithmetic.
