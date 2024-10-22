@@ -8,7 +8,6 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/docking_promo/model/utils.h"
-#import "ios/chrome/browser/docking_promo/ui/docking_promo_consumer.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -65,10 +64,6 @@ NSString* const kDockingPromoAnimation = @"docking_promo";
   return CanShowDockingPromo(_timeSinceLastForeground);
 }
 
-- (void)configureConsumer {
-  [self setTextAndImage];
-}
-
 - (void)registerPromoWithPromosManager {
   if (!self.promosManager) {
     return;
@@ -76,24 +71,6 @@ NSString* const kDockingPromoAnimation = @"docking_promo";
 
   self.promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::DockingPromoRemindMeLater);
-}
-
-#pragma mark - Private
-
-- (void)setTextAndImage {
-  CHECK(self.consumer);
-
-  NSString* titleString = l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_TITLE);
-  NSString* primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_PRIMARY_BUTTON_TITLE);
-  NSString* secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_SECONDARY_BUTTON_TITLE);
-  NSString* animationName = kDockingPromoAnimation;
-
-  [self.consumer setTitleString:titleString
-            primaryActionString:primaryActionString
-          secondaryActionString:secondaryActionString
-                  animationName:animationName];
 }
 
 @end
