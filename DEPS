@@ -1484,7 +1484,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/bundletool',
-               'version': 'sZ24OFOduSafn8fvR3ajsGS6KP_oS_Tq0Cw3SA8XiD0C',
+               'version': 'Q-7KJYcc15Cn9iVy-7bk0tPH9-oUrhqHis6HmUzck80C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
