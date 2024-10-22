@@ -48,8 +48,8 @@ public class SearchActivityUtils {
     }
 
     /**
-     * @return the document url associated with the intent, if the intent is trusted and carries
-     *     valid URL.
+     * Returns the document url associated with the intent, if the intent is trusted and carries
+     * valid URL.
      */
     /* package */ static @Nullable GURL getIntentUrl(@NonNull Intent intent) {
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
@@ -62,9 +62,7 @@ public class SearchActivityUtils {
         return null;
     }
 
-    /**
-     * @return the package name on behalf of which the intent was issued.
-     */
+    /** Returns the package name on behalf of which the intent was issued. */
     /* package */ static @Nullable String getReferrer(@NonNull Intent intent) {
         String referrer = null;
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
@@ -82,17 +80,18 @@ public class SearchActivityUtils {
         return TextUtils.isEmpty(referrer) ? null : referrer;
     }
 
-    /**
-     * @return the incognito status of the associated launching activity.
-     */
+    /** Returns whether intent requests a response (true) or action (false). */
+    /* package */ static boolean isServiceRequest(@NonNull Intent intent) {
+        return IntentUtils.isTrustedIntentFromSelf(intent)
+                && IntentUtils.safeGetBooleanExtra(
+                        intent, SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, false);
+    }
+
+    /** Returns the incognito status of the associated launching activity. */
     /* package */ static boolean getIntentIncognitoStatus(@NonNull Intent intent) {
-        boolean isIncognito = false;
-        if (IntentUtils.isTrustedIntentFromSelf(intent)) {
-            isIncognito =
-                    IntentUtils.safeGetBooleanExtra(
-                            intent, SearchActivityExtras.EXTRA_IS_INCOGNITO, false);
-        }
-        return isIncognito;
+        return IntentUtils.isTrustedIntentFromSelf(intent)
+                && IntentUtils.safeGetBooleanExtra(
+                        intent, SearchActivityExtras.EXTRA_IS_INCOGNITO, false);
     }
 
     /** Returns the caller-supplied initial search query. */

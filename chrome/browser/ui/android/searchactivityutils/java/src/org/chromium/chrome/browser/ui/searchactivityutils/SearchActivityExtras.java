@@ -23,12 +23,16 @@ public @interface SearchActivityExtras {
     /** The package name (String) on behalf of which the search was requested. */
     String EXTRA_REFERRER = "org.chromium.chrome.browser.ui.searchactivityutils.referrer";
 
-    // Only alpha-numeric characters, including dots and dashes.
-    // Must be at least 2 characters long, and begin and end with an alphanumeric character.
-    String REFERRER_VALIDATION_REGEX = "^[a-zA-Z0-9][a-zA-Z0-9._-]*[a-zA-Z0-9]$";
-
     /** The incognito status (boolean) associated with the origin activity. */
     String EXTRA_IS_INCOGNITO = "org.chromium.chrome.browser.ui.searchactivityutils.is_incognito";
+
+    /** Whether intent is requesting LoadUrlParams (true) or direct navigation (false). */
+    String EXTRA_IS_SERVICE_REQUEST =
+            "org.chromium.chrome.browser.ui.searchactivityutils.is_service_request";
+
+    // Only alphanumeric characters, dots and dashes.
+    // Must be at least 2 characters long, and begin and end with an alphanumeric character.
+    String REFERRER_VALIDATION_REGEX = "^[a-zA-Z0-9][a-zA-Z0-9._-]*[a-zA-Z0-9]$";
 
     // LINT.IfChange(IntentOrigin)
     /** ID of the calling component */

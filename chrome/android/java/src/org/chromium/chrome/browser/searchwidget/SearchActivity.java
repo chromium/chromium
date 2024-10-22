@@ -392,6 +392,7 @@ public class SearchActivity extends AsyncInitializationActivity
      */
     @VisibleForTesting
     /* package */ void handleNewIntent(Intent intent, boolean activityPresent) {
+        setIntent(intent);
         mIntentOrigin = SearchActivityUtils.getIntentOrigin(intent);
         mSearchType = SearchActivityUtils.getIntentSearchType(intent);
 
@@ -580,7 +581,6 @@ public class SearchActivity extends AsyncInitializationActivity
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        setIntent(intent);
         handleNewIntent(intent, true);
     }
 
@@ -681,7 +681,7 @@ public class SearchActivity extends AsyncInitializationActivity
     /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
         recordNavigationTargetType(new GURL(params.url));
 
-        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB || mIntentOrigin == IntentOrigin.LAUNCHER) {
+        if (SearchActivityUtils.isServiceRequest(getIntent())) {
             SearchActivityUtils.resolveOmniboxRequestForResult(this, params);
         } else {
             loadUrlInChromeBrowser(params);
@@ -741,9 +741,7 @@ public class SearchActivity extends AsyncInitializationActivity
         if (isFinishing()) return;
 
         var exitAnimationRes = 0;
-        if (mIntentOrigin != null
-                && (mIntentOrigin == IntentOrigin.CUSTOM_TAB
-                        || mIntentOrigin == IntentOrigin.LAUNCHER)) {
+        if (SearchActivityUtils.isServiceRequest(getIntent())) {
             if (reason != TerminationReason.NAVIGATION) {
                 SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
             }

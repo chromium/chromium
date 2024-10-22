@@ -173,7 +173,59 @@ public class SearchActivityUtilsUnitTest {
     }
 
     @Test
+    public void isServiceRequest_trustedIntent() {
+        // Generate intent used for testing.
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(
+                        mActivity,
+                        EMPTY_URL,
+                        IntentOrigin.CUSTOM_TAB,
+                        null,
+                        /* isIncognito= */ false);
+        var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
+
+        // Want Activity Result
+        assertTrue(intent.getBooleanExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, false));
+        assertTrue(SearchActivityUtils.isServiceRequest(intent));
+
+        // Want Intent Dispatch
+        intent.putExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, false);
+        assertFalse(SearchActivityUtils.isServiceRequest(intent));
+
+        // Unspecified
+        intent.removeExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST);
+        assertFalse(SearchActivityUtils.isServiceRequest(intent));
+    }
+
+    @Test
+    public void isServiceRequest_untrustedIntent() {
+        // Generate intent used for testing.
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(
+                        mActivity,
+                        EMPTY_URL,
+                        IntentOrigin.CUSTOM_TAB,
+                        null,
+                        /* isIncognito= */ false);
+        var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
+        intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
+
+        // Want Activity Result
+        assertTrue(intent.getBooleanExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, false));
+        assertFalse(SearchActivityUtils.isServiceRequest(intent));
+
+        // Want Intent Dispatch
+        intent.putExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, false);
+        assertFalse(SearchActivityUtils.isServiceRequest(intent));
+
+        // Unspecified
+        intent.removeExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST);
+        assertFalse(SearchActivityUtils.isServiceRequest(intent));
+    }
+
+    @Test
     public void getIntentIncognitoStatus_trustedIntent() {
+        // Generate intent used for testing.
         new SearchActivityClientImpl()
                 .requestOmniboxForResult(
                         mActivity,
@@ -181,13 +233,24 @@ public class SearchActivityUtilsUnitTest {
                         IntentOrigin.CUSTOM_TAB,
                         null,
                         /* isIncognito= */ true);
-
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
+
+        // Want incognito.
+        assertTrue(intent.getBooleanExtra(SearchActivityExtras.EXTRA_IS_INCOGNITO, false));
         assertTrue(SearchActivityUtils.getIntentIncognitoStatus(intent));
+
+        // Want regular.
+        intent.putExtra(SearchActivityExtras.EXTRA_IS_INCOGNITO, false);
+        assertFalse(SearchActivityUtils.getIntentIncognitoStatus(intent));
+
+        // Unspecified
+        intent.removeExtra(SearchActivityExtras.EXTRA_IS_INCOGNITO);
+        assertFalse(SearchActivityUtils.getIntentIncognitoStatus(intent));
     }
 
     @Test
     public void getIntentIncognitoStatus_untrustedIntent() {
+        // Generate intent used for testing.
         new SearchActivityClientImpl()
                 .requestOmniboxForResult(
                         mActivity,
@@ -195,9 +258,19 @@ public class SearchActivityUtilsUnitTest {
                         IntentOrigin.CUSTOM_TAB,
                         null,
                         /* isIncognito= */ true);
-
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
+
+        // Want incognito.
+        assertTrue(intent.getBooleanExtra(SearchActivityExtras.EXTRA_IS_INCOGNITO, false));
+        assertFalse(SearchActivityUtils.getIntentIncognitoStatus(intent));
+
+        // Want regular.
+        intent.putExtra(SearchActivityExtras.EXTRA_IS_INCOGNITO, false);
+        assertFalse(SearchActivityUtils.getIntentIncognitoStatus(intent));
+
+        // Unspecified
+        intent.removeExtra(SearchActivityExtras.EXTRA_IS_INCOGNITO);
         assertFalse(SearchActivityUtils.getIntentIncognitoStatus(intent));
     }
 

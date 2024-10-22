@@ -28,6 +28,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
+import java.util.Locale;
+
 /** Class with logic enabling clients to interact with SearchActivity. */
 public class SearchActivityClientImpl implements SearchActivityClient {
     private static final String TAG = "SAClient";
@@ -84,26 +86,14 @@ public class SearchActivityClientImpl implements SearchActivityClient {
             referrer = null;
         }
 
-        @SuppressLint("DefaultLocale")
-        var intent =
-                buildTrustedIntent(
-                                activity,
-                                String.format(ACTION_SEARCH_FORMAT, intentOrigin, SearchType.TEXT))
-                        .putExtra(
-                                SearchActivityExtras.EXTRA_CURRENT_URL,
-                                GURL.isEmptyOrInvalid(currentUrl) ? null : currentUrl.getSpec())
-                        .putExtra(SearchActivityExtras.EXTRA_ORIGIN, intentOrigin)
-                        .putExtra(
-                                SearchActivityExtras.EXTRA_REFERRER,
-                                TextUtils.isEmpty(referrer) ? null : referrer)
-                        .putExtra(SearchActivityExtras.EXTRA_SEARCH_TYPE, SearchType.TEXT)
-                        .putExtra(SearchActivityExtras.EXTRA_IS_INCOGNITO, isIncognito)
-                        .addFlags(
-                                Intent.FLAG_ACTIVITY_NO_HISTORY
-                                        | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
-
         activity.startActivityForResult(
-                intent,
+                createServiceRequestIntent(
+                        activity,
+                        intentOrigin,
+                        GURL.isEmptyOrInvalid(currentUrl) ? null : currentUrl.getSpec(),
+                        referrer,
+                        /* isServiceIntent= */ true,
+                        isIncognito),
                 OMNIBOX_REQUEST_CODE,
                 ActivityOptions.makeCustomAnimation(
                                 activity, android.R.anim.fade_in, R.anim.no_anim)
@@ -163,5 +153,43 @@ public class SearchActivityClientImpl implements SearchActivityClient {
                 new Intent(action).setComponent(new ComponentName(context, SearchActivity.class));
         IntentUtils.addTrustedIntentExtras(intent);
         return intent;
+    }
+
+    /**
+     * Create an intent to be used to startActivityForResult.
+     *
+     * @param activity the activity to use to build trusted intent
+     * @param intentOrigin the component requesting service
+     * @param currentUrl the current url, used as a context for the service
+     * @param referrer package name of the app on behalf of which the request is made - or null
+     * @param isServiceIntent whether SearchActivity should serve result (true), or take action
+     *     (false)
+     * @param isIncognito whether Omnibox is requested for the incognito profile
+     * @return newly created Intent
+     */
+    @VisibleForTesting
+    /* package */ static Intent createServiceRequestIntent(
+            @NonNull Activity activity,
+            @IntentOrigin int intentOrigin,
+            @Nullable String currentUrl,
+            @Nullable String referrer,
+            boolean isServiceIntent,
+            boolean isIncognito) {
+        return buildTrustedIntent(
+                        activity,
+                        String.format(
+                                Locale.getDefault(),
+                                ACTION_SEARCH_FORMAT,
+                                intentOrigin,
+                                SearchType.TEXT))
+                .putExtra(SearchActivityExtras.EXTRA_CURRENT_URL, currentUrl)
+                .putExtra(SearchActivityExtras.EXTRA_ORIGIN, intentOrigin)
+                .putExtra(
+                        SearchActivityExtras.EXTRA_REFERRER,
+                        TextUtils.isEmpty(referrer) ? null : referrer)
+                .putExtra(SearchActivityExtras.EXTRA_SEARCH_TYPE, SearchType.TEXT)
+                .putExtra(SearchActivityExtras.EXTRA_IS_INCOGNITO, isIncognito)
+                .putExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, isServiceIntent)
+                .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
     }
 }
