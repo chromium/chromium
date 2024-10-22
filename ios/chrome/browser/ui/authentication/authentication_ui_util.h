@@ -60,4 +60,13 @@ AlertCoordinator* ErrorCoordinatorNoItem(NSError* error,
 NSString* ViewControllerPresentationStatusDescription(
     UIViewController* view_controller);
 
+// Returns an alert coordinator asking the user whether they accept to switch to
+// a managed account.
+AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
+    NSString* hosted_domain,
+    Browser* browser,
+    UIViewController* view_controller,
+    ProceduralBlock accept_block,
+    ProceduralBlock cancel_block);
+
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_UI_UTIL_H_

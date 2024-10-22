@@ -62,41 +62,6 @@ NSString* const kAuthenticationSnackbarCategory =
 
 }  // namespace
 
-// Content of the managed account confirmation dialog.
-@interface ManagedConfirmationDialogContent : NSObject
-
-// Title of the dialog.
-@property(nonatomic, readonly, copy) NSString* title;
-// Subtitle of the dialog.
-@property(nonatomic, readonly, copy) NSString* subtitle;
-// Label of the accept button in the dialog.
-@property(nonatomic, readonly, copy) NSString* acceptLabel;
-// Label of the cancel button in the dialog.
-@property(nonatomic, readonly, copy) NSString* cancelLabel;
-
-- (instancetype)initWithTitle:(NSString*)title
-                     subtitle:(NSString*)subtitle
-                  acceptLabel:(NSString*)acceptLabel
-                  cancelLabel:(NSString*)cancelLabel;
-
-@end
-
-@implementation ManagedConfirmationDialogContent
-
-- (instancetype)initWithTitle:(NSString*)title
-                     subtitle:(NSString*)subtitle
-                  acceptLabel:(NSString*)acceptLabel
-                  cancelLabel:(NSString*)cancelLabel {
-  if ((self = [super init])) {
-    _title = title;
-    _subtitle = subtitle;
-    _acceptLabel = acceptLabel;
-    _cancelLabel = cancelLabel;
-  }
-  return self;
-}
-
-@end
 
 @implementation AuthenticationFlowPerformer {
   __weak id<AuthenticationFlowPerformerDelegate> _delegate;
@@ -177,52 +142,15 @@ NSString* const kAuthenticationSnackbarCategory =
       /*force_clear_browsing_data=*/false, nil);
 }
 
-// Retuns the ManagedConfirmationDialogContent that corresponds to the
-// provided `hostedDomain`, and the activation state of User Policy.
-- (ManagedConfirmationDialogContent*)
-    managedConfirmationDialogContentForHostedDomain:(NSString*)hostedDomain {
-  if (!policy::IsAnyUserPolicyFeatureEnabled()) {
-    // Show the legacy managed confirmation dialog if User Policy is disabled.
-    return [[ManagedConfirmationDialogContent alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE)
-             subtitle:l10n_util::GetNSStringF(
-                          IDS_IOS_MANAGED_SIGNIN_SUBTITLE,
-                          base::SysNSStringToUTF16(hostedDomain))
-          acceptLabel:l10n_util::GetNSString(
-                          IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON)
-          cancelLabel:l10n_util::GetNSString(IDS_CANCEL)];
-  } else {
-    // Show the release version of the managed confirmation dialog for User
-    // Policy if User Policy is enabled and there is no Sync consent.
-    return [[ManagedConfirmationDialogContent alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE)
-             subtitle:l10n_util::GetNSStringF(
-                          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
-                          base::SysNSStringToUTF16(hostedDomain))
-          acceptLabel:
-              l10n_util::GetNSString(
-                  IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL)
-          cancelLabel:l10n_util::GetNSString(IDS_CANCEL)];
-  }
-}
-
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser {
   DCHECK(!_managedConfirmationAlertCoordinator);
   DCHECK(!_errorAlertCoordinator);
 
-  ManagedConfirmationDialogContent* content =
-      [self managedConfirmationDialogContentForHostedDomain:hostedDomain];
-
   base::RecordAction(
       base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                               "ManagedConfirmationDialog_Presented"));
-  _managedConfirmationAlertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:viewController
-                                                   browser:browser
-                                                     title:content.title
-                                                   message:content.subtitle];
 
   __weak AuthenticationFlowPerformer* weakSelf = self;
   __weak AlertCoordinator* weakAlert = _managedConfirmationAlertCoordinator;
@@ -262,17 +190,9 @@ NSString* const kAuthenticationSnackbarCategory =
     [strongSelf alertControllerDidDisappear:weakAlert];
     [[strongSelf delegate] didCancelManagedConfirmation];
   };
-
-  [_managedConfirmationAlertCoordinator
-      addItemWithTitle:content.cancelLabel
-                action:cancelBlock
-                 style:UIAlertActionStyleCancel];
-  [_managedConfirmationAlertCoordinator
-      addItemWithTitle:content.acceptLabel
-                action:acceptBlock
-                 style:UIAlertActionStyleDefault];
-  _managedConfirmationAlertCoordinator.noInteractionAction = cancelBlock;
-  [_managedConfirmationAlertCoordinator start];
+  _managedConfirmationAlertCoordinator =
+      ManagedConfirmationDialogContentForHostedDomain(
+          hostedDomain, browser, viewController, acceptBlock, cancelBlock);
 }
 
 - (void)completePostSignInActions:(PostSignInActionSet)postSignInActions

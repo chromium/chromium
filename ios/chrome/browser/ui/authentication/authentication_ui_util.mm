@@ -6,8 +6,10 @@
 
 #import "base/check.h"
 #import "base/format_macros.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -104,4 +106,44 @@ NSString* ViewControllerPresentationStatusDescription(
                                       view_controller.presentingViewController];
   }
   return @"Not presented";
+}
+
+AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
+    NSString* hosted_domain,
+    Browser* browser,
+    UIViewController* view_controller,
+    ProceduralBlock accept_block,
+    ProceduralBlock cancel_block) {
+  // Show the legacy managed confirmation dialog if User Policy is disabled.
+  // Otherwise, show the release version of the managed confirmation dialog for
+  // User Policy if User Policy is enabled and there is no Sync consent.
+  bool user_policy_enabled = policy::IsAnyUserPolicyFeatureEnabled();
+  NSString* title = l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE);
+  NSString* subtitle = l10n_util::GetNSStringF(
+      user_policy_enabled ? IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE
+                          : IDS_IOS_MANAGED_SIGNIN_SUBTITLE,
+      base::SysNSStringToUTF16(hosted_domain));
+  NSString* accept_label = l10n_util::GetNSString(
+      user_policy_enabled
+          ? IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL
+          : IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON);
+  NSString* cancel_label = l10n_util::GetNSString(IDS_CANCEL);
+
+  AlertCoordinator* managed_confirmation_alert_coordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:view_controller
+                                                   browser:browser
+                                                     title:title
+                                                   message:subtitle];
+
+  [managed_confirmation_alert_coordinator
+      addItemWithTitle:cancel_label
+                action:cancel_block
+                 style:UIAlertActionStyleCancel];
+  [managed_confirmation_alert_coordinator
+      addItemWithTitle:accept_label
+                action:accept_block
+                 style:UIAlertActionStyleDefault];
+  managed_confirmation_alert_coordinator.noInteractionAction = cancel_block;
+  [managed_confirmation_alert_coordinator start];
+  return managed_confirmation_alert_coordinator;
 }
