@@ -170,10 +170,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     .beginTransaction()
                     .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
                     .setCustomAnimations(
-                            R.anim.shared_x_axis_open_enter,
-                            R.anim.shared_x_axis_open_exit,
-                            R.anim.shared_x_axis_close_enter,
-                            R.anim.shared_x_axis_close_exit)
+                            R.animator.shared_x_axis_open_enter,
+                            R.animator.shared_x_axis_open_exit,
+                            R.animator.shared_x_axis_close_enter,
+                            R.animator.shared_x_axis_close_exit)
                     .commit();
         }
 
@@ -312,10 +312,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     .beginTransaction()
                     .setReorderingAllowed(true)
                     .setCustomAnimations(
-                            R.anim.shared_x_axis_open_enter,
-                            R.anim.shared_x_axis_open_exit,
-                            R.anim.shared_x_axis_close_enter,
-                            R.anim.shared_x_axis_close_exit)
+                            R.animator.shared_x_axis_open_enter,
+                            R.animator.shared_x_axis_open_exit,
+                            R.animator.shared_x_axis_close_enter,
+                            R.animator.shared_x_axis_close_exit)
                     .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
                     .addToBackStack(null)
                     .commit();
