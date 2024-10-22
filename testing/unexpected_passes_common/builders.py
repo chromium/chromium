@@ -18,9 +18,15 @@ from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 
 TESTING_BUILDBOT_DIR = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', 'buildbot'))
+    os.path.join(constants.CHROMIUM_SRC_DIR, 'testing', 'buildbot'))
 INTERNAL_TESTING_BUILDBOT_DIR = os.path.realpath(
     os.path.join(constants.SRC_INTERNAL_DIR, 'testing', 'buildbot'))
+INFRA_CONFIG_BUILDERS_DIR = os.path.realpath(
+    os.path.join(constants.CHROMIUM_SRC_DIR, 'infra', 'config', 'generated',
+                 'builders'))
+INTERNAL_INFRA_CONFIG_BUILDERS_DIR = os.path.realpath(
+    os.path.join(constants.SRC_INTERNAL_DIR, 'infra', 'config', 'generated',
+                 'builders'))
 
 # Public JSON files for internal builders, which should be treated as internal.
 PUBLIC_INTERNAL_JSON_FILES = {
@@ -69,8 +75,9 @@ class Builders():
     self._suite = suite
     self._include_internal_builders = include_internal_builders
 
-  def _ProcessJsonFiles(self, files: List[str], are_internal_files: bool,
-                        builder_type: str) -> Set[data_types.BuilderEntry]:
+  def _ProcessTestingBuildbotJsonFiles(
+      self, files: List[str], are_internal_files: bool,
+      builder_type: str) -> Set[data_types.BuilderEntry]:
     builders = set()
     for filepath in files:
       if not filepath.endswith('.json'):
@@ -98,6 +105,36 @@ class Builders():
             data_types.BuilderEntry(builder, builder_type, are_internal_files))
     return builders
 
+  def _ProcessInfraConfigJsonFiles(
+      self, files: List[Tuple[str, str]], are_internal_files: bool,
+      builder_type: str) -> Set[data_types.BuilderEntry]:
+    builders = set()
+    for builder_name, filepath in files:
+      if not filepath.endswith('.json'):
+        raise RuntimeError(f'Given path {filepath} was not a JSON file')
+      with open(filepath, encoding='utf-8') as f:
+        targets_json = json.load(f)
+
+      # For CI builders, we can directly use the builder name from the JSON
+      # file, as this will always be a valid CI builder name. Additionally, this
+      # properly handles cases of a parent builder triggering a child tester -
+      # the parent builder's JSON contains the names of the child testers.
+      # For trybots, we want to instead use the builder name from the filepath.
+      # This is because trybots that mirror CI builders contain the CI builder
+      # names in the JSON, but we want the trybot name.
+      for ci_builder_name, test_map in targets_json.items():
+        if not self._BuilderRunsTestOfInterest(test_map):
+          continue
+        if builder_type == constants.BuilderTypes.CI:
+          builders.add(
+              data_types.BuilderEntry(ci_builder_name, builder_type,
+                                      are_internal_files))
+        else:
+          builders.add(
+              data_types.BuilderEntry(builder_name, builder_type,
+                                      are_internal_files))
+    return builders
+
   def GetCiBuilders(self) -> Set[data_types.BuilderEntry]:
     """Gets the set of CI builders to query.
 
@@ -108,11 +145,16 @@ class Builders():
     ci_builders = set()
 
     logging.info('Getting CI builders')
-    ci_builders = self._ProcessJsonFiles(_GetPublicJsonFiles(), False,
-                                         constants.BuilderTypes.CI)
+    ci_builders = self._ProcessTestingBuildbotJsonFiles(
+        _GetPublicTestingBuildbotJsonFiles(), False, constants.BuilderTypes.CI)
+    ci_builders |= self._ProcessInfraConfigJsonFiles(
+        _GetPublicInfraConfigCiJsonFiles(), False, constants.BuilderTypes.CI)
     if self._include_internal_builders:
-      ci_builders |= self._ProcessJsonFiles(_GetInternalJsonFiles(), True,
-                                            constants.BuilderTypes.CI)
+      ci_builders |= self._ProcessTestingBuildbotJsonFiles(
+          _GetInternalTestingBuildbotJsonFiles(), True,
+          constants.BuilderTypes.CI)
+      ci_builders |= self._ProcessInfraConfigJsonFiles(
+          _GetInternalInfraConfigCiJsonFiles(), True, constants.BuilderTypes.CI)
 
     logging.debug('Got %d CI builders after trimming: %s', len(ci_builders),
                   ', '.join([b.name for b in ci_builders]))
@@ -148,15 +190,20 @@ class Builders():
       Chromium try builder to query results from.
     """
     logging.info('Getting try builders')
-    dedicated_try_builders = self._ProcessJsonFiles([
+    dedicated_try_builders = self._ProcessTestingBuildbotJsonFiles([
         os.path.join(TESTING_BUILDBOT_DIR, f)
         for f in os.listdir(TESTING_BUILDBOT_DIR)
     ], False, constants.BuilderTypes.TRY)
+    dedicated_try_builders |= self._ProcessInfraConfigJsonFiles(
+        _GetPublicInfraConfigTryJsonFiles(), False, constants.BuilderTypes.TRY)
     if self._include_internal_builders:
-      dedicated_try_builders |= self._ProcessJsonFiles([
+      dedicated_try_builders |= self._ProcessTestingBuildbotJsonFiles([
           os.path.join(INTERNAL_TESTING_BUILDBOT_DIR, f)
           for f in os.listdir(INTERNAL_TESTING_BUILDBOT_DIR)
       ], True, constants.BuilderTypes.TRY)
+      dedicated_try_builders |= self._ProcessInfraConfigJsonFiles(
+          _GetInternalInfraConfigTryJsonFiles(), True,
+          constants.BuilderTypes.TRY)
     mirrored_builders = set()
     no_output_builders = set()
 
@@ -301,7 +348,7 @@ class Builders():
     raise NotImplementedError()
 
 
-def _GetPublicJsonFiles() -> List[str]:
+def _GetPublicTestingBuildbotJsonFiles() -> List[str]:
   return [
       os.path.join(TESTING_BUILDBOT_DIR, f)
       for f in os.listdir(TESTING_BUILDBOT_DIR)
@@ -309,7 +356,7 @@ def _GetPublicJsonFiles() -> List[str]:
   ]
 
 
-def _GetInternalJsonFiles() -> List[str]:
+def _GetInternalTestingBuildbotJsonFiles() -> List[str]:
   internal_files = [
       os.path.join(INTERNAL_TESTING_BUILDBOT_DIR, f)
       for f in os.listdir(INTERNAL_TESTING_BUILDBOT_DIR)
@@ -320,3 +367,48 @@ def _GetInternalJsonFiles() -> List[str]:
       if f in PUBLIC_INTERNAL_JSON_FILES
   ]
   return internal_files + public_internal_files
+
+
+def _GetPublicInfraConfigCiJsonFiles() -> List[Tuple[str, str]]:
+  return _GetInfraConfigJsonFiles(INFRA_CONFIG_BUILDERS_DIR, 'ci')
+
+
+def _GetInternalInfraConfigCiJsonFiles() -> List[Tuple[str, str]]:
+  return _GetInfraConfigJsonFiles(INTERNAL_INFRA_CONFIG_BUILDERS_DIR, 'ci')
+
+
+def _GetPublicInfraConfigTryJsonFiles() -> List[Tuple[str, str]]:
+  return _GetInfraConfigJsonFiles(INFRA_CONFIG_BUILDERS_DIR, 'try')
+
+
+def _GetInternalInfraConfigTryJsonFiles() -> List[Tuple[str, str]]:
+  return _GetInfraConfigJsonFiles(INTERNAL_INFRA_CONFIG_BUILDERS_DIR, 'try')
+
+
+def _GetInfraConfigJsonFiles(builders_dir: str,
+                             subdirectory: str) -> List[Tuple[str, str]]:
+  """Gets the relevant //infra/config JSON files.
+
+  Args:
+    builders_dir: The generated builders directory to look in, mainly for
+        specifying whether to look for public or internal files.
+    subdirectory: The subdirectory in |builders_dir| to look in, mainly for
+        specifying whether to look for CI or try builders.
+
+  Returns:
+    A list of tuples (builder_name, filepath). |builder_name| is the name of the
+    builder that was found, while |filepath| is the path to a generated JSON
+    file.
+  """
+  json_files = []
+  group_path = os.path.join(builders_dir, subdirectory)
+  for builder_name in os.listdir(group_path):
+    target_dir = os.path.join(group_path, builder_name, 'targets')
+    if not os.path.exists(target_dir):
+      continue
+    for target_file in os.listdir(target_dir):
+      if not target_file.endswith('.json'):
+        continue
+      json_files.append((builder_name, os.path.join(target_dir, target_file)))
+
+  return json_files
