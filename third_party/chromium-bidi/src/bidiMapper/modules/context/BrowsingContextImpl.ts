@@ -503,12 +503,27 @@ export class BrowsingContextImpl {
       if (this.id !== params.frameId) {
         return;
       }
-      // If there is a pending navigation, reject it.
-      this.#pendingCommandNavigation?.reject(
-        new UnknownErrorException(
-          `navigation canceled, as new navigation is requested by ${params.reason}`,
-        ),
-      );
+
+      if (this.#pendingCommandNavigation !== undefined) {
+        // The pending navigation was aborted by the new one.
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+            params: {
+              context: this.id,
+              navigation: this.#navigationId,
+              timestamp: BrowsingContextImpl.getTimestamp(),
+              url: this.#url,
+            },
+          },
+          this.id,
+        );
+        this.#pendingCommandNavigation.reject(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+        );
+        this.#pendingCommandNavigation = undefined;
+      }
       this.#pendingNavigationUrl = params.url;
     });
 
@@ -907,7 +922,7 @@ export class BrowsingContextImpl {
 
     if (wait === BrowsingContext.ReadinessState.None) {
       // Do not wait for the result of the navigation promise.
-      this.#pendingCommandNavigation.resolve();
+      this.#pendingCommandNavigation?.resolve();
       this.#pendingCommandNavigation = undefined;
 
       return {
@@ -924,13 +939,20 @@ export class BrowsingContextImpl {
       this.#waitNavigation(wait, cdpNavigateResult.loaderId === undefined),
       // Throw an error if the navigation is canceled.
       this.#pendingCommandNavigation,
-    ]);
+    ]).catch((e) => {
+      // Aborting navigation should not fail the original navigation command for now.
+      // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
+      if (e !== ChromiumBidi.BrowsingContext.EventNames.NavigationAborted) {
+        throw e;
+      }
+    });
 
-    this.#pendingCommandNavigation.resolve();
+    // `#pendingCommandNavigation` can be already rejected and set to undefined.
+    this.#pendingCommandNavigation?.resolve();
     this.#pendingCommandNavigation = undefined;
     return {
       navigation: navigationId,
-      // Url can change due to redirect get the latest one.
+      // Url can change due to redirect. Get the latest one.
       url: this.#url,
     };
   }

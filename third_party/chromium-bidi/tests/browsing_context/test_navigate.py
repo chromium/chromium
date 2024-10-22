@@ -20,6 +20,43 @@ from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
 
 
 @pytest.mark.asyncio
+async def test_browsingContext_navigateWaitInteractive_redirect(
+        websocket, context_id, html, url_example, read_sorted_messages):
+    await subscribe(websocket, ["browsingContext.navigationAborted"])
+
+    initial_url = html(f"<script>window.location='{url_example}';</script>")
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": initial_url,
+                "wait": "interactive",
+                "context": context_id
+            }
+        })
+
+    [navigation_result,
+     navigation_aborted_event] = await read_sorted_messages(2)
+    assert navigation_result == AnyExtending({
+        'id': command_id,
+        'type': 'success'
+    })
+    initial_navigation_id = navigation_result['result']['navigation']
+
+    assert navigation_aborted_event == AnyExtending({
+        'method': 'browsingContext.navigationAborted',
+        'type': 'event',
+        'params': {
+            'context': context_id,
+            'navigation': initial_navigation_id,
+            'timestamp': ANY_TIMESTAMP,
+            'url': initial_url
+        }
+    })
+
+
+@pytest.mark.asyncio
 async def test_browsingContext_navigateWaitNone_navigated(
         websocket, context_id, html):
     url = html("<h2>test</h2>")
