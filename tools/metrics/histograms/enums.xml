@@ -10569,7 +10569,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4933" label="CSSColor_SpaceOkLxx_outOfRec2020"/>
   <int value="4934" label="SandboxedSrcdocFrameResolvesRelativeURL"/>
   <int value="4935" label="V8Ink_RequestPresenter_Method"/>
-  <int value="4936" label="EventTimingOrphanPointerup"/>
+  <int value="4936" label="OBSOLETE_EventTimingOrphanPointerup"/>
   <int value="4937" label="NavigatorCookieEnabledThirdParty"/>
   <int value="4938" label="FoldableAPIs"/>
   <int value="4939" label="SnapEvent"/>
@@ -10641,7 +10641,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5002" label="ZstdContentEncodingForMainFrameNavigation"/>
   <int value="5003" label="ZstdContentEncodingForSubFrameNavigation"/>
   <int value="5004" label="ZstdContentEncodingForSubresource"/>
-  <int value="5005" label="EventTimingOrphanPointerupWithClick"/>
+  <int value="5005" label="OBSOLETE_EventTimingOrphanPointerupWithClick"/>
   <int value="5006" label="DisableReduceAcceptLanguage"/>
   <int value="5007"
       label="SharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin"/>

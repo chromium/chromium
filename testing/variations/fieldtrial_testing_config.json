@@ -9621,21 +9621,6 @@
             ]
         }
     ],
-    "EventTimingFallbackToModalDialogStart": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EventTimingFallbackToModalDialogStart"
-                    ]
-                }
-            ]
-        }
-    ],
     "EventTimingHandleKeyboardEventSimulatedClick": [
         {
             "platforms": [
@@ -9654,44 +9639,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EventTimingHandleKeyboardEventSimulatedClick"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EventTimingHandleOrphanPointerup": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "android_webview",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EventTimingHandleOrphanPointerup"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EventTimingKeypressAndCompositionInteractionId": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EventTimingKeypressAndCompositionInteractionId"
                     ]
                 }
             ]

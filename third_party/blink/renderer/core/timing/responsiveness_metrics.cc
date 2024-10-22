@@ -357,15 +357,9 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       // Reset if pointer_info got flushed.
       pointer_info = nullptr;
 
-      UseCounter::Count(window_performance_->GetExecutionContext(),
-                        WebFeature::kEventTimingOrphanPointerup);
-
-      if (base::FeatureList::IsEnabled(
-              features::kEventTimingHandleOrphanPointerup)) {
-        // Early exit if it's an orphan pointerup, not treating it as an
-        // interaction. crbug.com/40935137
-        return true;
-      }
+      // Early exit if it's an orphan pointerup, not treating it as an
+      // interaction. crbug.com/40935137
+      return true;
     }
 
     // Generate a new interaction id.
@@ -406,8 +400,6 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
           kPageLoadInternalEventTimingClickInteractionEvents,
           ClickInteractionEvents::kKeyboardClick);
     } else if (is_last_pointerup_orphan_) {
-      UseCounter::Count(window_performance_->GetExecutionContext(),
-                        WebFeature::kEventTimingOrphanPointerupWithClick);
       base::UmaHistogramEnumeration(
           kPageLoadInternalEventTimingClickInteractionEvents,
           ClickInteractionEvents::kPointerClickWithMissingPointerdownOnly);
