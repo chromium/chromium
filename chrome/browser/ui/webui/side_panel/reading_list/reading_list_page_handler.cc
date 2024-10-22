@@ -19,7 +19,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -27,11 +26,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/url_formatter/url_formatter.h"
@@ -131,13 +130,8 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
   }
 
   bool IsCommandIdEnabled(int command_id) const override {
-    PrefService* prefs = browser_->profile()->GetPrefs();
-    policy::IncognitoModeAvailability incognito_avail =
-        IncognitoModePrefs::GetAvailability(prefs);
-    switch (command_id) {
-      case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD:
-        return !browser_->profile()->IsOffTheRecord() &&
-               incognito_avail != policy::IncognitoModeAvailability::kDisabled;
+    if (command_id == IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD) {
+      return IsOpenLinkOTREnabled(browser_->GetProfile(), url_);
     }
     return true;
   }

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -88,7 +89,7 @@ class HistoryClustersSidePanelContextMenu
   HistoryClustersSidePanelContextMenu(
       absl::variant<BrowserWindowInterface*, tabs::TabInterface*> interface,
       GURL url)
-      : ui::SimpleMenuModel(this), interface_(interface), url_(url) {
+      : ui::SimpleMenuModel(this), interface_(interface), url_(std::move(url)) {
     AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
                         IDS_HISTORY_CLUSTERS_OPEN_IN_NEW_TAB);
     AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
@@ -109,6 +110,14 @@ class HistoryClustersSidePanelContextMenu
     AddItemWithStringId(IDC_PASTE, IDS_HISTORY_CLUSTERS_PASTE);
   }
   ~HistoryClustersSidePanelContextMenu() override = default;
+
+  bool IsCommandIdEnabled(int command_id) const override {
+    if (command_id == IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD) {
+      return IsOpenLinkOTREnabled(
+          GetBrowserWindowInterface(interface_)->GetProfile(), url_);
+    }
+    return true;
+  }
 
   void ExecuteCommand(int command_id, int event_flags) override {
     switch (command_id) {
@@ -513,6 +522,14 @@ void HistoryClustersHandler::HistoryDeleted() {
 Profile* HistoryClustersHandler::GetProfile() {
   DCHECK(profile_);
   return profile_;
+}
+
+std::unique_ptr<ui::SimpleMenuModel>
+HistoryClustersHandler::CreateHistoryClustersSidePanelContextMenuForTesting(
+    ContextInterface interface,
+    GURL url) {
+  return std::make_unique<HistoryClustersSidePanelContextMenu>(interface,
+                                                               std::move(url));
 }
 
 void HistoryClustersHandler::SendClustersToPage(

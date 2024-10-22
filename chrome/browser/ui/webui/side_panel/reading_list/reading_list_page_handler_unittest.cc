@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -18,6 +19,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_test_utils.h"
 #include "content/public/test/test_web_ui.h"
@@ -441,6 +443,35 @@ TEST_F(TestReadingListPageHandlerTest, OpenInIncognitoDisabledWhenInOTRMode) {
   // when in OTR mode.
   EXPECT_FALSE(IsItemEnabledInMenu(otr_read_later_context_menu.get(),
                                    IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
+
+  // Expect ItemsChanged to be called four times from the two AddEntry calls in
+  // SetUp() each AddEntry call while the reading list is open triggers items to
+  // be marked as read which triggers an ItemsChanged call.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
+}
+
+TEST_F(TestReadingListPageHandlerTest,
+       OpenInIncognitoRespectsIncognitoModePolicy) {
+  // Disable incognito mode, the menu option should be disabled.
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      policy::IncognitoModeAvailability::kDisabled);
+  std::unique_ptr<ui::SimpleMenuModel> read_later_context_menu =
+      handler()->GetItemContextMenuModelForTesting(browser(), model(),
+                                                   GURL(kTabUrl1));
+  EXPECT_FALSE(IsItemEnabledInMenu(read_later_context_menu.get(),
+                                   IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
+
+  // Enable incognito mode, the menu option should appear as expected.
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      policy::IncognitoModeAvailability::kEnabled);
+  read_later_context_menu = handler()->GetItemContextMenuModelForTesting(
+      browser(), model(), GURL(kTabUrl1));
+  EXPECT_TRUE(IsItemEnabledInMenu(read_later_context_menu.get(),
+                                  IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
 
   // Expect ItemsChanged to be called four times from the two AddEntry calls in
   // SetUp() each AddEntry call while the reading list is open triggers items to
