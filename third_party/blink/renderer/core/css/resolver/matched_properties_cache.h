@@ -47,9 +47,8 @@ class CORE_EXPORT CachedMatchedProperties final
   // semantics.
   // We use UntracedMember<> here because WeakMember<> would require using a
   // HeapHashSet which is slower to iterate.
-  Vector<
-      std::pair<UntracedMember<CSSPropertyValueSet>, MatchedProperties::Data>>
-      matched_properties;
+  Vector<UntracedMember<CSSPropertyValueSet>> matched_properties;
+  Vector<MatchedProperties::Data> matched_properties_metadata;
 
   // Note that we don't cache the original ComputedStyle instance. It may be
   // further modified. The ComputedStyle in the cache is really just a holder
