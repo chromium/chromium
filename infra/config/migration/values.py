@@ -162,6 +162,9 @@ def convert_swarming(swarming: dict[str, typing.Any]) -> Value:
       case 'hard_timeout':
         value_builder['hard_timeout_sec'] = convert_direct(value)
 
+      case 'io_timeout':
+        value_builder['io_timeout_sec'] = convert_direct(value)
+
       case _:
         raise Exception(f'unhandled key in swarming: "{key}"')
 
