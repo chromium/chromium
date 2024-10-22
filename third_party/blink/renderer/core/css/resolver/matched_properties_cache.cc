@@ -247,14 +247,10 @@ void MatchedPropertiesCache::Clear() {
 }
 
 void MatchedPropertiesCache::ClearViewportDependent() {
-  Vector<unsigned, 16> to_remove;
-  for (const auto& cache_entry : cache_) {
-    CachedMatchedProperties* cache_item = cache_entry.value.Get();
-    if (cache_item && cache_item->computed_style->HasViewportUnits()) {
-      to_remove.push_back(cache_entry.key);
-    }
-  }
-  cache_.RemoveAll(to_remove);
+  cache_.erase_if([](const auto& entry_pair) {
+    CachedMatchedProperties* cache_item = entry_pair.value.Get();
+    return cache_item && cache_item->computed_style->HasViewportUnits();
+  });
 }
 
 bool MatchedPropertiesCache::IsStyleCacheable(
@@ -383,26 +379,19 @@ void MatchedPropertiesCache::CleanMatchedPropertiesCache(
 
   if (cache_.size() <= kCacheLimit) {
     // Fast path with no LRU pruning.
-    Vector<unsigned> to_remove;
-    for (const auto& entry_pair : cache_) {
-      // A nullptr value indicates that the entry is currently being created;
-      // see |MatchedPropertiesCache::Add|. Keep such entries.
+    cache_.erase_if([&info](const auto& entry_pair) {
+      // A nullptr value indicates that the entry is currently being
+      // created; see |MatchedPropertiesCache::Add|. Keep such entries.
       if (!entry_pair.value) {
-        continue;
+        return false;
       }
-      if (ShouldRemoveMPCEntry(*entry_pair.value, info)) {
-        to_remove.push_back(entry_pair.key);
-      }
-    }
+      return ShouldRemoveMPCEntry(*entry_pair.value, info);
+    });
     // Allocation of Oilpan memory is forbidden during executing weak callbacks,
     // so the data structure will not be rehashed here (ShouldShrink() internal
     // to the map returns false during such callbacks). The next
     // insertion/deletion from regular code will take care of shrinking
     // accordingly.
-    //
-    // We would prefer simply use cache_.erase(it++) from inside the loop,
-    // but this hits DCHECKs with WTF::Vector.
-    cache_.RemoveAll(to_remove);
     return;
   }
 
@@ -413,19 +402,19 @@ void MatchedPropertiesCache::CleanMatchedPropertiesCache(
   // call, we don't prune down to the cap (500 entries), but a little
   // further (300 entries).
 
-  Vector<unsigned> to_remove;
-  Vector<std::pair<unsigned, unsigned>> live_entries;
+  Vector<unsigned> live_entries;
   live_entries.ReserveInitialCapacity(cache_.size());
-  for (const auto& entry_pair : cache_) {
+  cache_.erase_if([&info, &live_entries](const auto& entry_pair) {
     if (!entry_pair.value) {
-      continue;
+      return false;
     }
     if (ShouldRemoveMPCEntry(*entry_pair.value, info)) {
-      to_remove.push_back(entry_pair.key);
+      return true;
     } else {
-      live_entries.emplace_back(entry_pair.value->last_used, entry_pair.key);
+      live_entries.emplace_back(entry_pair.value->last_used);
+      return false;
     }
-  }
+  });
 
   // If removals didn't take us back under the pruning limit,
   // remove everything older than the 300th newest LRU entry.
@@ -435,16 +424,12 @@ void MatchedPropertiesCache::CleanMatchedPropertiesCache(
     std::nth_element(live_entries.begin(),
                      UNSAFE_BUFFERS(live_entries.begin() + cutoff_idx),
                      live_entries.end());
-    unsigned min_last_used = live_entries[cutoff_idx].first;
+    unsigned min_last_used = live_entries[cutoff_idx];
 
-    for (const auto& [last_used, key] : live_entries) {
-      if (last_used <= min_last_used) {
-        to_remove.push_back(key);
-      }
-    }
+    cache_.erase_if([min_last_used](const auto& entry_pair) {
+      return entry_pair.value && entry_pair.value->last_used <= min_last_used;
+    });
   }
-
-  cache_.RemoveAll(to_remove);
 }
 
 std::ostream& operator<<(std::ostream& stream,
