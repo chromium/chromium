@@ -8,7 +8,9 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/test/bind.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -53,12 +55,16 @@ constexpr const char* kPolicyJson = R"([
   }
 ])";
 
+constexpr const char kTZ[] = "TZ";
+
 using weekly_time::BuildList;
 using weekly_time::DayToString;
+using weekly_time::TimeFromString;
 using Day = WeeklyTimeChecked::Day;
 using testing::_;
 using testing::DoAll;
 using testing::InSequence;
+using ::testing::Mock;
 using ::testing::NiceMock;
 using testing::Return;
 
@@ -75,6 +81,15 @@ using testing::Return;
     EXPECT_EQ(actual_minutes, minutes);                                      \
   }
 
+// Used to verify time in EXPECT_CALLs. Macro in order to see correct line
+// numbers in errors.
+#define EXPECT_TIME_STR(time_str)                          \
+  [&] {                                                    \
+    base::Time expected_time = TimeFromString((time_str)); \
+    base::Time actual_time = base::Time::Now();            \
+    EXPECT_EQ(actual_time, expected_time);                 \
+  }
+
 }  // namespace
 
 class MockDelegate : public DeviceRestrictionScheduleController::Delegate {
@@ -89,6 +104,7 @@ class MockObserver : public DeviceRestrictionScheduleController::Observer {
  public:
   // DeviceRestrictionScheduleController::Observer:
   MOCK_METHOD1(OnRestrictionScheduleStateChanged, void(bool));
+  MOCK_METHOD0(OnRestrictionScheduleMessageChanged, void());
 };
 
 class DeviceRestrictionScheduleControllerTest : public testing::Test {
@@ -112,6 +128,13 @@ class DeviceRestrictionScheduleControllerTest : public testing::Test {
 
   void AdvanceTime(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
+  }
+
+  void SetTime(const char* time_str) {
+    base::Time time = TimeFromString(time_str);
+    base::TimeDelta delta = time - base::Time::Now();
+    CHECK(!delta.is_negative());
+    AdvanceTime(delta);
   }
 
   void SetTime(Day day, int hours, int minutes) {
@@ -465,6 +488,72 @@ TEST_F(DeviceRestrictionScheduleControllerTest, RestrictionScheduleEndDayTime) {
                  << ", minutes: " << t.minutes);
     EXPECT_EQ(t.expected_day, controller_->RestrictionScheduleEndDay());
     EXPECT_EQ(t.expected_time, controller_->RestrictionScheduleEndTime());
+  }
+}
+
+// Verify that the restriction schedule banner message is updated appropriately.
+// Also tests edge cases around handling of DST changes.
+TEST_F(DeviceRestrictionScheduleControllerTest,
+       RestrictionScheduleMessageChanged) {
+  // clang-format off
+  constexpr const struct TestData {
+    const char* start_time;
+    const char* sunday_midnight_utc;
+    const char* monday_midnight_utc;
+  } kTestData[] = {
+      // Regular Friday.
+      {"Fri 22 Mar 2024 19:00",
+       "Sat 23 Mar 2024 23:00 GMT",
+       "Sun 24 Mar 2024 23:00 GMT"},
+      // DST starts on Sun, 31 Mar 2024 when the clock moves from 2:00 to 3:00,
+      // this is 2 days before on a Friday.
+      {"Fri 29 Mar 2024 19:00",
+       "Sat 30 Mar 2024 23:00 GMT",
+       "Sun 31 Mar 2024 22:00 GMT"},
+      // DST ends on Sun, 27 Oct 2024 when the clock moves from 3:00 to 2:00,
+      // this is 2 days before on a Friday.
+      {"Fri 25 Oct 2024 19:00",
+       "Sat 26 Oct 2024 22:00 GMT",
+       "Sun 27 Oct 2024 23:00 GMT"},
+  };
+  // clang-format on
+
+  // Override the local time zone for the current test to have it fixed.
+  base::ScopedEnvironmentVariableOverride scoped_timezone(kTZ, "Europe/Berlin");
+
+  for (const auto& t : kTestData) {
+    // Start each test case with a clean state.
+    UpdatePolicyPref(kPolicyJsonEmpty);
+
+    // Set time inside restricted schedule.
+    SetTime(t.start_time);  // Friday 19:00
+    SCOPED_TRACE(testing::Message() << "time: " << t.start_time);
+
+    // The text should initially contain "Monday" and the changed function
+    // shouldn't be called.
+    EXPECT_CALL(observer_, OnRestrictionScheduleMessageChanged()).Times(0);
+    UpdatePolicyPref(kPolicyJson);
+    EXPECT_EQ(u"on Monday", controller_->RestrictionScheduleEndDay());
+
+    // Nothing happens yet.
+    AdvanceTime(base::Days(1));  // Saturday 19:00
+    Mock::VerifyAndClearExpectations(&observer_);
+
+    // Sunday midnight the text changes to "Tomorrow".
+    EXPECT_CALL(observer_, OnRestrictionScheduleMessageChanged())
+        .Times(1)
+        .WillOnce(EXPECT_TIME_STR(t.sunday_midnight_utc));
+    AdvanceTime(base::Hours(9));  // Sunday 04:00
+    Mock::VerifyAndClearExpectations(&observer_);
+    EXPECT_EQ(u"Tomorrow", controller_->RestrictionScheduleEndDay());
+
+    // Monday midnight the text changes to "Today".
+    EXPECT_CALL(observer_, OnRestrictionScheduleMessageChanged())
+        .Times(1)
+        .WillOnce(EXPECT_TIME_STR(t.monday_midnight_utc));
+    AdvanceTime(base::Days(1));  // Monday 04:00
+    Mock::VerifyAndClearExpectations(&observer_);
+    EXPECT_EQ(u"Today", controller_->RestrictionScheduleEndDay());
   }
 }
 

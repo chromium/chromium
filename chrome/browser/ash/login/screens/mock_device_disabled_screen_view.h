@@ -19,6 +19,11 @@ class MockDeviceDisabledScreenView : public DeviceDisabledScreenView {
 
   MOCK_METHOD(void, UpdateMessage, (const std::string&), (override));
 
+  MOCK_METHOD(void,
+              UpdateRestrictionScheduleMessage,
+              (const std::u16string&, const std::u16string&),
+              (override));
+
   base::WeakPtr<DeviceDisabledScreenView> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "base/values.h"
@@ -99,7 +101,7 @@ bool DeviceRestrictionScheduleController::RestrictionScheduleEnabled() const {
 std::u16string DeviceRestrictionScheduleController::RestrictionScheduleEndDay()
     const {
   const WeeklyTimeChecked current_weekly_time =
-      WeeklyTimeChecked::FromTimeAsLocalTime(base::Time::Now());
+      WeeklyTimeChecked::FromTimeAsLocalTime(clock_->Now());
   std::optional<WeeklyTimeChecked> next_event =
       GetNextEvent(intervals_, current_weekly_time);
   if (state_ == State::kRegular || !next_event.has_value()) {
@@ -128,6 +130,16 @@ std::u16string DeviceRestrictionScheduleController::RestrictionScheduleEndTime()
   return base::TimeFormatTimeOfDay(next_run_time_.value());
 }
 
+void DeviceRestrictionScheduleController::SetClockForTesting(
+    const base::Clock& clock) {
+  clock_ = clock;
+}
+
+void DeviceRestrictionScheduleController::SetMessageUpdateTimerForTesting(
+    std::unique_ptr<base::WallClockTimer> timer) {
+  message_update_timer_ = std::move(timer);
+}
+
 void DeviceRestrictionScheduleController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -151,9 +163,10 @@ void DeviceRestrictionScheduleController::Run() {
   // Reset any potentially running timers.
   run_timer_.Stop();
   notification_timer_.Stop();
+  message_update_timer_->Stop();
 
   // Update state.
-  const base::Time current_time = base::Time::Now();
+  const base::Time current_time = clock_->Now();
   next_run_time_ = GetNextRunTime(current_time);
   state_ = GetCurrentState(current_time);
 
@@ -162,6 +175,11 @@ void DeviceRestrictionScheduleController::Run() {
     // Show end session notification in regular state.
     if (state_ == State::kRegular) {
       StartNotificationTimer(current_time, next_run_time_.value());
+    }
+
+    // Update restriction schedule banner message on day change.
+    if (state_ == State::kRestricted) {
+      StartMessageUpdateTimer(current_time);
     }
 
     // Set up next run of the function.
@@ -177,9 +195,8 @@ void DeviceRestrictionScheduleController::Run() {
 
   // Block or unblock login. This needs to be the last statement since it could
   // cause a restart to the login-screen.
-  for (auto& observer : observers_) {
-    observer.OnRestrictionScheduleStateChanged(state_ == State::kRestricted);
-  }
+  observers_.Notify(&Observer::OnRestrictionScheduleStateChanged,
+                    state_ == State::kRestricted);
 }
 
 void DeviceRestrictionScheduleController::MaybeShowUpcomingLogoutNotification(
@@ -198,6 +215,11 @@ void DeviceRestrictionScheduleController::MaybeShowPostLogoutNotification() {
         false);
     delegate_->ShowPostLogoutNotification();
   }
+}
+
+void DeviceRestrictionScheduleController::RestrictionScheduleMessageChanged() {
+  observers_.Notify(&Observer::OnRestrictionScheduleMessageChanged);
+  StartMessageUpdateTimer(clock_->Now());
 }
 
 // TODO(isandrk): Pass in `intervals_` and convert to pure function in the empty
@@ -268,6 +290,47 @@ void DeviceRestrictionScheduleController::StartRunTimer(
   run_timer_.Start(FROM_HERE, next_run_time,
                    base::BindOnce(&DeviceRestrictionScheduleController::Run,
                                   base::Unretained(this)));
+}
+
+void DeviceRestrictionScheduleController::StartMessageUpdateTimer(
+    base::Time current_time) {
+  if (!next_run_time_.has_value()) {
+    // Sanity check, should never happen.
+    return;
+  }
+
+  // There are at most two message updates:
+  // 1) At next_run_midnight - base::Days(1): "Tomorrow".
+  // 2) At next_run_midnight: "Today";
+  // We only need to check our position in time relative to these two.
+
+  const base::Time next_run_midnight = next_run_time_.value().LocalMidnight();
+  // We need to include the consideration of daylight saving time in local time,
+  // so cannot subtract by one day simply here. 12 hours is enough long/short to
+  // point a time in the "previous local day" even with the consideration of
+  // daylight saving time.
+  const base::Time next_run_prev_day_midnight =
+      (next_run_midnight - base::Hours(12)).LocalMidnight();
+  base::Time update_time;
+
+  if (current_time < next_run_prev_day_midnight) {
+    // The message is some day of week (eg. "Wednesday"), needs to be update to
+    // "Tomorrow".
+    update_time = next_run_prev_day_midnight;
+  } else if (current_time < next_run_midnight) {
+    // The message is "Tomorrow", needs to be updated to "Today".
+    update_time = next_run_midnight;
+  } else {
+    // The message is already "Today" so no update needed.
+    return;
+  }
+
+  // `this` outlives `message_update_timer_`.
+  message_update_timer_->Start(
+      FROM_HERE, update_time,
+      base::BindOnce(&DeviceRestrictionScheduleController::
+                         RestrictionScheduleMessageChanged,
+                     base::Unretained(this)));
 }
 
 }  // namespace policy

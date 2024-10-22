@@ -21,22 +21,30 @@ DeviceDisabledScreenHandler::DeviceDisabledScreenHandler()
 DeviceDisabledScreenHandler::~DeviceDisabledScreenHandler() = default;
 
 void DeviceDisabledScreenHandler::Show(const Params& params) {
-  base::Value::Dict screen_data;
-  screen_data.Set("serial", params.serial);
-  screen_data.Set("domain", params.domain);
-  screen_data.Set("message", params.message);
-  screen_data.Set("deviceRestrictionScheduleEnabled",
-                  params.device_restriction_schedule_enabled);
-  screen_data.Set("deviceName", params.device_name);
-  screen_data.Set("restrictionScheduleEndDay",
-                  params.restriction_schedule_end_day);
-  screen_data.Set("restrictionScheduleEndTime",
-                  params.restriction_schedule_end_time);
-  ShowInWebUI(std::move(screen_data));
+  ShowInWebUI(
+      base::Value::Dict()
+          .Set("serial", params.serial)
+          .Set("domain", params.domain)
+          .Set("message", params.message)
+          .Set("deviceRestrictionScheduleEnabled",
+               params.device_restriction_schedule_enabled)
+          .Set("deviceName", params.device_name)
+          .Set("restrictionScheduleEndDay", params.restriction_schedule_end_day)
+          .Set("restrictionScheduleEndTime",
+               params.restriction_schedule_end_time));
 }
 
 void DeviceDisabledScreenHandler::UpdateMessage(const std::string& message) {
-  CallExternalAPI("setMessage", message);
+  CallExternalAPI("updateData", base::Value::Dict().Set("message", message));
+}
+
+void DeviceDisabledScreenHandler::UpdateRestrictionScheduleMessage(
+    const std::u16string& end_day,
+    const std::u16string& end_time) {
+  CallExternalAPI("updateData",
+                  base::Value::Dict()
+                      .Set("restrictionScheduleEndDay", end_day)
+                      .Set("restrictionScheduleEndTime", end_time));
 }
 
 base::WeakPtr<DeviceDisabledScreenView>

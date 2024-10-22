@@ -41,6 +41,10 @@ class DeviceDisabledScreenView {
 
   virtual void UpdateMessage(const std::string& message) = 0;
 
+  virtual void UpdateRestrictionScheduleMessage(
+      const std::u16string& end_day,
+      const std::u16string& end_time) = 0;
+
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<DeviceDisabledScreenView> AsWeakPtr() = 0;
 };
@@ -62,6 +66,9 @@ class DeviceDisabledScreenHandler final : public DeviceDisabledScreenView,
   // DeviceDisabledScreenView:
   void Show(const Params& params) override;
   void UpdateMessage(const std::string& message) override;
+  void UpdateRestrictionScheduleMessage(
+      const std::u16string& end_day,
+      const std::u16string& end_time) override;
   base::WeakPtr<DeviceDisabledScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:

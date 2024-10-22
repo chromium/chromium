@@ -196,6 +196,12 @@ void DeviceDisablingManager::OnRestrictionScheduleStateChanged(bool enabled) {
   Update();
 }
 
+void DeviceDisablingManager::OnRestrictionScheduleMessageChanged() {
+  for (auto& observer : observers_) {
+    observer.OnRestrictionScheduleMessageChanged();
+  }
+}
+
 void DeviceDisablingManager::Update() {
   if (cros_settings_->PrepareTrustedValues(base::BindOnce(
           &DeviceDisablingManager::Update, weak_factory_.GetWeakPtr())) !=

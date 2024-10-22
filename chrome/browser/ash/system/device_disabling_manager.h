@@ -63,6 +63,8 @@ class DeviceDisablingManager
 
     virtual void OnDisabledMessageChanged(
         const std::string& disabled_message) = 0;
+
+    virtual void OnRestrictionScheduleMessageChanged() = 0;
   };
 
   class Delegate {
@@ -127,6 +129,7 @@ class DeviceDisablingManager
 
   // DeviceRestrictionScheduleController::Observer:
   void OnRestrictionScheduleStateChanged(bool enabled) override;
+  void OnRestrictionScheduleMessageChanged() override;
 
   void Update();
 

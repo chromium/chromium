@@ -26,6 +26,7 @@ class DeviceDisabledScreen : public BaseScreen,
 
   // system::DeviceDisablingManager::Observer:
   void OnDisabledMessageChanged(const std::string& disabled_message) override;
+  void OnRestrictionScheduleMessageChanged() override;
 
  private:
   // BaseScreen:

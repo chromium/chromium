@@ -75,4 +75,12 @@ void DeviceDisabledScreen::OnDisabledMessageChanged(
   }
 }
 
+void DeviceDisabledScreen::OnRestrictionScheduleMessageChanged() {
+  if (view_) {
+    view_->UpdateRestrictionScheduleMessage(
+        DeviceRestrictionScheduleController().RestrictionScheduleEndDay(),
+        DeviceRestrictionScheduleController().RestrictionScheduleEndTime());
+  }
+}
+
 }  // namespace ash

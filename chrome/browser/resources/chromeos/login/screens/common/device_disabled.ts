@@ -121,7 +121,7 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
 
   /** @override */
   override get EXTERNAL_API(): string[] {
-    return ['setMessage'];
+    return ['updateData'];
   }
 
   /** Initial UI State for screen */
@@ -140,6 +140,13 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
    */
   override onBeforeShow(data: DeviceDisabledScreenData): void {
     super.onBeforeShow(data);
+    this.updateData(data);
+  }
+
+  /**
+   * Updates the data used in the screen.
+   */
+  updateData(data: DeviceDisabledScreenData): void {
     if ('serial' in data) {
       this.serial = data.serial;
     }
@@ -162,13 +169,6 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
     if ('restrictionScheduleEndTime' in data) {
       this.restrictionScheduleEndTime = data.restrictionScheduleEndTime;
     }
-  }
-
-  /**
-   * Sets the message to be shown to the user.
-   */
-  setMessage(message: string): void {
-    this.message = message;
   }
 
   /**

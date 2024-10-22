@@ -16,10 +16,10 @@ found in the LICENSE file.
     role="dialog"
     aria-label$="[[disabledHeading(locale, deviceRestrictionScheduleEnabled)]]">
   <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
-  <h1 slot="title">
+  <h1 id="title" slot="title">
     [[disabledHeading(locale, deviceRestrictionScheduleEnabled)]]
   </h1>
-  <div inner-h-t-m-l="[[disabledText(
+  <div id="subtitle" inner-h-t-m-l="[[disabledText(
     locale, serial, enrollmentDomain, deviceRestrictionScheduleEnabled,
     deviceName, restrictionScheduleEndDay, restrictionScheduleEndTime)]]"
       slot="subtitle">
