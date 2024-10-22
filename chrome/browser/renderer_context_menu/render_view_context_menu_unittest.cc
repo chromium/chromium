@@ -4,7 +4,11 @@
 
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 
+#include <memory>
 #include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -75,7 +79,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_prefs.h"
@@ -1752,4 +1758,74 @@ TEST_P(FormatUrlForClipboardTest, FormatUrlForClipboard) {
   GURL url(param.input);
   const std::u16string result = FormatUrl(url);
   DCHECK_EQ(base::UTF8ToUTF16(param.output), result);
+}
+
+// TODO(crbug.com/374253376): Once existing fenced frame context menu browser
+// tests are changed to interactive UI tests, the test cases here should also be
+// added the interactive UI tests.
+class FencedFrameRenderViewContextMenuTest
+    : public RenderViewContextMenuPrefsTest {
+ public:
+  FencedFrameRenderViewContextMenuTest() = default;
+  ~FencedFrameRenderViewContextMenuTest() override = default;
+
+  // Create a fenced frame that is eligible for disabling untrusted network
+  // access.
+  content::RenderFrameHost* CreateAndNavigateFencedFrame(
+      content::RenderFrameHostTester* main_frame) {
+    content::RenderFrameHost* fenced_frame_rfh =
+        main_frame->AppendFencedFrame();
+    GURL fenced_frame_url = GURL("https://fencedframe.com");
+    std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+        content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                              fenced_frame_rfh);
+
+    navigation_simulator->Commit();
+    fenced_frame_rfh = navigation_simulator->GetFinalRenderFrameHost();
+    EXPECT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
+
+    // Set fenced frame config so that its mapped url is the same as the
+    // committed URL.
+    content::test::SetFencedFrameConfig(fenced_frame_rfh, fenced_frame_url);
+
+    return fenced_frame_rfh;
+  }
+
+ private:
+  // Enable fenced frame feature flags when constructed.
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+TEST_F(FencedFrameRenderViewContextMenuTest,
+       DisableOpenLinkEntriesWhenFencedFrameNetworkRevoked) {
+  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
+
+  // Append a fenced frame to the primary main frame.
+  content::RenderFrameHostTester* main_frame =
+      content::RenderFrameHostTester::For(
+          web_contents()->GetPrimaryMainFrame());
+  main_frame->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateAndNavigateFencedFrame(main_frame);
+  auto menu =
+      std::make_unique<TestRenderViewContextMenu>(*fenced_frame_rfh, params);
+
+  // "Open Link in New Tab", "Open Link in New Window" and "Open Link in
+  // Incognito Window".
+  std::vector<int> commands{IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                            IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                            IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD};
+  // Commands should be present and enabled in the context menu.
+  for (auto command : commands) {
+    EXPECT_TRUE(menu->IsCommandIdEnabled(command));
+  }
+
+  ASSERT_TRUE(
+      content::test::RevokeFencedFrameUntrustedNetwork(fenced_frame_rfh));
+  // Commands should be disabled in the context menu after fenced frame has
+  // untrusted network access revoked.
+  menu = std::make_unique<TestRenderViewContextMenu>(*fenced_frame_rfh, params);
+  for (auto command : commands) {
+    EXPECT_FALSE(menu->IsCommandIdEnabled(command));
+  }
 }

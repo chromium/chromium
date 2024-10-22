@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/ranges/algorithm.h"
+#include "base/test/run_until.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
+#include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
@@ -299,12 +301,28 @@ GURL AddAndVerifyFencedFrameURL(
   return urn_uuid.value();
 }
 
+bool RevokeFencedFrameUntrustedNetwork(RenderFrameHost* rfh) {
+  static_cast<RenderFrameHostImpl*>(rfh)->DisableUntrustedNetworkInFencedFrame(
+      base::DoNothing());
+  return base::test::RunUntil(
+      [rfh]() { return rfh->IsUntrustedNetworkDisabled(); });
+}
+
 void ExemptUrlsFromFencedFrameNetworkRevocation(RenderFrameHost* rfh,
                                                 const std::vector<GURL>& urls) {
   base::ranges::for_each(urls, [rfh](GURL url) {
     static_cast<RenderFrameHostImpl*>(rfh)
         ->ExemptUrlFromNetworkRevocationForTesting(url, base::DoNothing());
   });
+}
+
+void SetFencedFrameConfig(RenderFrameHost* rfh, const GURL& url) {
+  FencedFrameConfig config(url);
+  FencedFrameProperties properties = FencedFrameProperties(config);
+
+  static_cast<RenderFrameHostImpl*>(rfh)
+      ->frame_tree_node()
+      ->set_fenced_frame_properties(properties);
 }
 
 void SimulateClickInFencedFrameTree(const ToRenderFrameHost& adapter,

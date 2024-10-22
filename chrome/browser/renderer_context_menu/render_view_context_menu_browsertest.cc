@@ -2307,6 +2307,8 @@ class InterestGroupContentBrowserClient : public ChromeContentBrowserClient {
   }
 };
 
+// TODO(crbug.com/374253376): Change fenced frame context menu browser tests to
+// interactive UI tests.
 class ContextMenuFencedFrameTest : public ContextMenuBrowserTestBase {
  public:
   ContextMenuFencedFrameTest()

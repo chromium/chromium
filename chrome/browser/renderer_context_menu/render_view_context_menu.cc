@@ -2898,12 +2898,12 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE:
       return navigation_allowed;
 
-    case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB:
-    case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
     case IDC_CONTENT_CONTEXT_OPENLINKINPROFILE:
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
       return navigation_allowed && params_.link_url.is_valid() &&
              IsOpenLinkAllowedByDlp(params_.link_url);
+    case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB:
+    case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
     case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
       return navigation_allowed && params_.link_url.is_valid() &&
              IsOpenLinkAllowedByDlp(params_.link_url) &&
@@ -3011,7 +3011,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return !!(params_.edit_flags & ContextMenuDataEditFlags::kCanSelectAll);
 
     case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD:
-      return navigation_allowed && IsOpenLinkOTREnabled();
+      return navigation_allowed && IsOpenLinkOTREnabled() &&
+             IsAllowedByUntrustedNetworkStatus();
 
     case IDC_PRINT:
       return IsPrintPreviewEnabled();
