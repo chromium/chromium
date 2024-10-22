@@ -100,7 +100,7 @@ class USBDevice : public ScriptWrappable,
   ScriptPromise<USBOutTransferResult> controlTransferOut(
       ScriptState*,
       const USBControlTransferParameters* setup,
-      const DOMArrayPiece& optional_data,
+      base::span<const uint8_t> data,
       ExceptionState&);
   ScriptPromise<IDLUndefined> clearHalt(ScriptState*,
                                         const V8USBDirection& direction,
@@ -110,10 +110,11 @@ class USBDevice : public ScriptWrappable,
                                                 uint8_t endpoint_number,
                                                 unsigned length,
                                                 ExceptionState&);
-  ScriptPromise<USBOutTransferResult> transferOut(ScriptState*,
-                                                  uint8_t endpoint_number,
-                                                  const DOMArrayPiece& data,
-                                                  ExceptionState&);
+  ScriptPromise<USBOutTransferResult> transferOut(
+      ScriptState*,
+      uint8_t endpoint_number,
+      base::span<const uint8_t> data,
+      ExceptionState&);
   ScriptPromise<USBIsochronousInTransferResult> isochronousTransferIn(
       ScriptState*,
       uint8_t endpoint_number,
@@ -122,7 +123,7 @@ class USBDevice : public ScriptWrappable,
   ScriptPromise<USBIsochronousOutTransferResult> isochronousTransferOut(
       ScriptState*,
       uint8_t endpoint_number,
-      const DOMArrayPiece& data,
+      base::span<const uint8_t> data,
       Vector<unsigned> packet_lengths,
       ExceptionState&);
   ScriptPromise<IDLUndefined> reset(ScriptState*, ExceptionState&);

@@ -51,7 +51,6 @@ const char kPacketLengthsTooBig[] =
     "The total packet length exceeded the maximum size.";
 const char kBufferSizeMismatch[] =
     "The data buffer size must match the total packet length.";
-const char kDetachedBuffer[] = "The data buffer has been detached.";
 const char kDeviceStateChangeInProgress[] =
     "An operation that changes the device state is in progress.";
 const char kDeviceDisconnected[] = "The device was disconnected.";
@@ -463,18 +462,18 @@ ScriptPromise<USBOutTransferResult> USBDevice::controlTransferOut(
     ScriptState* script_state,
     const USBControlTransferParameters* setup,
     ExceptionState& exception_state) {
-  return controlTransferOut(script_state, setup, DOMArrayPiece(),
-                            exception_state);
+  return controlTransferOut(script_state, setup, {}, exception_state);
 }
 
 ScriptPromise<USBOutTransferResult> USBDevice::controlTransferOut(
     ScriptState* script_state,
     const USBControlTransferParameters* setup,
-    const DOMArrayPiece& optional_data,
+    base::span<const uint8_t> data,
     ExceptionState& exception_state) {
   EnsureNoDeviceOrInterfaceChangeInProgress(exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return EmptyPromise();
+  }
 
   if (!opened_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -483,23 +482,12 @@ ScriptPromise<USBOutTransferResult> USBDevice::controlTransferOut(
   }
 
   auto parameters = ConvertControlTransferParameters(setup, exception_state);
-  if (!parameters)
+  if (!parameters) {
     return EmptyPromise();
+  }
 
-  base::span<const uint8_t> data;
-  if (!optional_data.IsNull()) {
-    if (optional_data.IsDetached()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        kDetachedBuffer);
-      return EmptyPromise();
-    }
-
-    if (ShouldRejectUsbTransferLength(optional_data.ByteLength(),
-                                      exception_state)) {
-      return EmptyPromise();
-    }
-
-    data = optional_data.ByteSpan();
+  if (ShouldRejectUsbTransferLength(data.size(), exception_state)) {
+    return EmptyPromise();
   }
 
   auto* resolver =
@@ -570,22 +558,15 @@ ScriptPromise<USBInTransferResult> USBDevice::transferIn(
 ScriptPromise<USBOutTransferResult> USBDevice::transferOut(
     ScriptState* script_state,
     uint8_t endpoint_number,
-    const DOMArrayPiece& data,
+    base::span<const uint8_t> data,
     ExceptionState& exception_state) {
-  DCHECK(!data.IsNull());
-
   EnsureEndpointAvailable(/*in_transfer=*/false, endpoint_number,
                           exception_state);
-  if (exception_state.HadException())
-    return EmptyPromise();
-
-  if (data.IsDetached()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kDetachedBuffer);
+  if (exception_state.HadException()) {
     return EmptyPromise();
   }
 
-  if (ShouldRejectUsbTransferLength(data.ByteLength(), exception_state)) {
+  if (ShouldRejectUsbTransferLength(data.size(), exception_state)) {
     return EmptyPromise();
   }
 
@@ -596,10 +577,10 @@ ScriptPromise<USBOutTransferResult> USBDevice::transferOut(
 
   device_requests_.insert(resolver);
   device_->GenericTransferOut(
-      endpoint_number, data.ByteSpan(), 0,
+      endpoint_number, data, 0,
       resolver->WrapCallbackInScriptScope(
           WTF::BindOnce(&USBDevice::AsyncTransferOut, WrapPersistent(this),
-                        static_cast<uint32_t>(data.ByteLength()))));
+                        static_cast<uint32_t>(data.size()))));
   return promise;
 }
 
@@ -639,19 +620,12 @@ ScriptPromise<USBIsochronousInTransferResult> USBDevice::isochronousTransferIn(
 ScriptPromise<USBIsochronousOutTransferResult>
 USBDevice::isochronousTransferOut(ScriptState* script_state,
                                   uint8_t endpoint_number,
-                                  const DOMArrayPiece& data,
+                                  base::span<const uint8_t> data,
                                   Vector<unsigned> packet_lengths,
                                   ExceptionState& exception_state) {
-  DCHECK(!data.IsNull());
-
   EnsureEndpointAvailable(/*in_transfer=*/false, endpoint_number,
                           exception_state);
-  if (exception_state.HadException())
-    return EmptyPromise();
-
-  if (data.IsDetached()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kDetachedBuffer);
+  if (exception_state.HadException()) {
     return EmptyPromise();
   }
 
@@ -664,7 +638,7 @@ USBDevice::isochronousTransferOut(ScriptState* script_state,
   if (ShouldRejectUsbTransferLength(total_bytes.value(), exception_state)) {
     return EmptyPromise();
   }
-  if (total_bytes.value() != data.ByteLength()) {
+  if (total_bytes.value() != data.size()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       kBufferSizeMismatch);
     return EmptyPromise();
@@ -677,7 +651,7 @@ USBDevice::isochronousTransferOut(ScriptState* script_state,
 
   device_requests_.insert(resolver);
   device_->IsochronousTransferOut(
-      endpoint_number, data.ByteSpan(), packet_lengths, 0,
+      endpoint_number, data, packet_lengths, 0,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           &USBDevice::AsyncIsochronousTransferOut, WrapPersistent(this))));
   return promise;
