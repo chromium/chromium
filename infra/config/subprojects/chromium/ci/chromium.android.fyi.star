@@ -503,10 +503,11 @@ ci.builder(
     execution_timeout = 4 * time.hour,
 )
 
-# TODO(crbug.com/40263601): Remove after experimental is done.
 ci.builder(
     name = "android-13-x64-fyi-rel",
     description_html = "Run chromium tests on Android 13 emulators for experimental.",
+    # Set to trigger manually as there is no experiment at the moment.
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -544,7 +545,7 @@ ci.builder(
             "android_13_emulator_gtests",
         ],
         mixins = [
-            "13-swangle-x64-emulator",
+            "13-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
@@ -653,6 +654,8 @@ ci.builder(
 ci.builder(
     name = "android-14-x64-fyi-rel",
     description_html = "Run chromium tests on Android 14 emulators for experimental.",
+    # Set to trigger manually as there is no experiment at the moment.
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -693,7 +696,7 @@ ci.builder(
             "android_14_emulator_gtests",
         ],
         mixins = [
-            "14-swangle-x64-emulator",
+            "14-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
@@ -980,6 +983,8 @@ ci.builder(
 ci.builder(
     name = "android-15-x64-fyi-rel",
     description_html = "Run chromium tests on Android 15 emulators.",
+    # Set to trigger manually as there is no experiment at the moment.
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1022,7 +1027,7 @@ ci.builder(
                     "--emulator-debug-tags=all,-qemud,-sensors",
                 ],
             ),
-            "15-swangle-x64-emulator",
+            "15-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",

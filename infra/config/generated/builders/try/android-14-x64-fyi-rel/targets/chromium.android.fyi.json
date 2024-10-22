@@ -3,11 +3,11 @@
     "gtest_tests": [
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -33,13 +33,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -49,12 +49,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -80,13 +80,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -98,12 +98,12 @@
       {
         "args": [
           "--test-launcher-batch-limit=1",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--emulator-debug-tags=all,-qemud,-sensors",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "experiment_percentage": 100,
         "merge": {
           "args": [
@@ -130,13 +130,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -147,11 +147,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -177,13 +177,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -194,9 +194,9 @@
       {
         "args": [
           "-v",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -216,13 +216,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -233,12 +233,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.base_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -264,13 +264,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -280,11 +280,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -310,13 +310,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -326,11 +326,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -356,13 +356,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -373,11 +373,11 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -408,13 +408,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -424,11 +424,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -454,13 +454,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -470,11 +470,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -500,13 +500,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -517,11 +517,11 @@
       {
         "args": [
           "--gtest_filter=-*UsingRealWebcam*",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -547,13 +547,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -563,11 +563,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -593,13 +593,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -609,11 +609,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -639,13 +639,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -655,11 +655,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -685,13 +685,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -702,13 +702,13 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter",
           "--emulator-debug-tags=all,-qemud,-sensors",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -739,13 +739,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -757,12 +757,12 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_unit_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -793,13 +793,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -810,12 +810,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gtest_filter=-V8ContextTrackerTest.AboutBlank",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -841,13 +841,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -857,12 +857,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gtest_filter=-BrowsingTopicsStateTest.EpochsForSite_FourEpochs_SwitchTimeArrived",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -888,13 +888,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -905,12 +905,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -936,13 +936,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -953,12 +953,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.content_shell_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -984,13 +984,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1001,12 +1001,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.content_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1032,13 +1032,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1049,12 +1049,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1080,13 +1080,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1096,11 +1096,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1126,13 +1126,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1142,12 +1142,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1173,13 +1173,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1189,11 +1189,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1219,13 +1219,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1235,12 +1235,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1266,13 +1266,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1282,11 +1282,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1312,13 +1312,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1328,11 +1328,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1358,13 +1358,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1374,11 +1374,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1404,13 +1404,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1420,11 +1420,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1450,13 +1450,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1466,11 +1466,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1496,13 +1496,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1513,12 +1513,12 @@
       {
         "args": [
           "--use-cmd-decoder=validating",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1544,13 +1544,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1560,11 +1560,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1590,13 +1590,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1606,11 +1606,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1636,13 +1636,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1652,11 +1652,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1682,13 +1682,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1698,12 +1698,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.gwp_asan_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1729,13 +1729,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1745,11 +1745,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1775,13 +1775,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1791,11 +1791,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1821,13 +1821,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1837,12 +1837,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1868,13 +1868,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1884,11 +1884,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1914,13 +1914,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1930,11 +1930,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1960,13 +1960,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1976,12 +1976,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2007,13 +2007,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2023,11 +2023,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2053,13 +2053,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2069,11 +2069,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2099,13 +2099,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2115,11 +2115,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2145,13 +2145,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2161,11 +2161,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2191,13 +2191,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2208,12 +2208,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2239,13 +2239,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2255,11 +2255,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2285,13 +2285,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2301,11 +2301,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2331,13 +2331,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2347,11 +2347,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2377,13 +2377,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2393,11 +2393,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2423,13 +2423,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2439,11 +2439,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2469,13 +2469,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2485,11 +2485,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2515,13 +2515,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2531,11 +2531,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2561,13 +2561,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2577,11 +2577,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2607,13 +2607,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2623,11 +2623,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2653,13 +2653,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2669,11 +2669,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2699,13 +2699,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2715,11 +2715,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2745,13 +2745,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2761,12 +2761,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2792,13 +2792,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2809,11 +2809,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2839,13 +2839,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2855,11 +2855,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2885,13 +2885,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2901,12 +2901,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gtest_filter=-All/HTMLPreloadScannerLCPPLazyLoadImageTest.TokenStreamMatcherWithLoadingLazy/*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2932,13 +2932,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2950,12 +2950,12 @@
       {
         "args": [
           "--webview-process-mode=multiple",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2981,13 +2981,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2999,11 +2999,11 @@
       {
         "args": [
           "--store-tombstones",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3036,13 +3036,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3058,11 +3058,11 @@
           "--exclude-annotation",
           "AppModeFull",
           "--test-apk-as-instant",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3095,13 +3095,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3115,11 +3115,11 @@
         "args": [
           "--disable-field-trial-config",
           "--store-tombstones",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3152,13 +3152,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3169,11 +3169,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3199,13 +3199,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3215,11 +3215,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3245,13 +3245,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3261,11 +3261,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64_swangle.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_34_google_apis_x64_swangle",
+        "description": "Run with android_34_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3291,13 +3291,13 @@
           },
           "named_caches": [
             {
-              "name": "android_34_google_apis_x64_swangle",
-              "path": ".android_emulator/android_34_google_apis_x64_swangle"
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_34_google_apis_x64_swangle"
+              "caches": "android_34_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
