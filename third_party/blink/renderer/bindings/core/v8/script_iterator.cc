@@ -20,12 +20,12 @@ namespace blink {
 namespace {
 
 class AsyncIteratorCloseFulfillFunction final
-    : public ScriptFunction::Callable {
+    : public ThenCallable<IDLAny, AsyncIteratorCloseFulfillFunction, IDLAny> {
  public:
   explicit AsyncIteratorCloseFulfillFunction(ExceptionContext exception_context)
       : exception_context_(exception_context) {}
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+  ScriptValue React(ScriptState* script_state, ScriptValue value) {
     // In a detached context, we shouldn't proceed to do things that can run
     // script.
     if (!script_state->ContextIsValid()) {
@@ -41,13 +41,13 @@ class AsyncIteratorCloseFulfillFunction final
       V8ThrowException::ThrowException(script_state->GetIsolate(), error);
       return ScriptValue();
     }
-
     // 9.2. Return undefined.
     return ScriptValue();
   }
 
   void Trace(Visitor* visitor) const final {
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLAny, AsyncIteratorCloseFulfillFunction, IDLAny>::Trace(
+        visitor);
   }
 
  private:
@@ -374,10 +374,9 @@ ScriptPromise<IDLAny> ScriptIterator::CloseAsync(
   //
   // (See documentation in `AsyncIteratorCloseFulfillFunction` for remaining
   // documentation).
-  ScriptFunction* on_fulfilled = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<AsyncIteratorCloseFulfillFunction>(
-                        exception_context));
-  return return_promise.Then(on_fulfilled);
+  auto* on_fulfilled = MakeGarbageCollected<AsyncIteratorCloseFulfillFunction>(
+      exception_context);
+  return return_promise.ThenTyped(script_state, on_fulfilled);
 }
 
 }  // namespace blink

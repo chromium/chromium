@@ -28,16 +28,25 @@ namespace blink {
 
 namespace {
 
-class TestHelperFunction : public ScriptFunction::Callable {
+class TestResolveFunction
+    : public ThenCallable<IDLString, TestResolveFunction> {
  public:
-  explicit TestHelperFunction(String* value) : value_(value) {}
+  explicit TestResolveFunction(String* value) : value_(value) {}
+  void React(ScriptState*, String value) { *value_ = value; }
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+ private:
+  String* value_;
+};
+
+class TestRejectFunction : public ThenCallable<IDLAny, TestRejectFunction> {
+ public:
+  explicit TestRejectFunction(String* value) : value_(value) {}
+
+  void React(ScriptState* script_state, ScriptValue value) {
     DCHECK(!value.IsEmpty());
     *value_ = ToCoreString(
         script_state->GetIsolate(),
         value.V8Value()->ToString(script_state->GetContext()).ToLocalChecked());
-    return value;
   }
 
  private:
@@ -91,12 +100,9 @@ TEST_F(ScriptPromiseResolverBaseTest, resolve) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(GetScriptState());
-    promise.Then(MakeGarbageCollected<ScriptFunction>(
-                     GetScriptState(),
-                     MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<ScriptFunction>(
-                     GetScriptState(),
-                     MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
+    promise.React(GetScriptState(),
+                  MakeGarbageCollected<TestResolveFunction>(&on_fulfilled),
+                  MakeGarbageCollected<TestRejectFunction>(&on_rejected));
   }
 
   EXPECT_EQ(String(), on_fulfilled);
@@ -144,12 +150,9 @@ TEST_F(ScriptPromiseResolverBaseTest, reject) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(GetScriptState());
-    promise.Then(MakeGarbageCollected<ScriptFunction>(
-                     GetScriptState(),
-                     MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<ScriptFunction>(
-                     GetScriptState(),
-                     MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
+    promise.React(GetScriptState(),
+                  MakeGarbageCollected<TestResolveFunction>(&on_fulfilled),
+                  MakeGarbageCollected<TestRejectFunction>(&on_rejected));
   }
 
   EXPECT_EQ(String(), on_fulfilled);
@@ -197,12 +200,9 @@ TEST_F(ScriptPromiseResolverBaseTest, stop) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(GetScriptState());
-    promise.Then(MakeGarbageCollected<ScriptFunction>(
-                     GetScriptState(),
-                     MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<ScriptFunction>(
-                     GetScriptState(),
-                     MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
+    promise.React(GetScriptState(),
+                  MakeGarbageCollected<TestResolveFunction>(&on_fulfilled),
+                  MakeGarbageCollected<TestRejectFunction>(&on_rejected));
   }
 
   GetExecutionContext()->NotifyContextDestroyed();
@@ -215,11 +215,11 @@ TEST_F(ScriptPromiseResolverBaseTest, stop) {
 }
 
 TEST_F(ScriptPromiseResolverBaseTest, resolveUndefined) {
-  ScriptPromiseResolver<IDLUndefined>* resolver = nullptr;
-  ScriptPromise<IDLUndefined> promise;
+  ScriptPromiseResolver<IDLString>* resolver = nullptr;
+  ScriptPromise<IDLString> promise;
   {
     ScriptState::Scope scope(GetScriptState());
-    resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+    resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
         GetScriptState());
     promise = resolver->Promise();
   }
@@ -228,12 +228,9 @@ TEST_F(ScriptPromiseResolverBaseTest, resolveUndefined) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(GetScriptState());
-    promise.Then(MakeGarbageCollected<ScriptFunction>(
-                     GetScriptState(),
-                     MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<ScriptFunction>(
-                     GetScriptState(),
-                     MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
+    promise.React(GetScriptState(),
+                  MakeGarbageCollected<TestResolveFunction>(&on_fulfilled),
+                  MakeGarbageCollected<TestRejectFunction>(&on_rejected));
   }
 
   resolver->Resolve();
@@ -244,11 +241,11 @@ TEST_F(ScriptPromiseResolverBaseTest, resolveUndefined) {
 }
 
 TEST_F(ScriptPromiseResolverBaseTest, rejectUndefined) {
-  ScriptPromiseResolver<IDLUndefined>* resolver = nullptr;
-  ScriptPromise<IDLUndefined> promise;
+  ScriptPromiseResolver<IDLString>* resolver = nullptr;
+  ScriptPromise<IDLString> promise;
   {
     ScriptState::Scope scope(GetScriptState());
-    resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+    resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
         GetScriptState());
     promise = resolver->Promise();
   }
@@ -257,12 +254,9 @@ TEST_F(ScriptPromiseResolverBaseTest, rejectUndefined) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(GetScriptState());
-    promise.Then(MakeGarbageCollected<ScriptFunction>(
-                     GetScriptState(),
-                     MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<ScriptFunction>(
-                     GetScriptState(),
-                     MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
+    promise.React(GetScriptState(),
+                  MakeGarbageCollected<TestResolveFunction>(&on_fulfilled),
+                  MakeGarbageCollected<TestRejectFunction>(&on_rejected));
   }
 
   resolver->Reject();
@@ -302,12 +296,9 @@ TEST_F(ScriptPromiseResolverBaseTest, OverrideScriptStateToCurrentContext) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(main_script_state);
-    promise.Then(MakeGarbageCollected<ScriptFunction>(
-                     main_script_state,
-                     MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<ScriptFunction>(
-                     main_script_state,
-                     MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
+    promise.React(main_script_state,
+                  MakeGarbageCollected<TestResolveFunction>(&on_fulfilled),
+                  MakeGarbageCollected<TestRejectFunction>(&on_rejected));
   }
 
   {

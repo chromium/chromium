@@ -30,27 +30,92 @@ namespace blink {
 
 namespace {
 
-class NotReachedFunction : public ScriptFunction::Callable {
+class NotReachedResolveFunction
+    : public ThenCallable<GarbageCollectedScriptWrappable,
+                          NotReachedResolveFunction> {
  public:
-  NotReachedFunction() = default;
+  NotReachedResolveFunction() = default;
 
-  ScriptValue Call(ScriptState*, ScriptValue) override;
+  void React(ScriptState*, GarbageCollectedScriptWrappable*) {
+    ADD_FAILURE() << "'Unreachable' code was reached";
+  }
 };
 
-ScriptValue NotReachedFunction::Call(ScriptState*, ScriptValue) {
-  EXPECT_TRUE(false) << "'Unreachable' code was reached";
-  return ScriptValue();
-}
-
-class StubFunction : public ScriptFunction::Callable {
+class NotReachedRejectFunction
+    : public ThenCallable<IDLAny, NotReachedRejectFunction> {
  public:
-  StubFunction(ScriptValue& value, size_t& call_count)
+  NotReachedRejectFunction() = default;
+
+  void React(ScriptState*, ScriptValue) {
+    ADD_FAILURE() << "'Unreachable' code was reached";
+  }
+};
+
+class ScriptWrappableReaction
+    : public ThenCallable<GarbageCollectedScriptWrappable,
+                          ScriptWrappableReaction> {
+ public:
+  ScriptWrappableReaction() = default;
+
+  void React(ScriptState*, GarbageCollectedScriptWrappable* arg) {
+    result_ = arg;
+    call_count_++;
+  }
+
+  GarbageCollectedScriptWrappable* Result() const { return result_; }
+  size_t CallCount() const { return call_count_; }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(result_);
+    ThenCallable<GarbageCollectedScriptWrappable,
+                 ScriptWrappableReaction>::Trace(visitor);
+  }
+
+ private:
+  Member<GarbageCollectedScriptWrappable> result_;
+  size_t call_count_ = 0;
+};
+
+template <typename IDLType, typename ValueType>
+class StubResolveFunction
+    : public ThenCallable<IDLType, StubResolveFunction<IDLType, ValueType>> {
+ public:
+  StubResolveFunction(ValueType& value, size_t& call_count)
       : value_(value), call_count_(call_count) {}
 
-  ScriptValue Call(ScriptState*, ScriptValue arg) override {
+  template <typename T = IDLType>
+    requires(std::is_same_v<T, IDLUndefined>)
+  void React(ScriptState*) {
+    call_count_++;
+  }
+
+  template <typename T = IDLType>
+    requires(std::is_same_v<T, IDLString>)
+  void React(ScriptState*, String arg) {
     value_ = arg;
     call_count_++;
-    return ScriptValue();
+  }
+
+  template <typename T = IDLType>
+    requires(std::is_same_v<T, IDLLong>)
+  void React(ScriptState*, int32_t arg) {
+    value_ = arg;
+    call_count_++;
+  }
+
+ private:
+  ValueType& value_;
+  size_t& call_count_;
+};
+
+class StubRejectFunction : public ThenCallable<IDLAny, StubRejectFunction> {
+ public:
+  StubRejectFunction(ScriptValue& value, size_t& call_count)
+      : value_(value), call_count_(call_count) {}
+
+  void React(ScriptState*, ScriptValue arg) {
+    value_ = arg;
+    call_count_++;
   }
 
  private:
@@ -149,15 +214,21 @@ class ScriptPromisePropertyTestBase {
 
   void Gc() { ThreadState::Current()->CollectAllGarbageForTesting(); }
 
-  ScriptFunction* NotReached(ScriptState* script_state) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state, MakeGarbageCollected<NotReachedFunction>());
+  NotReachedResolveFunction* NotReachedResolve() {
+    return MakeGarbageCollected<NotReachedResolveFunction>();
   }
-  ScriptFunction* Stub(ScriptState* script_state,
-                       ScriptValue& value,
-                       size_t& call_count) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state, MakeGarbageCollected<StubFunction>(value, call_count));
+  NotReachedRejectFunction* NotReachedReject() {
+    return MakeGarbageCollected<NotReachedRejectFunction>();
+  }
+  template <typename IDLType = GarbageCollectedScriptWrappable,
+            typename ValueType>
+  StubResolveFunction<IDLType, ValueType>* StubResolve(ValueType& value,
+                                                       size_t& call_count) {
+    return MakeGarbageCollected<StubResolveFunction<IDLType, ValueType>>(
+        value, call_count);
+  }
+  StubRejectFunction* StubReject(ScriptValue& value, size_t& call_count) {
+    return MakeGarbageCollected<StubRejectFunction>(value, call_count);
   }
 
   ScriptValue Wrap(DOMWrapperWorld& world,
@@ -216,27 +287,18 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
     typedef ScriptPromiseProperty<T, IDLUndefined> Property;
     Property* property = MakeGarbageCollected<Property>(DomWindow());
     size_t n_resolve_calls = 0;
-    ScriptValue actual_value;
-    String actual;
+    typename T::ImplType actual_value;
     {
       ScriptState::Scope scope(MainScriptState());
       property->Promise(DOMWrapperWorld::MainWorld(GetIsolate()))
-          .Then(Stub(CurrentScriptState(), actual_value, n_resolve_calls),
-                NotReached(CurrentScriptState()));
+          .React(CurrentScriptState(),
+                 StubResolve<T>(actual_value, n_resolve_calls),
+                 NotReachedReject());
     }
     property->Resolve(value);
     PerformMicrotaskCheckpoint();
-    {
-      ScriptState::Scope scope(MainScriptState());
-      actual = ToCoreString(MainScriptState()->GetIsolate(),
-                            actual_value.V8Value()
-                                ->ToString(MainScriptState()->GetContext())
-                                .ToLocalChecked());
-    }
-    if (expected != actual) {
-      ADD_FAILURE_AT(file, line)
-          << "toV8 returns an incorrect value.\n  Actual: " << actual.Utf8()
-          << "\nExpected: " << expected;
+    if (value != actual_value) {
+      ADD_FAILURE_AT(file, line) << "toV8 returns an incorrect value.\n";
       return;
     }
   }
@@ -323,21 +385,19 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   auto promise =
       GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   auto other_promise = GetProperty()->Promise(OtherWorld());
-  ScriptValue actual, other_actual;
-  size_t n_resolve_calls = 0;
-  size_t n_other_resolve_calls = 0;
+
+  auto* reaction = MakeGarbageCollected<ScriptWrappableReaction>();
+  auto* other_reaction = MakeGarbageCollected<ScriptWrappableReaction>();
 
   {
     ScriptState::Scope scope(MainScriptState());
-    promise.Then(Stub(CurrentScriptState(), actual, n_resolve_calls),
-                 NotReached(CurrentScriptState()));
+    promise.React(CurrentScriptState(), reaction, NotReachedReject());
   }
 
   {
     ScriptState::Scope scope(OtherScriptState());
-    other_promise.Then(
-        Stub(CurrentScriptState(), other_actual, n_other_resolve_calls),
-        NotReached(CurrentScriptState()));
+    other_promise.React(CurrentScriptState(), other_reaction,
+                        NotReachedReject());
   }
 
   EXPECT_NE(promise, other_promise);
@@ -348,11 +408,10 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   EXPECT_EQ(Property::kResolved, GetProperty()->GetState());
 
   PerformMicrotaskCheckpoint();
-  EXPECT_EQ(1u, n_resolve_calls);
-  EXPECT_EQ(1u, n_other_resolve_calls);
-  EXPECT_EQ(Wrap(MainWorld(), value), actual);
-  EXPECT_NE(actual, other_actual);
-  EXPECT_EQ(Wrap(OtherWorld(), value), other_actual);
+  EXPECT_EQ(1u, reaction->CallCount());
+  EXPECT_EQ(1u, other_reaction->CallCount());
+  EXPECT_EQ(value, reaction->Result());
+  EXPECT_EQ(value, other_reaction->Result());
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
@@ -360,14 +419,13 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   auto promise =
       GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   auto other_promise = GetProperty()->Promise(OtherWorld());
-  ScriptValue actual, other_actual;
-  size_t n_resolve_calls = 0;
-  size_t n_other_resolve_calls = 0;
+
+  auto* reaction = MakeGarbageCollected<ScriptWrappableReaction>();
+  auto* other_reaction = MakeGarbageCollected<ScriptWrappableReaction>();
 
   {
     ScriptState::Scope scope(MainScriptState());
-    promise.Then(Stub(CurrentScriptState(), actual, n_resolve_calls),
-                 NotReached(CurrentScriptState()));
+    promise.React(CurrentScriptState(), reaction, NotReachedReject());
   }
 
   EXPECT_NE(promise, other_promise);
@@ -377,22 +435,19 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   EXPECT_EQ(Property::kResolved, GetProperty()->GetState());
 
   PerformMicrotaskCheckpoint();
-  EXPECT_EQ(1u, n_resolve_calls);
-  EXPECT_EQ(0u, n_other_resolve_calls);
-
+  EXPECT_EQ(1u, reaction->CallCount());
+  EXPECT_EQ(0u, other_reaction->CallCount());
   {
     ScriptState::Scope scope(OtherScriptState());
-    other_promise.Then(
-        Stub(CurrentScriptState(), other_actual, n_other_resolve_calls),
-        NotReached(CurrentScriptState()));
+    other_promise.React(CurrentScriptState(), other_reaction,
+                        NotReachedReject());
   }
 
   PerformMicrotaskCheckpoint();
-  EXPECT_EQ(1u, n_resolve_calls);
-  EXPECT_EQ(1u, n_other_resolve_calls);
-  EXPECT_EQ(Wrap(MainWorld(), value), actual);
-  EXPECT_NE(actual, other_actual);
-  EXPECT_EQ(Wrap(OtherWorld(), value), other_actual);
+  EXPECT_EQ(1u, reaction->CallCount());
+  EXPECT_EQ(1u, other_reaction->CallCount());
+  EXPECT_EQ(value, reaction->Result());
+  EXPECT_EQ(value, other_reaction->Result());
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reject_RejectsScriptPromise) {
@@ -408,16 +463,16 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reject_RejectsScriptPromise) {
     ScriptState::Scope scope(MainScriptState());
     GetProperty()
         ->Promise(DOMWrapperWorld::MainWorld(GetIsolate()))
-        .Then(NotReached(CurrentScriptState()),
-              Stub(CurrentScriptState(), actual, n_reject_calls));
+        .React(CurrentScriptState(), NotReachedResolve(),
+               StubReject(actual, n_reject_calls));
   }
 
   {
     ScriptState::Scope scope(OtherScriptState());
     GetProperty()
         ->Promise(OtherWorld())
-        .Then(NotReached(CurrentScriptState()),
-              Stub(CurrentScriptState(), other_actual, n_other_reject_calls));
+        .React(CurrentScriptState(), NotReachedResolve(),
+               StubReject(other_actual, n_other_reject_calls));
   }
 
   PerformMicrotaskCheckpoint();
@@ -445,8 +500,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Resolve_DeadContext) {
     ScriptState::Scope scope(MainScriptState());
     GetProperty()
         ->Promise(DOMWrapperWorld::MainWorld(GetIsolate()))
-        .Then(NotReached(CurrentScriptState()),
-              NotReached(CurrentScriptState()));
+        .React(CurrentScriptState(), NotReachedResolve(), NotReachedReject());
   }
 
   DestroyContext();
@@ -462,21 +516,20 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   ScriptState::Scope scope(MainScriptState());
 
   ScriptPromise<GarbageCollectedScriptWrappable> old_promise, new_promise;
-  ScriptValue old_actual, new_actual;
+  ScriptValue new_actual;
   GarbageCollectedScriptWrappable* old_value =
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("old");
   GarbageCollectedScriptWrappable* new_value =
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("new");
-  size_t n_old_resolve_calls = 0;
+
+  auto* old_reaction = MakeGarbageCollected<ScriptWrappableReaction>();
   size_t n_new_reject_calls = 0;
 
   {
     ScriptState::Scope scope2(MainScriptState());
     GetProperty()->Resolve(old_value);
     old_promise = GetProperty()->Promise(MainWorld());
-    old_promise.Then(
-        Stub(CurrentScriptState(), old_actual, n_old_resolve_calls),
-        NotReached(CurrentScriptState()));
+    old_promise.React(CurrentScriptState(), old_reaction, NotReachedReject());
   }
 
   GetProperty()->Reset();
@@ -484,22 +537,21 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   {
     ScriptState::Scope scope2(MainScriptState());
     new_promise = GetProperty()->Promise(MainWorld());
-    new_promise.Then(
-        NotReached(CurrentScriptState()),
-        Stub(CurrentScriptState(), new_actual, n_new_reject_calls));
+    new_promise.React(CurrentScriptState(), NotReachedResolve(),
+                      StubReject(new_actual, n_new_reject_calls));
     GetProperty()->Reject(new_value);
   }
 
-  EXPECT_EQ(0u, n_old_resolve_calls);
+  EXPECT_EQ(0u, old_reaction->CallCount());
   EXPECT_EQ(0u, n_new_reject_calls);
 
   PerformMicrotaskCheckpoint();
-  EXPECT_EQ(1u, n_old_resolve_calls);
+  EXPECT_EQ(1u, old_reaction->CallCount());
   EXPECT_EQ(1u, n_new_reject_calls);
   EXPECT_NE(old_promise, new_promise);
-  EXPECT_EQ(Wrap(MainWorld(), old_value), old_actual);
+  EXPECT_EQ(old_value, old_reaction->Result());
   EXPECT_EQ(Wrap(MainWorld(), new_value), new_actual);
-  EXPECT_NE(old_actual, new_actual);
+  EXPECT_NE(Wrap(MainWorld(), old_reaction->Result()), new_actual);
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
@@ -597,11 +649,6 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
   // This shouldn't crash.
   GetProperty()->Resolve(resolution);
   EXPECT_EQ(GetProperty()->GetState(), Property::State::kPending);
-}
-
-TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,
-       ResolveWithUndefined) {
-  Test<IDLUndefined>(ToV8UndefinedGenerator(), "undefined", __FILE__, __LINE__);
 }
 
 TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,

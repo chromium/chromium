@@ -90,9 +90,9 @@ class ScriptPromise;
 //
 //       // `on_fulfilled` fulfills to an Iterator Result, and calls
 //       // `GetNextValue()` again if the result is not done.
-//       ScriptFunction* on_fulfilled = ...;
-//       ScriptFunction* on_rejected = ...;
-//       next_promise_.Then(on_fulfilled, on_rejected);
+//       ThenCallableDerived* on_fulfilled = ...;
+//       ThenCallableDerived* on_rejected = ...;
+//       next_promise_.ThenTyped(script_State, on_fulfilled, on_rejected);
 //     }
 //
 //    private:

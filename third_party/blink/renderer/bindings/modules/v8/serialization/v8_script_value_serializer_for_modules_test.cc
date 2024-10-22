@@ -319,16 +319,29 @@ bool ConvertCryptoResult<bool>(v8::Isolate*, const ScriptValue& value) {
   return value.V8Value()->IsTrue();
 }
 
-template <typename T>
-class WebCryptoResultAdapter : public ScriptFunction::Callable {
+template <typename IDLType, typename T>
+class WebCryptoResultAdapter
+    : public ThenCallable<IDLType, WebCryptoResultAdapter<IDLType, T>> {
  public:
   explicit WebCryptoResultAdapter(base::RepeatingCallback<void(T)> function)
       : function_(std::move(function)) {}
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+  template <typename I = IDLType>
+    requires(std::is_same_v<I, IDLAny>)
+  void React(ScriptState* script_state, ScriptValue value) {
     function_.Run(ConvertCryptoResult<T>(script_state->GetIsolate(), value));
-    return ScriptValue(script_state->GetIsolate(),
-                       v8::Undefined(script_state->GetIsolate()));
+  }
+  template <typename I = IDLType>
+    requires(std::is_same_v<I, CryptoKey>)
+  void React(ScriptState* script_state, CryptoKey* crypto_key) {
+    function_.Run(crypto_key);
+  }
+  template <typename I = IDLType>
+    requires(std::is_same_v<I, DOMArrayBuffer>)
+  void React(ScriptState* script_state, DOMArrayBuffer* buffer) {
+    WebVector<unsigned char> vector;
+    vector.Assign(buffer->ByteSpan());
+    function_.Run(vector);
   }
 
  private:
@@ -344,16 +357,14 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLType>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
-  resolver->Promise().Then(
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<WebCryptoResultAdapter<T>>(std::move(function))),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<WebCryptoResultAdapter<DOMException*>>(
-              WTF::BindRepeating([](DOMException* exception) {
-                CHECK(false) << "crypto operation failed";
-              }))));
+  resolver->Promise().React(
+      script_state,
+      MakeGarbageCollected<WebCryptoResultAdapter<IDLType, T>>(
+          std::move(function)),
+      MakeGarbageCollected<WebCryptoResultAdapter<IDLAny, DOMException*>>(
+          WTF::BindRepeating([](DOMException* exception) {
+            CHECK(false) << "crypto operation failed";
+          })));
   return result->Result();
 }
 

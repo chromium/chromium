@@ -88,9 +88,9 @@ class CORE_EXPORT AsyncIterationSourceBase
                                     ScriptValue value);
 
   Member<ScriptState> script_state_;
-  Member<ScriptFunction> on_settled_function_;
-  Member<ScriptFunction> on_fulfilled_function_;
-  Member<ScriptFunction> on_rejected_function_;
+  Member<CallableCommon> on_settled_function_;
+  Member<CallableCommon> on_fulfilled_function_;
+  Member<CallableCommon> on_rejected_function_;
 
   // https://webidl.spec.whatwg.org/#dfn-default-asynchronous-iterator-object
   // its 'ongoing promise', which is a Promise or null,

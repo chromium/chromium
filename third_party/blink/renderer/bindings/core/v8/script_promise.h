@@ -266,13 +266,29 @@ class ScriptPromise : public ScriptPromiseUntyped {
   }
 
   template <typename ReturnPromiseResolveType = IDLResolvedType,
+            typename ResolveClass>
+  ScriptPromise<ReturnPromiseResolveType> ThenTyped(
+      ScriptState* script_state,
+      ThenCallable<IDLResolvedType, ResolveClass, ReturnPromiseResolveType>*
+          on_fulfilled) const {
+    v8::Local<v8::Promise> v8_promise = ThenRaw(
+        script_state,
+        MakeGarbageCollected<ScriptFunction>(script_state, on_fulfilled),
+        nullptr);
+    return ScriptPromise<ReturnPromiseResolveType>::FromV8Promise(
+        script_state->GetIsolate(), v8_promise);
+  }
+
+  template <typename ReturnPromiseResolveType = IDLResolvedType,
+            typename ReturnPromiseRejectType = IDLUndefined,
             typename ResolveClass,
             typename RejectClass>
   ScriptPromise<ReturnPromiseResolveType> ThenTyped(
       ScriptState* script_state,
       ThenCallable<IDLResolvedType, ResolveClass, ReturnPromiseResolveType>*
           on_fulfilled,
-      ThenCallable<IDLAny, RejectClass, IDLAny>* on_rejected) const {
+      ThenCallable<IDLAny, RejectClass, ReturnPromiseRejectType>* on_rejected)
+      const {
     on_fulfilled->SetTypingFailureCallable(on_rejected);
     v8::Local<v8::Promise> v8_promise = ThenRaw(
         script_state,
@@ -299,6 +315,14 @@ class ScriptPromise : public ScriptPromiseUntyped {
     on_fulfilled->SetTypingFailureCallable(on_rejected);
     ThenRaw(script_state,
             MakeGarbageCollected<ScriptFunction>(script_state, on_fulfilled),
+            MakeGarbageCollected<ScriptFunction>(script_state, on_rejected));
+  }
+
+  template <typename RejectClass>
+  void Catch(
+      ScriptState* script_state,
+      ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
+    ThenRaw(script_state, nullptr,
             MakeGarbageCollected<ScriptFunction>(script_state, on_rejected));
   }
 

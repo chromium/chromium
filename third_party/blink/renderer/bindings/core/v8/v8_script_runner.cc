@@ -887,13 +887,12 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
 }
 
 class ModuleEvaluationRejectionCallback final
-    : public ScriptFunction::Callable {
+    : public ThenCallable<IDLAny, ModuleEvaluationRejectionCallback> {
  public:
   ModuleEvaluationRejectionCallback() = default;
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+  void React(ScriptState* script_state, ScriptValue value) {
     ModuleRecord::ReportException(script_state, value.V8Value());
-    return ScriptValue();
   }
 };
 
@@ -1006,12 +1005,11 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
     // <spec step="7"> If report errors is true, then upon rejection of
     // evaluationPromise with reason, report the exception given by reason
     // for script.</spec>
-    auto* callback_failure = MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<ModuleEvaluationRejectionCallback>());
     // Add a rejection handler to report back errors once the result
     // promise is rejected.
-    result.GetPromise(script_state).Then(nullptr, callback_failure);
+    result.GetPromise(script_state)
+        .Catch(script_state,
+               MakeGarbageCollected<ModuleEvaluationRejectionCallback>());
   }
 
   // <spec step="8">Clean up after running script with settings.</spec>
