@@ -4913,7 +4913,7 @@ class AssertAshOnlyCodeTest(unittest.TestCase):
         ]
         other_files = [
             MockFile('chrome/browser/BUILD.gn', []),
-            MockFile('chrome/browser/BUILD.gn', ['assert(is_chromeos_ash)']),
+            MockFile('chrome/browser/foo/BUILD.gn', ['assert(is_chromeos_ash)']),
         ]
         input_api = MockInputApi()
         input_api.files = files_in_ash
@@ -4949,7 +4949,13 @@ class AssertAshOnlyCodeTest(unittest.TestCase):
             MockFile('ash/BUILD.gn', ['assert(is_chromeos_ash)']),
             MockFile('chrome/browser/ash/BUILD.gn',
                      ['assert(is_chromeos_ash)']),
-            MockFile('chrome/browser/ash/BUILD.gn',
+            MockFile('chrome/browser/ash/1/BUILD.gn',
+                     ['assert(is_chromeos)']),
+            MockFile('chrome/browser/ash/2/BUILD.gn',
+                     ['assert(is_chromeos_ash)']),
+            MockFile('chrome/browser/ash/3/BUILD.gn',
+                     ['assert(is_chromeos, "test")']),
+            MockFile('chrome/browser/ash/4/BUILD.gn',
                      ['assert(is_chromeos_ash, "test")']),
         ]
         errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())

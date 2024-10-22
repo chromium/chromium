@@ -7272,7 +7272,8 @@ def CheckConsistentGrdChanges(input_api, output_api):
 
 def CheckAssertAshOnlyCode(input_api, output_api):
     """Errors if a BUILD.gn file in an ash/ directory doesn't include
-    assert(is_chromeos_ash).
+    assert(is_chromeos).
+    For a transition period, assert(is_chromeos_ash) is also accepted.
     """
 
     def FileFilter(affected_file):
@@ -7285,16 +7286,16 @@ def CheckAssertAshOnlyCode(input_api, output_api):
             files_to_skip=(input_api.DEFAULT_FILES_TO_SKIP))
 
     errors = []
-    pattern = input_api.re.compile(r'assert\(is_chromeos_ash')
+    pattern = input_api.re.compile(r'assert\(is_chromeos(_ash)?\b')
     for f in input_api.AffectedFiles(include_deletes=False,
                                      file_filter=FileFilter):
         if (not pattern.search(input_api.ReadFile(f))):
             errors.append(
                 output_api.PresubmitError(
-                    'Please add assert(is_chromeos_ash) to %s. If that\'s not '
-                    'possible, please create and issue and add a comment such '
+                    'Please add assert(is_chromeos) to %s. If that\'s not '
+                    'possible, please create an issue and add a comment such '
                     'as:\n  # TODO(crbug.com/XXX): add '
-                    'assert(is_chromeos_ash) when ...' % f.LocalPath()))
+                    'assert(is_chromeos) when ...' % f.LocalPath()))
     return errors
 
 
