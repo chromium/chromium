@@ -1731,32 +1731,20 @@ namespace {
 
 bool HasAttributeDependentGeneratedContent(const Element& element) {
   DCHECK(!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
-  if (PseudoElement* check = element.GetPseudoElement(kPseudoIdCheck)) {
-    const ComputedStyle* style = check->GetComputedStyle();
-    if (style && style->HasAttrFunction()) {
-      return true;
+
+  const auto HasAttrFunc = [](PseudoElement* pseudo_element) {
+    if (!pseudo_element) {
+      return false;
     }
-  }
-  if (PseudoElement* before = element.GetPseudoElement(kPseudoIdBefore)) {
-    const ComputedStyle* style = before->GetComputedStyle();
-    if (style && style->HasAttrFunction()) {
-      return true;
-    }
-  }
-  if (PseudoElement* after = element.GetPseudoElement(kPseudoIdAfter)) {
-    const ComputedStyle* style = after->GetComputedStyle();
-    if (style && style->HasAttrFunction()) {
-      return true;
-    }
-  }
-  if (PseudoElement* scroll_marker =
-          element.GetPseudoElement(kPseudoIdScrollMarker)) {
-    const ComputedStyle* style = scroll_marker->GetComputedStyle();
-    if (style && style->HasAttrFunction()) {
-      return true;
-    }
-  }
-  return false;
+
+    const ComputedStyle* style = pseudo_element->GetComputedStyle();
+    return style && style->HasAttrFunction();
+  };
+
+  return HasAttrFunc(element.GetPseudoElement(kPseudoIdCheck)) ||
+         HasAttrFunc(element.GetPseudoElement(kPseudoIdBefore)) ||
+         HasAttrFunc(element.GetPseudoElement(kPseudoIdAfter)) ||
+         HasAttrFunc(element.GetPseudoElement(kPseudoIdScrollMarker));
 }
 
 bool HasAttributeDependentStyle(const Element& element) {
