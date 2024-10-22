@@ -67,7 +67,7 @@ void VideoDecodeStatsReporter::OnPaused() {
   is_playing_ = false;
 
   // Stop timer until playing resumes.
-  stats_cb_timer_.AbandonAndStop();
+  stats_cb_timer_.Stop();
 }
 
 void VideoDecodeStatsReporter::OnHidden() {
@@ -79,7 +79,7 @@ void VideoDecodeStatsReporter::OnHidden() {
   is_backgrounded_ = true;
 
   // Stop timer until no longer hidden.
-  stats_cb_timer_.AbandonAndStop();
+  stats_cb_timer_.Stop();
 }
 
 void VideoDecodeStatsReporter::OnShown() {
@@ -177,7 +177,7 @@ void VideoDecodeStatsReporter::OnIpcConnectionError() {
   // service is unavailable. Otherwise, errors are unexpected.
   DVLOG(2) << __func__ << " IPC disconnected. Stopping reporting.";
   is_ipc_connected_ = false;
-  stats_cb_timer_.AbandonAndStop();
+  stats_cb_timer_.Stop();
 }
 
 bool VideoDecodeStatsReporter::UpdateDecodeProgress(
@@ -232,7 +232,7 @@ bool VideoDecodeStatsReporter::UpdateFrameRateStability(
         if (num_consecutive_tiny_fps_windows_ >= kMaxTinyFpsWindows) {
           DVLOG(2) << __func__ << " Too many tiny fps windows. Stopping timer";
           fps_stabilization_failed_ = true;
-          stats_cb_timer_.AbandonAndStop();
+          stats_cb_timer_.Stop();
           return false;
         }
       } else {
@@ -245,7 +245,7 @@ bool VideoDecodeStatsReporter::UpdateFrameRateStability(
       // config) to change before trying again.
       DVLOG(2) << __func__ << " Unable to stabilize FPS. Stopping timer.";
       fps_stabilization_failed_ = true;
-      stats_cb_timer_.AbandonAndStop();
+      stats_cb_timer_.Stop();
       return false;
     }
 

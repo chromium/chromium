@@ -55,7 +55,7 @@ class SyncLoadContext::SignalHelper final {
   void SignalRedirectOrResponseComplete() {
     abort_watcher_.StopWatching();
     if (timeout_timer_)
-      timeout_timer_->AbandonAndStop();
+      timeout_timer_->Stop();
     redirect_or_response_event_->Signal();
   }
 
