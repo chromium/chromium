@@ -41,6 +41,7 @@
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/client_hints/client_hints_factory.h"
+#include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/content_index/content_index_provider_factory.h"
@@ -753,6 +754,7 @@ void ChromeBrowserMainExtraPartsProfiles::
     chromeos::cloud_storage::OneDrivePrefObserverFactory::GetInstance();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  collaboration::CollaborationServiceFactory::GetInstance();
   commerce::ShoppingServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
   ContentIndexProviderFactory::GetInstance();

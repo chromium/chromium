@@ -100,6 +100,7 @@ include_rules = [
   "+components/client_hints/browser",
   "+components/client_hints/common",
   "+components/cloud_devices/common",
+  "+components/collaboration/public",
   "+components/color",
   "+components/commerce",
   "+components/component_updater",
