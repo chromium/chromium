@@ -105,6 +105,7 @@ if (!is_android) {
     deps = [
       "//base/test:test_support",
       "//chrome/browser:browser_process",
+      "//chrome/browser/prefs",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_enums",

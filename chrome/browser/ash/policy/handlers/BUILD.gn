@@ -191,6 +191,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/tpm",
     "//chrome/browser/extensions",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/common:chrome_features",

@@ -17,6 +17,7 @@ static_library("network") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/common:constants",
     "//chromeos/ash/components/network",

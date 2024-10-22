@@ -46,6 +46,7 @@ static_library("avatar") {
     "//chrome/browser/ash/image_downloader",
     "//chrome/browser/ash/login/users/default_user_image",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",

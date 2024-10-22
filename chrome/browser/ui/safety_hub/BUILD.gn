@@ -255,6 +255,7 @@ source_set("unit_tests") {
       "//base/test:test_support",
       "//chrome/app:branded_strings",
       "//chrome/browser",
+      "//chrome/browser/prefs",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/safe_browsing:test_support",
       "//chrome/browser/ui",

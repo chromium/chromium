@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/prefs",
     "//chrome/browser/support_tool:support_tool_proto",
     "//chrome/test:test_support",
     "//components/prefs",

@@ -155,6 +155,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/child_accounts/apps",
     "//chrome/browser/ash/child_accounts/time_limits",
     "//chrome/browser/ash/child_accounts/time_limits:test_support",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",

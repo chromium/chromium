@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/status_collector",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/prefs",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//chromeos/ash/components/settings",

@@ -485,6 +485,7 @@ source_set("browser_tests") {
     sources += [ "test/promotional_tabs_enabled_policy_browsertest.cc" ]
 
     deps += [
+      "//chrome/browser/prefs:util",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/common:version_header",
     ]

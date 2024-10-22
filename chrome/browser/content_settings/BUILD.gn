@@ -263,6 +263,7 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser/permissions",
+    "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_enums",

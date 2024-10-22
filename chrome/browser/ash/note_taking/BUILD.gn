@@ -80,6 +80,7 @@ source_set("unit_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications",

@@ -89,6 +89,7 @@ static_library("multidevice_setup") {
     "//chrome/browser",
     "//chrome/browser/ash/multidevice_debug",
     "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/prefs:impl",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash/shell_delegate",
