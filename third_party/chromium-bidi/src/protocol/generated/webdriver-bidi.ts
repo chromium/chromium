@@ -384,6 +384,7 @@ export type BrowsingContextEvent =
   | BrowsingContext.DomContentLoaded
   | BrowsingContext.DownloadWillBegin
   | BrowsingContext.FragmentNavigated
+  | BrowsingContext.HistoryUpdated
   | BrowsingContext.Load
   | BrowsingContext.NavigationAborted
   | BrowsingContext.NavigationFailed
@@ -808,6 +809,18 @@ export namespace BrowsingContext {
   export type FragmentNavigated = {
     method: 'browsingContext.fragmentNavigated';
     params: BrowsingContext.NavigationInfo;
+  };
+}
+export namespace BrowsingContext {
+  export type HistoryUpdated = {
+    method: 'browsingContext.historyUpdated';
+    params: BrowsingContext.HistoryUpdatedParameters;
+  };
+}
+export namespace BrowsingContext {
+  export type HistoryUpdatedParameters = {
+    context: BrowsingContext.BrowsingContext;
+    url: string;
   };
 }
 export namespace BrowsingContext {

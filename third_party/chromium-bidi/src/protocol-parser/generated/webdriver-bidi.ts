@@ -517,6 +517,7 @@ export const BrowsingContextEventSchema = z.lazy(() =>
     BrowsingContext.DomContentLoadedSchema,
     BrowsingContext.DownloadWillBeginSchema,
     BrowsingContext.FragmentNavigatedSchema,
+    BrowsingContext.HistoryUpdatedSchema,
     BrowsingContext.LoadSchema,
     BrowsingContext.NavigationAbortedSchema,
     BrowsingContext.NavigationFailedSchema,
@@ -983,6 +984,22 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.fragmentNavigated'),
       params: BrowsingContext.NavigationInfoSchema,
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const HistoryUpdatedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browsingContext.historyUpdated'),
+      params: BrowsingContext.HistoryUpdatedParametersSchema,
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const HistoryUpdatedParametersSchema = z.lazy(() =>
+    z.object({
+      context: BrowsingContext.BrowsingContextSchema,
+      url: z.string(),
     }),
   );
 }
