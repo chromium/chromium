@@ -658,14 +658,8 @@ int PropertyTreeManager::EnsureCompositorScrollNodeInternal(
 int PropertyTreeManager::EnsureCompositorScrollAndTransformNode(
     const TransformPaintPropertyNode& scroll_translation,
     const gfx::Rect& scrolling_contents_cull_rect) {
-  const auto* scroll_node = scroll_translation.ScrollNode();
-  DCHECK(scroll_node);
   EnsureCompositorTransformNode(scroll_translation);
-  if (!scrolling_contents_cull_rect.Contains(scroll_node->ContentsRect())) {
-    scroll_tree_.SetScrollingContentsCullRect(
-        scroll_node->GetCompositorElementId(), scrolling_contents_cull_rect);
-  }
-  int id = scroll_node->CcNodeId(new_sequence_number_);
+  int id = scroll_translation.ScrollNode()->CcNodeId(new_sequence_number_);
   DCHECK(scroll_tree_.Node(id));
   return id;
 }

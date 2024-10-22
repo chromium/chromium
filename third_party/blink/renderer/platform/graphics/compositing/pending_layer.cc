@@ -717,10 +717,11 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
       break;
   }
 
-  UpdateLayerProperties(layer_selection, /*selection_only=*/false);
-
   cc::Layer& layer = CcLayer();
   layer.SetLayerTreeHost(layer_tree_host);
+
+  UpdateLayerProperties(layer_selection, /*selection_only=*/false);
+
   if (!layer.subtree_property_changed() &&
       PropertyTreeStateChanged(old_pending_layer)) {
     layer.SetSubtreePropertyChanged();
