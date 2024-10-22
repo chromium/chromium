@@ -72,9 +72,9 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     return {
       // Text that describes the resulting tabs currently present in the list.
       searchResultText_: {type: String},
+      availableHeight: {type: Number},
       shortcut_: {type: String},
       searchText_: {type: String},
-      availableHeight_: {type: Number},
       filteredItems_: {type: Array},
       listMaxHeight_: {type: Number},
       listItemSize_: {type: Number},
@@ -95,8 +95,8 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
   tabOrganizationEnabled: boolean =
       loadTimeData.getBoolean('tabOrganizationEnabled');
+  availableHeight?: number;
   private searchText_: string = '';
-  private availableHeight_?: number;
   protected listMaxHeight_?: number;
   protected listItemSize_?: number;
   protected filteredItems_: Array<TitleItem|TabData|TabGroupData> = [];
@@ -231,17 +231,15 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('availableHeight_')) {
-      assert(this.availableHeight_ !== undefined);
+    if (changedProperties.has('availableHeight')) {
+      assert(this.availableHeight !== undefined);
 
       /**
        * Calculate the list's available height by subtracting the height used by
        * the search and feedback fields.
        */
       this.listMaxHeight_ = Math.max(
-          this.availableHeight_ - this.$.searchField.offsetHeight -
+          this.availableHeight - this.$.searchField.offsetHeight -
               this.$.divider.offsetHeight,
           Math.round(
               MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT *
@@ -324,12 +322,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         console.warn('Tab Search: no browser window.');
         return;
       }
-
-      // TODO(crbug.com/40855872): Determine why no active window is reported
-      // in some cases on ChromeOS and Linux.
-      const activeWindow = profileData.windows.find((t) => t.active);
-      this.availableHeight_ =
-          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
 
       // The selectable-list produces viewport-filled events whenever a data
       // or scroll position change triggers the viewport fill logic.
@@ -836,10 +828,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
   getSearchTextForTesting(): string {
     return this.searchText_;
-  }
-
-  getAvailableHeightForTesting(): number|undefined {
-    return this.availableHeight_;
   }
 
   static override get styles() {

@@ -40,11 +40,14 @@ export class TabOrganizationSelectorElement extends CrLitElement {
 
   static override get properties() {
     return {
+      availableHeight: {type: Number},
       declutterHeading_: {type: String},
       disableDeclutter_: {type: Boolean},
       selectedState_: {type: Number},
     };
   }
+
+  availableHeight: number = 0;
 
   protected selectedState_: TabOrganizationFeature =
       TabOrganizationFeature.kSelector;

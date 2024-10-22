@@ -50,6 +50,7 @@ suite('TabSearchMediaTabsTest', () => {
     TabSearchApiProxyImpl.setInstance(testProxy);
 
     tabSearchPage = document.createElement('tab-search-page');
+    tabSearchPage.availableHeight = 500;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(tabSearchPage);

@@ -46,23 +46,23 @@ export class AutoTabGroupsPageElement extends CrLitElement {
 
   static override get properties() {
     return {
+      availableHeight: {type: Number},
       showBackButton: {type: Boolean},
 
       state_: {type: Number},
       session_: {type: Object},
-      availableHeight_: {type: Number},
       showFRE_: {type: Boolean},
       multiTabOrganization_: {type: Boolean},
       modelStrategy_: {type: Number, notify: true},
     };
   }
 
+  availableHeight: number = 0;
   showBackButton: boolean = false;
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private state_: TabOrganizationState = TabOrganizationState.kInitializing;
-  protected availableHeight_: number = 0;
   protected session_: TabOrganizationSession|null = null;
   protected showFRE_: boolean =
       loadTimeData.getBoolean('showTabOrganizationFRE');
@@ -135,27 +135,9 @@ export class AutoTabGroupsPageElement extends CrLitElement {
   }
 
   private onVisible_() {
-    this.updateAvailableHeight_();
     // When the UI goes from not shown to shown, bypass any state change
     // animations.
     this.classList.toggle('changed-state', false);
-  }
-
-  // TODO(emshack): Consider moving the available height calculation into
-  // app.ts and reusing across both tab search and tab organization.
-  private updateAvailableHeight_() {
-    this.apiProxy_.getProfileData().then(({profileData}) => {
-      // In rare cases there is no browser window. I suspect this happens during
-      // browser shutdown.
-      if (!profileData.windows) {
-        return;
-      }
-      // TODO(crbug.com/c/1349350): Determine why no active window is reported
-      // in some cases on ChromeOS and Linux.
-      const activeWindow = profileData.windows.find((t) => t.active);
-      this.availableHeight_ =
-          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
-    });
   }
 
   private setShowFre_(show: boolean) {

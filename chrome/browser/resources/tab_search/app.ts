@@ -31,11 +31,13 @@ export class TabSearchAppElement extends CrLitElement {
       tabIcons_: {type: Array},
       tabOrganizationEnabled_: {type: Boolean},
       declutterEnabled_: {type: Boolean},
+      availableHeight_: {type: Number},
     };
   }
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
+  private documentVisibilityChangedListener_: () => void;
   protected selectedTabSection_: TabSearchSection = TabSearchSection.kNone;
   protected tabNames_: string[] = [
     loadTimeData.getString('tabSearchTabName'),
@@ -47,6 +49,7 @@ export class TabSearchAppElement extends CrLitElement {
       loadTimeData.getBoolean('tabOrganizationEnabled');
   protected declutterEnabled_: boolean =
       loadTimeData.getBoolean('declutterEnabled');
+  protected availableHeight_: number = 0;
 
   static override get styles() {
     return getCss();
@@ -54,6 +57,15 @@ export class TabSearchAppElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  constructor() {
+    super();
+    this.documentVisibilityChangedListener_ = () => {
+      if (document.visibilityState === 'visible') {
+        this.updateAvailableHeight_();
+      }
+    };
   }
 
   override connectedCallback() {
@@ -67,12 +79,32 @@ export class TabSearchAppElement extends CrLitElement {
     this.listenerIds_.push(
         callbackRouter.tabOrganizationEnabledChanged.addListener(
             this.onTabOrganizationEnabledChanged_.bind(this)));
+    this.updateAvailableHeight_();
+    document.addEventListener(
+        'visibilitychange', this.documentVisibilityChangedListener_);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
+    document.removeEventListener(
+        'visibilitychange', this.documentVisibilityChangedListener_);
+  }
+
+  private updateAvailableHeight_() {
+    this.apiProxy_.getProfileData().then(({profileData}) => {
+      // In rare cases there is no browser window. I suspect this happens during
+      // browser shutdown.
+      if (!profileData.windows) {
+        return;
+      }
+      // TODO(crbug.com/40855872): Determine why no active window is reported
+      // in some cases on ChromeOS and Linux.
+      const activeWindow = profileData.windows.find((t) => t.active);
+      this.availableHeight_ =
+          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
+    });
   }
 
   private onTabSectionChanged_(section: TabSearchSection) {

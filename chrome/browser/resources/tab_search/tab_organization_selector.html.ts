@@ -34,6 +34,7 @@ export function getHtml(this: TabOrganizationSelectorElement) {
 <div ?hidden=${
     this.getVisibleFeature_() !== TabOrganizationFeature.kAutoTabGroups}>
   <auto-tab-groups-page id="autoTabGroupsPage" ?show-back-button="${true}"
+      available-height="${this.availableHeight}"
       @back-click="${this.onBackClick_}">
   </auto-tab-groups-page>
 </div>
