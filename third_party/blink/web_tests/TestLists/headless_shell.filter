@@ -47,7 +47,6 @@ external/wpt/scheduler/*
 external/wpt/selection/*
 external/wpt/signed-exchange/*
 external/wpt/wasm/*
-external/wpt/webaudio/*
 external/wpt/webauthn/*
 external/wpt/WebCryptoAPI/*
 
