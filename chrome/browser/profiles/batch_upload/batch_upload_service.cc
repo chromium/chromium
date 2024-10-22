@@ -215,8 +215,9 @@ void BatchUploadService::OnBatchUplaodDialogResult(
 bool BatchUploadService::IsUserEligibleToOpenDialog() const {
   AccountInfo primary_account = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  // If not signed in, the user should not have access to the dialog.
-  if (primary_account.IsEmpty()) {
+  // If not signed in or syncing, the user should not have access to the dialog.
+  if (primary_account.IsEmpty() ||
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return false;
   }
 
