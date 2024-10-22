@@ -7877,11 +7877,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "screenshots-for-android-v2",
-    "owners": [ "kenok@google.com", "addisonphelps@google.com", "jeffreycohen@chromium.org" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "scrollable-tabstrip",
     "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist@chromium.org" ],
     "expiry_milestone": 130
