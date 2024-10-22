@@ -218,8 +218,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
           features::kAutofillUseITAddressModel,
-          // TODO(crbug.com/320965828): Remove once launched.
-          features::kAutofillEnableSupportForParsingWithSharedLabels,
       },
       // Disabled
       {// TODO(crbug.com/40220393): Remove once launched.
