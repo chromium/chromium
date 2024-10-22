@@ -31,7 +31,7 @@
 namespace gl {
 namespace {
 
-// When in BGRA888 overlay format, wait for this time delta before retrying
+// When in BGRA8888 overlay format, wait for this time delta before retrying
 // YUV format.
 constexpr base::TimeDelta kDelayForRetryingYUVFormat = base::Minutes(10);
 
@@ -2291,7 +2291,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
     }
   }
   if (!use_yuv_swap_chain) {
-    TRACE_EVENT1("gpu", "SwapChainPresenter::ReallocateSwapChain::BGRA",
+    TRACE_EVENT1("gpu", "SwapChainPresenter::ReallocateSwapChain::RGB",
                  "format", DxgiFormatToString(swap_chain_format));
 
     desc.Format = swap_chain_format;
