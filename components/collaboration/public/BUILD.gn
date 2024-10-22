@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
 source_set("public") {
   sources = [
     "collaboration_controller_delegate.h",
@@ -14,4 +19,12 @@ source_set("public") {
     "//components/saved_tab_groups/public",
     "//url",
   ]
+}
+
+if (is_android) {
+  android_library("java") {
+    sources = [ "android/java/src/org/chromium/components/collaboration/CollaborationService.java" ]
+
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
 }

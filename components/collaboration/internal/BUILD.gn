@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 static_library("internal") {
   visibility = [
     ":*",
@@ -24,6 +30,15 @@ static_library("internal") {
     "//components/collaboration/public",
     "//components/keyed_service/core",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/collaboration_service_android.cc",
+      "android/collaboration_service_android.h",
+    ]
+
+    deps += [ ":jni_headers" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -40,4 +55,28 @@ source_set("unit_tests") {
     ":internal",
     "//testing/gtest",
   ]
+}
+
+if (is_android) {
+  android_library("java") {
+    visibility = [ "//chrome/android:chrome_all_java" ]
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [ "android/java/src/org/chromium/components/collaboration/CollaborationServiceImpl.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//components/collaboration/public:java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [ "android/java/src/org/chromium/components/collaboration/CollaborationServiceImpl.java" ]
+  }
 }

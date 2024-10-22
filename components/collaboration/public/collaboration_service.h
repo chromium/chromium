@@ -12,12 +12,23 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace collaboration {
 
 // The core class for managing collaboration group flows.
 class CollaborationService : public KeyedService,
                              public base::SupportsUserData {
  public:
+#if BUILDFLAG(IS_ANDROID)
+  // Returns a Java object of the type CollaborationService for the given
+  // CollaborationService.
+  static base::android::ScopedJavaLocalRef<jobject> GetJavaObject(
+      CollaborationService* collaboration_service);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   CollaborationService() = default;
   ~CollaborationService() override = default;
 
