@@ -33612,6 +33612,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="129" label="IntlSegmenter"/>
   <int value="130" label="Eyedropper"/>
   <int value="131" label="BackgroundClipText"/>
+  <int value="132" label="ContainInlineSize"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

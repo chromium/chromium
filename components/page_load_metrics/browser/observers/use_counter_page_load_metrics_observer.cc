@@ -526,6 +526,8 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kMask, WebDXFeature::kMasks},
           {CSSSampleId::kPaintOrder, WebDXFeature::kPaintOrder},
           {CSSSampleId::kBackgroundClip, WebDXFeature::kBackgroundClipText},
+          {CSSSampleId::kContainIntrinsicInlineSize,
+           WebDXFeature::kContainInlineSize},
       }};
 
   return *kMap;

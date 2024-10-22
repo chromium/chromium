@@ -187,6 +187,7 @@ enum WebDXFeature {
   kIntlSegmenter = 129,
   kEyedropper = 130,
   kBackgroundClipText = 131,
+  kContainInlineSize = 132,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
