@@ -307,7 +307,8 @@
           "builder": "gpu-fyi-try-mac-nvidia-retina-rel",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Mac Builder/targets"
     }
   },
   "$build/reclient": {

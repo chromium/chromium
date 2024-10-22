@@ -1912,6 +1912,7 @@
     "label": "//tools/perf/contrib/vr_benchmarks:vr_perf_tests",
     "type": "script",
     "script": "//testing/scripts/run_performance_tests.py",
+    "skip_usage_check": True,
     "args": [
       "../../tools/perf/run_benchmark",
     ],
@@ -1927,6 +1928,7 @@
   "vulkan_tests": {
     "label": "//gpu/vulkan:vulkan_tests",
     "type": "windowed_test_launcher",
+    "skip_usage_check": True,
   },
   "wayland_client_perftests": {
     "label": "//components/exo/wayland:wayland_client_perftests",

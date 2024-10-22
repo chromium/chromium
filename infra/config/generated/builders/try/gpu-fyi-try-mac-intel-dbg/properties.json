@@ -74,7 +74,8 @@
           "builder": "Mac FYI Debug (Intel)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-mac-intel-dbg/targets"
     }
   },
   "$build/reclient": {

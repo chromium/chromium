@@ -54,9 +54,11 @@ def register_targets(*, parent_key, builder_group, builder_name, name, targets, 
     graph.add_edge(parent_key, targets_key)
 
 _OS_SPECIFIC_ARGS = {
+    # desktop_args goes first to appear before args from other os-specific args
+    # values; this matches generate_buildbot_json.py behavior
+    "desktop_args": "is_desktop",
     "android_args": "is_android",
     "chromeos_args": "is_cros",
-    "desktop_args": "is_desktop",
     "lacros_args": "is_lacros",
     "linux_args": "is_linux",
     "mac_args": "is_mac",

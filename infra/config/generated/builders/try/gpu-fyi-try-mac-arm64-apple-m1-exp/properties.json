@@ -75,7 +75,8 @@
           "builder": "Mac FYI Experimental Release (Apple M1)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-mac-arm64-apple-m1-exp/targets"
     }
   },
   "$build/reclient": {

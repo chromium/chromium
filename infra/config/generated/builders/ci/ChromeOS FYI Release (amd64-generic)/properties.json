@@ -51,7 +51,8 @@
           "builder": "gpu-fyi-try-chromeos-amd64-generic",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ChromeOS FYI Release (amd64-generic)/targets"
     }
   },
   "$build/reclient": {

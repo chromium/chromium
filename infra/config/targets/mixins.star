@@ -791,6 +791,7 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_nvidia_shield_tv_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
@@ -846,6 +847,7 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_samsung_a13_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
@@ -859,6 +861,7 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_samsung_a23_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
@@ -1356,6 +1359,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_arm64_apple_m1_gpu_experimental",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1370,6 +1374,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_arm64_apple_m1_gpu_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1487,6 +1492,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_pro_amd_gpu",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1982,6 +1988,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_amd_rx_5500_xt_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
@@ -2074,6 +2081,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_nvidia_rtx_4070_super_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",

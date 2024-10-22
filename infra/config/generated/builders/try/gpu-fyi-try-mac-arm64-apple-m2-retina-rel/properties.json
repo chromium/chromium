@@ -75,7 +75,8 @@
           "builder": "Mac FYI Retina Release (Apple M2)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-mac-arm64-apple-m2-retina-rel/targets"
     }
   },
   "$build/reclient": {

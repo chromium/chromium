@@ -2096,6 +2096,8 @@ targets.binaries.script(
     name = "vr_perf_tests",
     label = "//tools/perf/contrib/vr_benchmarks:vr_perf_tests",
     script = "//testing/scripts/run_performance_tests.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "../../tools/perf/run_benchmark",
     ],
@@ -2116,6 +2118,8 @@ targets.binaries.script(
 targets.binaries.windowed_test_launcher(
     name = "vulkan_tests",
     label = "//gpu/vulkan:vulkan_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(

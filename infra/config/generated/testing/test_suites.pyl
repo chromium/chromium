@@ -1525,18 +1525,6 @@
       'gl_unittests': {},
     },
 
-    'gpu_angle_unit_gtests': {
-      'angle_unittests': {
-        'android_args': [
-          '-v',
-        ],
-        'linux_args': [
-          '--no-xvfb',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-    },
-
     'gpu_command_buffer_perf_passthrough_isolated_scripts': {
       'passthrough_command_buffer_perftests': {
         'test_common': {
@@ -1611,42 +1599,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      'gl_unittests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'chromeos_args': [
-          '--stop-ui',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.gl_unittests.filter',
-        ],
-        'desktop_args': [
-          '--use-gpu-in-tests',
-        ],
-        'linux_args': [
-          '--no-xvfb',
-        ],
-      },
-    },
-
-    'gpu_common_gtests_validating': {
-      'gl_tests_validating': {
-        'test_common': {
-          'args': [
-            '--use-cmd-decoder=validating',
-          ],
-        },
-        'test': 'gl_tests',
-        'chromeos_args': [
-          '--stop-ui',
-          '$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile',
-        ],
-        'desktop_args': [
-          '--use-gpu-in-tests',
-        ],
-        'linux_args': [
-          '--no-xvfb',
-        ],
       },
       'gl_unittests': {
         'mixins': [
@@ -2244,21 +2196,6 @@
       },
     },
 
-    'gpu_desktop_specific_gtests': {
-      'tab_capture_end2end_tests': {
-        'test': 'browser_tests',
-        'args': [
-          '--enable-gpu',
-          '--test-launcher-bot-mode',
-          '--test-launcher-jobs=1',
-          '--gtest_filter=TabCaptureApiPixelTest.EndToEnd*',
-        ],
-        'linux_args': [
-          '--no-xvfb',
-        ],
-      },
-    },
-
     'gpu_fyi_and_optional_non_linux_gtests': {
       'gpu_unittests': {},
     },
@@ -2393,27 +2330,6 @@
         'args': [
           '--dont-restore-color-profile-after-test',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
-        ],
-      },
-    },
-
-    'gpu_memory_buffer_impl_tests_suite': {
-      'gpu_memory_buffer_impl_tests': {
-        'test': 'gpu_unittests',
-        'args': [
-          '--enable-gpu',
-          '--use-gpu-in-tests',
-          '--gtest_filter=*GpuMemoryBufferImplTest*',
-        ],
-        'lacros_args': [
-          '--ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
-        ],
-        'linux_args': [
-          '--no-xvfb',
         ],
       },
     },
@@ -2902,17 +2818,6 @@
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-      },
-    },
-
-    'gpu_vulkan_gtests': {
-      'vulkan_tests': {
-        'desktop_args': [
-          '--use-gpu-in-tests',
-        ],
-        'linux_args': [
-          '--no-xvfb',
         ],
       },
     },
@@ -4854,25 +4759,6 @@
       },
     },
 
-    'win_specific_xr_perf_tests': {
-      'xr.webxr.static': {
-        'test_common': {
-          'args': [
-            '--benchmarks=xr.webxr.static',
-            '-v',
-            '--upload-results',
-            '--output-format=histograms',
-            '--browser=release_x64',
-          ],
-          'merge': {
-            'script': '//tools/perf/process_perf_results.py',
-          },
-        },
-        'test': 'vr_perf_tests',
-        'experiment_percentage': 100,
-      },
-    },
-
     'wpt_tests_ios_suite': {
       'wpt_tests_ios': {
         'test_common': {
@@ -5085,18 +4971,6 @@
       'gpu_webgl_conformance_telemetry_tests',
     ],
 
-    'gpu_common_android_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_validating_telemetry_tests',
-      'gpu_webgl_conformance_validating_telemetry_tests',
-    ],
-
-    'gpu_common_gl_passthrough_ganesh_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests',
-    ],
-
     'gpu_dawn_android_compat_telemetry_tests': [
       'gpu_dawn_webgpu_compat_cts',
       'gpu_dawn_webgpu_cts',
@@ -5178,125 +5052,12 @@
       'gpu_dawn_gtests',
     ],
 
-    'gpu_fyi_android_gtests': [
-      'gpu_angle_unit_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_common_gtests_validating',
-      'gpu_fyi_and_optional_non_linux_gtests',
-    ],
-
-    'gpu_fyi_android_shieldtv_gtests': [
-      'gpu_angle_unit_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_common_gtests_validating',
-      'gpu_fyi_and_optional_non_linux_gtests',
-    ],
-
-    'gpu_fyi_android_webgl2_and_gold_telemetry_tests': [
-      'gpu_validating_telemetry_tests',
-      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
-      'gpu_webgl2_conformance_validating_telemetry_tests',
-    ],
-
-    'gpu_fyi_chromeos_release_gtests': [
-      'gpu_common_gtests_passthrough',
-    ],
-
-    'gpu_fyi_chromeos_release_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
-    ],
-
-    'gpu_fyi_lacros_release_gtests': [
-      'gpu_memory_buffer_impl_tests_suite',
-    ],
-
-    'gpu_fyi_lacros_release_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
-    ],
-
-    'gpu_fyi_linux_debug_gtests': [
-      'gpu_common_gtests_passthrough',
-    ],
-
-    'gpu_fyi_linux_debug_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-    ],
-
-    'gpu_fyi_linux_release_gtests': [
-      'gpu_angle_unit_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_desktop_specific_gtests',
-      'gpu_memory_buffer_impl_tests_suite',
-      'gpu_vulkan_gtests',
-    ],
-
-    'gpu_fyi_linux_release_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-    ],
-
     'gpu_fyi_linux_release_vulkan_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_skia_renderer_vulkan_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-    ],
-
-    'gpu_fyi_mac_debug_gtests': [
-      'gpu_angle_unit_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_fyi_and_optional_non_linux_gtests',
-      'gpu_fyi_mac_specific_gtests',
-    ],
-
-    'gpu_fyi_mac_nvidia_release_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_webcodecs_gl_passthrough_ganesh_telemetry_test',
-      'gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
-    ],
-
-    'gpu_fyi_mac_pro_release_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_metal_passthrough_graphite_telemetry_tests',
-      'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests',
-      'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests',
-    ],
-
-    'gpu_fyi_mac_release_gtests': [
-      'gpu_angle_unit_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_desktop_specific_gtests',
-      'gpu_fyi_and_optional_non_linux_gtests',
-      'gpu_fyi_mac_specific_gtests',
-    ],
-
-    'gpu_fyi_mac_release_telemetry_tests': [
-      'gpu_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_metal_passthrough_ganesh_telemetry_tests',
-      'gpu_webcodecs_gl_passthrough_ganesh_telemetry_test',
-      'gpu_webcodecs_metal_passthrough_ganesh_telemetry_test',
-      'gpu_webcodecs_metal_passthrough_graphite_telemetry_test',
-      'gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
     ],
 
     'gpu_fyi_only_mac_release_telemetry_tests': [
@@ -5313,47 +5074,6 @@
       'gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests',
       'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
-    ],
-
-    'gpu_fyi_win_amd_release_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
-    ],
-
-    'gpu_fyi_win_debug_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
-    ],
-
-    'gpu_fyi_win_gtests': [
-      'gpu_angle_unit_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_default_and_optional_win_media_foundation_specific_gtests',
-      'gpu_default_and_optional_win_specific_gtests',
-      'gpu_desktop_specific_gtests',
-      'gpu_fyi_and_optional_non_linux_gtests',
-      'gpu_fyi_and_optional_win_specific_gtests',
-    ],
-
-    'gpu_fyi_win_intel_release_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
-    ],
-
-    'gpu_fyi_win_optional_isolated_scripts': [
-      'gpu_command_buffer_perf_passthrough_isolated_scripts',
     ],
 
     'gpu_fyi_win_release_telemetry_tests': [

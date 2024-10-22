@@ -1984,6 +1984,24 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_angle_unit_gtests",
+    targets = [
+        "angle_unittests",
+    ],
+    per_test_modifications = {
+        "angle_unittests": targets.mixin(
+            android_args = [
+                "-v",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+    },
+)
+
+targets.bundle(
     name = "gpu_angle_win_intel_nvidia_telemetry_tests",
     targets = [
         "gpu_info_collection_telemetry_tests",
@@ -1992,6 +2010,61 @@ targets.bundle(
         "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
         "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
     ],
+)
+
+targets.bundle(
+    name = "gpu_common_android_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_validating_telemetry_tests",
+        "gpu_webgl_conformance_validating_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_common_gl_passthrough_ganesh_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_gl_passthrough_ganesh_telemetry_tests",
+        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_common_gtests_validating",
+    targets = [
+        "gl_tests_validating",
+        "gl_unittests",
+    ],
+    per_test_modifications = {
+        "gl_tests_validating": targets.mixin(
+            chromeos_args = [
+                "--stop-ui",
+                targets.magic_args.CROS_GTEST_FILTER_FILE,
+            ],
+            desktop_args = [
+                "--use-gpu-in-tests",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+        ),
+        "gl_unittests": [
+            targets.mixin(
+                chromeos_args = [
+                    "--stop-ui",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.gl_unittests.filter",
+                ],
+                desktop_args = [
+                    "--use-gpu-in-tests",
+                ],
+                linux_args = [
+                    "--no-xvfb",
+                ],
+            ),
+            "skia_gold_test",
+        ],
+    },
 )
 
 targets.bundle(
@@ -2031,6 +2104,249 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_desktop_specific_gtests",
+    targets = [
+        "tab_capture_end2end_tests",
+    ],
+    per_test_modifications = {
+        "tab_capture_end2end_tests": targets.mixin(
+            args = [
+                "--enable-gpu",
+                "--test-launcher-bot-mode",
+                "--test-launcher-jobs=1",
+                "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_fyi_android_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+        "gpu_common_gtests_validating",
+        "gpu_fyi_and_optional_non_linux_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_android_shieldtv_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+        "gpu_common_gtests_validating",
+        "gpu_fyi_and_optional_non_linux_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_android_webgl2_and_gold_telemetry_tests",
+    targets = [
+        "gpu_validating_telemetry_tests",
+        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl2_conformance_validating_telemetry_tests",
+    ],
+)
+
+# TODO(crbug.com/40130073): Merge with an existing set of tests such as
+# gpu_fyi_linux_release_gtests once all CrOS tests have been enabled.
+targets.bundle(
+    name = "gpu_fyi_chromeos_release_gtests",
+    targets = [
+        "gpu_common_gtests_passthrough",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_chromeos_release_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webcodecs_telemetry_test",
+        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_lacros_release_gtests",
+    targets = [
+        "gpu_memory_buffer_impl_tests_suite",
+    ],
+)
+
+# The same as gpu_fyi_chromeos_release_telemetry_tests, but using
+# passthrough instead of validating since the Lacros bots are actually
+# Lacros-like Linux bots, and Linux uses the passthrough decoder.
+# Additionally, we use GLES instead of GL since that's what is supported.
+targets.bundle(
+    name = "gpu_fyi_lacros_release_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webcodecs_telemetry_test",
+        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_linux_debug_gtests",
+    targets = [
+        "gpu_common_gtests_passthrough",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_linux_debug_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_linux_release_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+        "gpu_desktop_specific_gtests",
+        "gpu_memory_buffer_impl_tests_suite",
+        "gpu_vulkan_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_linux_release_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_mac_debug_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+        "gpu_fyi_and_optional_non_linux_gtests",
+        "gpu_fyi_mac_specific_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_mac_nvidia_release_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_gl_passthrough_ganesh_telemetry_tests",
+        "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
+        "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
+        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
+        "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_mac_pro_release_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_metal_passthrough_graphite_telemetry_tests",
+        "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
+        "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_mac_release_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+        "gpu_desktop_specific_gtests",
+        "gpu_fyi_and_optional_non_linux_gtests",
+        "gpu_fyi_mac_specific_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_mac_release_telemetry_tests",
+    targets = [
+        "gpu_gl_passthrough_ganesh_telemetry_tests",
+        "gpu_metal_passthrough_ganesh_telemetry_tests",
+        "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
+        "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test",
+        "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
+        "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
+        "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
+        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
+        "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
+        "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_win_amd_release_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webcodecs_telemetry_test",
+        "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_win_debug_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_win_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+        "gpu_default_and_optional_win_media_foundation_specific_gtests",
+        "gpu_default_and_optional_win_specific_gtests",
+        "gpu_desktop_specific_gtests",
+        "gpu_fyi_and_optional_non_linux_gtests",
+        "gpu_fyi_and_optional_win_specific_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_win_intel_release_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webcodecs_telemetry_test",
+        "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_win_optional_isolated_scripts",
+    targets = [
+        "gpu_command_buffer_perf_passthrough_isolated_scripts",
+    ],
+)
+
+targets.bundle(
     name = "gpu_info_collection_telemetry_tests",
     targets = [
         "info_collection_tests",
@@ -2046,6 +2362,32 @@ targets.bundle(
             ),
             "gpu_integration_test_common_args",
         ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_memory_buffer_impl_tests_suite",
+    targets = [
+        "gpu_memory_buffer_impl_tests",
+    ],
+    per_test_modifications = {
+        "gpu_memory_buffer_impl_tests": targets.mixin(
+            args = [
+                "--enable-gpu",
+                "--use-gpu-in-tests",
+                "--gtest_filter=*GpuMemoryBufferImplTest*",
+            ],
+            lacros_args = [
+                "--ozone-platform=wayland",
+                "--xvfb",
+                "--no-xvfb",
+                "--use-weston",
+                "--weston-use-gl",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+        ),
     },
 )
 
@@ -2075,6 +2417,23 @@ targets.bundle(
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
     ],
+)
+
+targets.bundle(
+    name = "gpu_vulkan_gtests",
+    targets = [
+        "vulkan_tests",
+    ],
+    per_test_modifications = {
+        "vulkan_tests": targets.mixin(
+            desktop_args = [
+                "--use-gpu-in-tests",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+        ),
+    },
 )
 
 targets.bundle(
@@ -2795,6 +3154,18 @@ targets.bundle(
     targets = [
         "webview_ui_test_app_test_apk_no_field_trial",
     ],
+)
+
+targets.bundle(
+    name = "win_specific_xr_perf_tests",
+    targets = [
+        "xr.webxr.static",
+    ],
+    per_test_modifications = {
+        "xr.webxr.static": targets.mixin(
+            experiment_percentage = 100,
+        ),
+    },
 )
 
 targets.bundle(

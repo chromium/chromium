@@ -74,7 +74,8 @@
           "builder": "Android FYI Release (Pixel 2)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-android-p-pixel-2-32/targets"
     }
   },
   "$build/reclient": {

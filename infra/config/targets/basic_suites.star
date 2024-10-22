@@ -1155,21 +1155,6 @@ targets.legacy_basic_suite(
 
 # BEGIN tests which run on the GPU bots
 
-targets.legacy_basic_suite(
-    name = "gpu_angle_unit_gtests",
-    tests = {
-        "angle_unittests": targets.legacy_test_config(
-            android_args = [
-                "-v",
-            ],
-            linux_args = [
-                "--no-xvfb",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-    },
-)
-
 # The command buffer perf tests are only run on Windows.
 # They are mostly driver and platform independent.
 targets.legacy_basic_suite(
@@ -1230,39 +1215,6 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 2,
             ),
-        ),
-        "gl_unittests": targets.legacy_test_config(
-            mixins = [
-                "skia_gold_test",
-            ],
-            chromeos_args = [
-                "--stop-ui",
-                "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.gl_unittests.filter",
-            ],
-            desktop_args = [
-                "--use-gpu-in-tests",
-            ],
-            linux_args = [
-                "--no-xvfb",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_common_gtests_validating",
-    tests = {
-        "gl_tests_validating": targets.legacy_test_config(
-            chromeos_args = [
-                "--stop-ui",
-                targets.magic_args.CROS_GTEST_FILTER_FILE,
-            ],
-            desktop_args = [
-                "--use-gpu-in-tests",
-            ],
-            linux_args = [
-                "--no-xvfb",
-            ],
         ),
         "gl_unittests": targets.legacy_test_config(
             mixins = [
@@ -1706,23 +1658,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_desktop_specific_gtests",
-    tests = {
-        "tab_capture_end2end_tests": targets.legacy_test_config(
-            args = [
-                "--enable-gpu",
-                "--test-launcher-bot-mode",
-                "--test-launcher-jobs=1",
-                "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*",
-            ],
-            linux_args = [
-                "--no-xvfb",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_fyi_and_optional_non_linux_gtests",
     tests = {
         # gpu_unittests is killing the Swarmed Linux GPU bots similarly to
@@ -2088,29 +2023,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_memory_buffer_impl_tests_suite",
-    tests = {
-        "gpu_memory_buffer_impl_tests": targets.legacy_test_config(
-            args = [
-                "--enable-gpu",
-                "--use-gpu-in-tests",
-                "--gtest_filter=*GpuMemoryBufferImplTest*",
-            ],
-            lacros_args = [
-                "--ozone-platform=wayland",
-                "--xvfb",
-                "--no-xvfb",
-                "--use-weston",
-                "--weston-use-gl",
-            ],
-            linux_args = [
-                "--no-xvfb",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
     tests = {
         "vulkan_pixel_skia_gold_test": targets.legacy_test_config(
@@ -2195,20 +2107,6 @@ targets.legacy_basic_suite(
             android_args = [
                 # TODO(crbug.com/40134877): Remove this once we fix the tests.
                 "--extra-browser-args=--force-online-connection-state-for-indicator",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_vulkan_gtests",
-    tests = {
-        "vulkan_tests": targets.legacy_test_config(
-            desktop_args = [
-                "--use-gpu-in-tests",
-            ],
-            linux_args = [
-                "--no-xvfb",
             ],
         ),
     },
@@ -3866,16 +3764,6 @@ targets.legacy_basic_suite(
         ),
         "polymer_tools_python_unittests": targets.legacy_test_config(
             experiment_percentage = 0,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "win_specific_xr_perf_tests",
-    tests = {
-        "xr.webxr.static": targets.legacy_test_config(
-            # Experimental until we're sure these are stable.
-            experiment_percentage = 100,
         ),
     },
 )

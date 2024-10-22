@@ -73,7 +73,8 @@
           "builder": "Linux FYI Release (AMD RX 5500 XT)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-linux-amd-rel/targets"
     }
   },
   "$build/reclient": {

@@ -70,7 +70,8 @@
           "builder": "gpu-fyi-try-mac-intel-dbg",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac FYI Debug (Intel)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -73,7 +73,8 @@
           "builder": "Mac FYI Retina Release (AMD)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-mac-amd-retina-rel/targets"
     }
   },
   "$build/reclient": {

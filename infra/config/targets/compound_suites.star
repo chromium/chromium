@@ -273,24 +273,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-targets.legacy_compound_suite(
-    name = "gpu_common_android_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_validating_telemetry_tests",
-        "gpu_webgl_conformance_validating_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_common_gl_passthrough_ganesh_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
-    ],
-)
-
 # Same as gpu_dawn_isolated_scripts, but with some suites removed:
 # * telemetry_gpu_unittests since those aren't built for Android
 # * SwiftShader-related tests since SwiftShader is not used on Android.
@@ -424,121 +406,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-targets.legacy_compound_suite(
-    name = "gpu_fyi_android_gtests",
-    basic_suites = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
-        "gpu_common_gtests_validating",
-        "gpu_fyi_and_optional_non_linux_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_android_shieldtv_gtests",
-    basic_suites = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
-        "gpu_common_gtests_validating",
-        "gpu_fyi_and_optional_non_linux_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_android_webgl2_and_gold_telemetry_tests",
-    basic_suites = [
-        "gpu_validating_telemetry_tests",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_validating_telemetry_tests",
-    ],
-)
-
-# TODO(crbug.com/40130073): Merge with an existing set of tests such as
-# gpu_fyi_linux_release_gtests once all CrOS tests have been enabled.
-targets.legacy_compound_suite(
-    name = "gpu_fyi_chromeos_release_gtests",
-    basic_suites = [
-        # TODO(crbug.com/40723796): Missing cros wrapper script.
-        # "gpu_angle_unit_gtests",
-        # TODO(crbug.com/1087567, crbug.com/1087590): Enable once there are tests
-        # that actually pass.
-        "gpu_common_gtests_passthrough",
-        # TODO(crbug.com/1087563): Enable once tab_capture_end2end_tests passes
-        # on CrOS.
-        # "gpu_desktop_specific_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_chromeos_release_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webcodecs_telemetry_test",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-    ],
-)
-
-# The same as gpu_fyi_chromeos_release_telemetry_tests, but using
-# passthrough instead of validating since the Lacros bots are actually
-# Lacros-like Linux bots, and Linux uses the passthrough decoder.
-# Additionally, we use GLES instead of GL since that's what is supported.
-targets.legacy_compound_suite(
-    name = "gpu_fyi_lacros_release_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webcodecs_telemetry_test",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_lacros_release_gtests",
-    basic_suites = [
-        "gpu_memory_buffer_impl_tests_suite",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_linux_debug_gtests",
-    basic_suites = [
-        "gpu_common_gtests_passthrough",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_linux_debug_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_linux_release_gtests",
-    basic_suites = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
-        "gpu_desktop_specific_gtests",
-        "gpu_memory_buffer_impl_tests_suite",
-        "gpu_vulkan_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_linux_release_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
-    ],
-)
-
 # TODO(jonross): remove this once Vulkan Swiftshader and Vulkan GL interop
 # paths are merged. This should mirror
 # `gpu_fyi_linux_release_telemetry_tests` but with additional
@@ -551,65 +418,6 @@ targets.legacy_compound_suite(
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
         "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_mac_debug_gtests",
-    basic_suites = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
-        "gpu_fyi_and_optional_non_linux_gtests",
-        "gpu_fyi_mac_specific_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_mac_nvidia_release_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
-        "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_mac_pro_release_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_metal_passthrough_graphite_telemetry_tests",
-        "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_mac_release_gtests",
-    basic_suites = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
-        "gpu_desktop_specific_gtests",
-        "gpu_fyi_and_optional_non_linux_gtests",
-        "gpu_fyi_mac_specific_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_mac_release_telemetry_tests",
-    basic_suites = [
-        "gpu_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_metal_passthrough_ganesh_telemetry_tests",
-        "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
-        "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test",
-        "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
-        "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
     ],
 )
 
@@ -629,62 +437,6 @@ targets.legacy_compound_suite(
         "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_win_amd_release_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webcodecs_telemetry_test",
-        "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_win_debug_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_win_gtests",
-    basic_suites = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
-        "gpu_default_and_optional_win_media_foundation_specific_gtests",
-        "gpu_default_and_optional_win_specific_gtests",
-        "gpu_desktop_specific_gtests",
-        "gpu_fyi_and_optional_non_linux_gtests",
-        "gpu_fyi_and_optional_win_specific_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_win_intel_release_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webcodecs_telemetry_test",
-        "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_fyi_win_optional_isolated_scripts",
-    basic_suites = [
-        "gpu_command_buffer_perf_passthrough_isolated_scripts",
     ],
 )
 

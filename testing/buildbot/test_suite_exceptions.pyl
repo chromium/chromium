@@ -652,45 +652,6 @@
       },
     },
   },
-  'context_lost_metal_passthrough_ganesh_tests': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
-  },
-  'context_lost_metal_passthrough_graphite_tests': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
-  },
-  'context_lost_passthrough_tests': {
-    'modifications': {
-      'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': [
-          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
-          # helps with stability.
-          '--jobs=2',
-        ],
-      },
-    },
-    'replacements': {
-      'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': {
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the number of jobs above.
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
-        },
-      },
-    },
-  },
-  'context_lost_validating_tests': {
-    # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
-    # exception once there is enough capacity to run these tests.
-    'remove_from': [
-      'Android FYI Release (Pixel 2)',
-    ],
-  },
   'crashpad_tests': {
     'remove_from': [
       # https://crbug.com/crashpad/304
@@ -833,10 +794,6 @@
     },
   },
   'expected_color_pixel_metal_passthrough_ganesh_test': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
     'replacements': {
       'Mac V8 FYI Release (Intel)': {
         'args': {
@@ -846,10 +803,6 @@
     },
   },
   'expected_color_pixel_metal_passthrough_graphite_test': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
     'replacements': {
       'Mac V8 FYI Release (Intel)': {
         'args': {
@@ -860,19 +813,9 @@
   },
   'expected_color_pixel_passthrough_test': {
     'modifications': {
-      'Android FYI Release (Pixel 4)': {
-        'args': [
-          # Pixel 4s are weird in that they can output in different color spaces
-          # simultaneously. The readback code for capturing a screenshot assumes
-          # only one color space, so disable wide color gamut for the test to
-          # work around the issue. See https://crbug.com/1166379 for more
-          # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
-          # See above.
+          # See Android FYI Release (Pixel 4).
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
@@ -921,28 +864,13 @@
   },
   'expected_color_pixel_validating_test': {
     'modifications': {
-      'Android FYI Release (Pixel 4)': {
-        'args': [
-          # Pixel 4s are weird in that they can output in different color spaces
-          # simultaneously. The readback code for capturing a screenshot assumes
-          # only one color space, so disable wide color gamut for the test to
-          # work around the issue. See https://crbug.com/1166379 for more
-          # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
-          # See above.
+          # See Android FYI Release (Pixel 4).
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
     },
-    # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
-    # exception once there is enough capacity to run these tests.
-    'remove_from': [
-      'Android FYI Release (Pixel 2)',
-    ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -1028,16 +956,6 @@
           },
         },
       },
-      'Linux FYI Experimental Release (Intel UHD 630)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_630.gl_tests_passthrough.filter',
-        ],
-      },
-      'Linux FYI Release (Intel UHD 770)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_770.gl_tests_passthrough.filter',
-        ],
-      },
       'Linux TSan Tests': {
         'args': [
           '--use-gpu-in-tests',
@@ -1051,25 +969,6 @@
             'pool': 'chromium.tests.gpu',
           },
         },
-      },
-      'Win10 FYI x64 Release (Intel UHD 770)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/win.uhd_770.gl_tests_passthrough.filter',
-        ],
-      },
-    },
-  },
-  'gl_tests_validating': {
-    'modifications': {
-      'Android FYI Release (Samsung A13)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a13.gl_tests.filter',
-        ],
-      },
-      'Android FYI Release (Samsung A23)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a23.gl_tests.filter',
-        ],
       },
     },
   },
@@ -1086,37 +985,12 @@
       # which isn't instrumented.
       'Linux MSan Tests',
     ],
-    'modifications': {
-      'Win10 FYI x64 Release (AMD RX 5500 XT)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter',
-        ],
-      },
-    },
   },
   'gl_unittests_ozone': {
     'remove_from': [
       # Can't run on MSAN because gl_unittests_ozone uses the hardware driver,
       # which isn't instrumented.
       'Linux ChromiumOS MSan Tests',
-    ],
-  },
-  'gpu_process_launch_tests': {
-    'remove_from': [
-      # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
-      # exception once there is enough capacity to run these tests.
-      'Android FYI Release (Pixel 2)',
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
-  },
-  'hardware_accelerated_feature_tests': {
-    'remove_from': [
-      # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
-      # exception once there is enough capacity to run these tests.
-      'Android FYI Release (Pixel 2)',
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
     ],
   },
   'headless_shell_wpt_tests_include_all': {
@@ -1170,31 +1044,9 @@
       'Android V8 FYI Release (Nexus 5X)',
       'Linux V8 FYI Release (NVIDIA)',
       'Linux V8 FYI Release - pointer compression (NVIDIA)',
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
       'Mac V8 FYI Release (Intel)',
       'Win V8 FYI Release (NVIDIA)',
     ],
-    'modifications': {
-      'ChromeOS FYI Release (amd64-generic)': {
-        'args': [
-          # Swarming does not report a GPU since tests are run in a VM, but
-          # the VM does report that a GPU is present.
-          '--expected-vendor-id', '1af4',
-          '--expected-device-id', '1050',
-        ],
-      },
-    },
-    'replacements': {
-      'ChromeOS FYI Release (amd64-generic)': {
-        'args': {
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the expected device ID above.
-          '$$MAGIC_SUBSTITUTION_GPUExpectedVendorId': None,
-          '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId': None,
-        },
-      },
-    },
   },
   'interactive_ui_tests': {
     'modifications': {
@@ -1314,22 +1166,6 @@
         },
       },
     },
-  },
-  'media_foundation_browser_tests': {
-    'remove_from': [
-      # TODO(crbug.com/40912267): Enable Media Foundation browser tests on NVIDIA
-      # gpu bots once the Windows OS supports HW secure decryption.
-      'Win10 FYI x64 Debug (NVIDIA)',
-      'Win10 FYI x64 Release (AMD RX 5500 XT)',
-      'Win10 FYI x64 Release (NVIDIA)',
-      'Win10 FYI x86 Release (NVIDIA)',
-    ],
-  },
-  'mediapipe_passthrough_tests': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
   },
   'model_validation_tests MODEL_VALIDATION_BASE': {
     'modifications': {
@@ -1474,10 +1310,6 @@
     },
   },
   'pixel_skia_gold_metal_passthrough_ganesh_test': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
     'replacements': {
       'Mac V8 FYI Release (Intel)': {
         'args': {
@@ -1487,10 +1319,6 @@
     },
   },
   'pixel_skia_gold_metal_passthrough_graphite_test': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
     'replacements': {
       'Mac V8 FYI Release (Intel)': {
         'args': {
@@ -1501,26 +1329,9 @@
   },
   'pixel_skia_gold_passthrough_test': {
     'modifications': {
-      'Android FYI Release (Pixel 4)': {
-        'args': [
-          # Pixel 4s are weird in that they can output in different color spaces
-          # simultaneously. The readback code for capturing a screenshot assumes
-          # only one color space, so disable wide color gamut for the test to
-          # work around the issue. See https://crbug.com/1166379 for more
-          # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-      'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': [
-          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
-          # helps with stability.
-          '--jobs=2',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
-          # See above.
+          # See Android FYI Release (Pixel 4).
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
@@ -1541,13 +1352,6 @@
       'Win V8 FYI Release (NVIDIA)': {
         'args': {
           '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': {
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the number of jobs above.
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
         },
       },
     },
@@ -1576,19 +1380,9 @@
   },
   'pixel_skia_gold_validating_test': {
     'modifications': {
-      'Android FYI Release (Pixel 4)': {
-        'args': [
-          # Pixel 4s are weird in that they can output in different color spaces
-          # simultaneously. The readback code for capturing a screenshot assumes
-          # only one color space, so disable wide color gamut for the test to
-          # work around the issue. See https://crbug.com/1166379 for more
-          # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
-          # See above.
+          # See Android FYI Release (Pixel 4).
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
@@ -1623,33 +1417,11 @@
       'android-asan',  # https://crbug.com/962650
     ],
   },
-  'screenshot_sync_metal_passthrough_ganesh_tests': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
-  },
-  'screenshot_sync_metal_passthrough_graphite_tests': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
-  },
   'screenshot_sync_passthrough_tests': {
     'modifications': {
-      'Android FYI Release (Pixel 4)': {
-        'args': [
-          # Pixel 4s are weird in that they can output in different color spaces
-          # simultaneously. The readback code for capturing a screenshot assumes
-          # only one color space, so disable wide color gamut for the test to
-          # work around the issue. See https://crbug.com/1166379 for more
-          # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
-          # See above.
+          # See Android FYI Release (Pixel 4).
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
@@ -1657,19 +1429,9 @@
   },
   'screenshot_sync_validating_tests': {
     'modifications': {
-      'Android FYI Release (Pixel 4)': {
-        'args': [
-          # Pixel 4s are weird in that they can output in different color spaces
-          # simultaneously. The readback code for capturing a screenshot assumes
-          # only one color space, so disable wide color gamut for the test to
-          # work around the issue. See https://crbug.com/1166379 for more
-          # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
-          # See above.
+          # See Android FYI Release (Pixel 4).
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
@@ -1677,8 +1439,6 @@
   },
   'services_unittests': {
     'remove_from': [
-      # The face and barcode detection tests fail on the Mac Pros.
-      'Mac Pro FYI Release (AMD)',
       'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
       'Linux MSan Tests',  # https://crbug.com/831676
     ],
@@ -1722,15 +1482,6 @@
       'win10-rel-no-external-ip',
     ],
   },
-  'tab_capture_end2end_tests': {
-    # Run these only on Release bots.
-    'remove_from': [
-      'Win10 FYI x64 Debug (NVIDIA)',
-      # Disabled due to dbus crashes crbug.com/927465
-      'Linux FYI Release (Intel UHD 630)',
-      'Linux FYI Release (NVIDIA)',
-    ],
-  },
   'telemetry_perf_unittests': {
     'modifications': {
       'chromeos-eve-chrome': {
@@ -1756,30 +1507,6 @@
       # TODO(crbug.com/40727045): Restore when there's more DUTs
       'chromeos-eve-chrome',
       'win10-rel-no-external-ip',
-    ],
-  },
-  'trace_test': {
-    'modifications': {
-      'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': [
-          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
-          # helps with stability.
-          '--jobs=2',
-        ],
-      },
-    },
-    'replacements': {
-      'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': {
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the number of jobs above.
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
-        },
-      },
-    },
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
     ],
   },
   'trace_test 8086:9bc5': {
@@ -1899,13 +1626,6 @@
       },
     },
   },
-  'video_decode_accelerator_gl_unittest': {
-    'remove_from': [
-      # Windows Intel doesn't have the GL extensions to support this test.
-      'Win10 FYI x64 Release (Intel)',
-      'Win10 FYI x64 Experimental Release (Intel)',
-    ],
-  },
   'vulkan_pixel_skia_gold_test': {
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
@@ -1938,38 +1658,6 @@
       'linux-chromeos-dbg-oslogin',
     ],
   },
-  'webcodecs_metal_passthrough_ganesh_tests': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
-  },
-  'webcodecs_metal_passthrough_graphite_tests': {
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
-  },
-  'webcodecs_tests': {
-    'modifications': {
-      'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': [
-          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
-          # helps with stability.
-          '--jobs=2',
-        ],
-      },
-    },
-    'replacements': {
-      'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': {
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the number of jobs above.
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
-        },
-      },
-    },
-  },
   'webgl2_conformance_d3d11_passthrough_tests': {
     'remove_from': [
       # Removed from V8 builder since WebGL 1 should provide reasonable
@@ -1995,110 +1683,12 @@
       'Linux V8 FYI Release - pointer compression (NVIDIA)',
     ],
   },
-  'webgl2_conformance_gles_passthrough_tests': {
-    'remove_from': [
-      # Not enough CrOS hardware capacity to run both on anything other than
-      # VMs. See https://crbug.com/1238070.
-      'Linux Wayland FYI Release (Intel)',
-    ],
-    'modifications': {
-      # This VM configuration is known to be significantly slower than other
-      # CrOS configurations, so increase the shards.
-      # TODO(crbug.com/40774693): Remove this if the configuration can be sped
-      # up.
-      'ChromeOS FYI Release (amd64-generic)': {
-        'swarming': {
-          'shards': 30,
-        },
-      },
-    },
-  },
   'webgl2_conformance_metal_passthrough_graphite_tests': {
     'remove_from': [
-      # crbug.com/1270755
-      'Mac FYI ASAN (Intel)',
-      'Mac FYI Retina ASAN (AMD)',
-      # Not enough capacity.
-      'Mac FYI Retina Release (NVIDIA)',
-      'Mac FYI Experimental Retina Release (NVIDIA)',
       # Removed from V8 builders since WebGL 1 should provide reasonable
       # upstream test coverage without the capacity hit from WebGL 2.
       'Mac V8 FYI Release (Intel)',
     ],
-    'modifications': {
-      'Mac FYI ASAN (Intel)': {
-        'args': [
-          '--extra-browser-args=--disable-metal-shader-cache',
-        ],
-      },
-      'Mac FYI Retina ASAN (AMD)': {
-        'args': [
-          '--extra-browser-args=--disable-metal-shader-cache',
-        ],
-      },
-    },
-    'replacements': {
-      'Mac Pro FYI Release (AMD)': {
-        'args': {
-          # Causes problems on older hardware. crbug.com/1499911.
-          '--enable-metal-debug-layers': None,
-        },
-      },
-    },
-  },
-  'webgl2_conformance_validating_tests': {
-    'modifications': {
-      # This VM configuration is known to be significantly slower than other
-      # CrOS configurations, so increase the shards.
-      # TODO(crbug.com/40774693): Remove this if the configuration can be sped
-      # up.
-      'ChromeOS FYI Release (amd64-generic)': {
-        'swarming': {
-          'shards': 30,
-        },
-        # This configuration is tested with the passthrough decoder as well,
-        # which will be shipped in the nearish future, so any failures that
-        # show up with the validating decoder are just an FYI.
-        'experiment_percentage': 100,
-      },
-    },
-  },
-  'webgl_conformance_metal_passthrough_ganesh_tests': {
-    'remove_from': [
-      # crbug.com/1270755
-      'Mac FYI ASAN (Intel)',
-      'Mac FYI Retina ASAN (AMD)',
-    ],
-  },
-  'webgl_conformance_metal_passthrough_graphite_tests': {
-    'remove_from': [
-      # crbug.com/1270755
-      'Mac FYI ASAN (Intel)',
-      'Mac FYI Retina ASAN (AMD)',
-      # crbug.com/1158857: re-enable when switching to Metal by default.
-      'Mac FYI Retina Release (NVIDIA)',
-      'Mac FYI Experimental Retina Release (NVIDIA)',
-    ],
-    'modifications': {
-      'Mac FYI ASAN (Intel)': {
-        'args': [
-          '--extra-browser-args=--disable-metal-shader-cache',
-        ],
-      },
-      'Mac FYI Retina ASAN (AMD)': {
-        'args': [
-          '--extra-browser-args=--disable-metal-shader-cache',
-        ],
-      },
-    },
-    'replacements': {
-      'Mac Pro FYI Release (AMD)': {
-        'args': {
-          # Causes problems on older hardware. crbug.com/1499911.
-          '--enable-metal-debug-layers': None,
-        },
-      },
-    },
   },
   'webgpu_blink_web_tests': {
     'remove_from': [
@@ -2341,31 +1931,6 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
     ],
-  },
-  'xr_browser_tests': {
-    'modifications': {
-      'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': [
-          # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
-          # resolved.
-          '--gtest_filter=-WebXrVrOpenXrBrowserTest.TestNoStalledFrameLoop',
-        ],
-      },
-      'Win10 FYI x64 Release (Intel UHD 770)': {
-        'args': [
-          # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
-          # resolved.
-          '--gtest_filter=-WebXrVrOpenXrBrowserTest.TestNoStalledFrameLoop',
-        ],
-      },
-      'Win10 FYI x64 Release (Intel)': {
-        'args': [
-          # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
-          # resolved.
-          '--gtest_filter=-WebXrVrOpenXrBrowserTest.TestNoStalledFrameLoop',
-        ],
-      },
-    },
   },
   'xr_browser_tests 8086:9bc5': {
     'modifications': {

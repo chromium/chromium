@@ -73,7 +73,8 @@
           "builder": "Win10 FYI x64 Release (Intel UHD 770)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-win10-intel-uhd770-rel/targets"
     }
   },
   "$build/reclient": {

@@ -198,7 +198,8 @@
           "builder": "gpu-fyi-try-mac-arm64-apple-m2-retina-rel",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Mac arm64 Builder/targets"
     }
   },
   "$build/reclient": {

@@ -279,17 +279,6 @@
       '--weston-use-gl',
     ],
   },
-  'gpu_nvidia_shield_tv_stable': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Android',
-        'device_type': 'mdarcy',
-        'device_os': 'PPR1.180610.011',
-        'device_os_type': 'userdebug',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
   'gpu_pixel_4_stable': {
     'fail_if_unused': False,
     'swarming': {
@@ -322,28 +311,6 @@
         'device_type': 'oriole',
         'device_os': 'TP1A.220624.021',
         'device_os_type': 'userdebug',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
-  'gpu_samsung_a13_stable': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Android',
-        'device_type': 'a13',
-        'device_os': 'S',
-        'device_os_type': 'user',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
-  'gpu_samsung_a23_stable': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Android',
-        'device_type': 'a23',
-        'device_os': 'SP1A.210812.016',
-        'device_os_type': 'user',
         'pool': 'chromium.tests.gpu',
       },
     },
@@ -625,30 +592,6 @@
       },
     },
   },
-  'mac_arm64_apple_m1_gpu_experimental': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'gpu': 'apple:m1',
-        'mac_model': 'Macmini9,1',
-        'os': 'Mac-14.5',
-        'pool': 'chromium.tests',
-        'display_attached': '1',
-      },
-    },
-  },
-  'mac_arm64_apple_m1_gpu_stable': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'gpu': 'apple:m1',
-        'mac_model': 'Macmini9,1',
-        'os': 'Mac-14.5',
-        'pool': 'chromium.tests',
-        'display_attached': '1',
-      },
-    },
-  },
   'mac_arm64_apple_m2_retina_gpu_experimental': {
     'swarming': {
       'dimensions': {
@@ -725,17 +668,6 @@
         'cpu': 'x86-64',
         'gpu': '8086:3e9b',
         'os': 'Mac-14.5',
-        'display_attached': '1',
-      },
-    },
-  },
-  'mac_pro_amd_gpu': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'gpu': '1002:679e',
-        'os': 'Mac-12.7',
-        'pool': 'chromium.tests.gpu',
         'display_attached': '1',
       },
     },
@@ -1004,16 +936,6 @@
       },
     },
   },
-  'win10_amd_rx_5500_xt_stable': {
-    'swarming': {
-      'dimensions': {
-        'display_attached': '1',
-        'gpu': '1002:7340-31.0.24002.92',
-        'os': 'Windows-10-19045.3930',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
   'win10_gce_gpu_pool': {
     'fail_if_unused': False,
     'swarming': {
@@ -1075,16 +997,6 @@
         'gpu': '10de:2184-27.21.14.5638',
         'os': 'Windows-10-18363',
         'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
-  'win10_nvidia_rtx_4070_super_stable': {
-    'swarming': {
-      'dimensions': {
-        'display_attached': '1',
-        'gpu': '10de:2783',
-        'os': 'Windows-10',
-        'pool': 'chromium.tests.gpu.experimental',
       },
     },
   },
