@@ -26678,6 +26678,21 @@
             ]
         }
     ],
+    "WebViewEnableADPF": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewEnableADPF"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewFrameRateHints": [
         {
             "platforms": [
