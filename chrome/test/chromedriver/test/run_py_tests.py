@@ -8947,7 +8947,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--retry-limit',
       type=int,
-      default=3,
+      default=None,
       help='Maximum amount of failed attempts until the test is deemed failed')
 
   ##############################################################################
@@ -9100,7 +9100,13 @@ Delegating this task to ChromeDriver'''
       num_failed = len(result.failures) + len(result.errors)
       has_failures = has_failures or (num_failed > 0)
 
-  retry_limit = options.retry_limit
+  # The default retry-limit for local runs is 0
+  retry_limit = 0
+  # However on the bots it must be 3 unless specified explicitly
+  if options.test_type == 'integration':
+    retry_limit = 3
+  if options.retry_limit is not None:
+    retry_limit = options.retry_limit
 
   # Limit fail tests to 10 to avoid real bug causing many tests to fail
   # Only enable retry for automated bot test
