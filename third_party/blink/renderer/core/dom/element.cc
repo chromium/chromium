@@ -3143,6 +3143,36 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   return kInsertionDone;
 }
 
+void Element::MovedFrom(ContainerNode& old_parent) {
+  Node::MovedFrom(old_parent);
+
+  DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
+
+  // `old_parent` can be the document.
+  if (!old_parent.IsElementNode()) {
+    return;
+  }
+
+  Element* focused_element = GetDocument().FocusedElement();
+  Element* new_parent = parentElement();
+  if (focused_element && old_parent.HasFocusWithin() &&
+      contains(focused_element) && old_parent != *new_parent) {
+    To<Element>(old_parent)
+        .DispatchFocusOutEvent(event_type_names::kFocusout, focused_element);
+
+    // Note that at this point we might be firing a focusin event at an inert
+    // subtree. That's because the inertness of the tree might only be known
+    // during the next style calculation, and we don't want to force a
+    // synchronous style calculation for the sake of the focusin event. If that
+    // occurs, the subtree would receive the focusin event, followed by a
+    // focusout event when the focus fixup occurs in the next "update the
+    // rendering" step.
+    new_parent->DispatchFocusInEvent(event_type_names::kFocusin,
+                                     focused_element,
+                                     mojom::blink::FocusType::kScript);
+  }
+}
+
 void Element::RemovedFrom(ContainerNode& insertion_point) {
   bool was_in_document = insertion_point.isConnected();
 

@@ -780,8 +780,11 @@ Node* Node::moveBefore(Node* new_child,
   // Mutation events are disabled during the `moveBefore()` API.
   MutationEventSuppressionScope scope(GetDocument());
 
+  ContainerNode* old_parent = new_child->parentNode();
+
   Node* return_node = insertBefore(new_child, ref_child, exception_state);
   GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  new_child->MovedFrom(*old_parent);
 
   // We don't need to conditionally return `nullptr` if `exception_state` had an
   // exception. `insertBefore()` already handles this for us, so we can just
@@ -2471,6 +2474,8 @@ Node::InsertionNotificationRequest Node::InsertedInto(
 
   return kInsertionDone;
 }
+
+void Node::MovedFrom(ContainerNode& old_parent) {}
 
 void Node::RemovedFrom(ContainerNode& insertion_point) {
   DCHECK(IsContainerNode() || IsInTreeScope() || GetDOMParts());
