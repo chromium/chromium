@@ -4509,7 +4509,7 @@
     },
     {
       name: "ViewTransitionOverflowRectFromSurface",
-      status: "test",
+      status: "stable",
       implied_by: ["ViewTransitionLayeredCapture"],
     },
     {

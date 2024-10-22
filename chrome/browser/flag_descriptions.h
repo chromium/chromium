@@ -655,6 +655,9 @@ extern const char kViewTransitionOnNavigationDescription[];
 extern const char kViewTransitionOnNavigationIframeName[];
 extern const char kViewTransitionOnNavigationIframeDescription[];
 
+extern const char kViewTransitionOverflowRectFromSurfaceName[];
+extern const char kViewTransitionOverflowRectFromSurfaceDescription[];
+
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 
