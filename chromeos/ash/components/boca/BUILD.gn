@@ -16,6 +16,7 @@ static_library("boca") {
     "boca_session_manager.h",
     "boca_session_util.cc",
     "boca_session_util.h",
+    "boca_window_observer.h",
   ]
   deps = [
     "//ash",
@@ -24,6 +25,7 @@ static_library("boca") {
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/network",
+    "//components/sessions:session_id",
     "//components/signin/public/identity_manager",
   ]
 

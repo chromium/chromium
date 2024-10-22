@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_H_
 
-#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
@@ -44,7 +43,7 @@ class OnTaskSystemWebAppManager {
   // id.
   virtual void SetWindowTrackerForSystemWebAppWindow(
       SessionID window_id,
-      ActiveTabTracker* observer) = 0;
+      const std::vector<boca::BocaWindowObserver*> observers) = 0;
 
   // Creates a background tab with the given URL and restriction_level in the
   // specified Boca SWA window.
@@ -56,7 +55,7 @@ class OnTaskSystemWebAppManager {
   // Removes tabs with the given tab ids in the specified Boca SWA window.
   virtual void RemoveTabsWithTabIds(
       SessionID window_id,
-      const base::flat_set<SessionID>& tab_ids_to_remove) = 0;
+      const std::set<SessionID>& tab_ids_to_remove) = 0;
 
   // Sets up the specified Boca SWA window for OnTask. This may remove all
   // pre-existing content tabs except for the homepage one, normally required

@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
-#include "base/containers/flat_set.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
@@ -241,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       .InSequence(s);
 
   // Remove tab with the tab id and verify that Boca no longer has the tab.
-  const base::flat_set<SessionID> tab_ids_to_remove = {tab_id};
+  const std::set<SessionID> tab_ids_to_remove = {tab_id};
   system_web_app_manager.RemoveTabsWithTabIds(boca_app_browser->session_id(),
                                               tab_ids_to_remove);
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);

@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
       system_web_app_manager()->GetActiveSystemWebAppWindowID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
-      window_id, /*active_tab_tracker=*/nullptr);
+      window_id, /*observers=*/{});
 
   // Spawn two tabs for testing purposes (outside the homepage tab).
   system_web_app_manager()->CreateBackgroundTabWithUrl(
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
       system_web_app_manager()->GetActiveSystemWebAppWindowID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
-      window_id, /*active_tab_tracker=*/nullptr);
+      window_id, /*observers=*/{});
 
   // Spawns a tab for testing purposes (outside the homepage tab).
   const GURL base_url(kTabUrl1);
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
       system_web_app_manager()->GetActiveSystemWebAppWindowID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
-      window_id, /*active_tab_tracker=*/nullptr);
+      window_id, /*observers=*/{});
 
   // Spawns a tab for testing purposes (outside the homepage tab).
   const GURL base_url(kTabUrl1);
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
       system_web_app_manager()->GetActiveSystemWebAppWindowID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
-      window_id, /*active_tab_tracker=*/nullptr);
+      window_id, /*observers=*/{});
 
   // Spawns a tab for testing purposes (outside the homepage tab).
   const GURL base_url(kTabUrl1);
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
       system_web_app_manager()->GetActiveSystemWebAppWindowID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
-      window_id, /*active_tab_tracker=*/nullptr);
+      window_id, /*observers=*/{});
 
   // Spawns a tab for testing purposes (outside the homepage tab).
   const GURL base_url(kTabUrl1);

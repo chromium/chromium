@@ -59,7 +59,8 @@ OnTaskSessionManager::OnTaskSessionManager(
       system_web_app_launch_helper_(
           std::make_unique<OnTaskSessionManager::SystemWebAppLaunchHelper>(
               system_web_app_manager_.get(),
-              &active_tab_tracker_)) {}
+              std::vector<boca::BocaWindowObserver*>{&active_tab_tracker_,
+                                                     this})) {}
 
 OnTaskSessionManager::~OnTaskSessionManager() = default;
 
@@ -138,20 +139,20 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
       // went to a stricter setting.
       system_web_app_launch_helper_->RemoveTab(
           provider_url_tab_ids_map_[url],
-          base::BindOnce(&OnTaskSessionManager::OnTabRemoved,
+          base::BindOnce(&OnTaskSessionManager::OnBundleTabRemoved,
                          weak_ptr_factory_.GetWeakPtr(), url));
     }
 
     system_web_app_launch_helper_->AddTab(
         url, restriction_level,
-        base::BindOnce(&OnTaskSessionManager::OnTabAdded,
+        base::BindOnce(&OnTaskSessionManager::OnBundleTabAdded,
                        weak_ptr_factory_.GetWeakPtr(), url, restriction_level));
   }
   for (auto const& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
     if (!current_urls_set.contains(provider_sent_url)) {
       system_web_app_launch_helper_->RemoveTab(
           tab_ids,
-          base::BindOnce(&OnTaskSessionManager::OnTabRemoved,
+          base::BindOnce(&OnTaskSessionManager::OnBundleTabRemoved,
                          weak_ptr_factory_.GetWeakPtr(), provider_sent_url));
     }
   }
@@ -180,11 +181,10 @@ void OnTaskSessionManager::OnAppReloaded() {
   }
   system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(window_id);
   system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
-      window_id, &active_tab_tracker_);
+      window_id, {&active_tab_tracker_, this});
 
   // Reopen only content that was originally shared by the provider. We also
   // clear stale tab ids that were tracked with the previous instance.
-  // TODO: Restore nav restrictions applied with the previous instance.
   for (auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
     tab_ids.clear();
     OnTaskBlocklist::RestrictionLevel restriction_level = OnTaskBlocklist::
@@ -195,17 +195,50 @@ void OnTaskSessionManager::OnAppReloaded() {
     }
     system_web_app_launch_helper_->AddTab(
         provider_sent_url, restriction_level,
-        base::BindOnce(&OnTaskSessionManager::OnTabAdded,
+        base::BindOnce(&OnTaskSessionManager::OnBundleTabAdded,
                        weak_ptr_factory_.GetWeakPtr(), provider_sent_url,
                        restriction_level));
   }
 }
 
+void OnTaskSessionManager::OnTabAdded(const SessionID active_tab_id,
+                                      const SessionID tab_id,
+                                      const GURL url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(tab_id.is_valid());
+  if (active_tab_id == tab_id) {
+    return;
+  }
+  if (!active_tab_id.is_valid()) {
+    provider_url_tab_ids_map_[url].insert(tab_id);
+  }
+  for (auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
+    // Guarantee that tabs sent by provider are not regarded as child tabs.
+    if (tab_ids.contains(tab_id)) {
+      return;
+    }
+    if (tab_ids.contains(active_tab_id)) {
+      tab_ids.insert(tab_id);
+      return;
+    }
+  }
+}
+
+void OnTaskSessionManager::OnTabRemoved(const SessionID tab_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(tab_id.is_valid());
+  for (auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
+    if (tab_ids.contains(tab_id)) {
+      tab_ids.erase(tab_id);
+      return;
+    }
+  }
+}
+
 OnTaskSessionManager::SystemWebAppLaunchHelper::SystemWebAppLaunchHelper(
     OnTaskSystemWebAppManager* system_web_app_manager,
-    ActiveTabTracker* active_tab_tracker)
-    : system_web_app_manager_(system_web_app_manager),
-      active_tab_tracker_(active_tab_tracker) {}
+    std::vector<boca::BocaWindowObserver*> observers)
+    : system_web_app_manager_(system_web_app_manager), observers_(observers) {}
 
 OnTaskSessionManager::SystemWebAppLaunchHelper::~SystemWebAppLaunchHelper() =
     default;
@@ -243,7 +276,7 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::AddTab(
 }
 
 void OnTaskSessionManager::SystemWebAppLaunchHelper::RemoveTab(
-    const base::flat_set<SessionID>& tab_ids_to_remove,
+    const std::set<SessionID>& tab_ids_to_remove,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (launch_in_progress_) {
@@ -299,24 +332,31 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
       window_id.is_valid()) {
     // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
     // `OnTaskSystemWebAppManager`.
-    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
-        window_id, active_tab_tracker_);
+    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id,
+                                                                   observers_);
   }
 }
 
-void OnTaskSessionManager::OnTabAdded(
+void OnTaskSessionManager::OnBundleTabAdded(
     GURL url,
     OnTaskBlocklist::RestrictionLevel restriction_level,
     SessionID tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (tab_id.is_valid()) {
-    base::flat_set<SessionID>& tab_ids = provider_url_tab_ids_map_[url];
-    tab_ids.insert(tab_id);
+    // Ensure parent tab association with the right URL in case it is
+    // accidentally added by `OnTabAdded` while observing new tab additions.
+    for (const auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
+      if (tab_ids.contains(tab_id)) {
+        provider_url_tab_ids_map_[provider_sent_url].erase(tab_id);
+        break;
+      }
+    }
+    provider_url_tab_ids_map_[url].insert(tab_id);
     provider_url_restriction_level_map_[url] = restriction_level;
   }
 }
 
-void OnTaskSessionManager::OnTabRemoved(GURL url) {
+void OnTaskSessionManager::OnBundleTabRemoved(GURL url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (provider_url_tab_ids_map_.contains(url)) {
     // TODO(b/368105857): Remove child tabs.
@@ -332,7 +372,7 @@ void OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow() {
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
-        window_id, &active_tab_tracker_);
+        window_id, {&active_tab_tracker_, this});
   }
 }
 

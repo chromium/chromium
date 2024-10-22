@@ -80,7 +80,7 @@ source_set("unit_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/boca:activity",
+    "//chromeos/ash/components/boca:boca",
     "//content/test:test_support",
   ]
 }

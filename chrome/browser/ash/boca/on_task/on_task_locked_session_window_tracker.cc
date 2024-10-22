@@ -20,7 +20,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
+#include "chromeos/ash/components/boca/boca_window_observer.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 
 // static
@@ -46,6 +47,18 @@ LockedSessionWindowTracker::LockedSessionWindowTracker(
 
 LockedSessionWindowTracker::~LockedSessionWindowTracker() {
   CleanupWindowTracker();
+}
+
+void LockedSessionWindowTracker::AddObserver(
+    ash::boca::BocaWindowObserver* observer) {
+  if (!observers_.HasObserver(observer)) {
+    observers_.AddObserver(observer);
+  }
+}
+
+void LockedSessionWindowTracker::RemoveObserver(
+    ash::boca::BocaWindowObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
@@ -117,11 +130,6 @@ void LockedSessionWindowTracker::set_can_start_navigation_throttle(
   can_start_navigation_throttle_ = is_ready;
 }
 
-void LockedSessionWindowTracker::SetActiveTabTracker(
-    ash::boca::ActiveTabTracker* active_tab_tracker) {
-  active_tab_tracker_ = active_tab_tracker;
-}
-
 OnTaskBlocklist* LockedSessionWindowTracker::on_task_blocklist() {
   return on_task_blocklist_.get();
 }
@@ -145,7 +153,11 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   browser_ = nullptr;
   can_open_new_popup_ = true;
   oauth_in_progress_ = false;
-  active_tab_tracker_ = nullptr;
+  for (auto& observer : observers_) {
+    observer.OnWindowTrackerCleanedup();
+    RemoveObserver(&observer);
+  }
+
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()
         ->screen_pinning_controller()
@@ -168,9 +180,27 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (selection.active_tab_changed()) {
     RefreshUrlBlocklist();
-    if (active_tab_tracker_ && selection.new_contents) {
-      active_tab_tracker_->OnActiveTabChanged(
-          selection.new_contents->GetTitle());
+    if (selection.new_contents) {
+      for (auto& observer : observers_) {
+        observer.OnActiveTabChanged(selection.new_contents->GetTitle());
+      }
+    }
+  }
+  if (change.type() == TabStripModelChange::kInserted) {
+    content::WebContents* const old_contents = selection.old_contents;
+    SessionID active_tab_id = SessionID::InvalidValue();
+    if (old_contents &&
+        (TabStripModel::kNoTab !=
+         browser_->tab_strip_model()->GetIndexOfWebContents(old_contents))) {
+      active_tab_id = sessions::SessionTabHelper::IdForTab(old_contents);
+    }
+    for (const auto& contents : change.GetInsert()->contents) {
+      SessionID tab_id =
+          sessions::SessionTabHelper::IdForTab(contents.contents);
+      GURL url = contents.contents->GetVisibleURL();
+      for (auto& observer : observers_) {
+        observer.OnTabAdded(active_tab_id, tab_id, url);
+      }
     }
   }
 }
@@ -180,6 +210,10 @@ void LockedSessionWindowTracker::OnTabWillBeRemoved(
     int index) {
   on_task_blocklist()->RemoveParentFilter(contents);
   on_task_blocklist()->RemoveChildFilter(contents);
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(contents);
+  for (auto& observer : observers_) {
+    observer.OnTabRemoved(tab_id);
+  }
 }
 
 void LockedSessionWindowTracker::WillCloseAllTabs(

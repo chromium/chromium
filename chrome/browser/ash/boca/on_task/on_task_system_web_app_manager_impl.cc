@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
@@ -130,7 +129,7 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
 // TODO(b/367417612): Add unit test for this function.
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
     SessionID window_id,
-    ActiveTabTracker* active_tab_tracker) {
+    const std::vector<boca::BocaWindowObserver*> observers) {
   Browser* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return;
@@ -140,7 +139,9 @@ void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
     return;
   }
   window_tracker->InitializeBrowserInfoForTracking(browser);
-  window_tracker->SetActiveTabTracker(active_tab_tracker);
+  for (auto* observer : observers) {
+    window_tracker->AddObserver(observer);
+  }
 }
 
 SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
@@ -170,7 +171,7 @@ SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
 
 void OnTaskSystemWebAppManagerImpl::RemoveTabsWithTabIds(
     SessionID window_id,
-    const base::flat_set<SessionID>& tab_ids_to_remove) {
+    const std::set<SessionID>& tab_ids_to_remove) {
   Browser* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return;
@@ -208,7 +209,7 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
 
   // Remove all tabs with pre-existing content. This is to de-dupe content and
   // ensure that the tabs are set up for locked mode.
-  base::flat_set<SessionID> tab_ids_to_remove;
+  std::set<SessionID> tab_ids_to_remove;
   for (int idx = browser->tab_strip_model()->count() - 1; idx > 0; --idx) {
     content::WebContents* const tab =
         browser->tab_strip_model()->GetWebContentsAt(idx);

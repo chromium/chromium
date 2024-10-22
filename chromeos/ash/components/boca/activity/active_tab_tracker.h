@@ -7,16 +7,17 @@
 
 #include <string>
 
+#include "chromeos/ash/components/boca/boca_window_observer.h"
+
 namespace ash::boca {
 
-class ActiveTabTracker {
+class ActiveTabTracker : public boca::BocaWindowObserver {
  public:
   ActiveTabTracker();
-  virtual ~ActiveTabTracker();
+  ~ActiveTabTracker() override;
 
-  // Just include basic tab info, tab model can't be carried into chromeos
-  // dir.
-  virtual void OnActiveTabChanged(const std::u16string& tab_title);
+  // BocaWindowObserver:
+  void OnActiveTabChanged(const std::u16string& tab_title) override;
 };
 
 }  // namespace ash::boca

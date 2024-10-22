@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
@@ -22,9 +21,11 @@
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Sequence;
+using ::testing::UnorderedElementsAreArray;
 
 namespace ash::boca {
 namespace {
@@ -53,7 +54,8 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               (override));
   MOCK_METHOD(void,
               SetWindowTrackerForSystemWebAppWindow,
-              (SessionID window_id, ActiveTabTracker* active_tab_tracker),
+              (SessionID window_id,
+               const std::vector<boca::BocaWindowObserver*> observers),
               (override));
   MOCK_METHOD(SessionID,
               CreateBackgroundTabWithUrl,
@@ -64,7 +66,7 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
   MOCK_METHOD(void,
               RemoveTabsWithTabIds,
               (SessionID window_id,
-               const base::flat_set<SessionID>& tab_ids_to_remove),
+               const std::set<SessionID>& tab_ids_to_remove),
               (override));
   MOCK_METHOD(void,
               PrepareSystemWebAppWindowForOnTask,
@@ -97,7 +99,7 @@ class OnTaskSessionManagerTest : public ::testing::Test {
         std::move(system_web_app_manager), std::move(extensions_manager));
   }
 
-  base::flat_map<GURL, base::flat_set<SessionID>>* provider_url_tab_ids_map() {
+  base::flat_map<GURL, std::set<SessionID>>* provider_url_tab_ids_map() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(session_manager_->sequence_checker_);
     return &session_manager_->provider_url_tab_ids_map_;
   }
@@ -125,15 +127,17 @@ TEST_F(OnTaskSessionManagerTest, ShouldLaunchBocaSWAOnSessionStart) {
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
+  const std::vector<boca::BocaWindowObserver*> kWindowObservers = {
+      session_manager_->active_tab_tracker(), session_manager_.get()};
   const SessionID kWindowId = SessionID::NewUnique();
   EXPECT_CALL(*system_web_app_manager_ptr_,
               GetActiveSystemWebAppWindowID())
       .WillOnce(
           Return(SessionID::InvalidValue()))  // Initial check before launch.
       .WillOnce(Return(kWindowId));
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetWindowTrackerForSystemWebAppWindow(
-                  kWindowId, session_manager_->active_tab_tracker()))
+  EXPECT_CALL(
+      *system_web_app_manager_ptr_,
+      SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
       .Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
@@ -374,7 +378,6 @@ TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
   const SessionID kWindowId = SessionID::NewUnique();
   const SessionID kTabId_1 = SessionID::NewUnique();
   const SessionID kTabId_2 = SessionID::NewUnique();
-  const base::flat_set<SessionID> kTabIds = {kTabId_2};
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillRepeatedly(Return(kWindowId));
   EXPECT_CALL(*system_web_app_manager_ptr_,
@@ -384,7 +387,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl2), _))
       .WillOnce(Return(kTabId_2));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              RemoveTabsWithTabIds(kWindowId, kTabIds))
+              RemoveTabsWithTabIds(kWindowId, std::set<SessionID>{kTabId_2}))
       .Times(1);
 
   ::boca::Bundle bundle_1;
@@ -489,9 +492,8 @@ TEST_F(OnTaskSessionManagerTest, ShouldUpdateRestrictionsToTabOnBundleUpdated) {
                   kWindowId, GURL(kTestUrl1),
                   OnTaskBlocklist::RestrictionLevel::kNoRestrictions))
       .WillOnce(Return(kTabId_1));
-  EXPECT_CALL(
-      *system_web_app_manager_ptr_,
-      RemoveTabsWithTabIds(kWindowId, base::flat_set<SessionID>{kTabId_1}))
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              RemoveTabsWithTabIds(kWindowId, std::set<SessionID>{kTabId_1}))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_,
@@ -542,6 +544,8 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
   const SessionID kWindowId = SessionID::NewUnique();
   const SessionID kTabId1 = SessionID::NewUnique();
   const SessionID kTabId2 = SessionID::NewUnique();
+  const std::vector<boca::BocaWindowObserver*> kWindowObservers = {
+      session_manager_->active_tab_tracker(), session_manager_.get()};
   Sequence s;
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillRepeatedly(Return(kWindowId));
@@ -549,9 +553,9 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
               PrepareSystemWebAppWindowForOnTask(kWindowId))
       .Times(1)
       .InSequence(s);
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetWindowTrackerForSystemWebAppWindow(
-                  kWindowId, session_manager_->active_tab_tracker()))
+  EXPECT_CALL(
+      *system_web_app_manager_ptr_,
+      SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_,
@@ -577,6 +581,45 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
               ElementsAre(kTabId2));
   EXPECT_EQ((*provider_url_restriction_level_map())[GURL(kTestUrl2)],
             OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
+}
+
+TEST_F(OnTaskSessionManagerTest,
+       ShouldAddToProviderUrlTabIdsMapWhenTabIsAdded) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  const SessionID kTabId_2 = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .WillOnce(Return(kTabId_1));
+
+  ::boca::Bundle bundle_1;
+  bundle_1.add_content_configs()->set_url(kTestUrl1);
+  session_manager_->OnBundleUpdated(bundle_1);
+  const SessionID active_tab_id = kTabId_1;
+  const SessionID tab_id = kTabId_2;
+  session_manager_->OnTabAdded(active_tab_id, tab_id, GURL(kTestUrl1));
+  EXPECT_THAT((*provider_url_tab_ids_map())[GURL(kTestUrl1)],
+              UnorderedElementsAreArray({active_tab_id, tab_id}));
+}
+
+TEST_F(OnTaskSessionManagerTest,
+       ShouldRemoveFromProviderUrlTabIdsMapWhenTabIsRemoved) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .WillOnce(Return(kTabId_1));
+
+  ::boca::Bundle bundle_1;
+  bundle_1.add_content_configs()->set_url(kTestUrl1);
+  session_manager_->OnBundleUpdated(bundle_1);
+  const SessionID tab_id = kTabId_1;
+  session_manager_->OnTabRemoved(tab_id);
+  EXPECT_THAT((*provider_url_tab_ids_map())[GURL(kTestUrl1)], IsEmpty());
 }
 
 }  // namespace ash::boca

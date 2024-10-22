@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -22,7 +23,7 @@ class Browser;
 class BrowserList;
 
 namespace ash::boca {
-class ActiveTabTracker;
+class BocaWindowObserver;
 }
 
 // This class is used to track the windows and tabs that are opened in the
@@ -48,6 +49,9 @@ class LockedSessionWindowTracker : public KeyedService,
       delete;
   ~LockedSessionWindowTracker() override;
 
+  void AddObserver(ash::boca::BocaWindowObserver* observer);
+  void RemoveObserver(ash::boca::BocaWindowObserver* observer);
+
   // Starts tracking the `browser` for navigation changes.
   void InitializeBrowserInfoForTracking(Browser* browser);
 
@@ -72,10 +76,6 @@ class LockedSessionWindowTracker : public KeyedService,
     return can_start_navigation_throttle_;
   }
   virtual void set_can_start_navigation_throttle(bool is_ready);
-
-  // Set active tab tracker that handles the event when active tab changes
-  // within boca.
-  void SetActiveTabTracker(ash::boca::ActiveTabTracker* active_tab_tracker);
 
   bool oauth_in_progress() { return oauth_in_progress_; }
   void set_oauth_in_progress(bool in_progress) {
@@ -118,10 +118,8 @@ class LockedSessionWindowTracker : public KeyedService,
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
+  base::ObserverList<ash::boca::BocaWindowObserver> observers_;
 
-  // Will be reset when browser window closed. Will not have dangling pointer
-  // issue.
-  raw_ptr<ash::boca::ActiveTabTracker> active_tab_tracker_;
   base::WeakPtrFactory<LockedSessionWindowTracker> weak_pointer_factory_{this};
 };
 
