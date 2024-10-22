@@ -118,6 +118,7 @@ template("fuzzer_test") {
       }
 
       if (archive_seed_corpus) {
+        test_data_deps += [ ":" + target_name + "_seed_corpus" ]
         supporting_file_test_deps += [ ":" + target_name + "_seed_corpus" ]
       }
     }
@@ -133,6 +134,7 @@ template("fuzzer_test") {
           sources = [ invoker.dict ]
           outputs = [ "$root_build_dir/" + target_name + ".dict" ]
         }
+        test_data_deps += [ ":" + target_name + "_dict_copy" ]
         supporting_file_test_deps += [ ":" + target_name + "_dict_copy" ]
       }
 
