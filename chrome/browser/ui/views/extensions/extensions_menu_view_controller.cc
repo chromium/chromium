@@ -575,7 +575,15 @@ void ExtensionsMenuViewController::UpdateMainPage(
     ExtensionsMenuMainPageView* main_page,
     content::WebContents* web_contents) {
   CHECK(web_contents);
-
+  auto has_enterprise_extensions = [&]() {
+    return std::any_of(
+        toolbar_model_->action_ids().begin(),
+        toolbar_model_->action_ids().end(),
+        [this](const ToolbarActionsModel::ActionId extension_id) {
+          auto* extension = GetExtension(browser_, extension_id);
+          return HasEnterpriseForcedAccess(*extension, *browser_->profile());
+        });
+  };
   auto reload_required = [web_contents]() {
     return extensions::TabHelper::FromWebContents(web_contents)
         ->IsReloadRequired();
@@ -585,6 +593,7 @@ void ExtensionsMenuViewController::UpdateMainPage(
   int site_settings_label_id;
   bool is_site_settings_toggle_visible = false;
   bool is_site_settings_toggle_on = false;
+  bool is_site_settings_tooltip_visible = false;
   bool is_reload_required = false;
   bool can_have_requests = false;
 
@@ -592,16 +601,23 @@ void ExtensionsMenuViewController::UpdateMainPage(
       GetMainPageState(*browser_->profile(), *toolbar_model_, *web_contents);
   switch (state) {
     case MainPageState::kRestrictedSite:
-    case MainPageState::kPolicyBlockedSite:
       site_settings_label_id =
           IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
       is_site_settings_toggle_visible = false;
       is_site_settings_toggle_on = false;
       break;
+    case MainPageState::kPolicyBlockedSite:
+      site_settings_label_id =
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
+      is_site_settings_toggle_visible = false;
+      is_site_settings_toggle_on = false;
+      is_site_settings_tooltip_visible = has_enterprise_extensions();
+      break;
     case MainPageState::kUserBlockedSite:
       site_settings_label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
       is_site_settings_toggle_visible = true;
       is_site_settings_toggle_on = false;
+      is_site_settings_tooltip_visible = has_enterprise_extensions();
       is_reload_required = reload_required();
       break;
     case MainPageState::kUserCustomizedSite:
@@ -613,9 +629,9 @@ void ExtensionsMenuViewController::UpdateMainPage(
       break;
   }
 
-  main_page->UpdateSiteSettings(current_site, site_settings_label_id,
-                                is_site_settings_toggle_visible,
-                                is_site_settings_toggle_on);
+  main_page->UpdateSiteSettings(
+      current_site, site_settings_label_id, is_site_settings_tooltip_visible,
+      is_site_settings_toggle_visible, is_site_settings_toggle_on);
 
   if (is_reload_required) {
     main_page->ShowReloadSection();

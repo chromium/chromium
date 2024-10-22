@@ -64,8 +64,9 @@ class ExtensionsMenuMainPageView : public views::View {
   // Updates the site settings views with the given parameters.
   void UpdateSiteSettings(const std::u16string& current_site,
                           int label_id,
-                          bool is_site_settings_toggle_visible,
-                          bool is_site_settings_toggle_on);
+                          bool is_tooltip_visible,
+                          bool is_toggle_visible,
+                          bool is_toggle_on);
 
   // Shows the reload section in the menu. Takes precedence over the requests
   // section.
@@ -94,6 +95,7 @@ class ExtensionsMenuMainPageView : public views::View {
   // Accessors used by tests:
   // Returns the currently-showing menu items.
   const std::u16string& GetSiteSettingLabelForTesting() const;
+  const views::View* site_settings_tooltip() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }
@@ -111,11 +113,19 @@ class ExtensionsMenuMainPageView : public views::View {
   views::View* GetExtensionRequestEntry(
       const extensions::ExtensionId& extension_id) const;
 
+  // Returns the site settings section builder, which contains information and
+  // access controls for the site.
+  [[nodiscard]] views::Builder<views::FlexLayoutView> CreateSiteSettingsBuilder(
+      gfx::Insets margins,
+      views::FlexSpecification,
+      ExtensionsMenuHandler* menu_handler);
+
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsMenuHandler> menu_handler_;
 
   // Site settings section.
   raw_ptr<views::Label> site_settings_label_;
+  raw_ptr<views::View> site_settings_tooltip_;
   raw_ptr<views::ToggleButton> site_settings_toggle_;
 
   // Reload section.

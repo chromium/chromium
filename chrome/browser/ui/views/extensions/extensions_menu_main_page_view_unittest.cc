@@ -1150,10 +1150,11 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
   ShowMenu();
   ASSERT_EQ(menu_items().size(), 2u);
 
-  // Verify site setting toggle is hidden, since no extension can customize
-  // a restricted site.
+  // Verify site settings tooltip and toggle are hidden, since no extension can
+  // customize a restricted site.
   EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
             u"Extensions are not allowed on chrome://extensions");
+  EXPECT_FALSE(main_page()->site_settings_tooltip()->GetVisible());
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetVisible());
 
   // Verify reload section and requests section are hidden.
@@ -1175,10 +1176,89 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
 // Test that user controls in the menu are hidden or disabled on policy blocked
 // sites, since user cannot change extension's site settings for them.
 TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
-  URLPattern default_policy_blocked_pattern =
-      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*");
+  // Install extensions requesting site access.
+  InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  InstallExtensionWithPermissions("Extension: activeTab", {"activeTab"});
 
   // Add a policy-blocked site.
+  URLPattern default_policy_blocked_pattern =
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*");
+  extensions::URLPatternSet default_allowed_hosts;
+  extensions::URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
+  extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
+      extensions::util::GetBrowserContextId(browser()->profile()),
+      default_blocked_hosts, default_allowed_hosts);
+
+  // Navigate to the policy-blocked site.
+  const GURL policy_blocked_url("https://www.policy-blocked.com");
+  auto restricted_origin = url::Origin::Create(policy_blocked_url);
+  web_contents_tester()->NavigateAndCommit(policy_blocked_url);
+
+  ShowMenu();
+  ASSERT_EQ(menu_items().size(), 2u);
+
+  // Verify site settings':
+  //    - label says extensions are not allowed
+  //    - tooltip is hidden since there is no enterprise extension that has
+  //      site access.
+  //    - toggle is hidden since user cannot customize any extension on a
+  //    policy-blocked-site.
+  EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
+            u"Extensions are not allowed on policy-blocked.com");
+  EXPECT_FALSE(main_page()->site_settings_tooltip()->GetVisible());
+  EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetVisible());
+
+  // Verify reload section and requests section are hidden.
+  EXPECT_FALSE(main_page()->reload_section()->GetVisible());
+  EXPECT_FALSE(main_page()->requests_section()->GetVisible());
+
+  // Retrieve menu items.
+  ExtensionMenuItemView* extension_item = menu_items()[0];
+  ExtensionMenuItemView* activeTab_extension_item = menu_items()[1];
+  ASSERT_EQ(extension_item->primary_action_button_for_testing()
+                ->label_text_for_testing(),
+            u"Extension");
+  ASSERT_EQ(activeTab_extension_item->primary_action_button_for_testing()
+                ->label_text_for_testing(),
+            u"Extension: activeTab");
+
+  // Verify all extensions':
+  //   - site access toggle is hidden, since site access cannot be changed
+  //   - site permissions button is visible, disabled and has "none" access. We
+  //     leave them visible because enterprise extensions can still have access
+  //     to the site, but disabled because site access cannot be changed.
+  //     TODO(crbug.com/40879945): Consider only showing the site permissions
+  //     button only for enterprise installed extensions on policy-blocked
+  //     sites, similar to how we do for user-blocked sites.
+  EXPECT_FALSE(extension_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(
+      activeTab_extension_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_TRUE(
+      extension_item->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_TRUE(activeTab_extension_item->site_permissions_button_for_testing()
+                  ->GetVisible());
+  EXPECT_FALSE(
+      extension_item->site_permissions_button_for_testing()->GetEnabled());
+  EXPECT_FALSE(activeTab_extension_item->site_permissions_button_for_testing()
+                   ->GetEnabled());
+  EXPECT_EQ(extension_item->site_permissions_button_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
+  EXPECT_EQ(activeTab_extension_item->site_permissions_button_for_testing()
+                ->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
+}
+
+// Test that user controls in the menu are hidden or disabled on policy blocked
+// sites, since user cannot change extension's site settings for them, and
+// informs the user that enterprise extensions still have access.
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       PolicyBlockedSite_EnterpriseExtension) {
+  // Add a policy-blocked site.
+  URLPattern default_policy_blocked_pattern =
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*");
   extensions::URLPatternSet default_allowed_hosts;
   extensions::URLPatternSet default_blocked_hosts;
   default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
@@ -1187,10 +1267,6 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
       default_blocked_hosts, default_allowed_hosts);
 
   // Install extensions requesting host permissions or activeTab.
-  auto extension =
-      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
-  auto activeTab_extension =
-      InstallExtensionWithPermissions("Extension: activeTab", {"activeTab"});
   auto enterprise_extension =
       InstallEnterpriseExtension("Extension: enterprise",
                                  /*host_permissions=*/{"<all_urls>"});
@@ -1208,67 +1284,38 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
   web_contents_tester()->NavigateAndCommit(policy_blocked_url);
 
   ShowMenu();
-  ASSERT_EQ(menu_items().size(), 3u);
+  ASSERT_EQ(menu_items().size(), 1u);
 
-  // Verify site setting toggle is not visible, since no extension can customize
-  // a policy-blocked site.
+  // Verify site settings':
+  //    - label says extensions are not allowed
+  //    - tooltip is visible since an enterprise extension still has access
+  //    - toggle is hidden since user cannot customize any extension on a
+  //      policy-blocked-site.
   EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
             u"Extensions are not allowed on policy-blocked.com");
+  EXPECT_TRUE(main_page()->site_settings_tooltip());
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetVisible());
 
   // Verify reload section and requests section are hidden.
   EXPECT_FALSE(main_page()->reload_section()->GetVisible());
   EXPECT_FALSE(main_page()->requests_section()->GetVisible());
 
-  // Retrieve menu items.
-  ExtensionMenuItemView* extension_item = menu_items()[0];
-  ExtensionMenuItemView* activeTab_extension_item = menu_items()[1];
-  ExtensionMenuItemView* enterprise_extension_item = menu_items()[2];
-  ASSERT_EQ(extension_item->primary_action_button_for_testing()
-                ->label_text_for_testing(),
-            u"Extension");
-  ASSERT_EQ(activeTab_extension_item->primary_action_button_for_testing()
-                ->label_text_for_testing(),
-            u"Extension: activeTab");
+  // Retrieve menu item.
+  ExtensionMenuItemView* enterprise_extension_item = menu_items()[0];
   ASSERT_EQ(enterprise_extension_item->primary_action_button_for_testing()
                 ->label_text_for_testing(),
             u"Extension: enterprise");
 
-  // Verify all extensions':
+  // Verify extension's:
   //   - site access toggle is hidden, since site access cannot be changed
-  //   - site permissions button is visible and disabled. We leave them visible
-  //     because enterprise extensions can still have access to the site, but
-  //     disabled because site access cannot be changed.
-  EXPECT_FALSE(extension_item->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(
-      activeTab_extension_item->site_access_toggle_for_testing()->GetVisible());
+  //   - site permissions button is visible, disabled and "on all sites" since
+  //     enterprise extension can have access to a policy-blocked site.
   EXPECT_FALSE(enterprise_extension_item->site_access_toggle_for_testing()
                    ->GetVisible());
-  EXPECT_TRUE(
-      extension_item->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(activeTab_extension_item->site_permissions_button_for_testing()
-                  ->GetVisible());
   EXPECT_TRUE(enterprise_extension_item->site_permissions_button_for_testing()
                   ->GetVisible());
-  EXPECT_FALSE(
-      extension_item->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_FALSE(activeTab_extension_item->site_permissions_button_for_testing()
-                   ->GetEnabled());
   EXPECT_FALSE(enterprise_extension_item->site_permissions_button_for_testing()
                    ->GetEnabled());
-
-  // Verify site permission button text for:
-  //   - extension and activeTab extension is "none", since site is blocked by
-  //   policy
-  //   - enterprise extension is "on all sites", since site is allowed to the
-  //     extension by policy.
-  EXPECT_EQ(extension_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
-  EXPECT_EQ(activeTab_extension_item->site_permissions_button_for_testing()
-                ->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
   EXPECT_EQ(
       enterprise_extension_item->site_permissions_button_for_testing()
           ->GetText(),
@@ -1276,10 +1323,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 }
 
-// Tests site setting toggle is off, reload and requests sections are hidden and
-// menu item controls are hidden when user blocked all extensions on the current
-// site.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, UserSiteSetting_BlockAllExtensions) {
+// Test that user controls for extensions in the menu are hidden on user
+// blocked sites, since user cannot change the individual extension's site
+// access.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, UserBlockedSite) {
   InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
   const GURL url("http://www.example.com");
@@ -1293,7 +1340,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, UserSiteSetting_BlockAllExtensions) {
 
   ShowMenu();
 
-  // Site setting toggle is off.
+  // Site setting tooltip is hidden and toggle is off.
+  EXPECT_FALSE(main_page()->site_settings_tooltip()->GetVisible());
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
 
   // Reload and requests section are hidden.
@@ -1304,6 +1352,48 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, UserSiteSetting_BlockAllExtensions) {
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_permissions_button_for_testing()->GetVisible());
+}
+
+// Test that user controls for enterprise extensions in the menu are disabled on
+// user blocked sites, since user cannot change the individual extension's site
+// access.
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       UserBlockedSite_EnterpriseExtension) {
+  InstallEnterpriseExtension("Enterprise extension", {"<all_urls>"});
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  // Block all extensions on `url`.
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
+  ASSERT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+
+  ShowMenu();
+
+  // Site setting tooltip is visible, since the enterprise extension still has
+  // access, and toggle is off.
+  EXPECT_TRUE(main_page()->site_settings_tooltip()->GetVisible());
+  EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
+
+  // Reload and requests section are hidden.
+  EXPECT_FALSE(main_page()->reload_section()->GetVisible());
+  EXPECT_FALSE(main_page()->requests_section()->GetVisible());
+
+  // Site access toggle is hidden since user cannot customize the extension's
+  // access. However, site permissions button is visible and disabled since the
+  // enterprise extension still has access to the site.
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
+  auto* site_permissions_button =
+      menu_item->site_permissions_button_for_testing();
+  EXPECT_TRUE(site_permissions_button->GetVisible());
+  EXPECT_FALSE(site_permissions_button->GetEnabled());
+  EXPECT_EQ(
+      site_permissions_button->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 }
 
 // Tests that the requests section is visible when the user can customize the

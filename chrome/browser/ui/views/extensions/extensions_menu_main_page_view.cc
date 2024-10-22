@@ -189,32 +189,10 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           base::BindRepeating(
                               &ExtensionsMenuHandler::CloseBubble,
                               base::Unretained(menu_handler_))))),
-          // Site settings.
-          views::Builder<views::FlexLayoutView>()
-              .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets::VH(control_vertical_spacing,
-                                           dialog_insets.left()))
-              .AddChildren(
-                  views::Builder<views::Label>()
-                      .CopyAddressTo(&site_settings_label_)
-                      .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
-                      .SetEnabledColorId(kColorExtensionsMenuText)
-                      .SetProperty(views::kFlexBehaviorKey,
-                                   stretch_specification)
-                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
-                  views::Builder<views::ToggleButton>()
-                      .CopyAddressTo(&site_settings_toggle_)
-                      .SetCallback(base::BindRepeating(
-                          [](views::ToggleButton* toggle_button,
-                             base::RepeatingCallback<void(bool)> callback) {
-                            callback.Run(toggle_button->GetIsOn());
-                          },
-                          site_settings_toggle_,
-                          base::BindRepeating(
-                              &ExtensionsMenuHandler::
-                                  OnSiteSettingsToggleButtonPressed,
-                              base::Unretained(menu_handler))))),
+          CreateSiteSettingsBuilder(
+              /*margins=*/gfx::Insets::VH(control_vertical_spacing,
+                                          dialog_insets.left()),
+              stretch_specification, menu_handler),
           // Contents.
           views::Builder<views::ScrollView>()
               .ClipHeightTo(0, kMaxExtensionButtonsHeightDp)
@@ -383,12 +361,12 @@ void ExtensionsMenuMainPageView::RemoveMenuItem(
 void ExtensionsMenuMainPageView::UpdateSiteSettings(
     const std::u16string& current_site,
     int label_id,
+    bool is_tooltip_visible,
     bool is_toggle_visible,
     bool is_toggle_on) {
-  // TODO(crbug.com/40879945): Add info tooltip when an enterprise extension
-  // can still access the site.
   site_settings_label_->SetText(
       l10n_util::GetStringFUTF16(label_id, current_site));
+  site_settings_tooltip_->SetVisible(is_tooltip_visible);
   site_settings_toggle_->SetVisible(is_toggle_visible);
   site_settings_toggle_->SetIsOn(is_toggle_on);
   site_settings_toggle_->SetTooltipText(GetSiteSettingToggleText(is_toggle_on));
@@ -511,6 +489,11 @@ ExtensionsMenuMainPageView::GetSiteSettingLabelForTesting() const {
   return site_settings_label_->GetText();
 }
 
+const views::View* ExtensionsMenuMainPageView::site_settings_tooltip() const {
+  CHECK_IS_TEST();
+  return site_settings_tooltip_;
+}
+
 const views::View* ExtensionsMenuMainPageView::reload_section() const {
   CHECK_IS_TEST();
   return reload_section_;
@@ -547,6 +530,48 @@ views::View* ExtensionsMenuMainPageView::GetExtensionRequestEntry(
     const extensions::ExtensionId& extension_id) const {
   auto iter = requests_entries_.find(extension_id);
   return iter == requests_entries_.end() ? nullptr : iter->second;
+}
+
+views::Builder<views::FlexLayoutView>
+ExtensionsMenuMainPageView::CreateSiteSettingsBuilder(
+    gfx::Insets margins,
+    views::FlexSpecification stretch_specification,
+    ExtensionsMenuHandler* menu_handler) {
+  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  int tooltip_bubble_width = layout_provider->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+
+  return views::Builder<views::FlexLayoutView>()
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetProperty(views::kMarginsKey, margins)
+      .AddChildren(
+          views::Builder<views::FlexLayoutView>()
+              .SetProperty(views::kFlexBehaviorKey, stretch_specification)
+              .AddChildren(
+                  views::Builder<views::Label>()
+                      .CopyAddressTo(&site_settings_label_)
+                      .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
+                      .SetEnabledColorId(kColorExtensionsMenuText)
+                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
+                  views::Builder<views::TooltipIcon>(
+                      std::make_unique<
+                          views::TooltipIcon>(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_ENTERPRISE_TOOLTIP_ICON_TEXT)))
+                      .CopyAddressTo(&site_settings_tooltip_)
+                      .SetBubbleWidth(tooltip_bubble_width)
+                      .SetAnchorPointArrow(
+                          views::BubbleBorder::Arrow::TOP_RIGHT)),
+          views::Builder<views::ToggleButton>()
+              .CopyAddressTo(&site_settings_toggle_)
+              .SetCallback(base::BindRepeating(
+                  [](views::ToggleButton* toggle_button,
+                     base::RepeatingCallback<void(bool)> callback) {
+                    callback.Run(toggle_button->GetIsOn());
+                  },
+                  site_settings_toggle_,
+                  base::BindRepeating(
+                      &ExtensionsMenuHandler::OnSiteSettingsToggleButtonPressed,
+                      base::Unretained(menu_handler)))));
 }
 
 BEGIN_METADATA(ExtensionsMenuMainPageView)
