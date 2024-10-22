@@ -2134,7 +2134,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (arguments == null) return;
 
         if (!areInlineTextBoxesLoaded(virtualViewId)) {
+            mHistogramRecorder.recordInlineTextBoxesDuplicateRequestHistogram(false);
             loadInlineTextBoxes(virtualViewId);
+        } else {
+            mHistogramRecorder.recordInlineTextBoxesDuplicateRequestHistogram(true);
         }
 
         int positionInfoStartIndex =

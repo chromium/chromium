@@ -267,6 +267,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   // Request loading inline text boxes for a given node.
   void LoadInlineTextBoxes(JNIEnv* env, jint id);
+  void RecordInlineTextBoxMetrics(bool from_focus);
 
   // Get the bounds of each character for a given static text node,
   // starting from index |start| with length |len|. The resulting array

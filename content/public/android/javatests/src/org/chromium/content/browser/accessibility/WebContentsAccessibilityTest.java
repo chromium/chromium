@@ -52,7 +52,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sViewIdResourceNameMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_INLINE_TEXT_BOXES_BUNDLE;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_INLINE_TEXT_BOXES_COUNT;
-import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_INLINE_TEXT_BOXES_PRESENT_IN_UPDATE;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_INITIAL;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_SUCCESSIVE;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_INITIAL;
@@ -752,10 +751,6 @@ public class WebContentsAccessibilityTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(ACCESSIBILITY_INLINE_TEXT_BOXES_BUNDLE, 3)
                         .expectIntRecord(ACCESSIBILITY_INLINE_TEXT_BOXES_COUNT, 1)
-                        .expectBooleanRecordTimes(
-                                ACCESSIBILITY_INLINE_TEXT_BOXES_PRESENT_IN_UPDATE, false, 2)
-                        .expectBooleanRecordTimes(
-                                ACCESSIBILITY_INLINE_TEXT_BOXES_PRESENT_IN_UPDATE, true, 1)
                         .build();
 
         performActionOnUiThread(paragraphId, ACTION_ACCESSIBILITY_FOCUS, new Bundle());

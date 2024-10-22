@@ -1440,6 +1440,61 @@ jboolean WebContentsAccessibilityAndroid::PreviousAtGranularity(
   return false;
 }
 
+void WebContentsAccessibilityAndroid::RecordInlineTextBoxMetrics(
+    bool from_focus) {
+  // Track the current AXMode via UMA. We do this here and not in the
+  // manager so that we can get a signal of whether we are making requests
+  // for modes that don't have kInlineTextBoxes mode flag.
+  BrowserAccessibilityStateImpl* accessibility_state =
+      BrowserAccessibilityStateImpl::GetInstance();
+  ui::AXMode mode = accessibility_state->GetAccessibilityMode();
+
+  ui::AXMode::BundleHistogramValue bundle;
+  if (mode == ui::kAXModeBasic) {
+    bundle = ui::AXMode::BundleHistogramValue::kBasic;
+
+    // TODO(mschillaci): Remove once inline textboxes is fixed.
+    // This will be too noisy if recorded each time.
+    static bool previously_logged_basic = false;
+    if (!previously_logged_basic && base::RandDouble() < 0.0005) {
+      previously_logged_basic = true;
+      DUMP_WILL_BE_NOTREACHED()
+          << "Inline text boxes will not be loaded in basic state, so this "
+             "request will not be fulfilled. Current services are: "
+          << base::JoinString(
+                 ui::AccessibilityState::GetAccessibilityServiceIds(), ", ");
+    }
+  } else if (mode == ui::kAXModeWebContentsOnly) {
+    bundle = ui::AXMode::BundleHistogramValue::kWebContentsOnly;
+  } else if (mode == ui::kAXModeComplete) {
+    bundle = ui::AXMode::BundleHistogramValue::kComplete;
+  } else if (mode == ui::kAXModeFormControls) {
+    bundle = ui::AXMode::BundleHistogramValue::kFormControls;
+
+    // TODO(mschillaci): Remove once inline textboxes is fixed.
+    // This will be too noisy if recorded each time.
+    static bool previously_logged_forms = false;
+    if (!previously_logged_forms && base::RandDouble() < 0.003) {
+      previously_logged_forms = true;
+      DUMP_WILL_BE_NOTREACHED()
+          << "Should not be loading inline text boxes while in form controls "
+             "state. Current services are: "
+          << base::JoinString(
+                 ui::AccessibilityState::GetAccessibilityServiceIds(), ", ");
+    }
+  } else {
+    bundle = ui::AXMode::BundleHistogramValue::kUnnamed;
+  }
+
+  if (from_focus) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.Android.InlineTextBoxes.Bundle.FromFocus", bundle);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Accessibility.Android.InlineTextBoxes.Bundle.ExtraData", bundle);
+  }
+}
+
 void WebContentsAccessibilityAndroid::MoveAccessibilityFocus(
     JNIEnv* env,
     jint old_unique_id,
@@ -1461,52 +1516,7 @@ void WebContentsAccessibilityAndroid::MoveAccessibilityFocus(
   // as that will result in loading inline text boxes for the whole tree.
   if (node != node->manager()->GetBrowserAccessibilityRoot()) {
     node->manager()->LoadInlineTextBoxes(*node);
-
-    // Track the current AXMode via UMA. We do this here and not in the
-    // manager so that we can get a signal of whether we are making requests
-    // for modes that don't have kInlineTextBoxes mode flag.
-    BrowserAccessibilityStateImpl* accessibility_state =
-        BrowserAccessibilityStateImpl::GetInstance();
-    ui::AXMode mode = accessibility_state->GetAccessibilityMode();
-
-    ui::AXMode::BundleHistogramValue bundle;
-    if (mode == ui::kAXModeBasic) {
-      bundle = ui::AXMode::BundleHistogramValue::kBasic;
-
-      // TODO(mschillaci): Remove once inline textboxes is fixed.
-      // This will be too noisy if recorded each time.
-      static bool previously_logged_basic = false;
-      if (!previously_logged_basic && base::RandDouble() < 0.0005) {
-        previously_logged_basic = true;
-        DUMP_WILL_BE_NOTREACHED()
-            << "Inline text boxes will not be loaded in basic state, so this "
-               "request will not be fulfilled. Current services are: "
-            << base::JoinString(
-                   ui::AccessibilityState::GetAccessibilityServiceIds(), ", ");
-      }
-    } else if (mode == ui::kAXModeWebContentsOnly) {
-      bundle = ui::AXMode::BundleHistogramValue::kWebContentsOnly;
-    } else if (mode == ui::kAXModeComplete) {
-      bundle = ui::AXMode::BundleHistogramValue::kComplete;
-    } else if (mode == ui::kAXModeFormControls) {
-      bundle = ui::AXMode::BundleHistogramValue::kFormControls;
-
-      // TODO(mschillaci): Remove once inline textboxes is fixed.
-      // This will be too noisy if recorded each time.
-      static bool previously_logged_forms = false;
-      if (!previously_logged_forms && base::RandDouble() < 0.003) {
-        previously_logged_forms = true;
-        DUMP_WILL_BE_NOTREACHED()
-            << "Should not be loading inline text boxes while in form controls "
-               "state. Current services are: "
-            << base::JoinString(
-                   ui::AccessibilityState::GetAccessibilityServiceIds(), ", ");
-      }
-    } else {
-      bundle = ui::AXMode::BundleHistogramValue::kUnnamed;
-    }
-    base::UmaHistogramEnumeration(
-        "Accessibility.Android.InlineTextBoxes.Bundle", bundle);
+    RecordInlineTextBoxMetrics(/*from_focus=*/true);
   }
 }
 
@@ -1647,6 +1657,7 @@ void WebContentsAccessibilityAndroid::LoadInlineTextBoxes(JNIEnv* env,
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (node) {
     node->manager()->LoadInlineTextBoxes(*node);
+    RecordInlineTextBoxMetrics(/*from_focus=*/false);
   }
 }
 

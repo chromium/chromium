@@ -146,15 +146,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Android.InlineTextBoxes.Bundle"
+<histogram name="Accessibility.Android.InlineTextBoxes.Bundle.{CallLocation}"
     enum="AccessibilityModeBundleEnum" expires_after="2025-04-14">
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
     Tracks the combinations of mode flags that are set when there is a request
-    to load inline text boxes on Android. This occurs when a node first receives
-    accessibility focus.
+    to load inline text boxes on Android. This occurs when {CallLocation}.
+  </summary>
+  <token key="CallLocation">
+    <variant name="ExtraData"
+        summary="an AT explicitly requests in-line text boxes via
+                 addExtraDataToAccessibilityNodeInfo"/>
+    <variant name="FromFocus"
+        summary="a node first receives accessibility focus via
+                 MoveAccessibilityFocus"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.Android.InlineTextBoxes.DuplicateRequest"
+    enum="Boolean" expires_after="2025-04-14">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Tracks if the inline text boxes for a node have already been requested and
+    generated when an AT calls the addExtraDataToAccessibilityNodeInfo method to
+    explicitly request that we add the boxes for that node.
   </summary>
 </histogram>
 
