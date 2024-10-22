@@ -11,7 +11,7 @@
  */
 import '../cr_icon_button/cr_icon_button.js';
 import '../cr_icon/cr_icon.js';
-import '../icons_lit.html.js';
+import '../icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';

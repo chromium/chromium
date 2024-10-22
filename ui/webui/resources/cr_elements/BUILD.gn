@@ -40,10 +40,7 @@ build_webui("build") {
   if (!is_android && !is_ios) {
     web_component_files += [ "cr_a11y_announcer/cr_a11y_announcer.ts" ]
 
-    icons_html_files = [
-      "icons.html",
-      "icons_lit.html",
-    ]
+    icons_html_files = [ "icons.html" ]
 
     non_web_component_files += [
       "cr_container_shadow_mixin.ts",
