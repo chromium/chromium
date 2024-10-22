@@ -47,7 +47,7 @@
         "properties": {
           "lang": {
             "type": "string",
-            "description": "Language string in the form language code-region code, where the region may be omitted. Examples are en, en-AU, zh-CH."
+            "description": "Language string in the form of language code-region code, where the region may be omitted. Examples are en, en-AU, zh-CH."
           },
           "installStatus": {
             "$ref": "LanguageInstallStatus",
@@ -310,6 +310,23 @@
             "name": "lang",
             "type": "string",
             "description": "Language string to be installed in the form language code-region code, where the region may be omitted. Examples are en, en-AU, zh-CH."
+          }
+        ]
+      },
+      {
+        "name": "onLanguageStatusRequest",
+        "type": "function",
+        "description": "Fired when a TTS client requests the install status of a language.",
+        "parameters": [
+          {
+            "name": "requestor",
+            "$ref": "TtsClient",
+            "description": "Client requesting status."
+          },
+          {
+            "name": "lang",
+            "type": "string",
+            "description": "Language string in the form language code-region code, where the region may be omitted. Examples are en, en-AU, zh-CH."
           }
         ]
       }

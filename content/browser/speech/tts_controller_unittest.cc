@@ -140,6 +140,11 @@ class MockTtsEngineDelegate : public TtsEngineDelegate {
                               const std::string& client_id,
                               int source) override {}
 
+  void LanguageStatusRequest(BrowserContext* browser_context,
+                             const std::string& lang,
+                             const std::string& client_id,
+                             int source) override {}
+
   void LoadBuiltInTtsEngine(BrowserContext* browser_context) override {}
 
   bool IsBuiltInTtsEngineInitialized(BrowserContext* browser_context) override {

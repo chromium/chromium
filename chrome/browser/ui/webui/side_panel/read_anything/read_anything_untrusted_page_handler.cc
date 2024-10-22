@@ -491,9 +491,14 @@ void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
           base::BindOnce(&ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo,
                          weak_factory_.GetSafeRef())));
 #else
-  //  TODO (b/40927698) Implement high quality voice support for non ChromeOS
-  //  platforms. For now, just return that all high quality voices are
-  //  unavailable.
+  TtsController::GetInstance()->LanguageStatusRequest(
+      profile_, language, string_constants::kReadingModeName,
+      static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE));
+
+  //  TODO (crbug.com/40927698) The above LanguageStatusRequest is not handled
+  //  by the ReadAnythingUntrustedPageHandler and is currently a no-op.
+  //  Implement high quality voice support for non ChromeOS platforms. For now,
+  //  just return that all high quality voices are unavailable.
   auto voicePackInfo = read_anything::mojom::VoicePackInfo::New();
   voicePackInfo->language = language;
   voicePackInfo->pack_state =

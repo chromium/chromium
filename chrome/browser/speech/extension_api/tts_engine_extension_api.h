@@ -22,6 +22,7 @@ extern const char kOnStop[];
 extern const char kOnPause[];
 extern const char kOnResume[];
 extern const char kOnInstallLanguageRequest[];
+extern const char kOnLanguageStatusRequest[];
 
 // Specifying where events sent to the TTS Engine originated
 enum class TtsClientSource {
@@ -58,6 +59,10 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
                               const std::string& lang,
                               const std::string& client_id,
                               int source) override;
+  void LanguageStatusRequest(content::BrowserContext* browser_context,
+                             const std::string& lang,
+                             const std::string& client_id,
+                             int source) override;
   void LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override;
   bool IsBuiltInTtsEngineInitialized(
       content::BrowserContext* browser_context) override;
@@ -79,7 +84,7 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
  protected:
   base::Value::List BuildSpeakArgs(content::TtsUtterance* utterance,
                                    const content::VoiceData& voice);
-  base::Value::List BuildInstallLanguageArgs(
+  base::Value::List BuildLanguagePackArgs(
       const std::string& lang,
       const std::string& client_id,
       tts_engine_events::TtsClientSource source);

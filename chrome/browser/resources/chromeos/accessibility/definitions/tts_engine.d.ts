@@ -92,6 +92,9 @@ declare global {
 
       export const onInstallLanguageRequest:
           ChromeEvent<(requestor: TtsClient, lang: string) => void>;
+
+      export const onLanguageStatusRequest:
+          ChromeEvent<(requestor: TtsClient, lang: string) => void>;
     }
   }
 }

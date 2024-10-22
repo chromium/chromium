@@ -65,6 +65,7 @@ const char kOnStop[] = "ttsEngine.onStop";
 const char kOnPause[] = "ttsEngine.onPause";
 const char kOnResume[] = "ttsEngine.onResume";
 const char kOnInstallLanguageRequest[] = "ttsEngine.onInstallLanguageRequest";
+const char kOnLanguageStatusRequest[] = "ttsEngine.onLanguageStatusRequest";
 }  // namespace tts_engine_events
 
 namespace {
@@ -413,12 +414,32 @@ void TtsExtensionEngine::InstallLanguageRequest(
   tts_engine_events::TtsClientSource tts_client_source =
       static_cast<tts_engine_events::TtsClientSource>(source);
   base::Value::List args =
-      BuildInstallLanguageArgs(lang, client_id, tts_client_source);
+      BuildLanguagePackArgs(lang, client_id, tts_client_source);
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_INSTALL_LANGUAGE_REQUEST,
       tts_engine_events::kOnInstallLanguageRequest, std::move(args), profile);
+  EventRouter* event_router = EventRouter::Get(profile);
+
+  event_router->BroadcastEvent(std::move(event));
+}
+
+void TtsExtensionEngine::LanguageStatusRequest(
+    content::BrowserContext* browser_context,
+    const std::string& lang,
+    const std::string& client_id,
+    int source) {
+  tts_engine_events::TtsClientSource tts_client_source =
+      static_cast<tts_engine_events::TtsClientSource>(source);
+
+  base::Value::List args =
+      BuildLanguagePackArgs(lang, client_id, tts_client_source);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::TTS_ENGINE_ON_LANGUAGE_STATUS_REQUEST,
+      tts_engine_events::kOnLanguageStatusRequest, std::move(args), profile);
   EventRouter* event_router = EventRouter::Get(profile);
 
   event_router->BroadcastEvent(std::move(event));
@@ -435,7 +456,7 @@ bool TtsExtensionEngine::IsBuiltInTtsEngineInitialized(
   return true;
 }
 
-base::Value::List TtsExtensionEngine::BuildInstallLanguageArgs(
+base::Value::List TtsExtensionEngine::BuildLanguagePackArgs(
     const std::string& lang,
     const std::string& client_id,
     tts_engine_events::TtsClientSource source) {

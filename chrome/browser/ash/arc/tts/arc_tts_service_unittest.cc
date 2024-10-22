@@ -62,6 +62,10 @@ class TestableTtsController : public content::TtsController {
                               const std::string& lang,
                               const std::string& client_id,
                               int source) override {}
+  void LanguageStatusRequest(content::BrowserContext* browser_context,
+                             const std::string& lang,
+                             const std::string& client_id,
+                             int source) override {}
   void GetVoices(content::BrowserContext* browser_context,
                  const GURL& source_url,
                  std::vector<content::VoiceData>* out_voices) override {}

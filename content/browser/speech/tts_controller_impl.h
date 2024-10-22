@@ -70,6 +70,10 @@ class CONTENT_EXPORT TtsControllerImpl
                               const std::string& lang,
                               const std::string& client_id,
                               int source) override;
+  void LanguageStatusRequest(BrowserContext* browser_context,
+                             const std::string& lang,
+                             const std::string& client_id,
+                             int source) override;
   void OnTtsEvent(int utterance_id,
                   TtsEventType event_type,
                   int char_index,

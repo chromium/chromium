@@ -82,6 +82,11 @@ class CONTENT_EXPORT TtsEngineDelegate {
                                       const std::string& lang,
                                       const std::string& client_id,
                                       int source) = 0;
+  // Requests the installation status of a voice for a specific language.
+  virtual void LanguageStatusRequest(BrowserContext* browser_context,
+                                     const std::string& lang,
+                                     const std::string& client_id,
+                                     int source) = 0;
   // Load the built-in TTS engine.
   virtual void LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
 
@@ -190,6 +195,15 @@ class CONTENT_EXPORT TtsController {
                                       const std::string& lang,
                                       const std::string& client_id,
                                       int source) = 0;
+
+  // Request the installation status of a voice for a specific language. For
+  // example, Reading Mode uses this to broadcast a LanguageStatusRequest to tts
+  // extensions, which respond with this status via the
+  // chrome.ttsEngine.updateLanguage API.
+  virtual void LanguageStatusRequest(BrowserContext* browser_context,
+                                     const std::string& lang,
+                                     const std::string& client_id,
+                                     int source) = 0;
 
   // Handle events received from the speech engine. Events are forwarded to
   // the callback function, and in addition, completion and error events

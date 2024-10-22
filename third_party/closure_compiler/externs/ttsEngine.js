@@ -197,3 +197,10 @@ chrome.ttsEngine.onResume;
  * @see https://developer.chrome.com/extensions/ttsEngine#event-onInstallLanguageRequest
  */
 chrome.ttsEngine.onInstallLanguageRequest;
+
+/**
+ * Fired when a TTS client requests the install status of a language.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/ttsEngine#event-onLanguageStatusRequest
+ */
+chrome.ttsEngine.onLanguageStatusRequest;
