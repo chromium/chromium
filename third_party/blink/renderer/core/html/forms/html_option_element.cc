@@ -644,7 +644,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         (event.type() == event_type_names::kMousedown && mouse_event &&
          mouse_event->button() ==
              static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
-      SetSelected(true);
+      select->SelectOptionByPopup(this);
       select->HidePopup();
       event.SetDefaultHandled();
       return;
@@ -688,7 +688,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
           }
         }
       } else if ((key == " " || key == keywords::kCapitalEnter) && select) {
-        SetSelected(true);
+        select->SelectOptionByPopup(this);
         select->HidePopup();
         event.SetDefaultHandled();
         return;

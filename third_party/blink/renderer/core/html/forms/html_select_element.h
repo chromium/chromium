@@ -190,6 +190,7 @@ class CORE_EXPORT HTMLSelectElement final
   // Text starting offset in RTL.
   LayoutUnit ClientPaddingRight() const;
   void SelectOptionByPopup(int list_index);
+  void SelectOptionByPopup(HTMLOptionElement* option);
   void SelectMultipleOptionsByPopup(const Vector<int>& list_indices);
   // A popup is canceled when the popup was hidden without selecting an item.
   void PopupDidCancel();
