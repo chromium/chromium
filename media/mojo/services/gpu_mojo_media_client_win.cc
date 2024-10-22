@@ -40,7 +40,22 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
             traits.media_gpu_channel_manager
                 ? traits.media_gpu_channel_manager->GetSharedContextState()
                 : nullptr,
-            traits) {}
+            traits) {
+    // D3D11 multi-thread protection must be enabled before the device is used
+    // on other threads than the one it was created on.
+    // See https://crbugs.com/361718010 for more details.
+    if (!gpu_workarounds_.disable_d3d11_video_decoder) {
+      if (IsDedicatedMediaServiceThreadEnabled(
+              gpu_info_.gl_implementation_parts.angle) &&
+          d3d11_device_) {
+        Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
+        auto hr = d3d11_device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
+        CHECK(SUCCEEDED(hr));
+        multi_threaded->SetMultithreadProtected(TRUE);
+        multithread_protected_ = true;
+      }
+    }
+  }
 
   ~GpuMojoMediaClientWin() final = default;
 
@@ -49,19 +64,6 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
       VideoDecoderTraits& traits) final {
     if (gpu_workarounds_.disable_d3d11_video_decoder) {
       return nullptr;
-    }
-
-    if (!multithread_protected_ &&
-        IsDedicatedMediaServiceThreadEnabled(
-            gpu_info_.gl_implementation_parts.angle)) {
-      // Since the D3D11Device used for decoding is shared with
-      // SkiaRenderer(ANGLE or Dawn), we need multithread protection turned on
-      // to use it from another thread.
-      Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
-      auto hr = d3d11_device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
-      CHECK(SUCCEEDED(hr));
-      multi_threaded->SetMultithreadProtected(TRUE);
-      multithread_protected_ = true;
     }
 
     return D3D11VideoDecoder::Create(
