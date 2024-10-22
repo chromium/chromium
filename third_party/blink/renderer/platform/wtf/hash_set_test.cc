@@ -425,6 +425,26 @@ TEST(HashSetTest, InitializerList) {
   EXPECT_TRUE(IsOneTwoThreeSet(ReturnOneTwoThreeSet()));
 }
 
+TEST(HashSetTest, EraseIf) {
+  HashSet<int> set{1, 2, 3, 5, 8};
+  set.erase(2);
+  int num_buckets_seen = 0;
+  set.erase_if([&num_buckets_seen](int key) {
+    ++num_buckets_seen;
+    EXPECT_TRUE(key == 1 || key == 3 || key == 5 || key == 8)
+        << "Saw unexpected bucket " << key;
+    return key == 5;
+  });
+  EXPECT_EQ(num_buckets_seen, 4) << "Should see all buckets";
+  EXPECT_EQ(set.size(), 3u);
+
+  EXPECT_TRUE(set.Contains(1));
+  EXPECT_FALSE(set.Contains(2));
+  EXPECT_TRUE(set.Contains(3));
+  EXPECT_FALSE(set.Contains(5));
+  EXPECT_TRUE(set.Contains(8));
+}
+
 enum TestEnum {
   kItem0,
 };

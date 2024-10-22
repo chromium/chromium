@@ -124,8 +124,19 @@ class HashSet {
   AddResult AddWithTranslator(T&&);
 
   // Does nothing if the value is not found.
+  // NOTE: You cannot continue using an iterator after erase()
+  // (no modifications are allowed during iteration). Consider erase_if()
+  // or RemoveAll().
   void erase(ValuePeekInType);
   void erase(iterator);
+
+  // Erases all elements for which pred(element) returns true.
+  //
+  // The predicate should have a signature compatible with:
+  //   bool pred(const ValueType&);
+  template <typename Pred>
+  void erase_if(Pred pred);
+
   void clear();
   template <typename Collection>
   void RemoveAll(const Collection& to_be_removed) {
@@ -316,6 +327,12 @@ inline void HashSet<T, U, V>::erase(iterator it) {
 template <typename T, typename U, typename V>
 inline void HashSet<T, U, V>::erase(ValuePeekInType value) {
   erase(find(value));
+}
+
+template <typename T, typename U, typename V>
+template <typename Pred>
+inline void HashSet<T, U, V>::erase_if(Pred pred) {
+  impl_.erase_if(std::forward<Pred>(pred));
 }
 
 template <typename T, typename U, typename V>

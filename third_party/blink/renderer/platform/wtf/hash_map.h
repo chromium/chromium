@@ -179,8 +179,19 @@ class HashMap {
   template <typename IncomingKeyType, typename IncomingMappedType>
   AddResult insert(IncomingKeyType&&, IncomingMappedType&&);
 
+  // NOTE: You cannot continue using an iterator after erase()
+  // (no modifications are allowed during iteration). Consider erase_if()
+  // or RemoveAll().
   void erase(KeyPeekInType);
   void erase(iterator);
+
+  // Erases all elements for which pred(element) returns true.
+  //
+  // The predicate should have a signature compatible with:
+  //   bool pred(const WTF::KeyValuePair<KeyType, MappedType>&);
+  template <typename Pred>
+  void erase_if(Pred pred);
+
   void clear();
   template <typename Collection>
   void RemoveAll(const Collection& to_be_removed) {
@@ -493,6 +504,12 @@ inline void HashMap<T, U, V, W, X>::erase(iterator it) {
 template <typename T, typename U, typename V, typename W, typename X>
 inline void HashMap<T, U, V, W, X>::erase(KeyPeekInType key) {
   erase(find(key));
+}
+
+template <typename T, typename U, typename V, typename W, typename X>
+template <typename Pred>
+inline void HashMap<T, U, V, W, X>::erase_if(Pred pred) {
+  impl_.erase_if(std::forward<Pred>(pred));
 }
 
 template <typename T, typename U, typename V, typename W, typename X>

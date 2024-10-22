@@ -654,6 +654,27 @@ TEST(HashMapTest, IsValidKey) {
   EXPECT_FALSE((HashMap<AtomicString, int>::IsValidKey(AtomicString())));
 }
 
+TEST(HashMapTest, EraseIf) {
+  HashMap<int, int> map{{1, 1}, {2, 3}, {5, 8}, {13, 21}, {34, 56}};
+  map.erase(2);
+  int num_buckets_seen = 0;
+  map.erase_if([&num_buckets_seen](const WTF::KeyValuePair<int, int>& bucket) {
+    auto [key, value] = bucket;
+    ++num_buckets_seen;
+    EXPECT_TRUE(key == 1 || key == 5 || key == 13 || key == 34)
+        << "Saw unexpected bucket " << key;
+    return key == 5 || value == 56;
+  });
+  EXPECT_EQ(num_buckets_seen, 4) << "Should see all buckets";
+  EXPECT_EQ(map.size(), 2u);
+
+  EXPECT_TRUE(map.Contains(1));
+  EXPECT_FALSE(map.Contains(2));
+  EXPECT_FALSE(map.Contains(5));
+  EXPECT_TRUE(map.Contains(13));
+  EXPECT_FALSE(map.Contains(34));
+}
+
 static_assert(!IsTraceable<HashMap<int, int>>::value,
               "HashMap<int, int> must not be traceable.");
 
