@@ -41,6 +41,7 @@ export interface LocalCertsSectionV2Element {
     // <if expr="is_win or is_macosx">
     manageOsImportedCerts: HTMLElement,
     // </if>
+    userCertsInstalledLinkRow: HTMLElement,
 
     numSystemCerts: HTMLElement,
   };
@@ -61,6 +62,7 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
       numSystemCertsString_: String,
       // </if>
       numPolicyCertsString_: String,
+      numUserCertsString_: String,
 
       importOsCertsEnabled_: {
         type: Boolean,
@@ -95,6 +97,7 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
   // <if expr="not is_chromeos">
   private numSystemCertsString_: string;
   // </if>
+  private numUserCertsString_: string;
   private certManagementMetadata_: CertManagementMetadata;
   private importOsCertsEnabled_: boolean;
   // <if expr="not is_chromeos">
@@ -133,6 +136,7 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
       // <if expr="not is_chromeos">
       this.numSystemCertsString_ = '';
       // </if>
+      this.numUserCertsString_ = '';
     } else {
       PluralStringProxyImpl.getInstance()
           .getPluralString(
@@ -150,6 +154,13 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
             this.numSystemCertsString_ = label;
           });
       // </if>
+      PluralStringProxyImpl.getInstance()
+          .getPluralString(
+              'certificateManagerV2NumCerts',
+              this.certManagementMetadata_.numUserCerts)
+          .then(label => {
+            this.numUserCertsString_ = label;
+          });
     }
   }
 
@@ -161,6 +172,11 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
   private onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.ADMIN_CERTS);
+  }
+
+  private onUserCertsInstalledLinkRowClick_(e: Event) {
+    e.preventDefault();
+    Router.getInstance().navigateTo(Page.USER_CERTS);
   }
 
   private computeImportOsCertsEnabled_(): boolean {
@@ -180,8 +196,19 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
 
   // If true, show the Custom Certs section.
   private showCustomSection_(): boolean {
+    return this.showPolicySection_() || this.showUserSection_();
+  }
+
+  // If true, show the Policy Certs section.
+  private showPolicySection_(): boolean {
     return this.certManagementMetadata_ !== undefined &&
         this.certManagementMetadata_.numPolicyCerts > 0;
+  }
+
+  // If true, show the User Certs section.
+  private showUserSection_(): boolean {
+    return this.certManagementMetadata_ !== undefined &&
+        this.certManagementMetadata_.showUserCertsUi;
   }
 
   // <if expr="is_win or is_macosx">

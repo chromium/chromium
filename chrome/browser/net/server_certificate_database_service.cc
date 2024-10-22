@@ -132,4 +132,11 @@ void ServerCertificateDatabaseService::PostTaskWithDatabase(
   server_cert_database_.PostTaskWithThisObject(std::move(callback));
 }
 
+void ServerCertificateDatabaseService::GetCertificatesCount(
+    base::OnceCallback<void(uint32_t)> callback) {
+  server_cert_database_
+      .AsyncCall(&net::ServerCertificateDatabase::RetrieveCertificatesCount)
+      .Then(std::move(callback));
+}
+
 }  // namespace net

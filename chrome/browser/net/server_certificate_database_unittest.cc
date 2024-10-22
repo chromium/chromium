@@ -44,6 +44,7 @@ class ServerCertificateDatabaseTest : public testing::Test {
 
 TEST_F(ServerCertificateDatabaseTest, StoreAndRetrieve) {
   EXPECT_TRUE(database_->RetrieveAllCertificates().empty());
+  EXPECT_EQ(database_->RetrieveCertificatesCount(), 0u);
 
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
 
@@ -60,6 +61,7 @@ TEST_F(ServerCertificateDatabaseTest, StoreAndRetrieve) {
       database_->RetrieveAllCertificates(),
       UnorderedElementsAre(CertInfoEquals(std::ref(root_cert_info)),
                            CertInfoEquals(std::ref(intermediate_cert_info))));
+  EXPECT_EQ(database_->RetrieveCertificatesCount(), 2u);
 
   // Reopen the database, and it should have the entries.
   database_.reset();
@@ -68,6 +70,7 @@ TEST_F(ServerCertificateDatabaseTest, StoreAndRetrieve) {
       database_->RetrieveAllCertificates(),
       UnorderedElementsAre(CertInfoEquals(std::ref(intermediate_cert_info)),
                            CertInfoEquals(std::ref(root_cert_info))));
+  EXPECT_EQ(database_->RetrieveCertificatesCount(), 2u);
 }
 
 TEST_F(ServerCertificateDatabaseTest, Update) {

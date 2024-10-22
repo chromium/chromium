@@ -62,6 +62,15 @@ enum CertificateSource {
   // Extension provided client certificates.
   [EnableIf=is_chromeos]
   kExtensionsClientCert,
+
+  // User-added trusted certs.
+  kUserTrustedCerts,
+
+  // User-added intermediate certs.
+  kUserIntermediateCerts,
+
+  // User-added distrusted certs.
+  kUserDistrustedCerts,
 };
 
 struct CertManagementMetadata {
@@ -78,6 +87,13 @@ struct CertManagementMetadata {
 
   // Number of certificates added via enterprise policy.
   uint8 num_policy_certs;
+
+  // Number of certificates added by the user directly through the cert
+  // manager UI.
+  uint32 num_user_certs;
+
+  // Whether the UI for viewing/editing user certificates should be shown.
+  bool show_user_certs_ui;
 };
 
 enum SuccessResult {

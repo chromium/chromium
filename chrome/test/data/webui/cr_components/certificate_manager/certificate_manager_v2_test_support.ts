@@ -47,6 +47,8 @@ class FakePageHandler extends TestBrowserProxy implements
     isIncludeSystemTrustStoreManaged: false,
     // </if>
     numPolicyCerts: 0,
+    numUserCerts: 0,
+    showUserCertsUi: false,
   };
 
   constructor() {

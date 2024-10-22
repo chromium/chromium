@@ -189,6 +189,8 @@ suite('CertificateManagerV2FocusTest', () => {
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();

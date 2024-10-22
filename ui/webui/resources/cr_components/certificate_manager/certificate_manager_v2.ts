@@ -89,6 +89,7 @@ export interface CertificateManagerV2Element {
     clientCertSection: HTMLElement,
     crsCertSection: CrsSectionV2Element,
     adminCertsSection: CertificateSubpageV2Element,
+    userCertsSection: CertificateSubpageV2Element,
     platformCertsSection: CertificateSubpageV2Element,
     platformClientCertsSection: CertificateSubpageV2Element,
   };
@@ -165,6 +166,29 @@ export class CertificateManagerV2Element extends
         // <if expr="not chromeos_ash">
         computed: 'computeClientPlatformSubpageLists_()',
         // </if>
+      },
+
+      userSubpageLists_: {
+        type: Array<SubpageCertificateList>,
+        value: (): SubpageCertificateList[] => {
+          return [
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2TrustedCertsList'),
+              certSource: CertificateSource.kUserTrustedCerts,
+            },
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2IntermediateCertsList'),
+              certSource: CertificateSource.kUserIntermediateCerts,
+            },
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2DistrustedCertsList'),
+              certSource: CertificateSource.kUserDistrustedCerts,
+            },
+          ];
+        },
       },
 
       toastMessage_: String,
@@ -317,6 +341,9 @@ export class CertificateManagerV2Element extends
           break;
         case Page.PLATFORM_CLIENT_CERTS:
           this.$.platformClientCertsSection.setInitialFocus();
+          break;
+        case Page.USER_CERTS:
+          this.$.userCertsSection.setInitialFocus();
           break;
         default:
           assertNotReached();

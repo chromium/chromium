@@ -74,6 +74,8 @@ suite('CertificateManagerV2Test', () => {
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 5,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -97,6 +99,9 @@ suite('CertificateManagerV2Test', () => {
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 5,
+      numUserCerts: 0,
+      showUserCertsUi: false,
+
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -187,6 +192,57 @@ suite('CertificateManagerV2Test', () => {
     certManager.$.crsMenuItem.click();
     await microtasksFinished();
     assertTrue(certManager.$.crsCertSection.classList.contains('selected'));
+  });
+
+  test('show user certs', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      // <if expr="not is_chromeos">
+      isIncludeSystemTrustStoreManaged: true,
+      // </if>
+      numPolicyCerts: 5,
+      numUserCerts: 1,
+      showUserCertsUi: true,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+    await microtasksFinished();
+    assertFalse(certManager.$.userCertsSection.classList.contains('selected'));
+    const userSection =
+        certManager.$.localCertSection.shadowRoot!.querySelector(
+            '#userCertsSection');
+    const linkRow = userSection!.querySelector('cr-link-row');
+    linkRow!.click();
+    await microtasksFinished();
+    assertTrue(certManager.$.userCertsSection.classList.contains('selected'));
+  });
+
+  test('navigate back from user certs', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      // <if expr="not is_chromeos">
+      isIncludeSystemTrustStoreManaged: true,
+      // </if>
+      numPolicyCerts: 5,
+      numUserCerts: 1,
+      showUserCertsUi: true,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+    await microtasksFinished();
+    const userSection =
+        certManager.$.localCertSection.shadowRoot!.querySelector(
+            '#userCertsSection');
+    const linkRow = userSection!.querySelector('cr-link-row');
+    linkRow!.click();
+    await microtasksFinished();
+    assertTrue(certManager.$.userCertsSection.classList.contains('selected'));
+    certManager.$.userCertsSection.$.backButton.click();
+    await microtasksFinished();
+    assertFalse(certManager.$.userCertsSection.classList.contains('selected'));
+    assertTrue(certManager.$.localCertSection.classList.contains('selected'));
   });
 
   // Tests opening the password dialog through the mojo interface and

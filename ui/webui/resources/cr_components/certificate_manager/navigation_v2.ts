@@ -20,6 +20,7 @@ export enum Page {
   // Sub-pages
   ADMIN_CERTS = 'localcerts/admincerts',
   PLATFORM_CERTS = 'localcerts/platformcerts',
+  USER_CERTS = 'localcerts/usercerts',
   PLATFORM_CLIENT_CERTS = 'clientcerts/platformclientcerts',
 }
 
@@ -39,6 +40,7 @@ export class Route {
       case Page.ADMIN_CERTS:
       case Page.PLATFORM_CERTS:
       case Page.PLATFORM_CLIENT_CERTS:
+      case Page.USER_CERTS:
         return true;
       case Page.LOCAL_CERTS:
       case Page.CLIENT_CERTS:

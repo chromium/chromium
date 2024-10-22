@@ -54,6 +54,8 @@ class ServerCertificateDatabase {
   // Retrieve all of the certificates from the database.
   std::vector<CertInformation> RetrieveAllCertificates();
 
+  uint32_t RetrieveCertificatesCount();
+
  private:
   sql::InitStatus InitInternal(const base::FilePath& storage_dir);
 

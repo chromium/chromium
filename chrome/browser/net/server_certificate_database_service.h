@@ -84,6 +84,8 @@ class ServerCertificateDatabaseService : public KeyedService {
   void PostTaskWithDatabase(
       base::OnceCallback<void(net::ServerCertificateDatabase*)> callback);
 
+  void GetCertificatesCount(base::OnceCallback<void(uint32_t)> callback);
+
  private:
 #if BUILDFLAG(IS_CHROMEOS)
   void NSSMigrationComplete(
