@@ -27,6 +27,9 @@ enum OcrClientType {
   kCameraApp,
   kPdfSearchify,
   kMediaApp,
+  // Used in the ChromeOS screenshot tool to detect text in a user selected
+  // region.
+  kScreenshotTextDetection,
 };
 
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.

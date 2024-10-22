@@ -59,7 +59,10 @@ enum class OcrClientTypeForMetrics {
   kCameraApp = 3,
   kPdfSearchify = 4,
   kMediaApp = 5,
-  kMaxValue = kMediaApp
+  // Used in the ChromeOS screenshot tool to detect text in a user selected
+  // region.
+  kScreenshotTextDetection,
+  kMaxValue = kScreenshotTextDetection
 };
 
 OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
@@ -77,6 +80,8 @@ OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
       return OcrClientTypeForMetrics::kPdfSearchify;
     case mojom::OcrClientType::kMediaApp:
       return OcrClientTypeForMetrics::kMediaApp;
+    case mojom::OcrClientType::kScreenshotTextDetection:
+      return OcrClientTypeForMetrics::kScreenshotTextDetection;
   }
 }
 

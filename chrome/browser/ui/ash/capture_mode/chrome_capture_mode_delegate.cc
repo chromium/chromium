@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -13,8 +14,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -32,7 +35,9 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -48,7 +53,9 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/video_capture_service.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -254,6 +261,11 @@ void ChromeCaptureModeDelegate::BindAudioStreamFactory(
 
 void ChromeCaptureModeDelegate::OnSessionStateChanged(bool started) {
   is_session_active_ = started;
+
+  if (!is_session_active_) {
+    // Release the OCR handle to save memory.
+    optical_character_recognizer_ = nullptr;
+  }
 }
 
 void ChromeCaptureModeDelegate::OnServiceRemoteReset() {}
@@ -432,6 +444,27 @@ ChromeCaptureModeDelegate::CreateSearchResultsView() const {
   return std::make_unique<ash::SearchResultsView>();
 }
 
+void ChromeCaptureModeDelegate::DetectTextInImage(
+    const SkBitmap& image,
+    ash::OnTextDetectionComplete callback) {
+  CHECK(ash::features::IsScannerEnabled());
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    return;
+  }
+
+  // TODO(crbug.com/374186111): Handle the case where the OCR service is already
+  // initialized.
+  if (!optical_character_recognizer_) {
+    optical_character_recognizer_ =
+        screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
+            profile, screen_ai::mojom::OcrClientType::kScreenshotTextDetection,
+            base::BindOnce(&ChromeCaptureModeDelegate::OnOcrServiceInitialized,
+                           weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
 void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
     ash::OnGotDriveFsFreeSpace callback,
     drive::FileError error,
@@ -447,4 +480,8 @@ void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
 void ChromeCaptureModeDelegate::SetOdfsTempDir(base::ScopedTempDir temp_dir) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   odfs_temp_dir_ = std::move(temp_dir);
+}
+
+void ChromeCaptureModeDelegate::OnOcrServiceInitialized(bool is_successful) {
+  // TODO(crbug.com/374186111): Perform OCR when the service is ready.
 }

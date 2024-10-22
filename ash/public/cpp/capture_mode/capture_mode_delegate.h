@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 #define ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "base/files/file_path.h"
@@ -14,6 +16,8 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class SkBitmap;
 
 namespace aura {
 class Window;
@@ -52,6 +56,12 @@ using OnCaptureModeDlpRestrictionChecked =
 // there is an error in computing the DriveFS quota.
 using OnGotDriveFsFreeSpace =
     base::OnceCallback<void(int64_t free_remaining_bytes)>;
+
+// Defines the type of the callback that will be invoked when text detection has
+// been performed on an image. `detected_text` contains detected text, or is
+// empty if no text is detected.
+using OnTextDetectionComplete =
+    base::OnceCallback<void(std::string detected_text)>;
 
 // Defines the interface for the delegate of CaptureModeController, that can be
 // implemented by an ash client (e.g. Chrome). The CaptureModeController owns
@@ -222,6 +232,12 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
 
   // Returns an instance of the concrete class of `SearchResultsView`.
   virtual std::unique_ptr<AshWebView> CreateSearchResultsView() const = 0;
+
+  // Performs OCR to detect text in `image` and invokes `callback` with the full
+  // detected text contents. `callback` will be invoked with an empty string if
+  // no text is detected.
+  virtual void DetectTextInImage(const SkBitmap& image,
+                                 OnTextDetectionComplete callback) = 0;
 };
 
 }  // namespace ash
