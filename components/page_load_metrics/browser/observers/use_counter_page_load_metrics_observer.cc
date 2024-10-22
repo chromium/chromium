@@ -471,6 +471,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kInertAttribute, WebDXFeature::kInert},
           {WebFeature::kSegmenter, WebDXFeature::kIntlSegmenter},
           {WebFeature::kEyeDropperOpen, WebDXFeature::kEyedropper},
+          {WebFeature::kElementCheckVisibility, WebDXFeature::kCheckVisibility},
       }};
 
   return *kMap;
