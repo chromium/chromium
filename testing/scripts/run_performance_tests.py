@@ -94,7 +94,7 @@ else:
 
 SHARD_MAPS_DIR = CHROMIUM_SRC_DIR / 'tools/perf/core/shard_maps'
 CROSSBENCH_TOOL = CHROMIUM_SRC_DIR / 'third_party/crossbench/cb.py'
-ADB_TOOL = THIRD_PARTY_DIR / 'android_sdk/public/platform-tools/adb'
+ADB_TOOL = THIRD_PARTY_DIR / 'catapult/devil/bin/deps/linux2/x86_64/bin/adb'
 PAGE_SETS_DATA = CHROMIUM_SRC_DIR / 'tools/perf/page_sets/data'
 PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
 
