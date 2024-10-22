@@ -18,7 +18,8 @@ class CoralDelegateImpl : public ash::CoralDelegate {
 
   // ash::CoralDelegateImpl:
   void LaunchPostLoginGroup(coral::mojom::GroupPtr group) override;
-  void MoveTabsInGroupToNewDesk(coral::mojom::GroupPtr group) override;
+  void MoveTabsInGroupToNewDesk(
+      const std::vector<coral::mojom::Tab>& tabs) override;
   void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) override;
 
  private:

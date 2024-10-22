@@ -4,7 +4,6 @@
 
 #include "ash/birch/coral_item_remover.h"
 
-#include "ash/public/cpp/coral_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

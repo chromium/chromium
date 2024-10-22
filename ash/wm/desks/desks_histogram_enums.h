@@ -36,7 +36,8 @@ enum class DesksMoveWindowFromActiveDeskSource {
   kShortcut = 1,
   kSendToDesk = 2,
   kVisibleOnAllDesks = 3,
-  kMaxValue = kVisibleOnAllDesks,
+  kCoral = 4,
+  kMaxValue = kCoral,
 };
 
 // Please keep in sync with the matching enum in

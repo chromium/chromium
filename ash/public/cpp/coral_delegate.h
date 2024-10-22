@@ -22,8 +22,9 @@ class ASH_PUBLIC_EXPORT CoralDelegate {
   // ash/wm/window_restore/README.md for more details about post-login.
   virtual void LaunchPostLoginGroup(coral::mojom::GroupPtr group) = 0;
 
-  // Moves the tabs from `group` to a browser on the new desk.
-  virtual void MoveTabsInGroupToNewDesk(coral::mojom::GroupPtr group) = 0;
+  // Moves the `tabs` to a browser on the new desk.
+  virtual void MoveTabsInGroupToNewDesk(
+      const std::vector<coral::mojom::Tab>& tabs) = 0;
 
   // Creates a saved desk with up to one browser with tabs from `group`.
   // Closes apps based on the apps from `group`, and places them in the saved

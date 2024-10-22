@@ -1298,6 +1298,8 @@ component("ash") {
     # they cannot live in //ash/public/cpp/BUILD.gn. The "test api" files are
     # not in the test_support target because they are used in production by the
     # autotest extension API.
+    "birch/coral_util.cc",
+    "birch/coral_util.h",
     "public/ash_interfaces.h",
     "public/cpp/ash_prefs.h",
     "public/cpp/autotest_ambient_api.h",

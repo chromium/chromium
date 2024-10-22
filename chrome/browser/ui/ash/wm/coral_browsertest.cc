@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/coral_delegate.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -57,6 +58,18 @@ std::vector<GURL> CollectTabURLsFromWindows(
     }
   }
   return tab_urls;
+}
+
+// Collects the app IDs from the given window list.
+std::vector<std::string> CollectAppIDsFromWindows(
+    const MruWindowTracker::WindowList& windows) {
+  std::vector<std::string> app_ids;
+  for (aura::Window* window : windows) {
+    if (auto* app_id = window->GetProperty(kAppIDKey)) {
+      app_ids.emplace_back(*app_id);
+    }
+  }
+  return app_ids;
 }
 
 }  // namespace
@@ -229,6 +242,60 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveTabsToNewDesk) {
   EXPECT_THAT(tab_urls_on_last_active_desk,
               testing::UnorderedElementsAre(GURL("https://google.com"),
                                             GURL("https://mail.google.com")));
+}
+
+// Tests that the Coral controller could create a new desk and move the apps in
+// the group to the new desk.
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveAppsToNewDesk) {
+  // Create two browsers with different tabs and urls.
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+
+  test::InstallSystemAppsForTesting(primary_profile);
+
+  // Open some SWA windows.
+  test::CreateSystemWebApp(primary_profile, SystemWebAppType::FILE_MANAGER);
+  test::CreateSystemWebApp(primary_profile, SystemWebAppType::SETTINGS);
+  test::CreateSystemWebApp(primary_profile, SystemWebAppType::HELP);
+
+  // Create a browser window.
+  CreateBrowser(primary_profile);
+
+  // Open some PWA windows.
+  test::InstallAndLaunchPWA(primary_profile, GURL("https://www.youtube.com/"),
+                            /*launch_in_browser=*/false,
+                            /*app_title=*/u"YouTube");
+  test::InstallAndLaunchPWA(primary_profile, GURL("https://www.gmail.com/"),
+                            /*launch_in_browser=*/false,
+                            /*app_title=*/u"Gmail");
+
+  // Create a fake coral group which contains four apps except the Files app and
+  // the browser.
+  coral::mojom::GroupPtr fake_group =
+      CreateTestGroup({{"Youtube", "adnlfjpnmidfimlkaohpidplnoimahfh"},
+                       {"Gmail", "gdkbjbkdgeggmfkjbfohmimchmkikbid"},
+                       {"Explore", "nbljnnecbjbmifnoehiemkgefbnpoeak"},
+                       {"Settings", "odknhmnlageboeamepcngndbggdpaobj"}},
+                      "Coral desk");
+
+  DeskSwitchAnimationWaiter waiter;
+  Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(fake_group));
+  waiter.Wait();
+
+  // We should have two desks and the new active desk has the coral title.
+  DesksController* desks_controller = DesksController::Get();
+  EXPECT_EQ(2u, desks_controller->desks().size());
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
+  EXPECT_EQ(u"Coral desk", desks_controller->GetDeskName(
+                               desks_controller->GetActiveDeskIndex()));
+
+  // The active desk should have the four apps in the group.
+  std::vector<std::string> app_ids_on_active_desk = CollectAppIDsFromWindows(
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk));
+  EXPECT_THAT(app_ids_on_active_desk, testing::UnorderedElementsAre(
+                                          "adnlfjpnmidfimlkaohpidplnoimahfh",
+                                          "gdkbjbkdgeggmfkjbfohmimchmkikbid",
+                                          "nbljnnecbjbmifnoehiemkgefbnpoeak",
+                                          "odknhmnlageboeamepcngndbggdpaobj"));
 }
 
 }  // namespace ash

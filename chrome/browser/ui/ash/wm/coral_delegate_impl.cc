@@ -136,15 +136,12 @@ void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
       DesksTemplatesAppLaunchHandler::GetNextLaunchId());
 }
 
-void CoralDelegateImpl::MoveTabsInGroupToNewDesk(coral::mojom::GroupPtr group) {
+void CoralDelegateImpl::MoveTabsInGroupToNewDesk(
+    const std::vector<coral::mojom::Tab>& tabs) {
   Browser* target_browser = nullptr;
-  for (const auto& entity : group->entities) {
-    if (!entity->is_tab()) {
-      continue;
-    }
-
+  for (const auto& tab : tabs) {
     // Find the index of the tab item on its browser window.
-    const auto& tab_url = entity->get_tab()->url;
+    const auto& tab_url = tab.url;
     int tab_index = -1;
     Browser* source_browser = FindTabOnActiveDesk(tab_url, tab_index);
     if (source_browser) {
@@ -161,10 +158,10 @@ void CoralDelegateImpl::MoveTabsInGroupToNewDesk(coral::mojom::GroupPtr group) {
       bool was_pinned = source_tab_strip->IsTabPinned(tab_index);
       int add_types =
           was_pinned ? AddTabTypes::ADD_PINNED : AddTabTypes::ADD_ACTIVE;
-      std::unique_ptr<tabs::TabModel> tab =
+      std::unique_ptr<tabs::TabModel> tab_model =
           source_tab_strip->DetachTabAtForInsertion(tab_index);
-      target_browser->tab_strip_model()->InsertDetachedTabAt(-1, std::move(tab),
-                                                             add_types);
+      target_browser->tab_strip_model()->InsertDetachedTabAt(
+          -1, std::move(tab_model), add_types);
     }
   }
 

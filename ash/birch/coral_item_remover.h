@@ -8,7 +8,6 @@
 #include <set>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/coral_util.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 
 namespace ash {

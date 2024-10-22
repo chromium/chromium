@@ -4,11 +4,15 @@
 
 #include "ash/wm/coral/coral_controller.h"
 
+#include "ash/birch/coral_util.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/coral_delegate.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/coral/fake_coral_service.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
@@ -19,12 +23,31 @@
 namespace ash {
 
 namespace {
+
 constexpr int kMinItemsInGroup = 4;
 constexpr int kMaxItemsInGroup = 10;
 constexpr int kMaxGroupsToGenerate = 2;
 // Too many items in 1 request could result in poor performance.
 constexpr size_t kMaxItemsInRequest = 100;
 constexpr base::TimeDelta kRequestCoralServiceTimeout = base::Seconds(10);
+
+aura::Window* FindAppWindowOnActiveDesk(const std::string& app_id) {
+  for (const auto& window :
+       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
+    // Skip invalid windows.
+    if (!coral_util::CanMoveToNewDesk(window)) {
+      continue;
+    }
+
+    const std::string* app_id_key = window->GetProperty(kAppIDKey);
+    if (app_id_key && *app_id_key == app_id) {
+      return window;
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 CoralRequest::CoralRequest() = default;
@@ -179,9 +202,24 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
   }
   desks_controller->NewDesk(DesksCreationRemovalSource::kCoral,
                             base::UTF8ToUTF16(group->title));
-  Shell::Get()->coral_delegate()->MoveTabsInGroupToNewDesk(std::move(group));
+  const coral_util::TabsAndApps tabs_apps =
+      coral_util::SplitContentData(group->entities);
 
-  // TODO(zxdan): move the apps in group to the new desk.
+  // Move tabs to a browser on the new desk.
+  Shell::Get()->coral_delegate()->MoveTabsInGroupToNewDesk(tabs_apps.tabs);
+
+  // Move the apps to the new desk.
+  const int new_desk_idx = desks_controller->GetNumberOfDesks() - 1;
+  Desk* new_desk = desks_controller->GetDeskAtIndex(new_desk_idx);
+  for (const auto& app : tabs_apps.apps) {
+    auto* window = FindAppWindowOnActiveDesk(app.id);
+    if (window) {
+      desks_controller->MoveWindowFromActiveDeskTo(
+          window, new_desk, window->GetRootWindow(),
+          DesksMoveWindowFromActiveDeskSource::kCoral);
+    }
+  }
+
   desks_controller->ActivateDesk(desks_controller->desks().back().get(),
                                  DesksSwitchSource::kCoral);
 }

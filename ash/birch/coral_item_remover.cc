@@ -4,6 +4,8 @@
 
 #include "ash/birch/coral_item_remover.h"
 
+#include "ash/birch/coral_util.h"
+
 namespace ash {
 
 CoralItemRemover::CoralItemRemover() = default;

@@ -10,10 +10,9 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/birch/coral_item_remover.h"
+#include "ash/birch/coral_util.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/coral_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
@@ -64,26 +63,6 @@ bool IsBrowserWindow(aura::Window* window) {
          chromeos::AppType::BROWSER;
 }
 
-bool IsValidInSessionWindow(aura::Window* window) {
-  auto* delegate = Shell::Get()->saved_desk_delegate();
-
-  // We should guarantee the window can be launched in saved desk template.
-  if (!delegate->IsWindowSupportedForSavedDesk(window)) {
-    return false;
-  }
-
-  // The window should belong to the current active user.
-  if (auto* window_manager = MultiUserWindowManagerImpl::Get()) {
-    const AccountId& window_owner = window_manager->GetWindowOwner(window);
-    const AccountId& active_owner =
-        Shell::Get()->session_controller()->GetActiveAccountId();
-    if (window_owner.is_valid() && active_owner != window_owner) {
-      return false;
-    }
-  }
-  return true;
-}
-
 // Filters out tabs that should not be embedded/clustered.
 bool IsValidTab(TabClusterUIItem* tab) {
   aura::Window* browser_window = tab->current_info().browser_window;
@@ -98,8 +77,8 @@ bool IsValidTab(TabClusterUIItem* tab) {
     return false;
   }
 
-  // Filter out invalid window.
-  if (!IsValidInSessionWindow(browser_window)) {
+  // Filter out browser window whose tabs cannot move to the new desk.
+  if (!coral_util::CanMoveToNewDesk(browser_window)) {
     return false;
   }
   return true;
@@ -153,8 +132,8 @@ std::unordered_set<coral::mojom::AppPtr> GetInSessionAppData() {
       continue;
     }
 
-    // Skip invalid windows.
-    if (!IsValidInSessionWindow(window)) {
+    // Skip the window that cannot move to the new desk.
+    if (!coral_util::CanMoveToNewDesk(window)) {
       continue;
     }
 

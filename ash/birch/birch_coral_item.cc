@@ -7,6 +7,7 @@
 #include "ash/birch/birch_coral_grouped_icon_image.h"
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_model.h"
+#include "ash/birch/coral_util.h"
 #include "ash/public/cpp/coral_delegate.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
@@ -127,18 +128,12 @@ void BirchCoralItem::PerformAction(bool is_post_login) {
 void BirchCoralItem::LoadIcon(LoadIconCallback original_callback) const {
   const coral::mojom::GroupPtr& group =
       BirchCoralProvider::Get()->GetGroupById(group_id_);
-  std::vector<GURL> page_urls;
-  std::vector<std::string> app_ids;
-  for (const auto& entity : group->entities) {
-    if (entity->is_tab()) {
-      page_urls.push_back(entity->get_tab()->url);
-    } else {
-      app_ids.push_back(entity->get_app()->id);
-    }
-  }
 
-  const int page_num = page_urls.size();
-  const int app_num = app_ids.size();
+  const coral_util::TabsAndApps tabs_apps =
+      coral_util::SplitContentData(group->entities);
+
+  const int page_num = tabs_apps.tabs.size();
+  const int app_num = tabs_apps.apps.size();
   const int total_count = page_num + app_num;
 
   // If the total number of pages and apps exceeds the limit of number of sub
@@ -163,13 +158,13 @@ void BirchCoralItem::LoadIcon(LoadIconCallback original_callback) const {
   for (int i = 0; i < std::min(icon_requests, page_num); i++) {
     // For each `url`, retrieve the icon using favicon service, and run the
     // `barrier_callback` with the image result.
-    GetFaviconImageCoral(page_urls[i], barrier_callback);
+    GetFaviconImageCoral(tabs_apps.tabs[i].url, barrier_callback);
   }
 
   for (int i = 0; i < icon_requests - page_num; i++) {
     // For each `id`, retrieve the icon using `saved_desk_delegate`, and run the
     // `barrier_callback` with the image result.
-    GetAppIconCoral(app_ids[i], barrier_callback);
+    GetAppIconCoral(tabs_apps.apps[i].id, barrier_callback);
   }
 }
 

@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/birch/birch_data_provider.h"
-#include "ash/public/cpp/coral_util.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/wm/coral/coral_controller.h"

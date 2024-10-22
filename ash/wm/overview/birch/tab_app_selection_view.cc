@@ -5,6 +5,7 @@
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 
 #include "ash/birch/birch_coral_provider.h"
+#include "ash/birch/coral_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -406,18 +407,11 @@ TabAppSelectionView::TabAppSelectionView(int group_id) : group_id_(group_id) {
   // Grab the lists of tabs and apps from data provider.
   const coral::mojom::GroupPtr& group =
       BirchCoralProvider::Get()->GetGroupById(group_id_);
-  std::vector<coral::mojom::TabPtr> tabs;
-  std::vector<coral::mojom::AppPtr> apps;
-  for (const auto& entity : group->entities) {
-    if (entity->is_tab()) {
-      tabs.push_back(entity->get_tab().Clone());
-    } else {
-      apps.push_back(entity->get_app().Clone());
-    }
-  }
+  coral_util::TabsAndApps tabs_apps =
+      coral_util::SplitContentData(group->entities);
 
-  const size_t num_tabs = tabs.size();
-  const size_t num_apps = apps.size();
+  const size_t num_tabs = tabs_apps.tabs.size();
+  const size_t num_apps = tabs_apps.apps.size();
   item_views_.reserve(num_tabs + num_apps);
   const bool show_close_button = (num_tabs + num_apps) > kMinItems;
   auto create_item_view = [&](TabAppSelectionItemView::InitParams::Type type,
@@ -441,18 +435,18 @@ TabAppSelectionView::TabAppSelectionView(int group_id) : group_id_(group_id) {
   if (num_tabs > 0) {
     contents->AddChildView(CreateSubtitle(
         IDS_ASH_BIRCH_CORAL_SELECTOR_TAB_SUBTITLE, kTabSubtitleID));
-    for (const coral::mojom::TabPtr& tab : tabs) {
+    for (const coral::mojom::Tab& tab : tabs_apps.tabs) {
       create_item_view(TabAppSelectionItemView::InitParams::Type::kTab,
-                       tab->url.spec(), tab->title, position++);
+                       tab.url.spec(), tab.title, position++);
     }
   }
 
   if (num_apps > 0) {
     contents->AddChildView(CreateSubtitle(
         IDS_ASH_BIRCH_CORAL_SELECTOR_APP_SUBTITLE, kAppSubtitleID));
-    for (const coral::mojom::AppPtr& app : apps) {
-      create_item_view(TabAppSelectionItemView::InitParams::Type::kApp, app->id,
-                       app->title, position++);
+    for (const coral::mojom::App& app : tabs_apps.apps) {
+      create_item_view(TabAppSelectionItemView::InitParams::Type::kApp, app.id,
+                       app.title, position++);
     }
   }
 

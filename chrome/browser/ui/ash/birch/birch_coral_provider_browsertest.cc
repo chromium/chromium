@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "ash/birch/birch_model.h"
+#include "ash/birch/coral_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -26,36 +27,6 @@
 #include "gmock/gmock.h"
 
 namespace ash {
-
-namespace {
-using coral::mojom::App;
-using coral::mojom::EntityPtr;
-using coral::mojom::Tab;
-
-struct TabsAndApps {
-  std::vector<Tab> tabs;
-  std::vector<App> apps;
-};
-
-// Splits an entity pointer vector `content` into its tab and app components.
-// This is so we can use EXPECT_THAT in tests.
-// TODO(sammiequon|zxdan): move this to coral_util.
-TabsAndApps SplitContentData(const std::vector<EntityPtr>& content) {
-  TabsAndApps split;
-
-  // Extract tab data and app data from content data.
-  for (const auto& data : content) {
-    if (data->is_tab()) {
-      split.tabs.emplace_back(*data->get_tab());
-    } else {
-      split.apps.emplace_back(*data->get_app());
-    }
-  }
-
-  return split;
-}
-
-}  // namespace
 
 class BirchCoralProviderTest : public extensions::PlatformAppBrowserTest {
  public:
@@ -121,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectInSessionData) {
   ash::WaitForOverviewEnterAnimation();
 
   // Check if the collected data as expected.
-  const TabsAndApps tabs_and_apps =
-      SplitContentData(GetCoralProvider()->GetCoralRequestForTest().content());
+  const coral_util::TabsAndApps tabs_and_apps = coral_util::SplitContentData(
+      GetCoralProvider()->GetCoralRequestForTest().content());
 
   // Comparing the collected tab data with the expected tab data.
   EXPECT_THAT(tabs_and_apps.tabs,
@@ -170,8 +141,8 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, NoDupInSessionData) {
   ash::WaitForOverviewEnterAnimation();
 
   // Check if the collected data as expected.
-  const TabsAndApps tabs_and_apps =
-      SplitContentData(GetCoralProvider()->GetCoralRequestForTest().content());
+  const coral_util::TabsAndApps tabs_and_apps = coral_util::SplitContentData(
+      GetCoralProvider()->GetCoralRequestForTest().content());
 
   // Comparing the collected tab data with the expected tab data.
   EXPECT_THAT(tabs_and_apps.tabs,
@@ -217,8 +188,8 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, PRE_CollectPostLoginData) {
 
 IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectPostLoginData) {
   // Check if the collected data as expected.
-  const TabsAndApps tabs_and_apps =
-      SplitContentData(GetCoralProvider()->GetCoralRequestForTest().content());
+  const coral_util::TabsAndApps tabs_and_apps = coral_util::SplitContentData(
+      GetCoralProvider()->GetCoralRequestForTest().content());
 
   // Comparing the collected tab data with the expected tab data.
   EXPECT_THAT(tabs_and_apps.tabs,
