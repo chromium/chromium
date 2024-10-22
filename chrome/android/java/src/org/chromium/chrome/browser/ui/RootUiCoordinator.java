@@ -295,7 +295,7 @@ public class RootUiCoordinator
     protected final CallbackController mCallbackController;
     protected final BrowserControlsManager mBrowserControlsManager;
     private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
-    protected ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    protected final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     protected final OneshotSupplier<TabSwitcher> mTabSwitcherSupplier;
     protected final OneshotSupplier<TabSwitcher> mIncognitoTabSwitcherSupplier;
     @Nullable protected ManagedMessageDispatcher mMessageDispatcher;
@@ -702,10 +702,6 @@ public class RootUiCoordinator
 
         if (mScrimCoordinator != null) mScrimCoordinator.destroy();
         mScrimCoordinator = null;
-
-        if (mTabModelSelectorSupplier != null) {
-            mTabModelSelectorSupplier = null;
-        }
 
         if (mCaptureController != null) {
             mCaptureController.destroy();
