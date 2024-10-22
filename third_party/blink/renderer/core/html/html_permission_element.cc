@@ -462,30 +462,29 @@ void HTMLPermissionElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
-void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
-  Element::AttachLayoutTree(context);
+Node::InsertionNotificationRequest HTMLPermissionElement::InsertedInto(
+    ContainerNode& insertion_point) {
+  HTMLElement::InsertedInto(insertion_point);
   if (permission_descriptors_.empty()) {
-    return;
+    return kInsertionDone;
   }
 
-  if (LocalFrame* frame = GetDocument().GetFrame()) {
-    if (frame->IsInFencedFrameTree()) {
-      AddConsoleError(
-          String::Format("The permission '%s' is not allowed in fenced frame",
-                         GetType().Utf8().c_str()));
-      return;
-    }
+  if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
+    AddConsoleError(
+        String::Format("The permission '%s' is not allowed in fenced frame",
+                       GetType().Utf8().c_str()));
+    return kInsertionDone;
+  }
 
-    if (frame->IsCrossOriginToOutermostMainFrame() &&
-        !GetExecutionContext()
-             ->GetContentSecurityPolicy()
-             ->HasEnforceFrameAncestorsDirectives()) {
-      AddConsoleError(
-          String::Format("The permission '%s' is not allowed without the CSP "
-                         "'frame-ancestors' directive present.",
-                         GetType().Utf8().c_str()));
-      return;
-    }
+  if (GetDocument().GetFrame()->IsCrossOriginToOutermostMainFrame() &&
+      !GetExecutionContext()
+           ->GetContentSecurityPolicy()
+           ->HasEnforceFrameAncestorsDirectives()) {
+    AddConsoleError(
+        String::Format("The permission '%s' is not allowed without the CSP "
+                       "'frame-ancestors' directive present.",
+                       GetType().Utf8().c_str()));
+    return kInsertionDone;
   }
 
   for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
@@ -495,13 +494,12 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
           "The permission '%s' is not allowed in the current context due to "
           "PermissionsPolicy",
           PermissionNameToString(descriptor->name).Utf8().c_str()));
-      return;
+      return kInsertionDone;
     }
   }
-  DisableClickingTemporarily(DisableReason::kRecentlyAttachedToLayoutTree,
-                             kDefaultDisableTimeout);
+
   if (embedded_permission_control_receiver_.is_bound()) {
-    return;
+    return kInsertionDone;
   }
   mojo::PendingRemote<EmbeddedPermissionControlClient> client;
   embedded_permission_control_receiver_.Bind(
@@ -510,11 +508,23 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
       mojo::Clone(permission_descriptors_), std::move(client));
   CHECK(GetDocument().View());
   GetDocument().View()->RegisterForLifecycleNotifications(this);
+  return kInsertionDone;
 }
 
-void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
-  Element::DetachLayoutTree(performing_reattach);
+void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
+  Element::AttachLayoutTree(context);
+  DisableClickingTemporarily(DisableReason::kRecentlyAttachedToLayoutTree,
+                             kDefaultDisableTimeout);
+}
+
+void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
+  HTMLElement::RemovedFrom(insertion_point);
   embedded_permission_control_receiver_.reset();
+  // We also need to remove all permission observer receivers from the set, to
+  // effectively stop listening the permission status change events.
+  permission_observer_receivers_.Clear();
+  permission_status_map_.clear();
+  aggregated_permission_status_ = std::nullopt;
   pseudo_state_ = {/*has_invalid_style*/ false, /*is_occluded*/ false};
   if (disable_reason_expire_timer_.IsActive()) {
     disable_reason_expire_timer_.Stop();

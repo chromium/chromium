@@ -282,10 +282,18 @@ class TestPermissionService : public PermissionService {
             ? Vector<MojoPermissionStatus>(permissions.size(),
                                            MojoPermissionStatus::ASK)
             : initial_statuses_;
-    mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client(
+    client_ = mojo::Remote<mojom::blink::EmbeddedPermissionControlClient>(
         std::move(pending_client));
-    client->OnEmbeddedPermissionControlRegistered(/*allow=*/true,
-                                                  std::move(statuses));
+    client_.set_disconnect_handler(base::BindOnce(
+        &TestPermissionService::OnMojoDisconnect, base::Unretained(this)));
+    client_->OnEmbeddedPermissionControlRegistered(/*allowed=*/true,
+                                                   std::move(statuses));
+  }
+
+  void OnMojoDisconnect() {
+    if (client_disconnect_run_loop_) {
+      client_disconnect_run_loop_->Quit();
+    }
   }
 
   void RequestPageEmbeddedPermission(
@@ -340,6 +348,11 @@ class TestPermissionService : public PermissionService {
     run_loop_->Run();
   }
 
+  void WaitForClientDisconnected() {
+    client_disconnect_run_loop_ = std::make_unique<base::RunLoop>();
+    client_disconnect_run_loop_->Run();
+  }
+
   void set_initial_statuses(const Vector<MojoPermissionStatus>& statuses) {
     initial_statuses_ = statuses;
   }
@@ -363,6 +376,8 @@ class TestPermissionService : public PermissionService {
   Vector<MojoPermissionStatus> initial_statuses_;
   bool should_defer_registered_callback_ = false;
   base::OnceClosure pepc_registered_callback_;
+  mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client_;
+  std::unique_ptr<base::RunLoop> client_disconnect_run_loop_;
 };
 
 class RegistrationWaiter {
@@ -1455,6 +1470,35 @@ TEST_F(HTMLPemissionElementSimTest, GrantedSelectorDisplayNone) {
   EXPECT_EQ(
       EDisplay::kInlineBlock,
       permission_element->GetComputedStyle()->GetDisplayStyle().Display());
+}
+
+TEST_F(HTMLPemissionElementSimTest, MovePEPCToAnotherDocument) {
+  SimRequest main_resource("https://example.test/", "text/html");
+  SimRequest iframe_resource("https://example.test/foo.html", "text/html");
+  LoadURL("https://example.test/");
+  main_resource.Complete(R"HTML(
+  <body>
+      <iframe src='https://example.test/foo.html'
+        allow="camera *">
+      </iframe>
+  </body>
+  )HTML");
+  iframe_resource.Finish();
+
+  Compositor().BeginFrame();
+  auto* permission_element =
+      CreatePermissionElement(*MainFrame().GetFrame()->GetDocument(), "camera");
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  DeferredChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  auto& new_document = *child_frame->GetFrame()->GetDocument();
+  new_document.body()->AppendChild(permission_element);
+  permission_service()->WaitForClientDisconnected();
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
 }
 
 class HTMLPemissionElementIntersectionTest

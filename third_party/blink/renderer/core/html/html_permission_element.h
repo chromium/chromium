@@ -58,8 +58,9 @@ class CORE_EXPORT HTMLPermissionElement final
 
   void Trace(Visitor*) const override;
 
+  InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+  void RemovedFrom(ContainerNode&) override;
   void AttachLayoutTree(AttachContext& context) override;
-  void DetachLayoutTree(bool performing_reattach) override;
   void Focus(const FocusParams& params) override;
   FocusableState SupportsFocus(UpdateBehavior) const override;
   int DefaultTabIndex() const override;
@@ -114,6 +115,8 @@ class CORE_EXPORT HTMLPermissionElement final
                            EnableClickingAfterDelay);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
                            FontSizeCanDisableElement);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
+                           MovePEPCToAnotherDocument);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
                            InvalidatePEPCAfterMove);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
