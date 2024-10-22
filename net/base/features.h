@@ -286,6 +286,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDocumentReporting);
 // See spec changes in https://github.com/httpwg/http-extensions/pull/1348
 NET_EXPORT BASE_DECLARE_FEATURE(kCookieSameSiteConsidersRedirectChain);
 
+// When this feature is enabled, servers can include an
+// allow-same-site-none-cookies value that notifies the browser that same-site
+// SameSite=None cookies should be allowed in sandboxed contexts with 3PC
+// restrictions.
+NET_EXPORT BASE_DECLARE_FEATURE(kAllowSameSiteNoneCookiesInSandbox);
+
 // When this feature is enabled, the network service will wait until First-Party
 // Sets are initialized before issuing requests that use the HTTP cache or
 // cookies.

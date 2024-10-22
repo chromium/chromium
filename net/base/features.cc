@@ -224,6 +224,10 @@ BASE_FEATURE(kCookieSameSiteConsidersRedirectChain,
              "CookieSameSiteConsidersRedirectChain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAllowSameSiteNoneCookiesInSandbox,
+             "AllowSameSiteNoneCookiesInSandbox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kWaitForFirstPartySetsInit,
              "WaitForFirstPartySetsInit",
              base::FEATURE_DISABLED_BY_DEFAULT);
