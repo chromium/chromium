@@ -179,6 +179,7 @@ class FakeWebServiceWorkerFetchContext final
     return std::optional<WebSecurityOrigin>();
   }
   WebString GetAcceptLanguages() const override { return WebString(); }
+  void SetIsOfflineMode(bool is_offline_mode) override {}
 
  private:
   FakeURLLoaderFactory fake_url_loader_factory_;
