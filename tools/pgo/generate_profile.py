@@ -42,6 +42,10 @@ from telemetry.internal.backends import android_browser_backend_settings
 
 _ANDROID_SETTINGS = android_browser_backend_settings.ANDROID_BACKEND_SETTINGS
 
+# This is mutable, set to True on the first benchmark run and used to avoid
+# re-installing the browser on subsequent benchmark runs.
+_android_browser_installed = False
+
 # See https://crbug.com/373822787 for how this value was calculated.
 _ANDROID_64_BLOCK_COUNT_THRESHOLD = 2200000000
 
@@ -261,6 +265,8 @@ def get_max_internal_block_count(file_name):
 
 def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
     '''Puts profdata in {profiledir}/{args[0]}.profdata'''
+    global _android_browser_installed
+
     _LOGGER.info(f"Running benchmark: {' '.join(benchmark_args)}")
 
     # Include the first 2 args since per-story benchmarks use [name, --story=s].
@@ -309,6 +315,10 @@ def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
             f'--fetch-data-path-device={args.android_device_path}',
             f'--fetch-data-path-local={profraw_path}',
         ]
+        if _android_browser_installed:
+            cmd += ['--assume-browser-already-installed']
+        else:
+            _android_browser_installed = True
         _LOGGER.debug(
             f"Running benchmark on Android with command: {' '.join(cmd)}")
     else:
