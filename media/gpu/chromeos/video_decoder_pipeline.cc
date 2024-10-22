@@ -251,11 +251,12 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 }
 
 // static
-std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForVDAAdapterForARC(
+std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForARC(
     const gpu::GpuDriverBugWorkarounds& workarounds,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
-    std::vector<Fourcc> renderable_fourccs) {
+    std::vector<Fourcc> renderable_fourccs,
+    std::unique_ptr<MediaLog> media_log) {
   DCHECK(client_task_runner);
   DCHECK(frame_pool);
   DCHECK(!renderable_fourccs.empty());
@@ -272,7 +273,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForVDAAdapterForARC(
   auto* pipeline = new VideoDecoderPipeline(
       workarounds, std::move(client_task_runner), std::move(frame_pool),
       /*frame_converter=*/nullptr, std::move(renderable_fourccs),
-      std::make_unique<NullMediaLog>(), std::move(create_decoder_function_cb),
+      std::move(media_log), std::move(create_decoder_function_cb),
       /*uses_oop_video_decoder=*/false,
       // TODO(b/195769334): Set this properly once OOP-VD is enabled for ARC.
       /*in_video_decoder_process=*/false);
