@@ -3400,6 +3400,12 @@ ci.builder(
                         # crbug.com/1292221
                         "cores": "8",
                     },
+                    shards = 9,
+                ),
+            ),
+            "android_sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
                 ),
             ),
             "cc_unittests": targets.mixin(
@@ -3426,7 +3432,12 @@ ci.builder(
                         "cores": "8",
                     },
                     # See https://crbug.com/1230192, runs of 40-60 minutes at 20 shards.
-                    shards = 30,
+                    shards = 75,
+                ),
+            ),
+            "components_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
                 ),
             ),
             "content_browsertests": targets.mixin(
@@ -3434,15 +3445,24 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter",
                 ],
                 swarming = targets.swarming(
-                    # Flaking with only 20 shards with 40-60 minute runs.
-                    # https://crbug.com/1230118
-                    shards = 30,
+                    dimensions = {
+                        # use 8-core to shorten runtime
+                        "cores": "8",
+                    },
+                    shards = 75,
                 ),
             ),
             "content_shell_test_apk": targets.mixin(
                 args = [
                     "--gtest_filter=-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode*",
                 ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        # use 8-core to shorten runtime
+                        "cores": "8",
+                    },
+                    shards = 6,
+                ),
             ),
             "gl_tests_validating": targets.mixin(
                 args = [
@@ -3464,7 +3484,7 @@ ci.builder(
                     "--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*",
                 ],
                 swarming = targets.swarming(
-                    shards = 2,
+                    shards = 3,
                 ),
             ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
@@ -3473,7 +3493,7 @@ ci.builder(
                 ],
                 swarming = targets.swarming(
                     # crbug.com/1294924
-                    shards = 8,
+                    shards = 15,
                 ),
             ),
             "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
@@ -3482,7 +3502,7 @@ ci.builder(
                 ],
                 swarming = targets.swarming(
                     # crbug.com/1294924
-                    shards = 5,
+                    shards = 9,
                 ),
             ),
         },
