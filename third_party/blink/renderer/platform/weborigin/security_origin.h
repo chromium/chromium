@@ -511,7 +511,7 @@ struct HashTraits<scoped_refptr<const blink::SecurityOrigin>>
 #error "Unknown bits"
 #endif
     };
-    return StringHasher::HashMemory(base::as_byte_span(hash_codes));
+    return StringHasher::HashMemory<sizeof(hash_codes)>(hash_codes);
   }
   static unsigned GetHash(
       const scoped_refptr<const blink::SecurityOrigin>& origin) {

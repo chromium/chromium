@@ -38,15 +38,15 @@ namespace WTF {
 
 namespace {
 
-const char kNullLChars[1] = {0};
-const UChar kNullUChars[1] = {0};
+const char kNullLChars[2] = {0, 0};
+const UChar kNullUChars[2] = {0, 0};
 
 const uint64_t kEmptyStringHash = 0x5A6EF77074EBC84B;
 const uint64_t kSingleNullCharacterHash = 0x48DFCE108249B3F8;
 
-const LChar kTestALChars[5] = {0x41, 0x95, 0xFF, 0x50, 0x01};
-const UChar kTestAUChars[5] = {0x41, 0x95, 0xFF, 0x50, 0x01};
-const UChar kTestBUChars[5] = {0x41, 0x95, 0xFFFF, 0x1080, 0x01};
+const LChar kTestALChars[6] = {0x41, 0x95, 0xFF, 0x50, 0x01, 0};
+const UChar kTestAUChars[6] = {0x41, 0x95, 0xFF, 0x50, 0x01, 0};
+const UChar kTestBUChars[6] = {0x41, 0x95, 0xFFFF, 0x1080, 0x01, 0};
 
 const uint64_t kTestAHash = 0xE9422771E0A5DDE6;
 const uint64_t kTestBHash = 0x4A2DA770EEA75C1E;
@@ -98,17 +98,18 @@ TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
 }
 
 TEST(StringHasherTest, StringHasher_HashMemory) {
-  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory({}));
-  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory(
-                                  base::as_byte_span(kNullUChars).first(0u)));
+  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory(nullptr, 0));
+  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory(kNullUChars, 0));
+  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory<0>(nullptr));
+  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory<0>(kNullUChars));
 
-  EXPECT_EQ(
-      kSingleNullCharacterHash,
-      StringHasher::HashMemory(base::as_byte_span(kNullUChars).first(1u)));
+  EXPECT_EQ(kSingleNullCharacterHash, StringHasher::HashMemory(kNullLChars, 1));
+  EXPECT_EQ(kSingleNullCharacterHash, StringHasher::HashMemory<1>(kNullUChars));
 
-  EXPECT_EQ(kTestAHash, StringHasher::HashMemory(kTestALChars));
-  EXPECT_EQ(kTestBHash,
-            StringHasher::HashMemory(base::as_byte_span(kTestBUChars)));
+  EXPECT_EQ(kTestAHash, StringHasher::HashMemory(kTestALChars, 5));
+  EXPECT_EQ(kTestAHash, StringHasher::HashMemory<5>(kTestALChars));
+  EXPECT_EQ(kTestBHash, StringHasher::HashMemory(kTestBUChars, 10));
+  EXPECT_EQ(kTestBHash, StringHasher::HashMemory<10>(kTestBUChars));
 }
 
 TEST(StringHasherTest, CaseFoldingHash) {
