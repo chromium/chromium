@@ -242,8 +242,10 @@ bool EncodeImage(
     int compression_quality,
     scoped_refptr<base::RefCountedBytes> output,
     scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs) {
-  if (gfx::JPEGCodec::Encode(image, compression_quality,
-                             &output->as_vector())) {
+  std::optional<std::vector<uint8_t>> encoded_image =
+      gfx::JPEGCodec::Encode(image, compression_quality);
+  if (encoded_image) {
+    output->as_vector() = std::move(encoded_image.value());
     AddClientLogsForEncode(client_logs, output);
     return true;
   }
@@ -258,8 +260,10 @@ bool EncodeImageMaybeWithTransparency(
   if (image.isOpaque()) {
     return EncodeImage(image, compression_quality, output, client_logs);
   }
-  if (gfx::WebpCodec::Encode(image, compression_quality,
-                             &output->as_vector())) {
+  std::optional<std::vector<uint8_t>> encoded_image =
+      gfx::WebpCodec::Encode(image, compression_quality);
+  if (encoded_image) {
+    output->as_vector() = std::move(encoded_image.value());
     AddClientLogsForEncode(client_logs, output);
     return true;
   }

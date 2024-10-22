@@ -419,15 +419,13 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
 
     SkBitmap decoded_bitmap;
     if (response_file_extension == ".png") {
-      EXPECT_TRUE(gfx::PNGCodec::Decode(&response_image_data.front(),
-                                        response_image_data.size(),
-                                        &decoded_bitmap));
+      decoded_bitmap = gfx::PNGCodec::Decode(response_image_data);
+      ASSERT_FALSE(decoded_bitmap.isNull());
       ASSERT_EQ(expected_size.width(), decoded_bitmap.width());
       ASSERT_EQ(expected_size.height(), decoded_bitmap.height());
     } else if (response_file_extension == ".jpg") {
-      decoded_bitmap = *gfx::JPEGCodec::Decode(&response_image_data.front(),
-                                               response_image_data.size())
-                            .get();
+      decoded_bitmap = gfx::JPEGCodec::Decode(response_image_data);
+      ASSERT_FALSE(decoded_bitmap.isNull());
       ASSERT_EQ(expected_size.width(), decoded_bitmap.width());
       ASSERT_EQ(expected_size.height(), decoded_bitmap.height());
     } else if (response_file_extension == ".webp") {

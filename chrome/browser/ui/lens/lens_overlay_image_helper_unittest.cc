@@ -67,15 +67,15 @@ class LensOverlayImageHelperTest : public testing::Test {
   }
 
   std::string GetJpegBytesForBitmap(const SkBitmap& bitmap) {
-    std::vector<unsigned char> data;
-    gfx::JPEGCodec::Encode(bitmap, kImageCompressionQuality, &data);
-    return std::string(data.begin(), data.end());
+    std::optional<std::vector<uint8_t>> data =
+        gfx::JPEGCodec::Encode(bitmap, kImageCompressionQuality);
+    return std::string(base::as_string_view(data.value()));
   }
 
   std::string GetWebpBytesForBitmap(const SkBitmap& bitmap) {
-    std::vector<unsigned char> data;
-    gfx::WebpCodec::Encode(bitmap, kImageCompressionQuality, &data);
-    return std::string(data.begin(), data.end());
+    std::optional<std::vector<uint8_t>> data =
+        gfx::WebpCodec::Encode(bitmap, kImageCompressionQuality);
+    return std::string(base::as_string_view(data.value()));
   }
 
   // Helper to create a region search region for the given rect.

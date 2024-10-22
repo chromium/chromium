@@ -42,13 +42,11 @@ SkBitmap LoadImageFromTestFile(
           .Append(relative_path_from_chrome_data);
   EXPECT_TRUE(base::PathExists(image_path));
 
-  std::string image_data;
-  EXPECT_TRUE(base::ReadFileToString(image_path, &image_data));
+  std::optional<std::vector<uint8_t>> image_data =
+      base::ReadFileToBytes(image_path);
 
-  SkBitmap image;
-  EXPECT_TRUE(
-      gfx::PNGCodec::Decode(reinterpret_cast<const uint8_t*>(image_data.data()),
-                            image_data.size(), &image));
+  SkBitmap image = gfx::PNGCodec::Decode(image_data.value());
+  EXPECT_FALSE(image.isNull());
   return image;
 }
 

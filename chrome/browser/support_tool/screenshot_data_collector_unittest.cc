@@ -54,10 +54,7 @@ class ScreenshotDataCollectorTest : public ::testing::Test {
     const GURL url(kTestImageBase64);
     std::string mime_type, charset, data;
     EXPECT_TRUE(net::DataURL::Parse(url, &mime_type, &charset, &data));
-    bitmap_ = *gfx::JPEGCodec::Decode(
-                   reinterpret_cast<const unsigned char*>(data.c_str()),
-                   data.length())
-                   .get();
+    bitmap_ = gfx::JPEGCodec::Decode(base::as_byte_span(data));
 
     webrtc::DesktopSize size(bitmap_.width(), bitmap_.height());
     frame_ = std::make_unique<webrtc::BasicDesktopFrame>(std::move(size));

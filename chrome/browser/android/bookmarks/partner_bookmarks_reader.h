@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon_base/favicon_types.h"
@@ -120,8 +121,7 @@ class PartnerBookmarksReader {
                         FaviconFetchResult result);
   // Putting in class in order to set the friend class access for
   // base::ScopedAllowBaseSyncPrimitives.
-  static void PrepareAndSetFavicon(jbyte* icon_bytes,
-                                   int icon_len,
+  static void PrepareAndSetFavicon(base::span<uint8_t> icon,
                                    bookmarks::BookmarkNode* node,
                                    Profile* profile,
                                    favicon_base::IconType icon_type);

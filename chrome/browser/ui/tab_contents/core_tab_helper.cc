@@ -140,12 +140,13 @@ std::vector<unsigned char> CoreTabHelper::EncodeImage(
     const gfx::Image& image,
     std::string& content_type,
     lens::mojom::ImageFormat& image_format) {
-  std::vector<unsigned char> data;
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(image.AsBitmap(), kEncodingQualityJpeg);
 
-  if (gfx::JPEGCodec::Encode(image.AsBitmap(), kEncodingQualityJpeg, &data)) {
+  if (data) {
     content_type = "image/jpeg";
     image_format = lens::mojom::ImageFormat::JPEG;
-    return data;
+    return data.value();
   }
 
   // Get the front and end of the image bytes in order to store them in the
@@ -153,8 +154,7 @@ std::vector<unsigned char> CoreTabHelper::EncodeImage(
   content_type = "image/png";
   image_format = lens::mojom::ImageFormat::PNG;
   auto bytes = image.As1xPNGBytes();
-  data.assign(bytes->begin(), bytes->end());
-  return data;
+  return {bytes->begin(), bytes->end()};
 }
 
 // static
@@ -212,19 +212,19 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
   }
 
   lens::mojom::ImageFormat encode_target_format;
-  std::vector<unsigned char> encoded_data;
+  std::optional<std::vector<uint8_t>> encoded_data;
   log_data.push_back(lens::mojom::LatencyLog::New(
       lens::mojom::Phase::ENCODE_START, original_size, downscaled_size,
       lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
       /*encoded_size_bytes=*/0));
-  if (thumbnail.isOpaque() &&
-      gfx::JPEGCodec::Encode(thumbnail, kEncodingQualityJpeg, &encoded_data)) {
-    thumbnail_data.swap(encoded_data);
+  if (thumbnail.isOpaque() && (encoded_data = gfx::JPEGCodec::Encode(
+                                   thumbnail, kEncodingQualityJpeg))) {
+    thumbnail_data.swap(encoded_data.value());
     content_type = "image/jpeg";
     encode_target_format = lens::mojom::ImageFormat::JPEG;
-  } else if (gfx::WebpCodec::Encode(thumbnail, kEncodingQualityWebp,
-                                    &encoded_data)) {
-    thumbnail_data.swap(encoded_data);
+  } else if ((encoded_data =
+                  gfx::WebpCodec::Encode(thumbnail, kEncodingQualityWebp))) {
+    thumbnail_data.swap(encoded_data.value());
     content_type = "image/webp";
     encode_target_format = lens::mojom::ImageFormat::WEBP;
   }
@@ -243,8 +243,7 @@ lens::mojom::ImageFormat CoreTabHelper::EncodeImageIntoSearchArgs(
     TemplateURLRef::SearchTermsArgs& search_args) {
   lens::mojom::ImageFormat image_format;
   std::string content_type;
-  std::vector<unsigned char> data =
-      EncodeImage(image, content_type, image_format);
+  std::vector<uint8_t> data = EncodeImage(image, content_type, image_format);
   encoded_size_bytes = sizeof(unsigned char) * data.size();
   search_args.image_thumbnail_content.assign(data.begin(), data.end());
   search_args.image_thumbnail_content_type = content_type;

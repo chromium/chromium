@@ -439,7 +439,6 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
     }
   }
 
-  std::vector<unsigned char> data;
   if (image_format == chrome::mojom::ImageFormat::ORIGINAL) {
     // ORIGINAL will only fall back to here if the image needs to downscale.
     // Let's PNG downscale to PNG and JEPG downscale to JPEG.
@@ -456,25 +455,29 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
         image_format_conversion.at(image_format), base::Time::Now(),
         /*encoded_size_bytes=*/0));
   }
+  std::optional<std::vector<uint8_t>> data;
   switch (image_format) {
     case chrome::mojom::ImageFormat::PNG:
-      if (gfx::PNGCodec::EncodeBGRASkBitmap(
-              bitmap, kDiscardTransparencyForContextMenu, &data)) {
-        image_data.swap(data);
+      data = gfx::PNGCodec::EncodeBGRASkBitmap(
+          bitmap, kDiscardTransparencyForContextMenu);
+      if (data) {
+        image_data.swap(data.value());
         image_extension = kPngExtension;
       }
       break;
     case chrome::mojom::ImageFormat::WEBP:
-      if (gfx::WebpCodec::Encode(bitmap, quality, &data)) {
-        image_data.swap(data);
+      data = gfx::WebpCodec::Encode(bitmap, quality);
+      if (data) {
+        image_data.swap(data.value());
         image_extension = kWebpExtension;
       }
       break;
     case chrome::mojom::ImageFormat::ORIGINAL:
     // Any format other than PNG and JPEG fall back to here.
     case chrome::mojom::ImageFormat::JPEG:
-      if (gfx::JPEGCodec::Encode(bitmap, quality, &data)) {
-        image_data.swap(data);
+      data = gfx::JPEGCodec::Encode(bitmap, quality);
+      if (data) {
+        image_data.swap(data.value());
         image_extension = kJpgExtension;
       }
       break;

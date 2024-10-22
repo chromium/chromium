@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -116,10 +117,10 @@ class RemoteCopyMessageHandlerTest : public SharedClipboardTestBase {
   }
 
   static std::string SkBitmapToPNGString(const SkBitmap& bitmap) {
-    std::vector<unsigned char> png_data;
-    gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
-                                      &png_data);
-    return std::string(png_data.begin(), png_data.end());
+    std::optional<std::vector<uint8_t>> png_data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                          /*discard_transparency=*/false);
+    return std::string(base::as_string_view(png_data.value()));
   }
 
   std::unique_ptr<RemoteCopyMessageHandler> message_handler_;

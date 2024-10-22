@@ -36,15 +36,14 @@ base::expected<SkBitmap, std::string> LoadImageFromTestFile(
     return base::unexpected(
         base::StrCat({"Path does not exist: ", image_path.AsUTF8Unsafe()}));
   }
-  std::string image_data;
-  if (!base::ReadFileToString(image_path, &image_data)) {
+  std::optional<std::vector<uint8_t>> image_data =
+      base::ReadFileToBytes(image_path);
+  if (!image_data) {
     return base::unexpected("Could not read file.");
   }
 
-  SkBitmap image;
-  if (!gfx::PNGCodec::Decode(
-          reinterpret_cast<const uint8_t*>(image_data.data()),
-          image_data.size(), &image)) {
+  SkBitmap image = gfx::PNGCodec::Decode(image_data.value());
+  if (image.isNull()) {
     return base::unexpected("Could not decode file.");
   }
   return image;

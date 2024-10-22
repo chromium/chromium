@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/picture_in_picture_window_controller.h"
-
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -33,6 +31,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/overlay_window.h"
+#include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -438,13 +437,11 @@ class PictureInPicturePixelComparisonBrowserTest
     quit_run_loop.Run();
   }
 
-  bool ReadImageFile(const base::FilePath& file_path, SkBitmap* read_image) {
+  SkBitmap ReadImageFile(const base::FilePath& file_path) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    std::string png_string;
-    base::ReadFileToString(file_path, &png_string);
-    return gfx::PNGCodec::Decode(
-        reinterpret_cast<const unsigned char*>(png_string.data()),
-        png_string.length(), read_image);
+    std::optional<std::vector<uint8_t>> png_data =
+        base::ReadFileToBytes(file_path);
+    return gfx::PNGCodec::Decode(png_data.value());
   }
 
   void TakeOverlayWindowScreenshot(const gfx::Size& window_size,
@@ -547,10 +544,10 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest, VideoPlay) {
 
   TakeOverlayWindowScreenshot({402, 268}, /*controls_visible=*/false);
 
-  SkBitmap expected_image;
   base::FilePath expected_image_path =
       GetFilePath(FILE_PATH_LITERAL("pixel_expected_video_play.png"));
-  ASSERT_TRUE(ReadImageFile(expected_image_path, &expected_image));
+  SkBitmap expected_image = ReadImageFile(expected_image_path);
+  ASSERT_FALSE(expected_image.isNull());
   EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)

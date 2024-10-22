@@ -40,12 +40,10 @@ void CompressTask(
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
   constexpr int kCompressionQuality = 97;
-  std::vector<uint8_t> data;
-  const bool result =
-      gfx::JPEGCodec::Encode(ResizeBitmap(bitmap), kCompressionQuality, &data);
-  DCHECK(result);
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(ResizeBitmap(bitmap), kCompressionQuality);
 
-  std::move(post_processing_task).Run(std::move(data));
+  std::move(post_processing_task).Run(std::move(data.value()));
 }
 
 void WriteTask(base::FilePath file_path,

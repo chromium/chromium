@@ -5,6 +5,7 @@
 #include "lens_overlay_query_controller.h"
 
 #include "base/base64url.h"
+#include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -282,10 +283,9 @@ class LensOverlayQueryControllerTest : public testing::Test {
   }
 
   std::string GetExpectedJpegBytesForBitmap(const SkBitmap& bitmap) {
-    std::vector<unsigned char> data;
-    gfx::JPEGCodec::Encode(
-        bitmap, lens::features::GetLensOverlayImageCompressionQuality(), &data);
-    return std::string(data.begin(), data.end());
+    std::optional<std::vector<uint8_t>> data = gfx::JPEGCodec::Encode(
+        bitmap, lens::features::GetLensOverlayImageCompressionQuality());
+    return std::string(base::as_string_view(data.value()));
   }
 
   lens::LensOverlaySelectionType GetSelectionTypeFromUrl(

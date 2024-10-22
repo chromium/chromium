@@ -207,37 +207,28 @@ std::vector<uint8_t> ThumbnailImage::CompressBitmap(
     SkBitmap bitmap,
     std::optional<uint64_t> frame_id) {
   constexpr int kCompressionQuality = 97;
-  std::vector<uint8_t> data;
-
-  // Similar to above, extract logic into function so we can select a
-  // TRACE_EVENT_* macro.
-  auto compress = [&]() {
-    const bool result =
-        gfx::JPEGCodec::Encode(bitmap, kCompressionQuality, &data);
-    DCHECK(result);
-  };
+  std::optional<std::vector<uint8_t>> data;
 
   if (frame_id) {
     TRACE_EVENT_WITH_FLOW0(
         "ui", "Tab.Preview.CompressJPEGWithFlow", *frame_id,
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-    compress();
+    data = gfx::JPEGCodec::Encode(bitmap, kCompressionQuality);
   } else {
     TRACE_EVENT0("ui", "Tab.Preview.CompressJPEG");
-    compress();
+    data = gfx::JPEGCodec::Encode(bitmap, kCompressionQuality);
   }
 
-  return data;
+  return data.value();
 }
 
 // static
 gfx::ImageSkia ThumbnailImage::UncompressImage(
     CompressedThumbnailData compressed) {
   gfx::ImageSkia result;
-  std::unique_ptr<SkBitmap> bitmap(
-      gfx::JPEGCodec::Decode(compressed->data.data(), compressed->data.size()));
-  if (bitmap.get()) {
-    result = gfx::ImageSkia::CreateFrom1xBitmap(*bitmap);
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(compressed->data);
+  if (!bitmap.isNull()) {
+    result = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   }
 
   result.MakeThreadSafe();

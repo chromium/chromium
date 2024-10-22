@@ -56,13 +56,13 @@ base::expected<SkBitmap, std::string> LoadIcon(
   if (!base::PathExists(icon_path)) {
     return base::unexpected("Icon path does not exist.");
   }
-  std::string icon_data;
-  if (!base::ReadFileToString(icon_path, &icon_data)) {
+  std::optional<std::vector<uint8_t>> icon_data =
+      base::ReadFileToBytes(icon_path);
+  if (!icon_data) {
     return base::unexpected("Could not read icon file.");
   }
-  base::span<const uint8_t> bytes = base::as_byte_span(icon_data);
-  SkBitmap icon;
-  if (!gfx::PNGCodec::Decode(bytes.data(), bytes.size(), &icon)) {
+  SkBitmap icon = gfx::PNGCodec::Decode(icon_data.value());
+  if (icon.isNull()) {
     return base::unexpected("Could not decode icon file.");
   }
   return base::ok(icon);
