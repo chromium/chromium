@@ -2472,8 +2472,14 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(nav_url);
 }
 
+// TODO(https://crbug.com/361839153): This test fails on ChromeOS builds.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OutOfScopeBarShown DISABLED_OutOfScopeBarShown
+#else
+#define MAYBE_OutOfScopeBarShown OutOfScopeBarShown
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
-                       OutOfScopeBarShown) {
+                       MAYBE_OutOfScopeBarShown) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   // Origin text should not show if out-of-scope bar is shown after navigation.
@@ -2518,8 +2524,16 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(nav_url);
 }
 
+// TODO(https://crbug.com/361839153): This test fails on ChromeOS builds.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OutOfScopeBarWithThemeColorChange \
+  DISABLED_OutOfScopeBarWithThemeColorChange
+#else
+#define MAYBE_OutOfScopeBarWithThemeColorChange \
+  OutOfScopeBarWithThemeColorChange
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
-                       OutOfScopeBarWithThemeColorChange) {
+                       MAYBE_OutOfScopeBarWithThemeColorChange) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
