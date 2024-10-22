@@ -9,6 +9,7 @@ assert(is_chromeos_ash,
 
 static_library("babelorca") {
   sources = [
+    "babel_orca_controller.h",
     "babel_orca_manager.cc",
     "babel_orca_manager.h",
     "babel_orca_speech_recognizer.h",
