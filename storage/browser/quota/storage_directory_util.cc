@@ -30,8 +30,6 @@ base::FilePath CreateClientBucketPath(const base::FilePath& profile_path,
       return bucket_directory.Append(kCacheStorageDirectory);
     case QuotaClientType::kServiceWorker:
       return bucket_directory.Append(kScriptCacheDirectory);
-    case QuotaClientType::kMediaLicense:
-      return bucket_directory.Append(kMediaLicenseDirectory);
     case QuotaClientType::kDatabase:
       NOTREACHED() << "Unsupported QuotaClientType";
   }
