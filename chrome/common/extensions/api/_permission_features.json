@@ -57,7 +57,7 @@
     ]
   },
   "aiLanguageModelOriginTrial": {
-    "channel": "trunk",
+    "channel": "stable",
     "extension_types": [
       "extension"
     ]

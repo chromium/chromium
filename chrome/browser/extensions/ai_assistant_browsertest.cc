@@ -208,7 +208,6 @@ class ExtensionAIAssistantBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  ScopedCurrentChannel scoped_channel_{version_info::Channel::UNKNOWN};
 };
 
 INSTANTIATE_TEST_SUITE_P(
