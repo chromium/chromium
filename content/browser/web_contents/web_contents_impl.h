@@ -452,6 +452,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool IsConnectedToSerialPort() override;
   bool IsConnectedToHidDevice() override;
   bool IsConnectedToUsbDevice() override;
+  bool IsConnectedToGeolocation() override;
   bool HasFileSystemAccessHandles() override;
   bool HasPictureInPictureVideo() override;
   bool HasPictureInPictureDocument() override;
@@ -1298,6 +1299,11 @@ class CONTENT_EXPORT WebContentsImpl
   // devices.
   void IncrementHidActiveFrameCount();
   void DecrementHidActiveFrameCount();
+
+  // Modify the counter of frames in this WebContents actively using
+  // geolocation.
+  void IncrementGeolocationActiveFrameCount();
+  void DecrementGeolocationActiveFrameCount();
 
   // Notifies the delegate and observers when device connection types used by
   // the WebContents change.
@@ -2363,6 +2369,7 @@ class CONTENT_EXPORT WebContentsImpl
   size_t serial_active_frame_count_ = 0;
   size_t hid_active_frame_count_ = 0;
   size_t usb_active_frame_count_ = 0;
+  size_t geolocation_active_frame_count_ = 0;
 
   size_t file_system_access_handle_count_ = 0;
 

@@ -97,6 +97,7 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
   }
 
   void TearDown() override {
+    service_.reset();
     context_.reset();
     geolocation_overrider_.reset();
     RenderViewHostImplTestHarness::TearDown();

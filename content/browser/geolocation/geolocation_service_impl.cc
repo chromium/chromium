@@ -67,12 +67,16 @@ GeolocationServiceImpl::GeolocationServiceImpl(
   DCHECK(render_frame_host);
 }
 
-GeolocationServiceImpl::~GeolocationServiceImpl() = default;
+GeolocationServiceImpl::~GeolocationServiceImpl() {
+  DecrementActivityCount();
+}
 
 void GeolocationServiceImpl::Bind(
     mojo::PendingReceiver<blink::mojom::GeolocationService> receiver) {
   receiver_set_.Add(this, std::move(receiver),
                     std::make_unique<GeolocationServiceImplContext>());
+  receiver_set_.set_disconnect_handler(base::BindRepeating(
+      &GeolocationServiceImpl::OnDisconnected, base::Unretained(this)));
 #if BUILDFLAG(IS_IOS)
   device::GeolocationSystemPermissionManager*
       geolocation_system_permission_manager =
@@ -116,6 +120,8 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionStatus(
   if (permission_status != blink::mojom::PermissionStatus::GRANTED)
     return;
 
+  IncrementActivityCount();
+
   requesting_origin_ =
       render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
   auto requesting_url =
@@ -145,6 +151,29 @@ void GeolocationServiceImpl::HandlePermissionStatusChange(
         render_frame_host_->GetBrowserContext())
         ->UnsubscribeFromPermissionStatusChange(subscription_id_);
     geolocation_context_->OnPermissionRevoked(requesting_origin_);
+    DecrementActivityCount();
+  }
+}
+
+void GeolocationServiceImpl::OnDisconnected() {
+  if (receiver_set_.empty()) {
+    DecrementActivityCount();
+  }
+}
+
+void GeolocationServiceImpl::IncrementActivityCount() {
+  is_sending_updates_ = true;
+  auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host_);
+  static_cast<WebContentsImpl*>(web_contents)
+      ->IncrementGeolocationActiveFrameCount();
+}
+
+void GeolocationServiceImpl::DecrementActivityCount() {
+  if (is_sending_updates_) {
+    is_sending_updates_ = false;
+    auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host_);
+    static_cast<WebContentsImpl*>(web_contents)
+        ->DecrementGeolocationActiveFrameCount();
   }
 }
 

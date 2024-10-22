@@ -832,6 +832,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // device.
   virtual bool IsConnectedToUsbDevice() = 0;
 
+  // Indicates whether any frame in the WebContents is connected to geolocation
+  // service.
+  virtual bool IsConnectedToGeolocation() = 0;
+
   // Indicates whether any frame in the WebContents has File System Access
   // handles.
   virtual bool HasFileSystemAccessHandles() = 0;

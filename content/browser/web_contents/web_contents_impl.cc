@@ -2626,6 +2626,10 @@ bool WebContentsImpl::IsConnectedToUsbDevice() {
   return usb_active_frame_count_ > 0;
 }
 
+bool WebContentsImpl::IsConnectedToGeolocation() {
+  return geolocation_active_frame_count_ > 0;
+}
+
 bool WebContentsImpl::HasFileSystemAccessHandles() {
   return file_system_access_handle_count_ > 0;
 }
@@ -10080,6 +10084,44 @@ void WebContentsImpl::DecrementHidActiveFrameCount() {
   if (hid_active_frame_count_ == 0) {
     OnDeviceConnectionTypesChanged(
         WebContentsObserver::DeviceConnectionType::kHID, /*used=*/false);
+  }
+}
+
+void WebContentsImpl::IncrementGeolocationActiveFrameCount() {
+  OPTIONAL_TRACE_EVENT0(
+      "content", "WebContentsImpl::IncrementGeolocationActiveFrameCount");
+  // Trying to invalidate the tab state while being destroyed could result in a
+  // use after free.
+  if (IsBeingDestroyed()) {
+    return;
+  }
+
+  // Notify for UI updates if the active frame count transitions from zero to
+  // non-zero.
+  geolocation_active_frame_count_++;
+  if (geolocation_active_frame_count_ == 1) {
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kGeolocation, /*used=*/true);
+  }
+}
+
+void WebContentsImpl::DecrementGeolocationActiveFrameCount() {
+  OPTIONAL_TRACE_EVENT0(
+      "content", "WebContentsImpl::DecrementGeolocationActiveFrameCount");
+  // Trying to invalidate the tab state while being destroyed could result in a
+  // use after free.
+  if (IsBeingDestroyed()) {
+    return;
+  }
+
+  // Notify for UI updates if the active frame count transitions from non-zero
+  // to zero.
+  DCHECK_NE(0u, geolocation_active_frame_count_);
+  geolocation_active_frame_count_--;
+  if (geolocation_active_frame_count_ == 0) {
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kGeolocation,
+        /*used=*/false);
   }
 }
 

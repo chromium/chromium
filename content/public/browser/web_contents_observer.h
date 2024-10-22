@@ -127,7 +127,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
     // WebHID
     kHID,
     // Web Serial
-    kSerial
+    kSerial,
+    // Geolocation
+    kGeolocation
   };
 
   WebContentsObserver(WebContentsObserver&&) = delete;

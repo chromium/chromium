@@ -348,6 +348,8 @@ void PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
           contents, &PageLiveStateDataImpl::set_is_connected_to_serial_port,
           used);
       break;
+    default:
+      break;
   }
 }
 
