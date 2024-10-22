@@ -25,3 +25,22 @@ static_library("isolated_web_app") {
     "//url",
   ]
 }
+
+# A separate library is needed to avoid circular dependency between
+# //c/b/web_applications and //c/b/ash/app_mode/isolated_web_app.
+static_library("trust_check") {
+  sources = [
+    "kiosk_iwa_trust_check.cc",
+    "kiosk_iwa_trust_check.h",
+  ]
+  public_deps = []
+  deps = [
+    "//ash/constants",
+    "//chrome/browser/ash/policy/core",
+    "//chromeos/ash/components/settings",
+    "//components/account_id",
+    "//components/prefs",
+    "//components/user_manager",
+    "//components/web_package",
+  ]
+}
