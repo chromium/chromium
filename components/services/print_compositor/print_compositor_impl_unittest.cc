@@ -2,19 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/services/print_compositor/print_compositor_impl.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/services/print_compositor/print_compositor_impl.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "base/test/scoped_feature_list.h"
+#include "cc/test/pixel_test_utils.h"                      // nogncheck
+#include "components/enterprise/watermarking/features.h"   // nogncheck
+#include "components/enterprise/watermarking/watermark.h"  // nogncheck
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/docs/SkMultiPictureDocument.h"
+#endif
 
 namespace printing {
 
@@ -78,6 +91,34 @@ class MockCompletionPrintCompositorImpl : public PrintCompositorImpl {
   }
 };
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+class MockPrintCompositorImplEnterpriseWatermark : public PrintCompositorImpl {
+ public:
+  MockPrintCompositorImplEnterpriseWatermark()
+      : PrintCompositorImpl(mojo::NullReceiver(),
+                            /*initialize_environment=*/false,
+                            /*io_task_runner=*/nullptr) {}
+  ~MockPrintCompositorImplEnterpriseWatermark() override = default;
+
+  static constexpr SkSize kSize{200, 200};
+  static constexpr char kWatermarkText[] = "example-watermark";
+
+  void DrawPage(SkDocument* doc,
+                const SkDocumentPage& page,
+                const std::string& watermark_text) override {
+    bitmap_.allocN32Pixels(kSize.fWidth, kSize.fHeight);
+    SkCanvas canvas(bitmap_);
+    canvas.clear(SK_ColorBLACK);
+    DrawEnterpriseWatermark(&canvas, kSize, watermark_text);
+  }
+
+  const SkBitmap& bitmap() const { return bitmap_; }
+
+ private:
+  SkBitmap bitmap_;
+};
+#endif  //  BUILDFLAG(ENTERPRISE_WATERMARK)
+
 class PrintCompositorImplTest : public testing::Test {
  public:
   PrintCompositorImplTest()
@@ -132,6 +173,79 @@ class PrintCompositorImplTest : public testing::Test {
   mojom::PrintCompositor::Status status_ =
       mojom::PrintCompositor::Status::kSuccess;
 };
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+class PrintCompositorImplEnterpriseWatermarkTest
+    : public testing::TestWithParam<bool> {
+ public:
+  PrintCompositorImplEnterpriseWatermarkTest() {
+    // Enable finch flag based on params.
+    bool is_watermark_enabled = GetParam();
+    if (is_watermark_enabled) {
+      feature_list_.InitAndEnableFeature(
+          enterprise_watermark::features::kEnablePrintWatermark);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          enterprise_watermark::features::kEnablePrintWatermark);
+    }
+
+    // Create reference bitmap.
+    reference_watermark_.allocN32Pixels(
+        MockPrintCompositorImplEnterpriseWatermark::kSize.fWidth,
+        MockPrintCompositorImplEnterpriseWatermark::kSize.fHeight);
+    SkCanvas canvas(reference_watermark_);
+    canvas.clear(SK_ColorBLACK);
+    enterprise_watermark::DrawWatermark(
+        &canvas, MockPrintCompositorImplEnterpriseWatermark::kSize,
+        MockPrintCompositorImplEnterpriseWatermark::kWatermarkText,
+        PrintCompositorImpl::kWatermarkBlockWidth,
+        PrintCompositorImpl::kWatermarkTextSize);
+  }
+
+  const SkBitmap& reference_watermark() const { return reference_watermark_; }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  SkBitmap reference_watermark_;
+};
+
+TEST_P(PrintCompositorImplEnterpriseWatermarkTest, EnterpriseWatermarkSet) {
+  MockPrintCompositorImplEnterpriseWatermark compositor;
+  compositor.DrawPage(
+      nullptr, {}, MockPrintCompositorImplEnterpriseWatermark::kWatermarkText);
+
+  // If the feature is enabled, the watermark will equal the reference.
+  bool enterprise_watermark_enabled = GetParam();
+  ASSERT_EQ(cc::MatchesBitmap(compositor.bitmap(), reference_watermark(),
+                              cc::ExactPixelComparator()),
+            enterprise_watermark_enabled);
+}
+
+TEST_P(PrintCompositorImplEnterpriseWatermarkTest,
+       IsPageBlankWhenWatermarkingDisabled) {
+  MockPrintCompositorImplEnterpriseWatermark compositor;
+  compositor.DrawPage(
+      nullptr, {}, MockPrintCompositorImplEnterpriseWatermark::kWatermarkText);
+  // If the feature is disabled, the page rendered will be blank.
+  bool enterprise_watermark_enabled = GetParam();
+  base::FilePath path =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
+  path = path.AppendASCII("components")
+             .AppendASCII("services")
+             .AppendASCII("print_compositor")
+             .AppendASCII("test")
+             .AppendASCII("data")
+             .AppendASCII("blank.png");
+  ASSERT_NE(
+      cc::MatchesPNGFile(compositor.bitmap(), path, cc::ExactPixelComparator()),
+      enterprise_watermark_enabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(WatermarkStateTest,
+                         PrintCompositorImplEnterpriseWatermarkTest,
+                         testing::Bool());
+
+#endif  //  BUILDFLAG(ENTERPRISE_WATERMARK)
 
 class PrintCompositorImplCrashKeyTest : public PrintCompositorImplTest {
  public:

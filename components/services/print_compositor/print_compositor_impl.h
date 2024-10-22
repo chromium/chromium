@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,6 +31,7 @@
 #include "ui/accessibility/ax_tree_update.h"
 
 class SkDocument;
+struct SkDocumentPage;
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -95,6 +97,14 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   void SetGenerateDocumentOutline(
       mojom::GenerateDocumentOutline generate_document_outline) override;
   void SetTitle(const std::string& title) override;
+  void SetWatermarkText(const std::string& watermark_text) override;
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  // Print UX requirement for watermarking. Values are in pixels. Constants
+  // exposed for testing.
+  static constexpr int kWatermarkBlockWidth = 350;
+  static constexpr float kWatermarkTextSize = 24.0f;
+#endif
 
  protected:
   // This is the uniform underlying type for both
@@ -120,6 +130,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       mojom::PrintCompositor::DocumentType document_type);
 
   // Make these functions virtual so tests can override them.
+  virtual void DrawPage(SkDocument* doc,
+                        const SkDocumentPage& page,
+                        const std::string& watermark_text);
   virtual void FulfillRequest(
       base::span<const uint8_t> serialized_content,
       const ContentToFrameMap& subframe_content_map,
@@ -132,6 +145,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   FRIEND_TEST_ALL_PREFIXES(PrintCompositorImplTest, IsReadyToComposite);
   FRIEND_TEST_ALL_PREFIXES(PrintCompositorImplTest, MultiLayerDependency);
   FRIEND_TEST_ALL_PREFIXES(PrintCompositorImplTest, DependencyLoop);
+
   friend class MockCompletionPrintCompositorImpl;
 
   // The map needed during content deserialization. It stores the mapping
@@ -280,7 +294,18 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
 
   // The title of the document.
   std::string title_;
+
+  // The watermark text.
+  std::string watermark_text_;
 };
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+// Draw the watermark specified by `watermark_text` using the provided canvas
+// and its size. Exposed for testing.
+void DrawEnterpriseWatermark(SkCanvas* canvas,
+                             SkSize size,
+                             const std::string& watermark_text);
+#endif
 
 }  // namespace printing
 

@@ -35,6 +35,7 @@ static_library("print_compositor") {
   }
 
   public_deps = [
+    "//components/enterprise/buildflags",
     "//components/services/print_compositor/public/cpp",
     "//components/services/print_compositor/public/mojom",
     "//printing/buildflags",
@@ -51,9 +52,19 @@ if (enable_printing) {
       ":print_compositor",
       "//base/test:test_support",
       "//components/crash/core/common:crash_key",
+      "//components/enterprise/buildflags",
       "//components/services/print_compositor/public/cpp",
       "//testing/gmock",
       "//testing/gtest",
     ]
+
+    if (enterprise_watermark) {
+      data = [ "//components/services/print_compositor/test/data" ]
+
+      deps += [
+        "//cc:test_support",
+        "//components/enterprise/watermarking",
+      ]
+    }
   }
 }
