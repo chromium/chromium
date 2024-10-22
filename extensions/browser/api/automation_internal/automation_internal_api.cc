@@ -360,6 +360,10 @@ class AutomationWebContentsObserver
     for (const auto& src : details.location_changes) {
       router->DispatchAccessibilityLocationChange(tree_id, src);
     }
+
+    for (const auto& change : details.scroll_changes) {
+      router->DispatchAccessibilityScrollChange(tree_id, change);
+    }
   }
 
   void MediaStartedPlaying(const MediaPlayerInfo& video_type,

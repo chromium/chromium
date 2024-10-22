@@ -68,6 +68,10 @@ class FakeAccessibilityService
       const ui::AXTreeID& tree_id,
       int node_id,
       const ui::AXRelativeBounds& bounds) override;
+  void DispatchAccessibilityScrollChange(const ui::AXTreeID& tree_id,
+                                         int node_id,
+                                         int scroll_x,
+                                         int scroll_y) override;
   void DispatchGetTextLocationResult(
       const ui::AXActionData& data,
       const std::optional<gfx::Rect>& rect) override;
@@ -233,6 +237,7 @@ class FakeAccessibilityService
   std::vector<std::tuple<ui::AXActionData, bool>> action_results_;
   std::vector<ui::AXTreeID> accessibility_events_;
   std::vector<ui::AXTreeID> location_changes_;
+  std::vector<ui::AXTreeID> scroll_changes_;
 
   gfx::Rect autoclick_scrollable_bounds_;
 

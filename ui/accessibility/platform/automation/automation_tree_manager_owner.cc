@@ -1131,6 +1131,38 @@ void AutomationTreeManagerOwner::DispatchAccessibilityLocationChange(
   }
 }
 
+void AutomationTreeManagerOwner::DispatchAccessibilityScrollChange(
+    const AXTreeID& tree_id,
+    int32_t node_id,
+    int32_t scroll_x,
+    int32_t scroll_y) {
+  AutomationAXTreeWrapper* tree_wrapper =
+      GetAutomationAXTreeWrapperFromTreeID(tree_id);
+  if (!tree_wrapper) {
+    return;
+  }
+  AXNode* node =
+      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  if (!node) {
+    return;
+  }
+
+  int old_scroll_x = 0;
+  int old_scroll_y = 0;
+  node->GetScrollInfo(&old_scroll_x, &old_scroll_y);
+  node->SetScrollInfo(scroll_x, scroll_y);
+
+  if (scroll_x == old_scroll_x && scroll_y == old_scroll_y) {
+    return;
+  }
+
+  AXEvent event;
+  event.id = tree_wrapper->accessibility_focused_id();
+  event.id = node_id;
+  event.event_type = ax::mojom::Event::kScrollPositionChanged;
+  SendAutomationEvent(tree_wrapper->GetTreeID(), gfx::Point(), event);
+}
+
 void AutomationTreeManagerOwner::DispatchActionResult(const AXActionData& data,
                                                       bool result) {
   GetAutomationV8Bindings()->SendActionResultEvent(data, result);

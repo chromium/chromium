@@ -44,6 +44,10 @@ class AutomationImpl : public mojom::Automation {
       const ui::AXTreeID& tree_id,
       int node_id,
       const ui::AXRelativeBounds& bounds) override;
+  void DispatchAccessibilityScrollChange(const ui::AXTreeID& tree_id,
+                                         int node_id,
+                                         int scroll_x,
+                                         int scroll_y) override;
 
   // We may have multiple automation sources, so use a set to store their
   // receivers.

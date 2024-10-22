@@ -162,6 +162,9 @@ class AutomationEventWaiter
   void DispatchAccessibilityLocationChange(
       const ui::AXTreeID& tree_id,
       const ui::AXLocationChange& details) override {}
+  void DispatchAccessibilityScrollChange(
+      const ui::AXTreeID& tree_id,
+      const ui::AXScrollChange& details) override {}
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override {}
   void DispatchActionResult(
       const ui::AXActionData& data,
