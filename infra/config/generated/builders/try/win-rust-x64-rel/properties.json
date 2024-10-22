@@ -37,7 +37,8 @@
           "builder": "win-rust-x64-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win-rust-x64-rel/targets"
     }
   },
   "$build/reclient": {

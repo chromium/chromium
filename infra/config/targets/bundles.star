@@ -2362,6 +2362,37 @@ targets.bundle(
     ],
 )
 
+# Rust tests run on all targets.
+targets.bundle(
+    name = "rust_common_gtests",
+    targets = [
+        "base_unittests",
+        # TODO(https://crbug.com/356914314): Remove `gfx_unittests` if/when
+        # Rust PNG is covered by the main waterfall/CQ bots.
+        "gfx_unittests",
+        "mojo_rust_integration_unittests",
+        "mojo_rust_unittests",
+        "rust_gtest_interop_unittests",
+        "test_cpp_including_rust_unittests",
+        "test_serde_json_lenient",
+    ],
+)
+
+# Rust tests run on non-cross builds.
+targets.bundle(
+    name = "rust_host_gtests",
+    targets = [
+        "rust_common_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "rust_native_tests",
+    targets = [
+        "build_rust_tests",
+    ],
+)
+
 targets.bundle(
     name = "system_webview_wpt_suite",
     targets = "system_webview_wpt",

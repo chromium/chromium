@@ -4363,20 +4363,6 @@
       },
     },
 
-    'rust_common_gtests': {
-      'base_unittests': {},
-      'gfx_unittests': {},
-      'mojo_rust_integration_unittests': {},
-      'mojo_rust_unittests': {},
-      'rust_gtest_interop_unittests': {},
-      'test_cpp_including_rust_unittests': {},
-      'test_serde_json_lenient': {},
-    },
-
-    'rust_native_tests': {
-      'build_rust_tests': {},
-    },
-
     'site_isolation_android_fyi_gtests': {
       'site_per_process_android_browsertests': {
         'test_common': {
@@ -5539,10 +5525,6 @@
 
     'network_service_extra_gtests': [
       'network_service_fyi_gtests',
-    ],
-
-    'rust_host_gtests': [
-      'rust_common_gtests',
     ],
 
     'win_specific_isolated_scripts_and_sizes': [

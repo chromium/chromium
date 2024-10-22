@@ -299,6 +299,8 @@ targets.compile_target(
     # Since we can't build rust tests on Android now, add this for build
     # coverage.
     label = "//mojo/public/rust:mojo_rust",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -368,6 +370,8 @@ targets.compile_target(
 targets.compile_target(
     name = "rust_build_tests",
     label = "//build/rust/tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(

@@ -3484,29 +3484,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# Rust tests run on all targets.
-targets.legacy_basic_suite(
-    name = "rust_common_gtests",
-    tests = {
-        "base_unittests": targets.legacy_test_config(),
-        # TODO(https://crbug.com/356914314): Remove `gfx_unittests` if/when
-        # Rust PNG is covered by the main waterfall/CQ bots.
-        "gfx_unittests": targets.legacy_test_config(),
-        "mojo_rust_integration_unittests": targets.legacy_test_config(),
-        "mojo_rust_unittests": targets.legacy_test_config(),
-        "rust_gtest_interop_unittests": targets.legacy_test_config(),
-        "test_cpp_including_rust_unittests": targets.legacy_test_config(),
-        "test_serde_json_lenient": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "rust_native_tests",
-    tests = {
-        "build_rust_tests": targets.legacy_test_config(),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "site_isolation_android_fyi_gtests",
     tests = {

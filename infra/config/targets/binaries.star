@@ -1333,11 +1333,15 @@ targets.binaries.script(
 targets.binaries.console_test_launcher(
     name = "mojo_rust_integration_unittests",
     label = "//mojo/public/rust:mojo_rust_integration_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(
     name = "mojo_rust_unittests",
     label = "//mojo/public/rust:mojo_rust_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(
@@ -1388,6 +1392,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.generated_script(
     name = "build_rust_tests",
     label = "//build/rust/tests:build_rust_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
@@ -1862,6 +1868,8 @@ targets.binaries.generated_script(
 targets.binaries.console_test_launcher(
     name = "test_cpp_including_rust_unittests",
     label = "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
@@ -1877,6 +1885,8 @@ targets.binaries.generated_script(
 targets.binaries.console_test_launcher(
     name = "test_serde_json_lenient",
     label = "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.script(

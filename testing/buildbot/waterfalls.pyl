@@ -23,6 +23,7 @@
   #   chromium.fuchsia.fyi
   #   chromium.gpu
   #   chromium.mac
+  #   chromium.rust
   #   chromium.win
   #
   # The following builder group has been migrated to set their targets in the
@@ -2904,134 +2905,6 @@
         'additional_compile_targets': [
           'all',
         ],
-      },
-    },
-  },
-  {
-    'name': 'chromium.rust',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'android-rust-arm32-rel': {
-        'additional_compile_targets': [
-          'mojo_rust',
-          'rust_build_tests',
-        ],
-        'mixins': [
-          'chromium_pixel_2_pie',
-        ],
-        'test_suites': {
-          'gtest_tests': 'rust_common_gtests',
-          # Currently `can_build_rust_unit_tests` is false on Android (because
-          # we need to construct an APK instead of compile an exe).
-          # TODO(crbug.com/40201737): Cover `rust_native_tests` here.
-        },
-      },
-      'android-rust-arm64-dbg': {
-        'additional_compile_targets': [
-          'mojo_rust',
-          'rust_build_tests',
-        ],
-        'mixins': [
-          'chromium_pixel_2_pie',
-        ],
-        'test_suites': {
-          'gtest_tests': 'rust_common_gtests',
-          # Currently `can_build_rust_unit_tests` is false on Android (because
-          # we need to construct an APK instead of compile an exe).
-          # TODO(crbug.com/40201737): Cover `rust_native_tests` here.
-        },
-      },
-      'android-rust-arm64-rel': {
-        'additional_compile_targets': [
-          'mojo_rust',
-          'rust_build_tests',
-        ],
-        'mixins': [
-          'chromium_pixel_2_pie',
-        ],
-        'test_suites': {
-          'gtest_tests': 'rust_common_gtests',
-          # Currently `can_build_rust_unit_tests` is false on Android (because
-          # we need to construct an APK instead of compile an exe).
-          # TODO(crbug.com/40201737): Cover `rust_native_tests` here.
-        },
-      },
-      'linux-rust-x64-dbg' : {
-        'additional_compile_targets': [
-          'mojo_rust',
-          'mojo_rust_integration_unittests',
-          'mojo_rust_unittests',
-          'rust_build_tests',
-        ],
-        'mixins': [
-          'linux-jammy'
-        ],
-        'test_suites': {
-          'gtest_tests': 'rust_host_gtests',
-          'isolated_scripts': 'rust_native_tests',
-        },
-      },
-      'linux-rust-x64-rel' : {
-        'additional_compile_targets': [
-          'mojo_rust',
-          'mojo_rust_integration_unittests',
-          'mojo_rust_unittests',
-          'rust_build_tests',
-        ],
-        'mixins': [
-          'linux-jammy'
-        ],
-        'test_suites': {
-          'gtest_tests': 'rust_host_gtests',
-          'isolated_scripts': 'rust_native_tests',
-        },
-      },
-      'mac-rust-x64-dbg' : {
-        'additional_compile_targets': [
-          'mojo_rust',
-          'mojo_rust_integration_unittests',
-          'mojo_rust_unittests',
-          'rust_build_tests',
-        ],
-        'mixins': [
-          'mac_default_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'rust_host_gtests',
-          'isolated_scripts': 'rust_native_tests',
-        },
-      },
-      'win-rust-x64-dbg' : {
-        'additional_compile_targets': [
-          'mojo_rust',
-          'mojo_rust_integration_unittests',
-          'mojo_rust_unittests',
-          'rust_build_tests',
-        ],
-        'mixins': [
-          'win10-any',
-          'x86-64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'rust_host_gtests',
-          'isolated_scripts': 'rust_native_tests',
-        },
-      },
-      'win-rust-x64-rel' : {
-        'additional_compile_targets': [
-          'mojo_rust',
-          'mojo_rust_integration_unittests',
-          'mojo_rust_unittests',
-          'rust_build_tests',
-        ],
-        'mixins': [
-          'win10-any',
-          'x86-64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'rust_host_gtests',
-          'isolated_scripts': 'rust_native_tests',
-        },
       },
     },
   },

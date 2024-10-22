@@ -822,14 +822,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-# Rust tests run on non-cross builds.
-targets.legacy_compound_suite(
-    name = "rust_host_gtests",
-    basic_suites = [
-        "rust_common_gtests",
-    ],
-)
-
 targets.legacy_compound_suite(
     name = "win_specific_isolated_scripts_and_sizes",
     basic_suites = [
