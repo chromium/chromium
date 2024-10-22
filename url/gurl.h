@@ -173,8 +173,8 @@ class COMPONENT_EXPORT(URL) GURL {
   //
   // Note that this intentionally disallows direct use of url::Replacements,
   // which is harder to use correctly.
-  GURL ReplaceComponents(const Replacements& replacements) const;
-  GURL ReplaceComponents(const ReplacementsW& replacements) const;
+  [[nodiscard]] GURL ReplaceComponents(const Replacements& replacements) const;
+  [[nodiscard]] GURL ReplaceComponents(const ReplacementsW& replacements) const;
 
   // A helper function that is equivalent to replacing the path with a slash
   // and clearing out everything after that. We sometimes need to know just the
