@@ -200,8 +200,19 @@ UIColor* BackgroundColor() {
 // Only available in iOS 17.0+.
 - (void)provideCredentialWithoutUserInteractionForRequest:
     (id<ASCredentialRequest>)credentialRequest API_AVAILABLE(ios(17.0)) {
-  [self provideCredentialWithoutUserInteractionForIdentifier:
-            credentialRequest.credentialIdentity.recordIdentifier];
+  __weak __typeof__(self) weakSelf = self;
+  [self validateUserWithCompletion:^(BOOL userIsValid) {
+    // reauthenticationModule can't attempt reauth when no password is set. This
+    // means a password shouldn't be retrieved.
+    if (!weakSelf.reauthenticationModule.canAttemptReauth || !userIsValid) {
+      [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserInteractionRequired];
+      return;
+    }
+    // iOS already gates the credential with device auth for
+    // -provideCredentialWithoutUserInteractionForRequest:. Not using
+    // reauthenticationModule here to avoid a double authentication request.
+    [weakSelf provideCredentialForRequest:credentialRequest];
+  }];
 }
 
 // Deprecated in iOS 17.0+.
@@ -219,9 +230,21 @@ UIColor* BackgroundColor() {
 // Only available in iOS 17.0+.
 - (void)prepareInterfaceToProvideCredentialForRequest:
     (id<ASCredentialRequest>)credentialRequest API_AVAILABLE(ios(17.0)) {
-  [self prepareInterfaceToProvideCredentialForIdentifier:credentialRequest
-                                                             .credentialIdentity
-                                                             .recordIdentifier];
+  __weak __typeof__(self) weakSelf = self;
+  [self validateUserWithCompletion:^(BOOL userIsValid) {
+    if (!userIsValid) {
+      [weakSelf showStaleCredentials];
+      return;
+    }
+    [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
+                  ReauthenticationResult result) {
+      if (result != ReauthenticationResult::kFailure) {
+        [weakSelf provideCredentialForRequest:credentialRequest];
+      } else {
+        [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
+      }
+    }];
+  }];
 }
 
 - (void)prepareInterfaceForExtensionConfiguration {
