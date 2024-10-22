@@ -24,13 +24,13 @@ PASS Succeeded: "/a".getDirectory("../b")
 PASS Succeeded: "/a".getDirectory("../../b/c")
 PASS Succeeded: "/a".getDirectory("/a/../../d")
 PASS Succeeded: "/a".getDirectory("/a/../../b/./c/../../../../../e")
-PASS this.expectedError + "" is "NotFoundError"
+FAIL this.expectedError + "" should be EncodingError. Was NotFoundError.
 PASS Succeeded: "/a".getFile("./b.txt")
 PASS Succeeded: "/a".getFile("../b.txt")
 PASS Succeeded: "/a".getFile("../../b/c.txt")
 PASS Succeeded: "/a".getFile("/a/../../d.txt")
 PASS Succeeded: "/a".getFile("/a/../../b/./c/../../../../../e.txt")
-PASS this.expectedError + "" is "NotFoundError"
+FAIL this.expectedError + "" should be EncodingError. Was NotFoundError.
 PASS Verified entry: ENTRY {path:/a name:a type:DIRECTORY}
 PASS Verified entry: ENTRY {path:/a/b name:b type:DIRECTORY}
 PASS Verified entry: ENTRY {path:/b name:b type:DIRECTORY}

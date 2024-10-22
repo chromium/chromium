@@ -749,6 +749,8 @@ TEST_F(ZipTest, UnzipMixedPaths) {
       "Space→",  //
 #else
       " ",                        //
+      "...",                      // Disappears on Windows
+      "....",                     // Disappears on Windows
       "AUX",                      // Disappears on Windows
       "COM1",                     // Disappears on Windows
       "COM2",                     // Disappears on Windows
