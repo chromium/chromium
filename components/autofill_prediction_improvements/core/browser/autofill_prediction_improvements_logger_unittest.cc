@@ -24,6 +24,7 @@
 #include "components/user_annotations/test_user_annotations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace autofill_prediction_improvements {
 
@@ -117,6 +118,7 @@ class MockAutofillPredictionImprovementsClient
               (),
               (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
+  MOCK_METHOD(const url::Origin&, GetLastCommittedOrigin, (), (override));
   MOCK_METHOD(std::string, GetTitle, (), (override));
   MOCK_METHOD(user_annotations::UserAnnotationsService*,
               GetUserAnnotationsService,

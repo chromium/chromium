@@ -74,8 +74,12 @@ void AutofillPredictionImprovementsFillingEngineImpl::
   optimization_guide::proto::FormsPredictionsRequest request;
   optimization_guide::proto::PageContext* page_context =
       request.mutable_page_context();
-  page_context->set_url(form_data.url().spec());
-  page_context->set_title(ax_tree_update.tree_data().title());
+  if (kSendTitleURL.Get()) {
+    page_context->set_url(form_data.url().spec());
+    page_context->set_title(ax_tree_update.tree_data().title());
+  } else {
+    page_context->set_url(form_data.main_frame_origin().Serialize());
+  }
   *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
 
   *request.mutable_form_data() =

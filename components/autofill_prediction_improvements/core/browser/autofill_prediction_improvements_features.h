@@ -51,6 +51,13 @@ inline constexpr base::FeatureParam<bool> kShowDetailsText{
     /*name=*/"show_details_text",
     /*default_value=*/false};
 
+// Feature param to send title and URL of the page the form is in. By default,
+// the origin of the page is sent, with no title.
+inline constexpr base::FeatureParam<bool> kSendTitleURL{
+    &kAutofillPredictionImprovements,
+    /*name=*/"send_title_url",
+    /*default_value=*/false};
+
 // Indicates whether Autofill Prediction Improvements are available (but not
 // necessary enabled). This considers the AutofillPredictionSettings policy.
 // If this function returns false, no AutofillPredictionImprovementsClient

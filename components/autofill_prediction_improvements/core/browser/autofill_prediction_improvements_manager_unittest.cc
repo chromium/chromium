@@ -101,6 +101,7 @@ class MockAutofillPredictionImprovementsClient
               (),
               (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
+  MOCK_METHOD(const url::Origin&, GetLastCommittedOrigin, (), (override));
   MOCK_METHOD(std::string, GetTitle, (), (override));
   MOCK_METHOD(user_annotations::UserAnnotationsService*,
               GetUserAnnotationsService,
@@ -183,6 +184,7 @@ class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
 
  protected:
   GURL url_{"https://example.com"};
+  url::Origin origin_ = url::Origin::Create(GURL("https://example.com"));
   NiceMock<MockOptimizationGuideDecider> decider_;
   NiceMock<MockAutofillPredictionImprovementsFillingEngine> filling_engine_;
   NiceMock<MockAutofillPredictionImprovementsClient> client_;
@@ -201,9 +203,10 @@ class AutofillPredictionImprovementsManagerTest
     feature_.InitAndEnableFeatureWithParameters(
         kAutofillPredictionImprovements,
         {{"skip_allowlist", "true"},
-         {"extract_ax_tree_for_predictions", "true"}});
+         {"extract_ax_tree_for_predictions", "true"},
+         {"send_title_url", "false"}});
     ON_CALL(client_, GetFillingEngine).WillByDefault(Return(&filling_engine_));
-    ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
+    ON_CALL(client_, GetLastCommittedOrigin).WillByDefault(ReturnRef(origin_));
     ON_CALL(client_, GetTitle).WillByDefault(Return("title"));
     ON_CALL(client_, GetUserAnnotationsService)
         .WillByDefault(Return(&user_annotations_service_));
@@ -1212,7 +1215,7 @@ class AutofillPredictionImprovementsManagerTriggerAutomaticallyTest
         {{"skip_allowlist", "true"},
          {"trigger_automatically", "true"},
          {"extract_ax_tree_for_predictions", GetParam() ? "true" : "false"}});
-    ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
+    ON_CALL(client_, GetLastCommittedOrigin).WillByDefault(ReturnRef(origin_));
     ON_CALL(client_, GetFillingEngine).WillByDefault(Return(&filling_engine_));
     manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
         &client_, &decider_, &strike_database_);
@@ -1260,7 +1263,7 @@ class IsFormAndFieldEligibleAutofillPredictionImprovementsTest
     : public BaseAutofillPredictionImprovementsManagerTest {
  public:
   IsFormAndFieldEligibleAutofillPredictionImprovementsTest() {
-    ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
+    ON_CALL(client_, GetLastCommittedOrigin).WillByDefault(ReturnRef(origin_));
     autofill::test::FormDescription form_description = {
         .fields = {{.role = autofill::NAME_FIRST,
                     .heuristic_type = autofill::NAME_FIRST}}};

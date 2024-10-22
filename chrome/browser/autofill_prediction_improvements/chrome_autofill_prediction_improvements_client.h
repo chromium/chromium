@@ -42,6 +42,7 @@ class ChromeAutofillPredictionImprovementsClient
   autofill_prediction_improvements::AutofillPredictionImprovementsFillingEngine*
   GetFillingEngine() override;
   const GURL& GetLastCommittedURL() override;
+  const url::Origin& GetLastCommittedOrigin() override;
   std::string GetTitle() override;
   user_annotations::UserAnnotationsService* GetUserAnnotationsService()
       override;

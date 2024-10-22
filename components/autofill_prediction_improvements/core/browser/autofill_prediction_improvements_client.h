@@ -14,6 +14,10 @@ namespace optimization_guide::proto {
 class AXTreeUpdate;
 }
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace user_annotations {
 class UserAnnotationsService;
 }
@@ -51,6 +55,9 @@ class AutofillPredictionImprovementsClient {
 
   // Returns the last committed URL of the primary main frame.
   virtual const GURL& GetLastCommittedURL() = 0;
+
+  // Returns the last committed origin of the primary main frame.
+  virtual const url::Origin& GetLastCommittedOrigin() = 0;
 
   // Returns the title of the web contents.
   virtual std::string GetTitle() = 0;

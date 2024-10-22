@@ -830,18 +830,22 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
                             /*prompt_acceptance_callback=*/base::DoNothing());
     return;
   }
+  GURL url = kSendTitleURL.Get() ? client_->GetLastCommittedURL()
+                                 : client_->GetLastCommittedOrigin().GetURL();
 
   if (user_annotations::ShouldExtractAXTreeForFormsAnnotations()) {
     // TODO(crbug.com/366222226): Ensure the AX tree retrieval is not delayed,
     // e.g. by async filters added in future.
     client_->GetAXTree(base::BindOnce(
         &AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport,
-        weak_ptr_factory_.GetWeakPtr(), client_->GetLastCommittedURL(),
-        client_->GetTitle(), std::move(form), std::move(callback)));
+        weak_ptr_factory_.GetWeakPtr(), url,
+        kSendTitleURL.Get() ? client_->GetTitle() : std::string(),
+        std::move(form), std::move(callback)));
   } else {
     OnReceivedAXTreeForFormImport(
-        client_->GetLastCommittedURL(), client_->GetTitle(), std::move(form),
-        std::move(callback), optimization_guide::proto::AXTreeUpdate());
+        url, kSendTitleURL.Get() ? client_->GetTitle() : std::string(),
+        std::move(form), std::move(callback),
+        optimization_guide::proto::AXTreeUpdate());
   }
 }
 

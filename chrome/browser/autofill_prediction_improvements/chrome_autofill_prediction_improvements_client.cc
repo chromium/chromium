@@ -38,6 +38,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 ChromeAutofillPredictionImprovementsClient::
     ChromeAutofillPredictionImprovementsClient(
@@ -109,6 +110,11 @@ ChromeAutofillPredictionImprovementsClient::GetFillingEngine() {
 
 const GURL& ChromeAutofillPredictionImprovementsClient::GetLastCommittedURL() {
   return web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL();
+}
+
+const url::Origin&
+ChromeAutofillPredictionImprovementsClient::GetLastCommittedOrigin() {
+  return web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 }
 
 std::string ChromeAutofillPredictionImprovementsClient::GetTitle() {
