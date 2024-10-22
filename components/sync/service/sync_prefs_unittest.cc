@@ -201,9 +201,9 @@ TEST_F(SyncPrefsTest, CachedTrustedVaultAutoUpgradeExperimentGroupCorrupt) {
 class MockSyncPrefObserver : public SyncPrefObserver {
  public:
   MOCK_METHOD(void, OnSyncManagedPrefChange, (bool), (override));
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(void, OnFirstSetupCompletePrefChange, (bool), (override));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(void, OnSelectedTypesPrefChange, (), (override));
 };
 
@@ -225,7 +225,7 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncPrefsTest, FirstSetupCompletePrefChange) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   InSequence in_sequence;
@@ -244,9 +244,9 @@ TEST_F(SyncPrefsTest, FirstSetupCompletePrefChange) {
 
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncPrefsTest, SyncFeatureDisabledViaDashboard) {
   EXPECT_FALSE(sync_prefs_->IsSyncFeatureDisabledViaDashboard());
 
@@ -267,13 +267,13 @@ TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
                                   UserSelectableOsTypeSet());
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
-#endif
+#endif // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncPrefsTest, Basic) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   sync_prefs_->SetInitialSyncFeatureSetupComplete();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 
@@ -652,7 +652,7 @@ TEST_F(SyncPrefsTest, KeepAccountSettingsPrefsOnlyForUsers) {
             default_selected_types);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncPrefsTest, IsSyncAllOsTypesEnabled) {
   EXPECT_TRUE(sync_prefs_->IsSyncAllOsTypesEnabled());
 
@@ -771,27 +771,7 @@ TEST_F(SyncPrefsTest, SetOsTypeDisabledByPolicy) {
   EXPECT_FALSE(sync_prefs_->IsOsTypeManagedByPolicy(
       UserSelectableOsType::kOsPreferences));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(SyncPrefsTest, ShouldSetAppsSyncEnabledByOsToFalseByDefault) {
-  EXPECT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
-}
-
-TEST_F(SyncPrefsTest, ShouldChangeAppsSyncEnabledByOsAndNotifyObservers) {
-  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
-  sync_prefs_->AddObserver(&mock_sync_pref_observer);
-
-  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
-  sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/true);
-  EXPECT_TRUE(sync_prefs_->IsAppsSyncEnabledByOs());
-
-  testing::Mock::VerifyAndClearExpectations(&mock_sync_pref_observer);
-  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
-  sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/false);
-  EXPECT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncPrefsTest, PassphrasePromptMutedProductVersion) {
   EXPECT_EQ(0, sync_prefs_->GetPassphrasePromptMutedProductVersion());
