@@ -29,6 +29,7 @@ class AppInstance;
 class AppPermissionsInstance;
 class AppfuseHost;
 class AppfuseInstance;
+class ArcShellExecutionInstance;
 class ArcWifiHost;
 class ArcWifiInstance;
 class AudioHost;
@@ -170,6 +171,9 @@ class ArcBridgeService {
   }
   ConnectionHolder<mojom::AppfuseInstance, mojom::AppfuseHost>* appfuse() {
     return &appfuse_;
+  }
+  ConnectionHolder<mojom::ArcShellExecutionInstance>* arc_shell_execution() {
+    return &arc_shell_execution_;
   }
   ConnectionHolder<mojom::ArcWifiInstance, mojom::ArcWifiHost>* arc_wifi() {
     return &arc_wifi_;
@@ -359,6 +363,7 @@ class ArcBridgeService {
   ConnectionHolder<mojom::CompatibilityModeInstance> compatibility_mode_;
   ConnectionHolder<mojom::CrashCollectorInstance, mojom::CrashCollectorHost>
       crash_collector_;
+  ConnectionHolder<mojom::ArcShellExecutionInstance> arc_shell_execution_;
   ConnectionHolder<mojom::DigitalGoodsInstance> digital_goods_;
   ConnectionHolder<mojom::DiskSpaceInstance, mojom::DiskSpaceHost> disk_space_;
   ConnectionHolder<mojom::EnterpriseReportingInstance,

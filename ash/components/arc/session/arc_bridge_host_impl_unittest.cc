@@ -142,6 +142,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(App);
     MAKE_INSTANCE_READY(AppPermissions);
     MAKE_INSTANCE_READY(Appfuse);
+    MAKE_INSTANCE_READY(ArcShellExecution);
     MAKE_INSTANCE_READY(Audio);
     MAKE_INSTANCE_READY(Auth);
     MAKE_INSTANCE_READY(BackupSettings);

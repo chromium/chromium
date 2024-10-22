@@ -17,6 +17,7 @@
 #include "ash/components/arc/mojom/camera.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
+#include "ash/components/arc/mojom/crosh.mojom.h"
 #include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
 #include "ash/components/arc/mojom/error_notification.mojom.h"
@@ -78,6 +79,10 @@ void FakeArcBridgeHost::OnAppPermissionsInstanceReady(
 
 void FakeArcBridgeHost::OnAppfuseInstanceReady(
     mojo::PendingRemote<mojom::AppfuseInstance> app_remote) {}
+
+void FakeArcBridgeHost::OnArcShellExecutionInstanceReady(
+    mojo::PendingRemote<mojom::ArcShellExecutionInstance>
+        arc_shell_execution_remote) {}
 
 void FakeArcBridgeHost::OnArcWifiInstanceReady(
     mojo::PendingRemote<mojom::ArcWifiInstance> arc_wifi_remote) {}

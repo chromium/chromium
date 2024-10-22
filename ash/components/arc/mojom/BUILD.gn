@@ -25,6 +25,7 @@ mojom("mojom") {
     "chrome_feature_flags.mojom",
     "compatibility_mode.mojom",
     "crash_collector.mojom",
+    "crosh.mojom",
     "digital_goods.mojom",
     "disk_space.mojom",
     "enterprise_reporting.mojom",

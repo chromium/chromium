@@ -21,6 +21,7 @@
 #include "ash/components/arc/mojom/chrome_feature_flags.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
+#include "ash/components/arc/mojom/crosh.mojom.h"
 #include "ash/components/arc/mojom/digital_goods.mojom.h"
 #include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
@@ -127,6 +128,13 @@ void ArcBridgeHostImpl::OnAppPermissionsInstanceReady(
 void ArcBridgeHostImpl::OnAppfuseInstanceReady(
     mojo::PendingRemote<mojom::AppfuseInstance> appfuse_remote) {
   OnInstanceReady(arc_bridge_service_->appfuse(), std::move(appfuse_remote));
+}
+
+void ArcBridgeHostImpl::OnArcShellExecutionInstanceReady(
+    mojo::PendingRemote<mojom::ArcShellExecutionInstance>
+        arc_shell_execution_remote) {
+  OnInstanceReady(arc_bridge_service_->arc_shell_execution(),
+                  std::move(arc_shell_execution_remote));
 }
 
 void ArcBridgeHostImpl::OnArcWifiInstanceReady(

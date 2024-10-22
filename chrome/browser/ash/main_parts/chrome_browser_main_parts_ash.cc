@@ -68,6 +68,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/lacros_availability_policy_observer.h"
 #include "chrome/browser/ash/crostini/crostini_unsupported_action_notifier.h"
+#include "chrome/browser/ash/dbus/arc_crosh_service_provider.h"
 #include "chrome/browser/ash/dbus/arc_tracing_service_provider.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/dbus/chrome_features_service_provider.h"
@@ -521,6 +522,12 @@ class DBusServices {
               std::make_unique<LibvdaServiceProvider>()));
     }
 
+    arc_crosh_service_ = CrosDBusService::Create(
+        system_bus, arc::crosh::kArcCroshServiceName,
+        dbus::ObjectPath(arc::crosh::kArcCroshServicePath),
+        CrosDBusService::CreateServiceProviderList(
+            std::make_unique<ArcCroshServiceProvider>()));
+
     // Initialize PowerDataCollector after DBusThreadManager is initialized.
     PowerDataCollector::Initialize();
 
@@ -590,6 +597,7 @@ class DBusServices {
     lock_to_single_user_service_.reset();
     fusebox_service_.reset();
     mojo_connection_service_.reset();
+    arc_crosh_service_.reset();
     PowerDataCollector::Shutdown();
     chromeos::PowerPolicyController::Shutdown();
     device::BluetoothAdapterFactory::Shutdown();
@@ -625,6 +633,7 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> mojo_connection_service_;
   std::unique_ptr<CrosDBusService> dlp_files_policy_service_;
   std::unique_ptr<CrosDBusService> arc_tracing_service_;
+  std::unique_ptr<CrosDBusService> arc_crosh_service_;
 };
 
 }  // namespace internal

@@ -33,6 +33,9 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       override;
   void OnAppfuseInstanceReady(
       mojo::PendingRemote<mojom::AppfuseInstance> appfuse_remote) override;
+  void OnArcShellExecutionInstanceReady(
+      mojo::PendingRemote<mojom::ArcShellExecutionInstance>
+          arc_shell_execution_remote) override;
   void OnArcWifiInstanceReady(
       mojo::PendingRemote<mojom::ArcWifiInstance> arc_wifi_remote) override;
   void OnAudioInstanceReady(

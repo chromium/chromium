@@ -88,6 +88,9 @@ class ArcBridgeHostImpl
   void OnCrashCollectorInstanceReady(
       mojo::PendingRemote<mojom::CrashCollectorInstance> crash_collector_remote)
       override;
+  void OnArcShellExecutionInstanceReady(
+      mojo::PendingRemote<mojom::ArcShellExecutionInstance>
+          arc_shell_execution_remote) override;
   void OnDigitalGoodsInstanceReady(
       mojo::PendingRemote<mojom::DigitalGoodsInstance> digital_goods_remote)
       override;
