@@ -27,7 +27,6 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
-#include "media/cast/common/video_frame_factory.h"
 #include "media/cast/test/fake_video_encode_accelerator_factory.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
@@ -122,21 +121,13 @@ class VideoEncoderTest
   }
 
   // Creates a new VideoFrame of the given |size|, filled with a test pattern.
-  // When available, it attempts to use the VideoFrameFactory provided by the
-  // encoder.
   scoped_refptr<media::VideoFrame> CreateTestVideoFrame(const gfx::Size& size) {
     const base::TimeDelta timestamp =
         testing_clock_.NowTicks() - first_frame_time_;
     scoped_refptr<media::VideoFrame> frame;
-    if (video_frame_factory_) {
-      DVLOG(1) << "MaybeCreateFrame";
-      frame = video_frame_factory_->MaybeCreateFrame(size, timestamp);
-    }
-    if (!frame) {
-      DVLOG(1) << "No VideoFrame, create using VideoFrame::CreateFrame";
-      frame = media::VideoFrame::CreateFrame(PIXEL_FORMAT_I420, size,
-                                             gfx::Rect(size), size, timestamp);
-    }
+    DVLOG(1) << "No VideoFrame, create using VideoFrame::CreateFrame";
+    frame = media::VideoFrame::CreateFrame(PIXEL_FORMAT_I420, size,
+                                           gfx::Rect(size), size, timestamp);
     PopulateVideoFrame(frame.get(), 123);
     return frame;
   }
@@ -163,11 +154,6 @@ class VideoEncoderTest
 
     EXPECT_TRUE(operational_status_ == STATUS_CODEC_REINIT_PENDING ||
                 operational_status_ == STATUS_INITIALIZED);
-
-    // Create the VideoFrameFactory the first time status changes to
-    // STATUS_INITIALIZED.
-    if (operational_status_ == STATUS_INITIALIZED && !video_frame_factory_)
-      video_frame_factory_ = video_encoder_->CreateVideoFrameFactory();
   }
 
   base::SimpleTestTickClock testing_clock_;
@@ -181,7 +167,6 @@ class VideoEncoderTest
   base::TimeTicks first_frame_time_;
   OperationalStatus operational_status_;
   std::unique_ptr<VideoEncoder> video_encoder_;
-  std::unique_ptr<VideoFrameFactory> video_frame_factory_;
 };
 
 // Tests that the encoder outputs encoded frames, and also responds to frame

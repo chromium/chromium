@@ -85,12 +85,6 @@ void SizeAdaptableVideoEncoderBase::GenerateKeyFrame() {
   }
 }
 
-std::unique_ptr<VideoFrameFactory>
-SizeAdaptableVideoEncoderBase::CreateVideoFrameFactory() {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  return nullptr;
-}
-
 void SizeAdaptableVideoEncoderBase::EmitFrames() {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   if (encoder_) {

@@ -14,7 +14,6 @@
 #include "media/cast/cast_callbacks.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
-#include "media/cast/common/video_frame_factory.h"
 
 namespace media {
 
@@ -61,11 +60,6 @@ class VideoEncoder {
 
   // Inform the encoder to encode the next frame as a key frame.
   virtual void GenerateKeyFrame() = 0;
-
-  // Creates a |VideoFrameFactory| object to vend |VideoFrame| object with
-  // encoder affinity (defined as offering some sort of performance benefit).
-  // This is an optional capability and by default returns null.
-  virtual std::unique_ptr<VideoFrameFactory> CreateVideoFrameFactory();
 
   // Instructs the encoder to finish and emit all frames that have been
   // submitted for encoding. An encoder may hold a certain number of frames for

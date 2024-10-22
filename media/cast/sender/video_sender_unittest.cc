@@ -24,7 +24,6 @@
 #include "media/base/video_frame.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
-#include "media/cast/common/video_frame_factory.h"
 #include "media/cast/constants.h"
 #include "media/cast/logging/simple_event_subscriber.h"
 #include "media/cast/test/fake_openscreen_clock.h"
@@ -244,12 +243,6 @@ TEST_F(VideoSenderTest, ExternalEncoderInitFails) {
   openscreen_video_sender_ = nullptr;
   video_sender_.reset();
   task_runner_->RunTasks();
-}
-
-TEST_F(VideoSenderTest, CheckVideoFrameFactoryIsNull) {
-  InitEncoder(false, true);
-  ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
-  EXPECT_EQ(nullptr, video_sender_->CreateVideoFrameFactory().get());
 }
 
 }  // namespace media::cast

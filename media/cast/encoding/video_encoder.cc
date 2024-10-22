@@ -34,10 +34,6 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
                            std::move(metrics_provider), status_change_cb));
 }
 
-std::unique_ptr<VideoFrameFactory> VideoEncoder::CreateVideoFrameFactory() {
-  return nullptr;
-}
-
 void VideoEncoder::EmitFrames() {}
 
 }  // namespace media::cast

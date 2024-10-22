@@ -298,10 +298,6 @@ void VideoSender::InsertRawVideoFrame(
   }
 }
 
-std::unique_ptr<VideoFrameFactory> VideoSender::CreateVideoFrameFactory() {
-  return video_encoder_ ? video_encoder_->CreateVideoFrameFactory() : nullptr;
-}
-
 void VideoSender::SetTargetPlayoutDelay(
     base::TimeDelta new_target_playout_delay) {
   frame_sender_->SetTargetPlayoutDelay(new_target_playout_delay);

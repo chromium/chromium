@@ -28,7 +28,6 @@ source_set("common") {
     "common/rtp_time.h",
     "common/sender_encoded_frame.cc",
     "common/sender_encoded_frame.h",
-    "common/video_frame_factory.h",
     "constants.h",
 
     # NOTE: Logging code is pulled in by CastEnvironment.
