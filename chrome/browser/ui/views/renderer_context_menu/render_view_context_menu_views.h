@@ -7,7 +7,6 @@
 
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/base/ui_base_types.h"
 
 namespace aura {
 class Window;

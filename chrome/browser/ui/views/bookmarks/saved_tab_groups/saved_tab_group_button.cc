@@ -46,7 +46,6 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"

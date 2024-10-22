@@ -12,7 +12,6 @@
 #include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/base/ui_base_types.h"
 
 namespace gfx {
 class Rect;

@@ -21,7 +21,6 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/layout.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"

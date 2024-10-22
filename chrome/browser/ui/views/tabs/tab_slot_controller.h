@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/base/ui_base_types.h"
 
 class Browser;
 class Tab;

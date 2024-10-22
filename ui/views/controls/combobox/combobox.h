@@ -15,7 +15,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/prefix_delegate.h"

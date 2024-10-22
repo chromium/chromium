@@ -5,7 +5,7 @@
 #include "ui/views/context_menu_controller.h"
 
 #include "base/auto_reset.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace views {
 

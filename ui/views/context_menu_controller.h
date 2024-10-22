@@ -6,8 +6,7 @@
 #define UI_VIEWS_CONTEXT_MENU_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {

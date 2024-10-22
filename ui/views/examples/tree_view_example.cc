@@ -8,7 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"

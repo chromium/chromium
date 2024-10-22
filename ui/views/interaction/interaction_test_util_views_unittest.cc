@@ -25,7 +25,6 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/range/range.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"

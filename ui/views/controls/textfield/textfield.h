@@ -24,7 +24,7 @@
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/keycodes/keyboard_codes.h"

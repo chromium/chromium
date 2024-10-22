@@ -11,7 +11,6 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/widget.h"
 

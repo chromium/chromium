@@ -14,7 +14,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace ash {

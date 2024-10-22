@@ -67,7 +67,6 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/themed_vector_icon.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"

@@ -5,7 +5,7 @@
 #include "ui/views/dialog_model_context_menu_controller.h"
 
 #include "ui/base/models/dialog_model.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/view.h"
 
 namespace views {

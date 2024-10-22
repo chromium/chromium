@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/views_export.h"

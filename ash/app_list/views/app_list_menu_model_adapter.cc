@@ -11,7 +11,7 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace ash {

@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace gfx {
 class Rect;

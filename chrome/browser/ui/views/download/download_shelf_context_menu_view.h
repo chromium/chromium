@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/download/download_shelf_context_menu.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/base/ui_base_types.h"
 
 class DownloadItemView;
 

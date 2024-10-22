@@ -12,7 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/render_text.h"
