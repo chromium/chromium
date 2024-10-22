@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_permission_element_strings_map.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -53,6 +54,8 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -66,6 +69,12 @@ using mojom::blink::PermissionName;
 using mojom::blink::PermissionObserver;
 using mojom::blink::PermissionService;
 using MojoPermissionStatus = mojom::blink::PermissionStatus;
+// A data structure that maps Permission element MessageIds to locale specific
+// MessageIds.
+// Key of the outer map: locale.
+// Key of the inner map: The base MessageId (in english).
+// Value of the outer map: The corresponding MessageId in the given locale.
+using GeneratedMessagesMap = HashMap<String, HashMap<int, int>>;
 
 namespace {
 
@@ -138,11 +147,53 @@ Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
   return Vector<PermissionDescriptorPtr>();
 }
 
+int GetTranslatedMessageID(int message_id,
+                           const AtomicString& language_string) {
+  DCHECK(language_string.IsLowerASCII());
+  DEFINE_STATIC_LOCAL(GeneratedMessagesMap, generated_message_ids, ());
+  if (language_string.empty()) {
+    return message_id;
+  }
+
+  if (generated_message_ids.empty()) {
+    FillInPermissionElementTranslationsMap(generated_message_ids);
+  }
+
+  const auto language_map_itr = generated_message_ids.find(language_string);
+  if (language_map_itr != generated_message_ids.end()) {
+    const auto& language_map = language_map_itr->value;
+    const auto translated_message_itr = language_map.find(message_id);
+    if (translated_message_itr != language_map.end()) {
+      return translated_message_itr->value;
+    }
+  }
+
+  Vector<String> parts;
+  language_string.GetString().Split('-', parts);
+
+  if (parts.size() == 0) {
+    return message_id;
+  }
+  // This is to support locales with unknown combination of languages and
+  // countries. If the combination of language and country is not known,
+  // the code will fallback to strings just from the language part of the
+  // locale.
+  // Eg: en-au is a unknown combination, in this case we will fall back to
+  // en strings.
+  if (generated_message_ids.Contains(parts[0])) {
+    const auto& language_map = generated_message_ids.find(parts[0])->value;
+    if (language_map.Contains(message_id)) {
+      return language_map.find(message_id)->value;
+    }
+  }
+  return message_id;
+}
+
 // Helper to get permission text resource ID for the given map which has only
 // one element.
-int GetMessageIDSinglePermission(PermissionName name,
-                                 bool granted,
-                                 bool is_precise_location) {
+int GetUntranslatedMessageIDSinglePermission(PermissionName name,
+                                             bool granted,
+                                             bool is_precise_location) {
   if (name == PermissionName::VIDEO_CAPTURE) {
     return granted ? IDS_PERMISSION_REQUEST_CAMERA_ALLOWED
                    : IDS_PERMISSION_REQUEST_CAMERA;
@@ -169,7 +220,7 @@ int GetMessageIDSinglePermission(PermissionName name,
 // Helper to get permission text resource ID for the given map which has
 // multiple elements. Currently we only support "camera microphone" grouped
 // permissions.
-int GetMessageIDMultiplePermissions(bool granted) {
+int GetUntranslatedMessageIDMultiplePermissions(bool granted) {
   return granted ? IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED
                  : IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE;
 }
@@ -649,7 +700,10 @@ void HTMLPermissionElement::AttributeChanged(
     }
 
     is_precise_location_ = true;
+    UpdateText();
+  }
 
+  if (params.name == html_names::kLangAttr) {
     UpdateText();
   }
 
@@ -1204,32 +1258,36 @@ void HTMLPermissionElement::UpdateAppearance() {
 }
 
 void HTMLPermissionElement::UpdateText() {
+  bool permission_granted;
+  PermissionName permission_name;
+  wtf_size_t permission_count;
   if (permission_status_map_.size() == 0U) {
     // Use |permission_descriptors_| instead and assume a "not granted" state.
-    switch (permission_descriptors_.size()) {
-      case 1:
-        permission_text_span_->setInnerText(
-            GetLocale().QueryString(GetMessageIDSinglePermission(
-                permission_descriptors_[0]->name, /*granted=*/false,
-                is_precise_location_)));
-        break;
-      case 2:
-        permission_text_span_->setInnerText(
-            GetLocale().QueryString(IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE));
-        break;
+    if (permission_descriptors_.size() == 0U) {
+      return;
     }
-    return;
+    permission_granted = false;
+    permission_name = permission_descriptors_[0]->name;
+    permission_count = permission_descriptors_.size();
+  } else {
+    CHECK_LE(permission_status_map_.size(), 2u);
+    permission_granted = PermissionsGranted();
+    permission_name = permission_status_map_.begin()->key;
+    permission_count = permission_status_map_.size();
   }
 
-  CHECK_LE(permission_status_map_.size(), 2u);
-  int message_id = permission_status_map_.size() == 1
-                       ? GetMessageIDSinglePermission(
-                             permission_status_map_.begin()->key,
-                             PermissionsGranted(), is_precise_location_)
-                       : GetMessageIDMultiplePermissions(PermissionsGranted());
+  AtomicString language_string = ComputeInheritedLanguage().LowerASCII();
 
-  CHECK(message_id);
-  permission_text_span_->setInnerText(GetLocale().QueryString(message_id));
+  int untranslated_message_id =
+      permission_count == 1
+          ? GetUntranslatedMessageIDSinglePermission(
+                permission_name, permission_granted, is_precise_location_)
+          : GetUntranslatedMessageIDMultiplePermissions(permission_granted);
+  int translated_message_id =
+      GetTranslatedMessageID(untranslated_message_id, language_string);
+  CHECK(translated_message_id);
+  permission_text_span_->setInnerText(
+      GetLocale().QueryString(translated_message_id));
 }
 
 void HTMLPermissionElement::AddConsoleError(String error) {

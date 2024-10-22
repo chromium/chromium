@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/public/strings/grit/permission_element_generated_strings.h"
 #include "third_party/blink/public/strings/grit/permission_element_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -47,6 +48,15 @@ using mojom::blink::PermissionService;
 using MojoPermissionStatus = mojom::blink::PermissionStatus;
 
 namespace {
+
+constexpr char16_t kGeolocationStringPt[] = u"Usar localização";
+constexpr char16_t kGeolocationAllowedStringPt[] =
+    u"Acesso à localização permitido";
+constexpr char16_t kGeolocationStringBr[] = u"Usar local";
+constexpr char16_t kGeolocationAllowedStringBr[] =
+    u"Acesso à localização permitido";
+constexpr char16_t kGeolocationStringTa[] = u"இருப்பிடத்தைப் பயன்படுத்து";
+constexpr char16_t kGeolocationAllowedStringTa[] = u"இருப்பிட அனுமதி வழங்கப்பட்டது";
 
 constexpr char kCameraString[] = "Use camera";
 constexpr char kCameraAllowedString[] = "Camera allowed";
@@ -87,6 +97,18 @@ class LocalePlatformSupport : public TestingPlatformSupport {
         return kPreciseGeolocationString;
       case IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION_ALLOWED:
         return kPreciseGeolocationAllowedString;
+      case IDS_PERMISSION_REQUEST_GEOLOCATION_pt_PT:
+        return WebString::FromUTF16(kGeolocationStringPt);
+      case IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED_pt_PT:
+        return WebString::FromUTF16(kGeolocationAllowedStringPt);
+      case IDS_PERMISSION_REQUEST_GEOLOCATION_pt_BR:
+        return WebString::FromUTF16(kGeolocationStringBr);
+      case IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED_pt_BR:
+        return WebString::FromUTF16(kGeolocationAllowedStringBr);
+      case IDS_PERMISSION_REQUEST_GEOLOCATION_ta:
+        return WebString::FromUTF16(kGeolocationStringTa);
+      case IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED_ta:
+        return WebString::FromUTF16(kGeolocationAllowedStringTa);
       default:
         break;
     }
@@ -528,6 +550,50 @@ TEST_F(HTMLPemissionElementTest, InitializeInnerText) {
     DOMRect* rect = permission_element->GetBoundingClientRect();
     EXPECT_NE(0, rect->width());
     EXPECT_NE(0, rect->height());
+  }
+}
+
+TEST_F(HTMLPemissionElementTest, TranslateInnerText) {
+  const struct {
+    const char* lang_attr_value;
+    String expected_text_ask;
+    String expected_text_allowed;
+  } kTestData[] = {
+      // no language means the default string
+      {"", kGeolocationString, kGeolocationAllowedString},
+      // "pt" selects Portuguese
+      {"pT", kGeolocationStringPt, kGeolocationAllowedStringPt},
+      // "pt-br" selects brazilian Portuguese
+      {"pt-BR", kGeolocationStringBr, kGeolocationAllowedStringBr},
+      // "pt" and a country that has no defined separate translation falls back
+      // to Portuguese
+      {"Pt-cA", kGeolocationStringPt, kGeolocationAllowedStringPt},
+      // "pt" and something that is not a country falls back to Portuguese
+      {"PT-gIbbeRish", kGeolocationStringPt, kGeolocationAllowedStringPt},
+      // unrecognized locale selects the default string
+      {"gibBeRish", kGeolocationString, kGeolocationAllowedString},
+      // try tamil to test non-english-alphabet-based language
+      {"ta", kGeolocationStringTa, kGeolocationAllowedStringTa}};
+
+  auto* permission_element = CreatePermissionElement("geolocation");
+  permission_service()->WaitForPermissionObserverAdded();
+
+  for (const auto& data : kTestData) {
+    permission_element->setAttribute(html_names::kLangAttr,
+                                     AtomicString(data.lang_attr_value));
+    permission_service()->NotifyPermissionStatusChange(
+        PermissionName::GEOLOCATION, MojoPermissionStatus::ASK);
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    EXPECT_EQ(
+        data.expected_text_ask,
+        permission_element->permission_text_span_for_testing()->innerText());
+
+    permission_service()->NotifyPermissionStatusChange(
+        PermissionName::GEOLOCATION, MojoPermissionStatus::GRANTED);
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    EXPECT_EQ(
+        data.expected_text_allowed,
+        permission_element->permission_text_span_for_testing()->innerText());
   }
 }
 
