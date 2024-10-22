@@ -48,6 +48,7 @@ external/wpt/selection/*
 external/wpt/signed-exchange/*
 external/wpt/wasm/*
 external/wpt/webauthn/*
+external/wpt/webvtt/*
 external/wpt/WebCryptoAPI/*
 external/wpt/xhr/*
 
