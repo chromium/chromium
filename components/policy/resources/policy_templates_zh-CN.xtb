@@ -2476,6 +2476,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2872968825059227580">停用 GIF 支持。</translation>
 <translation id="2874209944580848064">针对支持 Android 应用的 <ph name="PRODUCT_OS_NAME" />设备的注意事项：</translation>
 <translation id="287474029350993681">禁止向设备投放内容</translation>
+<translation id="2874983257003956579">配置课程管理工具</translation>
 <translation id="2875192972412983412">指定要让系统为确认是否有可用的服务器打印机而查询的部分打印服务器。
 
       如果使用此政策，则只有那些具有与此政策中所列值匹配的 ID 的服务器打印机才可供用户使用。
@@ -2597,6 +2598,9 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果为与所提供的某个过滤条件匹配的网域设置了 Cookie，则相应 Cookie 将不会移动。系统会根据 https://support.google.com/chrome/a?p=url_blocklist_filter_format 中列出的“主机”字段规则匹配 Cookie 网域，而所有其他字段均会被忽略。允许使用通配符 <ph name="WILDCARD_VALUE" />。
 
 <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> 政策优先。</translation>
+<translation id="2953447815703785478">指定应使用设备管理协议注册的设备级客户端证书。
+
+从 <ph name="PRODUCT_OS_NAME" /> 132 版开始支持 <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> 密钥算法选项。</translation>
 <translation id="2957506574938329824">不允许任何网站通过 Web Bluetooth API 请求访问蓝牙设备</translation>
 <translation id="2957513448235202597">进行 <ph name="HTTP_NEGOTIATE" />身份验证时使用的账号类型</translation>
 <translation id="2959469725686993410">解析时区时一律将 Wi-Fi 接入点发送给服务器</translation>
@@ -4402,6 +4406,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       此政策已从 <ph name="PRODUCT_NAME" /> M121 版中移除。</translation>
 <translation id="439661169333921592">禁止在登录屏幕上使用键盘焦点突出显示</translation>
 <translation id="4397045637922200204">停用账号恢复服务</translation>
+<translation id="4397157269508242312">设置该政策后，可指定用户是否可以使用课程管理工具以学生或老师的身份发送/接收内容或字幕，或者是否对用户停用课程管理工具。</translation>
 <translation id="4397464099112037398">默认的窗口放置权限设置</translation>
 <translation id="4398803806072237638">我们正在将 <ph name="PRODUCT_NAME" /> 中 CSS 自定义状态功能的 <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> 语法更改为 <ph name="CUSTOM_STATE_NEW_SYNTAX" />，以使其符合 <ph name="FIREFOX_PRODUCT_NAME" /> 和 <ph name="SAFARI_PRODUCT_NAME" /> 中的相关更改。此政策允许启用已弃用的旧语法，直至 M133。
 
@@ -4860,6 +4865,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4739596156184678950">允许直接将文件保存到 <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">限制背景图片打印模式</translation>
 <translation id="4745232963710538589">启用数据洞见扩展程序以报告使用情况指标</translation>
+<translation id="4746394249367607432">用户将能够加入并被添加到课程管理会话中。老师将能够向这些用户发送内容。</translation>
 <translation id="4749670563834935149">旨在以列表形式为登录界面和锁定的屏幕上的一系列网址启用 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" />。
 
 通过设置此政策，您可以指定 <ph name="PRODUCT_OS_NAME" /> 将主动为哪些网址启动认证流程。后者会允许这些网站从设备上获取一组经过认证的情境感知信号。
@@ -6135,6 +6141,9 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策已停用，系统会从所有来源关闭拼写检查，而且用户无法开启该功能。如果此政策设为 False，<ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME" />、<ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> 和 <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> 政策都不会产生任何影响。
 
       如果此政策未设置，用户便可在语言设置中开启或关闭拼写检查。 </translation>
+<translation id="5655060841667911118">指定应使用设备管理协议注册的客户端证书。
+
+从 <ph name="PRODUCT_OS_NAME" /> 132 版开始支持 <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> 密钥算法选项。</translation>
 <translation id="5655553344896004108">允许使用已弃用的 U2F Security Key API</translation>
 <translation id="5656177735561364047">启用“共享剪贴板”功能</translation>
 <translation id="5657752663637568277">此政策旨在控制是否在打印预览对话框或设置页面内向用户显示 <ph name="CLOUD_PRINT_NAME" />弃用警告。
@@ -7408,6 +7417,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6607983779935460461">对 SVGUseElement 的数据网址支持。</translation>
 <translation id="6609867253856597039">设置已停用功能的用户体验</translation>
 <translation id="6614557704487944013">允许用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
+<translation id="6614648642325603511">用于生成密钥对的算法。从 132 版开始支持 EC 选项。</translation>
 <translation id="661610294649586421">禁止在 TLS 证书已损坏的网站上发出 WebAuthn API 请求。</translation>
 <translation id="6617589895942747919">间隔时段（含端点值）的开始时间。</translation>
 <translation id="6621830999036927230">如果您设置了此政策，远程访问主机会使用该网址来验证远程访问客户端的身份验证令牌，以便确定是否接受连接。如果您未设置此政策或将它留空，系统会停用此功能。
@@ -7697,6 +7707,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       此政策已被弃用，请改用 <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="6847379587945465889">允许在登录过程中将 SAML SSO Cookie 传输到用户会话中</translation>
+<translation id="6847810176590195243">用户将能够连接并向学生部署内容，包括发送 Web 内容，以及为学生提供老师说话内容的实时字幕/翻译。</translation>
 <translation id="684856667300805181">此政策已在 <ph name="PRODUCT_NAME" /> 68 中移除，并已由 <ph name="ARC_GLS_POLICY_NAME" /> 取代。</translation>
 <translation id="684882090733715433">浏览器事件报告</translation>
 <translation id="6850300477973481112">桌面连接器设置</translation>
@@ -8902,6 +8913,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="782661371433719637">不允许任何网站通过 File System API 请求对文件和目录的读取权限</translation>
 <translation id="7827127381981620448">平台应用</translation>
 <translation id="7829436838673974723">允许页面在关闭期间发送同步 XHR 请求</translation>
+<translation id="7829546795016635784">用户无法使用任何课程管理功能，也不能被添加到课程管理会话中。</translation>
 <translation id="782978857350824974">允许在 TLS 证书已损坏的网站上发出网络身份验证请求。</translation>
 <translation id="7830775338190021763">允许在企业远程支持会话中传输文件</translation>
 <translation id="7832225468415136704">禁止 Chrome 清理功能定期扫描系统并停用人工扫描</translation>
@@ -9089,21 +9101,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           此政策已从 Chrome 110 中移除。
                                         </translation>
 <translation id="7976157349247117979"><ph name="PRODUCT_NAME" /> 目标名称</translation>
-<translation id="7982057585796399404">通过设置此政策，您能以列表形式指定哪些应用和扩展程序无需用户互动即可静默安装且无法由用户卸载或停用。权限由系统默认授予，其中包括对 enterprise.deviceAttributes 和 enterprise.platformKeys 扩展程序 API 的权限。（这 2 个 API 不适用于非强制安装的应用和扩展程序。）
-
-如果未设置此政策，系统将不会自动安装任何应用或扩展程序，而且用户可在 <ph name="PRODUCT_NAME" /> 中卸载任何应用或扩展程序。
-
-此政策将会取代 <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 政策。如果从此列表中移除了以前强制安装的某个应用或扩展程序，<ph name="PRODUCT_NAME" /> 便会自动卸载该应用或扩展程序。
-
-用户可通过开发者工具更改任意扩展程序的源代码，这可能会导致扩展程序无法正常运行。要想避免这种情况，请设置 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。
-
-此政策的每个列表项都是一个字符串，其中包含一个扩展程序 ID 和一个可选的更新网址（这两者之间以英文分号“;”分隔）。扩展程序 ID 是一个由 32 个字母构成的字符串；若想查找该字符串，一种方法是在开发者模式下访问 chrome://extensions。更新网址（若指定）应指向一个更新清单 XML 文档 (https://developer.chrome.com/extensions/autoupdate)。更新网址应使用以下架构之一：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 或 <ph name="FILE_SCHEME" />。默认情况下，系统会使用 Chrome 应用商店的更新网址。此政策中设置的更新网址仅用于初次安装；扩展程序的后续更新将会使用相应扩展程序清单中的更新网址。后续更新所用的更新网址可被 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 政策中的相应设置覆盖，详见 http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy。
-
-只有当 <ph name="MS_WIN_NAME" /> 实例已加入 <ph name="MS_AD_NAME" /> 网域、已加入 <ph name="MS_AAD_NAME" /> 或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
-
-只有当 <ph name="MAC_OS_NAME" /> 实例是通过 MDM 进行管理、已通过 MCX 加入网域或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
-
-注意：此政策不适用于无痕模式。了解如何托管扩展程序 (https://developer.chrome.com/extensions/hosting)。</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651"><ph name="PRODUCT_OS_NAME" /> 上的 Glanceables</translation>
 <translation id="7986473886676689183">启用 Android 报告</translation>
@@ -10684,6 +10681,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       默认设置是允许托管浏览器执行渲染操作，不过您可以视情况替换此设置，并默认让 <ph name="PRODUCT_FRAME_NAME" />渲染 HTML 网页。</translation>
 <translation id="944817693306670849">设置磁盘缓存大小</translation>
 <translation id="949192525372487705">禁止切换到第三方密码管理工具</translation>
+<translation id="956107219808875608">控制课程管理工具的设置。</translation>
 <translation id="957322141096206402">系统 DNS 解析可能在网络进程中运行，也可能在网络进程外运行，具体取决于系统配置和功能标志。</translation>
 <translation id="957778406002650056">可供下载相应 <ph name="PLUGIN_VM_NAME" /> 图片的网址。</translation>
 <translation id="957920984193041197">允许页面在卸载期间显示弹出式窗口</translation>
@@ -10696,6 +10694,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="966425658642788645">应用默认行为</translation>
 <translation id="971677226939413180">不提供“以图片形式打印”选项供用户选择。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>
+<translation id="978619365985286086">课程管理工具设置</translation>
 <translation id="978658824596356870">24 小时制</translation>
 <translation id="979467274961593903">不允许进行远程调试</translation>
 <translation id="980218166381006412">如果此政策已启用，系统会开启后台模式。在后台模式下，<ph name="PRODUCT_NAME" /> 进程会在用户登录操作系统时启动，并会在最后一个浏览器窗口关闭后继续运行，从而使后台应用和浏览会话保持活动状态。系统任务栏中会显示该后台进程的图标，用户可以随时在此处关闭该后台进程。

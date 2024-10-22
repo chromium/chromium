@@ -2713,7 +2713,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2889064240420137087">Open link with...</translation>
 <translation id="2890206081124517553">Remember your desktop background across devices</translation>
 <translation id="2891464434568738544">No websites currently available. Visit a site to add it to this list.</translation>
-<translation id="2891566119238851894">Open search in side panel. Search is not open in the side panel.</translation>
 <translation id="2891922230654533301">Use your device to sign in to <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Default browser</translation>
 <translation id="2893180576842394309">Google may use your history to personalise Search and other Google services</translation>
@@ -3761,7 +3760,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3678156199662914018">Extension: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Pages that you view in this window won't appear in the browser history and they won't leave other traces, like cookies, on the computer after you sign out. Files that you download and bookmarks that you create won't be preserved.</translation>
 <translation id="3679126865530709868">Built-in touchpad</translation>
-<translation id="368019053277764111">Open search in side panel</translation>
 <translation id="3680683624079082902">Text-to-speech voice</translation>
 <translation id="3681017028939109078">Show window suggestions when starting split-screen</translation>
 <translation id="3681311097828166361">Thank you for your feedback. You are offline now, and your report will be sent later.</translation>
@@ -4672,7 +4670,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4316850752623536204">Developer Website</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Removed permissions for 1 site}other{Removed permissions for {NUM_SITES} sites}}</translation>
 <translation id="4317733381297736564">In-app purchases</translation>
-<translation id="4317737918133146519">Your work profile is almost ready</translation>
 <translation id="4317820549299924617">Verification was not successful</translation>
 <translation id="4319441675152393296">Click this extension's icon to read and change <ph name="HOST" /></translation>
 <translation id="4320177379694898372">No internet connection</translation>
@@ -6198,7 +6195,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (works offline)</translation>
 <translation id="5453829744223920473">Your child can use all of their school apps, bookmarks and resources just like they do in class. The school sets the ground rules.</translation>
 <translation id="5454166040603940656">with <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">See more search results</translation>
 <translation id="5457082343331641453">Add to your search</translation>
 <translation id="5457113250005438886">Invalid</translation>
 <translation id="5457459357461771897">Read and delete photos, music and other media from your computer</translation>
@@ -6656,7 +6652,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5799508265798272974">Linux Virtual Machine: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Destination file was truncated or removed since last download.</translation>
 <translation id="5800290746557538611">Enable instant hotspot</translation>
-<translation id="5800351251499368110">Close search in side panel. Search is open in the side panel.</translation>
 <translation id="5800703268655655701">Select Light or Dark theme</translation>
 <translation id="5801051031414037185">Set up phone</translation>
 <translation id="5801568494490449797">Preferences</translation>
@@ -8761,7 +8756,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7356908624372060336">Network logs</translation>
 <translation id="7357271391997763660">Run password check?</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
-<translation id="7358338787722390626">Close search in side panel</translation>
 <translation id="7359680654975233185">Unable to cast tab</translation>
 <translation id="735994578317267253">Get your apps, settings and more on any Chrome OS device</translation>
 <translation id="7360257054721917104">Viewing saved desks and templates. Press tab to navigate.</translation>
@@ -9761,7 +9755,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8054609631325628928">These numbers can be used to help activate service</translation>
 <translation id="8054883179223321715">Available for specific video sites</translation>
 <translation id="8054921503121346576">USB keyboard connected</translation>
-<translation id="8057414620575339583">Side Search</translation>
 <translation id="8058655154417507695">Expiry year</translation>
 <translation id="8058986560951482265">Jerky</translation>
 <translation id="8059417245945632445">&amp;Inspect devices</translation>

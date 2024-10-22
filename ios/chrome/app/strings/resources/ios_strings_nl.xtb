@@ -1558,6 +1558,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8232956427053453090">Gegevens behouden</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="82619448491672958">Andere tabbladen bekijken</translation>
+<translation id="8263228331881858381">Toegangssleutel opgeslagen</translation>
 <translation id="8263809106706527890">Je standaard browserinstellingen zijn misschien gewijzigd. Je kunt dit nagaan in de instellingen.</translation>
 <translation id="8264966119170358612">Sommige van je opgeslagen wachtwoorden zijn openbaar gemaakt bij een gegevenslek van derden. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Je bent uitgelogd van je account <ph name="USER_NAME" /> omdat je iPad wordt gereset. Tik hieronder op Doorgaan om weer in te loggen.</translation>
@@ -1635,6 +1636,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8601611099293226919">Zoeken op je scherm met Google Lens</translation>
 <translation id="8605219856220328675">Tabblad sluiten</translation>
 <translation id="8609743333007776886">${url} toevoegen aan bookmarks</translation>
+<translation id="8611922158252451755">Iedereen met de link kan alle tabbladen bewerken. Wees dus voorzichtig met delen. De link verloopt over 48 uur.</translation>
 <translation id="8620640915598389714">Bewerken</translation>
 <translation id="8625706492572042370">Startscherm bewerken</translation>
 <translation id="8633025649649592204">Recente activiteit</translation>
@@ -1746,6 +1748,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9032405509996909363">Browsegegevens verwijderen bevestigen</translation>
 <translation id="9034759925968272072">Je wordt niet uitgelogd van je Google-account. Voor je Google-account kunnen andere vormen van browsegeschiedenis beschikbaar zijn via <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>
+<translation id="9057030985451135243">Meer informatie over gedeelde tabbladgroepen</translation>
 <translation id="9057972802061533987">Volgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="9066097352053395362">Bookmark bewerken verbergen</translation>

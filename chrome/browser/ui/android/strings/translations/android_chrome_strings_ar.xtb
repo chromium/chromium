@@ -115,6 +115,7 @@
 <translation id="1460751212339734034">وفِّر وقت الكتابة</translation>
 <translation id="1466383950273130737">‏اختيار لغة Chrome</translation>
 <translation id="1477626028522505441">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب مشاكل بالخادم.</translation>
+<translation id="147982357559798527">تم التغيير</translation>
 <translation id="1480287803138246127">‏قد لا تظهر هنا بعض بيانات السجلّ. للاطّلاع على جميع البيانات، افتح سجلّ Chrome الكامل.</translation>
 <translation id="148482509007564431">مسار حفظ الإشارات المرجعية</translation>
 <translation id="1492417797159476138">سبق لك حفظ اسم المستخدم لهذا الموقع الإلكتروني.</translation>
@@ -1139,6 +1140,7 @@
 <translation id="6440291723980579689">لا يتم تحميل الصفحات إلّا بعد أن تفتحها.</translation>
 <translation id="6441734959916820584">الاسم طويل جدًا</translation>
 <translation id="6444291413624515012">تم إغلاق مجموعة علامات التبويب "<ph name="TAB_GROUP_TITLE" />"</translation>
+<translation id="6452534462676960500">نشاط جديد</translation>
 <translation id="6459045781120991510">استطلاعات الرأي</translation>
 <translation id="6461962085415701688">يتعذر فتح الملف</translation>
 <translation id="6464977750820128603">‏يمكنك الاطِّلاع على المواقع الإلكترونية التي تزورها في Chrome وتحديد موقِّتات لها.\n\nتحصل Google على معلومات عن المواقع الإلكترونية التي ضبطت موقِّتات لها ومدة زيارتك لها. تُستخدم هذه المعلومات لتحسين الرفاهية الرقمية.</translation>

@@ -2699,7 +2699,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2889064240420137087">Abrir ligazón con...</translation>
 <translation id="2890206081124517553">Recorda o fondo de escritorio en todos os teus dispositivos</translation>
 <translation id="2891464434568738544">Non hai ningún sitio dispoñible actualmente. Visita un para engadilo a esta lista.</translation>
-<translation id="2891566119238851894">Abrir busca no panel lateral. A busca non está aberta no panel lateral.</translation>
 <translation id="2891922230654533301">Queres utilizar o teu dispositivo para iniciar sesión en <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2893180576842394309">Google pode utilizar o teu historial para personalizar a Busca e outros servizos de Google</translation>
@@ -3750,7 +3749,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">As páxinas que visites nesta ventá non aparecerán no historial do navegador nin deixarán outros rastros (por exemplo, cookies) no ordenador unha vez peches sesión. Non se conservarán os ficheiros que descargues nin os marcadores que crees.</translation>
 <translation id="3679126865530709868">Panel táctil integrado</translation>
-<translation id="368019053277764111">Abrir busca no panel lateral</translation>
 <translation id="3680683624079082902">Voz da conversión de texto a voz</translation>
 <translation id="3681017028939109078">Mostrar suxestións de ventás ao iniciar a pantalla dividida</translation>
 <translation id="3681311097828166361">Grazas polo teu comentario. Agora estás sen conexión, polo que o informe se enviará máis tarde.</translation>
@@ -4661,7 +4659,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4316850752623536204">Sitio web para programadores</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Permisos quitados para 1 sitio}other{Permisos quitados para {NUM_SITES} sitios}}</translation>
 <translation id="4317733381297736564">Compras integradas na aplicación</translation>
-<translation id="4317737918133146519">O teu perfil de traballo está case listo</translation>
 <translation id="4317820549299924617">A verificación non se realizou correctamente</translation>
 <translation id="4319441675152393296">Fai clic na icona desta extensión para que poida ler e cambiar <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Non hai conexión a Internet</translation>
@@ -6187,7 +6184,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona sen conexión)</translation>
 <translation id="5453829744223920473">O teu fillo ou filla pode usar todas as aplicacións escolares, marcadores e recursos, tal e como o fai en clase. A escola define as normas básicas.</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Ver máis resultados da busca</translation>
 <translation id="5457082343331641453">Engade unha consulta á busca</translation>
 <translation id="5457113250005438886">Non válidos</translation>
 <translation id="5457459357461771897">Ler e eliminar fotos, música e outros ficheiros multimedia do teu ordenador</translation>
@@ -6643,7 +6639,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5799508265798272974">Máquina virtual de Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">O ficheiro de destino truncouse ou eliminouse desde a última descarga.</translation>
 <translation id="5800290746557538611">Activar zona wifi instantánea</translation>
-<translation id="5800351251499368110">Pechar busca no panel lateral. A busca está aberta no panel lateral.</translation>
 <translation id="5800703268655655701">Seleccionar o tema escuro ou o claro</translation>
 <translation id="5801051031414037185">Configurar teléfono</translation>
 <translation id="5801568494490449797">Preferencias</translation>
@@ -8746,7 +8741,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7356908624372060336">Rexistros de rede</translation>
 <translation id="7357271391997763660">Queres facer unha revisión de contrasinais?</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
-<translation id="7358338787722390626">Pechar busca no panel lateral</translation>
 <translation id="7359680654975233185">Non se puido emitir a pestana</translation>
 <translation id="735994578317267253">Accede ás túas aplicacións, opcións de configuración e moito máis en calquera dispositivo ChromeOS</translation>
 <translation id="7360257054721917104">Vendo escritorios e modelos gardados. Para navegar, preme Tabulador.</translation>
@@ -9745,7 +9739,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8054609631325628928">Estes números poden usarse para axudar a activar o servizo</translation>
 <translation id="8054883179223321715">Dispoñible para determinados sitios de vídeos</translation>
 <translation id="8054921503121346576">Teclado USB conectado</translation>
-<translation id="8057414620575339583">Busca lateral</translation>
 <translation id="8058655154417507695">Ano de caducidade</translation>
 <translation id="8058986560951482265">Entrecortado</translation>
 <translation id="8059417245945632445">&amp;Inspeccionar dispositivos</translation>

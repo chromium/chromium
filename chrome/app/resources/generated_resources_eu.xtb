@@ -2700,7 +2700,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2889064240420137087">Ireki esteka honekin…</translation>
 <translation id="2890206081124517553">Gogoratu zure mahaigainaren atzeko planoa gailu guztietan</translation>
 <translation id="2891464434568738544">Ez dago webgunerik erabilgarri une honetan. Zerrenda honetan webgune bat gehitzeko, bisita ezazu.</translation>
-<translation id="2891566119238851894">Ireki bilatzeko aukera alboko panelean. Bilatzeko aukera ez dago irekita alboko panelean.</translation>
 <translation id="2891922230654533301">Gailua erabili nahi duzu <ph name="APP_NAME" /> webgunean saioa hasteko?</translation>
 <translation id="2893168226686371498">Arakatzaile lehenetsia</translation>
 <translation id="2893180576842394309">Baliteke Google-k historia erabiltzea Bilaketa eta Google-ren beste zerbitzu batzuk pertsonalizatzeko</translation>
@@ -3746,7 +3745,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3678156199662914018">Luzapena: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Leiho honetan ikusten dituzun orriak ez dira arakatze-historian agertuko eta ez dute ordenagailuan beste inolako aztarnarik utziko (adibidez, cookieak) saioa itxi ondoren. Ez dira gordeko deskargatzen dituzun fitxategiak eta sortzen dituzun laster-markak.</translation>
 <translation id="3679126865530709868">Ukipen-panel integratua</translation>
-<translation id="368019053277764111">Ireki bilatzeko aukera alboko panelean</translation>
 <translation id="3680683624079082902">Testua ahots bihurtzeko eginbidearen ahotsa</translation>
 <translation id="3681017028939109078">Erakutsi iradokitako leihoak pantaila zatitzeko eginbidea aktibatzean</translation>
 <translation id="3681311097828166361">Eskerrik asko oharrak bidaltzeagatik. Konektatuta ez zaudenez, geroago bidaliko da txostena.</translation>
@@ -4657,7 +4655,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4316850752623536204">Garatzaileen webgunea</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Webgune bati baimenak kendu zaizkio}other{{NUM_SITES} webguneri baimenak kendu zaizkie}}</translation>
 <translation id="4317733381297736564">Aplikazioko erosketak ditu</translation>
-<translation id="4317737918133146519">Ia prest duzu laneko profila</translation>
 <translation id="4317820549299924617">Ezin izan da egiaztatu</translation>
 <translation id="4319441675152393296">Sakatu luzapen honen ikonoa <ph name="HOST" /> ostalariko edukia irakurtzeko eta aldatzeko</translation>
 <translation id="4320177379694898372">Ez zaude konektatuta Internetera</translation>
@@ -6181,7 +6178,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (Interneteko konexiorik gabe funtzionatzen du)</translation>
 <translation id="5453829744223920473">Haurrak ikastetxean darabiltzan aplikazio, laster-marka eta baliabide guztiak erabil ditzake, ikasgelan bezalaxe. Ikastetxeak ezartzen ditu oinarrizko arauak.</translation>
 <translation id="5454166040603940656">Hornitzailea: <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Ikusi bilaketa-emaitza gehiago</translation>
 <translation id="5457082343331641453">Gehitu zerbait bilaketan</translation>
 <translation id="5457113250005438886">Ez du balio</translation>
 <translation id="5457459357461771897">Irakurri eta ezabatu ordenagailuko argazkiak, musika eta bestelako multimedia-edukia</translation>
@@ -6637,7 +6633,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5799508265798272974">Linux makina birtuala: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Helburuko fitxategia moztuta dago edo kendu egin da azken aldiz deskargatu zenetik.</translation>
 <translation id="5800290746557538611">Gaitu istanteko wifi-gunea</translation>
-<translation id="5800351251499368110">Itxi bilatzeko aukera alboko panelean. Bilatzeko aukera irekita dago alboko panelean.</translation>
 <translation id="5800703268655655701">Hautatu gai argia edo iluna</translation>
 <translation id="5801051031414037185">Konfiguratu telefonoa</translation>
 <translation id="5801568494490449797">Hobespenak</translation>
@@ -8740,7 +8735,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7356908624372060336">Sarearen erregistroak</translation>
 <translation id="7357271391997763660">Pasahitz-egiaztapena exekutatu nahi duzu?</translation>
 <translation id="735745346212279324">VPN deskonektatu da</translation>
-<translation id="7358338787722390626">Itxi bilatzeko aukera alboko panelean</translation>
 <translation id="7359680654975233185">Ezin da igorri fitxa</translation>
 <translation id="735994578317267253">Eduki aplikazioak, ezarpenak eta beste gauza batzuk Chrome OS darabilten gailu guztietan</translation>
 <translation id="7360257054721917104">Gordetako lan-eremuak eta txantiloiak ikusgai. Nabigatzeko, sakatu tabuladorea.</translation>
@@ -9738,7 +9732,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8054609631325628928">Zerbitzua aktibatzeko erabil daitezke zenbakiok</translation>
 <translation id="8054883179223321715">Bideoen webgune zehatz batzuetarako eskuragarri</translation>
 <translation id="8054921503121346576">USB teklatua konektatu da</translation>
-<translation id="8057414620575339583">Alboko bilaketa</translation>
 <translation id="8058655154417507695">Iraungitze-urtea</translation>
 <translation id="8058986560951482265">Behin eta berriro mozten da</translation>
 <translation id="8059417245945632445">&amp;Aztertu gailuak</translation>

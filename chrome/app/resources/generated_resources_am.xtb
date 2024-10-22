@@ -2709,7 +2709,6 @@
 <translation id="2889064240420137087">አገናኝ ክፈት በ...</translation>
 <translation id="2890206081124517553">የእርስዎን ዴስክቶፕ ዳራ በመላው መሣሪያዎች ላይ ያስታውሱ</translation>
 <translation id="2891464434568738544">ምንም ጣቢያዎች በአሁኑ ጊዜ አይገኙም። አንድን ጣቢያ ወደዚህ ዝርዝር ለማከል ይጎብኙት።</translation>
-<translation id="2891566119238851894">በጎን ፓነል ውስጥ ፍለጋን ክፈት ፍለጋ በጎን ፓነል ውስጥ አልተከፈተም።</translation>
 <translation id="2891922230654533301">ወደ <ph name="APP_NAME" /> ለመግባት መሣሪያዎን ይጠቀሙበት?</translation>
 <translation id="2893168226686371498">ነባሪ አሳሽ</translation>
 <translation id="2893180576842394309">Google ፍለጋን እና ሌሎች የGoogle አገልግሎቶችን ግላዊነት ለማላበስ ሲል ታሪክዎን ሊጠቀም ይችላል።</translation>
@@ -3757,7 +3756,6 @@
 <translation id="3678156199662914018">ቅጥያ፦ <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">በዚህ መስኮት ላይ የሚመለከቷቸውን ገጾች በአሳሽ ታሪክ ላይ የማይታዩ ሲሆን ዘግተው ከወጡ በኋላ ገጾቹ እንደ ኩኪዎች ያሉ ሌሎች መከታተያዎችን አይተዉም። ያወረዷቸው ፋይሎች እና ዕልባቶች አይቀመጡም።</translation>
 <translation id="3679126865530709868">አብሮገነብ የመዳሰሻ ሰሌዳ</translation>
-<translation id="368019053277764111">በጎን ፓነል ውስጥ ፍለጋን ክፈት</translation>
 <translation id="3680683624079082902">የጽሑፍ-ወደ-ንግግር ድምፅ</translation>
 <translation id="3681017028939109078">የተከፈለ ማያ ገጽ ሲጀመር የመስኮት ጥቆማዎችን አሳይ</translation>
 <translation id="3681311097828166361">ለሰጡን ግብረመልስ እናመሰግናለን። አሁን ከመስመር ውጭ ነዎት፣ እና የእርስዎ ሪፖርት በኋላ ላይ ይላካል።</translation>
@@ -4666,7 +4664,6 @@
 <translation id="4316850752623536204">የገንቢ ድር ጣቢያ</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{ለ 1 ጣቢያ ፈቃዶች ተወግደዋል}one{ለ{NUM_SITES} ጣቢያ ፈቃዶች ተወግደዋል}other{ለ{NUM_SITES} ጣቢያዎች ፈቃዶች ተወግደዋል}}</translation>
 <translation id="4317733381297736564">የውስጥ-መተግበሪያ ግዢዎች</translation>
-<translation id="4317737918133146519">የሥራ መገለጫዎ ዝግጁ ሊሆን ነው</translation>
 <translation id="4317820549299924617">ማረጋገጫ አልተሳካም</translation>
 <translation id="4319441675152393296">የዚህ ቅጥያ አዶ <ph name="HOST" />ን እንዲያነብ እና እንዲለውጥ ጠቅ ያድርጉት</translation>
 <translation id="4320177379694898372">ምንም የበይነመረብ ግንኙነት የለም</translation>
@@ -6192,7 +6189,6 @@
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ከመስመር ውጭ ይሰራል)</translation>
 <translation id="5453829744223920473">ልጅዎ ልክ ክፍል ውስጥ እንደሚያደርጉት ሁሉንም የእነሱን የትምህርት ቤት መተግበሪያዎች፣ እልባቶች እና ግብዓቶች መጠቀም ይችላሉ። ትምህርት ቤቱ የመመሪያ ሕጎቹን ያወጣል።</translation>
 <translation id="5454166040603940656">ከ<ph name="PROVIDER" /> ጋር</translation>
-<translation id="545484289444831485">ተጨማሪ የፍለጋ ውጤቶችን ይመልከቱ</translation>
 <translation id="5457082343331641453">ወደ ፍለጋዎ ያክሉ</translation>
 <translation id="5457113250005438886">ልክ ያልሆነ</translation>
 <translation id="5457459357461771897">በኮምፒውተርዎ ላይ ፎቶዎችን፣ ሙዚቃ እና ሌላ ማህደረ መረጃን ያነብባል</translation>
@@ -6650,7 +6646,6 @@
 <translation id="5799508265798272974">የLinux ምናባዊ ማሽን፦ <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">የመድረሻ ፋይሉ ከመጨረሻ ውርዱ በኋላ ተቋርጧል ወይም ተወግዷል።</translation>
 <translation id="5800290746557538611">ቅጽበታዊ መገናኛ ነጥብን አንቃ</translation>
-<translation id="5800351251499368110">በጎን ፓነል ውስጥ ፍለጋን ዝጋ። ፍለጋ በጎን ፓነል ውስጥ ተከፍቷል።</translation>
 <translation id="5800703268655655701">የብርሃን ወይም ጠቆር ያለ ገጽታ ይምረጡ</translation>
 <translation id="5801051031414037185">ስልክን አዋቅር</translation>
 <translation id="5801568494490449797">አማራጮች</translation>
@@ -8757,7 +8752,6 @@
 <translation id="7356908624372060336">የአውታረ መረብ ምዝግብ ማስታወሻዎች</translation>
 <translation id="7357271391997763660">የይለፍ ቃል ፍተሻ ይሂድ?</translation>
 <translation id="735745346212279324">የቪ ፒ ኤን ግንኙነት ተቋርጧል</translation>
-<translation id="7358338787722390626">በጎን ፓነል ውስጥ ፍለጋን ዝጋ</translation>
 <translation id="7359680654975233185">ትርን cast ማድረግ አልተቻለም</translation>
 <translation id="735994578317267253">የእርስዎን መተግበሪያዎች፣ ቅንብሮች እና ሌሎችንም በማንኛውም የChromeOS መሣሪያ ላይ ያግኙ</translation>
 <translation id="7360257054721917104">የተቀመጡ ዴስኮችን እና ቅንብር ደንቦችን በመመልከት ላይ። ለማሰስ ትርን ይጫኑ።</translation>
@@ -9762,7 +9756,6 @@ nil</translation>
 <translation id="8054609631325628928">እነዚህ ቁጥሮች አገልግሎትን ለማግበር እንዲያግዙ ሥራ ላይ መዋል ይችላሉ</translation>
 <translation id="8054883179223321715">ለተወሰኑ የቪዲዮ ጣቢያዎች የሚገኝ</translation>
 <translation id="8054921503121346576">የUSB ቁልፍ ሰሌዳ ተገናኝቷል</translation>
-<translation id="8057414620575339583">የጎን ፍለጋ</translation>
 <translation id="8058655154417507695">ጊዜው የሚያበቃበት ዓመት</translation>
 <translation id="8058986560951482265">ይንቀጠቀጣል</translation>
 <translation id="8059417245945632445">&amp;መሣሪያዎችን መርምር</translation>

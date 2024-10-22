@@ -116,6 +116,7 @@
 <translation id="1498283581832036924"><ph name="WEBSITE" /> paskyra nebus ištrinta.</translation>
 <translation id="1506061864768559482">Paieškos variklis</translation>
 <translation id="1506063256525392513">Galite fotografuoti ir įkelti nuotraukas bei nuskaityti QR kodus</translation>
+<translation id="1508263560970797965">Tęsti inkognito režimu</translation>
 <translation id="1509486075633541495">Prisijungti prie svetainės</translation>
 <translation id="1509960214886564027">Funkcijos gali neveikti daugybėje svetainių.</translation>
 <translation id="1513858653616922153">Ištrinti slaptažodį</translation>
@@ -750,6 +751,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4587589328781138893">Svetainės</translation>
 <translation id="4592672037257622855">{count,plural, =1{Puslapis pridėtas prie skaitymo sąrašo}one{{count} puslapis pridėtas prie skaitymo sąrašo}few{{count} puslapiai pridėti prie skaitymo sąrašo}many{{count} puslapio pridėta prie skaitymo sąrašo}other{{count} puslapių pridėta prie skaitymo sąrašo}}</translation>
 <translation id="459644946100970322">Įjungti įspėjimus apie kainą?</translation>
+<translation id="4597892826846980979">Skirtukų pranešimų gavimas</translation>
 <translation id="4601095002996233687">Nuodugnus įtartinų atsisiuntimų nuskaitymas.</translation>
 <translation id="4606247758155004938">Jūsų naršyklę tvarko jūsų organizacija.</translation>
 <translation id="4611811151908969241">Slėpti parinktį „Nebestebėti <ph name="DOMAIN_NAME" />“</translation>
@@ -1213,6 +1215,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="6606914854592108404">Vykdoma saugos patikra…</translation>
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ir <ph name="THIRD_WEBSITE" /> slaptažodžiai bus ištrinti. Jūsų paskyros nebus ištrintos.</translation>
 <translation id="661266467055912436">Sustiprina jūsų ir visų žiniatinklio naudotojų saugą.</translation>
+<translation id="6612912757320004438">Leisti skirtukų pranešimus…</translation>
 <translation id="6617761071025228250">Išvalyti tekstą</translation>
 <translation id="6620279676667515405">Atšaukti</translation>
 <translation id="6624219055418309072">Blokuoti inkognito režimu</translation>
@@ -1573,6 +1576,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8242644458318193141">Siekiant užtikrinti organizacijos saugą, skirtukai bus uždaryti, o neišsaugoti paskyros duomenys bus ištrinti iš šio įrenginio. Tai gali būti slaptažodžiai, istorija ir kt.</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="82619448491672958">Žr. kitus skirtukus</translation>
+<translation id="8263228331881858381">Prieigos raktas išsaugotas</translation>
 <translation id="8263809106706527890">Galbūt buvo pakeisti numatytosios naršyklės nustatymai. Tai galite patikrinti nustatymuose.</translation>
 <translation id="8264966119170358612">Kai kurie jūsų išsaugoti slaptažodžiai buvo atskleisti dėl ne „Google“ duomenų saugos pažeidimo. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Buvote atjungti nuo paskyros <ph name="USER_NAME" /> nustatant „iPad“ iš naujo. Jei norite vėl prisijungti, toliau palieskite „Tęsti“.</translation>
@@ -1589,7 +1593,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8299613349954694191">Norėdami naršyti žiniatinklį privačiai, atidarykite inkognito skirtuką.</translation>
 <translation id="8307481894409578819">Nepavyksta įkelti šio failo</translation>
 <translation id="8319076807703933069">Nauja paieška</translation>
-<translation id="8320212361750431956">Naujausia veikla</translation>
 <translation id="8343993175958086504">Sukurkite atsarginę turinio kopiją ir naudokite ją bet kuriame įrenginyje.</translation>
 <translation id="8349305172487531364">Žymių juosta</translation>
 <translation id="8366466717204352506">Niekada netikrinti</translation>

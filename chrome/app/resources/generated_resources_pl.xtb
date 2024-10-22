@@ -2684,7 +2684,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2889064240420137087">Otwórz link przy użyciu...</translation>
 <translation id="2890206081124517553">Zapamiętaj tło pulpitu na wszystkich urządzeniach</translation>
 <translation id="2891464434568738544">Obecnie brak dostępnych witryn. Odwiedź stronę, aby dodać ją do tej listy.</translation>
-<translation id="2891566119238851894">Otwórz pasek narzędzi wyszukiwania w panelu bocznym. Pasek nie jest otwarty.</translation>
 <translation id="2891922230654533301">Chcesz logować się na <ph name="APP_NAME" /> za pomocą tego urządzenia?</translation>
 <translation id="2893168226686371498">Domyślna przeglądarka</translation>
 <translation id="2893180576842394309">Google może korzystać z Twojej historii, by personalizować wyniki wyszukiwania i działanie innych usług.</translation>
@@ -3728,7 +3727,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3678156199662914018">Rozszerzenie: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Strony wyświetlane w tym oknie nie pojawią się w historii przeglądarki. Gdy się wylogujesz, nie zostanie po nich na komputerze żaden ślad (np. w postaci plików cookie). Nie zostaną też zachowane pobrane pliki ani utworzone zakładki.</translation>
 <translation id="3679126865530709868">Touchpad wbudowany</translation>
-<translation id="368019053277764111">Otwórz pasek narzędzi wyszukiwania w panelu bocznym</translation>
 <translation id="3680683624079082902">Głos zamiany tekstu na mowę</translation>
 <translation id="3681017028939109078">Przy włączaniu podzielonego ekranu sugeruj okna</translation>
 <translation id="3681311097828166361">Dziękujemy za opinię. Jesteś teraz offline, więc Twoje zgłoszenie zostanie wysłane później.</translation>
@@ -4639,7 +4637,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4316850752623536204">Witryna dewelopera</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Usunięto uprawnienia 1 witryny}few{Usunięto uprawnienia {NUM_SITES} witryn}many{Usunięto uprawnienia {NUM_SITES} witryn}other{Usunięto uprawnienia {NUM_SITES} witryny}}</translation>
 <translation id="4317733381297736564">Zakupy w aplikacji</translation>
-<translation id="4317737918133146519">Twój profil służbowy jest prawie gotowy</translation>
 <translation id="4317820549299924617">Nieudana weryfikacja</translation>
 <translation id="4319441675152393296">Aby zezwolić na odczytywanie i zmienianie danych w witrynie <ph name="HOST" />, kliknij ikonę rozszerzenia</translation>
 <translation id="4320177379694898372">Brak połączenia z internetem</translation>
@@ -5027,6 +5024,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4602776638371779614">Ta karta wykonuje teraz skanowanie w poszukiwaniu urządzeń Bluetooth</translation>
 <translation id="4605026046465576953">Nie możesz otworzyć tej aplikacji, ponieważ nie masz uprawnień do uruchamiania izolowanych aplikacji internetowych</translation>
 <translation id="4606551464649945562">Nie zezwalaj stronom na tworzenie mapy 3D Twojego otoczenia ani na śledzenie pozycji kamery</translation>
+<translation id="4606933160360542263">Niestandardowa kombinacja klawiszy: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Usunąć grupę kart?}few{Usunąć grupy kart?}many{Usunąć grupy kart?}other{Usunąć grupy kart?}}</translation>
 <translation id="4608500690299898628">&amp;Znajdź</translation>
 <translation id="4610162781778310380">We wtyczce <ph name="PLUGIN_NAME" /> wystąpił błąd</translation>
@@ -6162,7 +6160,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (działa offline)</translation>
 <translation id="5453829744223920473">Dziecko może korzystać ze wszystkich swoich szkolnych aplikacji, zakładek i zasobów tak samo jak w klasie. Zasady określa szkoła.</translation>
 <translation id="5454166040603940656">za pomocą <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Pokaż więcej wyników wyszukiwania</translation>
 <translation id="5457082343331641453">Dodaj do wyszukiwania</translation>
 <translation id="5457113250005438886">Nieprawidłowe</translation>
 <translation id="5457459357461771897">Odczyt i usuwanie zdjęć, muzyki oraz innych multimediów na komputerze</translation>
@@ -6260,6 +6257,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5517304475148761050">Ta aplikacja wymaga dostępu do Sklepu Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Usuń działanie <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Czy to oczekiwana strona główna?</translation>
 <translation id="5522156646677899028">To rozszerzenie zawiera poważną lukę w zabezpieczeniach.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administrator zainstalował rozszerzenie}few{Administrator zainstalował # rozszerzenia}many{Administrator zainstalował # rozszerzeń}other{Administrator zainstalował # rozszerzenia}}</translation>
@@ -6620,7 +6618,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5799508265798272974">Linuksowa maszyna wirtualna: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Od czasu ostatniego pobierania plik docelowy został obcięty lub usunięty.</translation>
 <translation id="5800290746557538611">Włącz błyskawiczny hotspot</translation>
-<translation id="5800351251499368110">Zamknij pasek narzędzi wyszukiwania w panelu bocznym. Pasek jest otwarty.</translation>
 <translation id="5800703268655655701">Wybierz jasny lub ciemny motyw</translation>
 <translation id="5801051031414037185">Skonfiguruj telefon</translation>
 <translation id="5801568494490449797">Ustawienia</translation>
@@ -8727,7 +8724,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7356908624372060336">Dzienniki sieci</translation>
 <translation id="7357271391997763660">Uruchomić sprawdzanie hasła?</translation>
 <translation id="735745346212279324">VPN odłączona</translation>
-<translation id="7358338787722390626">Zamknij pasek narzędzi wyszukiwania na panelu bocznym</translation>
 <translation id="7359680654975233185">Nie udało się przesłać karty</translation>
 <translation id="735994578317267253">Pobieranie aplikacji i ustawień na dowolne urządzenie z Chrome OS</translation>
 <translation id="7360257054721917104">Wyświetlam zapisane biurka i szablony. Poruszaj się za pomocą klawisza Tab.</translation>
@@ -9726,7 +9722,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8054609631325628928">Tych numerów można użyć do aktywowania usługi</translation>
 <translation id="8054883179223321715">Dostępne w przypadku konkretnych stron z filmami</translation>
 <translation id="8054921503121346576">Podłączono klawiaturę USB</translation>
-<translation id="8057414620575339583">Wyszukiwanie na boku</translation>
 <translation id="8058655154417507695">Rok utraty ważności</translation>
 <translation id="8058986560951482265">Przeskakuje</translation>
 <translation id="8059417245945632445">&amp;Sprawdź urządzenia</translation>
@@ -10247,6 +10242,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> – więcej opcji</translation>
 <translation id="8431190899827883166">Pokaż kliknięcia</translation>
 <translation id="843173223122814223">Twórz tła za pomocą AI</translation>
+<translation id="8431977087510901105">Ustawienia kursora zostały zresetowane</translation>
 <translation id="8433186206711564395">Ustawienia sieci</translation>
 <translation id="8434109185104929038">Kącik do czytania</translation>
 <translation id="8434480141477525001">Port debugowania NaCl</translation>
@@ -11165,7 +11161,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9082750838489080452">Aplikacja: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Otwórz jako okno</translation>
 <translation id="9085256200913095638">Powiel wybraną kartę</translation>
-<translation id="9085446486797400519">Dostęp do aparatu</translation>
+<translation id="9085446486797400519">Dostęp do kamery</translation>
 <translation id="9085776959277692427">Nie wybrano: <ph name="LANGUAGE" />. Aby wybrać język, naciśnij Wyszukaj i spację.</translation>
 <translation id="9087949559523851360">Dodawanie użytkownika z ograniczonym dostępem</translation>
 <translation id="9088234649737575428">Wtyczka <ph name="PLUGIN_NAME" /> została zablokowana przez zasady przedsiębiorstwa</translation>

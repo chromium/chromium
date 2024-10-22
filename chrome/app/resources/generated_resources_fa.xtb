@@ -2710,7 +2710,6 @@
 <translation id="2889064240420137087">بازکردن پیوند با...</translation>
 <translation id="2890206081124517553">به‌خاطر سپردن پس‌زمینه میز کار در دستگاه‌های مختلف</translation>
 <translation id="2891464434568738544">درحال‌حاضر هیچ سایتی در‌دسترس نیست. برای افزودن سایت به این فهرست، از آن بازدید کنید.</translation>
-<translation id="2891566119238851894">جستجو در پانل کناری باز می‌شود. جستجو در پانل کناری باز نیست.</translation>
 <translation id="2891922230654533301">برای وارد شدن به سیستم <ph name="APP_NAME" /> از دستگاهتان استفاده شود؟</translation>
 <translation id="2893168226686371498">مرورگر پیش‌فرض</translation>
 <translation id="2893180576842394309">‏Google ممکن است از سابقه مرور شما برای شخصی کردن جستجو و سایر سرویس‌های Google استفاده کند</translation>
@@ -3758,7 +3757,6 @@
 <translation id="3678156199662914018">برنامهٔ افزودنی: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">صفحه‌هایی که در این پنجره مشاهده می‌کنید در سابقه مرورگر نشان داده نمی‌شوند و بعد از خروج از سیستم هیچ رد دیگری (مثلاً کوکی) از خودشان در رایانه به‌جای نمی‌گذارند. فایل‌هایی که بارگیری می‌کنید و نشانک‌هایی که ایجاد می‌کنید حفظ نخواهند شد.</translation>
 <translation id="3679126865530709868">صفحه لمسی داخلی</translation>
-<translation id="368019053277764111">باز کردن جستجو در پانل کناری</translation>
 <translation id="3680683624079082902">صدای نوشتار به گفتار</translation>
 <translation id="3681017028939109078">نمایش پیشنهاد پنجره هنگام شروع صفحهٔ دونیمه</translation>
 <translation id="3681311097828166361">از بازخوردتان سپاس‌گزاریم. درحال‌حاضر آفلاین هستید و گزارشتان بعداً ارسال می‌شود.</translation>
@@ -4669,7 +4667,6 @@
 <translation id="4316850752623536204">وب‌سایت برنامه‌نویس</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{اجازه‌های ۱ سایت برداشته شد}one{اجازه‌های {NUM_SITES} سایت برداشته شد}other{اجازه‌های {NUM_SITES} سایت برداشته شد}}</translation>
 <translation id="4317733381297736564">خریدهای درون‌برنامه</translation>
-<translation id="4317737918133146519">نمایه کاری‌تان تقریباً آماده است</translation>
 <translation id="4317820549299924617">راستی‌آزمایی انجام نشد</translation>
 <translation id="4319441675152393296">برای خواندن و تغییر دادن <ph name="HOST" />، روی نماد این افزونه کلیک کنید</translation>
 <translation id="4320177379694898372">اتصال اینترنتی ندارید</translation>
@@ -5057,6 +5054,7 @@
 <translation id="4602776638371779614">این برگه به‌طور فعال درحال اسکن کردن دستگاه‌های بلوتوث است</translation>
 <translation id="4605026046465576953">این برنامه باز نمی‌شود چون اجازه ندارید برنامه‌های وب مجزا را اجرا کنید</translation>
 <translation id="4606551464649945562">به سایت‌ها اجازه داده نشود نقشه سه‌بعدی از محیط ایجاد کنند یا موقعیت دوربین را ردیابی کنند</translation>
+<translation id="4606933160360542263">ترکیب سفارشی کلید: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{گروه برگه حذف شود؟}one{گروه برگه حذف شود؟}other{گروه‌های برگه حذف شود؟}}</translation>
 <translation id="4608500690299898628">&amp;یافتن...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> با خطایی مواجه شده است</translation>
@@ -6195,7 +6193,6 @@
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (آفلاین کار می‌کند)</translation>
 <translation id="5453829744223920473">فرزندتان می‌تواند از همه برنامه‌ها، نشانک‌ها، و منابع مدرسه‌اش درست مثل زمانی‌که در کلاس است استفاده کند. مدرسه قوانین پایه را تعیین می‌کند.</translation>
 <translation id="5454166040603940656">با <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">دیدن نتایج جستجوی بیشتر</translation>
 <translation id="5457082343331641453">افزودن به جستجو</translation>
 <translation id="5457113250005438886">نامعتبر</translation>
 <translation id="5457459357461771897">خواندن و حذف عکس‌ها، موسیقی، و سایر رسانه‌ها از رایانه‌تان</translation>
@@ -6293,6 +6290,7 @@
 <translation id="5517304475148761050">‏این برنامه باید به «فروشگاه Play» دسترسی پیدا کند</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">برداشتن کنش <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">آیا این همان صفحه اصلی مورد انتظار شماست؟</translation>
 <translation id="5522156646677899028">این برنامه افزودنی از لحاظ امنیتی اصلاً مطمئن نیست.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{سرپرستتان یک افزونه نصب کرده است}one{سرپرستتان # افزونه نصب کرده است}other{سرپرستتان # افزونه نصب کرده است}}</translation>
@@ -6653,7 +6651,6 @@
 <translation id="5799508265798272974">‏ماشین مجازی Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">فایل مقصد از زمان آخرین بارگیری برداشته شده است یا ناقص است.</translation>
 <translation id="5800290746557538611">فعال کردن «نقطه اتصال فوری»</translation>
-<translation id="5800351251499368110">جستجو در پانل کناری بسته می‌شود. جستجو در پانل کناری باز است.</translation>
 <translation id="5800703268655655701">زمینه روشن یا تیره را انتخاب کنید</translation>
 <translation id="5801051031414037185">راه‌اندازی تلفن</translation>
 <translation id="5801568494490449797">اولویت‌ها</translation>
@@ -8760,7 +8757,6 @@
 <translation id="7356908624372060336">گزارش‌های شبکه</translation>
 <translation id="7357271391997763660">بررسی گذرواژه اجرا شود؟</translation>
 <translation id="735745346212279324">‏VPN قطع است</translation>
-<translation id="7358338787722390626">بستن جستجو در پانل کناری</translation>
 <translation id="7359680654975233185">پخش کردن محتوای برگه امکان‌پذیر نیست</translation>
 <translation id="735994578317267253">‏دریافت برنامه‌ها، تنظیمات و موارد دیگر در دستگاه‌های ChromeOS</translation>
 <translation id="7360257054721917104">درحال نمایش الگوها و میزکارهای ذخیره‌شده. برای پیمایش، کلید جهش را فشار دهید.</translation>
@@ -9759,7 +9755,6 @@
 <translation id="8054609631325628928">می‌توان از این شماره‌ها برای کمک به فعال‌سازی سرویس استفاده کرد</translation>
 <translation id="8054883179223321715">دردسترس برای بعضی از سایت‌های ویدیویی</translation>
 <translation id="8054921503121346576">‏صفحه‌کلید USB متصل شد</translation>
-<translation id="8057414620575339583">جستجوی جانبی</translation>
 <translation id="8058655154417507695">سال انقضا</translation>
 <translation id="8058986560951482265">جریان نامنظم</translation>
 <translation id="8059417245945632445">&amp;بازرسی دستگاه‌ها</translation>
@@ -10280,6 +10275,7 @@
 <translation id="8429928917752180743">گزینه‌های بیشتر برای <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">نمایش تک‌ضرب‌ها</translation>
 <translation id="843173223122814223">ایجاد پس‌زمینه با هوش مصنوعی</translation>
+<translation id="8431977087510901105">بازنشانی کردن تنظیمات مکان‌نما</translation>
 <translation id="8433186206711564395">تنظیمات شبکه</translation>
 <translation id="8434109185104929038">محل مطالعه</translation>
 <translation id="8434480141477525001">‏درگاه اشکال‌زدایی NaCl</translation>

@@ -978,6 +978,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4356872429719185452">Tunjukkan butiran tempat liputan. Tempat liputan sedang dihidupkan.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Merakam</translation>
 <translation id="4371348193907997655">Tetapan Cast</translation>
+<translation id="4371834685492830207">PIN mestilah mengandungi aksara yang sah sahaja</translation>
 <translation id="4375482231364171368">Buat carian dalam bar alamat</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, kekuatan isyarat <ph name="SIGNAL_STRENGTH" /> peratus</translation>
 <translation id="4378551569595875038">Menyambung...</translation>
@@ -1564,6 +1565,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6232416233079464213">Daripada <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon anda pada masa ini</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Kata laluan mestilah mengandungi aksara yang sah sahaja</translation>
 <translation id="6240603910551255087">Butang Atas</translation>
 <translation id="6240821072888636753">Tanya setiap kali</translation>
 <translation id="6247728804802644171">Buka pemberitahuan</translation>

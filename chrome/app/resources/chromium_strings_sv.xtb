@@ -178,7 +178,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3286538390144397061">Starta om nu</translation>
 <translation id="328888136576916638">Googles API-nycklar saknas. Vissa funktioner i Google Chromium kommer att vara inaktiverade.</translation>
 <translation id="3296368748942286671">Fortsätt köra bakgrundsappar när Chromium avslutas</translation>
-<translation id="3300643253493387004">Du kan använda Chromium medan vi konfigurerar kontoåtkomst. Du kanske inte har åtkomst till vissa resurser förrän konfigureringen är klar.</translation>
 <translation id="3313189106987092621">Chromium varnar dig innan webbplatser med osäkra anslutningar läses in</translation>
 <translation id="3316771292331273802">Du loggas ut från de flesta webbplatser när du stänger alla fönster i Chromium, med undantag för Google-kontot om du är inloggad i Chromium. <ph name="SETTINGS_LINK" /> och gör så att webbplatser kommer ihåg dig.</translation>
 <translation id="3350761136195634146">Det finns redan en Chromium-profil med detta konto</translation>

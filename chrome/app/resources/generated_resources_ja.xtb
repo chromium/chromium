@@ -2694,7 +2694,6 @@
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
 <translation id="2890206081124517553">デスクトップの背景をすべてのデバイスに保存します</translation>
 <translation id="2891464434568738544">現在、追加されたサイトはありません。このサイトをリストに追加するには、サイトにアクセスしてください。</translation>
-<translation id="2891566119238851894">サイドパネルで検索を開きます。サイドパネルで検索が開いていません。</translation>
 <translation id="2891922230654533301">デバイスを使用して <ph name="APP_NAME" /> にログインしますか？</translation>
 <translation id="2893168226686371498">既定のブラウザ</translation>
 <translation id="2893180576842394309">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
@@ -3739,7 +3738,6 @@
 <translation id="3678156199662914018">拡張機能: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">このウィンドウで開いたページはブラウザ履歴には記録されません。Cookie などの記録も、ログアウトするとパソコンから消去されます。ダウンロードしたファイルや追加したブックマークは保持されません。</translation>
 <translation id="3679126865530709868">内蔵タッチパッド</translation>
-<translation id="368019053277764111">サイドパネルで検索を開く</translation>
 <translation id="3680683624079082902">テキスト読み上げの音声</translation>
 <translation id="3681017028939109078">分割画面の開始時にウィンドウの候補を表示する</translation>
 <translation id="3681311097828166361">ご意見をお寄せいただきありがとうございます。現在オフラインのため、ご報告の内容は後で送信されます。</translation>
@@ -4649,7 +4647,6 @@
 <translation id="4316850752623536204">デベロッパーのウェブサイト</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{1 件のサイトの権限を削除しました}other{{NUM_SITES} 件のサイトの権限を削除しました}}</translation>
 <translation id="4317733381297736564">アプリ内購入</translation>
-<translation id="4317737918133146519">あと少しで仕事用プロファイルの設定が完了します</translation>
 <translation id="4317820549299924617">確認が失敗しました</translation>
 <translation id="4319441675152393296"><ph name="HOST" /> の読み取りと変更を行うには、この拡張機能のアイコンをクリックします</translation>
 <translation id="4320177379694898372">インターネットに接続されていません</translation>
@@ -6170,7 +6167,6 @@
 <translation id="5452976525201205853"><ph name="LANGUAGE" />（オフラインで利用可能）</translation>
 <translation id="5453829744223920473">お子様は、学校のすべてのアプリ、ブックマーク、リソースを授業と同じように利用できます。基本ルールは学校が設定します。</translation>
 <translation id="5454166040603940656">- <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">他の検索結果を表示</translation>
 <translation id="5457082343331641453">検索に追加</translation>
 <translation id="5457113250005438886">無効</translation>
 <translation id="5457459357461771897">パソコンからの写真、音楽、その他のメディアの読み取りと削除</translation>
@@ -6628,7 +6624,6 @@
 <translation id="5799508265798272974">Linux 仮想マシン: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">対象ファイルは前回のダウンロード後に一部または全体が削除されました。</translation>
 <translation id="5800290746557538611">インスタント アクセス ポイントを有効にする</translation>
-<translation id="5800351251499368110">サイドパネルの検索を閉じます。サイドパネルの検索が開いています。</translation>
 <translation id="5800703268655655701">ライトモードまたはダークモードを選択する</translation>
 <translation id="5801051031414037185">スマートフォンを設定</translation>
 <translation id="5801568494490449797">設定</translation>
@@ -8730,7 +8725,6 @@
 <translation id="7356908624372060336">ネットワーク ログ</translation>
 <translation id="7357271391997763660">パスワード チェックを実行しますか？</translation>
 <translation id="735745346212279324">VPN が切断されました</translation>
-<translation id="7358338787722390626">サイドパネルの検索を閉じる</translation>
 <translation id="7359680654975233185">タブをキャストできません</translation>
 <translation id="735994578317267253">どの Chrome OS デバイスからでも自分のアプリや設定などにアクセスできます</translation>
 <translation id="7360257054721917104">保存したデスクとテンプレートを表示しています。Tab キーを押して移動できます。</translation>
@@ -9729,7 +9723,6 @@
 <translation id="8054609631325628928">これらの番号を使用して、サービスを有効にできます</translation>
 <translation id="8054883179223321715">特定の動画サイトで利用可能</translation>
 <translation id="8054921503121346576">USB キーボードが接続されました</translation>
-<translation id="8057414620575339583">サイド検索</translation>
 <translation id="8058655154417507695">有効期限（年）</translation>
 <translation id="8058986560951482265">粗く、途切れがち</translation>
 <translation id="8059417245945632445">デバイスを検証(&amp;I)</translation>

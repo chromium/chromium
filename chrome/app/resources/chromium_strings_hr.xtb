@@ -173,7 +173,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="3286538390144397061">Ponovo pokreni sad</translation>
 <translation id="328888136576916638">Nedostaju ključevi Google API-ja. Neke funkcije Chromiuma bit će onemogućene.</translation>
 <translation id="3296368748942286671">Nastavi izvršavati ​​pozadinske aplikacije po zatvaranju preglednika Chromium</translation>
-<translation id="3300643253493387004">Dok postavljamo pristup računu, i dalje možete upotrebljavati Chromium. Možda nećete moći pristupiti nekim resursima dok se postavljanje ne dovrši.</translation>
 <translation id="3313189106987092621">Chromium će vas upozoriti prije učitavanja bilo koje web-lokacije putem nesigurne veze</translation>
 <translation id="3316771292331273802">Kad zatvorite sve prozore Chromiuma, odjavit ćete se s većine web-lokacija osim Google računa ako ste prijavljeni na Chromium. Da bi vas web-lokacije zapamtile, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3350761136195634146">Već postoji profil u Chromiumu s tim računom</translation>

@@ -74,7 +74,6 @@
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Extensia nu mai este acceptată. Chrome recomandă să o elimini.}few{Aceste extensii nu mai sunt acceptate. Chrome recomandă să le elimini.}other{Aceste extensii nu mai sunt acceptate. Chrome recomandă să le elimini.}}</translation>
 <translation id="2018528049276128029">Fiecare profil conține propriile informații Chrome, cum ar fi marcaje, istoric, parole și altele</translation>
 <translation id="2018879682492276940">Nu s-a instalat. Încearcă din nou.</translation>
-<translation id="2022471217832964798">Poți folosi Chrome cât timp configurăm accesul la cont. Există șanse să nu poți accesa anumite resurse până la finalizarea configurării.</translation>
 <translation id="2034233344106846793">Chrome face automat upgrade conexiunilor nesecurizate la HTTPS, dacă este posibil</translation>
 <translation id="207902854391093810">În versiunile de încercare, Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>
 <translation id="2091012649849228750">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 8.</translation>

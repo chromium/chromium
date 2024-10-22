@@ -115,6 +115,7 @@
 <translation id="1460751212339734034">节省时间，减少输入操作</translation>
 <translation id="1466383950273130737">选择要让 Chrome 采用的语言</translation>
 <translation id="1477626028522505441">未能成功下载 <ph name="FILE_NAME" />，因为服务器出现了问题。</translation>
+<translation id="147982357559798527">已更改</translation>
 <translation id="1480287803138246127">您的部分历史记录可能不会在此处显示。如需查看您的所有 Chrome 历史记录，请打开完整的 Chrome 历史记录。</translation>
 <translation id="148482509007564431">书签保存流程</translation>
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
@@ -1137,6 +1138,7 @@
 <translation id="6440291723980579689">仅当您打开网页后，它们才会加载</translation>
 <translation id="6441734959916820584">名称太长</translation>
 <translation id="6444291413624515012">已关闭“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
+<translation id="6452534462676960500">新活动</translation>
 <translation id="6459045781120991510">调查问卷</translation>
 <translation id="6461962085415701688">无法打开文件</translation>
 <translation id="6464977750820128603">您可以查看自己在 Chrome 中访问的网站并为这些网站设置计时器。\n\nGoogle 会获取这些设有计时器的网站的相关信息以及您对这些网站的访问时长。这些信息会被用于改进“数字健康”应用。</translation>

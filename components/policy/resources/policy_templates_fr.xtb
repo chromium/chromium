@@ -9157,21 +9157,6 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
           Cette règle a été supprimée dans Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nom de la destination <ph name="PRODUCT_NAME" /></translation>
-<translation id="7982057585796399404">Cette règle permet de lister les applis et extensions qui s'installent de manière autonome, sans intervention de l'utilisateur, et que celui-ci ne peut pas désinstaller ni désactiver. Les autorisations sont accordées implicitement, y compris pour les API d'extension enterprise.deviceAttributes et enterprise.platformKeys (ces deux API ne sont pas disponibles pour les applis et extensions non installées d'office).
-
-Si cette règle n'est pas configurée, aucune appli ni extension n'est installée automatiquement, et l'utilisateur peut désinstaller n'importe quelle appli ou extension dans <ph name="PRODUCT_NAME" />.
-
-Cette règle remplace la règle <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Si une appli ou une extension installée d'office est supprimée de cette liste, <ph name="PRODUCT_NAME" /> la désinstalle automatiquement.
-
-Le code source de toute extension peut être modifié par les utilisateurs à l'aide des outils pour les développeurs, ce qui peut entraîner des dysfonctionnements. Si cela pose problème, configurez la règle <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
-
-Chaque élément listé de la règle est une chaîne comprenant un ID d'extension et éventuellement une URL de mise à jour séparés par un point-virgule (;). L'ID d'extension est la chaîne de 32 lettres figurant, par exemple, sur la page chrome://extensions, quand le mode développeur est activé. Si indiquée, l'URL de mise à jour doit renvoyer vers un fichier manifeste au format XML (https://developer.chrome.com/extensions/autoupdate) et utiliser l'un des schémas suivants : <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ou <ph name="FILE_SCHEME" />. Par défaut, l'URL de mise à jour du Chrome Web Store est utilisée. L'URL de mise à jour spécifiée dans cette règle ne sert que pour l'installation initiale. Toute mise à jour ultérieure de l'extension utilise l'URL de mise à jour indiquée dans le fichier manifeste de l'extension. L'URL de mise à jour peut être remplacée à l'aide de la règle <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> (voir http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy).
-
-Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est associée à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Pour les instances <ph name="MAC_OS_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM, associée à un domaine via MCX ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Remarque : cette règle ne s'applique pas en mode navigation privée. Pour en savoir plus sur l'hébergement des extensions, consultez la page https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Activer la création de rapports Android</translation>

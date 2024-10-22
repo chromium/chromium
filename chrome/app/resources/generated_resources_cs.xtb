@@ -2702,7 +2702,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2889064240420137087">Otevřít odkaz pomocí...</translation>
 <translation id="2890206081124517553">Pamatovat si pozadí plochy napříč zařízeními</translation>
 <translation id="2891464434568738544">Aktuálně nejsou k dispozici žádné weby. Pokud nějaký web do tohoto seznamu chcete přidat, navštivte ho.</translation>
-<translation id="2891566119238851894">Otevřít vyhledávání na postranním panelu. Vyhledávání není otevřeno na postranním panelu.</translation>
 <translation id="2891922230654533301">Přihlásit se pomocí zařízení do aplikace <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Výchozí prohlížeč</translation>
 <translation id="2893180576842394309">Google vaši historii může používat k personalizaci Vyhledávání a dalších služeb Google</translation>
@@ -3748,7 +3747,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3678156199662914018">Rozšíření: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Stránky, které otevřete v tomto okně, nebudou uvedeny v historii prohlížeče a po odhlášení v počítači nezanechají žádné stopy, např. soubory cookie. Zachovány nezůstanou ani stažené soubory či vytvořené záložky.</translation>
 <translation id="3679126865530709868">Vestavěný touchpad</translation>
-<translation id="368019053277764111">Otevřít vyhledávání na postranním panelu</translation>
 <translation id="3680683624079082902">Hlas převodu textu na řeč</translation>
 <translation id="3681017028939109078">Při spuštění rozdělené obrazovky zobrazit návrhy oken</translation>
 <translation id="3681311097828166361">Děkujeme vám za zpětnou vazbu. Nyní jste offline, zpráva bude odeslána později.</translation>
@@ -4658,7 +4656,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4316850752623536204">Webové stránky vývojáře</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Byla odebrána oprávnění 1 webu}few{Odebrána oprávnění {NUM_SITES} webům}many{Odebrána oprávnění {NUM_SITES} webu}other{Odebrána oprávnění {NUM_SITES} webům}}</translation>
 <translation id="4317733381297736564">Nákupy v aplikacích</translation>
-<translation id="4317737918133146519">Váš pracovní profil je téměř připraven</translation>
 <translation id="4317820549299924617">Ověření nebylo úspěšné</translation>
 <translation id="4319441675152393296">Kliknutím na ikonu tohoto rozšíření mu povolíte číst web <ph name="HOST" /> a provádět na něm změny</translation>
 <translation id="4320177379694898372">Žádné připojení k internetu</translation>
@@ -6182,7 +6179,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funguje offline)</translation>
 <translation id="5453829744223920473">Vaše dítě může používat všechny své školní aplikace, záložky a zdroje stejně jako ve třídě. Základní pravidla určuje škola.</translation>
 <translation id="5454166040603940656">(<ph name="PROVIDER" />)</translation>
-<translation id="545484289444831485">Zobrazit více výsledků vyhledávání</translation>
 <translation id="5457082343331641453">Přidat k vyhledávání</translation>
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5457459357461771897">Číst a mazat fotografie, hudbu a další média z počítače</translation>
@@ -6638,7 +6634,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5799508265798272974">Virtuální počítač systému Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Cílový soubor byl od posledního stahování zkrácen nebo odstraněn.</translation>
 <translation id="5800290746557538611">Povolit okamžitý hotspot</translation>
-<translation id="5800351251499368110">Zavřít vyhledávání na postranním panelu. Vyhledávání je otevřeno na postranním panelu.</translation>
 <translation id="5800703268655655701">Vyberte světlý nebo tmavý motiv</translation>
 <translation id="5801051031414037185">Nastavit telefon</translation>
 <translation id="5801568494490449797">Nastavení</translation>
@@ -8746,7 +8741,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7356908624372060336">Síťové protokoly</translation>
 <translation id="7357271391997763660">Spustit kontrolu hesel?</translation>
 <translation id="735745346212279324">Síť VPN je odpojena</translation>
-<translation id="7358338787722390626">Zavřít vyhledávání na postranním panelu</translation>
 <translation id="7359680654975233185">Kartu nelze odesílat.</translation>
 <translation id="735994578317267253">Mějte své aplikace, nastavení a další položky na každém zařízení se systémem ChromeOS</translation>
 <translation id="7360257054721917104">Jsou zobrazeny uložené plochy a šablony. Můžete je procházet tabulátorem.</translation>
@@ -9745,7 +9739,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8054609631325628928">Tato čísla lze použít k aktivaci služby</translation>
 <translation id="8054883179223321715">Dostupné u konkrétních webů ke sledování videí</translation>
 <translation id="8054921503121346576">Klávesnice s konektorem USB byla připojena</translation>
-<translation id="8057414620575339583">Postranní vyhledávání</translation>
 <translation id="8058655154417507695">Rok vypršení platnosti</translation>
 <translation id="8058986560951482265">Trhané přehrávání</translation>
 <translation id="8059417245945632445">&amp;Zkontrolovat zařízení</translation>

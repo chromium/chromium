@@ -116,6 +116,7 @@
 <translation id="1498283581832036924">Akaun <ph name="WEBSITE" /> anda tidak akan dipadamkan.</translation>
 <translation id="1506061864768559482">Enjin carian</translation>
 <translation id="1506063256525392513">Langkah ini membolehkan anda mengambil dan memuat naik foto serta mengimbas Kod QR</translation>
+<translation id="1508263560970797965">Teruskan dalam Inkognito</translation>
 <translation id="1509486075633541495">Log masuk ke laman web</translation>
 <translation id="1509960214886564027">Ciri pada banyak tapak mungkin rosak</translation>
 <translation id="1513858653616922153">Padam kata laluan</translation>
@@ -750,6 +751,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4587589328781138893">Tapak</translation>
 <translation id="4592672037257622855">{count,plural, =1{Halaman ditambahkan pada senarai bacaan anda}other{{count} halaman ditambahkan pada senarai bacaan anda}}</translation>
 <translation id="459644946100970322">Hidupkan makluman harga?</translation>
+<translation id="4597892826846980979">Dapatkan Pemberitahuan Tab</translation>
 <translation id="4601095002996233687">Imbasan secara mendalam untuk muat turun yang mencurigakan.</translation>
 <translation id="4606247758155004938">Penyemak imbas anda diurus oleh organisasi anda.</translation>
 <translation id="4611811151908969241">Sembunyikan Berhenti Mengikuti <ph name="DOMAIN_NAME" /></translation>
@@ -1213,6 +1215,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="6606914854592108404">Semakan Keselamatan sedang dijalankan…</translation>
 <translation id="6609890790934458793">Kata laluan untuk <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />dan <ph name="THIRD_WEBSITE" /> akan dipadamkan. Akaun anda tidak akan dipadamkan.</translation>
 <translation id="661266467055912436">Meningkatkan keselamatan untuk anda dan semua orang yang melayari web.</translation>
+<translation id="6612912757320004438">Benarkan Pemberitahuan Tab…</translation>
 <translation id="6617761071025228250">Kosongkan teks</translation>
 <translation id="6620279676667515405">Batal</translation>
 <translation id="6624219055418309072">Sekat dalam inkognito</translation>
@@ -1573,6 +1576,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8242644458318193141">Untuk melindungi keselamatan organisasi anda, tab akan ditutup dan data akaun yang tidak disimpan akan dipadamkan daripada peranti ini. Perkara ini mungkin termasuk kata laluan, sejarah dan pelbagai lagi.</translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="82619448491672958">Lihat tab lain</translation>
+<translation id="8263228331881858381">Kunci laluan disimpan</translation>
 <translation id="8263809106706527890">Mungkin terdapat perubahan pada tetapan penyemak imbas lalai anda. Anda boleh menyemak perubahan ini dalam tetapan.</translation>
 <translation id="8264966119170358612">Sesetengah kata laluan anda yang disimpan telah terdedah dalam pelanggaran data bukan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPad anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
@@ -1589,7 +1593,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8299613349954694191">Buka tab Inkognito untuk menyemak imbas web secara tertutup.</translation>
 <translation id="8307481894409578819">Fail ini tidak dapat dimuat naik</translation>
 <translation id="8319076807703933069">Carian Baharu</translation>
-<translation id="8320212361750431956">Aktiviti Baru-baru Ini</translation>
 <translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
 <translation id="8349305172487531364">Bar penanda halaman</translation>
 <translation id="8366466717204352506">Penyemakan tidak pernah dijalankan</translation>

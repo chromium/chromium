@@ -172,7 +172,6 @@
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="328888136576916638">缺少 Google API 密钥，因此 Chromium 的部分功能将无法使用。</translation>
 <translation id="3296368748942286671">关闭 Chromium 后继续运行后台应用</translation>
-<translation id="3300643253493387004">在我们设置账号访问权限期间，您仍可以使用 Chromium。在设置完成之前，您可能无法访问某些资源。</translation>
 <translation id="3313189106987092621">Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="3316771292331273802">关闭所有 Chromium 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chromium，则您的 Google 账号不会退出。若要让网站记住您，请<ph name="SETTINGS_LINK" />。</translation>
 <translation id="3350761136195634146">已有一份使用此账号创建的 Chromium 个人资料</translation>

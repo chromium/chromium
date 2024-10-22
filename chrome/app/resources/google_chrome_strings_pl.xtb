@@ -74,7 +74,6 @@
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{To rozszerzenie nie jest już obsługiwane. Chrome zaleca jego usunięcie.}few{Te rozszerzenia nie są już obsługiwane. Chrome zaleca ich usunięcie.}many{Te rozszerzenia nie są już obsługiwane. Chrome zaleca ich usunięcie.}other{Te rozszerzenia nie są już obsługiwane. Chrome zaleca ich usunięcie.}}</translation>
 <translation id="2018528049276128029">Każdy profil zawiera własne dane Chrome, takie jak zakładki, historia, hasła i inne</translation>
 <translation id="2018879682492276940">Nie udało się zainstalować. Spróbuj ponownie.</translation>
-<translation id="2022471217832964798">Podczas konfigurowania dostępu do konta możesz nadal korzystać z Chrome. Dopóki nie dokończysz konfiguracji, możesz nie mieć dostępu do niektórych zasobów.</translation>
 <translation id="2034233344106846793">Chrome automatycznie przełącza niezabezpieczone połączenia na HTTPS, gdy jest to możliwe</translation>
 <translation id="207902854391093810">Gdy testy są włączone, w ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chrome o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>
 <translation id="2091012649849228750">Aby w przyszłości otrzymywać aktualizacje Google Chrome, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 8.</translation>

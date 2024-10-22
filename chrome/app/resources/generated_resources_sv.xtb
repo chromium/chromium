@@ -2733,7 +2733,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2889064240420137087">Öppna länk med ...</translation>
 <translation id="2890206081124517553">Kom ihåg skrivbordsbakgrunden på alla enheter</translation>
 <translation id="2891464434568738544">Det finns för närvarande inga tillgängliga webbplatser. Besök en webbplats för att lägga till den i den här listan.</translation>
-<translation id="2891566119238851894">Öppna sökning på sidopanelen. Sökning är inte öppet på sidopanelen.</translation>
 <translation id="2891922230654533301">Vill du logga in på <ph name="APP_NAME" /> med enheten?</translation>
 <translation id="2893168226686371498">Standardwebbläsare</translation>
 <translation id="2893180576842394309">Google kan anpassa Sök och andra Google-tjänster utifrån historiken</translation>
@@ -3789,7 +3788,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3678156199662914018">Tillägg: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Sidor du visar i det här fönstret syns inte i webbläsarhistoriken och de lämnar inga andra spår efter sig (till exempel cookies) på datorn när du har loggat ut. Filer som du laddar ned och bokmärken du skapar sparas inte.</translation>
 <translation id="3679126865530709868">Inbyggd styrplatta</translation>
-<translation id="368019053277764111">Öppna sökning på sidopanelen</translation>
 <translation id="3680683624079082902">Röst för text till tal</translation>
 <translation id="3681017028939109078">Visa fönsterförslag när delad skärm startas</translation>
 <translation id="3681311097828166361">Tack för din feedback. Just nu är du offline, så rapporten skickas senare.</translation>
@@ -4705,7 +4703,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4316850752623536204">Webbplats för utvecklare</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Behörigheter har tagits bort för 1 webbplats}other{Behörigheter har tagits bort för {NUM_SITES} webbplatser}}</translation>
 <translation id="4317733381297736564">Köp i appar</translation>
-<translation id="4317737918133146519">Jobbprofilen är nästan klar</translation>
 <translation id="4317820549299924617">Verifieringen lyckades inte</translation>
 <translation id="4319441675152393296">Klicka på tilläggets ikon för att läsa och ändra <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Ingen internetanslutning</translation>
@@ -6247,7 +6244,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (fungerar offline)</translation>
 <translation id="5453829744223920473">Ditt barn kan använda alla sina skolappar, bokmärken och resurser på samma sätt som i skolan. Skolan sätter upp grundläggande regler.</translation>
 <translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Visa fler sökresultat</translation>
 <translation id="5457082343331641453">Lägg till i sökningen</translation>
 <translation id="5457113250005438886">Ogiltigt</translation>
 <translation id="5457459357461771897">Läsa och ta bort foton, musik och andra media från datorn</translation>
@@ -6707,7 +6703,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5799508265798272974">Virtuell maskin för Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Målfilen har trunkerats eller tagits bort efter den senaste nedladdningen.</translation>
 <translation id="5800290746557538611">Aktivera snabb surfzon</translation>
-<translation id="5800351251499368110">Stäng sökning på sidopanelen. Sökning är öppet på sidopanelen.</translation>
 <translation id="5800703268655655701">Välj ljust eller mörkt tema</translation>
 <translation id="5801051031414037185">Konfigurera telefon</translation>
 <translation id="5801568494490449797">Inställningar</translation>
@@ -8825,7 +8820,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7356908624372060336">Nätverksloggar</translation>
 <translation id="7357271391997763660">Vill du köra lösenordskontrollen?</translation>
 <translation id="735745346212279324">VPN frånkopplat</translation>
-<translation id="7358338787722390626">Stäng sökning på sidopanelen</translation>
 <translation id="7359680654975233185">Det gick inte att casta fliken</translation>
 <translation id="735994578317267253">Få tillgång till dina appar, inställningar med mera på alla ChromeOS-enheter</translation>
 <translation id="7360257054721917104">Visar sparade skrivbord och mallar. Tryck på tabb för att navigera.</translation>
@@ -9834,7 +9828,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8054609631325628928">Dessa nummer kan användas för att aktivera tjänsten</translation>
 <translation id="8054883179223321715">Tillgänglig för vissa videowebbplatser</translation>
 <translation id="8054921503121346576">USB-tangentbord har anslutits</translation>
-<translation id="8057414620575339583">Sökning med sidofält</translation>
 <translation id="8058655154417507695">Utgångsår</translation>
 <translation id="8058986560951482265">Ryckig</translation>
 <translation id="8059417245945632445">&amp;Inspektera enheter</translation>

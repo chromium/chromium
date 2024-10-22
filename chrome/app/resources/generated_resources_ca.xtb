@@ -2700,7 +2700,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2889064240420137087">Obre l'enllaç amb...</translation>
 <translation id="2890206081124517553">Recorda el fons d'escriptori en tots els dispositius</translation>
 <translation id="2891464434568738544">No hi ha cap lloc web disponible en aquest moment. Visita un lloc web per afegir-lo a aquesta llista.</translation>
-<translation id="2891566119238851894">Obre la cerca al tauler lateral. La cerca no està oberta al tauler lateral.</translation>
 <translation id="2891922230654533301">Vols utilitzar el teu dispositiu per iniciar la sessió a <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador predeterminat</translation>
 <translation id="2893180576842394309">És possible que Google utilitzi el teu historial per personalitzar la Cerca i altres serveis de Google</translation>
@@ -3746,7 +3745,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3678156199662914018">Extensió: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Les pàgines que visualitzis en aquesta finestra no es mostraran a l'historial del navegador i no deixaran cap rastre a l'ordinador, com ara galetes, després de tancar la sessió. No es conservaran els fitxers que baixis ni les adreces d'interès que creïs.</translation>
 <translation id="3679126865530709868">Ratolí tàctil integrat</translation>
-<translation id="368019053277764111">Obre la cerca al tauler lateral</translation>
 <translation id="3680683624079082902">Veu de text a parla</translation>
 <translation id="3681017028939109078">Mostra suggeriments de finestres en iniciar la pantalla dividida</translation>
 <translation id="3681311097828166361">Gràcies pels teus suggeriments. Ara mateix no tens connexió, de manera que el teu informe s'enviarà més tard.</translation>
@@ -4656,7 +4654,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4316850752623536204">Lloc web per a desenvolupadors</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{S'han suprimit els permisos d'1 lloc web}other{S'han suprimit els permisos de {NUM_SITES} llocs web}}</translation>
 <translation id="4317733381297736564">Compres des de l'aplicació</translation>
-<translation id="4317737918133146519">El teu perfil de treball està gairebé a punt</translation>
 <translation id="4317820549299924617">La verificació no s'ha completat correctament</translation>
 <translation id="4319441675152393296">Fes clic a la icona d'aquesta extensió per llegir i canviar <ph name="HOST" /></translation>
 <translation id="4320177379694898372">No hi ha connexió a Internet</translation>
@@ -6181,7 +6178,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona sense connexió)</translation>
 <translation id="5453829744223920473">El teu fill o filla pot utilitzar totes les aplicacions, les adreces d'interès i els recursos del centre educatiu tal com ho fa a classe. El centre educatiu estableix les regles bàsiques.</translation>
 <translation id="5454166040603940656">amb <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Consulta més resultats de la cerca</translation>
 <translation id="5457082343331641453">Afegeix a la cerca</translation>
 <translation id="5457113250005438886">No vàlides</translation>
 <translation id="5457459357461771897">Llegeix i suprimeix fotos, música i altres elements multimèdia de l'ordinador</translation>
@@ -6638,7 +6634,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5799508265798272974">Màquina virtual de Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">El fitxer de destinació s'ha truncat o eliminat des de la darrera baixada.</translation>
 <translation id="5800290746557538611">Activa el punt d'accés instantani</translation>
-<translation id="5800351251499368110">Tanca la cerca al tauler lateral. La cerca està oberta al tauler lateral.</translation>
 <translation id="5800703268655655701">Selecciona el tema clar o fosc</translation>
 <translation id="5801051031414037185">Configura el telèfon</translation>
 <translation id="5801568494490449797">Preferències</translation>
@@ -8742,7 +8737,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7356908624372060336">Registres de la xarxa</translation>
 <translation id="7357271391997763660">Vols executar la comprovació de contrasenyes?</translation>
 <translation id="735745346212279324">VPN desconnectada</translation>
-<translation id="7358338787722390626">Tanca la cerca al tauler lateral</translation>
 <translation id="7359680654975233185">No es pot emetre la pestanya</translation>
 <translation id="735994578317267253">Gaudeix de les teves aplicacions, la configuració i més en qualsevol dispositiu Chrome OS</translation>
 <translation id="7360257054721917104">Es mostren les plantilles i els escriptoris desats. Prem la pestanya per navegar.</translation>
@@ -9742,7 +9736,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8054609631325628928">Aquests números es poden utilitzar per activar el servei</translation>
 <translation id="8054883179223321715">Disponible per a llocs web de vídeo concrets</translation>
 <translation id="8054921503121346576">Teclat USB connectat</translation>
-<translation id="8057414620575339583">Cerca lateral</translation>
 <translation id="8058655154417507695">Any de caducitat</translation>
 <translation id="8058986560951482265">S'entretalla</translation>
 <translation id="8059417245945632445">&amp;Inspecciona els dispositius</translation>

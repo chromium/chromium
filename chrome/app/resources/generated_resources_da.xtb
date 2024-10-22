@@ -2734,7 +2734,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2889064240420137087">Åbn link med...</translation>
 <translation id="2890206081124517553">Husk din skrivebordsbaggrund på alle enheder</translation>
 <translation id="2891464434568738544">Der er i øjeblikket ingen tilgængelige websites. Gå til et website for at føje det til denne liste.</translation>
-<translation id="2891566119238851894">Åbn søgning i sidepanel. Søgningen er ikke åben i sidepanelet.</translation>
 <translation id="2891922230654533301">Vil du logge ind på <ph name="APP_NAME" /> med din enhed?</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2893180576842394309">Google kan bruge din historik til at personligt tilpasse Søgning og andre Google-tjenester</translation>
@@ -3790,7 +3789,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3678156199662914018">Udvidelse: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">De sider, du ser i dette vindue, vises ikke i browserhistorikken, og de efterlader ikke andre spor som f.eks. cookies på computeren, når du logger ud. De filer, du downloader, og bogmærker, du opretter, bliver ikke gemt.</translation>
 <translation id="3679126865530709868">Indbygget touchplade</translation>
-<translation id="368019053277764111">Åbn søgning i sidepanel</translation>
 <translation id="3680683624079082902">Stemme til oplæsning</translation>
 <translation id="3681017028939109078">Vis vinduesforslag, når du starter opdelt skærm</translation>
 <translation id="3681311097828166361">Tak for din feedback. Du er offline nu, og din rapport sendes senere.</translation>
@@ -4706,7 +4704,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4316850752623536204">Udviklers website</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Tilladelserne for 1 website er fjernet}one{Tilladelserne for {NUM_SITES} website er fjernet}other{Tilladelserne for {NUM_SITES} websites er fjernet}}</translation>
 <translation id="4317733381297736564">Køb i apps</translation>
-<translation id="4317737918133146519">Din arbejdsprofil er næsten klar</translation>
 <translation id="4317820549299924617">Verificeringen blev ikke gennemført</translation>
 <translation id="4319441675152393296">Klik på ikonet for denne udvidelse for at give den tilladelse til at læse og ændre <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Ingen internetforbindelse</translation>
@@ -6247,7 +6244,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (fungerer offline)</translation>
 <translation id="5453829744223920473">Dit barn kan bruge alle sine skoleapps, bogmærker og ressourcer, ligesom barnet gør i skolen. Skolen opstiller de grundlæggende regler.</translation>
 <translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Se flere søgeresultater</translation>
 <translation id="5457082343331641453">Føj mere til din søgning</translation>
 <translation id="5457113250005438886">Ugyldig</translation>
 <translation id="5457459357461771897">Læs og slet billeder, musik og andre medier på din computer</translation>
@@ -6706,7 +6702,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5799508265798272974">Virtuel Linux-maskine: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Destinationsfilen er blevet forkortet eller fjernet siden sidste download.</translation>
 <translation id="5800290746557538611">Aktivér øjeblikkeligt hotspot</translation>
-<translation id="5800351251499368110">Luk søgning i sidepanel. Søgningen er åben i sidepanelet.</translation>
 <translation id="5800703268655655701">Vælg lyst eller mørkt tema</translation>
 <translation id="5801051031414037185">Konfigurer telefon</translation>
 <translation id="5801568494490449797">Præferencer</translation>
@@ -8826,7 +8821,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7356908624372060336">Netværkslogs</translation>
 <translation id="7357271391997763660">Vil du køre et adgangskodetjek?</translation>
 <translation id="735745346212279324">VPN afbrudt</translation>
-<translation id="7358338787722390626">Luk søgning i sidepanel</translation>
 <translation id="7359680654975233185">Fanen kan ikke castes</translation>
 <translation id="735994578317267253">Få dine apps, indstillinger m.m. på enhver ChromeOS-enhed</translation>
 <translation id="7360257054721917104">Viser gemte skriveborde og skabeloner. Tryk på Tab-tasten for at navigere.</translation>
@@ -9834,7 +9828,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8054609631325628928">Disse numre kan bruges til at hjælpe med at aktivere tjenesten</translation>
 <translation id="8054883179223321715">Tilgængelig for bestemte videowebsites</translation>
 <translation id="8054921503121346576">USB-tastatur er tilsluttet</translation>
-<translation id="8057414620575339583">Sidesøgning</translation>
 <translation id="8058655154417507695">Udløbsår</translation>
 <translation id="8058986560951482265">Ryster</translation>
 <translation id="8059417245945632445">&amp;Inspicer enheder</translation>

@@ -2712,7 +2712,6 @@
 <translation id="2889064240420137087">使用其他程式開啟連結…</translation>
 <translation id="2890206081124517553">記住您不同裝置的桌面背景</translation>
 <translation id="2891464434568738544">目前沒有可用的網站。請前往網站以將其新增到此清單。</translation>
-<translation id="2891566119238851894">開側面板入面嘅搜尋工具列。側面板入面嘅搜尋工具列冇開。</translation>
 <translation id="2891922230654533301">要使用裝置登入 <ph name="APP_NAME" /> 嗎？</translation>
 <translation id="2893168226686371498">預設瀏覽器</translation>
 <translation id="2893180576842394309">Google 可能會使用您的記錄，為您提供個人化的搜尋服務和其他 Google 服務</translation>
@@ -3758,7 +3757,6 @@
 <translation id="3678156199662914018">擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">您在這個視窗瀏覽的網頁不會在瀏覽器記錄中顯示，而在登出之後，電腦也不會保留 Cookie 等資料。此外，系統不會保留您下載的檔案和建立的書籤。</translation>
 <translation id="3679126865530709868">內置觸控板</translation>
-<translation id="368019053277764111">開啟側面板中的搜尋工具列</translation>
 <translation id="3680683624079082902">「文字轉語音」語音</translation>
 <translation id="3681017028939109078">啟用分割螢幕時顯示視窗建議</translation>
 <translation id="3681311097828166361">多謝您提供的意見反映。您目前處於離線狀態，系統會稍後傳送您的報告。</translation>
@@ -4662,7 +4660,6 @@
 <translation id="4316850752623536204">開發人員網站</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{已從 1 個網站移除權限}other{已從 {NUM_SITES} 個網站移除權限}}</translation>
 <translation id="4317733381297736564">應用程式內購買</translation>
-<translation id="4317737918133146519">工作設定檔即將就緒</translation>
 <translation id="4317820549299924617">驗證失敗</translation>
 <translation id="4319441675152393296">按一下此擴充程式的圖示即可讀取和變更 <ph name="HOST" /></translation>
 <translation id="4320177379694898372">沒有互聯網連線</translation>
@@ -6186,7 +6183,6 @@
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (可離線使用)</translation>
 <translation id="5453829744223920473">你的子女可以像在課堂般使用所有學校應用程式、書籤和資源。學校將設定基本規則。</translation>
 <translation id="5454166040603940656">與 <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">查看更多搜尋結果</translation>
 <translation id="5457082343331641453">加入更多搜尋字詞</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5457459357461771897">讀取及刪除您電腦中的相片、音樂及其他媒體</translation>
@@ -6642,7 +6638,6 @@
 <translation id="5799508265798272974">Linux 虛擬機器：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">上次下載之後，目標檔案已被截斷或移除。</translation>
 <translation id="5800290746557538611">啟用「即時熱點」</translation>
-<translation id="5800351251499368110">閂側面板入面嘅搜尋工具列。側面板入面嘅搜尋工具列開咗。</translation>
 <translation id="5800703268655655701">選取淺色或深色主題背景</translation>
 <translation id="5801051031414037185">設定手機</translation>
 <translation id="5801568494490449797">偏好設定</translation>
@@ -8746,7 +8741,6 @@
 <translation id="7356908624372060336">網絡記錄</translation>
 <translation id="7357271391997763660">係咪要執行密碼檢查？</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
-<translation id="7358338787722390626">閂側面板入面嘅搜尋工具列</translation>
 <translation id="7359680654975233185">無法投放分頁</translation>
 <translation id="735994578317267253">在任何 Chrome OS 裝置上取得您的應用程式和設定等</translation>
 <translation id="7360257054721917104">睇緊儲存咗嘅桌面同範本。㩒一下 Tab 鍵就可以瀏覽。</translation>
@@ -9745,7 +9739,6 @@
 <translation id="8054609631325628928">這些數字可用來啟用服務</translation>
 <translation id="8054883179223321715">適用於特定影片網站</translation>
 <translation id="8054921503121346576">已連接 USB 鍵盤</translation>
-<translation id="8057414620575339583">側欄搜尋</translation>
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8058986560951482265">畫面不穩定</translation>
 <translation id="8059417245945632445">檢查裝置 (&amp;I)</translation>

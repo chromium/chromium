@@ -169,6 +169,7 @@
 <translation id="1293797321964802402">კონვერტი 9 x 11 დუიმი</translation>
 <translation id="129553762522093515">ბოლოს დახურული</translation>
 <translation id="1296930489679394997">გაყიდვები</translation>
+<translation id="1297814096526086484">დაიბლოკოს თქვენი კლავიატურა და მაუსი?</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">შეამოწმეთ თქვენი დაცული DNS-ის პარამეტრები</translation>
 <translation id="1302418742166945866"><ph name="URL" />-ს სურს, მართოს და გადააპროგრამოს თქვენი MIDI-მოწყობილობები</translation>
@@ -200,6 +201,7 @@
 <translation id="1337692097987160377">ამ ჩანართის გაზიარება</translation>
 <translation id="1339601241726513588">რეგისტრაციის დომენი:</translation>
 <translation id="1340482604681802745">წაღების მისამართი</translation>
+<translation id="134204716678666126">გამოხმაურების ღილაკებს შორის გადასასვლელად გამოიყენეთ მარცხნივ და მარჯვნივ მიმართული ისრის კლავიშები.</translation>
 <translation id="1343356790768851700">ეს საიტი ადგენს იმას, თუ რა მოგწონთ, შემდეგ კი უკარნახებს რეკლამას სხვა საიტებს</translation>
 <translation id="1346748346194534595">მარჯვნივ</translation>
 <translation id="1348779747280417563">დაადასტურეთ სახელი</translation>
@@ -211,9 +213,12 @@
 <translation id="1358223345833465883">თქვენი საძიებო სისტემა Chromium-ში</translation>
 <translation id="1359836962251219822">სამზარეულო და სასადილო</translation>
 <translation id="1360955481084547712">ვების კონფიდენციალურად დასათვალიერებლად გახსენით ახალი ინკოგნიტო ფანჯარა</translation>
+<translation id="1361528602584216624">ლიმიტი თითოეული Pix-ისთვის: <ph name="TRANSACTION_LIMIT" /> R$</translation>
+<translation id="1363015776076529485">გადახდის ხელმისაწვდომი მეთოდები, რომლებიც უნდა აირჩიოთ გადახდის გასაგრძელებლად, გაიხსნა სრულ სიმაღლეზე.</translation>
 <translation id="1363028406613469049">ჩანაწერი</translation>
 <translation id="1364822246244961190">ეს წესები დაბლოკილია, მათი მნიშვნელობა იგნორირებული იქნება.</translation>
 <translation id="1368318639262510626">დინოზავრთა თამაში. პიქსელირებული დინოზავრი თავიდან ირიდებს კაქტუსებთან და პტეროდაქტილებთან დაჯახებას, უდაბური ლანდშაფტის სიღრმეებში გარბენისას. აუდიომინიშნების გაგონებისას დააჭირეთ შორისის ღილაკს, რათა გადაახტუნოთ დაბრკოლებებზე.</translation>
+<translation id="1369735141991626842">ველების შევსება ხელოვნური ინტელექტის მეშვეობით</translation>
 <translation id="1374468813861204354">შემოთავაზებები</translation>
 <translation id="1375198122581997741">ვერსიის შესახებ</translation>
 <translation id="1375293861397106342">ყველა ვარიანტი, როგორც წესი, <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -233,6 +238,7 @@
 <translation id="1406812885827747674">ამჯერად დაშვება</translation>
 <translation id="14070772729708640">ფაილები წარმატებით აიტვირთა <ph name="FOLDER_NAME" />-ში, <ph name="CLOUD_PROVIDER" />-ზე</translation>
 <translation id="1407135791313364759">ყველას გახსნა</translation>
+<translation id="1408696301184924537">მომავალში ამ IBAN-ის ავტომატურად შესავსებად შეინახეთ ის თქვენს Google ანგარიშში</translation>
 <translation id="1408787208417187241">სამმაგად დასტეპლერება ზემოთ</translation>
 <translation id="1410365862999780287">ამ მოწყობილობის სხვა მომხმარებლები არ დაინახავენ თქვენს აქტივობას, ამიტომ ვების დათვალიერება უფრო კონფიდენციალურად შეგიძლიათ. ეს მოქმედება არ ცვლის იმას, თუ რა წესით გროვდება მონაცემები თქვენ მიერ მონახულებული ვებსაიტებისა და მათ მიერ გამოყენებული სერვისების, მათ შორის, Google-ის, მიერ. ჩამოტვირთული ფაილები, სანიშნეები და საკითხავი სიის ერთეულები შეინახება.</translation>
 <translation id="1410941016594047814">კონვერტი Invite</translation>
@@ -303,6 +309,7 @@
 <translation id="1532118530259321453">ეს გვერდი იუწყება:</translation>
 <translation id="1533966801397200693">პროფილი, რომელშიც შესული ხართ, მართული პროფილია. თქვენს ადმინისტრატორს შეუძლია, დისტანციურად შეიტანოს ცვლილებები თქვენი პროფილის პარამეტრებში, გააანალიზოს ინფორმაცია თქვენი ბრაუზერის შესახებ ანგარიშგების მეშვეობით და შეასრულოს აუცილებელი ამოცანები. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">გვერდის თარგმნა</translation>
+<translation id="1538295100801850685">პროგნოზირების გაუმჯობესებები</translation>
 <translation id="1539840569003678498">მოხსენება გაიგზავნა:</translation>
 <translation id="1542105669288201090">ბიზნესგანათლება</translation>
 <translation id="1545757265410828525">ფასების ისტორია</translation>
@@ -398,6 +405,7 @@
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">მასშტაბირების დონეები</translation>
+<translation id="1706922226983368260">წვდომის გასაღები • „<ph name="PHONE_NAME" />“</translation>
 <translation id="1706954506755087368">{1,plural, =1{ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატი, სავარაუდოდ, ხვალინდელია. ამის მიზეზი შეიძლება იყოს არასწორი კონფიგურაცია ან შესაძლოა, თქვენი კავშირი თავდამსხმელს ჰქონდეს ხელში ჩაგდებული.}other{ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატის ვადა, სავარაუდოდ, # დღის შემდეგ იწყება. ამის მიზეზი შეიძლება იყოს არასწორი კონფიგურაცია ან შესაძლოა, თქვენი კავშირი თავდამსხმელს ჰქონდეს ხელში ჩაგდებული.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">იგნორირებულია, რადგან <ph name="POLICY_NAME" />-ის მნიშვნელობა არ არის <ph name="VALUE" />.</translation>
@@ -521,6 +529,7 @@
 <translation id="1919526244108283799">400 x 600 მმ</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{არცერთი}=1{1 საიტი}other{# საიტი}}</translation>
 <translation id="192095259937375524">ამ ჩანართის გაზიარების ღილაკი, ამ ჩანართის გასაზიარებლად ისეთი ხელსაწყოების მეშვეობით, როგორიცაა ბმულის გაზიარება, QR კოდის შექმნა, ტრანსლირება და სხვა, გაააქტიურეთ ის</translation>
+<translation id="1921479021518565778">შემოთავაზებები ჩაიტვირთა</translation>
 <translation id="1924727005275031552">სიახლე</translation>
 <translation id="1927439846988093361">თმის მოვლა</translation>
 <translation id="1935353813610900265">ისტორიაში ძიების შესახებ გამოხმაურება შექმნილია AI-ს დახმარებით</translation>
@@ -735,6 +744,7 @@
 <translation id="2292556288342944218">თქვენი კავშირი ინტერნეტთან დაბლოკილია</translation>
 <translation id="2293443924986248631">ჩართვის შემთხვევაში ვებსაიტებს აეკრძალება თქვენთვის თვალის მიდევნება ქუქი-ჩანაწერების მეშვეობით. ზოგიერთი საიტის ფუნქციებმა შეიძლება არასათანადოდ იმუშაოს.</translation>
 <translation id="2295831393422400053">ჩართეთ ძიებისა და ვებსაიტების დათვალიერების პროცესების გაუმჯობესების პარამეტრი, „დაწერაში დახმარება“ რომ გამოიყენოთ</translation>
+<translation id="2296244067976588032">წვდომის გასაღები • iCloud Keychain</translation>
 <translation id="2300306941146563769">აუტვირთავია</translation>
 <translation id="2301098101308036335">რომელი ვებსაიტები არის მონახულებული და როდის.</translation>
 <translation id="230286397113210245">ახალი ინკოგნიტო ფანჯრის გახსნის ღილაკი, ვების კონფიდენციალურად დასათვალიერებლად ახალი ინკოგნიტო ფანჯრის გასახსნელად გაააქტიურეთ ის</translation>
@@ -785,6 +795,7 @@
 <translation id="238459632961158867">ვებსაიტი</translation>
 <translation id="2385809941344967209">განაახლეთ Chrome თქვენი Chrome-ის პარამეტრებიდან</translation>
 <translation id="2386255080630008482">სერვერის სერტიფიკატი გაუქმდა.</translation>
+<translation id="2386410849674401722">ზევით აწეული ცერით გაიგზავნება გამოხმაურება იმის შესახებ, რომ ხელოვნური ინტელექტით ავტომატური შევსების ფუნქცია მოგწონთ</translation>
 <translation id="2388828676877700238">საგადასახადო საქმე და დაგეგმვა</translation>
 <translation id="239203817277685015">განვრცობა</translation>
 <translation id="239293030466334554">ავტომობილები გადასახსნელი ზედით</translation>
@@ -817,6 +828,7 @@
 <translation id="2452098632681057184">ეკოლოგია და გარემოს დაცვა</translation>
 <translation id="2452837234288608067">ამ კუთხით ვერ დაგეხმარებით. ცადეთ ხელახლა.</translation>
 <translation id="2456755709261364512">ბატარეის დონე უნდა იყოს მინიმუმ <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2461385121573678775">Chrome Enterprise Core უზრუნველგყოფთ ბრაუზერის წესების ღრუბლიდან კონფიგურირების ცენტრალიზებული ხელსაწყოთი</translation>
 <translation id="2461822463642141190">ამჟამინდელი</translation>
 <translation id="2462932596748424101">სოციალური ქსელები</translation>
 <translation id="2465688316154986572">დასტეპლერება</translation>
@@ -840,6 +852,7 @@
 <translation id="2491120439723279231">სერვერის სერთიფიკატი შეიცავს შეცდომებს.</translation>
 <translation id="2491414235131909199">ეს გვერდი დაბლოკილია გაფართოების მიერ</translation>
 <translation id="2495083838625180221">JSON-ის სინტაქსური ანალიზის პროგრამა</translation>
+<translation id="2496402116964818747">პაროლების შევსებისთვის თითის ანაბეჭდის გამოყენების მართვა შეგიძლიათ სექციიდან „<ph name="SETTINGS" />“</translation>
 <translation id="2498091847651709837">ახალი ბარათების სკანირება</translation>
 <translation id="2501270939904835585">ლეიბლები (სატინის)</translation>
 <translation id="2501278716633472235">უკან დაბრუნება</translation>
@@ -1027,6 +1040,7 @@
 <translation id="2902312830803030883">სხვა ქმედებები</translation>
 <translation id="2903493209154104877">მისამართები</translation>
 <translation id="290376772003165898">გვერდის ტექსტი არ არის <ph name="LANGUAGE" />?</translation>
+<translation id="2904165004205947971">მართეთ თქვენი ინფორმაცია</translation>
 <translation id="2905107382358353958">გადახდის ახალი ვარიანტის შესახებ გაფრთხილება</translation>
 <translation id="2909120679423833511">თქვენი ორგანიზაცია, <ph name="MANAGER" />, თქვენგან მოითხოვს კონკრეტული პროფილით შესვლას</translation>
 <translation id="2909946352844186028">აღმოჩენილია ქსელის ცვლილება.</translation>
@@ -1090,6 +1104,7 @@
 <translation id="299122504639061328">თქვენი ნაგულისხმევი საძიებო სისტემისა და საიტების მეშეობით ძიების პარამეტრების მართვა</translation>
 <translation id="2991571918955627853"><ph name="SITE" />-ზე შესვლა ამჟამად ვერ მოხერხდება, რადგან ვებსაიტი იყენებს HSTS-ს. ქსელის შეცდომები და მასზე შეტევები, ჩვეულებრივ, დროებითი მოვლენებია და შესაბამისად, ეს გვერდი შეიძლება მოგვიანებით ამუშავდეს.</translation>
 <translation id="2991865971341174470">Chrome-მა თქვენი საგადახდო ინფორმაცია რომ შეავსოს, დაადასტურეთ ვინაობა.</translation>
+<translation id="2995121550202354573">სტუმრის ყველა პროფილისთვის გამოყენება</translation>
 <translation id="2995517112308048736">ფაილის ზომა:</translation>
 <translation id="299990983510665749">ჰეტჩბეკები</translation>
 <translation id="3002501248619246229">შეამოწმეთ შეყვანის ლანგრის მედია</translation>
@@ -1118,6 +1133,7 @@
 <translation id="3052868890529250114">საიტებს, როგორც წესი, დაცულად უკავშირდებით, თუმცა Chrome-მა ამჯერად ვერ დაამყარა უსაფრთხო კავშირი. თავდამსხმელს შეეძლება თქვენს ქსელის კავშირზე თვალთვალი ან მისი შეცვლა. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი ამ გაფრთხილების შესახებ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-ზე ფასის <ph name="PRICE_DROP" />-ით შემცირება</translation>
 <translation id="3061707000357573562">ჩასწორების სერვისი</translation>
+<translation id="306198082577913404">ჩართეთ პროგნოზირების გაუმჯობესებები</translation>
 <translation id="3062655045399308513">დათვალიერების მონაცემების წაშლა...</translation>
 <translation id="306573536155379004">თამაში დაიწყო.</translation>
 <translation id="3067505415088964188">ფასი დაბალია</translation>
@@ -1397,6 +1413,7 @@
 <translation id="3542768452570884558">ბმულის გახსნა ახალ ფანჯარაში</translation>
 <translation id="3547442767634383572">სამსახურის პროფილის მიმოხილვა</translation>
 <translation id="3547746132308051926">20 x 24 დუიმი</translation>
+<translation id="3550325450190222557">გამოხმაურება ხელოვნური ინტელექტის მეშვეობით ავტომატური შევსების შესახებ.</translation>
 <translation id="3552155506104542239">ყურადღება: ეს წესები კონფლიქტშია „<ph name="POLICY_NAME" />“-თან და მას არ ექნება გავლენა Android-აპებზე. სხვა მხრივ ეს წესები დანიშნულებისამებრ მუშაობს.</translation>
 <translation id="3552297013052089404">Sans-serif შრიფტი</translation>
 <translation id="3558573058928565255">დღე</translation>
@@ -1492,10 +1509,12 @@
 <translation id="3681007416295224113">სერტიფიკატის ინფორმაცია</translation>
 <translation id="3681421644246505351">Chrome ინიშნავს ინტერესებს თქვენ მიერ ვების დათვალიერების ბოლოდროინდელი ისტორიის საფუძველზე.</translation>
 <translation id="3682094733650754138">არჩეული იყო მისამართის შევსების ვარიანტი</translation>
+<translation id="3687493962714153124">ხელოვნური ინტელექტის მეშვეობით ავტომატური შევსების მართვა</translation>
 <translation id="3687920599421452763">ფურგონები და მინივენები</translation>
 <translation id="3693327506115126094">აირჩიეთ თქვენი ვინაობის დადასტურების მეთოდი</translation>
 <translation id="3698353241727597930">თქვენმა ადმინისტრატორმა დააყენა პარამეტრები, რომ შეინახოს <ph name="FILES" /> თქვენი კომპანიის მიერ მართულ <ph name="CLOUD_STORAGE" /> მეხსიერებაში. ამ ფაილებმა შეიძლება გაიაროს მონიტორინგი, აუდიტი და შეიძლება ისინი შენახული იყოს, როცა მათ წაშლით.</translation>
 <translation id="3698629142018988477">საიტის შექმნის ღილაკი, Google Sites-ში ახალი საიტის სწრაფად შესაქმნელად გაააქტიურეთ ის</translation>
+<translation id="3700966190175650601">პაროლების შევსებისთვის თითის ანაბეჭდს იყენებთ</translation>
 <translation id="3701325639446035885">ღონისძიების ბილეთების გაყიდვები</translation>
 <translation id="3701427423622901115">გადაყენება გაცნობიერებულია.</translation>
 <translation id="3701900332588705891">როგორც წესი, <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -1504,6 +1523,7 @@
 <translation id="370665806235115550">იტვირთება…</translation>
 <translation id="3709599264800900598">თქვენ მიერ კოპირებული ტექსტი</translation>
 <translation id="3709837451557142236">საქონლითა და ფიუჩერსებით ვაჭრობა</translation>
+<translation id="3711430313228789376">Chrome ბრაუზერი ცდილობს პაროლების ჩვენებას</translation>
 <translation id="3711861349027352138">კომპიუტერული და ვიდეოთამაშები</translation>
 <translation id="3711895659073496551">შეჩერება</translation>
 <translation id="3712006010833051684">კონვერტი 10</translation>
@@ -1520,6 +1540,8 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides-ში ახალი Google პრეზენტაციის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="3727309136762649052">სახელთა სივრცე</translation>
 <translation id="3727850735097852673">Google პაროლების მმართველი macOS Keychain-თან რომ გამოიყენოთ, ხელახლა გაუშვით Chrome და დაუშვით წვდომა Keychain-ზე. ხელახლა გაშვების შემდეგ თქვენი ჩანართები თავიდან გაიხსნება.</translation>
+<translation id="3728173127485570463">Chrome ბრაუზერი აღარ მოგთხოვთ თითის ანაბეჭდს პაროლების შევსებისთვის</translation>
+<translation id="3735143108516366187">პროგნოზირების გაუმჯობესებების სამართავად დააჭირეთ შეყვანას</translation>
 <translation id="3736739313435669994">თქვენ დაუბლოკეთ საიტებს მესამე მხარის ქუქი-ჩანაწერების გამოყენების შესაძლებლობა ვების დათვალიერებისას თქვენთვის თვალის დევნების მიზნით. <ph name="LINK" /> თუ გსურთ, ეწვიეთ პარამეტრებს.</translation>
 <translation id="3738166223076830879">თქვენს ბრაუზერს მართავს თქვენი ადმინისტრატორი.</translation>
 <translation id="3738428049780661523">შექმნილია: <ph name="DATE" /></translation>
@@ -1564,6 +1586,7 @@
 <translation id="3810770279996899697">პაროლების მმართველი საჭიროებს წვდომას MacOS Keychain-ზე</translation>
 <translation id="3810973564298564668">მართვა</translation>
 <translation id="3812398568375898177">ეს არის კრიტიკულად მნიშვნელოვანი განახლება, რომელიც აუმჯობესებს Android აპების წარმადობას ChromeOS-ზე.</translation>
+<translation id="3814865536373139791">დააჩქარეთ თქვენი ორგანიზაციის მიერ წესების მართვა</translation>
 <translation id="3815434930383843058">8 x 12 დუიმი</translation>
 <translation id="3816482573645936981">მნიშვნელობა (ჩანაცვლებული)</translation>
 <translation id="382115839591654906"><ph name="CARD_NAME" />-ის CVC</translation>
@@ -1611,6 +1634,7 @@
 <translation id="3906954721959377182">ტაბლეტი</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">შეიტყვეთ მეტი ჩაშენებული კონტენტის შესახებ</translation>
+<translation id="3915878244842478983">Chrome-ს პრობლემა შეექმნა თქვენი ინფორმაციის შეგროვებისას</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />თქვენი მონაცემების მართვის ხერხები:<ph name="END_BOLD" />  Chrome ავტომატურად წაშლის 30 დღეზე ძველ საიტებს. საიტი, რომელსაც ხელახლა ეწვევით, შესაძლოა, კვლავ გამოჩნდეს სიაში. გარდა ამისა, Chrome-ის პარამეტრებიდან ნებისმიერ დროს შეგიძლიათ დაუბლოკოთ საიტს თქვენთვის რეკლამის შემოთავაზების შესაძლებლობა, ასევე, გამორთოთ საიტების მიერ შემოთავაზებული რეკლამის ფუნქცია.</translation>
 <translation id="3921869355029467742">შეიყვანეთ უსაფრთხოების კოდი</translation>
 <translation id="3927538228901078312">შესადარებელი ცხრილები არ არის</translation>
@@ -1848,6 +1872,7 @@
 <translation id="4312866146174492540">დაბლოკვა (ნაგულისხმევი)</translation>
 <translation id="4314815835985389558">სინქრონიზაციის მართვა</translation>
 <translation id="4316057107946726368">შეიყვანეთ ორმხრივად გასასწორებელი შეტყობინება, რომლის სიგრძეც მაქსიმუმ <ph name="MAX_CHAR_COUNT" /> სიმბოლოა. გამოყენებულია <ph name="MAX_CHAR_COUNT" />-დან <ph name="ACTUAL_CHAR_COUNT" /> სიმბოლო.</translation>
+<translation id="431740489189220419">შემოთავაზებები იტვირთება</translation>
 <translation id="4318213823155573975">ქუდები და თავსაბურავები</translation>
 <translation id="4318312030194671742">Paint Preview Compositor Service</translation>
 <translation id="4318566738941496689">თქვენი მოწყობილობის სახელი და ქსელის მისამართი</translation>
@@ -2011,6 +2036,7 @@
 <translation id="4668929960204016307">.</translation>
 <translation id="4670064810192446073">ვირტუალური რეალობა</translation>
 <translation id="4671339777629075741">კონვერტი DL</translation>
+<translation id="4675391562155186035">წვდომის გასაღები • თქვენი Chrome პროფილი</translation>
 <translation id="467662567472608290">ეს სერვერი ვერ ამტკიცებს რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატი შეიცავს შეცდომას. ეს შეიძლება გამოწვეული იყოს კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ითხოვს მარტივ წვდომასთან დაკავშირებულ მოვლენებზე რეაგირების ნებართვა</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -2051,6 +2077,7 @@
 <translation id="4743275772928623722">თქვენი სისტემა განახლდა, თუმცა თქვენი ზოგიერთი აპისა და ფაილის აღდგენა ვერ მოხერხდა. თქვენი აპები ხელახლა ჩამოიტვირთება ავტომატურად.</translation>
 <translation id="4744514002166662487">პრეზენტაციის შექმნა</translation>
 <translation id="4744603770635761495">შესრულებადი მისამართი</translation>
+<translation id="4744816391336495134">შეგიძლიათ, შეინახოთ თითის ანაბეჭდი, რათა დაადასტუროთ ვინაობა ყოველ ჯერზე, როცა შენახული პაროლის გამოყენებას დააპირებთ</translation>
 <translation id="4749011317274908093">თქვენ გადახვედით ინკოგნიტო რეჟიმზე</translation>
 <translation id="4750394297954878236">შემოთავაზებები</translation>
 <translation id="4750671009706599284">ეს ტელეფონი</translation>
@@ -2427,6 +2454,7 @@
 <translation id="5425082381151187189">სახლისა და ინტერიერის გაფორმება</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ითხოვს თქვენთვის შეტყობინებების გამოგზავნას</translation>
 <translation id="5430298929874300616">სანიშნის ამოშლა</translation>
+<translation id="5433756542371550806">ბრძანებათა სტრიქონის ვარიანტები</translation>
 <translation id="5434798570900738152">Chromium-ის მიერ <ph name="BEGIN_EMPHASIS" />არ შეინახება<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ვების დათვალიერების ისტორია
@@ -2574,6 +2602,7 @@
 <translation id="569000877158168851">„DnsOverHttpsTemplates“-ის მნიშვნელობა შეუსაბამოა და არ იქნება გამოყენებული, თუ „DnsOverHttpsMode“ წესების მნიშვნელობად არ არის მითითებული „<ph name="SECURE_DNS_MODE_AUTOMATIC" />“ ან „<ph name="SECURE_DNS_MODE_SECURE" />“.</translation>
 <translation id="5691848789297492617">ბარათის შენახვა გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="5695542892312572833">გსურთ, გამოიყენოთ Windows Hello შენაძენების დასადასტურებლად და განსახორციელებლად?</translation>
+<translation id="5697827549745555938">თქვენ მიერ შენახული ინფორმაცია და ეს გვერდი გაეგზავნება Google-ს, რათა შეამოწმოს, დაეხმარება თუ არა ავტომატური შევსება ამ ფორმის შევსებაში. ეს მონაცემები შეიძლება ნახონ ადამიანმა მიმომხილველებმა, ამ ფუნქციის გაუმჯობესების მიზნით.</translation>
 <translation id="5699628521141772782">რძის პროდუქტები და კვერცხი</translation>
 <translation id="5700761515355162635">მესამე მხარის ქუქი-ჩანაწერები დაშვებულია</translation>
 <translation id="5701381305118179107">ცენტრირება</translation>
@@ -2604,6 +2633,7 @@
 <translation id="5745733273847572235">შეუძლია თქვენი მდებარეობის გარკვევის თხოვნა</translation>
 <translation id="5750869797196646528">ხელების მოძრაობაზე თვალის დევნება</translation>
 <translation id="5752327398324808817">შეიყვანეთ ერთი-ორი სიტყვა</translation>
+<translation id="5752519522101347518">იტვირთება ბანკის დადასტურების ვებსაიტი</translation>
 <translation id="5759751709240058861">კამერის გამოყენება და გადაადგილება</translation>
 <translation id="5763042198335101085">შეიყვანეთ ელფოსტის სწორი მისამართი</translation>
 <translation id="5764725887548570807">წყაროს ფორმატი არასწორია.</translation>
@@ -2770,6 +2800,7 @@
 <translation id="6058977677006700226">გსურთ თქვენი ბარათების გამოყენება ნებისმიერ მოწყობილობაზე?</translation>
 <translation id="6059925163896151826">USB მოწყობილობები</translation>
 <translation id="6060009363608157444">DnsOverHttps რეჟიმი არასწორია.</translation>
+<translation id="6060132878120844000">და კიდევ 1 ველი</translation>
 <translation id="6061154937977953833">ჭიდაობა</translation>
 <translation id="6062937464449575061">ფასისთვის თვალის მიდევნების გაუქმება</translation>
 <translation id="6063415549109819824">დაფინანსება სახლისთვის</translation>
@@ -2802,6 +2833,7 @@
 <translation id="6124432979022149706">Chrome Enterprise მაერთებლები</translation>
 <translation id="6126565365696310362">კონვერტი Chinese 2</translation>
 <translation id="6127379762771434464">ერთეული ამოიშალა</translation>
+<translation id="6128214169525122635">ქვევით დაწეული ცერით გაიგზავნება გამოხმაურება იმის შესახებ, რომ ხელოვნური ინტელექტით ავტომატური შევსების ფუნქცია არ მოგწონთ</translation>
 <translation id="6131824478727057281">მდებარეობა</translation>
 <translation id="6133320744616005677">დაშვების გაგრძელება</translation>
 <translation id="6133984428121856852">ფაილის გაფართოება ცარიელი ან არასწორად ფორმირებულია.</translation>
@@ -2830,6 +2862,7 @@
 <translation id="6180316780098470077">ხელახლა მცდელობის ინტერვალი</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome ავტომატურად ზღუდავს მესამე მხარის ქუქი-ჩანაწერებს</translation>
+<translation id="6188479691141473408">და კიდევ <ph name="N_FIELDS" /> ველი</translation>
 <translation id="6194209731893739467">აქ შეგიძლიათ იხილოთ თქვენი ყველა თვალმიდევნებული პროდუქტი</translation>
 <translation id="6195163219142236913">მესამე მხარის ქუქი-ჩანაწერები შეზღუდულია</translation>
 <translation id="6195371403461054755">გეოლოგია</translation>
@@ -3091,6 +3124,7 @@
 <translation id="6649510485211003056">195 x 270 მმ</translation>
 <translation id="6651270836885078973">მმართველი:</translation>
 <translation id="6652101503459149953">Windows Hello-ის გამოყენება</translation>
+<translation id="6654224358955673568">ფორმალიზება</translation>
 <translation id="6654244995031366386">შუშა (ტექსტურიანი)</translation>
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="6659246032834639189">ეს ფასი დაბალია</translation>
@@ -3103,6 +3137,7 @@
 <translation id="6671697161687535275">ამოიშალოს ფორმებისთვის განკუთვნილი შემოთავაზება Chromium-იდან?</translation>
 <translation id="6677351035258626477">სწრაფი კვება</translation>
 <translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome-ის მეშვეობით რაიმეს შეძენისას ერთ-ერთ ვარიანტად გამოჩნდეს <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Chrome-ის მეშვეობით რაიმეს შეძენისას ერთ-ერთ ვარიანტად გამოჩნდეს <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
+<translation id="6679354743514146922">Chrome ბრაუზერი ცდილობს, შეავსოს თქვენი პაროლი <ph name="APP_NAME" />-ში.</translation>
 <translation id="6681790815630918386">CVC შეინახა</translation>
 <translation id="6683022854667115063">ყურსასმენები</translation>
 <translation id="6687230248707087982">კონვერტი (უბრალო)</translation>
@@ -3282,6 +3317,7 @@
 <translation id="6987806006823772670">კონვერტი (დანაფარიანი)</translation>
 <translation id="6989256887001961296">ეს კონტენტი დაბლოკილია.</translation>
 <translation id="6989763994942163495">დამატებითი პარამეტრების ჩვენება…</translation>
+<translation id="6991376411634620997">წვდომის გასაღები • Windows Hello</translation>
 <translation id="6997288673234694149">ბეისბოლისა და სოფტბოლის აღჭურვილობა</translation>
 <translation id="6999480632062519056">ფიტნესინსტრუქტაჟი და პერსონალური ვარჯიში</translation>
 <translation id="7003278537452757231">ფარდაგები და ხალიჩები</translation>
@@ -3451,6 +3487,7 @@
 <translation id="7316521168101843192">ფაილი ინახება Microsoft OneDrive-ში</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">კავშირთან დაკავშირებული დახმარება</translation>
+<translation id="7321111802407017850">შეინახეთ თქვენი ინფორმაცია ავტომატური შევსებისთვის</translation>
 <translation id="7323804146520582233">სექციის „<ph name="SECTION" />“ დამალვა</translation>
 <translation id="733354035281974745">მოწყობილობის ადგილობრივი ანგარიშის უგულებელყოფა</translation>
 <translation id="7334320624316649418">გადალაგების &amp;გამეორება</translation>
@@ -3486,6 +3523,7 @@
 <translation id="7378594059915113390">მედიის მართვის საშუალებები</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7380398842872229465">10 x 15 დუიმი</translation>
+<translation id="7381551826960739226">გადახდის მეთოდების ავტომატურად შევსება გამორთულია, რადგან ეს ფორმა არ იყენებს უსაფრთხო კავშირს.</translation>
 <translation id="7388380253839603603">საწვავის ფასები და საწვავით შევსება</translation>
 <translation id="7388594495505979117">{0,plural, =1{თქვენი მოწყობილობა გადაიტვირთება 1 წუთში}other{თქვენი მოწყობილობა გადაიტვირთება # წუთში}}</translation>
 <translation id="7392089738299859607">მისამართის განახლება</translation>
@@ -3523,6 +3561,7 @@
 <translation id="7424421098814895617">არჩეული იყო მისამართის წაშლის ვარიანტი</translation>
 <translation id="7425037327577270384">დამეხმარეთ დაწერაში</translation>
 <translation id="7425878584435172632">სახვითი ხელოვნება და დიზაინი</translation>
+<translation id="7426745633088095666">გაზიარებული ჩანართები</translation>
 <translation id="7427079287360774240">უცხო ენის შესწავლა</translation>
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Chromium-მა თქვენი საგადახდო ინფორმაცია რომ შეავსოს, დაადასტურეთ ვინაობა.</translation>
@@ -3765,6 +3804,7 @@
 <translation id="7831993212387676366">რა არის საყიდლების სია?</translation>
 <translation id="7840103971441592723">ეკრანის აღბეჭდვა დაიწყო</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="7841633276323004751">გადახდის ხელმისაწვდომი მეთოდები, რომლებიც უნდა აირჩიოთ გადახდის გასაგრძელებლად. კლავიატურა დამალულია.</translation>
 <translation id="7842611866969435396">დავიწყოთ</translation>
 <translation id="784404208867107517">დაჯგუფებული ისტორია</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{არცერთი}=1{1 აპი (<ph name="EXAMPLE_APP_1" />)}=2{2 აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -3855,6 +3895,7 @@
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome სისტემის ნაგულისხმევ ბრაუზერად რომ დააყენოთ, დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="8027077570865220386">ლანგარი 15</translation>
 <translation id="8027585818882015174">Chrome-ის უსაფრთხოების შემოწმების გაშვების ღილაკი, Chrome-ის პარამეტრებიდან უსაფრთხოების შემოწმების გასაშვებად გაააქტიურეთ ის</translation>
+<translation id="8028138772801251745">ავტომატური შევსება ხელოვნური ინტელექტის მეშვეობით</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms-ში ახალი ფორმის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="8028892419725165118">ყოველდღიური თამაშები</translation>
 <translation id="8028960012888758725">შემოჭრა დავალების შესრულების შემდეგ</translation>
@@ -3924,6 +3965,7 @@
 <translation id="8150722005171944719">ფაილი <ph name="URL" />-ზე არაწაკითხვადია. შესაძლოა, იგი წაშლილი ან გადატანილი იქნა, ან წვდომა აკრძალულია ნებართვების გამო.</translation>
 <translation id="8151185429379586178">დეველოპერის ხელსაწყოები</translation>
 <translation id="8153865548451212769">{0,plural, =1{ადმინისტრატორის წესების მიხედვით, ამ ფაილის <ph name="DESTINATION_NAME" />-ზე ჩამოტვირთვა რეკომენდებული არ არის}other{ადმინისტრატორის წესების მიხედვით, ამ ფაილების <ph name="DESTINATION_NAME" />-ზე ჩამოტვირთვა რეკომენდებული არ არის}}</translation>
+<translation id="8155253549374198915">ბოლოს გახსნილი ჩანართები</translation>
 <translation id="81563721597823545">ჰოკეის აღჭურვილობა</translation>
 <translation id="815805690561372740">Chrome-ში ჩაშენებულია უსაფრთხოების ფუნქციები, რომლებიც დაგიცავთ ვების დათვალიერებისას — მაგალითად, Google Safe Browsing, რომელმაც ახლახან <ph name="BEGIN_LINK" />აღმოაჩინა მავნე პროგრამა<ph name="END_LINK" /> საიტზე, რომლის მონახულებაც ცადეთ.</translation>
 <translation id="8161095570253161196">დათვალიერების გაგრძელება</translation>
@@ -4027,6 +4069,7 @@
 <translation id="8321448084834652864">საძიებო სისტემის შეცვლას ნებისმიერ დროს შეძლებთ Chromium-ის პარამეტრებიდან.</translation>
 <translation id="8321476692217554900">შეტყობინებები</translation>
 <translation id="8322402665880479974">საწოლები და საზურგეები</translation>
+<translation id="8323505966575306467">დაამატეთ დამატებითი დაცვა თქვენს პაროლებს</translation>
 <translation id="832567874344484841">პროდუქტები საუზმისთვის</translation>
 <translation id="8329068931308448247">კონვერტი 14</translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" />-ზე წვდომა აკრძალულია</translation>
@@ -4098,6 +4141,7 @@
 <translation id="8449155699563577224">17 x 24 დუიმი</translation>
 <translation id="8449836157089738489">ყველას გახსნა ჩანართების ახალ ჯგუფში</translation>
 <translation id="84561192812921051">თქვენს ადმინისტრატორს შეუძლია, დისტანციურად შეიტანოს ცვლილებები თქვენი პროფილის და ბრაუზერის პარამეტრებში, გააანალიზოს ინფორმაცია თქვენი ბრაუზერის შესახებ ანგარიშგების მეშვეობით და შეასრულოს სხვა აუცილებელი ამოცანები. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chrome-ს მიღმაც.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="8456383681414356368">ქვედა გვერდი დაიხურა.</translation>
 <translation id="8457125768502047971">განუსაზღვრელი</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">ჩართვა</translation>
@@ -4258,6 +4302,7 @@
 <translation id="8763986294015493060">ამჟამად გახსნილი ყველა ინკოგნიტო ფანჯრის დახურვა</translation>
 <translation id="8766943070169463815">გაიხსნა უსაფრთხო გადახდის ავტორიზაციის ფურცელი</translation>
 <translation id="8767765348545497220">დამხმარე ბუშტის დახურვა</translation>
+<translation id="8767881944435256294">{COUNT,plural, =1{გადახდის 1 მეთოდი}other{გადახდის # მეთოდი}}</translation>
 <translation id="8768225988514678921">პრეზენტაციის შექმნის ღილაკი, Slides-ში ახალი Google პრეზენტაციის სწრაფად შესაქმნელად გაააქტიურეთ ის</translation>
 <translation id="8770286973007342895">გაზონის საჭრელი მანქანები</translation>
 <translation id="8772387130037509473">იოგა და პილატესი</translation>
@@ -4385,6 +4430,7 @@
 <translation id="9023536760430404133">სატრანსპორტო საშუალებების ბორბლები და საბურავები</translation>
 <translation id="9025348182339809926">(არასწორია)</translation>
 <translation id="902590795160480390">მიმდინარეობს PDF-ის ჩატვირთვა</translation>
+<translation id="9027020981272345766">Chrome Enterprise Core-ის ცდა</translation>
 <translation id="9027531288681624875">სრულეკრანიანი რეჟიმიდან გასასვლელად ხანგრძლივად დააჭირეთ |<ph name="ACCELERATOR" />|-ს</translation>
 <translation id="9035022520814077154">უსაფრთხოების შეცდომა</translation>
 <translation id="9035824888276246493">უსაფრთხოების კოდების შენახვა</translation>
@@ -4447,6 +4493,7 @@
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, ვირტუალური ბარათი</translation>
 <translation id="9138037198177304356">შეტყობინებები დაშვებულია</translation>
 <translation id="9139318394846604261">საყიდლები</translation>
+<translation id="9140198744651252040">Chrome ბრაუზერს სურს, გამოიყენოს თითის ანაბეჭდი პაროლების ავტომატური შევსებისთვის</translation>
 <translation id="9141013498910525015">მისამართების მართვა</translation>
 <translation id="9144951720726881238">მოქმედების ვადის გასვლის თარიღი:</translation>
 <translation id="9145910032514306808">ხელახლა <ph name="BEGIN_LINK" />შედით სისტემაში<ph name="END_LINK" />,
@@ -4457,6 +4504,7 @@
 <translation id="9150025764986957246">მაგალითად, შეგიძლიათ მიუთითოთ:</translation>
 <translation id="9154194610265714752">განახლებული</translation>
 <translation id="9155211586651734179">მიერთებული პერიფერიული აუდიომოწყობილობები</translation>
+<translation id="9155453166708525139">ავტომატური შევსება ხელოვნური ინტელექტის მეშვეობით არის ექსპერიმენტული ფუნქცია და ის ყოველთვის არ იქნება ზუსტი. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">ჟურნალები</translation>
 <translation id="9157595877708044936">დაყენება…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />, შესაძლოა, შეიცავდეს სენსიტიურ კონტენტს}other{<ph name="FILE_COUNT" /> ფაილი, შესაძლოა, შეიცავდეს სენსიტიურ კონტენტს}}</translation>
@@ -4517,6 +4565,7 @@
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome დღეს კლავ შეზღუდავს ქუქი-ჩანაწერებს}=1{Chrome ხვალ კლავ შეზღუდავს ქუქი-ჩანაწერებს}other{Chrome # დღეში კლავ შეზღუდავს ქუქი-ჩანაწერებს}}</translation>
 <translation id="949314938206378263">თქვენ მოითხოვეთ ამ საიტის მონახულება. თქვენს მშობელს გამოხმაურება შეუძლია Family Link-იდან.</translation>
 <translation id="950736567201356821">სამმაგად გახვრეტა ზემოთ</translation>
+<translation id="950926967802086924">წვდომის გასაღები • Google პაროლების მმართველი</translation>
 <translation id="961663415146723894">აკინძვა ქვემოთ</translation>
 <translation id="961856697154696964">დათვალ. მონაცემების წაშლა</translation>
 <translation id="961930410699694996">მდებარეობა დაშვებულია ამჯერად</translation>

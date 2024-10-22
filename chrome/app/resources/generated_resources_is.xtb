@@ -2714,7 +2714,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2889064240420137087">Opna tengil með...</translation>
 <translation id="2890206081124517553">Muna bakgrunn skjáborðsins milli tækja</translation>
 <translation id="2891464434568738544">Engin vefsvæði tiltæk eins og er. Opnaðu vefsvæði til að bæta því á þennan lista.</translation>
-<translation id="2891566119238851894">Opna leit í hliðarglugga. Leit er ekki opin í hliðarglugganum.</translation>
 <translation id="2891922230654533301">Nota tækið þitt til að skrá þig inn á <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Sjálfgefinn vafri</translation>
 <translation id="2893180576842394309">Google notar hugsanlega ferilinn þinn til að sérsníða leitina og aðra þjónustu Google</translation>
@@ -3762,7 +3761,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3678156199662914018">Viðbót: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Síður sem þú skoðar í þessum glugga munu hvorki birtast í vafraferlinum né skilja eftir sig önnur ummerki, t.d. fótspor, í tölvunni að útskráningu lokinni. Skrár sem þú sækir og bókamerki sem þú býrð til varðveitast ekki.</translation>
 <translation id="3679126865530709868">Innbyggður snertiflötur</translation>
-<translation id="368019053277764111">Opna leit í hliðarglugga</translation>
 <translation id="3680683624079082902">Rödd talgervils</translation>
 <translation id="3681017028939109078">Sýna tillögur um glugga þegar byrjað er á skjáskiptingu</translation>
 <translation id="3681311097828166361">Takk fyrir ábendinguna. Þú ert án nettengingar sem stendur og tilkynningin verður send síðar.</translation>
@@ -4673,7 +4671,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4316850752623536204">Vefsvæði þróunaraðila</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Heimildir eins vefsvæðis voru fjarlægðar}one{Heimildir {NUM_SITES} vefsvæðis voru fjarlægðar}other{Heimildir {NUM_SITES} vefsvæða voru fjarlægðar}}</translation>
 <translation id="4317733381297736564">Innkaup í forriti</translation>
-<translation id="4317737918133146519">Vinnuprófíllinn þinn er næstum tilbúinn</translation>
 <translation id="4317820549299924617">Staðfesting tókst ekki</translation>
 <translation id="4319441675152393296">Smelltu á tákn þessarar viðbótar til að lesa og breyta <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Engin nettenging</translation>
@@ -5061,6 +5058,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4602776638371779614">Þessi flipi er að leita að Bluetooth-tækjum</translation>
 <translation id="4605026046465576953">Ekki er hægt að opna þetta forrit vegna þess að þú hefur ekki heimild til að keyra einangruð vefforrit</translation>
 <translation id="4606551464649945562">Ekki leyfa vefsvæðum að búa til þrívíddarkort af umhverfinu eða rekja staðsetningu myndavélarinnar</translation>
+<translation id="4606933160360542263">Sérsniðin lyklasamsetning: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Viltu eyða flipahópi?}one{Viltu eyða flipahópum?}other{Viltu eyða flipahópum?}}</translation>
 <translation id="4608500690299898628">&amp;Finna...</translation>
 <translation id="4610162781778310380">Villa kom upp í <ph name="PLUGIN_NAME" /></translation>
@@ -6199,7 +6197,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (virkar án nettengingar)</translation>
 <translation id="5453829744223920473">Barnið þitt getur notað öll forrit, bókamerki og tilföng skólans rétt eins og það gerir í tímum. Skólinn setur grundvallarreglurnar.</translation>
 <translation id="5454166040603940656">hjá <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Sjá fleiri leitarniðurstöður</translation>
 <translation id="5457082343331641453">Bættu við leitina</translation>
 <translation id="5457113250005438886">Ógilt</translation>
 <translation id="5457459357461771897">Lesa og eyða myndum, tónlist og öðru margmiðlunarefni í tölvunni þinni</translation>
@@ -6297,6 +6294,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5517304475148761050">Þetta forrit krefst aðgangs að Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Fjarlægja aðgerð <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Er þetta heimasíðan sem þú bjóst við?</translation>
 <translation id="5522156646677899028">Þessi viðbót inniheldur alvarlegan öryggisgalla.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Viðbót var sett upp af stjórnanda}one{# viðbót var sett upp af stjórnanda}other{# viðbætur voru settar upp af stjórnanda}}</translation>
@@ -6657,7 +6655,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5799508265798272974">Sýndarvél Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Áfangaskráin hefur verið stýfð eða fjarlægð síðan hún var sótt.</translation>
 <translation id="5800290746557538611">Virkja skynditengingu við heitan reit</translation>
-<translation id="5800351251499368110">Loka leit í hliðarglugga. Leit er opin í hliðarglugganum.</translation>
 <translation id="5800703268655655701">Veldu ljóst eða dökkt þema</translation>
 <translation id="5801051031414037185">Setja upp síma</translation>
 <translation id="5801568494490449797">Kjörstillingar</translation>
@@ -8763,7 +8760,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7356908624372060336">Annálar netkerfis</translation>
 <translation id="7357271391997763660">Athuga aðgangsorð?</translation>
 <translation id="735745346212279324">VPN ótengt</translation>
-<translation id="7358338787722390626">Loka leit í hliðarglugga</translation>
 <translation id="7359680654975233185">Ekki er hægt að varpa flipa</translation>
 <translation id="735994578317267253">Fáðu forritin þín, stillingarnar og fleira í hvaða ChromeOS tæki sem er</translation>
 <translation id="7360257054721917104">Skoðar vistuð skrifborð og sniðmát. Ýttu á dálkalykilinn (Tab) til að fletta.</translation>
@@ -9762,7 +9758,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8054609631325628928">Hægt er að nota þessi númer til að hjálpa til við virkjun þjónustu</translation>
 <translation id="8054883179223321715">Í boði fyrir tiltekin vídeóvefsvæði</translation>
 <translation id="8054921503121346576">USB-lyklaborð tengt</translation>
-<translation id="8057414620575339583">Hliðarleit</translation>
 <translation id="8058655154417507695">Gildir til ársins</translation>
 <translation id="8058986560951482265">Höktir</translation>
 <translation id="8059417245945632445">Kanna tæk&amp;i</translation>
@@ -10283,6 +10278,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8429928917752180743">Fleiri valkostir fyrir <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Sýna snertingar</translation>
 <translation id="843173223122814223">Búa til bakgrunna með gervigreind</translation>
+<translation id="8431977087510901105">Stillingar bendils endurstilltar</translation>
 <translation id="8433186206711564395">Netstillingar</translation>
 <translation id="8434109185104929038">Lestrarkrókur</translation>
 <translation id="8434480141477525001">Villuleitargátt NaCl</translation>

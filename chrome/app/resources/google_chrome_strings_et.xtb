@@ -76,7 +76,6 @@
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Seda laiendust enam ei toetata. Chrome soovitab selle eemaldada.}other{Neid laiendusi ei toetata enam. Chrome soovitab selle eemaldada.}}</translation>
 <translation id="2018528049276128029">Igal profiilil on oma Chrome'i teave, nagu järjehoidjad, ajalugu, paroolid ja muu</translation>
 <translation id="2018879682492276940">Installimine ebaõnnestus. Proovige uuesti.</translation>
-<translation id="2022471217832964798">Kontole juurdepääsu seadistamise ajal saate endiselt Chrome'i kasutada. Mõnele allikale ei pruugi te juurde pääseda enne, kui seadistamine on lõpule viidud.</translation>
 <translation id="2034233344106846793">Chrome uuendab võimalusel ebaturvalised ühendused automaatselt HTTPS-ile</translation>
 <translation id="207902854391093810">Kui katsed on sisse lülitatud, võimaldab reklaamide mõõtmine külastatavatel saitidel taotleda Chrome'ilt teavet, mis aitab saidil oma reklaamide toimivust mõõta. Reklaamide mõõtmine piirab saitidevahelist jälgimist, edastades saitide vahel võimalikult vähe teavet.</translation>
 <translation id="2091012649849228750">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 8.</translation>

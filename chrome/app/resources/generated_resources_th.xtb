@@ -2700,7 +2700,6 @@
 <translation id="2889064240420137087">เปิดลิงก์ด้วย...</translation>
 <translation id="2890206081124517553">จดจำพื้นหลังของเดสก์ท็อปในอุปกรณ์ต่างๆ</translation>
 <translation id="2891464434568738544">ไม่มีเว็บไซต์ในขณะนี้ ไปที่เว็บไซต์เพื่อเพิ่มลงในรายการนี้</translation>
-<translation id="2891566119238851894">เปิดการค้นหาในแผงด้านข้าง การค้นหาไม่ได้เปิดอยู่ในแผงด้านข้าง</translation>
 <translation id="2891922230654533301">ใช้อุปกรณ์เพื่อลงชื่อเข้าใช้ <ph name="APP_NAME" /> ไหม</translation>
 <translation id="2893168226686371498">เบราว์เซอร์เริ่มต้น</translation>
 <translation id="2893180576842394309">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เข้ากับคุณ</translation>
@@ -3746,7 +3745,6 @@
 <translation id="3678156199662914018">ส่วนขยาย: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">หน้าเว็บที่คุณดูในหน้าต่างนี้จะไม่ปรากฏในประวัติการใช้เบราว์เซอร์และจะไม่ทิ้งร่องรอยอื่นๆ เช่น คุกกี้ ไว้ในคอมพิวเตอร์หลังจากที่คุณออกจากระบบ รวมถึงจะไม่มีการเก็บรักษาไฟล์ที่คุณดาวน์โหลดและบุ๊กมาร์กที่คุณสร้างไว้</translation>
 <translation id="3679126865530709868">ทัชแพดในตัว</translation>
-<translation id="368019053277764111">เปิดการค้นหาในแผงด้านข้าง</translation>
 <translation id="3680683624079082902">เสียงของการอ่านออกเสียงข้อความ</translation>
 <translation id="3681017028939109078">แสดงการแนะนำหน้าต่างเมื่อเริ่มแยกหน้าจอ</translation>
 <translation id="3681311097828166361">ขอขอบคุณสำหรับความคิดเห็น คุณกำลังออฟไลน์อยู่ในขณะนี้ และระบบจะส่งรายงานของคุณในภายหลัง</translation>
@@ -4657,7 +4655,6 @@
 <translation id="4316850752623536204">เว็บไซต์นักพัฒนาซอฟต์แวร์</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{นำสิทธิ์สำหรับ 1 เว็บไซต์ออกแล้ว}other{นำสิทธิ์สำหรับ {NUM_SITES} เว็บไซต์ออกแล้ว}}</translation>
 <translation id="4317733381297736564">การซื้อในแอป</translation>
-<translation id="4317737918133146519">โปรไฟล์งานของคุณเกือบจะใช้งานได้แล้ว</translation>
 <translation id="4317820549299924617">ยืนยันไม่สำเร็จ</translation>
 <translation id="4319441675152393296">คลิกไอคอนของส่วนขยายนี้เพื่ออ่านและเปลี่ยนแปลง <ph name="HOST" /></translation>
 <translation id="4320177379694898372">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
@@ -5045,6 +5042,7 @@
 <translation id="4602776638371779614">แท็บนี้กำลังสแกนหาอุปกรณ์บลูทูธ</translation>
 <translation id="4605026046465576953">เปิดแอปนี้ไม่ได้เนื่องจากคุณไม่มีสิทธิ์เรียกใช้ Isolated Web App</translation>
 <translation id="4606551464649945562">ไม่อนุญาตให้เว็บไซต์สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณหรือติดตามตำแหน่งของกล้อง</translation>
+<translation id="4606933160360542263">ชุดแป้นที่กำหนดเอง: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ลบกลุ่มแท็บใช่ไหม}other{ลบกลุ่มแท็บใช่ไหม}}</translation>
 <translation id="4608500690299898628">&amp;ค้นหา...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> พบข้อผิดพลาด</translation>
@@ -6181,7 +6179,6 @@
 <translation id="5452976525201205853">ภาษา<ph name="LANGUAGE" /> (ใช้งานได้ขณะออฟไลน์)</translation>
 <translation id="5453829744223920473">บุตรหลานสามารถใช้แอป บุ๊กมาร์ก และแหล่งข้อมูลทั้งหมดของโรงเรียนได้เช่นเดียวกับในชั้นเรียน โดยโรงเรียนจะเป็นผู้ตั้งกฎพื้นฐาน</translation>
 <translation id="5454166040603940656">กับ <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">ดูผลการค้นหาเพิ่มเติม</translation>
 <translation id="5457082343331641453">เพิ่มไปยังการค้นหาของคุณ</translation>
 <translation id="5457113250005438886">ไม่ถูกต้อง</translation>
 <translation id="5457459357461771897">อ่านและลบรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
@@ -6279,6 +6276,7 @@
 <translation id="5517304475148761050">แอปนี้ต้องการสิทธิ์เข้าถึง Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">นำการดำเนินการออก <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">นี่คือ "หน้าแรก" ที่คุณต้องการใช่ไหม</translation>
 <translation id="5522156646677899028">ส่วนขยายนี้มีช่องโหว่ด้านความปลอดภัยอย่างร้ายแรง</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{มีการติดตั้งส่วนขยาย 1 รายการโดยผู้ดูแลระบบของคุณ}other{มีการติดตั้งส่วนขยาย # รายการโดยผู้ดูแลระบบของคุณ}}</translation>
@@ -6637,7 +6635,6 @@
 <translation id="5799508265798272974">เครื่องเสมือนของ Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">ไฟล์ปลายทางไม่สมบูรณ์หรือถูกลบไปตั้งแต่การดาวน์โหลดครั้งล่าสุด</translation>
 <translation id="5800290746557538611">เปิดใช้ฮอตสปอตด่วน</translation>
-<translation id="5800351251499368110">ปิดการค้นหาในแผงด้านข้าง การค้นหาเปิดอยู่ในแผงด้านข้าง</translation>
 <translation id="5800703268655655701">เลือกธีมสว่างหรือมืด</translation>
 <translation id="5801051031414037185">ตั้งค่าโทรศัพท์</translation>
 <translation id="5801568494490449797">ค่ากำหนด</translation>
@@ -8741,7 +8738,6 @@
 <translation id="7356908624372060336">บันทึกเครือข่าย</translation>
 <translation id="7357271391997763660">เรียกใช้การตรวจสอบรหัสผ่านใช่ไหม</translation>
 <translation id="735745346212279324">ยกเลิกการเชื่อมต่อ VPN แล้ว</translation>
-<translation id="7358338787722390626">ปิดการค้นหาในแผงด้านข้าง</translation>
 <translation id="7359680654975233185">แคสต์แท็บไม่ได้</translation>
 <translation id="735994578317267253">รับแอป การตั้งค่า และอื่นๆ ในทุกอุปกรณ์ Chrome OS</translation>
 <translation id="7360257054721917104">กําลังดูเดสก์และเทมเพลตที่บันทึกไว้ กด Tab เพื่อไปยังส่วนต่างๆ</translation>
@@ -9740,7 +9736,6 @@
 <translation id="8054609631325628928">คุณใช้หมายเลขเหล่านี้เพื่อช่วยเปิดใช้งานบริการได้</translation>
 <translation id="8054883179223321715">พร้อมใช้งานสำหรับเว็บไซต์วิดีโอบางเว็บไซต์</translation>
 <translation id="8054921503121346576">เชื่อมต่อแป้นพิมพ์ USB แล้ว</translation>
-<translation id="8057414620575339583">การค้นหาในแผงด้านข้าง</translation>
 <translation id="8058655154417507695">ปีที่หมดอายุ</translation>
 <translation id="8058986560951482265">กระตุก</translation>
 <translation id="8059417245945632445">&amp;ตรวจสอบอุปกรณ์</translation>
@@ -10261,6 +10256,7 @@
 <translation id="8429928917752180743">ตัวเลือกเพิ่มเติมสำหรับ <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">แสดงการแตะ</translation>
 <translation id="843173223122814223">สร้างพื้นหลังด้วย AI</translation>
+<translation id="8431977087510901105">รีเซ็ตการตั้งค่าเคอร์เซอร์แล้ว</translation>
 <translation id="8433186206711564395">การตั้งค่าเครือข่าย</translation>
 <translation id="8434109185104929038">มุมอ่านหนังสือ</translation>
 <translation id="8434480141477525001">พอร์ตแก้ปัญหา NaCl</translation>

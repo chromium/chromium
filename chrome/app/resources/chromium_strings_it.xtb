@@ -172,7 +172,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="3286538390144397061">Riavvia adesso</translation>
 <translation id="328888136576916638">Mancano le chiavi dell'API di Google. Alcune funzionalità di Chromium verranno disattivate.</translation>
 <translation id="3296368748942286671">Continua a eseguire applicazioni in background dopo la chiusura di Chromium</translation>
-<translation id="3300643253493387004">Puoi continuare a usare Chromium mentre stiamo configurando l'accesso all'account. Potresti non riuscire ad accedere ad alcune risorse finché la configurazione non sarà stata completata.</translation>
 <translation id="3313189106987092621">Chromium ti avvisa prima di caricare qualsiasi sito che utilizza una connessione non sicura</translation>
 <translation id="3316771292331273802">Quando chiudi tutte le finestre di Chromium, uscirai dalla maggior parte dei siti, ma se hai eseguito l'accesso a Chromium non uscirai dal tuo Account Google. Per consentire ai siti di memorizzare le tue informazioni, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3350761136195634146">Esiste già un profilo Chromium con questo account</translation>

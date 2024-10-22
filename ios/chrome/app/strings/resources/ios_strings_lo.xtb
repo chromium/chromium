@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">ບັນຊີ <ph name="WEBSITE" /> ຂອງທ່ານຈະບໍ່ຖືກລຶບ.</translation>
 <translation id="1506061864768559482">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
 <translation id="1506063256525392513">ນີ້ຈະເຮັດໃຫ້ທ່ານສາມາດຖ່າຍ ແລະ ອັບໂຫຼດຮູບພາບ, ຮວມທັງສະແກນລະຫັດ QR ໄດ້</translation>
+<translation id="1508263560970797965">ສືບຕໍ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1509486075633541495">ເຂົ້າສູ່ລະບົບເວັບໄຊ</translation>
 <translation id="1509960214886564027">ຄຸນສົມບັດໃນຫຼາຍໆເວັບໄຊອາດຈະໃຊ້ບໍ່ໄດ້</translation>
 <translation id="1513858653616922153">ລຶບລະຫັດຜ່ານ</translation>
@@ -742,6 +743,7 @@
 <translation id="4587589328781138893">ເວັບໄຊ</translation>
 <translation id="4592672037257622855">{count,plural, =1{ເພີ່ມໜ້າໃສ່ລາຍຊື່ການອ່ານຂອງທ່ານແລ້ວ}other{ເພີ່ມ {count} ໜ້າໃສ່ລາຍຊື່ການອ່ານຂອງທ່ານແລ້ວ}}</translation>
 <translation id="459644946100970322">ເປີດການແຈ້ງເຕືອນລາຄາບໍ?</translation>
+<translation id="4597892826846980979">ຮັບການແຈ້ງເຕືອນແຖບ</translation>
 <translation id="4601095002996233687">ການສະແກນແບບເຈາະເລິກສຳລັບການດາວໂຫຼດທີ່ໜ້າສົງໄສ.</translation>
 <translation id="4606247758155004938">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານແມ່ນຈັດການໂດຍອົງການຂອງທ່ານ.</translation>
 <translation id="4611811151908969241">ເຊື່ອງ ເຊົາຕິດຕາມ <ph name="DOMAIN_NAME" /></translation>
@@ -1201,6 +1203,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6606914854592108404">ກຳລັງດຳເນີນການກວດສອບຄວາມປອດໄພ…</translation>
 <translation id="6609890790934458793">ລະຫັດຜ່ານສຳລັບ <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ແລະ <ph name="THIRD_WEBSITE" /> ຈະບໍ່ຖືກລຶບ. ບັນຊີຂອງທ່ານຈະບໍ່ຖືກລຶບ.</translation>
 <translation id="661266467055912436">ປັບປຸງຄວາມປອດໄພສຳລັບທ່ານ ແລະ ທຸກຄົນໃນເວັບ.</translation>
+<translation id="6612912757320004438">ອະນຸຍາດການແຈ້ງເຕືອນແຖບ…</translation>
 <translation id="6617761071025228250">ລຶບລ້າງຂໍ້ຄວາມ</translation>
 <translation id="6620279676667515405">ຍົກເລີກ</translation>
 <translation id="6624219055418309072">ບລັອກໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -1558,6 +1561,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8232956427053453090">ຮັກສາຂໍ້ມູນໄວ້</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="82619448491672958">ເບິ່ງແຖບອື່ນໆ</translation>
+<translation id="8263228331881858381">ບັນທຶກກະແຈຜ່ານແລ້ວ</translation>
 <translation id="8263809106706527890">ການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານອາດມີການປ່ຽນແປງ. ທ່ານສາມາດກວດສອບໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="8264966119170358612">ລະຫັດຜ່ານຂອງທ່ານຈຳນວນໜຶ່ງທີ່ບັນທຶກໄວ້ຖືກເປີດເຜີຍໃນການລະເມີດຂໍ້ມູນທີ່ບໍ່ແມ່ນຂໍ້ມູນ Google. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">ທ່ານຖືກໃຫ້ອອກຈາກລະບົບບັນຊີຂອງທ່ານ, <ph name="USER_NAME" />, ເຊິ່ງເປັນສ່ວນໜຶ່ງຂອງການຣີເຊັດ iPad ທ່ານ. ເພື່ອເຂົ້າສູ່ລະບົບຄືນໃໝ່, ໃຫ້ແຕະ "ສືບຕໍ່" ທາງລຸ່ມ.</translation>

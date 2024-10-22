@@ -175,7 +175,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3286538390144397061">Restart Now</translation>
 <translation id="328888136576916638">Google API keys are missing. Some functionality of Chromium will be disabled.</translation>
 <translation id="3296368748942286671">Continue running background apps when Chromium is closed</translation>
-<translation id="3300643253493387004">While we're setting up account access, you can still use Chromium. You may not be able to access some resources until setup is complete.</translation>
 <translation id="3313189106987092621">Chromium will warn you before loading any site using an insecure connection</translation>
 <translation id="3316771292331273802">You'll be signed out of most sites when you close all Chromium windows, except your Google Account if you're signed in to Chromium. To let sites remember you, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3350761136195634146">A Chromium profile with this account already exists</translation>

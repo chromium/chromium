@@ -171,7 +171,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">As chaves da API do Google não foram encontradas. Algumas funcionalidades do Chromium serão desativadas.</translation>
 <translation id="3296368748942286671">Continuar executando os aplicativos em segundo plano quando o Chromium for fechado</translation>
-<translation id="3300643253493387004">Enquanto configuramos o acesso à conta, você ainda pode usar o Chromium. Talvez não seja possível acessar alguns recursos até que a configuração seja concluída.</translation>
 <translation id="3313189106987092621">O Chromium vai enviar um aviso antes de carregar qualquer site usando uma conexão sem segurança</translation>
 <translation id="3316771292331273802">Sua conta será desconectada da maioria dos sites quando você fechar todas as janelas do Chromium, exceto sua Conta do Google, se tiver feito login no navegador. Para permitir que os sites se lembrem de você, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3350761136195634146">Já existe um perfil do Chromium para essa conta</translation>

@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">Vaš <ph name="WEBSITE" /> račun neće se izbrisati.</translation>
 <translation id="1506061864768559482">Tražilica</translation>
 <translation id="1506063256525392513">To vam omogućuje snimanje i prijenos fotografija te skeniranje QR kodova.</translation>
+<translation id="1508263560970797965">Nastavite anonimno</translation>
 <translation id="1509486075633541495">Prijavite se na web-lokaciju</translation>
 <translation id="1509960214886564027">Značajke na mnogim web-lokacijama mogu prestati funkcionirati</translation>
 <translation id="1513858653616922153">Izbriši zaporku</translation>
@@ -742,6 +743,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4587589328781138893">Web-lokacije</translation>
 <translation id="4592672037257622855">{count,plural, =1{Stranica je dodana na vaš popis za čitanje}one{{count} stranica dodana je na vaš popis za čitanje}few{{count} stranice dodane su na vaš popis za čitanje}other{{count} stranica dodano je na vaš popis za čitanje}}</translation>
 <translation id="459644946100970322">Želite li uključiti upozorenja o cijeni?</translation>
+<translation id="4597892826846980979">Primajte obavijesti o karticama</translation>
 <translation id="4601095002996233687">Dubinska pretraživanja mogućih sumnjivih preuzimanja.</translation>
 <translation id="4606247758155004938">Vašim preglednikom upravlja vaša organizacija.</translation>
 <translation id="4611811151908969241">Sakrij prestanak praćenja <ph name="DOMAIN_NAME" /></translation>
@@ -1201,6 +1203,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="6606914854592108404">U tijeku je sigurnosna provjera…</translation>
 <translation id="6609890790934458793">Izbrisat će se zaporke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="THIRD_WEBSITE" />. Vaši se računi neće izbrisati.</translation>
 <translation id="661266467055912436">Poboljšava sigurnost za vas i sve ostale na webu.</translation>
+<translation id="6612912757320004438">Dopustite obavijesti o karticama…</translation>
 <translation id="6617761071025228250">Izbrišite tekst</translation>
 <translation id="6620279676667515405">Otkaži</translation>
 <translation id="6624219055418309072">Blokiranje u anonimnom načinu</translation>
@@ -1558,6 +1561,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8232956427053453090">Zadrži podatke</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="82619448491672958">Pogledajte ostale kartice</translation>
+<translation id="8263228331881858381">Pristupni je ključ spremljen</translation>
 <translation id="8263809106706527890">Možda je došlo do promjene u postavkama zadanog preglednika. To možete provjeriti u postavkama.</translation>
 <translation id="8264966119170358612">Neke od vaših spremljenih zaporki otkrivene su u neovlaštenom pristupu podacima izvan Googlea. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Odjavljeni ste s računa <ph name="USER_NAME" /> pri vraćanju iPada na zadano. Da biste se ponovno prijavili, dodirnite Nastavi u nastavku.</translation>

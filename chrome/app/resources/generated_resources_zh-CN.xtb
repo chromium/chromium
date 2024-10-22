@@ -2692,7 +2692,6 @@
 <translation id="2889064240420137087">链接打开方式...</translation>
 <translation id="2890206081124517553">记住您在各设备上的桌面背景</translation>
 <translation id="2891464434568738544">目前未打开任何网站。访问某个网站即可将其添加到此列表中。</translation>
-<translation id="2891566119238851894">打开侧边栏中的搜索工具栏。侧边栏中的搜索工具栏未打开。</translation>
 <translation id="2891922230654533301">使用您的设备登录 <ph name="APP_NAME" />？</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2893180576842394309">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
@@ -3738,7 +3737,6 @@
 <translation id="3678156199662914018">扩展程序：<ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">当您退出访客模式后，您在此窗口中查看过的网页将不会显示在浏览器历史记录中，也不会在计算机上留下其他痕迹（例如 Cookie）。系统不会保留您下载的文件和创建的书签。</translation>
 <translation id="3679126865530709868">内置触控板</translation>
-<translation id="368019053277764111">在侧边栏中打开搜索页面</translation>
 <translation id="3680683624079082902">文字转语音的语音偏好</translation>
 <translation id="3681017028939109078">启动分屏时显示窗口建议</translation>
 <translation id="3681311097828166361">感谢您提交反馈。您目前处于离线状态，系统将在您上线后提交您的反馈报告。</translation>
@@ -4648,7 +4646,6 @@
 <translation id="4316850752623536204">开发者网站</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{撤消了 1 个网站的权限}other{撤消了 {NUM_SITES} 个网站的权限}}</translation>
 <translation id="4317733381297736564">应用内购买</translation>
-<translation id="4317737918133146519">您的工作资料即将准备就绪</translation>
 <translation id="4317820549299924617">验证失败</translation>
 <translation id="4319441675152393296">点击此扩展程序的图标即可读取和更改 <ph name="HOST" /> 数据</translation>
 <translation id="4320177379694898372">未连接到互联网</translation>
@@ -5036,6 +5033,7 @@
 <translation id="4602776638371779614">此标签页正在主动搜寻蓝牙设备</translation>
 <translation id="4605026046465576953">无法打开此应用，因为您没有运行独立式 Web 应用 (IWA) 的权限</translation>
 <translation id="4606551464649945562">不允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
+<translation id="4606933160360542263">自定义组合键：<ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{要删除标签页分组吗？}other{要删除标签页分组吗？}}</translation>
 <translation id="4608500690299898628">查找(&amp;F)...</translation>
 <translation id="4610162781778310380">“<ph name="PLUGIN_NAME" />”遇到了错误</translation>
@@ -6172,7 +6170,6 @@
 <translation id="5452976525201205853"><ph name="LANGUAGE" />（可离线使用）</translation>
 <translation id="5453829744223920473">您的孩子可以像在课堂中一样使用所有学校应用、书签和资源。学校会设立基本规则。</translation>
 <translation id="5454166040603940656">提供方：<ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">查看更多搜索结果</translation>
 <translation id="5457082343331641453">添加到您的搜索内容中</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5457459357461771897">读取和删除您计算机上的照片、音乐和其他媒体</translation>
@@ -6270,6 +6267,7 @@
 <translation id="5517304475148761050">此应用需要获得对 Play 商店的访问权限</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">移除操作“<ph name="ACTION_TO_REMOVE" />”</translation>
 <translation id="5521078259930077036">这是您想要的主页吗？</translation>
 <translation id="5522156646677899028">该扩展程序存在严重的安全漏洞。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{您的管理员已安装了 1 个扩展程序}other{您的管理员已安装了 # 个扩展程序}}</translation>
@@ -6628,7 +6626,6 @@
 <translation id="5799508265798272974">Linux 虚拟机：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">目标文件在上次下载后被截断或删除。</translation>
 <translation id="5800290746557538611">启用智能热点</translation>
-<translation id="5800351251499368110">关闭侧边栏中的搜索工具栏。侧边栏中的搜索工具栏处于打开状态。</translation>
 <translation id="5800703268655655701">选择浅色或深色主题</translation>
 <translation id="5801051031414037185">设置手机</translation>
 <translation id="5801568494490449797">偏好设置</translation>
@@ -8732,7 +8729,6 @@
 <translation id="7356908624372060336">网络日志</translation>
 <translation id="7357271391997763660">是否运行密码检查？</translation>
 <translation id="735745346212279324">VPN 连接已断开</translation>
-<translation id="7358338787722390626">关闭侧边栏中的搜索工具栏。</translation>
 <translation id="7359680654975233185">无法投放标签页</translation>
 <translation id="735994578317267253">在任意 Chrome 操作系统设备上使用您的应用、设置等等</translation>
 <translation id="7360257054721917104">正在查看已保存的桌面和模板。按 Tab 键即可导航。</translation>
@@ -9732,7 +9728,6 @@
 <translation id="8054609631325628928">这些号码可用于帮助激活服务</translation>
 <translation id="8054883179223321715">适用于特定视频网站</translation>
 <translation id="8054921503121346576">USB键盘已连接</translation>
-<translation id="8057414620575339583">侧边搜索</translation>
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8058986560951482265">不流畅</translation>
 <translation id="8059417245945632445">检查设备(&amp;I)</translation>
@@ -10253,6 +10248,7 @@
 <translation id="8429928917752180743">“<ph name="EXTENSION_NAME" />”的更多选项</translation>
 <translation id="8431190899827883166">显示点按操作反馈</translation>
 <translation id="843173223122814223">利用 AI 创建背景</translation>
+<translation id="8431977087510901105">光标设置已重置</translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8434109185104929038">阅读角</translation>
 <translation id="8434480141477525001">NaCl调试端口</translation>

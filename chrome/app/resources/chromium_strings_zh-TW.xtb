@@ -172,7 +172,6 @@
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="328888136576916638">缺少 Google API 金鑰，系統將停用 Chromium 的部分功能。</translation>
 <translation id="3296368748942286671">在 Chromium 關閉時繼續執行背景應用程式</translation>
-<translation id="3300643253493387004">設定帳戶存取權的期間，你仍可使用 Chromium，但部分資源要等到設定完成後才能存取。</translation>
 <translation id="3313189106987092621">在使用不安全的連線載入任何網站前，Chromium 會發出警告</translation>
 <translation id="3316771292331273802">關閉所有 Chromium 視窗後，系統會將你登出大部分網站，但如果你已登入 Chromium，Google 帳戶就會維持登入狀態。如要允許網站記住你的資訊，請<ph name="SETTINGS_LINK" />。</translation>
 <translation id="3350761136195634146">該帳戶已有相關聯的 Chromium 設定檔</translation>

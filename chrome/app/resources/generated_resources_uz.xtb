@@ -2702,7 +2702,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2889064240420137087">Havolani ochish...</translation>
 <translation id="2890206081124517553">Ish stoli fon rasmi barcha qurilmalarda eslab qolinsin</translation>
 <translation id="2891464434568738544">Roʻyxatda hech qaysi sayt mavjud emas. Roʻyxatga kiritishdan avval saytni oching.</translation>
-<translation id="2891566119238851894">Yon panelda qidiruvni oching. Yon panelda qidiruv yopiq.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> ilovasiga qurilma orqali kirilsinmi?</translation>
 <translation id="2893168226686371498">Standart brauzer</translation>
 <translation id="2893180576842394309">Qidiruv va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin</translation>
@@ -3748,7 +3747,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3678156199662914018">Kengaytma: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Bu oynada ochiladigan sahifalar brauzer tarixida qolmaydi, barcha ochiq turgan Mehmon oynalarini yopganingizdan keyin ular kompyuterda cookie fayllari singari iz ham qoldirmaydi. Ammo, yuklab olingan fayllar saqlanib qoladi.</translation>
 <translation id="3679126865530709868">Ichki sensorli panel</translation>
-<translation id="368019053277764111">Yon panelda qidiruvni oching</translation>
 <translation id="3680683624079082902">Matnni nutqqa aylantirish ovozi</translation>
 <translation id="3681017028939109078">Oyna takliflari ekran ajratilishidan avval chiqsin</translation>
 <translation id="3681311097828166361">Fikr-mulohaza uchun rahmat! Hozir internet bilan aloqa yo‘qligi sababli xabaringiz keyinroq yuboriladi.</translation>
@@ -4659,7 +4657,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4316850752623536204">Dasturchi sayti</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{1 ta sayt ruxsatlari olib tashlandi}other{{NUM_SITES} ta sayt ruxsatlari olib tashlandi}}</translation>
 <translation id="4317733381297736564">Ilova ichida xaridlar</translation>
-<translation id="4317737918133146519">Ish profilingiz deyarli tayyor</translation>
 <translation id="4317820549299924617">Tasdiqlanmadi</translation>
 <translation id="4319441675152393296"><ph name="HOST" /> saytida oʻqish va yozish uchun kengaytma belgisini bosing</translation>
 <translation id="4320177379694898372">Internet aloqasi yo‘q</translation>
@@ -6184,7 +6181,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (internetsiz ishlaydi)</translation>
 <translation id="5453829744223920473">Farzandingiz oʻzining barcha maktab ilovalari, bukmarklari va resurslaridan xuddi sinfdagi kabi foydalanishi mumkin. Maktab asosiy qoidalarni belgilaydi.</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> yordamida</translation>
-<translation id="545484289444831485">Boshqa qidiruv natijalari</translation>
 <translation id="5457082343331641453">Qidiruvga kiritish</translation>
 <translation id="5457113250005438886">Yaroqsiz</translation>
 <translation id="5457459357461771897">Kompyuteringizdagi rasmlar, musiqa va boshqa mediafayllarni ko‘rish va o‘chirib yuborishga ruxsat</translation>
@@ -6642,7 +6638,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5799508265798272974">Linux virtual mashinasi: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Manzildagi fayl oxirgi yuklashdan so‘ng qisqartirilgan yoki olib tashlangan.</translation>
 <translation id="5800290746557538611">Tezkor modemni yoqish</translation>
-<translation id="5800351251499368110">Yon paneldagi qidiruvni yoping. Yon panelda qidiruv ochiq.</translation>
 <translation id="5800703268655655701">Yorqin va tungi mavzuni tanlang</translation>
 <translation id="5801051031414037185">Telefonni sozlash</translation>
 <translation id="5801568494490449797">Sozlamalar</translation>
@@ -8746,7 +8741,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7356908624372060336">Tarmoq jurnallari</translation>
 <translation id="7357271391997763660">Parol tekshiruvi ishga tushirilsinmi?</translation>
 <translation id="735745346212279324">VPN aloqasi uzildi</translation>
-<translation id="7358338787722390626">Yon paneldagi qidiruvni yoping</translation>
 <translation id="7359680654975233185">Sahifa translatsiya qilinmadi</translation>
 <translation id="735994578317267253">Ilova, sozlamalar va boshqa axborotlaringizni istalgan ChromeOS qurilmasida oling</translation>
 <translation id="7360257054721917104">Saqlangan ish stoli va namunalar koʻrilmoqda Ochish uchun Tab tugmasini bosing.</translation>
@@ -9744,7 +9738,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8054609631325628928">Bu raqamlar xizmatni faollashtirishga yordam beradi</translation>
 <translation id="8054883179223321715">Faqat ayrim video saytlarda ishlaydi</translation>
 <translation id="8054921503121346576">USB klaviaturasi ulanildi</translation>
-<translation id="8057414620575339583">Yondagi qidiruv</translation>
 <translation id="8058655154417507695">Muddati tugaydigan yil</translation>
 <translation id="8058986560951482265">Barqaror emas</translation>
 <translation id="8059417245945632445">&amp;Qurilmalar tekshiruvi</translation>

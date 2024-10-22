@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">Vaš račun na web lokaciji <ph name="WEBSITE" /> se neće izbrisati.</translation>
 <translation id="1506061864768559482">Pretraživač</translation>
 <translation id="1506063256525392513">To vam omogućava da snimate i otpremate fotografije kao i da skenirate QR kodove</translation>
+<translation id="1508263560970797965">Nastavite anonimno</translation>
 <translation id="1509486075633541495">Prijava na web lokaciju</translation>
 <translation id="1509960214886564027">Moguće je da će funkcije na mnogim web lokacijama prestati s radom</translation>
 <translation id="1513858653616922153">Izbriši lozinku</translation>
@@ -742,6 +743,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4587589328781138893">Web lokacije</translation>
 <translation id="4592672037257622855">{count,plural, =1{Stranica je dodana na listu za čitanje}one{{count} stranica je dodana na listu za čitanje}few{{count} stranice su dodane na listu za čitanje}other{{count} stranica je dodano na listu za čitanje}}</translation>
 <translation id="459644946100970322">Uključiti obavještenja o cijenama?</translation>
+<translation id="4597892826846980979">Primajte obavijesti o karticama</translation>
 <translation id="4601095002996233687">Detaljna skeniranja radi provjere sumnjivih preuzimanja.</translation>
 <translation id="4606247758155004938">Preglednikom upravlja vaša organizacija.</translation>
 <translation id="4611811151908969241">Sakrij prestanak praćenja domene <ph name="DOMAIN_NAME" /></translation>
@@ -1201,6 +1203,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="6606914854592108404">Sigurnosna provjera je u toku…</translation>
 <translation id="6609890790934458793">Lozinke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="THIRD_WEBSITE" /> će se izbrisati. Vaši računi se neće izbrisati.</translation>
 <translation id="661266467055912436">Poboljšava vašu i svačiju sigurnost na webu.</translation>
+<translation id="6612912757320004438">Dopustite obavijesti o karticama…</translation>
 <translation id="6617761071025228250">Brisanje teksta</translation>
 <translation id="6620279676667515405">Otkaži</translation>
 <translation id="6624219055418309072">Blokiraj u anonimnom načinu rada</translation>
@@ -1558,6 +1561,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8232956427053453090">Zadrži podatke</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="82619448491672958">Prikaži druge kartice</translation>
+<translation id="8263228331881858381">Pristupni ključ je sačuvan</translation>
 <translation id="8263809106706527890">Možda je došlo do promjene postavki zadanog preglednika. Možete provjeriti ovo u postavkama.</translation>
 <translation id="8264966119170358612">Neke vaše sačuvane lozinke su bile izložene prilikom narušavanja podataka koji nisu Googleovi. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Bili ste odjavljeni s računa <ph name="USER_NAME" /> tokom vraćanja iPada na zadano. Da se prijavite ponovo, dodirnite "Nastavi" u nastavku.</translation>
@@ -1635,7 +1639,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8601611099293226919">Pretražujte ekran koristeći Google Objektiv</translation>
 <translation id="8605219856220328675">Zatvaranje kartice.</translation>
 <translation id="8609743333007776886">Dodaj ${url} u oznake</translation>
-<translation id="8611922158252451755">Svatko s vezom može uređivati sve kartice, pa budite oprezni prilikom dijeljenja. Veza istječe za 48 sati.</translation>
+<translation id="8611922158252451755">Svako s linkom može uređivati sve kartice, stoga budite oprezni s kim ga dijelite. Link ističe za 48 sati.</translation>
 <translation id="8620640915598389714">Uredi</translation>
 <translation id="8625706492572042370">Uredite početni ekran</translation>
 <translation id="8633025649649592204">Nedavna aktivnost</translation>

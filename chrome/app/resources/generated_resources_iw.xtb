@@ -2712,7 +2712,6 @@
 <translation id="2889064240420137087">פתיחת קישור באמצעות...</translation>
 <translation id="2890206081124517553">הגדרה של אותו רקע בשולחן העבודה במכשירים שונים</translation>
 <translation id="2891464434568738544">אין אתרים זמינים כרגע. צריך לבקר באתר כדי שהוא יתווסף לרשימה הזו.</translation>
-<translation id="2891566119238851894">פתיחת החיפוש בחלונית הצדדית. החיפוש לא פתוח בחלונית הצדדית.</translation>
 <translation id="2891922230654533301">להשתמש במכשיר שלך כדי להיכנס לחשבון באתר <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">דפדפן ברירת מחדל</translation>
 <translation id="2893180576842394309">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך לצורך התאמה אישית של החיפוש ושירותי Google אחרים</translation>
@@ -3760,7 +3759,6 @@
 <translation id="3678156199662914018">תוסף: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">‏דפים שיוצגו בחלון זה לא יופיעו בהיסטוריית הדפדפן ולא ישאירו במחשב עקבות מסוגים אחרים, כגון קובצי Cookie, לאחר היציאה. קבצים שיורדו וסימניות שייווצרו לא יישמרו.</translation>
 <translation id="3679126865530709868">לוח מגע מובנה</translation>
-<translation id="368019053277764111">פתיחת החיפוש בחלונית הצדדית</translation>
 <translation id="3680683624079082902">‏קול של המרת טקסט לדיבור (TTS)</translation>
 <translation id="3681017028939109078">הצגת הצעות לחלונות כשמפעילים את המסך המפוצל</translation>
 <translation id="3681311097828166361">תודה על המשוב. כרגע אינך מחובר לאינטרנט, כך שהדוח שלך יישלח מאוחר יותר.</translation>
@@ -4671,7 +4669,6 @@
 <translation id="4316850752623536204">אתר המפתח</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{הוסרו ההרשאות לאתר אחד}one{הוסרו ההרשאות ל-{NUM_SITES} אתרים}two{הוסרו ההרשאות ל-{NUM_SITES} אתרים}other{הוסרו ההרשאות ל-{NUM_SITES} אתרים}}</translation>
 <translation id="4317733381297736564">רכישות מתוך האפליקציות</translation>
-<translation id="4317737918133146519">פרופיל העבודה שלך כמעט מוכן</translation>
 <translation id="4317820549299924617">לא הצלחנו לבצע אימות</translation>
 <translation id="4319441675152393296">כדי לקרוא ולשנות את <ph name="HOST" />, צריך ללחוץ על סמל התוסף הזה</translation>
 <translation id="4320177379694898372">אין חיבור לאינטרנט</translation>
@@ -6198,7 +6195,6 @@
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (פועלת אופליין)</translation>
 <translation id="5453829744223920473">הילד או הילדה יכולים להשתמש בכל האפליקציות, הסימניות והמשאבים של בית הספר, בדיוק כמו שהם משתמשים בכיתה. בית הספר קובע את הכללים המנחים.</translation>
 <translation id="5454166040603940656">עם <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">הצגת תוצאות חיפוש נוספות</translation>
 <translation id="5457082343331641453">הוספה טקסט לחיפוש</translation>
 <translation id="5457113250005438886">לא חוקי</translation>
 <translation id="5457459357461771897">קריאה ומחיקה של קובצי תמונות, מוזיקה ומדיה מסוגים נוספים מהמחשב שלך</translation>
@@ -6656,7 +6652,6 @@
 <translation id="5799508265798272974">‏מכונה וירטואלית של Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">קובץ היעד נקטע או הוסר מאז ההורדה האחרונה.</translation>
 <translation id="5800290746557538611">הפעלת שיתוף אינטרנט מיידי בין מכשירים</translation>
-<translation id="5800351251499368110">סגירת החיפוש בחלונית הצדדית. החיפוש פתוח בחלונית הצדדית.</translation>
 <translation id="5800703268655655701">בחירת עיצוב בהיר או כהה</translation>
 <translation id="5801051031414037185">הגדרת הטלפון</translation>
 <translation id="5801568494490449797">העדפות</translation>
@@ -8765,7 +8760,6 @@
 <translation id="7356908624372060336">יומני רשת</translation>
 <translation id="7357271391997763660">להריץ את בדיקת הסיסמאות?</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>
-<translation id="7358338787722390626">סגירת החיפוש בחלונית הצדדית</translation>
 <translation id="7359680654975233185">‏אי אפשר להפעיל Cast של הכרטיסייה</translation>
 <translation id="735994578317267253">‏קל לקבל את האפליקציות, ההגדרות ועוד בכל מכשיר Chrome OS</translation>
 <translation id="7360257054721917104">‏מוצגים שולחנות העבודה הווירטואליים והתבניות ששמרת. צריך להקיש על Tab כדי לנווט.</translation>
@@ -9764,7 +9758,6 @@
 <translation id="8054609631325628928">המספרים האלה יכולים לשמש להפעלת השירות</translation>
 <translation id="8054883179223321715">זמין עבור אתרי וידאו מסוימים</translation>
 <translation id="8054921503121346576">‏מקלדת USB מחוברת</translation>
-<translation id="8057414620575339583">חיפוש בצד הדף</translation>
 <translation id="8058655154417507695">שנת תפוגה</translation>
 <translation id="8058986560951482265">קופצני</translation>
 <translation id="8059417245945632445">&amp;בדיקת מכשירים</translation>

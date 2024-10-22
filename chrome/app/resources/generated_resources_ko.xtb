@@ -2715,7 +2715,6 @@
 <translation id="2889064240420137087">다음으로 링크 열기...</translation>
 <translation id="2890206081124517553">여러 기기에서 데스크톱 배경 기억하기</translation>
 <translation id="2891464434568738544">현재 사용 가능한 사이트가 없습니다. 사이트를 방문하여 이 목록에 추가하세요.</translation>
-<translation id="2891566119238851894">측면 패널에서 검색을 엽니다. 측면 패널에 검색이 열려 있지 않습니다.</translation>
 <translation id="2891922230654533301">기기를 사용하여 <ph name="APP_NAME" />에 로그인하시겠습니까?</translation>
 <translation id="2893168226686371498">기본 브라우저</translation>
 <translation id="2893180576842394309">Google에서 내 방문 기록을 사용하여 Google 검색 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
@@ -3763,7 +3762,6 @@
 <translation id="3678156199662914018">확장 프로그램: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">이 창에서 보는 페이지는 방문 기록에 나타나지 않으며, 로그아웃한 후 쿠키와 같은 다른 흔적을 컴퓨터에 남기지 않습니다. 다운로드한 파일과 생성한 북마크는 보관되지 않습니다.</translation>
 <translation id="3679126865530709868">내장 터치패드</translation>
-<translation id="368019053277764111">측면 패널에서 검색 열기</translation>
 <translation id="3680683624079082902">텍스트 음성 변환 음성</translation>
 <translation id="3681017028939109078">화면 분할 시작 시 창 추천 표시</translation>
 <translation id="3681311097828166361">의견을 보내주셔서 감사합니다. 현재 오프라인 상태이므로 보고서는 나중에 전송됩니다.</translation>
@@ -4672,7 +4670,6 @@
 <translation id="4316850752623536204">개발자 웹사이트</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{사이트 1개의 권한이 삭제됨}other{사이트 {NUM_SITES}개의 권한이 삭제됨}}</translation>
 <translation id="4317733381297736564">인앱 구매</translation>
-<translation id="4317737918133146519">직장 프로필이 거의 준비되었습니다</translation>
 <translation id="4317820549299924617">확인 실패</translation>
 <translation id="4319441675152393296"><ph name="HOST" /> 사이트를 읽고 변경하려면 이 확장 프로그램의 아이콘을 클릭하세요.</translation>
 <translation id="4320177379694898372">인터넷에 연결되지 않음</translation>
@@ -6199,7 +6196,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" />(오프라인에서 사용 가능)</translation>
 <translation id="5453829744223920473">자녀는 수업 시간과 마찬가지로 모든 학교 앱, 북마크, 리소스를 사용할 수 있습니다. 기본 규칙은 학교에서 정합니다.</translation>
 <translation id="5454166040603940656">제공업체: <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">검색결과 더보기</translation>
 <translation id="5457082343331641453">검색에 추가</translation>
 <translation id="5457113250005438886">잘못된 데이터</translation>
 <translation id="5457459357461771897">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 삭제</translation>
@@ -6657,7 +6653,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5799508265798272974">Linux 가상 머신: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">마지막 다운로드 이후 대상 파일이 잘렸거나 삭제되었습니다.</translation>
 <translation id="5800290746557538611">인스턴트 핫스팟 사용 설정</translation>
-<translation id="5800351251499368110">측면 패널의 검색을 닫습니다. 측면 패널에 검색이 열려 있습니다.</translation>
 <translation id="5800703268655655701">밝은 테마 또는 어두운 테마 선택</translation>
 <translation id="5801051031414037185">휴대전화 설정</translation>
 <translation id="5801568494490449797">환경설정</translation>
@@ -8762,7 +8757,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7356908624372060336">네트워크 로그</translation>
 <translation id="7357271391997763660">비밀번호 진단을 실행하시겠습니까?</translation>
 <translation id="735745346212279324">VPN 연결 끊김</translation>
-<translation id="7358338787722390626">측면 패널의 검색 닫기</translation>
 <translation id="7359680654975233185">탭을 전송할 수 없습니다</translation>
 <translation id="735994578317267253">모든 ChromeOS 기기에서 앱, 설정 등을 사용하세요</translation>
 <translation id="7360257054721917104">저장된 데스크 및 템플릿을 보는 중입니다. 이동하려면 Tab을 누르세요.</translation>
@@ -9762,7 +9756,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8054609631325628928">이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>
 <translation id="8054883179223321715">특정 동영상 사이트에서 사용 가능</translation>
 <translation id="8054921503121346576">USB 키보드 연결됨</translation>
-<translation id="8057414620575339583">사이드 검색</translation>
 <translation id="8058655154417507695">유효기간 연도</translation>
 <translation id="8058986560951482265">일정하지 않음</translation>
 <translation id="8059417245945632445">기기 검사(&amp;I)</translation>

@@ -74,7 +74,6 @@
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Esta extensión ya no es compatible. Chrome te recomienda quitarla.}other{Estas extensiones ya no son compatibles. Chrome te recomienda quitarlas.}}</translation>
 <translation id="2018528049276128029">Cada perfil conserva su propia información de Chrome, como los favoritos, el historial, las contraseñas y más.</translation>
 <translation id="2018879682492276940">No se completó la instalación. Vuelve a intentarlo.</translation>
-<translation id="2022471217832964798">Mientras configuramos el acceso a la cuenta, puedes seguir usando Chrome. Es posible que no tengas acceso a algunos recursos hasta que se complete la configuración.</translation>
 <translation id="2034233344106846793">Chrome actualiza automáticamente las conexiones no seguras a HTTPS cuando es posible</translation>
 <translation id="207902854391093810">Cuando comienzan las pruebas, la medición de anuncios les permite a los sitios que visitas solicitar información a Chrome a fin de medir el rendimiento de los anuncios. La medición de anuncios restringe el seguimiento entre sitios web, ya que se transfiere la menor cantidad de información posible entre sitios.</translation>
 <translation id="2091012649849228750">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 o una versión posterior. Esta computadora usa Windows 8.</translation>

@@ -2713,7 +2713,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2889064240420137087">Maak skakel oop met …</translation>
 <translation id="2890206081124517553">Onthou jou werkskermagtergrond op al jou toestelle</translation>
 <translation id="2891464434568738544">Geen werwe tans beskikbaar nie. Besoek ’n werf om dit by hierdie lys te voeg.</translation>
-<translation id="2891566119238851894">Maak soekbladsy in kantpaneel oop. Soekbladsy is nie oop in die kantpaneel nie.</translation>
 <translation id="2891922230654533301">Gebruik jou toestel om by <ph name="APP_NAME" /> aan te meld?</translation>
 <translation id="2893168226686371498">Verstekblaaier</translation>
 <translation id="2893180576842394309">Google kan jou geskiedenis gebruik om Search en ander Google-dienste te personaliseer</translation>
@@ -3761,7 +3760,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3678156199662914018">Uitbreiding: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Bladsye wat jy in hierdie venster bekyk, sal nie in die blaaiergeskiedenis verskyn nie en hulle sal nie ander spore, soos webkoekies, op die rekenaar agterlaat nadat jy afgemeld het nie. Lêers wat jy aflaai en boekmerke wat jy skep, sal nie bewaar word nie.</translation>
 <translation id="3679126865530709868">Ingeboude raakpaneel</translation>
-<translation id="368019053277764111">Maak soekbladsy in kantpaneel oop</translation>
 <translation id="3680683624079082902">Teks-na-spraak-stem</translation>
 <translation id="3681017028939109078">Wys venstervoorstelle wanneer verdeelde skerm begin word</translation>
 <translation id="3681311097828166361">Dankie vir jou terugvoer. Jy is nou vanlyn en jou verslag sal later gestuur word.</translation>
@@ -4672,7 +4670,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4316850752623536204">Ontwikkelaarwebwerf</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Toestemmings vir 1 webwerf is verwyder}other{Toestemmings vir {NUM_SITES} webwerwe is verwyder}}</translation>
 <translation id="4317733381297736564">Inprogramaankope</translation>
-<translation id="4317737918133146519">Jou werkprofiel is amper gereed</translation>
 <translation id="4317820549299924617">Verifikasie was nie suksesvol nie</translation>
 <translation id="4319441675152393296">Klik hierdie uitbreiding se ikoon om <ph name="HOST" /> te lees en te verander</translation>
 <translation id="4320177379694898372">Geen internetverbinding nie</translation>
@@ -6198,7 +6195,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (werk vanlyn)</translation>
 <translation id="5453829744223920473">Jou kind kan al hul skoolapps, boekmerke en hulpbronne net soos in die klas gebruik. Die skool stel die grondreëls.</translation>
 <translation id="5454166040603940656">met <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Sien meer soekresultate</translation>
 <translation id="5457082343331641453">Voeg by jou soektog</translation>
 <translation id="5457113250005438886">Ongeldig</translation>
 <translation id="5457459357461771897">Lees en vee foto's, musiek en ander media van jou rekenaar af uit</translation>
@@ -6657,7 +6653,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5799508265798272974">Linux- virtuele masjien: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Bestemminglêer is afgekap of verwyder sedert die laaste aflaai.</translation>
 <translation id="5800290746557538611">Aktiveer Kitswarmkol</translation>
-<translation id="5800351251499368110">Maak soekbladsy in kantpaneel toe Soekbladsy is oop in die kantpaneel.</translation>
 <translation id="5800703268655655701">Kies lig- of donkertema</translation>
 <translation id="5801051031414037185">Stel foon op</translation>
 <translation id="5801568494490449797">Voorkeure</translation>
@@ -8761,7 +8756,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7356908624372060336">Netwerkloglêers</translation>
 <translation id="7357271391997763660">Voer wagwoordkontrole uit?</translation>
 <translation id="735745346212279324">VPN ontkoppel</translation>
-<translation id="7358338787722390626">Maak soekbladsy in kantpaneel toe</translation>
 <translation id="7359680654975233185">Kan nie oortjie uitsaai nie</translation>
 <translation id="735994578317267253">Kry jou programme, instellings en meer op enige Chrome-bedryfstelseltoestel</translation>
 <translation id="7360257054721917104">Bekyk tans gestoorde lessenaars en template. Druk oortjie om te navigeer.</translation>
@@ -9760,7 +9754,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8054609631325628928">Hierdie nommers kan gebruik word om diens te help aktiveer</translation>
 <translation id="8054883179223321715">Beskikbaar vir spesifieke videowerwe</translation>
 <translation id="8054921503121346576">USB-sleutelbord gekoppel</translation>
-<translation id="8057414620575339583">Kantsoektog</translation>
 <translation id="8058655154417507695">Vervaljaar</translation>
 <translation id="8058986560951482265">Rukkerig</translation>
 <translation id="8059417245945632445">Ondersoek toestelle</translation>

@@ -2701,7 +2701,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2889064240420137087">Deschide linkul cu...</translation>
 <translation id="2890206081124517553">Reține fundalul desktopului pe toate dispozitivele</translation>
 <translation id="2891464434568738544">Momentan nu este disponibil niciun site. Accesează un site pentru a-l adăuga în listă.</translation>
-<translation id="2891566119238851894">Deschide căutarea în panoul lateral. Căutarea nu este deschisă în panoul lateral.</translation>
 <translation id="2891922230654533301">Folosești dispozitivul pentru a te conecta la <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Browserul prestabilit</translation>
 <translation id="2893180576842394309">Google poate folosi istoricul pentru a personaliza Căutarea și alte servicii Google</translation>
@@ -3748,7 +3747,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3678156199662914018">Extensie: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Paginile pe care le accesezi în această fereastră nu vor apărea în istoricul browserului și nu vor lăsa alte urme pe computer (de exemplu, cookie-uri) după ce te deconectezi. Fișierele pe care le descarci și marcajele pe care le creezi nu se vor păstra.</translation>
 <translation id="3679126865530709868">Touchpad încorporat</translation>
-<translation id="368019053277764111">Deschide căutarea în panoul lateral</translation>
 <translation id="3680683624079082902">Vocea pentru redarea vocală a textului</translation>
 <translation id="3681017028939109078">Afișează sugestii de ferestre când pornești ecranul împărțit</translation>
 <translation id="3681311097828166361">Îți mulțumim pentru feedback. Acum ești offline, iar raportul va fi trimis mai târziu.</translation>
@@ -4659,7 +4657,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4316850752623536204">Site-ul dezvoltatorului</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{S-au eliminat permisiunile pentru un site}few{S-au eliminat permisiunile pentru {NUM_SITES} site-uri}other{S-au eliminat permisiunile pentru {NUM_SITES} de site-uri}}</translation>
 <translation id="4317733381297736564">Achiziții în aplicație</translation>
-<translation id="4317737918133146519">Profilul tău de serviciu este aproape gata</translation>
 <translation id="4317820549299924617">Confirmarea nu a reușit</translation>
 <translation id="4319441675152393296">Dă clic pe pictograma extensiei pentru a permite citirea și modificările la <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Nu există conexiune la internet</translation>
@@ -6183,7 +6180,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funcționează offline)</translation>
 <translation id="5453829744223920473">Copilul tău poate să folosească toate aplicațiile, marcajele și resursele de la școală la fel cum le folosește în sala de clasă. Școala stabilește regulile de bază.</translation>
 <translation id="5454166040603940656">cu <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Vezi mai multe rezultate ale căutării</translation>
 <translation id="5457082343331641453">Adaugă la căutare</translation>
 <translation id="5457113250005438886">Nevalide</translation>
 <translation id="5457459357461771897">Citește și șterge fotografii, muzică și alte tipuri de conținut media de pe computer</translation>
@@ -6641,7 +6637,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5799508265798272974">Mașină virtuală Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Fișierul de destinație a fost trunchiat sau eliminat de la ultima descărcare.</translation>
 <translation id="5800290746557538611">Activează hotspotul instantaneu</translation>
-<translation id="5800351251499368110">Închide căutarea în panoul lateral. Căutarea este deschisă în panoul lateral.</translation>
 <translation id="5800703268655655701">Selectează tema luminoasă sau pe cea întunecată</translation>
 <translation id="5801051031414037185">Configurează telefonul</translation>
 <translation id="5801568494490449797">Preferințe</translation>
@@ -8748,7 +8743,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7356908624372060336">Jurnale de rețea</translation>
 <translation id="7357271391997763660">Rulezi verificarea parolelor?</translation>
 <translation id="735745346212279324">Rețea VPN deconectată</translation>
-<translation id="7358338787722390626">Închide căutarea în panoul lateral</translation>
 <translation id="7359680654975233185">Nu se poate proiecta fila</translation>
 <translation id="735994578317267253">Vezi aplicațiile, setările și altele pe orice dispozitiv ChromeOS</translation>
 <translation id="7360257054721917104">Se afișează desktopurile și șabloanele salvate. Apasă tasta Tab pentru a naviga.</translation>
@@ -9748,7 +9742,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8054609631325628928">Aceste numere pot fi folosite pentru activarea serviciului</translation>
 <translation id="8054883179223321715">Disponibil pentru anumite site-uri cu videoclipuri</translation>
 <translation id="8054921503121346576">Tastatură USB conectată</translation>
-<translation id="8057414620575339583">Căutare laterală</translation>
 <translation id="8058655154417507695">Anul expirării</translation>
 <translation id="8058986560951482265">Redare sacadată</translation>
 <translation id="8059417245945632445">&amp;Inspectați dispozitivele</translation>

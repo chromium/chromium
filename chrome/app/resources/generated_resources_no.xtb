@@ -2707,7 +2707,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2889064240420137087">Åpne link med</translation>
 <translation id="2890206081124517553">Husk skrivebordsbakgrunnen på tvers av enheter</translation>
 <translation id="2891464434568738544">Ingen nettsteder er tilgjengelige for øyeblikket. Gå til et nettsted for å legge det til på denne listen.</translation>
-<translation id="2891566119238851894">Åpne søket i sidepanelet. Søket er ikke åpent i sidepanelet.</translation>
 <translation id="2891922230654533301">Vil du bruke enheten din til å logge på <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Standardnettleser</translation>
 <translation id="2893180576842394309">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg</translation>
@@ -3755,7 +3754,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3678156199662914018">Utvidelse: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Sider i dette vinduet vises ikke i nettleserloggen, og de legger ikke igjen andre spor (f.eks. informasjonskapsler) på datamaskinen etter at du har logget av. Filer du laster ned og bokmerker du oppretter, blir ikke tatt vare på.</translation>
 <translation id="3679126865530709868">Innebygd styreflate</translation>
-<translation id="368019053277764111">Åpne søket i sidepanelet</translation>
 <translation id="3680683624079082902">Stemme for tekst til tale</translation>
 <translation id="3681017028939109078">Vis forslag til vinduer når du starter delt skjerm</translation>
 <translation id="3681311097828166361">Takk for tilbakemeldingen. Siden du er uten nett akkurat nå, sendes rapporten senere.</translation>
@@ -4664,7 +4662,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4316850752623536204">Utviklernettsted</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Fjernet tillatelser for 1 nettsted}other{Fjernet tillatelser for {NUM_SITES} nettsteder}}</translation>
 <translation id="4317733381297736564">Kjøp i app</translation>
-<translation id="4317737918133146519">Jobbprofilen din er nesten klar</translation>
 <translation id="4317820549299924617">Verifiseringen var ikke vellykket</translation>
 <translation id="4319441675152393296">Klikk på ikonet for denne utvidelsen for å lese og endre <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Ingen internettilkobling</translation>
@@ -6188,7 +6185,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (fungerer uten nett)</translation>
 <translation id="5453829744223920473">Barnet ditt kan bruke alle skoleappene, bokmerkene og ressursene sine på samme måte som i klasserommet. Skolen fastsetter grunnreglene.</translation>
 <translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Se flere søkeresultater</translation>
 <translation id="5457082343331641453">Legg til i søket</translation>
 <translation id="5457113250005438886">Ugyldig</translation>
 <translation id="5457459357461771897">lese og slette bilder, musikk og andre medier fra datamaskinen din</translation>
@@ -6647,7 +6643,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5799508265798272974">Virtuell Linux-maskin: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Målfilen har blitt komprimert eller fjernet siden siste nedlasting</translation>
 <translation id="5800290746557538611">Slå på umiddelbar wifi-sone</translation>
-<translation id="5800351251499368110">Lukk søket i sidepanelet. Søket er åpent i sidepanelet.</translation>
 <translation id="5800703268655655701">Velg lyst eller mørkt tema</translation>
 <translation id="5801051031414037185">Konfigurer telefonen</translation>
 <translation id="5801568494490449797">Innstillinger</translation>
@@ -8752,7 +8747,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7356908624372060336">Nettverkslogger</translation>
 <translation id="7357271391997763660">Vil du kjøre passordsjekk?</translation>
 <translation id="735745346212279324">VPN frakoblet</translation>
-<translation id="7358338787722390626">Lukk søket i sidepanelet</translation>
 <translation id="7359680654975233185">Kan ikke caste fanen</translation>
 <translation id="735994578317267253">Få appene dine, innstillingene dine med mer på alle ChromeOS-enheter</translation>
 <translation id="7360257054721917104">Ser på lagrede skrivebord og maler. Trykk på fanen for å navigere.</translation>
@@ -9752,7 +9746,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8054609631325628928">Disse numrene kan brukes til å aktivere tjenesten</translation>
 <translation id="8054883179223321715">Tilgjengelig for spesifikke videonettsteder</translation>
 <translation id="8054921503121346576">USB-tastatur tilkoblet</translation>
-<translation id="8057414620575339583">Sidesøk</translation>
 <translation id="8058655154417507695">Utløpsår</translation>
 <translation id="8058986560951482265">Hakker</translation>
 <translation id="8059417245945632445">&amp;Inspiser enheter</translation>

@@ -975,6 +975,7 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4356872429719185452">Prikažite pojedinosti žarišne točke. Žarišna točka se uključuje.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Snimanje</translation>
 <translation id="4371348193907997655">Postavke emitiranja</translation>
+<translation id="4371834685492830207">PIN mora sadržavati samo važeće znakove</translation>
 <translation id="4375482231364171368">Pretraživanje u adresnoj traci</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, jačina signala: <ph name="SIGNAL_STRENGTH" /> posto</translation>
 <translation id="4378551569595875038">Povezivanje...</translation>
@@ -1560,6 +1561,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6232416233079464213">S: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">Aplikacija <ph name="APP_NAME" /> trenutačno koristi vaš fotoaparat i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Zaporka mora sadržavati samo važeće znakove</translation>
 <translation id="6240603910551255087">Gornji gumb</translation>
 <translation id="6240821072888636753">Pitaj svaki put</translation>
 <translation id="6247728804802644171">Otvaranje obavijesti</translation>

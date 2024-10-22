@@ -567,6 +567,9 @@ Se impostato su ChiediInUnaScheda, quando l'autenticazione dell'utente scade, ap
 <translation id="1396119629372155901">Funzionalità ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes disattivata</translation>
 <translation id="1397855852561539316">URL di suggerimento del provider di ricerca predefinito</translation>
 <translation id="140076409387986842">Consenti Aiutami a scrivere senza migliorare i modelli di AI.</translation>
+<translation id="1401249111997036083">Se il criterio viene impostato su False, le app per Android possono acquisire i link supportati per impostazione predefinita.
+Se il criterio è impostato su True, tutti i link vengono aperti per impostazione predefinita nel browser Chrome.
+Se il criterio non viene configurato, i link vengono aperti per impostazione predefinita nelle app per Android per gli utenti gestiti e nel browser per i consumatori.</translation>
 <translation id="1402227992519954892">Attiva i report sulle informazioni relative alle app del dispositivo</translation>
 <translation id="1405444733221330570">Attiva Orca</translation>
 <translation id="1407977345632185991">Non consentire Crea temi.</translation>
@@ -9021,6 +9024,7 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
 <translation id="776110834126722255">Deprecata</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="7763650553214838209">L'impostazione di una scorciatoia per l'azione "Inserisci" è disattivata.</translation>
+<translation id="7763655314629932385">Specifica la versione che vuoi dell'IWA. Se viene fornita, il sistema tenterà di installare questa versione specifica e successivamente bloccherà eventuali ulteriori aggiornamenti. Per sbloccare l'app e abilitare nuovamente gli aggiornamenti, rimuovi questo campo. **Importante:** se la versione fornita non esiste, l'IWA rimane bloccata sulla versione installata al momento. Questo perché dopo aver tentato (e in questo caso senza successo) di eseguire l'aggiornamento alla versione bloccata, la limitazione degli aggiornamenti disabilita ulteriori aggiornamenti automatici.</translation>
 <translation id="776465643636059256">Disattiva insiemi di siti web correlati</translation>
 <translation id="7765879851993224640">Consenti l'uso dell'accesso tramite Smart Lock.</translation>
 <translation id="7767066506143083523">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che possono usare la funzionalità di acquisizione schede.
@@ -9055,6 +9059,15 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
           Se questo criterio non viene impostato, le scorciatoie delle funzioni di accessibilità saranno attive per impostazione predefinita nella schermata di accesso.</translation>
 <translation id="7777535871204167559">Considera i dispositivi di archiviazione esterni come di sola lettura</translation>
 <translation id="7781452670568828399">Modifica la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
+<translation id="7782770795171480507">La configurazione del criterio consente di specificare un elenco di app web isolate (IWA) che vengono installate automaticamente.
+      Le IWA sono applicazioni che presentano proprietà di sicurezza utili non disponibili per le normali pagine web, che vengono pacchettizzati in un bundle web firmato. La chiave pubblica del bundle web firmato viene utilizzata per creare l'ID pacchetto web che identifica l'IWA.
+      Finora questo criterio funziona solo per la sessione Ospite gestita.
+
+      Ogni elemento nell'elenco del criterio è un oggetto con due campi obbligatori: il manifest di aggiornamento <ph name="URL_LABEL" /> e l'ID pacchetto web dell'app web isolata.
+
+      Ogni elemento può anche avere campi facoltativi: un nome del canale di rilascio/aggiornamento dell'IWA (update_channel) e una versione specifica da bloccare (pinned_version).
+      Se il criterio "update_channel" non viene configurato, verrà utilizzato il valore "default". Quando viene specificato pinned_version, il sistema tenta di installare quella versione specifica (se disponibile sul canale di aggiornamento corrente).
+      Per impostazione predefinita, il blocco della versione non consente di tornare alle versioni precedenti. Se blocchi un'IWA a una versione specifica, non può essere aggiornato oltre quella versione. Per sbloccare la versione, rimuovi questo campo.</translation>
 <translation id="7784062550705119230">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7785199109546027763">Un criterio per controllare se la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> deve essere attivata o meno.
 
@@ -9287,21 +9300,6 @@ Disattiva il criterio solo se utilizzi una soluzione di sicurezza degli endpoint
           Questo criterio è stato rimosso in Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nome della destinazione di <ph name="PRODUCT_NAME" /></translation>
-<translation id="7982057585796399404">Questo criterio consente di specificare un elenco di app ed estensioni installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti. Le autorizzazioni vengono concesse implicitamente, anche quelle relative alle API delle estensioni enterprise.deviceAttributes ed enterprise.platformKeys. Queste due API non sono disponibili per le app e le estensioni senza installazione forzata.
-
-Se il criterio non viene configurato, nessuna app o estensione viene installata automaticamente e gli utenti possono disinstallare qualsiasi app o estensione in <ph name="PRODUCT_NAME" />.
-
-Questo criterio prevale sul criterio <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Se un'app o un'estensione di cui è stata precedentemente forzata l'installazione viene rimossa da questo elenco, questa app o estensione viene disinstallata automaticamente da <ph name="PRODUCT_NAME" />.
-
-Il codice sorgente di qualsiasi estensione può essere modificato dagli utenti tramite gli strumenti per sviluppatori, causando potenzialmente il malfunzionamento dell'estensione. Per evitare un problema di questo tipo, imposta il criterio <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
-
-Ogni voce nell'elenco del criterio è una stringa contenente un ID estensione e, facoltativamente, un URL di aggiornamento separati da punto e virgola (;). L'ID estensione è la stringa di 32 lettere che si trova, ad esempio, all'indirizzo chrome://extensions quando è attiva la modalità sviluppatore. Se specificato, l'URL di aggiornamento deve indirizzare a un documento XML manifest di aggiornamento (https://developer.chrome.com/extensions/autoupdate). L'URL di aggiornamento deve utilizzare uno dei seguenti schemi: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> o <ph name="FILE_SCHEME" />. Per impostazione predefinita, viene utilizzato l'URL di aggiornamento del Chrome Web Store. L'URL di aggiornamento impostato in questo criterio viene utilizzato esclusivamente per l'installazione iniziale; per i successivi aggiornamenti dell'estensione viene utilizzato l'URL di aggiornamento nel file manifest dell'estensione. È possibile eseguire l'override dell'URL di aggiornamento per gli aggiornamenti successivi utilizzando il criterio <ph name="EXTENSION_SETTINGS_POLICY_NAME" />; vedi http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy.
-
-Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è aggiunta a un dominio <ph name="MS_AD_NAME" />, aggiunta a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Nota: questo criterio non viene applicato alla modalità di navigazione in incognito. Scopri di più sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Attiva la generazione di report Android</translation>

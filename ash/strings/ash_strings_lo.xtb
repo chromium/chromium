@@ -975,6 +975,7 @@
 <translation id="4356872429719185452">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ກຳລັງເປີດຮັອດສະປອດ.</translation>
 <translation id="4364101114148522660">ກຳລັງບັນທຶກ  <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">ການຕັ້ງຄ່າການສົ່ງສັນຍານ</translation>
+<translation id="4371834685492830207">ລະຫັດ PIN ຕ້ອງມີຕົວອັກສອນທີ່ຖືກຕ້ອງເທົ່ານັ້ນ</translation>
 <translation id="4375482231364171368">ຊອກຫາໃນແຖບທີ່ຢູ່</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /> ເປີເຊັນ</translation>
 <translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
@@ -1560,6 +1561,7 @@
 <translation id="6232416233079464213">ຈາກ <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ກຳລັງໃຊ້ກ້ອງ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານຢູ່</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">ລະຫັດຜ່ານຕ້ອງມີຕົວອັກສອນທີ່ຖືກຕ້ອງເທົ່ານັ້ນ</translation>
 <translation id="6240603910551255087">ປຸ່ມເທິງ</translation>
 <translation id="6240821072888636753">ຖາມທຸກເທື່ອ</translation>
 <translation id="6247728804802644171">ເປີດການແຈ້ງເຕືອນ</translation>

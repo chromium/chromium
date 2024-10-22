@@ -2705,7 +2705,6 @@
 <translation id="2889064240420137087">فتح الرابط باستخدام...</translation>
 <translation id="2890206081124517553">مزامنة خلفية سطح المكتب على جميع الأجهزة</translation>
 <translation id="2891464434568738544">ما مِن مواقع إلكترونية متوفّرة حاليًا. يُرجى زيارة أحد المواقع الإلكترونية لإضافته إلى هذه القائمة.</translation>
-<translation id="2891566119238851894">‏افتَح صفحة "بحث Google" في اللوحة الجانبية. صفحة "بحث Google" غير مفتوحة في اللوحة الجانبية.</translation>
 <translation id="2891922230654533301">هل تريد استخدام جهازك لتسجيل الدخول إلى <ph name="APP_NAME" />؟</translation>
 <translation id="2893168226686371498">المتصفح التلقائي</translation>
 <translation id="2893180576842394309">‏قد تستخدم Google سجلّك لتخصيص محرّك بحث Google وخدماتها الأخرى.</translation>
@@ -3753,7 +3752,6 @@
 <translation id="3678156199662914018">الإضافة: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">لن تظهر في سجل المتصفّح الصفحات التي تعرضها في هذه النافذة، ولن تترك آثارًا أخرى في الكمبيوتر، كملفات تعريف الارتباط، بعد الخروج من وضع الضيف، ولن يتم الاحتفاظ بالملفات التي تنزِّلها والإشارات المرجعية التي تنشئها.</translation>
 <translation id="3679126865530709868">لوحة لمس مُدمَجة</translation>
-<translation id="368019053277764111">‏فتح صفحة "بحث Google" في اللوحة الجانبية</translation>
 <translation id="3680683624079082902">صوت "تحويل النص إلى كلام"</translation>
 <translation id="3681017028939109078">إظهار اقتراحات النوافذ عند تفعيل "وضع تقسيم الشاشة"</translation>
 <translation id="3681311097828166361">شكرًا على تعليقاتك. أنت غير متصل الآن، وسيتم إرسال تقريرك لاحقًا.</translation>
@@ -4662,7 +4660,6 @@
 <translation id="4316850752623536204">الموقع الإلكتروني للمطوّر</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{تمّت إزالة أذونات من موقع إلكتروني واحد}zero{تمت إزالة أذونات من {NUM_SITES} موقع إلكتروني}two{تمت إزالة أذونات من موقعَين إلكترونيَّين ({NUM_SITES})}few{تمت إزالة أذونات من {NUM_SITES} مواقع إلكترونية}many{تمت إزالة أذونات من {NUM_SITES} موقعًا إلكترونيًا}other{تمت إزالة أذونات من {NUM_SITES} موقع إلكتروني}}</translation>
 <translation id="4317733381297736564">عمليات شراء داخل التطبيق</translation>
-<translation id="4317737918133146519">أوشك إنشاء ملف العمل على الانتهاء</translation>
 <translation id="4317820549299924617">تعذَّر إثبات الملكية</translation>
 <translation id="4319441675152393296">انقر على رمز هذه الإضافة لمنحها إذنًا بقراءة محتوى <ph name="HOST" /> وتغييره.</translation>
 <translation id="4320177379694898372">لا يتوفر اتصال بالإنترنت</translation>
@@ -5050,6 +5047,7 @@
 <translation id="4602776638371779614">تبحث علامة التبويب هذه حاليًا عن أجهزة تتضمّن بلوتوث.</translation>
 <translation id="4605026046465576953">لا يمكن فتح هذا التطبيق لأنّه ليس لديك إذن بتشغيل تطبيقات الويب المعزولة.</translation>
 <translation id="4606551464649945562">عدم السماح للمواقع الإلكترونية بإنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا</translation>
+<translation id="4606933160360542263">مجموعة مفاتيح مخصّصة: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{هل تريد حذف مجموعة علامات التبويب؟}zero{هل تريد حذف مجموعات علامات التبويب؟}two{هل تريد حذف مجموعتَي علامات التبويب؟}few{هل تريد حذف مجموعات علامات التبويب؟}many{هل تريد حذف مجموعات علامات التبويب؟}other{هل تريد حذف مجموعات علامات التبويب؟}}</translation>
 <translation id="4608500690299898628">&amp;بحث...</translation>
 <translation id="4610162781778310380">حدث خطأ في <ph name="PLUGIN_NAME" />.</translation>
@@ -6188,7 +6186,6 @@
 <translation id="5452976525201205853">اللغة <ph name="LANGUAGE" /> متاحة بدون اتصال بالإنترنت.</translation>
 <translation id="5453829744223920473">يمكن لطفلك استخدام جميع التطبيقات والإشارات المرجعية والموارد الخاصة بكل مؤسسة تعليمية تمامًا كما يستخدمها في الصف. وتضع المؤسسة التعليمية القواعد الأساسية لاستخدامها.</translation>
 <translation id="5454166040603940656">مع <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">الاطّلاع على المزيد من نتائج البحث</translation>
 <translation id="5457082343331641453">إضافة نص إلى طلب البحث</translation>
 <translation id="5457113250005438886">غير صالحة</translation>
 <translation id="5457459357461771897">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وحذفها</translation>
@@ -6286,6 +6283,7 @@
 <translation id="5517304475148761050">‏يتطلّب هذا التطبيق الوصول إلى "متجر Play"</translation>
 <translation id="5517412723934627386">نوع الشبكة <ph name="NETWORK_TYPE" /> - الاسم المعروض للشبكة <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">إزالة الإجراء: <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">هل هذه هي الصفحة الرئيسية التي كنت تتوقع ظهورها؟</translation>
 <translation id="5522156646677899028">هذه الإضافة تحتوي على ثغرة أمنية خطيرة.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{ثبَّت مشرفك إضافة واحدة.}zero{ثبَّت مشرفك # إضافة.}two{ثبَّت مشرفك إضافتَين.}few{ثبَّت مشرفك # إضافات.}many{ثبَّت مشرفك # إضافةً.}other{ثبَّت مشرفك # إضافة.}}</translation>
@@ -6646,7 +6644,6 @@
 <translation id="5799508265798272974">‏آلة Linux الافتراضية: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">تم اقتطاع ملف الوجهة أو إزالته أثناء آخر تنزيل.</translation>
 <translation id="5800290746557538611">تفعيل نقطة الاتصال الفورية</translation>
-<translation id="5800351251499368110">‏أغلِق صفحة "بحث Google" في اللوحة الجانبية. صفحة "بحث Google" مفتوحة في اللوحة الجانبية.</translation>
 <translation id="5800703268655655701">اختيار المظهر الفاتح أو الداكن</translation>
 <translation id="5801051031414037185">بدء إعداد الهاتف</translation>
 <translation id="5801568494490449797">الإعدادات المفضّلة</translation>
@@ -8760,7 +8757,6 @@
 <translation id="7356908624372060336">سجلّات الشبكة</translation>
 <translation id="7357271391997763660">هل تريد بدء التحقّق من كلمات المرور؟</translation>
 <translation id="735745346212279324">‏تم قطع اتصال شبكة VPN</translation>
-<translation id="7358338787722390626">‏إغلاق صفحة "بحث Google" في اللوحة الجانبية</translation>
 <translation id="7359680654975233185">تعذَّر بث محتوى علامة التبويب</translation>
 <translation id="735994578317267253">‏استخدام التطبيقات والإعدادات وغيرها الكثير على أي جهاز يعمل بنظام التشغيل Chrome</translation>
 <translation id="7360257054721917104">‏يتم عرض أسطح المكتب والنماذج المحفوظة. اضغط على مفتاح التبويب (Tab) للتنقّل بينها.</translation>
@@ -9759,7 +9755,6 @@
 <translation id="8054609631325628928">يمكن استخدام هذه الأرقام للمساعدة في تفعيل الخدمة.</translation>
 <translation id="8054883179223321715">متاح لمشاهدة الفيديو عبر مواقع إلكترونية محدَّدة</translation>
 <translation id="8054921503121346576">‏لوحة مفاتيح USB متصلة</translation>
-<translation id="8057414620575339583">البحث الجانبي</translation>
 <translation id="8058655154417507695">سنة انتهاء الصلاحية</translation>
 <translation id="8058986560951482265">يتقطّع</translation>
 <translation id="8059417245945632445">&amp;فحص الأجهزة</translation>
@@ -10281,6 +10276,7 @@
 <translation id="8429928917752180743">خيارات إضافية حول "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8431190899827883166">عرض النقرات</translation>
 <translation id="843173223122814223">إنشاء خلفيات باستخدام الذكاء الاصطناعي</translation>
+<translation id="8431977087510901105">إعادة ضبط إعدادات المؤشر</translation>
 <translation id="8433186206711564395">إعدادات الشبكة</translation>
 <translation id="8434109185104929038">زاوية للقراءة</translation>
 <translation id="8434480141477525001">‏منفذ تصحيح أخطاء NaCl</translation>

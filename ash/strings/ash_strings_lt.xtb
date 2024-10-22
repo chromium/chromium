@@ -978,6 +978,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4356872429719185452">Rodyti išsamią viešosios interneto prieigos taško informaciją. Viešosios interneto prieigos taškas įjungiamas.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Įrašoma</translation>
 <translation id="4371348193907997655">„Cast“ nustatymai</translation>
+<translation id="4371834685492830207">PIN kodą turi sudaryti tik tinkami simboliai</translation>
 <translation id="4375482231364171368">Ieškoti adreso juostoje</translation>
 <translation id="4378479437904450384">„<ph name="WIRELESS_PROVIDER" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc.</translation>
 <translation id="4378551569595875038">Jungiamasi...</translation>
@@ -1564,6 +1565,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6232416233079464213">Iš „<ph name="SESSION_NAME" />“</translation>
 <translation id="6232891689835436217">Programa „<ph name="APP_NAME" />“ šiuo metu naudoja fotoaparatą ir mikrofoną</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Slaptažodį turi sudaryti tik tinkami simboliai</translation>
 <translation id="6240603910551255087">Viršutinis mygtukas</translation>
 <translation id="6240821072888636753">Klausti kaskart</translation>
 <translation id="6247728804802644171">Atidaryti pranešimus</translation>

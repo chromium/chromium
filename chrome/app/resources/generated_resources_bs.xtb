@@ -1815,6 +1815,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
     <ph name="BEGIN_PARAGRAPH2" />Kada instalacija započne, nije je moguće otkazati.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Razmijeni podatke s bilo kojim uređajem u domenama: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Dodijelite prekidač za "Odaberi"</translation>
+<translation id="2270668657177045040">Web-lokacija i njezine poddomene mogu vidjeti koje su povezane web-aplikacije instalirane na vašem uređaju.</translation>
 <translation id="2271452184061378400">Grupe kartica se pohranjuju ovdje</translation>
 <translation id="2271986192355138465">Saznajte kako instalirati web aplikacije</translation>
 <translation id="2272430695183451567">Nije dodijeljen nijedan prekidač</translation>
@@ -2712,7 +2713,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2889064240420137087">Otvori link koristeći…</translation>
 <translation id="2890206081124517553">Zapamtite pozadinu radne površine na svim uređajima</translation>
 <translation id="2891464434568738544">Trenutno nije dostupna nijedna web lokacija. Posjetite neku web lokaciju da je dodate na listu.</translation>
-<translation id="2891566119238851894">Otvaranje pretraživanja na bočnoj ploči. Pretraživanje nije otvoreno na bočnoj ploči.</translation>
 <translation id="2891922230654533301">Želite li se svojim uređajem prijaviti u aplikaciju <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Zadani preglednik</translation>
 <translation id="2893180576842394309">Google može koristiti vašu historiju za personalizaciju Pretraživanja i drugih Googleovih usluga</translation>
@@ -3760,7 +3760,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3678156199662914018">Ekstenzija: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Stranice koje prikazujete u ovom prozoru se neće prikazivati u historiji preglednika i neće, nakon odjave, ostaviti na računaru druge tragove, kao što su kolačići. Fajlovi koje preuzimate i oznake koje kreirate se neće zadržati.</translation>
 <translation id="3679126865530709868">Ugrađena dodirna podloga</translation>
-<translation id="368019053277764111">Otvorite pretraživanje na bočnoj ploči</translation>
 <translation id="3680683624079082902">Glas pretvaranja teksta u govor</translation>
 <translation id="3681017028939109078">Prikaži prijedloge prozora prilikom pokretanja podijeljenog ekrana</translation>
 <translation id="3681311097828166361">Hvala na povratnim informacijama. Trenutno ste van mreže i vaš će se izvještaj poslati kasnije.</translation>
@@ -4671,7 +4670,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4316850752623536204">Web lokacija programera</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Uklonjena su odobrenja za 1 web lokaciju}one{Uklonjena su odobrenja za {NUM_SITES} web lokaciju}few{Uklonjena su odobrenja za {NUM_SITES} web lokacije}other{Uklonjena su odobrenja za {NUM_SITES} web lokacija}}</translation>
 <translation id="4317733381297736564">Kupovine unutar aplikacija</translation>
-<translation id="4317737918133146519">Radni profil je skoro spreman</translation>
 <translation id="4317820549299924617">Potvrda nije uspjela</translation>
 <translation id="4319441675152393296">Kliknite na ikonu ekstenzije da pročitate i promijenite <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Nema internetske veze</translation>
@@ -5341,6 +5339,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4823193082697477185">Pristupajte dijeljenim fajlovima, folderima ili diskovima na lokalnoj mreži. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Pročitajte i promijenite postavke korisnika i uređaja</translation>
 <translation id="4824037980212326045">Izrada sigurnosne kopije i vraćanje na Linuxu</translation>
+<translation id="4824263260587281352">Promijenite kombinaciju tipki <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">Otkazati sinhroniziranje?</translation>
 <translation id="4825462365587146530">Više informacija o Chrome Root Storeu na novoj kartici.</translation>
 <translation id="4825532258163983651">Nije moguće izbrisati pristupni ključ</translation>
@@ -6198,7 +6197,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funkcionira van mreže)</translation>
 <translation id="5453829744223920473">Vaše dijete može koristiti sve školske aplikacije, oznake i izvore baš kao što to čini u razredu. Škola postavlja osnovna pravila.</translation>
 <translation id="5454166040603940656">s pružaocem usluge <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Prikaži više rezultata pretraživanja</translation>
 <translation id="5457082343331641453">Dodajte u pretraživanje</translation>
 <translation id="5457113250005438886">Nevažeće</translation>
 <translation id="5457459357461771897">Čitanje i brisanje fotografija, muzike i drugih medija na vašem računaru</translation>
@@ -6296,7 +6294,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5517304475148761050">Ovoj aplikaciji je potreban pristup Play trgovini</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5520605865175417976">Uklonite radnju <ph name="ACTION_TO_REMOVE" /></translation>
+<translation id="5520605865175417976">Uklanjanje radnje <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Je li ovo početna stranica koju ste očekivali?</translation>
 <translation id="5522156646677899028">Ova ekstenzija sadrži opasan sugurnosni propust.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Vaš administrator je instalirao ekstenziju}one{Vaš administrator je instalirao # ekstenziju}few{Vaš administrator je instalirao # ekstenzije}other{Vaš administrator je instalirao # ekstenzija}}</translation>
@@ -6657,7 +6655,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5799508265798272974">Linux virtuelni uređaj: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Odredišni fajl je skraćen ili uklonjen od zadnjeg preuzimanja.</translation>
 <translation id="5800290746557538611">Omogućite instant pristupnu tačku</translation>
-<translation id="5800351251499368110">Zatvaranje pretraživanja na bočnoj ploči. Pretraživanje je otvoreno na bočnoj ploči.</translation>
 <translation id="5800703268655655701">Odaberite svijetlu ili tamnu temu</translation>
 <translation id="5801051031414037185">Postavljanje telefona</translation>
 <translation id="5801568494490449797">Postavke</translation>
@@ -7840,6 +7837,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6676212663108450937">Razmislite da koristite slušalice dok vježbate glas</translation>
 <translation id="6676291960742508499">Vaše kartice, naslovi stranica i URL-ovi se šalju Googleu.</translation>
 <translation id="667752334740867460">Primanje informacija o WiFi-ju…</translation>
+<translation id="6677527809400770913">Pokret <ph name="GESTURE" /> dodijeljen je radnji <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Veliki valovi pljuskaju u moru, s kopnom daleko u pozadini. Iza horizonta se vide tračci narandžastog svjetla, a ostatak neba je taman i atmosferičan.</translation>
 <translation id="6678717876183468697">URL upita</translation>
 <translation id="6680442031740878064">Dostupno: <ph name="AVAILABLE_SPACE" /></translation>
@@ -8766,7 +8764,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7356908624372060336">Zapisnici mreže</translation>
 <translation id="7357271391997763660">Pokrenuti provjeru lozinke?</translation>
 <translation id="735745346212279324">VPN veza je prekinuta</translation>
-<translation id="7358338787722390626">Zatvaranje pretraživanja na bočnoj ploči</translation>
 <translation id="7359680654975233185">Nije moguće emitirati karticu</translation>
 <translation id="735994578317267253">Pristupite svojim aplikacijama, postavkama i drugom sadržaju na bilo kojem ChromeOS uređaju</translation>
 <translation id="7360257054721917104">Pregled sačuvanih radnih površina i šablona. Pritisnite karticu da navigirate.</translation>
@@ -9766,7 +9763,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8054609631325628928">Ovi brojevi mogu pomoći prilikom aktiviranja usluge</translation>
 <translation id="8054883179223321715">Dostupno za određene web lokacije za videozapise</translation>
 <translation id="8054921503121346576">USB tastatura je povezana</translation>
-<translation id="8057414620575339583">Bočno pretraživanje</translation>
 <translation id="8058655154417507695">Godina isteka</translation>
 <translation id="8058986560951482265">Isprekidano</translation>
 <translation id="8059417245945632445">&amp;Pregledaj uređaje</translation>
@@ -10046,6 +10042,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8261378640211443080">Ova ekstenzija nije navedena u <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda je dodana bez vašeg znanja.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8261625296061301062">Softver skenera je instaliran</translation>
+<translation id="8263149565724023141">Povezane aplikacije</translation>
 <translation id="8263228331881858381">Pristupni ključ je sačuvan</translation>
 <translation id="8263336784344783289">Dajte naziv ovoj grupi</translation>
 <translation id="8264024885325823677">Ovom postavkom upravlja vaš administrator.</translation>
@@ -10287,7 +10284,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8429928917752180743">Više opcija za ekstenziju <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Prikaži dodire</translation>
 <translation id="843173223122814223">Kreirajte pozadine pomoću AI-ja</translation>
-<translation id="8431977087510901105">Postavke pokazivača vraćene su na zadano</translation>
+<translation id="8431977087510901105">Vraćanje postavki kursora na zadano</translation>
 <translation id="8433186206711564395">Postavke mreže</translation>
 <translation id="8434109185104929038">Kutak za čitanje</translation>
 <translation id="8434480141477525001">NaCl port za otklanjanje grešaka</translation>

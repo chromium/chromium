@@ -2713,7 +2713,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2889064240420137087">Abrir link com...</translation>
 <translation id="2890206081124517553">Lembrar o plano de fundo da sua área de trabalho em todos os dispositivos</translation>
 <translation id="2891464434568738544">Nenhum site disponível no momento. Acesse um site para adicionar a esta lista.</translation>
-<translation id="2891566119238851894">Abrir a pesquisa no painel lateral. A pesquisa não está aberta no painel lateral.</translation>
 <translation id="2891922230654533301">Usar o dispositivo para fazer login em <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador padrão</translation>
 <translation id="2893180576842394309">O histórico será usado para personalizar a Pesquisa, anúncios e outros serviços do Google.</translation>
@@ -3762,7 +3761,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3678156199662914018">Extensão: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">As páginas abertas nesta janela não aparecerão no histórico do navegador nem deixarão outros rastros no computador, como cookies, depois que você sair. Os downloads e favoritos não serão preservados.</translation>
 <translation id="3679126865530709868">Touchpad integrado</translation>
-<translation id="368019053277764111">Abrir pesquisa no painel lateral</translation>
 <translation id="3680683624079082902">Voz da conversão de texto em voz</translation>
 <translation id="3681017028939109078">Mostrar sugestões de janela ao iniciar a tela dividida</translation>
 <translation id="3681311097828166361">Agradecemos seu feedback. Você está off-line no momento. Seu relatório será enviado mais tarde.</translation>
@@ -4673,7 +4671,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4316850752623536204">Website do desenvolvedor</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Permissões removidas para 1 site}one{Permissões removidas de {NUM_SITES} site}other{Permissões removidas de {NUM_SITES} sites}}</translation>
 <translation id="4317733381297736564">Compras no app</translation>
-<translation id="4317737918133146519">Seu perfil de trabalho está quase pronto</translation>
 <translation id="4317820549299924617">A verificação não foi concluída</translation>
 <translation id="4319441675152393296">Clique no ícone desta extensão para ler e mudar o <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Sem conexão com a Internet</translation>
@@ -5061,6 +5058,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4602776638371779614">Esta guia está procurando dispositivos Bluetooth no momento</translation>
 <translation id="4605026046465576953">Não é possível abrir este app porque você não tem permissão para executar Apps Isolados da Web</translation>
 <translation id="4606551464649945562">Não permitir que os sites criem um mapa 3D do ambiente a sua volta ou acompanhem a posição da câmera</translation>
+<translation id="4606933160360542263">Combinação de teclas personalizada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Excluir grupo de guias?}one{Excluir grupo de guias?}other{Excluir grupos de guias?}}</translation>
 <translation id="4608500690299898628">&amp;Localizar...</translation>
 <translation id="4610162781778310380">O plug-in <ph name="PLUGIN_NAME" /> encontrou um erro</translation>
@@ -6199,7 +6197,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona off-line)</translation>
 <translation id="5453829744223920473">A criança pode usar todos os apps, favoritos e recursos da escola, exatamente como faz na sala de aula. A escola define as regras básicas.</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Ver mais resultados da pesquisa</translation>
 <translation id="5457082343331641453">Adicionar à pesquisa</translation>
 <translation id="5457113250005438886">Inválidos</translation>
 <translation id="5457459357461771897">Ler e excluir fotos, músicas e outras mídias do seu computador</translation>
@@ -6297,6 +6294,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5517304475148761050">Este app precisa de acesso à Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Remover a ação "<ph name="ACTION_TO_REMOVE" />"</translation>
 <translation id="5521078259930077036">Esta é a página inicial que você esperava?</translation>
 <translation id="5522156646677899028">Esta extensão contém uma grave vulnerabilidade de segurança.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Uma extensão foi instalada pelo administrador}one{# extensão foi instalada pelo administrador}other{# extensões foram instaladas pelo administrador}}</translation>
@@ -6658,7 +6656,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5799508265798272974">Máquina virtual Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">O arquivo de destino foi truncado ou removido desde o último download.</translation>
 <translation id="5800290746557538611">Ativar o ponto de acesso instantâneo</translation>
-<translation id="5800351251499368110">Feche a pesquisa no painel lateral. A pesquisa está aberta no painel lateral.</translation>
 <translation id="5800703268655655701">Selecionar tema claro ou escuro</translation>
 <translation id="5801051031414037185">Configurar o smartphone</translation>
 <translation id="5801568494490449797">Preferências</translation>
@@ -8765,7 +8762,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7356908624372060336">Registros da rede</translation>
 <translation id="7357271391997763660">Executar a verificação de senha?</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
-<translation id="7358338787722390626">Fechar a pesquisa no painel lateral</translation>
 <translation id="7359680654975233185">Não foi possível transmitir a guia</translation>
 <translation id="735994578317267253">Tenha seus apps, configurações e muito mais em qualquer dispositivo ChromeOS</translation>
 <translation id="7360257054721917104">Mostrando os espaços de trabalho e modelos salvos. Pressione Tab para navegar.</translation>
@@ -9765,7 +9761,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8054609631325628928">Estes números podem ser usados para ativar o serviço</translation>
 <translation id="8054883179223321715">Disponível em sites de vídeo específicos</translation>
 <translation id="8054921503121346576">Teclado USB conectado</translation>
-<translation id="8057414620575339583">Pesquisa lateral</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>
 <translation id="8058986560951482265">Oscilante</translation>
 <translation id="8059417245945632445">&amp;Inspecionar dispositivos</translation>
@@ -10286,6 +10281,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8429928917752180743">Mais opções de <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Mostrar toques</translation>
 <translation id="843173223122814223">Crie planos de fundo com IA</translation>
+<translation id="8431977087510901105">As configurações do cursor foram redefinidas</translation>
 <translation id="8433186206711564395">Configurações de rede</translation>
 <translation id="8434109185104929038">Cantinho de leitura</translation>
 <translation id="8434480141477525001">Porta de depuração de Cliente nativo</translation>

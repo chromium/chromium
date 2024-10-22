@@ -2714,7 +2714,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2889064240420137087">Buksan ang link gamit ang...</translation>
 <translation id="2890206081124517553">Tandaan ang background ng iyong desktop sa lahat ng device</translation>
 <translation id="2891464434568738544">Walang available na site sa kasalukuyan. Bisitahin ang isang site para idagdag ito sa listahang ito.</translation>
-<translation id="2891566119238851894">Buksan ang paghahanap sa panel sa gilid. Hindi nakabukas ang paghahanap sa panel sa gilid.</translation>
 <translation id="2891922230654533301">Gamitin ang iyong device para mag-sign in sa <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Default na browser</translation>
 <translation id="2893180576842394309">Maaaring gamitin ng Google ang iyong history para i-personalize ang Search at iba pang serbisyo ng Google</translation>
@@ -3762,7 +3761,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3678156199662914018">Extension: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Hindi lalabas sa history ng browser ang mga page na tiningnan mo sa window na ito at hindi mag-iiwan ang mga ito ng iba pang trace, tulad ng cookies, sa computer pagkatapos mong mag-sign out. Hindi papanatilihin ang mga dina-download mong file at ginagawa mong bookmark.</translation>
 <translation id="3679126865530709868">Built-in na Touchpad</translation>
-<translation id="368019053277764111">Buksan ang paghahanap sa panel sa gilid</translation>
 <translation id="3680683624079082902">Boses ng text-to-speech</translation>
 <translation id="3681017028939109078">Ipakita ang mga suhestyon sa window kapag nagsisimula ng split screen</translation>
 <translation id="3681311097828166361">Salamat sa iyong feedback. Offline ka na ngayon, at ipapadala ang iyong ulat sa ibang pagkakataon.</translation>
@@ -4673,7 +4671,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4316850752623536204">Website ng Developer</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Inalis ang mga pahintulot para sa 1 site}one{Inalis ang mga pahintulot para sa {NUM_SITES} site}other{Inalis ang mga pahintulot para sa {NUM_SITES} na site}}</translation>
 <translation id="4317733381297736564">Mga in-app na pagbili</translation>
-<translation id="4317737918133146519">Malapit nang maging handa ang iyong profile sa trabaho</translation>
 <translation id="4317820549299924617">Hindi matagumpay ang pag-verify</translation>
 <translation id="4319441675152393296">I-click ang icon ng extension na ito para basahin at baguhin ang <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Walang koneksyon sa internet</translation>
@@ -6199,7 +6196,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (gumagana offline)</translation>
 <translation id="5453829744223920473">Puwedeng gamitin ng iyong anak ang lahat ng kanyang mga pampaaralang app, bookmark, at resource tulad ng ginagawa niya sa klase. Ang paaralan ang nagtatakda ng mga panuntunan.</translation>
 <translation id="5454166040603940656">sa <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Makakita ng higit pang resulta ng paghahanap</translation>
 <translation id="5457082343331641453">Idagdag sa paghahanap mo</translation>
 <translation id="5457113250005438886">Di-wasto</translation>
 <translation id="5457459357461771897">Basahin at i-delete ang mga larawan, musika at iba pang media sa iyong computer</translation>
@@ -6657,7 +6653,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5799508265798272974">Linux Virtual Machine: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Naputol o natanggal ang patutunguhang file simula noong huling pag-download.</translation>
 <translation id="5800290746557538611">I-enable ang Instant hotspot</translation>
-<translation id="5800351251499368110">Isara ang paghahanap sa panel sa gilid. Nakabukas ang paghahanap sa panel sa gilid.</translation>
 <translation id="5800703268655655701">Pumili ng maliwanag o madilim na tema</translation>
 <translation id="5801051031414037185">I-set up ang telepono</translation>
 <translation id="5801568494490449797">Mga Kagustuhan</translation>
@@ -8764,7 +8759,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7356908624372060336">Mga Log ng Network</translation>
 <translation id="7357271391997763660">Magpatakbo ng pagsusuri sa password?</translation>
 <translation id="735745346212279324">Nakadiskonekta ang VPN</translation>
-<translation id="7358338787722390626">I-close ang paghahanap sa panel sa gilid</translation>
 <translation id="7359680654975233185">Hindi ma-cast ang tab</translation>
 <translation id="735994578317267253">Makuha ang iyong mga app, setting, at iba pa sa anumang ChromeOS device</translation>
 <translation id="7360257054721917104">Pagtingin sa mga naka-save na desk at template. Pindutin ang tab para mag-navigate.</translation>
@@ -9764,7 +9758,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8054609631325628928">Puwedeng gamitin ang mga numerong ito para makatulong na ma-activate ang serbisyo</translation>
 <translation id="8054883179223321715">Available para sa mga partikular na site ng video</translation>
 <translation id="8054921503121346576">Nakakonekta ang USB keyboard</translation>
-<translation id="8057414620575339583">Side Search</translation>
 <translation id="8058655154417507695">Taon ng pag-expire</translation>
 <translation id="8058986560951482265">Magalaw</translation>
 <translation id="8059417245945632445">&amp;Inspeksyunin ang mga device</translation>

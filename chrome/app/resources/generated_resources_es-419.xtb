@@ -2697,7 +2697,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2889064240420137087">Abrir el vínculo con...</translation>
 <translation id="2890206081124517553">Recuerda el fondo de tu escritorio en distintos dispositivos</translation>
 <translation id="2891464434568738544">No hay sitios disponibles en este momento. Visita un sitio para agregarlo a esta lista.</translation>
-<translation id="2891566119238851894">Abre la búsqueda en el panel lateral. La búsqueda no está abierta en el panel lateral.</translation>
 <translation id="2891922230654533301">¿Quieres usar tu dispositivo para acceder a <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2893180576842394309">Es posible que Google use tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
@@ -3745,7 +3744,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Las páginas a las que accedas desde esta ventana no aparecerán en el historial del navegador ni dejarán rastros (por ejemplo, cookies) en la computadora una vez que salgas del navegador. Los archivos que descargues y los favoritos que crees no se guardarán.</translation>
 <translation id="3679126865530709868">Panel táctil integrado</translation>
-<translation id="368019053277764111">Abrir la búsqueda en el panel lateral</translation>
 <translation id="3680683624079082902">Voz para texto a voz</translation>
 <translation id="3681017028939109078">Mostrar sugerencias de ventana al iniciar el modo de pantalla dividida</translation>
 <translation id="3681311097828166361">Gracias por tus comentarios. Tu informe se enviará cuando tengas conexión.</translation>
@@ -4656,7 +4654,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4316850752623536204">Sitio web del programador</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Se quitaron los permisos de 1 sitio}other{Se quitaron los permisos de {NUM_SITES} sitios}}</translation>
 <translation id="4317733381297736564">Compras directas desde la app</translation>
-<translation id="4317737918133146519">Tu perfil de trabajo está casi listo</translation>
 <translation id="4317820549299924617">No se completó la verificación</translation>
 <translation id="4319441675152393296">Haz clic en el ícono de esta extensión para leer y editar <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Sin conexión a Internet</translation>
@@ -6182,7 +6179,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona sin conexión)</translation>
 <translation id="5453829744223920473">Tu hijo o hija puede usar todos los recursos, apps y favoritos de su institución educativa tal como lo hace en clase. La institución establece las reglas básicas.</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Ver más resultados de la búsqueda</translation>
 <translation id="5457082343331641453">Agregar a la búsqueda</translation>
 <translation id="5457113250005438886">Sin validez</translation>
 <translation id="5457459357461771897">Leer y eliminar fotos, música y otro contenido multimedia desde tu computadora</translation>
@@ -6640,7 +6636,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5799508265798272974">Máquina virtual de Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">El archivo de destino se truncó o eliminó desde la última descarga.</translation>
 <translation id="5800290746557538611">Habilitar Hotspot instantáneo</translation>
-<translation id="5800351251499368110">Cierra la búsqueda en el panel lateral. La búsqueda está abierta en el panel lateral.</translation>
 <translation id="5800703268655655701">Selecciona el tema oscuro o claro</translation>
 <translation id="5801051031414037185">Configurar el teléfono</translation>
 <translation id="5801568494490449797">Preferencias</translation>
@@ -8745,7 +8740,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7356908624372060336">Registros de red</translation>
 <translation id="7357271391997763660">¿Deseas verificar las contraseñas?</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
-<translation id="7358338787722390626">Cierra la búsqueda en el panel lateral</translation>
 <translation id="7359680654975233185">No es posible transmitir la pestaña</translation>
 <translation id="735994578317267253">Accede a tus apps, parámetros de configuración y más en cualquier dispositivo ChromeOS</translation>
 <translation id="7360257054721917104">Se muestran escritorios y plantillas guardados. Presiona Tab para navegar.</translation>
@@ -9745,7 +9739,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8054609631325628928">Estos números se pueden usar para activar el servicio</translation>
 <translation id="8054883179223321715">Disponible para sitios de video específicos</translation>
 <translation id="8054921503121346576">Teclado USB conectado</translation>
-<translation id="8057414620575339583">Búsqueda lateral</translation>
 <translation id="8058655154417507695">Año de vencimiento</translation>
 <translation id="8058986560951482265">Temblorosa</translation>
 <translation id="8059417245945632445">&amp;Inspeccionar dispositivos</translation>

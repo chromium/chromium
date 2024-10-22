@@ -2699,7 +2699,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2889064240420137087">Linki bununla açın:</translation>
 <translation id="2890206081124517553">Desktop arxa fonu cihazlarda yadda saxlanır</translation>
 <translation id="2891464434568738544">Əlçatan sayt yoxdur. Bu siyahıya əlavə etmək üçün sayta daxil olun.</translation>
-<translation id="2891566119238851894">Yan paneldə axtarışı açın. Axtarış yan paneldə açıq deyil.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> tətbiqinə daxil olmaq üçün cihazınız istifadə edilsin?</translation>
 <translation id="2893168226686371498">Defolt brauzer</translation>
 <translation id="2893180576842394309">Axtarış və digər Google xidmətlərini fərdiləşdirmək üçün Google tarixçədən istifadə edə bilər</translation>
@@ -3747,7 +3746,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3678156199662914018">Artırma: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Bu pəncərədə baxdığınız səhifələr brauzer tarixçəsində görünməyəcək və onlar heç bir iz buraxmayacaq. Endirdiyiniz fayllar və yaratdığınız əlfəcinlər saxlanmayacaq.</translation>
 <translation id="3679126865530709868">Daxili Taçped</translation>
-<translation id="368019053277764111">Yan paneldə axtarışı açın</translation>
 <translation id="3680683624079082902">Mətndən-nitqə səsi</translation>
 <translation id="3681017028939109078">Ekranı bölməyə başladıqda pəncərə təkliflərini göstərin</translation>
 <translation id="3681311097828166361">Əks əlaqə üçün təşəkkür edirik. Hazırda oflaynsınız, hesabınız sonra göndəriləcək.</translation>
@@ -4656,7 +4654,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4316850752623536204">Developer Saytı</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{1 sayt üçün icazələr silindi}other{{NUM_SITES} sayt üçün icazələr silindi}}</translation>
 <translation id="4317733381297736564">Tətbiqdaxili alışlar</translation>
-<translation id="4317737918133146519">İş profiliniz, demək olar ki, hazırdır</translation>
 <translation id="4317820549299924617">Doğrulama uğurlu olmadı</translation>
 <translation id="4319441675152393296"><ph name="HOST" /> saytını oxumaq və dəyişmək üçün bu artırma ikonasına klikləyin</translation>
 <translation id="4320177379694898372">İnternet bağlantısı yoxdur</translation>
@@ -6182,7 +6179,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (oflayn işləyir)</translation>
 <translation id="5453829744223920473">Uşaq məktəbə aid tətbiq, əlfəcin və resurslardan sinifdəki kimi istifadə edə bilər. Əsas qaydaları məktəb təyin edir.</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> ilə</translation>
-<translation id="545484289444831485">Digər axtarış nəticələrinə baxın</translation>
 <translation id="5457082343331641453">Axtarışa əlavə edin</translation>
 <translation id="5457113250005438886">Yanlış</translation>
 <translation id="5457459357461771897">Kompüterinizdə foto, musiqi və digər medianı oxuyun və silin</translation>
@@ -6640,7 +6636,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5799508265798272974">Virtual Linux Cihazı: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Təyinat faylı sonuncu endirmədən sonra ya kəsilib, ya da silinib.</translation>
 <translation id="5800290746557538611">Ani hotspotu aktivləşdirin</translation>
-<translation id="5800351251499368110">Yan paneldə axtarışı bağlayın. Axtarış yan paneldə açıqdır.</translation>
 <translation id="5800703268655655701">İşıqlı və ya tünd tema seçin</translation>
 <translation id="5801051031414037185">Telefonu ayarlayın</translation>
 <translation id="5801568494490449797">Seçimlər</translation>
@@ -8742,7 +8737,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7356908624372060336">Şəbəkə Loqları</translation>
 <translation id="7357271391997763660">Parol yoxlaması aparılsın?</translation>
 <translation id="735745346212279324">VPN bağlantısı kəsildi</translation>
-<translation id="7358338787722390626">Yan paneldə axtarışı bağlayın</translation>
 <translation id="7359680654975233185">Tabı yayımlamaq olmur</translation>
 <translation id="735994578317267253">İstənilən ChromeOS cihazında tətbiqlər, ayarlar və s. əldə edin</translation>
 <translation id="7360257054721917104">Yadda saxlanmış masa və ya şablonlara baxılır. Keçmək üçün taba basın.</translation>
@@ -9741,7 +9735,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8054609631325628928">Bu nömrələr xidməti aktivləşdirmək üçün istifadə edilə bilər</translation>
 <translation id="8054883179223321715">Müəyyən video saytları üçün əlçatandır</translation>
 <translation id="8054921503121346576">USB klaviatura qoşuldu</translation>
-<translation id="8057414620575339583">Yan Axtarış</translation>
 <translation id="8058655154417507695">Bitmə ili</translation>
 <translation id="8058986560951482265">Kəsik-kəsik</translation>
 <translation id="8059417245945632445">&amp;Cihazları aşkarlayın</translation>

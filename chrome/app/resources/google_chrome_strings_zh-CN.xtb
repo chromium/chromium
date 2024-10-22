@@ -74,7 +74,6 @@
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{此扩展程序已不再受支持。Chrome 建议您移除它。}other{这些扩展程序已不再受支持。Chrome 建议您移除它们。}}</translation>
 <translation id="2018528049276128029">每份个人资料均包含自己的 Chrome 信息，例如书签、历史记录、密码等等</translation>
 <translation id="2018879682492276940">安装失败。请重试。</translation>
-<translation id="2022471217832964798">在我们设置账号访问权限期间，您仍可以使用 Chrome。在设置完成之前，您可能无法访问某些资源。</translation>
 <translation id="2034233344106846793">Chrome 会尽可能将不安全的连接自动升级为 HTTPS</translation>
 <translation id="207902854391093810">在试用期间，Ad measurement 允许您访问的网站向 Chrome 请求信息来对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
 <translation id="2091012649849228750">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。此计算机目前使用的是 Windows 8。</translation>

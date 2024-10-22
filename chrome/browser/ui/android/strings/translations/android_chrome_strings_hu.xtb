@@ -115,6 +115,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="1460751212339734034">Takarítson meg időt, gépeljen kevesebbet</translation>
 <translation id="1466383950273130737">Chrome nyelvének kiválasztása</translation>
 <translation id="1477626028522505441">A következő fájl letöltése szerverproblémák miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
+<translation id="147982357559798527">Módosítva</translation>
 <translation id="1480287803138246127">Előfordulhat, hogy az előzményeinek egy része nem jelenik meg itt. Az összes Chrome-előzmény megtekintéséhez nyissa meg a teljes Chrome-előzményeket.</translation>
 <translation id="148482509007564431">Könyvjelzőmentési folyamat</translation>
 <translation id="1492417797159476138">Már elmentette ezt a felhasználónevet ehhez a webhelyhez</translation>
@@ -1137,6 +1138,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6440291723980579689">Az oldalak csak a megnyitásuk után töltődnek be</translation>
 <translation id="6441734959916820584">Túl hosszú a név</translation>
 <translation id="6444291413624515012"><ph name="TAB_GROUP_TITLE" /> lapcsoport bezárva</translation>
+<translation id="6452534462676960500">Új tevékenység</translation>
 <translation id="6459045781120991510">Felmérések</translation>
 <translation id="6461962085415701688">A fájlt nem lehet megnyitni</translation>
 <translation id="6464977750820128603">Megnézheti a Chrome böngészővel felkeresett webhelyeket, és beállíthat hozzájuk időzítéseket.\n\nAz időzítéssel ellátott webhelyek adatait és a látogatás hosszát megkapja a Google. Ezek az adatok a digitális jóllét funkció továbbfejlesztésére szolgálnak.</translation>

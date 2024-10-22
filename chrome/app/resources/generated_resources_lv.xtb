@@ -2702,7 +2702,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2889064240420137087">Atvērt saiti ar...</translation>
 <translation id="2890206081124517553">Jūsu darbvirsmas fona saglabāšana visās ierīcēs</translation>
 <translation id="2891464434568738544">Pašlaik nav pieejama neviena vietne. Apmeklējiet kādu vietni, lai to pievienotu šim sarakstam.</translation>
-<translation id="2891566119238851894">Atvērt meklēšanas lapu sānu panelī. Meklēšanas lapa nav atvērta sānu panelī.</translation>
 <translation id="2891922230654533301">Vai vēlaties izmantot ierīci, lai pierakstītos lietotnē <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Noklusējuma pārlūks</translation>
 <translation id="2893180576842394309">Google var izmantot jūsu vēsturi, lai personalizētu Meklēšanu un citus Google pakalpojumus.</translation>
@@ -3748,7 +3747,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3678156199662914018">Paplašinājums: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Lapas, ko skatāt šajā logā, nebūs redzamas pārlūka vēsturē, un, kad izrakstīsieties, datorā nepaliks nekādi vienumi, piemēram, sīkfaili. Tomēr visi lejupielādētie faili un izveidotās grāmatzīmes tiks saglabātas.</translation>
 <translation id="3679126865530709868">Iebūvēts skārienpaliktnis</translation>
-<translation id="368019053277764111">Atvērt meklēšanas lapu sānu panelī</translation>
 <translation id="3680683624079082902">Teksta pārvēršanas runā balss</translation>
 <translation id="3681017028939109078">Logu ieteikumu rādīšana, aktivizējot ekrāna sadalīšanas režīmu</translation>
 <translation id="3681311097828166361">Paldies par atsauksmēm! Pašlaik esat bezsaistē, un jūsu ziņojums tiks nosūtīts vēlāk.</translation>
@@ -4659,7 +4657,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4316850752623536204">Izstrādātāja vietne</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Tika noņemtas atļaujas vienai vietnei}zero{Tika noņemtas atļaujas {NUM_SITES} vietnēm}one{Tika noņemtas atļaujas {NUM_SITES} vietnei}other{Tika noņemtas atļaujas {NUM_SITES} vietnēm}}</translation>
 <translation id="4317733381297736564">Pirkumi lietotnēs</translation>
-<translation id="4317737918133146519">Darba profils ir gandrīz gatavs</translation>
 <translation id="4317820549299924617">Neizdevās veikt verifikāciju</translation>
 <translation id="4319441675152393296">Noklikšķiniet uz šī paplašinājuma ikonas, lai lasītu un mainītu vietnes <ph name="HOST" /> datus.</translation>
 <translation id="4320177379694898372">Nav interneta savienojuma.</translation>
@@ -6184,7 +6181,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (darbojas bezsaistē)</translation>
 <translation id="5453829744223920473">Bērns var izmantot visas savas mācību iestādes lietotnes, grāmatzīmes un resursus tieši tāpat, kā to var darīt klasē. Mācību iestāde nosaka pamatnoteikumus.</translation>
 <translation id="5454166040603940656">izmantojot <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Citu meklēšanas rezultātu skatīšana</translation>
 <translation id="5457082343331641453">Pievienot meklēšanai</translation>
 <translation id="5457113250005438886">Nav derīgi</translation>
 <translation id="5457459357461771897">Lasīt un dzēst fotoattēlus, mūziku un citu datorā esošu multivides saturu</translation>
@@ -6640,7 +6636,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5799508265798272974">Linux virtuālā mašīna: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Galamērķa fails kopš pēdējās lejupielādes ir saīsināts vai noņemts.</translation>
 <translation id="5800290746557538611">Iespējot tūlītējo tīklāju</translation>
-<translation id="5800351251499368110">Aizvērt meklēšanas lapu sānu panelī. Meklēšanas lapa ir atvērta sānu panelī.</translation>
 <translation id="5800703268655655701">Gaišā vai tumšā motīva atlase</translation>
 <translation id="5801051031414037185">Iestatīt tālruni</translation>
 <translation id="5801568494490449797">Preferences</translation>
@@ -8748,7 +8743,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7356908624372060336">Tīkla žurnāli</translation>
 <translation id="7357271391997763660">Vai veikt paroles pārbaudi?</translation>
 <translation id="735745346212279324">VPN ir atvienots</translation>
-<translation id="7358338787722390626">Aizvērt meklēšanas lapu sānu panelī</translation>
 <translation id="7359680654975233185">Nevar apraidīt cilni</translation>
 <translation id="735994578317267253">Piekļūstiet savām lietotnēm, iestatījumiem u.c. vienumiem jebkurā Chrome OS ierīcē</translation>
 <translation id="7360257054721917104">Tiek skatītas saglabātās darbvietas un veidnes. Lai pārietu citur, nospiediet tabulēšanas taustiņu.</translation>
@@ -9747,7 +9741,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8054609631325628928">Šos numurus var izmantot, lai aktivizētu pakalpojumu.</translation>
 <translation id="8054883179223321715">Pieejama konkrētām videoklipu vietnēm</translation>
 <translation id="8054921503121346576">USB tastatūra ir pievienota.</translation>
-<translation id="8057414620575339583">Meklēšanas sānu josla</translation>
 <translation id="8058655154417507695">Derīguma termiņa gads</translation>
 <translation id="8058986560951482265">Raustīgs attēls</translation>
 <translation id="8059417245945632445">&amp;Pārbaudīt ierīces</translation>

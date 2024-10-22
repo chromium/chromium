@@ -76,7 +76,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie už nie je podporované. Chrome odporúča, aby ste ho odstránili.}few{Tieto rozšírenia už nie sú podporované. Chrome odporúča, aby ste ich odstránili.}many{These extensions are no longer supported. Chrome recommends that you remove them.}other{Tieto rozšírenia už nie sú podporované. Chrome odporúča, aby ste ich odstránili.}}</translation>
 <translation id="2018528049276128029">V každom profile sú uchované vlastné údaje Chromu, ako sú záložky, história, heslá a ďalšie položky</translation>
 <translation id="2018879682492276940">Inštalácia bola neúspešná. Skúste to znova.</translation>
-<translation id="2022471217832964798">Počas nastavovania prístupu k účtu môžete Chrome naďalej používať. Do dokončenia nastavenia nemusíte mať prístup k niektorým zdrojom.</translation>
 <translation id="2034233344106846793">Keď je to možné, Chrome automaticky inovuje nezabezpečené pripojenia na HTTPS</translation>
 <translation id="207902854391093810">Keď sú skúšobné obdobia zapnuté, meranie reklám umožňuje webom, ktoré navštívite, požadovať od Chromu údaje, ktoré im pomáhajú merať výkonnosť reklám. Meranie reklám obmedzuje sledovanie na rôznych weboch presúvaním minimálneho množstva údajov medzi webmi.</translation>
 <translation id="2091012649849228750">Ak chcete v budúcnosti dostávať aktualizácie prehliadača Google Chrome, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 8.</translation>

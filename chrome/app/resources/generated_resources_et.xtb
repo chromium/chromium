@@ -2704,7 +2704,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2889064240420137087">Lingi avamine rakendusega ...</translation>
 <translation id="2890206081124517553">Töölaua tausta meeldejätmine seadmetes</translation>
 <translation id="2891464434568738544">Praegu pole ühtegi saiti saadaval. Saidi loendisse lisamiseks külastage seda.</translation>
-<translation id="2891566119238851894">Avage külgpaneelil otsing. Otsing ei ole külgpaneelil avatud.</translation>
 <translation id="2891922230654533301">Kas soovite rakendusse <ph name="APP_NAME" /> sisselogimiseks kasutada oma seadet?</translation>
 <translation id="2893168226686371498">Vaikebrauser</translation>
 <translation id="2893180576842394309">Google võib kasutada teie ajalugu otsingu ja muude Google'i teenuste isikupärastamiseks</translation>
@@ -3752,7 +3751,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3678156199662914018">Laiend: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Lehti, mida vaatate selles aknas, ei lisata teie brauseri ajalukku ja pärast väljalogimist ei jää neist arvutisse ka muid jälgi (nt küpsisefaile). Allalaaditud faile ja loodud järjehoidjaid ei säilitata.</translation>
 <translation id="3679126865530709868">Sisseehitatud puuteplaat</translation>
-<translation id="368019053277764111">Ava külgpaneelil otsing</translation>
 <translation id="3680683624079082902">Kõnesünteesi hääl</translation>
 <translation id="3681017028939109078">Kuva jagatud ekraanikuva käivitamisel aknasoovitused</translation>
 <translation id="3681311097828166361">Täname teid tagasiside eest. Te pole praegu võrguga ühendatud ja aruanne saadetakse hiljem.</translation>
@@ -4663,7 +4661,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4316850752623536204">Arendaja veebisait</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{1 saidi load on eemaldatud}other{{NUM_SITES} saidi load on eemaldatud}}</translation>
 <translation id="4317733381297736564">Rakendusesisesed ostud</translation>
-<translation id="4317737918133146519">Teie tööprofiil on peaaegu valmis</translation>
 <translation id="4317820549299924617">Kinnitamine ei õnnestunud</translation>
 <translation id="4319441675152393296">Klõpsake selle laienduse ikoonil, et lubada saiti <ph name="HOST" /> lugeda ja muuta</translation>
 <translation id="4320177379694898372">Interneti-ühendus puudub</translation>
@@ -6189,7 +6186,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (toimib võrguühenduseta)</translation>
 <translation id="5453829744223920473">Teie laps võib kasutada kõiki oma kooli rakendusi, järjehoidjaid ja ressursse täpselt nii, nagu ta teeb seda tunnis. Põhireeglid määrab kool.</translation>
 <translation id="5454166040603940656">teenusepakkujaga <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Kuva rohkem otsingutulemusi</translation>
 <translation id="5457082343331641453">Täiendage otsingut</translation>
 <translation id="5457113250005438886">Kehtetu</translation>
 <translation id="5457459357461771897">Arvutis olevate fotode, muusika ja muu meedia lugemine ja kustutamine</translation>
@@ -6647,7 +6643,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5799508265798272974">Linuxi vrituaalmasin: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Sihtfaili on pärast viimast allalaadimist kärbitud või see on eemaldatud.</translation>
 <translation id="5800290746557538611">Vahetu kuumkoha lubamine</translation>
-<translation id="5800351251499368110">Sulgege külgpaneelil otsing. Otsing on külgpaneelil avatud.</translation>
 <translation id="5800703268655655701">Heleda või tumeda teema valimine</translation>
 <translation id="5801051031414037185">Telefoni seadistamine</translation>
 <translation id="5801568494490449797">Eelistused</translation>
@@ -8752,7 +8747,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7356908624372060336">Võrgulogid</translation>
 <translation id="7357271391997763660">Kas käivitada paroolikontroll?</translation>
 <translation id="735745346212279324">VPN-i ühendus on katkestatud</translation>
-<translation id="7358338787722390626">Sule külgpaneelil otsing</translation>
 <translation id="7359680654975233185">Vahelehte ei õnnestu üle kanda</translation>
 <translation id="735994578317267253">Hankige juurdepääs oma rakendustele, seadetele ja muule mis tahes Chrome OS-i seadmes</translation>
 <translation id="7360257054721917104">Kuvatud on salvestatud töölauad ja mallid. Navigeerimiseks vajutage tabulaatorit.</translation>
@@ -9752,7 +9746,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8054609631325628928">Need numbrid on abiks teenuse aktiveerimisel</translation>
 <translation id="8054883179223321715">Saadaval teatud videosaitide jaoks</translation>
 <translation id="8054921503121346576">USB-klaviatuur on ühendatud</translation>
-<translation id="8057414620575339583">Kõrvalotsing</translation>
 <translation id="8058655154417507695">Aegumisaasta</translation>
 <translation id="8058986560951482265">Katkendlik</translation>
 <translation id="8059417245945632445">&amp;Seadmete kontrollimine</translation>

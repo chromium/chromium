@@ -2698,7 +2698,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2889064240420137087">Hap lidhjen me...</translation>
 <translation id="2890206081124517553">Kujto imazhin tënd të sfondit të desktopit mes pajisjeve të ndryshme</translation>
 <translation id="2891464434568738544">Nuk ka asnjë sajt aktualisht të disponueshëm. Vizito një sajt për ta shtuar te kjo listë.</translation>
-<translation id="2891566119238851894">Hap kërkimin në panelin anësor. Kërkimi nuk është i hapur në panelin anësor.</translation>
 <translation id="2891922230654533301">Dëshiron ta përdorësh këtë pajisje për t'u identifikuar në <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Shfletuesi i parazgjedhur</translation>
 <translation id="2893180576842394309">Google mund ta përdorë historikun tënd për të personalizuar "Kërko me Google" dhe shërbime të tjera të Google</translation>
@@ -3744,7 +3743,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3678156199662914018">Shtesa: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Faqet që shikon në këtë dritare nuk do të shfaqen në historikun e shfletuesit dhe nuk do të lenë në kompjuter gjurmë të tjera, si kuki, pasi del. Skedarët që shkarkon dhe faqeshënuesit që krijon nuk do të ruhen.</translation>
 <translation id="3679126865530709868">Blloku me prekje i integruar</translation>
-<translation id="368019053277764111">Hap kërkimin në panelin anësor</translation>
 <translation id="3680683624079082902">Zëri për "tekstin në ligjërim"</translation>
 <translation id="3681017028939109078">Shfaq sugjerime për dritare kur nis ekranin e ndarë</translation>
 <translation id="3681311097828166361">Faleminderit për komentet! Aktualisht je offline dhe raportimi do të dërgohet më vonë.</translation>
@@ -4655,7 +4653,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4316850752623536204">Uebsajti i zhvilluesit</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Janë hequr lejet për 1 sajt}other{Janë hequr lejet për {NUM_SITES} sajte}}</translation>
 <translation id="4317733381297736564">Blerjet përmes aplikacionit</translation>
-<translation id="4317737918133146519">Profili yt i punës është pothuajse gati</translation>
 <translation id="4317820549299924617">Verifikimi nuk u krye me sukses</translation>
 <translation id="4319441675152393296">Kliko tek ikona e kësaj shtese që shtesa të mund të lexojë dhe të ndryshojë <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Nuk ka lidhje me internetin</translation>
@@ -6179,7 +6176,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funksionon offline)</translation>
 <translation id="5453829744223920473">Fëmija yt mund të përdorë të gjitha aplikacionet, faqeshënuesit dhe burimet e veta të shkollës ashtu si vepron në klasë. Shkolla vendos rregullat bazë.</translation>
 <translation id="5454166040603940656">me <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Shiko më shumë rezultate kërkimi</translation>
 <translation id="5457082343331641453">Shto në kërkimin tënd</translation>
 <translation id="5457113250005438886">E pavlefshme</translation>
 <translation id="5457459357461771897">Lexo dhe fshi fotografitë, muzikën dhe media të tjera nga kompjuteri</translation>
@@ -6637,7 +6633,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5799508265798272974">Pajisja virtuale Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Skedari i destinacionit u shkurtua ose u hoq që nga shkarkimi i fundit.</translation>
 <translation id="5800290746557538611">Aktivizo "Zonën e qasjes për internet në çast"</translation>
-<translation id="5800351251499368110">Mbyll kërkimin në panelin anësor. Kërkimi është i hapur në panelin anësor.</translation>
 <translation id="5800703268655655701">Zgjidh temën e ndriçuar ose të errët</translation>
 <translation id="5801051031414037185">Konfiguro telefonin</translation>
 <translation id="5801568494490449797">Preferencat</translation>
@@ -8741,7 +8736,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7356908624372060336">Evidencat e rrjetit</translation>
 <translation id="7357271391997763660">Të ekzekutohet kontrolli i fjalëkalimeve?</translation>
 <translation id="735745346212279324">Rrjeti VPN u shkëput</translation>
-<translation id="7358338787722390626">Mbyll kërkimin në panelin anësor</translation>
 <translation id="7359680654975233185">Skeda nuk mund të transmetohet</translation>
 <translation id="735994578317267253">Merr aplikacionet, cilësimet dhe të tjera në çdo pajisje me ChromeOS</translation>
 <translation id="7360257054721917104">Po shikon shabllonet dhe tavolinat e ruajtura të punës. Shtyp tastin Tab për të naviguar.</translation>
@@ -9739,7 +9733,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8054609631325628928">Këta numra mund të përdoren për të ndihmuar në aktivizimin e shërbimit</translation>
 <translation id="8054883179223321715">Ofrohet për sajte specifike për video</translation>
 <translation id="8054921503121346576">Tastiera USB është e lidhur</translation>
-<translation id="8057414620575339583">Kërkimi anësor</translation>
 <translation id="8058655154417507695">Viti i skadimit</translation>
 <translation id="8058986560951482265">Me dridhje</translation>
 <translation id="8059417245945632445">&amp;Inspekto pajisjet</translation>

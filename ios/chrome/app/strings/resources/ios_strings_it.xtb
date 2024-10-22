@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">Il tuo account <ph name="WEBSITE" /> non verrà eliminato.</translation>
 <translation id="1506061864768559482">Motore di ricerca</translation>
 <translation id="1506063256525392513">In questo modo puoi scattare e caricare foto, nonché scansionare codici QR</translation>
+<translation id="1508263560970797965">Continua in incognito</translation>
 <translation id="1509486075633541495">Accedi al sito web</translation>
 <translation id="1509960214886564027">Le funzionalità su molti siti potrebbero non essere disponibili</translation>
 <translation id="1513858653616922153">Elimina la password</translation>
@@ -742,6 +743,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4587589328781138893">Siti</translation>
 <translation id="4592672037257622855">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura}other{{count} pagine aggiunte al tuo elenco di lettura}}</translation>
 <translation id="459644946100970322">Attivare gli avvisi sui prezzi?</translation>
+<translation id="4597892826846980979">Ricevi notifiche sulle schede</translation>
 <translation id="4601095002996233687">Scansioni approfondite per rilevare i download sospetti.</translation>
 <translation id="4606247758155004938">Il tuo browser è gestito dalla tua organizzazione.</translation>
 <translation id="4611811151908969241">Nascondi Non seguire più <ph name="DOMAIN_NAME" /></translation>
@@ -1201,6 +1203,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6606914854592108404">Controllo di sicurezza in corso…</translation>
 <translation id="6609890790934458793">Le passwords di <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="THIRD_WEBSITE" /> verranno eliminate. I tuoi account non verranno eliminati.</translation>
 <translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul Web.</translation>
+<translation id="6612912757320004438">Consenti notifiche delle schede…</translation>
 <translation id="6617761071025228250">Cancella testo</translation>
 <translation id="6620279676667515405">Annulla</translation>
 <translation id="6624219055418309072">Blocca in modalità di navigazione in incognito</translation>
@@ -1558,6 +1561,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8232956427053453090">Conserva i dati</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="82619448491672958">Vedi altre schede</translation>
+<translation id="8263228331881858381">Passkey salvata</translation>
 <translation id="8263809106706527890">Le impostazioni del browser predefinito potrebbero essere state modificate. Puoi verificarlo nelle impostazioni.</translation>
 <translation id="8264966119170358612">Alcune delle password che hai salvato sono state compromesse nell'ambito di una violazione dei dati non di Google. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPad. Per accedere di nuovo, tocca "Continua" di seguito.</translation>

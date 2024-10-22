@@ -173,7 +173,6 @@
 <translation id="3286538390144397061">Reinicia ara</translation>
 <translation id="328888136576916638">Falten les claus de l'API de Google. Es desactivaran algunes de les funcions de Chromium.</translation>
 <translation id="3296368748942286671">Continua executant les aplicacions en segon pla quan es tanqui Chromium</translation>
-<translation id="3300643253493387004">Mentre configurem l'accés al compte, pots continuar utilitzant Chromium, però és possible que no puguis accedir a alguns recursos fins que la configuració no finalitzi.</translation>
 <translation id="3313189106987092621">Chromium t'avisarà abans de carregar qualsevol lloc web amb una connexió no segura</translation>
 <translation id="3316771292331273802">Quan tanquis totes les finestres de Chromium, se't tancarà la sessió de la majoria de llocs web, tret del teu Compte de Google si tens la sessió iniciada a Chromium. Perquè els llocs web et recordin, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3350761136195634146">Ja existeix un perfil de Chromium amb aquest compte</translation>

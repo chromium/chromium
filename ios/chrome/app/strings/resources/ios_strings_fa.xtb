@@ -1558,6 +1558,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8232956427053453090">نگه‌داشتن داده</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="82619448491672958">دیدن برگه‌های دیگر</translation>
+<translation id="8263228331881858381">گذرکلید ذخیره شد</translation>
 <translation id="8263809106706527890">ممکن است تغییری در تنظیمات مرورگر پیش‌فرض ایجاد شده باشد. می‌توانید آن را در تنظیمات بررسی کنید.</translation>
 <translation id="8264966119170358612">‏برخی‌از گذرواژه‌های ذخیره‌شده‌تان به‌دلیل سرقت اطلاعات شبکه در سایت غیر Google لو رفته‌اند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">‏به‌عنوان بخشی از بازنشانی iPad، از سیستم حساب <ph name="USER_NAME" /> خارج شدید. برای ورود مجدد به سیستم، روی «ادامه» در زیر تک‌ضرب بزنید.</translation>
@@ -1635,6 +1636,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8601611099293226919">‏جستجوی صفحه با «لنز Google»</translation>
 <translation id="8605219856220328675">بستن برگه</translation>
 <translation id="8609743333007776886">‏افزودن ${url} به نشانک‌ها</translation>
+<translation id="8611922158252451755">هر کسی پیوند را داشته باشد می‌تواند همه برگه‌ها را ویرایش کند، پس بااحتیاط هم‌رسانی کنید. پیوند ظرف ۴۸ ساعت منقضی می‌شود.</translation>
 <translation id="8620640915598389714">ویرایش</translation>
 <translation id="8625706492572042370">ویرایش صفحه اصلی</translation>
 <translation id="8633025649649592204">فعالیت اخیر</translation>
@@ -1746,6 +1748,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9032405509996909363">تأیید کردن حذف داده‌های مرور</translation>
 <translation id="9034759925968272072">‏از حساب Google خود خارج نمی‌شوید. حساب Google شما ممکن است ممکن است اشکال دیگری از سابقه مرورتان در <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> وجود داشته باشد.</translation>
 <translation id="9039373489628511875">پهنای باند</translation>
+<translation id="9057030985451135243">آشنایی با گروه‌های برگه هم‌رسانی‌شده</translation>
 <translation id="9057972802061533987">دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9066097352053395362">پنهان کردن «ویرایش نشانک»</translation>

@@ -2716,7 +2716,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2889064240420137087">Odpri povezavo z ...</translation>
 <translation id="2890206081124517553">Shranjevanje ozadja namizja v napravah</translation>
 <translation id="2891464434568738544">Trenutno ni na voljo nobeno spletno mesto. Odprite spletno mesto, če ga želite dodati na ta seznam.</translation>
-<translation id="2891566119238851894">Odpri iskanje v stranskem podoknu. Iskanje ni odprto v stranskem podoknu.</translation>
 <translation id="2891922230654533301">Ali se želite z napravo prijaviti v aplikacijo <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Privzeti brskalnik</translation>
 <translation id="2893180576842394309">Google lahko vašo zgodovino uporabi za prilagajanje Iskanja Google in drugih Googlovih storitev</translation>
@@ -3764,7 +3763,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3678156199662914018">Razširitev: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Strani, ki si jih ogledujete v tem oknu, ne bodo prikazane v zgodovini brskanja in po odjavi v računalniku ne bodo pustile drugih sledi, na primer piškotkov. Datoteke, ki jih prenesete, in zaznamki, ki jih ustvarite, se ne bodo ohranili.</translation>
 <translation id="3679126865530709868">Vgrajena sledilna ploščica</translation>
-<translation id="368019053277764111">Odpri iskanje v stranskem podoknu</translation>
 <translation id="3680683624079082902">Glas pretvorbe besedila v govor</translation>
 <translation id="3681017028939109078">Pokaži predloge za okna ob zagonu razdeljenega zaslona</translation>
 <translation id="3681311097828166361">Hvala za povratne informacije. Trenutno nimate povezave, zato bo poročilo poslano pozneje.</translation>
@@ -4675,7 +4673,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4316850752623536204">Spletno mesto razvijalca</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Odstranjena so bila dovoljenja za 1 spletno mesto}one{Odstranjena so bila dovoljenja za {NUM_SITES} spletno mesto}two{Odstranjena so bila dovoljenja za {NUM_SITES} spletni mesti}few{Odstranjena so bila dovoljenja za {NUM_SITES} spletna mesta}other{Odstranjena so bila dovoljenja za {NUM_SITES} spletnih mest}}</translation>
 <translation id="4317733381297736564">Nakupi v aplikaciji</translation>
-<translation id="4317737918133146519">Delovni profil je skoraj pripravljen</translation>
 <translation id="4317820549299924617">Preverjanje ni uspelo</translation>
 <translation id="4319441675152393296">Kliknite ikono te razširitve, če želite prebrati in spremeniti spletno mesto <ph name="HOST" />.</translation>
 <translation id="4320177379694898372">Ni internetne povezave</translation>
@@ -6201,7 +6198,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (deluje brez povezave)</translation>
 <translation id="5453829744223920473">Otrok lahko uporablja vse svoje šolske aplikacije, zaznamke in vire enako kot v razredu. Šola določa osnovna pravila.</translation>
 <translation id="5454166040603940656">pri ponudniku <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Prikaz več rezultatov iskanja</translation>
 <translation id="5457082343331641453">Dodajte v iskanje</translation>
 <translation id="5457113250005438886">Neveljavno</translation>
 <translation id="5457459357461771897">Branje in izbris fotografij, glasbe in drugih predstavnosti v računalniku</translation>
@@ -6661,7 +6657,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5799508265798272974">Navidezni računalnik za Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Ciljna datoteka je bila po zadnjem prenosu okrnjena ali odstranjena.</translation>
 <translation id="5800290746557538611">Omogočanje takojšnje dostopne točke</translation>
-<translation id="5800351251499368110">Zapri iskanje v stranskem podoknu. Iskanje je odprto v stranskem podoknu.</translation>
 <translation id="5800703268655655701">Izberite svetlo ali temno temo</translation>
 <translation id="5801051031414037185">Nastavitev telefona</translation>
 <translation id="5801568494490449797">Nastavitve</translation>
@@ -8772,7 +8767,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7356908624372060336">Omrežni dnevniki</translation>
 <translation id="7357271391997763660">Želite zagnati preverjanje gesla?</translation>
 <translation id="735745346212279324">Povezava z navideznim zasebnim omrežjem je prekinjena</translation>
-<translation id="7358338787722390626">Zapri iskanje v stranskem podoknu</translation>
 <translation id="7359680654975233185">Zavihka ni mogoče predvajati</translation>
 <translation id="735994578317267253">Aplikacije, nastavitve in drugo imejte v vseh napravah Chrome OS</translation>
 <translation id="7360257054721917104">Ogledujete si shranjena namizja in predloge. Za premikanje pritiskajte tabulatorko.</translation>
@@ -9772,7 +9766,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8054609631325628928">Ti številki je mogoče uporabiti pri aktiviranju storitve.</translation>
 <translation id="8054883179223321715">Na voljo za določena spletna mesta z videoposnetki</translation>
 <translation id="8054921503121346576">Tipkovnica USB je povezana</translation>
-<translation id="8057414620575339583">Stransko iskanje</translation>
 <translation id="8058655154417507695">Leto poteka</translation>
 <translation id="8058986560951482265">Migeta</translation>
 <translation id="8059417245945632445">&amp;Pregled naprav</translation>

@@ -173,7 +173,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="3286538390144397061">Start på nytt nå</translation>
 <translation id="328888136576916638">API-nøkler for Google mangler. Noe funksjonalitet i Chromium blir deaktivert.</translation>
 <translation id="3296368748942286671">Fortsett å kjøre bakgrunnsprogrammer når Chromium er lukket</translation>
-<translation id="3300643253493387004">Du kan fortsatt bruke Chromium mens vi konfigurerer kontotilgangen. Det kan hende du ikke har tilgang til enkelte ressurser før konfigureringen er fullført.</translation>
 <translation id="3313189106987092621">Chromium advarer deg før all innlasting av nettsteder via usikre tilkoblinger</translation>
 <translation id="3316771292331273802">Du logges av de fleste nettsteder når du lukker alle Chromium-vinduer, men du blir ikke logget av Google-kontoen din hvis du er logget på Chromium. For å la nettsteder huske deg, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3350761136195634146">Det finnes allerede en Chromium-profil med denne kontoen</translation>

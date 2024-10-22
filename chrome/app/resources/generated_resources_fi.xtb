@@ -2712,7 +2712,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2889064240420137087">Avaa linkki sovelluksessa...</translation>
 <translation id="2890206081124517553">Muista työpöydän taustakuva eri laitteilla</translation>
 <translation id="2891464434568738544">Sivustoja ei ole tällä hetkellä saatavilla. Lisää sivusto luetteloon käymällä sivustolla.</translation>
-<translation id="2891566119238851894">Avaa haku sivupaneelissa. Haku ei ole avoinna sivupaneelissa.</translation>
 <translation id="2891922230654533301">Haluatko käyttää laitetta kirjautumiseen: <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Oletusselain</translation>
 <translation id="2893180576842394309">Google voi muokata Hakua ja muita Googlen palveluita historiasi perusteella</translation>
@@ -3760,7 +3759,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3678156199662914018">Laajennus: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Tässä ikkunassa katsomiasi sivuja ei lisätä selaushistoriaan, eikä niistä jää tietokoneelle muita jälkiä (esim. evästeitä) kirjauduttuasi ulos. Lataamiasi tiedostoja ja luomiasi kirjanmerkkejä ei tallenneta.</translation>
 <translation id="3679126865530709868">Sisäänrakennettu kosketuslevy</translation>
-<translation id="368019053277764111">Avaa haku sivupaneelissa</translation>
 <translation id="3680683624079082902">Tekstistä puheeksi ‑ääni</translation>
 <translation id="3681017028939109078">Näytä ikkunaehdotuksia, kun jaettu näyttö käynnistetään</translation>
 <translation id="3681311097828166361">Kiitos palautteestasi. Olet nyt offline-tilassa, joten ilmoituksesi lähetetään myöhemmin.</translation>
@@ -4668,7 +4666,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4316850752623536204">Kehittäjän verkkosivusto</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Luvat poistettu 1 sivustolta}other{Luvat poistettu {NUM_SITES} sivustolta}}</translation>
 <translation id="4317733381297736564">Sovelluksensisäiset ostokset</translation>
-<translation id="4317737918133146519">Työprofiilisi on melkein valmis</translation>
 <translation id="4317820549299924617">Vahvistus ei onnistunut</translation>
 <translation id="4319441675152393296">Klikkaa laajennuksen kuvaketta, jotta tätä voi lukea ja muuttaa: <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Ei internetyhteyttä</translation>
@@ -6195,7 +6192,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (toimii offline-tilassa)</translation>
 <translation id="5453829744223920473">Lapsesi voi käyttää kaikkia oppilaitoksen sovelluksia, kirjanmerkkejä ja materiaaleja. Koulu asettaa pelisäännöt.</translation>
 <translation id="5454166040603940656">palvelulla <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Katso lisää hakutuloksia</translation>
 <translation id="5457082343331641453">Lisää hakuun</translation>
 <translation id="5457113250005438886">Virheellinen</translation>
 <translation id="5457459357461771897">Käyttää ja poistaa kuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
@@ -6653,7 +6649,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5799508265798272974">Linux-virtuaalikone: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Kohdetiedosto on katkaistu tai poistettu edellisen latauksen jälkeen.</translation>
 <translation id="5800290746557538611">Ota pikahotspot käyttöön</translation>
-<translation id="5800351251499368110">Sulje haku sivupaneelista. Haku on avoinna sivupaneelissa.</translation>
 <translation id="5800703268655655701">Valitse vaalea tai tumma teema</translation>
 <translation id="5801051031414037185">Ota puhelin käyttöön</translation>
 <translation id="5801568494490449797">Asetukset</translation>
@@ -8758,7 +8753,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7356908624372060336">Verkon lokitiedostot</translation>
 <translation id="7357271391997763660">Tarkistetaanko salasanat?</translation>
 <translation id="735745346212279324">VPN-yhteys katkaistu</translation>
-<translation id="7358338787722390626">Sulje haku sivupaneelista</translation>
 <translation id="7359680654975233185">Välilehden striimaus ei onnistu</translation>
 <translation id="735994578317267253">Käytä esimerkiksi sovelluksia ja asetuksia millä tahansa ChromeOS-laitteella</translation>
 <translation id="7360257054721917104">Näytetään tallennetut työpöydät ja mallit. Selaa painamalla sarkainta.</translation>
@@ -9757,7 +9751,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8054609631325628928">Näitä numeroita voi käyttää palvelun aktivointiin</translation>
 <translation id="8054883179223321715">Saatavilla tietyille videosivustoille</translation>
 <translation id="8054921503121346576">USB-näppäimistö yhdistetty</translation>
-<translation id="8057414620575339583">Reunan hakuikkuna</translation>
 <translation id="8058655154417507695">Viimeinen voimassaolovuosi</translation>
 <translation id="8058986560951482265">Nykivä</translation>
 <translation id="8059417245945632445">Tark&amp;ista laitteet</translation>

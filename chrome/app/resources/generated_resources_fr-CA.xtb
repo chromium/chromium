@@ -2703,7 +2703,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2889064240420137087">Ouvrir le lien avec...</translation>
 <translation id="2890206081124517553">Mémorisez l'arrière-plan de votre bureau sur tous les appareils</translation>
 <translation id="2891464434568738544">Aucun site n'est accessible pour le moment. Visitez un site pour l'ajouter à cette liste.</translation>
-<translation id="2891566119238851894">Ouvrir la recherche dans le panneau latéral lorsque celle-ci n'y est pas ouverte.</translation>
 <translation id="2891922230654533301">Utiliser cet appareil pour vous connecter à <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navigateur par défaut</translation>
 <translation id="2893180576842394309">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google</translation>
@@ -3751,7 +3750,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3678156199662914018">Extension : <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Les pages que vous consultez dans cette fenêtre ne sont pas consignées dans l'historique du navigateur et ne laisseront aucune autre trace sur votre ordinateur (comme des témoins) après la déconnexion. Les fichiers que vous téléchargez et les favoris que vous créez ne seront pas conservés.</translation>
 <translation id="3679126865530709868">Pavé tactile intégré</translation>
-<translation id="368019053277764111">Ouvrir la recherche dans le panneau latéral</translation>
 <translation id="3680683624079082902">Voix de la synthèse vocale</translation>
 <translation id="3681017028939109078">Afficher les suggestions de fenêtre lors du démarrage de l'Écran divisé</translation>
 <translation id="3681311097828166361">Nous vous remercions de vos commentaires. Vous êtes actuellement hors connexion, et votre rapport sera envoyé plus tard.</translation>
@@ -4662,7 +4660,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4316850752623536204">Site Web du développeur</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Autorisations retirées pour 1 site}one{Autorisations retirées pour {NUM_SITES} site}other{Autorisations retirées pour {NUM_SITES} sites}}</translation>
 <translation id="4317733381297736564">Achats intégrés</translation>
-<translation id="4317737918133146519">Votre profil professionnel est presque prêt</translation>
 <translation id="4317820549299924617">Échec de la vérification</translation>
 <translation id="4319441675152393296">Cliquez sur l'icône de cette extension pour lire et modifier <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Pas de connexion Internet</translation>
@@ -6186,7 +6183,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (fonctionne hors ligne)</translation>
 <translation id="5453829744223920473">Votre enfant peut utiliser ses applications, ses favoris et ses ressources scolaires, comme il le fait en classe. L'école établit les règles de base.</translation>
 <translation id="5454166040603940656">avec <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Voir plus de résultats de recherche</translation>
 <translation id="5457082343331641453">Ajouter à votre recherche</translation>
 <translation id="5457113250005438886">Non valide</translation>
 <translation id="5457459357461771897">Accéder aux photos, à la musique et aux autres fichiers multimédias stockés sur votre ordinateur et les supprimer</translation>
@@ -6644,7 +6640,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5799508265798272974">Machine virtuelle Linux : <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Le fichier de destination a été tronqué ou supprimé depuis le dernier téléchargement.</translation>
 <translation id="5800290746557538611">Activer le point d'accès sans fil immédiat</translation>
-<translation id="5800351251499368110">Fermer la recherche ouverte dans le panneau latéral.</translation>
 <translation id="5800703268655655701">Sélectionner le thème clair ou sombre</translation>
 <translation id="5801051031414037185">Configurer le téléphone</translation>
 <translation id="5801568494490449797">Préférences</translation>
@@ -8750,7 +8745,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7356908624372060336">Journaux réseau</translation>
 <translation id="7357271391997763660">Exécuter la vérification du mot de passe?</translation>
 <translation id="735745346212279324">RPV déconnecté</translation>
-<translation id="7358338787722390626">Fermer la recherche dans le panneau latéral</translation>
 <translation id="7359680654975233185">Impossible de diffuser l'onglet</translation>
 <translation id="735994578317267253">Accédez à vos applications, à vos paramètres et plus sur n'importe quel appareil Chrome OS</translation>
 <translation id="7360257054721917104">Affichage des bureaux et des modèles enregistrés. Appuyez sur l'onglet pour naviguer.</translation>
@@ -9749,7 +9743,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8054609631325628928">Ces numéros peuvent être utilisés pour aider à activer le service</translation>
 <translation id="8054883179223321715">Compatible avec certains sites de vidéos</translation>
 <translation id="8054921503121346576">Clavier USB connecté</translation>
-<translation id="8057414620575339583">Recherche latérale</translation>
 <translation id="8058655154417507695">Année d'expiration</translation>
 <translation id="8058986560951482265">Saccadée</translation>
 <translation id="8059417245945632445">&amp;Inspecter les appareils</translation>

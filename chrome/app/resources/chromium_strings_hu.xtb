@@ -173,7 +173,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="3286538390144397061">Újraindítás most</translation>
 <translation id="328888136576916638">Hiányoznak Google API-kulcsok. A Chromium egyes funkciói kikapcsolnak.</translation>
 <translation id="3296368748942286671">A háttéralkalmazások továbbfuttatása, ha a Chromiumot bezárják</translation>
-<translation id="3300643253493387004">A fiókhozzáférés beállítása közben továbbra is használhatja a Chromiumot. Előfordulhat, hogy a beállítás elvégzéséig nem tud hozzáférni egyes erőforrásokhoz.</translation>
 <translation id="3313189106987092621">A Chromium figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
 <translation id="3316771292331273802">Az összes Chromium-ablak bezárásakor a legtöbb webhelyről kijelentkezteti a rendszer, kivéve a Google-fiókját, ha bejelentkezett a Chromiumba. Ha engedélyezni szeretné, hogy a webhelyek emlékezzenek Önre, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3350761136195634146">Már létezik Chromium-profil ezzel a fiókkal</translation>

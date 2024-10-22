@@ -2713,7 +2713,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2889064240420137087">Buka link dengan...</translation>
 <translation id="2890206081124517553">Ingat latar belakang desktop Anda di berbagai perangkat</translation>
 <translation id="2891464434568738544">Tidak ada situs yang tersedia saat ini. Kunjungi situs untuk menambahkannya ke daftar ini.</translation>
-<translation id="2891566119238851894">Buka penelusuran di panel samping. Penelusuran tidak dibuka di panel samping.</translation>
 <translation id="2891922230654533301">Gunakan perangkat Anda untuk login ke <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Browser default</translation>
 <translation id="2893180576842394309">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya</translation>
@@ -3761,7 +3760,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3678156199662914018">Ekstensi: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Halaman yang Anda lihat di jendela ini tidak akan muncul di histori browser dan tidak akan meninggalkan jejak lain, seperti cookie, di komputer setelah Anda logout. File yang didownload dan bookmark yang dibuat tidak akan disimpan.</translation>
 <translation id="3679126865530709868">Touchpad Bawaan</translation>
-<translation id="368019053277764111">Buka penelusuran di panel samping</translation>
 <translation id="3680683624079082902">Suara text-to-speech</translation>
 <translation id="3681017028939109078">Tampilkan saran jendela saat memulai layar terpisah</translation>
 <translation id="3681311097828166361">Terima kasih atas masukannya. Anda sedang offline, laporan akan dikirim nanti.</translation>
@@ -4672,7 +4670,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4316850752623536204">Situs Web Pengembang</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Izin dihapus untuk 1 situs}other{Izin dihapus untuk {NUM_SITES} situs}}</translation>
 <translation id="4317733381297736564">Pembelian dalam aplikasi</translation>
-<translation id="4317737918133146519">Profil kerja Anda hampir siap</translation>
 <translation id="4317820549299924617">Verifikasi tidak berhasil</translation>
 <translation id="4319441675152393296">Klik ikon ekstensi ini untuk membaca dan mengubah <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Tidak ada koneksi internet</translation>
@@ -6198,7 +6195,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (berfungsi secara offline)</translation>
 <translation id="5453829744223920473">Anak Anda dapat menggunakan semua aplikasi, bookmark, dan materi sekolahnya seperti halnya di kelas. Sekolah menetapkan aturan dasar.</translation>
 <translation id="5454166040603940656">dengan <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Lihat hasil penelusuran lainnya</translation>
 <translation id="5457082343331641453">Tambahkan ke penelusuran</translation>
 <translation id="5457113250005438886">Tidak valid</translation>
 <translation id="5457459357461771897">Membaca dan menghapus foto, musik, serta media lain dari komputer Anda</translation>
@@ -6656,7 +6652,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5799508265798272974">Mesin Virtual Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">File tujuan terpotong atau terhapus sejak download terakhir.</translation>
 <translation id="5800290746557538611">Aktifkan Hotspot instan</translation>
-<translation id="5800351251499368110">Tutup penelusuran di panel samping. Penelusuran dibuka di panel samping.</translation>
 <translation id="5800703268655655701">Pilih tema terang atau gelap</translation>
 <translation id="5801051031414037185">Siapkan ponsel</translation>
 <translation id="5801568494490449797">Preferensi</translation>
@@ -8761,7 +8756,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7356908624372060336">Log Jaringan</translation>
 <translation id="7357271391997763660">Jalankan pemeriksaan sandi?</translation>
 <translation id="735745346212279324">VPN terputus</translation>
-<translation id="7358338787722390626">Tutup penelusuran di panel samping</translation>
 <translation id="7359680654975233185">Tidak dapat mentransmisikan tab</translation>
 <translation id="735994578317267253">Dapatkan aplikasi, setelan, dan lainnya di perangkat ChromeOS mana pun</translation>
 <translation id="7360257054721917104">Melihat desktop dan template tersimpan. Tekan tab untuk memilih.</translation>
@@ -9760,7 +9754,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8054609631325628928">Nomor ini dapat digunakan untuk membantu mengaktifkan layanan</translation>
 <translation id="8054883179223321715">Tersedia untuk situs video tertentu</translation>
 <translation id="8054921503121346576">Keyboard USB terhubung</translation>
-<translation id="8057414620575339583">Kotak Penelusuran Samping</translation>
 <translation id="8058655154417507695">Tahun akhir masa berlaku</translation>
 <translation id="8058986560951482265">Tersendat-sendat</translation>
 <translation id="8059417245945632445">&amp;Periksa perangkat</translation>

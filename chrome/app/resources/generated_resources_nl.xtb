@@ -2700,7 +2700,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2889064240420137087">Link openen met...</translation>
 <translation id="2890206081124517553">Bureaubladachtergrond onthouden op verschillende apparaten</translation>
 <translation id="2891464434568738544">Er zijn op dit moment geen sites beschikbaar. Ga naar een site om die aan deze lijst toe te voegen.</translation>
-<translation id="2891566119238851894">Zoeken in zijvenster openen. Zoeken is niet geopend in het zijvenster.</translation>
 <translation id="2891922230654533301">Je apparaat gebruiken om in te loggen bij <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Standaardbrowser</translation>
 <translation id="2893180576842394309">Google kan je geschiedenis gebruiken om Google Zoeken en andere Google-services te personaliseren</translation>
@@ -3746,7 +3745,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3678156199662914018">Extensie: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Pagina's die je in dit venster bekijkt, zijn niet zichtbaar in de browsergeschiedenis en laten geen sporen (zoals cookies) achter op de computer nadat je bent uitgelogd. Bestanden die je downloadt en bookmarks die je instelt, worden niet bewaard.</translation>
 <translation id="3679126865530709868">Geïntegreerde touchpad</translation>
-<translation id="368019053277764111">Zoeken in zijvenster openen</translation>
 <translation id="3680683624079082902">Stem voor tekst-naar-spraak</translation>
 <translation id="3681017028939109078">Suggesties voor vensters tonen wanneer gesplitst scherm wordt gestart</translation>
 <translation id="3681311097828166361">Bedankt voor je feedback. Je bent nu offline en je rapport wordt later verzonden.</translation>
@@ -4656,7 +4654,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4316850752623536204">Website van ontwikkelaar</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Rechten verwijderd voor 1 site}other{Rechten verwijderd voor {NUM_SITES} sites}}</translation>
 <translation id="4317733381297736564">In-app aankopen</translation>
-<translation id="4317737918133146519">Je werkprofiel is bijna klaar</translation>
 <translation id="4317820549299924617">Verificatie is mislukt</translation>
 <translation id="4319441675152393296">Klik op het icoon van deze extensie om <ph name="HOST" /> te lezen en te wijzigen</translation>
 <translation id="4320177379694898372">Geen internetverbinding</translation>
@@ -5044,6 +5041,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4602776638371779614">Dit tabblad zoekt actief naar bluetooth-apparaten</translation>
 <translation id="4605026046465576953">Deze app kan niet worden geopend omdat je geen rechten hebt om geïsoleerde web-apps uit te voeren</translation>
 <translation id="4606551464649945562">Niet toestaan dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
+<translation id="4606933160360542263">Aangepaste toetsencombinatie: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Tabbladgroep verwijderen?}other{Tabbladgroepen verwijderen?}}</translation>
 <translation id="4608500690299898628">&amp;Zoeken...</translation>
 <translation id="4610162781778310380">Er is een fout opgetreden in <ph name="PLUGIN_NAME" /></translation>
@@ -6180,7 +6178,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (werkt offline)</translation>
 <translation id="5453829744223920473">Je kind kan alle school-apps, -bookmarks en -bronnen gebruiken net zoals in de klas. De school bepaalt de basisregels.</translation>
 <translation id="5454166040603940656">met <ph name="PROVIDER" /></translation>
-<translation id="545484289444831485">Meer zoekresultaten bekijken</translation>
 <translation id="5457082343331641453">Zoekopdracht aanvullen</translation>
 <translation id="5457113250005438886">Ongeldig</translation>
 <translation id="5457459357461771897">Foto's, muziek en andere media van je computer lezen en verwijderen</translation>
@@ -6278,6 +6275,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5517304475148761050">Deze app heeft toegang tot de Play Store nodig</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Actie <ph name="ACTION_TO_REMOVE" /> verwijderen</translation>
 <translation id="5521078259930077036">Is dit de homepage die je had verwacht?</translation>
 <translation id="5522156646677899028">Deze extensie bevat een groot beveiligingsprobleem.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Je beheerder heeft een extensie geïnstalleerd}other{Je beheerder heeft # extensies geïnstalleerd}}</translation>
@@ -6636,7 +6634,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5799508265798272974">Virtuele Linux-machine: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Bestemmingsbestand is afgekapt of verwijderd sinds de laatste download.</translation>
 <translation id="5800290746557538611">Instant hotspot aanzetten</translation>
-<translation id="5800351251499368110">Zoeken in zijvenster sluiten. Zoeken is geopend in het zijvenster.</translation>
 <translation id="5800703268655655701">Licht of donker thema selecteren</translation>
 <translation id="5801051031414037185">Telefoon instellen</translation>
 <translation id="5801568494490449797">Voorkeuren</translation>
@@ -8740,7 +8737,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7356908624372060336">Netwerklogboeken</translation>
 <translation id="7357271391997763660">Wachtwoordcheck uitvoeren?</translation>
 <translation id="735745346212279324">Verbinding met VPN verbroken</translation>
-<translation id="7358338787722390626">Zoeken in zijvenster sluiten</translation>
 <translation id="7359680654975233185">Kan tabblad niet casten</translation>
 <translation id="735994578317267253">Krijg op elk Chrome OS-apparaat toegang tot al je apps, instellingen en meer</translation>
 <translation id="7360257054721917104">Opgeslagen bureaus en templates worden weergegeven. Druk op Tab om te navigeren.</translation>
@@ -9738,7 +9734,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8054609631325628928">Met deze nummers kun je de service activeren</translation>
 <translation id="8054883179223321715">Beschikbaar voor specifieke videosites</translation>
 <translation id="8054921503121346576">USB-toetsenbord aangesloten</translation>
-<translation id="8057414620575339583">Zoekfunctie aan zijkant</translation>
 <translation id="8058655154417507695">Vervaljaar</translation>
 <translation id="8058986560951482265">Schokkerig</translation>
 <translation id="8059417245945632445">Apparaten &amp;inspecteren</translation>
@@ -10259,6 +10254,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8429928917752180743">Meer opties voor <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Tikken bekijken</translation>
 <translation id="843173223122814223">Achtergronden maken met AI</translation>
+<translation id="8431977087510901105">Cursorinstellingen gereset</translation>
 <translation id="8433186206711564395">Netwerkinstellingen</translation>
 <translation id="8434109185104929038">Leeshoek</translation>
 <translation id="8434480141477525001">Foutopsporingspoort voor systeemeigen client</translation>

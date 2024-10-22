@@ -9270,21 +9270,6 @@ Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.micr
           이 정책은 Chrome 110에서 삭제되었습니다.
                                         </translation>
 <translation id="7976157349247117979"><ph name="PRODUCT_NAME" /> 전송 대상의 이름</translation>
-<translation id="7982057585796399404">이 정책을 설정하면 사용자 상호작용 없이 자동으로 설치되는 앱 및 확장 프로그램 목록이 지정되며, 사용자가 제거하거나 사용 중지할 수 없습니다. enterprise.deviceAttributes 및 enterprise.platformKeys 확장 프로그램 API의 권한을 비롯한 권한은 암시적으로 부여됩니다. (이 2개의 API는 강제 설치되지 않은 앱과 확장 프로그램에서는 사용할 수 없습니다.)
-
-정책을 설정하지 않으면 앱 또는 확장 프로그램이 자동 설치되지 않으며 사용자는 <ph name="PRODUCT_NAME" />에서 모든 앱 또는 확장 프로그램을 제거할 수 있습니다.
-
-이 정책은 <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 정책을 대체합니다. 기존에 강제 설치된 앱 또는 확장 프로그램은 이 목록에서 삭제되며 <ph name="PRODUCT_NAME" />에서 자동으로 제거됩니다.
-
-모든 확장 프로그램의 소스 코드는 사용자가 개발자 도구를 통해 변경 가능하며, 이 과정에서 확장 프로그램 오작동이 발생할 수 있습니다. 이 점이 우려된다면 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 정책을 설정하세요.
-
-정책의 각 목록 항목은 세미콜론(;)으로 구분된 확장 프로그램 ID 및 업데이트 URL(선택사항)로 구성된 문자열입니다. 확장 프로그램 ID는 32자리 문자열로, 예를 들어 개발자 모드일 때 chrome://extensions에서 확인할 수 있습니다. 업데이트 URL을 지정하는 경우 업데이트 매니페스트 XML 문서(https://developer.chrome.com/extensions/autoupdate)로 연결되어야 합니다. 업데이트 URL은 <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> 또는 <ph name="FILE_SCHEME" /> 스키마 중 하나여야 합니다. 기본적으로 Chrome 웹 스토어의 업데이트 URL이 사용됩니다. 정책에 설정된 업데이트 URL은 최초 설치 시에만 사용되며 향후 확장 프로그램 업데이트에서는 확장 프로그램 매니페스트에 있는 업데이트 URL이 사용됩니다. 후속 업데이트를 위한 업데이트 URL은 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 정책을 사용하여 재정의할 수 있습니다. http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy를 참고하세요.
-
-<ph name="MS_WIN_NAME" /> 인스턴스의 경우 인스턴스가 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
-
-<ph name="MAC_OS_NAME" /> 인스턴스의 경우 인스턴스가 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
-
-참고: 이 정책은 시크릿 모드에는 적용되지 않습니다. 확장 프로그램 호스팅에 관해 자세히 알아보세요(https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651"><ph name="PRODUCT_OS_NAME" />에서 한눈에 보기</translation>
 <translation id="7986473886676689183">Android 보고서 사용 설정</translation>

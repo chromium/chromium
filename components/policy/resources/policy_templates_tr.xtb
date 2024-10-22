@@ -9321,21 +9321,6 @@ Politikayı yalnızca geçici imza içeren uygulamaların engellendiği bir uç 
           Bu politika Chrome 110'da kaldırıldı.
                                         </translation>
 <translation id="7976157349247117979"><ph name="PRODUCT_NAME" /> hedefinin adı</translation>
-<translation id="7982057585796399404">Politikanın ayarlanması, kullanıcı etkileşimi olmadan sessizce yüklenen, kullanıcı tarafından yüklemesi kaldırılamayan veya kapatılamayan uygulamaların ve uzantıların bir listesini belirtir. İzinler, enterprise.deviceAttributes ve enterprise.platformKeys uzantı API'leri için dolaylı olarak verilir. (Bu iki API zorunlu olarak yüklenmemiş uygulamalar ve uzantılar tarafından kullanılamaz.)
-
-Bu politika ayarlanmadan bırakılırsa hiçbir uygulama veya uzantı otomatik olarak yüklenmez ve kullanıcılar <ph name="PRODUCT_NAME" /> ürünündeki uygulama veya uzantıları kaldırabilirler.
-
-Bu politika, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> politikasının yerini alır. Önceden zorunlu olarak yüklenmiş bir uygulama veya uzantı listeden çıkarılırsa <ph name="PRODUCT_NAME" /> ürünü, otomatik olarak bu uygulamayı veya uzantıyı kaldırır.
-
-Herhangi bir uzantının kaynak kodu, kullanıcılar tarafından geliştirici araçları kullanılarak uzantının işlevselliğini devre dışı bırakabilecek şekilde değiştirilebilir. Böyle bir endişe olması durumunda <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> politikasını ayarlayın.
-
-Politikaya ait her liste öğesi, noktalı virgülle (;) ayrılmış bir uzantı kimliği ve isteğe bağlı bir güncelleme URL'si içeren bir dizedir. Uzantı kimliği, örneğin Geliştirici modundayken chrome://extensions adresinde bulunabilen 32 harfli bir dizedir. Belirtilmişse güncelleme URL'si bir Güncelleme Manifest XML dokümanına işaret etmelidir (https://developer.chrome.com/extensions/autoupdate). Güncelleme URL'si şu şemalardan birini kullanmalıdır: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> veya <ph name="FILE_SCHEME" />. Varsayılan olarak Chrome Web Mağazası'nın güncelleme URL'si kullanılır. Bu politikada ayarlanan güncelleme URL'si yalnızca ilk yükleme için kullanılır. Uzantının sonraki güncellemelerinde ise uzantının manifest dosyasındaki güncelleme URL'si kullanılır. Sonraki güncellemelerin güncelleme URL'si <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> politikası kullanılarak geçersiz kılınabilir. http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy adresine bakın.
-
-<ph name="MS_WIN_NAME" /> örneklerinde, Chrome Web Mağazası dışından uygulamalar ve uzantılar, örnek yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmışsa ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuşsa zorunlu olarak yüklenebilir.
-
-<ph name="MAC_OS_NAME" /> örneklerinde, Chrome Web Mağazası dışından uygulamalar ve uzantılar, örnek yalnızca MDM ile çalışıyorsa, MCX aracılığıyla bir alan adına katılmışsa veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuşsa zorunlu olarak yüklenebilir.
-
-Not: Bu politika gizli mod için geçerli değildir. Uzantıların barındırılması (https://developer.chrome.com/extensions/hosting) ile ilgili bilgi edinin.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651"><ph name="PRODUCT_OS_NAME" /> sistemindeki Glanceables</translation>
 <translation id="7986473886676689183">Android raporlamasını etkinleştir</translation>
