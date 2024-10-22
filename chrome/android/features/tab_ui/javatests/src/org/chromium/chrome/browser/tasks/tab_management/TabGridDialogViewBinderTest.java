@@ -75,6 +75,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.text.EmptyTextWatcher;
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -89,7 +90,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private PropertyModel mModel;
-    private PropertyModelChangeProcessor mMCP;
+    private PropertyModelChangeProcessor mMcp;
     private TabGridDialogToolbarView mToolbarView;
     private RecyclerView mContentView;
     private TabGridDialogView mTabGridDialogView;
@@ -100,7 +101,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private ImageView mColorIcon;
     private View mMainContent;
     private @Nullable View mShareButtonContainer;
-    private @Nullable View mShareButton;
+    private @Nullable ButtonCompat mShareButton;
     private @Nullable View mImageTilesContainer;
     private ImageView mHairline;
     private ScrimCoordinator mScrimCoordinator;
@@ -173,7 +174,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                                     .build();
                     mModel.set(TabGridDialogProperties.BINDING_TOKEN, mBindingToken);
 
-                    mMCP =
+                    mMcp =
                             PropertyModelChangeProcessor.create(
                                     mModel,
                                     new TabGridDialogViewBinder.ViewHolder(
@@ -574,14 +575,22 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     @EnableFeatures(DATA_SHARING)
     public void testShareButton() {
+        mModel.set(
+                TabGridDialogProperties.SHARE_BUTTON_STRING_RES,
+                R.string.tab_grid_share_button_text);
         mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, false);
         mModel.set(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER, mOnClickListener);
 
         assertEquals(mShareButtonContainer.getVisibility(), View.GONE);
+        assertEquals("Share", mShareButton.getText());
 
+        mModel.set(
+                TabGridDialogProperties.SHARE_BUTTON_STRING_RES,
+                R.string.tab_grid_manage_button_text);
         mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, true);
         assertEquals(mShareButtonContainer.getVisibility(), View.VISIBLE);
         assertEquals(mShareButton.getVisibility(), View.VISIBLE);
+        assertEquals("Manage", mShareButton.getText());
 
         mShareButton.performClick();
 

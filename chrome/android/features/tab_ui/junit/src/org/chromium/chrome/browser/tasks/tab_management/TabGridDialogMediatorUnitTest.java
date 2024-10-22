@@ -1600,6 +1600,9 @@ public class TabGridDialogMediatorUnitTest {
         verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
         verify(mSharedImageTilesCoordinator).updateCollaborationId(null);
         assertTrue(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
+        assertEquals(
+                R.string.tab_grid_share_button_text,
+                mModel.get(TabGridDialogProperties.SHARE_BUTTON_STRING_RES));
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
 
         // Reset with null first as re-using the same TabGroupId does not reset the observer.
@@ -1610,6 +1613,9 @@ public class TabGridDialogMediatorUnitTest {
         verify(mDialogController)
                 .addMessageCardItem(/* position= */ eq(0), mMessageCardModelCaptor.capture());
         assertTrue(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
+        assertEquals(
+                R.string.tab_grid_manage_button_text,
+                mModel.get(TabGridDialogProperties.SHARE_BUTTON_STRING_RES));
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
         String text = mMessageCardModelCaptor.getValue().get(DESCRIPTION_TEXT).toString();
         assertTrue(text, text.contains("3"));

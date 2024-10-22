@@ -220,6 +220,14 @@ public class TabGridDialogToolbarView extends FrameLayout {
         }
     }
 
+    void setShareButtonStringRes(@StringRes int stringRes) {
+        if (mShareButtonContainer == null || mShareButton == null) return;
+
+        stringRes =
+                stringRes != Resources.ID_NULL ? stringRes : R.string.tab_grid_share_button_text;
+        mShareButton.setText(stringRes);
+    }
+
     void setShareButtonClickListener(OnClickListener listener) {
         if (mShareButton == null) return;
         mShareButton.setOnClickListener(listener);

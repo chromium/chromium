@@ -1072,9 +1072,16 @@ public class TabGridDialogMediator
     }
 
     private void onGroupSharedStateChanged(@Nullable @GroupSharedState Integer groupSharedState) {
-        if (groupSharedState == null
-                || groupSharedState == GroupSharedState.NOT_SHARED
-                || groupSharedState == GroupSharedState.COLLABORATION_ONLY) {
+        if (groupSharedState == null || groupSharedState == GroupSharedState.NOT_SHARED) {
+            mModel.set(
+                    TabGridDialogProperties.SHARE_BUTTON_STRING_RES,
+                    R.string.tab_grid_share_button_text);
+            mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, shouldShowShareButton());
+            mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, false);
+        } else if (groupSharedState == GroupSharedState.COLLABORATION_ONLY) {
+            mModel.set(
+                    TabGridDialogProperties.SHARE_BUTTON_STRING_RES,
+                    R.string.tab_grid_manage_button_text);
             mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, shouldShowShareButton());
             mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, false);
         } else {

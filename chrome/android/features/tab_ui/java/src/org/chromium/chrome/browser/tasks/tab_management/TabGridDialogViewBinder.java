@@ -35,6 +35,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.PRIMARY_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_BUTTON_STRING_RES;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_IMAGE_TILES;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_SHARE_BUTTON;
@@ -242,6 +243,8 @@ class TabGridDialogViewBinder {
                     model.get(SHARE_IMAGE_TILES_CLICK_LISTENER));
         } else if (SHOW_SHARE_BUTTON == propertyKey) {
             viewHolder.toolbarView.setShareButtonVisibility(model.get(SHOW_SHARE_BUTTON));
+        } else if (SHARE_BUTTON_STRING_RES == propertyKey) {
+            viewHolder.toolbarView.setShareButtonStringRes(model.get(SHARE_BUTTON_STRING_RES));
         } else if (SHOW_IMAGE_TILES == propertyKey) {
             viewHolder.toolbarView.setImageTilesVisibility(model.get(SHOW_IMAGE_TILES));
         } else if (TAB_GROUP_COLOR_ID == propertyKey) {
