@@ -94,7 +94,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ExternalAuthUtils mExternalAuthUtils;
     private final ContextMenuParams mParams;
-    private @Nullable UkmRecorder.Bridge mUkmRecorderBridge;
     private ContextMenuNativeDelegate mNativeDelegate;
     private static final String LENS_SUPPORT_STATUS_HISTOGRAM_NAME =
             "ContextMenu.LensSupportStatus";
@@ -1001,41 +1000,33 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         maybeRecordBooleanUkm("ContextMenuAndroid.Shown", actionName);
     }
 
-    /** Initialize the bridge if not yet created. */
-    private void initializeUkmRecorderBridge() {
-        if (mUkmRecorderBridge == null) {
-            mUkmRecorderBridge = new UkmRecorder.Bridge();
-        }
-    }
-
     /**
      * Record a boolean UKM if the lens feature is enabled.
+     *
      * @param eventName The name of the UKM event to record.
      * @param metricName The name of the UKM metric to record.
      */
     private void maybeRecordBooleanUkm(String eventName, String metricName) {
         // Disable UKM reporting when incognito.
         if (mItemDelegate.isIncognito()) return;
-        initializeUkmRecorderBridge();
         WebContents webContents = mItemDelegate.getWebContents();
         if (webContents != null) {
-            mUkmRecorderBridge.recordEventWithBooleanMetric(webContents, eventName, metricName);
+            new UkmRecorder(webContents, eventName).addBooleanMetric(metricName).record();
         }
     }
 
     /**
      * Record a UKM for a menu action if the lens feature is enabled.
+     *
      * @param eventName The name of the boolean UKM event to record.
      * @param actionId The id of the action corresponding the ContextMenuUma.Action enum.
      */
     private void maybeRecordActionUkm(String eventName, int actionId) {
         // Disable UKM reporting when incognito.
         if (mItemDelegate.isIncognito()) return;
-        initializeUkmRecorderBridge();
         WebContents webContents = mItemDelegate.getWebContents();
         if (webContents != null) {
-            mUkmRecorderBridge.recordEventWithIntegerMetric(
-                    webContents, eventName, "Action", actionId);
+            new UkmRecorder(webContents, eventName).addMetric("Action", actionId).record();
         }
     }
 

@@ -7,10 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
-  sources = [
-    "java/src/org/chromium/components/ukm/MultiMetricUkmRecorder.java",
-    "java/src/org/chromium/components/ukm/UkmRecorder.java",
-  ]
+  sources = [ "java/src/org/chromium/components/ukm/UkmRecorder.java" ]
 
   deps = [
     "//build/android:build_java",
@@ -21,9 +18,7 @@ android_library("java") {
 }
 
 robolectric_library("ukm_junit_tests") {
-  sources = [
-    "javatests/src/org/chromium/components/ukm/MultiMetricUkmRecorderTest.java",
-  ]
+  sources = [ "javatests/src/org/chromium/components/ukm/UkmRecorderTest.java" ]
   deps = [
     ":java",
     "//base:base_java_test_support",
@@ -36,10 +31,7 @@ robolectric_library("ukm_junit_tests") {
 }
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/ukm/MultiMetricUkmRecorder.java",
-    "java/src/org/chromium/components/ukm/UkmRecorder.java",
-  ]
+  sources = [ "java/src/org/chromium/components/ukm/UkmRecorder.java" ]
 }
 
 static_library("ukm_recorder") {

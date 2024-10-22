@@ -27,7 +27,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.WebAuthnClientCapability;
-import org.chromium.components.ukm.MultiMetricUkmRecorder;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
@@ -424,12 +424,9 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         } else if (mIsPaymentRequest) {
             mode = AuthenticationRequestMode.PAYMENT;
         }
-        new MultiMetricUkmRecorder.Builder()
-                .setWebContents(mWebContents)
-                .setEventName(event)
+        new UkmRecorder(mWebContents, event)
                 .addMetric(resultMetricName, resultMetricValue)
                 .addMetric("RequestMode", mode)
-                .build()
                 .record();
     }
 

@@ -44,12 +44,9 @@ public class PasswordCheckUkmRecorder extends EmptyTabObserver {
 
     private void recordPasswordChange(
             WebContents webContents, @PasswordChangeType int passwordChangeType) {
-        new UkmRecorder.Bridge()
-                .recordEventWithIntegerMetric(
-                        webContents,
-                        "PasswordManager.PasswordChangeTriggered",
-                        "PasswordChangeType",
-                        passwordChangeType);
+        new UkmRecorder(webContents, "PasswordManager.PasswordChangeTriggered")
+                .addMetric("PasswordChangeType", passwordChangeType)
+                .record();
     }
 
     @Override

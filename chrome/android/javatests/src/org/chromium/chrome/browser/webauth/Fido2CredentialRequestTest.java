@@ -70,8 +70,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.components.ukm.MultiMetricUkmRecorder;
-import org.chromium.components.ukm.MultiMetricUkmRecorderJni;
+import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.CreateConfirmationUiDelegate;
@@ -133,7 +133,7 @@ public class Fido2CredentialRequestTest {
     @Rule public JniMocker mMocker = new JniMocker();
 
     @Mock ClientDataJsonImpl.Natives mClientDataJsonImplMock;
-    @Mock MultiMetricUkmRecorder.Natives mUkmRecorderJniMock;
+    @Mock UkmRecorder.Natives mUkmRecorderJniMock;
 
     private Context mContext;
     private MockIntentSender mIntentSender;
@@ -507,7 +507,7 @@ public class Fido2CredentialRequestTest {
         MockitoAnnotations.initMocks(this);
         mTestAuthenticatorImplJni = new TestAuthenticatorImplJni(mCallback);
         mMocker.mock(InternalAuthenticatorJni.TEST_HOOKS, mTestAuthenticatorImplJni);
-        mMocker.mock(MultiMetricUkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
+        mMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();

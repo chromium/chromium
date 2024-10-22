@@ -405,8 +405,7 @@ public class MerchantTrustMetrics {
     private void recordBooleanUkm(
             @Nullable WebContents webContents, String eventName, String metricsName) {
         if (webContents != null) {
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(webContents, eventName, metricsName);
+            new UkmRecorder(webContents, eventName).addBooleanMetric(metricsName).record();
         }
     }
 }

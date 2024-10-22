@@ -80,9 +80,9 @@ public class TrustedWebActivityUmaRecorder {
     public void recordTwaOpened(@Nullable WebContents webContents) {
         RecordUserAction.record("BrowserServices.TwaOpened");
         if (webContents != null) {
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(
-                            webContents, "TrustedWebActivity.Open", "HasOccurred");
+            new UkmRecorder(webContents, "TrustedWebActivity.Open")
+                    .addBooleanMetric("HasOccurred")
+                    .record();
         }
     }
 

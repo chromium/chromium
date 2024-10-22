@@ -22,12 +22,12 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.WebContents;
 
 @RunWith(BaseRobolectricTestRunner.class)
-public final class MultiMetricUkmRecorderTest {
+public final class UkmRecorderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     private @Mock WebContents mWebContents;
-    private @Mock MultiMetricUkmRecorder.Natives mUkmRecorderJniMock;
+    private @Mock UkmRecorder.Natives mUkmRecorderJniMock;
 
     private final String mTestEventName = "event1";
     private final String mMetricName1 = "metricName1";
@@ -35,17 +35,14 @@ public final class MultiMetricUkmRecorderTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(MultiMetricUkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
+        mJniMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
     }
 
     @Test
     public void record_multipleMetrics() {
-        new MultiMetricUkmRecorder.Builder()
-                .setWebContents(mWebContents)
-                .setEventName(mTestEventName)
+        new UkmRecorder(mWebContents, mTestEventName)
                 .addMetric(mMetricName1, 5)
                 .addMetric(mMetricName2, 10)
-                .build()
                 .record();
         verify(mUkmRecorderJniMock)
                 .recordEventWithMultipleMetrics(

@@ -91,9 +91,9 @@ public class ShareButtonController extends BaseButtonDataProvider {
         if (mOnShareRunnable != null) mOnShareRunnable.run();
         RecordUserAction.record("MobileTopToolbarShareButton");
         if (tab.getWebContents() != null) {
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(
-                            tab.getWebContents(), "TopToolbar.Share", "HasOccurred");
+            new UkmRecorder(tab.getWebContents(), "TopToolbar.Share")
+                    .addBooleanMetric("HasOccurred")
+                    .record();
         }
         shareDelegate.share(tab, /* shareDirectly= */ false, ShareOrigin.TOP_TOOLBAR);
 

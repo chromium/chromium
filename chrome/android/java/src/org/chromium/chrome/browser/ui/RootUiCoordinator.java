@@ -1231,14 +1231,14 @@ public class RootUiCoordinator
 
         if (shareDirectly) {
             RecordUserAction.record("MobileMenuDirectShare");
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(
-                            tab.getWebContents(), "MobileMenu.DirectShare", "HasOccurred");
+            new UkmRecorder(tab.getWebContents(), "MobileMenu.DirectShare")
+                    .addBooleanMetric("HasOccurred")
+                    .record();
         } else {
             RecordUserAction.record("MobileMenuShare");
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(
-                            tab.getWebContents(), "MobileMenu.Share", "HasOccurred");
+            new UkmRecorder(tab.getWebContents(), "MobileMenu.Share")
+                    .addBooleanMetric("HasOccurred")
+                    .record();
         }
         shareDelegate.share(tab, shareDirectly, ShareOrigin.OVERFLOW_MENU);
     }
@@ -1265,9 +1265,9 @@ public class RootUiCoordinator
 
             if (fromMenu) {
                 RecordUserAction.record("MobileMenuFindInPage");
-                new UkmRecorder.Bridge()
-                        .recordEventWithBooleanMetric(
-                                tab.getWebContents(), "MobileMenu.FindInPage", "HasOccurred");
+                new UkmRecorder(tab.getWebContents(), "MobileMenu.FindInPage")
+                        .addBooleanMetric("HasOccurred")
+                        .record();
             } else {
                 RecordUserAction.record("MobileShortcutFindInPage");
             }

@@ -780,32 +780,31 @@ public class MultiWindowUtils implements ActivityStateListener {
 
         if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
 
-        new UkmRecorder.Bridge()
-                .recordEventWithIntegerMetric(
-                        tab.getWebContents(),
-                        "Android.MultiWindowChangeActivity",
+        new UkmRecorder(tab.getWebContents(), "Android.MultiWindowChangeActivity")
+                .addMetric(
                         "ActivityType",
                         isInMultiWindowMode
                                 ? MultiWindowActivityType.ENTER
-                                : MultiWindowActivityType.EXIT);
+                                : MultiWindowActivityType.EXIT)
+                .record();
     }
 
     /**
      * Records the ukms about if the activity is in multi-window mode when the activity is shown.
+     *
      * @param activity The current Context, used to retrieve the ActivityManager system service.
      * @param tab The current activity {@link Tab}.
      */
     public void recordMultiWindowStateUkm(Activity activity, Tab tab) {
         if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
 
-        new UkmRecorder.Bridge()
-                .recordEventWithIntegerMetric(
-                        tab.getWebContents(),
-                        "Android.MultiWindowState",
+        new UkmRecorder(tab.getWebContents(), "Android.MultiWindowState")
+                .addMetric(
                         "WindowState",
                         isInMultiWindowMode(activity)
                                 ? MultiWindowState.MULTI_WINDOW
-                                : MultiWindowState.SINGLE_WINDOW);
+                                : MultiWindowState.SINGLE_WINDOW)
+                .record();
     }
 
     /**

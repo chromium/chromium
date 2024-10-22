@@ -153,9 +153,9 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         var webContents = mTabSupplier.get().getWebContents();
         if (webContents != null) {
             // TODO(ender): find out if this is still captured anywhere.
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(
-                            webContents, "Omnibox.EditUrlSuggestion.Share", "HasOccurred");
+            new UkmRecorder(webContents, "Omnibox.EditUrlSuggestion.Share")
+                    .addBooleanMetric("HasOccurred")
+                    .record();
         }
         mSuggestionHost.finishInteraction();
         // TODO(mdjones): This should only share the displayed URL instead of the background tab.
