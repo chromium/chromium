@@ -34,6 +34,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
@@ -134,14 +135,8 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
       return std::make_unique<WebKioskAppServiceLauncher>(
           profile, kiosk_app_id.account_id, network_delegate);
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/361018151): impl an app service based launcher or reuse
-      // WebKioskAppServiceLauncher since IWAs are installed as Web Apps.
-      // Temporarily use a web kiosk as a placeholder during development.
-      auto kiosk_web_apps = WebKioskAppManager::Get()->GetApps();
-      CHECK_GT(kiosk_web_apps.size(), 0U);
-      const WebKioskAppManager::App& placeholder_app_info = kiosk_web_apps[0];
-      return std::make_unique<WebKioskAppServiceLauncher>(
-          profile, placeholder_app_info.account_id, network_delegate);
+      return std::make_unique<KioskIwaLauncher>(
+          profile, kiosk_app_id.account_id, network_delegate);
   }
 }
 

@@ -22,11 +22,18 @@ class UpdateChannel;
 // enterprise policy.
 class IsolatedWebAppExternalInstallOptions final {
  public:
-  // Created the instance of the class from the enterprise policy entry.
+  // Creates an instance of the class from existing `update_manifest_url` and
+  // `web_bundle_id`. Uses the default update channel.
+  static base::expected<IsolatedWebAppExternalInstallOptions, std::string>
+  Create(const GURL& update_manifest_url,
+         const web_package::SignedWebBundleId& web_bundle_id);
+
+  // Creates an instance of the class from the enterprise policy entry.
   // The entry must contain a valid URL of the update manifest and
   // a Web Bundle ID of type Ed25519PublicKey.
   static base::expected<IsolatedWebAppExternalInstallOptions, std::string>
   FromPolicyPrefValue(const base::Value& entry);
+
   ~IsolatedWebAppExternalInstallOptions();
 
   IsolatedWebAppExternalInstallOptions(
@@ -34,12 +41,16 @@ class IsolatedWebAppExternalInstallOptions final {
   IsolatedWebAppExternalInstallOptions& operator=(
       const IsolatedWebAppExternalInstallOptions& other);
 
-  const GURL& update_manifest_url() const { return update_manifest_url_; }
-  const web_package::SignedWebBundleId& web_bundle_id() const {
+  [[nodiscard]] const GURL& update_manifest_url() const {
+    return update_manifest_url_;
+  }
+  [[nodiscard]] const web_package::SignedWebBundleId& web_bundle_id() const {
     return web_bundle_id_;
   }
-  const UpdateChannel& update_channel() const { return update_channel_; }
-  const std::optional<base::Version>& pinned_version() const {
+  [[nodiscard]] const UpdateChannel& update_channel() const {
+    return update_channel_;
+  }
+  [[nodiscard]] const std::optional<base::Version>& pinned_version() const {
     return pinned_version_;
   }
 

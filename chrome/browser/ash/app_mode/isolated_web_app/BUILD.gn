@@ -10,6 +10,8 @@ static_library("isolated_web_app") {
   sources = [
     "kiosk_iwa_data.cc",
     "kiosk_iwa_data.h",
+    "kiosk_iwa_launcher.cc",
+    "kiosk_iwa_launcher.h",
     "kiosk_iwa_manager.cc",
     "kiosk_iwa_manager.h",
   ]

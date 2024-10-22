@@ -40,6 +40,24 @@ IsolatedWebAppExternalInstallOptions::~IsolatedWebAppExternalInstallOptions() =
 
 // static
 base::expected<IsolatedWebAppExternalInstallOptions, std::string>
+IsolatedWebAppExternalInstallOptions::Create(
+    const GURL& update_manifest_url,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  if (!update_manifest_url.is_valid()) {
+    return base::unexpected("Bad update manifest URL");
+  }
+
+  if (web_bundle_id.is_for_proxy_mode()) {
+    return base::unexpected(
+        "Cannot install a Wed Bundle created for ProxyMode");
+  }
+
+  return IsolatedWebAppExternalInstallOptions(
+      update_manifest_url, web_bundle_id, UpdateChannel::default_channel());
+}
+
+// static
+base::expected<IsolatedWebAppExternalInstallOptions, std::string>
 IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
     const base::Value& entry) {
   if (!entry.is_dict()) {
