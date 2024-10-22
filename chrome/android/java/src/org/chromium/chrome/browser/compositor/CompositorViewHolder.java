@@ -1584,7 +1584,9 @@ public class CompositorViewHolder extends FrameLayout
         }
 
         // Clear drop permissions when tab changes unless this is a new tab loading from the drop.
-        if (mDropUri == null || !tab.getUrl().getSpec().equals(mDropUri.toString())) {
+        if (mDropUri == null
+                || tab == null
+                || !tab.getUrl().getSpec().equals(mDropUri.toString())) {
             releaseDragAndDropPermissions();
         }
     }
