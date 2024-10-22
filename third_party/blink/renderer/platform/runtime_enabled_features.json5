@@ -4452,6 +4452,11 @@
       settable_from_internals: true,
     },
     {
+      name: "VideoFrameMetadataBackgroundBlur",
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "VideoFullscreenOrientationLock",
     },
     {

@@ -15134,6 +15134,7 @@ from previous Chrome versions.
   <int value="-2027299676" label="CdmStorageDatabaseMigration:disabled"/>
   <int value="-2027019131" label="LegacyTechReportTopLevelUrl:enabled"/>
   <int value="-2026838590" label="OmniboxSteadyStateHeight:disabled"/>
+  <int value="-2026169165" label="VideoFrameMetadataBackgroundBlur:enabled"/>
   <int value="-2026156288"
       label="LookalikeUrlNavigationSuggestionsUI:disabled"/>
   <int value="-2025971178" label="QsRevamp:disabled"/>
@@ -17871,6 +17872,7 @@ from previous Chrome versions.
   <int value="-920204598" label="ScrollAnchorSerialization:enabled"/>
   <int value="-920001827" label="NearbySharingSelfShareAutoAccept:disabled"/>
   <int value="-919300982" label="ArcSwitchToKeyMintOnT:disabled"/>
+  <int value="-919149946" label="VideoFrameMetadataBackgroundBlur:disabled"/>
   <int value="-918900957" label="AutofillCreditCardAssist:disabled"/>
   <int value="-918899240" label="HistoryClustersOnDeviceClustering:disabled"/>
   <int value="-918618075" label="enable-service-worker"/>
