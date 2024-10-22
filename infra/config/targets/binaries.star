@@ -568,6 +568,8 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "chrome_ios_wpt",
     label = "//ios/chrome/test/wpt:chrome_ios_wpt",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     results_handler = "layout tests",
     args = [
         "--results-directory",
@@ -1091,41 +1093,57 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "ios_chrome_bookmarks_eg2tests_module",
     label = "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_chrome_integration_eg2tests_module",
     label = "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_chrome_settings_eg2tests_module",
     label = "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_chrome_signin_eg2tests_module",
     label = "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_chrome_smoke_eg2tests_module",
     label = "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_chrome_ui_eg2tests_module",
     label = "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_chrome_web_eg2tests_module",
     label = "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_crash_xcuitests_module",
     label = "//third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
@@ -1151,6 +1169,8 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "ios_web_shell_eg2tests_module",
     label = "//ios/web/shell/test:ios_web_shell_eg2tests_module",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(

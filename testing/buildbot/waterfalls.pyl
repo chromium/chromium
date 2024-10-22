@@ -790,6 +790,17 @@
     # The following builders in this group have been migrated to set their
     # targets in the builders' declarations in
     # //infra/config/subprojects/ci/chromium.fyi.star
+    #   ios-blink-dbg-fyi
+    #   ios-fieldtrial-rel
+    #   ios-m1-simulator
+    #   ios-vm
+    #   ios-webkit-tot
+    #   ios-wpt-fyi-rel
+    #   ios17-beta-simulator
+    #   ios17-sdk-device
+    #   ios17-sdk-simulator
+    #   ios18-beta-simulator
+    #   ios18-sdk-simulator
     #   Linux Viz
     #   linux-annotator-rel
     #   linux-blink-heap-verification
@@ -996,169 +1007,6 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'perfetto_gtests_android',
-        },
-      },
-      'ios-blink-dbg-fyi': {
-        'additional_compile_targets': [
-          'all'
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_default_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_15_beta',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_blink_dbg_tests'
-        },
-      },
-      'ios-fieldtrial-rel': {
-        'mixins': [
-          'finch-chromium-swarming-pool',
-          'has_native_resultdb_integration',
-          'mac_default_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'fieldtrial_ios_simulator_tests',
-        }
-      },
-      # ios-m1-sim compiles with xcode version n on M1 mac, and runs
-      # testers with xcode n during an xcode roll.
-      'ios-m1-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_14_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_m1_simulator_tests'
-        },
-      },
-      'ios-vm': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_vm',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_vm_tests'
-        },
-      },
-      'ios-webkit-tot': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'ios_custom_webkit',
-          'mac_default_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_webkit_tot_tests',
-        },
-      },
-      'ios-wpt-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'ioswpt-chromium-swarming-pool',
-          'mac_14_x64',
-          'mac_toolchain',
-          'xcode_16_main',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_tests_ios_suite',
-        },
-      },
-      'ios17-beta-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_default_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_1_beta',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios17_beta_simulator_tests'
-        },
-      },
-       'ios17-sdk-device': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ios17-sdk-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_14_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_1_beta',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios17_sdk_simulator_tests'
-        },
-      },
-      # ios18-beta-sim compiles with xcode version n-1, but
-      # runs testers with xcode n during an xcode roll.
-      'ios18-beta-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_14_beta_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_beta',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios18_beta_simulator_tests'
-        },
-      },
-      # ios18-sdk-sim compiles with xcode version n, and runs
-      # testers with xcode n during an xcode roll.
-      'ios18-sdk-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_14_beta_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_beta',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios18_sdk_simulator_tests'
         },
       },
       'mac-osxbeta-rel': {

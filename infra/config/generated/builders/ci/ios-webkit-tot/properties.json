@@ -42,7 +42,8 @@
           "builder": "ios-webkit-tot",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-webkit-tot/targets"
     }
   },
   "$build/reclient": {

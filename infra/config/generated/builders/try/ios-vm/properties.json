@@ -38,7 +38,8 @@
           "builder": "ios-vm",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios-vm/targets"
     }
   },
   "$build/reclient": {

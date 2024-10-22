@@ -38,7 +38,8 @@
           "builder": "ios-m1-simulator",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios-m1-simulator/targets"
     }
   },
   "$build/reclient": {

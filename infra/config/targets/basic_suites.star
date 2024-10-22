@@ -2216,151 +2216,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "ios_blink_tests",
-    tests = {
-        "absl_hardening_tests": targets.legacy_test_config(),
-        "angle_unittests": targets.legacy_test_config(
-            use_isolated_scripts_api = True,
-        ),
-        "base_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
-            ],
-        ),
-        "blink_common_unittests": targets.legacy_test_config(),
-        "blink_fuzzer_unittests": targets.legacy_test_config(),
-        "blink_heap_unittests": targets.legacy_test_config(),
-        "blink_platform_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter",
-            ],
-        ),
-        "boringssl_crypto_tests": targets.legacy_test_config(),
-        "boringssl_ssl_tests": targets.legacy_test_config(),
-        "capture_unittests": targets.legacy_test_config(),
-        "cast_unittests": targets.legacy_test_config(),
-        "cc_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.cc_unittests.filter",
-                "--use-gpu-in-tests",
-            ],
-        ),
-        "components_browsertests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_browsertests.filter",
-            ],
-        ),
-        "components_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_unittests.filter",
-            ],
-        ),
-        "compositor_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.compositor_unittests.filter",
-            ],
-        ),
-        "content_browsertests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_browsertests.filter",
-            ],
-        ),
-        "content_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter",
-            ],
-        ),
-        "crashpad_tests": targets.legacy_test_config(),
-        "crypto_unittests": targets.legacy_test_config(),
-        "device_unittests": targets.legacy_test_config(),
-        "display_unittests": targets.legacy_test_config(),
-        "env_chromium_unittests": targets.legacy_test_config(),
-        "events_unittests": targets.legacy_test_config(),
-        "gcm_unit_tests": targets.legacy_test_config(),
-        "gfx_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.gfx_unittests.filter",
-            ],
-        ),
-        "gin_unittests": targets.legacy_test_config(),
-        "gl_unittests": targets.legacy_test_config(),
-        "google_apis_unittests": targets.legacy_test_config(),
-        "gpu_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.gpu_unittests.filter",
-            ],
-        ),
-        "gwp_asan_unittests": targets.legacy_test_config(),
-        "latency_unittests": targets.legacy_test_config(),
-        "leveldb_unittests": targets.legacy_test_config(),
-        "libjingle_xmpp_unittests": targets.legacy_test_config(),
-        "liburlpattern_unittests": targets.legacy_test_config(),
-        "media_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
-            ],
-        ),
-        "media_unittests_skia_graphite_dawn": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
-            ],
-        ),
-        "media_unittests_skia_graphite_metal": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
-            ],
-        ),
-        "midi_unittests": targets.legacy_test_config(),
-        "mojo_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.mojo_unittests.filter",
-            ],
-        ),
-        "native_theme_unittests": targets.legacy_test_config(),
-        "net_unittests": targets.legacy_test_config(),
-        "perfetto_unittests": targets.legacy_test_config(),
-        "printing_unittests": targets.legacy_test_config(),
-        "sandbox_unittests": targets.legacy_test_config(),
-        "services_unittests": targets.legacy_test_config(),
-        "shell_dialogs_unittests": targets.legacy_test_config(),
-        "skia_unittests": targets.legacy_test_config(),
-        "sql_unittests": targets.legacy_test_config(),
-        "storage_unittests": targets.legacy_test_config(),
-        "ui_base_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.ui_base_unittests.filter",
-            ],
-        ),
-        "ui_touch_selection_unittests": targets.legacy_test_config(),
-        "ui_unittests": targets.legacy_test_config(),
-        "url_unittests": targets.legacy_test_config(),
-        "viz_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.viz_unittests.filter",
-                "--use-gpu-in-tests",
-            ],
-        ),
-        "wtf_unittests": targets.legacy_test_config(),
-        "zlib_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "ios_common_tests",
     tests = {
         "absl_hardening_tests": targets.legacy_test_config(),
@@ -2386,66 +2241,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "ios_crash_xcuitests",
-    tests = {
-        "ios_crash_xcuitests_module": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "ios_eg2_cq_tests",
-    tests = {
-        "ios_chrome_integration_eg2tests_module": targets.legacy_test_config(
-            mixins = [
-                "ios_parallel_simulators",
-            ],
-            swarming = targets.swarming(
-                shards = 8,
-            ),
-        ),
-        "ios_web_shell_eg2tests_module": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "ios_eg2_tests",
-    tests = {
-        "ios_chrome_bookmarks_eg2tests_module": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-        "ios_chrome_settings_eg2tests_module": targets.legacy_test_config(
-            mixins = [
-                "ios_parallel_simulators",
-            ],
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-        ),
-        "ios_chrome_signin_eg2tests_module": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
-        "ios_chrome_smoke_eg2tests_module": targets.legacy_test_config(),
-        "ios_chrome_ui_eg2tests_module": targets.legacy_test_config(
-            mixins = [
-                "ios_parallel_simulators",
-            ],
-            swarming = targets.swarming(
-                shards = 12,
-            ),
-        ),
-        "ios_chrome_web_eg2tests_module": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "ios_screen_size_dependent_tests",
     tests = {
         "base_unittests": targets.legacy_test_config(),
@@ -2462,20 +2257,6 @@ targets.legacy_basic_suite(
 )
 
 # END tests which run on the GPU bots
-
-targets.legacy_basic_suite(
-    name = "ios_vm_unittests",
-    tests = {
-        "ios_chrome_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "ios_vm_eg2_tests",
-    tests = {
-        "ios_chrome_smoke_eg2tests_module": targets.legacy_test_config(),
-    },
-)
 
 targets.legacy_basic_suite(
     name = "leak_detection_isolated_scripts",
@@ -3471,22 +3252,6 @@ targets.legacy_basic_suite(
         ),
         "polymer_tools_python_unittests": targets.legacy_test_config(
             experiment_percentage = 0,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "wpt_tests_ios_suite",
-    tests = {
-        "wpt_tests_ios": targets.legacy_test_config(
-            args = [
-                "--no-wpt-internal",
-            ],
-            swarming = targets.swarming(
-                shards = 36,
-                expiration_sec = 18000,
-                hard_timeout_sec = 14400,
-            ),
         ),
     },
 )

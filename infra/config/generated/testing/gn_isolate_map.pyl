@@ -432,6 +432,7 @@
   "chrome_ios_wpt": {
     "label": "//ios/chrome/test/wpt:chrome_ios_wpt",
     "type": "generated_script",
+    "skip_usage_check": True,
     "args": [
       "--results-directory",
       "${ISOLATED_OUTDIR}",
@@ -1030,6 +1031,7 @@
   "ios_chrome_bookmarks_eg2tests_module": {
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "ios_chrome_clusterfuzz_asan_build": {
     "label": "//ios/chrome/test/wpt:ios_chrome_clusterfuzz_asan_build",
@@ -1038,22 +1040,27 @@
   "ios_chrome_integration_eg2tests_module": {
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "ios_chrome_settings_eg2tests_module": {
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "ios_chrome_signin_eg2tests_module": {
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "ios_chrome_smoke_eg2tests_module": {
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "ios_chrome_ui_eg2tests_module": {
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "ios_chrome_unittests": {
     "label": "//ios/chrome/test:ios_chrome_unittests",
@@ -1062,6 +1069,7 @@
   "ios_chrome_web_eg2tests_module": {
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "ios_components_unittests": {
     "label": "//ios/components:ios_components_unittests",
@@ -1070,6 +1078,7 @@
   "ios_crash_xcuitests_module": {
     "label": "//third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "ios_net_unittests": {
     "label": "//ios/net:ios_net_unittests",
@@ -1086,6 +1095,7 @@
   "ios_web_shell_eg2tests_module": {
     "label": "//ios/web/shell/test:ios_web_shell_eg2tests_module",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "ios_web_unittests": {
     "label": "//ios/web:ios_web_unittests",

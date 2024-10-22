@@ -44,7 +44,8 @@
           "builder": "ios-vm",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-vm/targets"
     }
   },
   "$build/reclient": {

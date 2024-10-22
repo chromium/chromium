@@ -44,7 +44,8 @@
           "builder": "ios-m1-simulator",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-m1-simulator/targets"
     }
   },
   "$build/reclient": {

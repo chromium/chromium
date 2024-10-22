@@ -1653,6 +1653,34 @@ targets.bundle(
     },
 )
 
+targets.bundle(
+    name = "fieldtrial_ios_simulator_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "disable_field_trial_config_for_earl_grey",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPHONE_14_17_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "disable_field_trial_config_for_earl_grey",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPHONE_14_17_5",
+            ],
+        ),
+    ],
+)
+
 # Runs only the accessibility tests in CI/CQ to reduce accessibility
 # failures that land.
 targets.bundle(
@@ -2972,6 +3000,388 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "ios17_beta_simulator_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_1",
+                "SIM_IPHONE_14_18_1",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_crash_xcuitests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_1",
+                "SIM_IPHONE_14_18_1",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_1",
+                "SIM_IPHONE_14_18_1",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_1",
+                "SIM_IPHONE_14_18_1",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_1",
+                "SIM_IPHONE_14_18_1",
+                "SIM_IPHONE_SE_3RD_GEN_18_1",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios17_sdk_simulator_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_1",
+                "SIM_IPHONE_14_18_1",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_1",
+                "SIM_IPHONE_14_18_1",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_1",
+                "SIM_IPHONE_14_18_1",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_1",
+                "SIM_IPHONE_14_18_1",
+                "SIM_IPHONE_SE_3RD_GEN_18_1",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios18_beta_simulator_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_crash_xcuitests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_10TH_GEN_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_10TH_GEN_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPHONE_15_PRO_MAX_18_0",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios18_sdk_simulator_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_crash_xcuitests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPHONE_SE_3RD_GEN_18_0",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios_blink_dbg_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_blink_tests",
+            variants = [
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios_blink_tests",
+    targets = [
+        "absl_hardening_tests",
+        "angle_unittests",
+        "base_unittests",
+        "blink_common_unittests",
+        "blink_fuzzer_unittests",
+        "blink_heap_unittests",
+        "blink_platform_unittests",
+        "boringssl_crypto_tests",
+        "boringssl_ssl_tests",
+        "capture_unittests",
+        "cast_unittests",
+        "cc_unittests",
+        "components_browsertests",
+        "components_unittests",
+        "compositor_unittests",
+        "content_browsertests",
+        "content_unittests",
+        "crashpad_tests",
+        "crypto_unittests",
+        "device_unittests",
+        "display_unittests",
+        "env_chromium_unittests",
+        "events_unittests",
+        "gcm_unit_tests",
+        "gfx_unittests",
+        "gin_unittests",
+        "gl_unittests",
+        "google_apis_unittests",
+        "gpu_unittests",
+        "gwp_asan_unittests",
+        "latency_unittests",
+        "leveldb_unittests",
+        "libjingle_xmpp_unittests",
+        "liburlpattern_unittests",
+        "media_unittests",
+        "media_unittests_skia_graphite_dawn",
+        "media_unittests_skia_graphite_metal",
+        "midi_unittests",
+        "mojo_unittests",
+        "native_theme_unittests",
+        "net_unittests",
+        "perfetto_unittests",
+        "printing_unittests",
+        "sandbox_unittests",
+        "services_unittests",
+        "shell_dialogs_unittests",
+        "skia_unittests",
+        "sql_unittests",
+        "storage_unittests",
+        "ui_base_unittests",
+        "ui_touch_selection_unittests",
+        "ui_unittests",
+        "url_unittests",
+        "viz_unittests",
+        "wtf_unittests",
+        "zlib_unittests",
+    ],
+    per_test_modifications = {
+        "angle_unittests": targets.mixin(
+            use_isolated_scripts_api = True,
+        ),
+        "base_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
+            ],
+        ),
+        "blink_platform_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter",
+            ],
+        ),
+        "cc_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.cc_unittests.filter",
+                "--use-gpu-in-tests",
+            ],
+        ),
+        "components_browsertests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_browsertests.filter",
+            ],
+        ),
+        "components_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_unittests.filter",
+            ],
+        ),
+        "compositor_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.compositor_unittests.filter",
+            ],
+        ),
+        "content_browsertests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_browsertests.filter",
+            ],
+        ),
+        "content_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter",
+            ],
+        ),
+        "gfx_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.gfx_unittests.filter",
+            ],
+        ),
+        "gpu_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.gpu_unittests.filter",
+            ],
+        ),
+        "media_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
+            ],
+        ),
+        "media_unittests_skia_graphite_dawn": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
+            ],
+        ),
+        "media_unittests_skia_graphite_metal": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
+            ],
+        ),
+        "mojo_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.mojo_unittests.filter",
+            ],
+        ),
+        "ui_base_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.ui_base_unittests.filter",
+            ],
+        ),
+        "viz_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.viz_unittests.filter",
+                "--use-gpu-in-tests",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
     name = "ios_clang_tot_device_tests",
     targets = [
         targets.bundle(
@@ -3048,6 +3458,126 @@ targets.bundle(
                 "SIM_IPHONE_14_16_4",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_0",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios_crash_xcuitests",
+    targets = [
+        "ios_crash_xcuitests_module",
+    ],
+)
+
+targets.bundle(
+    name = "ios_eg2_cq_tests",
+    targets = [
+        "ios_chrome_integration_eg2tests_module",
+        "ios_web_shell_eg2tests_module",
+    ],
+    per_test_modifications = {
+        "ios_chrome_integration_eg2tests_module": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+            "ios_parallel_simulators",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "ios_eg2_tests",
+    targets = [
+        "ios_chrome_bookmarks_eg2tests_module",
+        "ios_chrome_settings_eg2tests_module",
+        "ios_chrome_signin_eg2tests_module",
+        "ios_chrome_smoke_eg2tests_module",
+        "ios_chrome_ui_eg2tests_module",
+        "ios_chrome_web_eg2tests_module",
+    ],
+    per_test_modifications = {
+        "ios_chrome_bookmarks_eg2tests_module": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "ios_chrome_settings_eg2tests_module": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "ios_parallel_simulators",
+        ],
+        "ios_chrome_signin_eg2tests_module": targets.mixin(
+            swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
+        "ios_chrome_ui_eg2tests_module": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
+            "ios_parallel_simulators",
+        ],
+        "ios_chrome_web_eg2tests_module": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "ios_m1_simulator_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_14_PRO_MAX_17_5",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPHONE_15_PRO_MAX_18_0",
             ],
         ),
     ],
@@ -3188,6 +3718,95 @@ targets.bundle(
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPHONE_15_18_0",
                 "SIM_IPAD_PRO_7TH_GEN_18_0",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios_vm_eg2_tests",
+    targets = [
+        "ios_chrome_smoke_eg2tests_module",
+    ],
+)
+
+targets.bundle(
+    name = "ios_vm_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_vm_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_10TH_GEN_17_5",
+                "SIM_IPAD_10TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_14_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_vm_unittests",
+            variants = [
+                "SIM_IPAD_10TH_GEN_17_5",
+                "SIM_IPAD_10TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_14_18_0",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios_vm_unittests",
+    targets = [
+        "ios_chrome_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "ios_webkit_tot_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
             ],
         ),
     ],
@@ -3668,6 +4287,25 @@ targets.bundle(
     per_test_modifications = {
         "xr.webxr.static": targets.mixin(
             experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.bundle(
+    name = "wpt_tests_ios_suite",
+    targets = [
+        "wpt_tests_ios",
+    ],
+    per_test_modifications = {
+        "wpt_tests_ios": targets.mixin(
+            args = [
+                "--no-wpt-internal",
+            ],
+            swarming = targets.swarming(
+                shards = 36,
+                expiration_sec = 18000,
+                hard_timeout_sec = 14400,
+            ),
         ),
     },
 )

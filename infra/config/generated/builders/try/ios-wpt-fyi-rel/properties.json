@@ -38,7 +38,8 @@
           "builder": "ios-wpt-fyi-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios-wpt-fyi-rel/targets"
     }
   },
   "$build/reclient": {

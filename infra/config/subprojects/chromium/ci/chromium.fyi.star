@@ -627,6 +627,20 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "fieldtrial_ios_simulator_tests",
+        ],
+        mixins = [
+            "finch-chromium-swarming-pool",
+            "has_native_resultdb_integration",
+            "mac_default_arm64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
+            "xctest",
+        ],
+    ),
     builderless = True,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
@@ -900,6 +914,18 @@ fyi_ios_builder(
             "remoteexec",
             "xctest",
             "dcheck_always_on",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "wpt_tests_ios_suite",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "ioswpt-chromium-swarming-pool",
+            "mac_14_x64",
+            "mac_toolchain",
+            "xcode_16_main",
         ],
     ),
     builderless = True,
@@ -1836,6 +1862,25 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
+    # ios-m1-sim compiles with xcode version n on M1 mac, and runs
+    # testers with xcode n during an xcode roll.
+    targets = targets.bundle(
+        targets = [
+            "ios_m1_simulator_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "mac_14_arm64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
+            "xctest",
+        ],
+    ),
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|iOSM1",
@@ -1874,6 +1919,23 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "ios_blink_dbg_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "mac_default_arm64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_15_beta",
+            "xctest",
+        ],
+    ),
     builderless = True,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
@@ -1908,6 +1970,22 @@ fyi_ios_builder(
             "remoteexec",
             "ios_simulator",
             "arm64",
+            "xctest",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "ios_vm_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "mac_vm",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
             "xctest",
         ],
     ),
@@ -1953,6 +2031,21 @@ fyi_ios_builder(
             "no_lld",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "ios_webkit_tot_tests",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "ios_custom_webkit",
+            "mac_default_x64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
+            "xctest",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "iOS",
         short_name = "wk",
@@ -1982,6 +2075,23 @@ fyi_ios_builder(
             "remoteexec",
             "ios_simulator",
             "arm64",
+            "xctest",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "ios17_beta_simulator_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "mac_default_arm64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_1_beta",
             "xctest",
         ],
     ),
@@ -2023,6 +2133,11 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
@@ -2055,6 +2170,23 @@ fyi_ios_builder(
             "remoteexec",
             "ios_simulator",
             "arm64",
+            "xctest",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "ios17_sdk_simulator_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "mac_14_arm64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_1_beta",
             "xctest",
         ],
     ),
@@ -2097,6 +2229,25 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
+    # ios18-beta-sim compiles with xcode version n-1, but
+    # runs testers with xcode n during an xcode roll.
+    targets = targets.bundle(
+        targets = [
+            "ios18_beta_simulator_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "mac_14_beta_arm64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_beta",
+            "xctest",
+        ],
+    ),
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
@@ -2131,6 +2282,25 @@ fyi_ios_builder(
             "remoteexec",
             "ios_simulator",
             "arm64",
+            "xctest",
+        ],
+    ),
+    # ios18-sdk-sim compiles with xcode version n, and runs
+    # testers with xcode n during an xcode roll.
+    targets = targets.bundle(
+        targets = [
+            "ios18_sdk_simulator_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "mac_14_beta_arm64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_beta",
             "xctest",
         ],
     ),

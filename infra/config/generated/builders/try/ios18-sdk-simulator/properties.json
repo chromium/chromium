@@ -39,7 +39,8 @@
           "builder": "ios18-sdk-simulator",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios18-sdk-simulator/targets"
     }
   },
   "$build/reclient": {

@@ -164,6 +164,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_AIR_5TH_GEN_17_5",
     identifier = "iPad Air (5th generation) 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -178,6 +179,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_AIR_5TH_GEN_18_1",
     identifier = "iPad Air (5th generation) 18.1",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_1",
     ],
@@ -221,6 +223,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_PRO_6TH_GEN_17_5",
     identifier = "iPad Pro (12.9-inch) (6th generation) 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -235,6 +238,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_PRO_7TH_GEN_18_0",
     identifier = "iPad Pro 13-inch (M4) 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -249,6 +253,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_10TH_GEN_17_5",
     identifier = "iPad (10th generation) 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -263,6 +268,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_10TH_GEN_18_0",
     identifier = "iPad (10th generation) 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -292,6 +298,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_17_5",
     identifier = "iPhone 14 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -306,6 +313,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_18_0",
     identifier = "iPhone 14 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -320,6 +328,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_18_1",
     identifier = "iPhone 14 18.1",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_1",
     ],
@@ -393,6 +402,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_PRO_MAX_17_5",
     identifier = "iPhone 14 Pro Max 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -407,6 +417,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_15_PRO_MAX_18_0",
     identifier = "iPhone 15 Pro Max 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -451,6 +462,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_SE_3RD_GEN_18_0",
     identifier = "iPhone SE (3rd generation) 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -465,6 +477,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_SE_3RD_GEN_18_1",
     identifier = "iPhone SE (3rd generation) 18.1",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_1",
     ],

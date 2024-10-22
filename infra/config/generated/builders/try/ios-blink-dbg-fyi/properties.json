@@ -39,7 +39,8 @@
           "builder": "ios-blink-dbg-fyi",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios-blink-dbg-fyi/targets"
     }
   },
   "$build/reclient": {

@@ -45,7 +45,8 @@
           "builder": "ios18-sdk-simulator",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios18-sdk-simulator/targets"
     }
   },
   "$build/reclient": {

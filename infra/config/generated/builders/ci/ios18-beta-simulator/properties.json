@@ -45,7 +45,8 @@
           "builder": "ios18-beta-simulator",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios18-beta-simulator/targets"
     }
   },
   "$build/reclient": {

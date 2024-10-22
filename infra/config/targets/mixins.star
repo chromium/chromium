@@ -568,6 +568,7 @@ targets.mixin(
 
 targets.mixin(
     name = "disable_field_trial_config_for_earl_grey",
+    generate_pyl_entry = False,
     args = [
         "--extra-app-args=--disable-field-trial-config",
     ],
@@ -878,6 +879,7 @@ targets.mixin(
 
 targets.mixin(
     name = "ios_custom_webkit",
+    generate_pyl_entry = False,
     args = [
         "--args-json",
         "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -894,6 +896,7 @@ targets.mixin(
 
 targets.mixin(
     name = "ios_parallel_simulators",
+    generate_pyl_entry = False,
     args = [
         "--clones",
         "2",
@@ -923,6 +926,7 @@ targets.mixin(
 
 targets.mixin(
     name = "ios_runtime_cache_17_5",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
@@ -947,6 +951,7 @@ targets.mixin(
 
 targets.mixin(
     name = "ios_runtime_cache_18_1",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
@@ -959,6 +964,7 @@ targets.mixin(
 
 targets.mixin(
     name = "ioswpt-chromium-swarming-pool",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "pool": "chromium.tests.ioswpt",
@@ -1159,6 +1165,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_vm",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1261,6 +1268,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_14_beta_arm64",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1709,6 +1717,7 @@ targets.mixin(
 
 targets.mixin(
     name = "record_failed_tests",
+    generate_pyl_entry = False,
     args = [
         "--record-video",
         "failed_only",
@@ -2099,6 +2108,7 @@ targets.mixin(
 
 targets.mixin(
     name = "xcode_15_beta",
+    generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
         "15f31d",
@@ -2131,6 +2141,7 @@ targets.mixin(
 
 targets.mixin(
     name = "xcode_16_beta",
+    generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
         "16a242d",
@@ -2147,6 +2158,7 @@ targets.mixin(
 
 targets.mixin(
     name = "xcode_16_1_beta",
+    generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
         "16b5029d",
@@ -2163,6 +2175,7 @@ targets.mixin(
 
 targets.mixin(
     name = "xcodebuild_sim_runner",
+    generate_pyl_entry = False,
     args = [
         "--xcodebuild-sim-runner",
     ],
