@@ -116,8 +116,7 @@ WebRequestResourceType ToWebRequestResourceType(
     case network::mojom::RequestDestination::kSpeculationRules:
       return WebRequestResourceType::OTHER;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebRequestResourceType::OTHER;
+  NOTREACHED();
 }
 
 const char* WebRequestResourceTypeToString(WebRequestResourceType type) {

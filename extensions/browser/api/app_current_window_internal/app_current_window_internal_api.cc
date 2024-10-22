@@ -57,8 +57,6 @@ const char kRequiresFramelessWindow[] =
 const char kAlwaysOnTopPermission[] =
     "The \"app.window.alwaysOnTop\" permission is required.";
 
-const char kInvalidParameters[] = "Invalid parameters.";
-
 const int kUnboundedSize = SizeConstraints::kUnboundedSize;
 
 void GetBoundsFields(const Bounds& bounds_spec, gfx::Rect* bounds) {
@@ -206,8 +204,7 @@ AppCurrentWindowInternalSetBoundsFunction::Run() {
 
   bounds::BoundsType bounds_type = bounds::GetBoundsType(params->bounds_type);
   if (bounds_type == bounds::INVALID_TYPE) {
-    NOTREACHED_IN_MIGRATION();
-    return RespondNow(Error(kInvalidParameters));
+    NOTREACHED();
   }
 
   // Start with the current bounds, and change any values that are specified in
@@ -245,7 +242,7 @@ AppCurrentWindowInternalSetBoundsFunction::Run() {
       break;
     }
     case bounds::INVALID_TYPE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (original_window_bounds != window_bounds) {
@@ -276,8 +273,7 @@ AppCurrentWindowInternalSetSizeConstraintsFunction::Run() {
   bounds::BoundsType bounds_type = bounds::GetBoundsType(params->bounds_type);
   if (bounds_type != bounds::INNER_BOUNDS &&
       bounds_type != bounds::OUTER_BOUNDS) {
-    NOTREACHED_IN_MIGRATION();
-    return RespondNow(Error(kInvalidParameters));
+    NOTREACHED();
   }
 
   gfx::Size original_min_size =

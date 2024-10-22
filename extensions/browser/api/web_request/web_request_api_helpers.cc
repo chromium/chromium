@@ -380,8 +380,7 @@ struct DNRHeaderAction {
       case dnr_api::HeaderOperation::kRemove:
         return true;
       case dnr_api::HeaderOperation::kNone:
-        NOTREACHED_IN_MIGRATION();
-        return true;
+        NOTREACHED();
     }
   }
 
@@ -463,7 +462,7 @@ bool ModifyRequestHeadersForAction(
         break;
       }
       case dnr_api::HeaderOperation::kNone:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     request_headers_modified |= header_modified;
@@ -561,7 +560,7 @@ bool ModifyResponseHeadersForAction(
         break;
       }
       case dnr_api::HeaderOperation::kNone:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     response_headers_modified |= header_modified;

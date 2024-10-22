@@ -426,9 +426,8 @@ std::string WebViewInternalCaptureVisibleRegionFunction::GetErrorMessage(
       reason_description = "screenshot has been disabled";
       break;
     case OK:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "GetErrorMessage should not be called with a successful result";
-      return "";
   }
   return ErrorUtils::FormatErrorMessage("Failed to capture webview: *",
                                         reason_description);
@@ -534,8 +533,7 @@ bool WebViewInternalExecuteCodeFunction::LoadFileForEmbedder(
 
   switch (host_id().type) {
     case mojom::HostID::HostType::kExtensions:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     case mojom::HostID::HostType::kControlledFrameEmbedder:
       url_fetcher_ = std::make_unique<ControlledFrameEmbedderURLFetcher>(
           source_process_id(), render_frame_host()->GetRoutingID(), file_url,
@@ -774,7 +772,7 @@ ExtensionFunction::ResponseAction WebViewInternalSetZoomModeFunction::Run() {
       zoom_mode = ZoomController::ZOOM_MODE_DISABLED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   GetGuest().SetZoomMode(zoom_mode);
@@ -804,7 +802,7 @@ ExtensionFunction::ResponseAction WebViewInternalGetZoomModeFunction::Run() {
       zoom_mode = web_view_internal::ZoomMode::kDisabled;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return RespondNow(WithArguments(web_view_internal::ToString(zoom_mode)));
@@ -982,7 +980,7 @@ ExtensionFunction::ResponseAction WebViewInternalSetPermissionFunction::Run() {
     case api::web_view_internal::SetPermissionAction::kDefault:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   std::string user_input;

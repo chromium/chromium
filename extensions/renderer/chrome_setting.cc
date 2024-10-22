@@ -124,8 +124,7 @@ v8::Local<v8::Value> ChromeSetting::GetOnChangeEvent(
       isolate, gin::StringToSymbol(isolate, "onChangeEvent"));
   v8::Local<v8::Value> event;
   if (!wrapper->GetPrivate(context, key).ToLocal(&event)) {
-    NOTREACHED_IN_MIGRATION();
-    return v8::Local<v8::Value>();
+    NOTREACHED();
   }
 
   DCHECK(!event.IsEmpty());
@@ -139,8 +138,7 @@ v8::Local<v8::Value> ChromeSetting::GetOnChangeEvent(
         true, context);
     v8::Maybe<bool> set_result = wrapper->SetPrivate(context, key, event);
     if (!set_result.IsJust() || !set_result.FromJust()) {
-      NOTREACHED_IN_MIGRATION();
-      return v8::Local<v8::Value>();
+      NOTREACHED();
     }
   }
   return event;

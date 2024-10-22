@@ -82,8 +82,7 @@ std::string GetContextTypeDescriptionString(mojom::ContextType context_type) {
     case mojom::ContextType::kUserScript:
       return "USER_SCRIPT_CONTEXT";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 static std::string ToStringOrDefault(v8::Isolate* isolate,

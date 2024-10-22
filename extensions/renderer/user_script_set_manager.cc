@@ -79,14 +79,12 @@ void UserScriptSetManager::OnUpdateUserScripts(
     base::ReadOnlySharedMemoryRegion shared_memory,
     const mojom::HostID& host_id) {
   if (!shared_memory.IsValid()) {
-    NOTREACHED_IN_MIGRATION() << "Bad scripts handle";
-    return;
+    NOTREACHED() << "Bad scripts handle";
   }
 
   if (host_id.type == mojom::HostID::HostType::kExtensions &&
       !crx_file::id_util::IdIsValid(host_id.id)) {
-    NOTREACHED_IN_MIGRATION() << "Invalid extension id: " << host_id.id;
-    return;
+    NOTREACHED() << "Invalid extension id: " << host_id.id;
   }
 
   auto& scripts = scripts_[host_id];

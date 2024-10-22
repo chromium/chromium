@@ -129,8 +129,7 @@ void ObjectBackedNativeHandler::Router(
   if (ret_value->IsObject() && !ret_value->IsNull() &&
       !ContextCanAccessObject(isolate, context,
                               v8::Local<v8::Object>::Cast(ret_value), true)) {
-    NOTREACHED_IN_MIGRATION() << "Insecure return value";
-    ret.SetUndefined();
+    NOTREACHED() << "Insecure return value";
   }
 }
 

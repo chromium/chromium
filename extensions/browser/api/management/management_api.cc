@@ -255,7 +255,7 @@ management::ExtensionInfo CreateExtensionInfo(
         break;
       case LAUNCH_TYPE_INVALID:
       case NUM_LAUNCH_TYPES:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     info.available_launch_types = GetAvailableLaunchTypes(extension, delegate);
@@ -997,7 +997,7 @@ ExtensionFunction::ResponseAction ManagementSetLaunchTypeFunction::Run() {
       launch_type = LAUNCH_TYPE_WINDOW;
       break;
     case management::LaunchType::kNone:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   delegate->SetLaunchType(browser_context(), params->id, launch_type);

@@ -151,8 +151,7 @@ void EmbedderUserScriptLoader::CreateEmbedderURLFetchers(
         NOTREACHED();
 #endif
       case extensions::mojom::HostID::HostType::kExtensions:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     fetchers_.push_back(std::move(fetcher));
   }

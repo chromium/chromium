@@ -86,7 +86,7 @@ void MockExtensionSystem::InstallUpdate(
     const base::FilePath& temp_dir,
     bool install_immediately,
     InstallUpdateCallback install_update_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockExtensionSystem::PerformActionBasedOnOmahaAttributes(
@@ -96,8 +96,7 @@ void MockExtensionSystem::PerformActionBasedOnOmahaAttributes(
 bool MockExtensionSystem::FinishDelayedInstallationIfReady(
     const ExtensionId& extension_id,
     bool install_immediately) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace extensions

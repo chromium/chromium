@@ -176,8 +176,7 @@ bt_private::ConnectResultType DeviceConnectErrorToConnectResult(
     case device::BluetoothDevice::ERROR_SOCKET:
       return bt_private::ConnectResultType::kSocketError;
     case device::BluetoothDevice::NUM_CONNECT_ERROR_CODES:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return bt_private::ConnectResultType::kNone;
 }
@@ -446,7 +445,7 @@ void BluetoothPrivateSetPairingResponseFunction::DoWork(
         device->CancelPairing();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

@@ -56,8 +56,7 @@ events::HistogramValue StorageAreaToEventHistogram(
     case StorageAreaNamespace::kSession:
       return events::STORAGE_SESSION_ON_CHANGE;
     case StorageAreaNamespace::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return events::UNKNOWN;
+      NOTREACHED();
   }
 }
 

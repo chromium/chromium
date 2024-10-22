@@ -177,8 +177,7 @@ bool ComputeExtensionID(const base::Value::Dict& manifest,
   // reloading the extension.
   *extension_id = crx_file::id_util::GenerateIdForPath(path);
   if (extension_id->empty()) {
-    NOTREACHED_IN_MIGRATION() << "Could not create ID from path.";
-    return false;
+    NOTREACHED() << "Could not create ID from path.";
   }
   return true;
 }

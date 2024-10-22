@@ -374,9 +374,7 @@ ExtensionFunction::ResponseAction FeedbackPrivateReadLogSourceFunction::Run() {
 
   return RespondLater();
 #else
-  NOTREACHED_IN_MIGRATION()
-      << "API function is not supported on this platform.";
-  return RespondNow(Error("API function is not supported on this platform."));
+  NOTREACHED() << "API function is not supported on this platform.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

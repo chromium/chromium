@@ -1000,8 +1000,7 @@ std::string WebRequestRequestCookieAction::GetName() const {
     case helpers::REMOVE:
       return keys::kRemoveRequestCookieType;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::optional<EventResponseDelta> WebRequestRequestCookieAction::CreateDelta(
@@ -1048,8 +1047,7 @@ std::string WebRequestResponseCookieAction::GetName() const {
     case helpers::REMOVE:
       return keys::kRemoveResponseCookieType;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::optional<EventResponseDelta> WebRequestResponseCookieAction::CreateDelta(

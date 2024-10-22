@@ -143,21 +143,19 @@ void ShellExtensionSystem::InstallUpdate(
     const base::FilePath& temp_dir,
     bool install_immediately,
     InstallUpdateCallback install_update_callback) {
-  NOTREACHED_IN_MIGRATION();
-  base::DeletePathRecursively(temp_dir);
+  NOTREACHED();
 }
 
 void ShellExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const ExtensionId& extension_id,
     const base::Value::Dict& attributes) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool ShellExtensionSystem::FinishDelayedInstallationIfReady(
     const ExtensionId& extension_id,
     bool install_immediately) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace extensions

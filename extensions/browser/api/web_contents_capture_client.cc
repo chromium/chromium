@@ -94,7 +94,7 @@ std::optional<std::string> WebContentsCaptureClient::EncodeBitmap(
       mime_type = kMimeTypePng;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid image format.";
+      NOTREACHED() << "Invalid image format.";
   }
 
   if (!data) {

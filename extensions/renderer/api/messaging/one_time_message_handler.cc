@@ -334,8 +334,7 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
 
   if (!v8::Function::New(context, &OneTimeMessageResponseHelper, external)
            .ToLocal(&response_function)) {
-    NOTREACHED_IN_MIGRATION();
-    return handled;
+    NOTREACHED();
   }
 
   new GCCallback(

@@ -98,10 +98,9 @@ std::string GetDisplayName(Manifest::Type type) {
     case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
       return "chromeos system extension";
     case Manifest::NUM_LOAD_TYPES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Gets a human-readable name for the given context type, suitable for giving
@@ -135,8 +134,7 @@ std::string GetDisplayName(mojom::ContextType context) {
     case mojom::ContextType::kUserScript:
       return "user script";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string GetDisplayName(mojom::FeatureSessionType session_type) {
@@ -406,8 +404,7 @@ std::string SimpleFeature::GetAvailabilityMessage(
                                 name().c_str());
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 Feature::Availability SimpleFeature::CreateAvailability(
@@ -515,8 +512,7 @@ bool SimpleFeature::MatchesManifestLocation(
     case SimpleFeature::UNPACKED_LOCATION:
       return Manifest::IsUnpackedLocation(manifest_location);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SimpleFeature::MatchesSessionTypes(

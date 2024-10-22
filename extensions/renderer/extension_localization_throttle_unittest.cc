@@ -43,7 +43,7 @@ class FakeURLLoader final : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
@@ -72,12 +72,12 @@ class FakeDelegate : public blink::URLLoaderThrottle::Delegate {
     cancel_error_code_ = error_code;
     cancel_custom_reason_ = std::string(custom_reason);
   }
-  void Resume() override { NOTREACHED_IN_MIGRATION(); }
+  void Resume() override { NOTREACHED(); }
 
   void UpdateDeferredResponseHead(
       network::mojom::URLResponseHeadPtr new_response_head,
       mojo::ScopedDataPipeConsumerHandle body) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void InterceptResponse(
       mojo::PendingRemote<network::mojom::URLLoader> new_loader,

@@ -438,8 +438,7 @@ uint8_t GetActionTypePriority(dnr_api::RuleActionType action_type) {
     case dnr_api::RuleActionType::kNone:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void RecordLargeRegexUMA(bool is_large_regex) {

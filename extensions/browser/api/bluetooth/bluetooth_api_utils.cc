@@ -197,7 +197,7 @@ device::BluetoothFilterType ToBluetoothDeviceFilterType(FilterType type) {
     case FilterType::kKnown:
       return device::BluetoothFilterType::KNOWN;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 #endif

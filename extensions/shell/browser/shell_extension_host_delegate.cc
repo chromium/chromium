@@ -27,8 +27,7 @@ content::JavaScriptDialogManager*
 ShellExtensionHostDelegate::GetJavaScriptDialogManager() {
   // TODO(jamescook): Create a JavaScriptDialogManager or reuse the one from
   // content_shell.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ShellExtensionHostDelegate::CreateTab(
@@ -38,7 +37,7 @@ void ShellExtensionHostDelegate::CreateTab(
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {
   // TODO(jamescook): Should app_shell support opening popup windows?
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ShellExtensionHostDelegate::ProcessMediaAccessRequest(
@@ -63,12 +62,11 @@ bool ShellExtensionHostDelegate::CheckMediaAccessPermission(
 content::PictureInPictureResult
 ShellExtensionHostDelegate::EnterPictureInPicture(
     content::WebContents* web_contents) {
-  NOTREACHED_IN_MIGRATION();
-  return content::PictureInPictureResult::kNotSupported;
+  NOTREACHED();
 }
 
 void ShellExtensionHostDelegate::ExitPictureInPicture() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace extensions

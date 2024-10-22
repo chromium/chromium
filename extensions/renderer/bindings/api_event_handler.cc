@@ -76,8 +76,7 @@ void DispatchEvent(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   if (info.Length() != 1 || !info[0]->IsArray()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
@@ -227,15 +226,13 @@ void APIEventHandler::InvalidateCustomEvent(v8::Local<v8::Context> context,
 
   if (!gin::Converter<EventEmitter*>::FromV8(context->GetIsolate(), event,
                                              &emitter)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   emitter->Invalidate(context);
   auto emitter_entry = base::ranges::find(data->anonymous_emitters, event);
   if (emitter_entry == data->anonymous_emitters.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   data->anonymous_emitters.erase(emitter_entry);

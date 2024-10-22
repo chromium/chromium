@@ -311,8 +311,7 @@ const OriginValueMap* ContentSettingsStore::GetValueMap(
       return &entry->settings;
     case ChromeSettingScope::kRegularOnly:
       // TODO(bauerb): Implement regular-only content settings.
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     case ChromeSettingScope::kIncognitoPersistent:
       return &entry->incognito_persistent_settings;
     case ChromeSettingScope::kIncognitoSessionOnly:
@@ -321,8 +320,7 @@ const OriginValueMap* ContentSettingsStore::GetValueMap(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ContentSettingsStore::ClearContentSettingsForExtension(

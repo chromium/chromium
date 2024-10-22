@@ -486,8 +486,7 @@ void WebRequestProxyingWebSocket::OnAuthRequiredComplete(
       break;
     case WebRequestEventRouter::AuthRequiredResponse::
         AUTH_REQUIRED_RESPONSE_IO_PENDING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

@@ -308,8 +308,7 @@ bool LockScreenItemStorage::IsContextAllowed(content::BrowserContext* context) {
     case SessionLockedState::kNotLocked:
       return context_ == context;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown session locked state";
-  return false;
+  NOTREACHED() << "Unknown session locked state";
 }
 
 void LockScreenItemStorage::CreateItemImpl(const ExtensionId& extension_id,

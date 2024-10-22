@@ -222,8 +222,7 @@ void DeclarativeContentHooksDelegate::HandleCall(
   v8::Local<v8::Object> this_object = info.This();
   if (this_object.IsEmpty()) {
     // Crazy script (e.g. declarativeContent.Foo.apply(null, args);).
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // TODO(devlin): Find a way to use APISignature here? It's a little awkward

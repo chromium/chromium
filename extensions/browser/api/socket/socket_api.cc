@@ -140,10 +140,7 @@ void SocketApiFunction::OpenFirewallHole(const std::string& address,
   if (!net::HostStringIsLocalhost(address)) {
     net::IPEndPoint local_address;
     if (!socket->GetLocalAddress(&local_address)) {
-      NOTREACHED_IN_MIGRATION()
-          << "Cannot get address of recently bound socket.";
-      Respond(ErrorWithCode(-1, kFirewallFailure));
-      return;
+      NOTREACHED() << "Cannot get address of recently bound socket.";
     }
 
     AppFirewallHoleManager* manager =
@@ -318,8 +315,7 @@ ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
       break;
     }
     case extensions::api::socket::SocketType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return RespondNow(NoArguments());
+      NOTREACHED();
   }
 
   DCHECK(socket);
@@ -374,9 +370,7 @@ ExtensionFunction::ResponseAction SocketConnectFunction::Work() {
       operation_type = SocketPermissionRequest::UDP_SEND_TO;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown socket type.";
-      operation_type = SocketPermissionRequest::NONE;
-      break;
+      NOTREACHED() << "Unknown socket type.";
   }
 
   SocketPermission::CheckParam param(operation_type, hostname_, port_);

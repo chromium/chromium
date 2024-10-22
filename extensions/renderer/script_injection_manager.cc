@@ -62,7 +62,7 @@ std::optional<mojom::RunLocation> NextRunLocation(
     case mojom::RunLocation::kBrowserDriven:
       return std::nullopt;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

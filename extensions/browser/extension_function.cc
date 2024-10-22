@@ -611,7 +611,7 @@ bool ExtensionFunction::ShouldKeepWorkerAliveIndefinitely() {
 void ExtensionFunction::OnResponseAck() {
   // Derived classes must override this if they require and implement an
   // ACK from the renderer.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::NoArguments() {

@@ -294,13 +294,9 @@ void RendererStartupHelper::ActivateExtensionInProcess(
   // The extension should have been loaded already. Dump without crashing to
   // debug crbug.com/528026.
   if (!base::Contains(extension_process_map_, extension.id())) {
-#if DCHECK_IS_ON()
-    NOTREACHED_IN_MIGRATION()
+    DUMP_WILL_BE_NOTREACHED()
         << "Extension " << extension.id() << " activated before loading";
-#else
-    base::debug::DumpWithoutCrashing();
     return;
-#endif
   }
 
   if (!util::IsExtensionVisibleToContext(extension,
@@ -576,9 +572,7 @@ void RendererStartupHelper::GetMessageBundle(
     const Extension* imported_extension =
         extension_set.GetByID(import.extension_id);
     if (!imported_extension) {
-      NOTREACHED_IN_MIGRATION()
-          << "Missing shared module " << import.extension_id;
-      continue;
+      NOTREACHED() << "Missing shared module " << import.extension_id;
     }
     paths_to_load.push_back(imported_extension->path());
   }

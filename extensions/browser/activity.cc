@@ -46,8 +46,7 @@ const char* Activity::ToString(Type type) {
     case DEBUGGER:
       return "DEBUGGER";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace extensions

@@ -115,7 +115,7 @@ void ExtensionOptionsGuest::DidInitialize(
 void ExtensionOptionsGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
   // This situation is not possible for ExtensionOptions.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExtensionOptionsGuest::GuestViewDidStopLoading() {
@@ -213,8 +213,7 @@ bool ExtensionOptionsGuest::HandleContextMenu(
 
 bool ExtensionOptionsGuest::ShouldResumeRequestsForCreatedWindow() {
   // Not reached due to the use of `CreateCustomWebContents`.
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool ExtensionOptionsGuest::IsWebContentsCreationOverridden(

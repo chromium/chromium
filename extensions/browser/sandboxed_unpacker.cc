@@ -669,8 +669,7 @@ void SandboxedUnpacker::OnImageSanitizationDone(
                                          u"ERROR_SAVING_THEME_IMAGE");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   ReportFailure(failure_reason, error);
@@ -735,8 +734,7 @@ void SandboxedUnpacker::MessageCatalogsSanitized(
                                          u"ERROR_SAVING_CATALOG");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   ReportFailure(failure_reason, error);
@@ -919,8 +917,7 @@ std::u16string SandboxedUnpacker::FailureReasonToString16(
     case SandboxedUnpackerFailureReason::DEPRECATED_ERROR_PARSING_DNR_RULESET:
     case SandboxedUnpackerFailureReason::NUM_FAILURE_REASONS:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 

@@ -161,8 +161,7 @@ UpdateDynamicRulesStatus GetUpdateDynamicRuleStatus(LoadRulesetResult result) {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return UpdateDynamicRulesStatus::kSuccess;
+  NOTREACHED();
 }
 
 // Helper to create the new list of dynamic rules. Returns false on failure and

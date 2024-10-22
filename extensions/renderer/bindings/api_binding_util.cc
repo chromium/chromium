@@ -144,8 +144,7 @@ std::string GetPlatformString() {
 #elif BUILDFLAG(IS_DESKTOP_ANDROID)
   return "desktop_android";
 #else
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 #endif
 }
 

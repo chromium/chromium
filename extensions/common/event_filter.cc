@@ -156,9 +156,7 @@ std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
   for (const auto& id_key : matching_condition_set_ids) {
     auto matcher_id = condition_set_id_to_event_matcher_id_.find(id_key);
     if (matcher_id == condition_set_id_to_event_matcher_id_.end()) {
-      NOTREACHED_IN_MIGRATION()
-          << "id not found in condition set map (" << id_key << ")";
-      continue;
+      NOTREACHED() << "id not found in condition set map (" << id_key << ")";
     }
     MatcherID id = matcher_id->second;
     auto matcher_entry = matcher_map.find(id);

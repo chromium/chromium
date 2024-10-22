@@ -83,8 +83,7 @@ const char* TypeToString(DevicePermissionEntry::Type type) {
     case DevicePermissionEntry::Type::HID:
       return kDeviceTypeHid;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Persists a DevicePermissionEntry in ExtensionPrefs.
@@ -603,7 +602,7 @@ void DevicePermissionsManager::RemoveEntry(
   } else if (entry->type_ == DevicePermissionEntry::Type::HID) {
     device_permissions->ephemeral_hid_devices_.erase(entry->device_guid_);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
