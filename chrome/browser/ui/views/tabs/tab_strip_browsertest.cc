@@ -1084,3 +1084,15 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
       ax_node_data_1.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kSelection), 2);
 }
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderAccessibleState) {
+  AppendTab();
+  AppendTab();
+
+  tab_groups::TabGroupId group = AddTabToNewGroup(1);
+  auto* group_header = tab_strip()->group_header(group);
+
+  ui::AXNodeData data;
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kEditable));
+}

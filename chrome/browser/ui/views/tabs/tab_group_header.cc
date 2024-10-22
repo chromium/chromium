@@ -148,6 +148,7 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   UpdateIsCollapsed();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
+  GetViewAccessibility().SetIsEditable(true);
 }
 
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
@@ -270,8 +271,6 @@ void TabGroupHeader::OnFocus() {
 }
 
 void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kEditable);
-
   std::u16string title = tab_slot_controller_->GetGroupTitle(group().value());
   std::u16string contents =
       tab_slot_controller_->GetGroupContentString(group().value());

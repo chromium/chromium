@@ -270,6 +270,9 @@ Textfield::Textfield()
   // accessibility trees of all the platforms we support.
   GetViewAccessibility().SetIsLeaf(true);
   UpdateAccessibleDefaultActionVerb();
+  // Editable state indicates support of editable interface, and is always set
+  // for a textfield, even if disabled or readonly.
+  GetViewAccessibility().SetIsEditable(true);
 }
 
 Textfield::~Textfield() {
@@ -1043,10 +1046,6 @@ void Textfield::OnDragDone() {
 
 void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
-
-  // Editable state indicates support of editable interface, and is always set
-  // for a textfield, even if disabled or readonly.
-  node_data->AddState(ax::mojom::State::kEditable);
 
   const gfx::Range range = GetSelectedRange();
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
