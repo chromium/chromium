@@ -180580,7 +180580,7 @@
         ]
        ],
        "shape-image-027.html": [
-        "112d7b976378fc2a9e3969b81df507eec5888df9",
+        "d7f624671a785c15cd744abcb01370cd39a795ff",
         [
          null,
          [
@@ -241824,6 +241824,19 @@
          ]
         ]
        }
+      ]
+     ],
+     "capture-old-state-error-flag-cleanup.html": [
+      "e202041e0cddc56510e4f18d2c16d4eebfe4d64e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
       ]
      ],
      "capture-with-offscreen-child-translated.html": [
@@ -475556,7 +475569,7 @@
        ]
       ],
       "grid-shorthand-serialization.html": [
-       "29bab75f617eb53642a3ec29b0689c6b8cbfbcf0",
+       "61be1c2872bccb077cc081b91964c65f4e600f84",
        [
         null,
         {}
@@ -475724,7 +475737,7 @@
        ]
       ],
       "grid-template-shorthand-invalid.html": [
-       "366cdf4d887aa937875cd5e5a49631d1b3e283b1",
+       "1f1385acd5680e4f695e423dae47058df62269bd",
        [
         null,
         {}
@@ -475738,7 +475751,7 @@
        ]
       ],
       "grid-template-shorthand.html": [
-       "b9165359a7250afab60463878b9beb8592424f58",
+       "d7e8f47e14a6c369b93fc02ad93ab1abce334eed",
        [
         null,
         {}
@@ -609280,7 +609293,7 @@
          ]
         ],
         "option-computed-style.tentative.html": [
-         "14650f3f320ae6f1974558ef63f47298a67801b3",
+         "9c930966829506685fdaccefdb5cd6e961db33d9",
          [
           null,
           {}
@@ -708054,7 +708067,7 @@
       ]
      ],
      "clamp.https.any.js": [
-      "083eca7128c6ce93bb30be8eafc43ee99a110c08",
+      "4253ca3449a2f56832e0abce5ea7b7a48ee9255b",
       [
        "webnn/conformance_tests/clamp.https.any.html?cpu",
        {
