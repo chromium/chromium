@@ -69,30 +69,43 @@ typedef enum : NSInteger {
     completion(NO, error);
     return;
   }
+
   self.temporalStore = [[UserDefaultsCredentialStore alloc]
       initWithUserDefaults:self.userDefaults
                        key:self.key];
   NSArray<id<Credential>>* credentials = self.temporalStore.credentials.copy;
+
+  bool importPasskeys = _passkeyStore && _passkeyStore->IsReady();
+  base::flat_set<std::string> syncIds;
+  if (importPasskeys) {
+    syncIds = _passkeyStore->GetAllSyncIds();
+  }
+
   for (id<Credential> credential in credentials) {
     if (credential.isPasskey) {
       // If this happens too early (before the passkey store is ready), the
       // migration will be re-triggered later for that passkey store by
       // CredentialProviderMigratorAppAgent.
-      if (!_passkeyStore || !_passkeyStore->IsReady()) {
+      if (!importPasskeys) {
         continue;
       }
 
-      std::string rpId = base::SysNSStringToUTF8(credential.rpId);
-      std::string credentialId(
-          static_cast<const char*>(credential.credentialId.bytes),
-          credential.credentialId.length);
-      std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
-          _passkeyStore->GetPasskeyByCredentialId(rpId, credentialId);
-      if (credential_specifics) {
+      std::string syncId(static_cast<const char*>(credential.syncId.bytes),
+                         credential.syncId.length);
+      if (syncIds.contains(syncId)) {
         // If the passkey already exists, only update its last used time, and
-        // only do so if it's newer.
-        if (credential_specifics->last_used_time_windows_epoch_micros() <
-            credential.lastUsedTime) {
+        // only do so if it's newer and the credential is still active.
+        std::string rpId = base::SysNSStringToUTF8(credential.rpId);
+        std::string credentialId(
+            static_cast<const char*>(credential.credentialId.bytes),
+            credential.credentialId.length);
+        std::optional<sync_pb::WebauthnCredentialSpecifics>
+            credential_specifics =
+                _passkeyStore->GetPasskeyByCredentialId(rpId, credentialId);
+
+        if (credential_specifics &&
+            (credential_specifics->last_used_time_windows_epoch_micros() <
+             credential.lastUsedTime)) {
           _passkeyStore->UpdatePasskeyTimestamp(
               credentialId, base::Time::FromDeltaSinceWindowsEpoch(
                                 base::Microseconds(credential.lastUsedTime)));
