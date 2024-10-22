@@ -13,7 +13,6 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/barrier_callback.h"
-#include "base/json/json_writer.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
@@ -107,7 +106,7 @@ std::string BirchCoralItem::ToString() const {
   auto root = base::Value::Dict().Set(
       "Coral item",
       base::Value::Dict().Set("Title", title()).Set("Subtitle", subtitle()));
-  return base::WriteJson(root).value_or(std::string());
+  return root.DebugString();
 }
 
 void BirchCoralItem::PerformAction(bool is_post_login) {
