@@ -15,6 +15,7 @@
 #include "client/settings.h"
 
 #include <stdint.h>
+#include <string.h>
 
 #include <limits>
 
@@ -117,6 +118,10 @@ void ScopedLockedFileHandleTraits::Free(FileHandle handle) {
 
 struct Settings::Data {
   static constexpr uint32_t kSettingsMagic = 'CPds';
+
+  // Version number only used for incompatible changes to Data. Do not change
+  // this when adding additional fields at the end. Modifying `kSettingsVersion`
+  // will wipe away the entire struct when reading from other versions.
   static constexpr uint32_t kSettingsVersion = 1;
 
   enum Options : uint32_t {
@@ -389,16 +394,33 @@ Settings::ScopedLockedFileHandle Settings::OpenForWritingAndReadSettings(
 bool Settings::ReadSettings(FileHandle handle,
                             Data* out_data,
                             bool log_read_error) {
-  if (LoggingSeekFile(handle, 0, SEEK_SET) != 0)
+  if (LoggingSeekFile(handle, 0, SEEK_SET) != 0) {
     return false;
+  }
 
-  bool read_result =
-      log_read_error
-          ? LoggingReadFileExactly(handle, out_data, sizeof(*out_data))
-          : ReadFileExactly(handle, out_data, sizeof(*out_data));
+  // This clears `out_data` so that any bytes not read from disk are zero
+  // initialized. This is expected when reading from an older settings file with
+  // fewer fields.
+  memset(out_data, 0, sizeof(*out_data));
 
-  if (!read_result)
+  const FileOperationResult read_result =
+      log_read_error ? LoggingReadFileUntil(handle, out_data, sizeof(*out_data))
+                     : ReadFileUntil(handle, out_data, sizeof(*out_data));
+
+  if (read_result <= 0) {
     return false;
+  }
+
+  // Newer versions of crashpad may add fields to Data, but all versions have
+  // the data members up to `client_id`. Do not attempt to understand a smaller
+  // struct read.
+  const size_t min_size =
+      offsetof(Data, client_id) + sizeof(out_data->client_id);
+  if (static_cast<size_t>(read_result) < min_size) {
+    LOG(ERROR) << "Settings file too small: minimum " << min_size
+               << ", observed " << read_result;
+    return false;
+  }
 
   if (out_data->magic != Data::kSettingsMagic) {
     LOG(ERROR) << "Settings magic is not " << Data::kSettingsMagic;

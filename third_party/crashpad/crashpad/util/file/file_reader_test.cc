@@ -156,8 +156,8 @@ TEST(FileReader, ReadExactly_Medium) {
 TEST(FileReader, ReadExactly_LargeSuccess) {
   MockFileReader file_reader;
   InSequence in_sequence;
-  constexpr size_t max = std::numeric_limits<uint32_t>::max();
-  constexpr size_t increment = std::numeric_limits<int32_t>::max();
+  constexpr size_t max = std::numeric_limits<int32_t>::max();
+  constexpr size_t increment = max / 2;
   EXPECT_CALL(file_reader, ReadInt(0, max)).WillOnce(Return(increment));
   EXPECT_CALL(file_reader, ReadInt(increment, max - increment))
       .WillOnce(Return(increment));
@@ -169,30 +169,30 @@ TEST(FileReader, ReadExactly_LargeSuccess) {
 TEST(FileReader, ReadExactly_LargeShort) {
   MockFileReader file_reader;
   InSequence in_sequence;
-  EXPECT_CALL(file_reader, ReadInt(0, 0xffffffff)).WillOnce(Return(0x7fffffff));
-  EXPECT_CALL(file_reader, ReadInt(0x7fffffff, 0x80000000))
+  EXPECT_CALL(file_reader, ReadInt(0, 0x7fffffff)).WillOnce(Return(0x3fffffff));
+  EXPECT_CALL(file_reader, ReadInt(0x3fffffff, 0x40000000))
       .WillOnce(Return(0x10000000));
-  EXPECT_CALL(file_reader, ReadInt(0x8fffffff, 0x70000000)).WillOnce(Return(0));
+  EXPECT_CALL(file_reader, ReadInt(0x4fffffff, 0x30000000)).WillOnce(Return(0));
   EXPECT_CALL(file_reader, Seek(_, _)).Times(0);
-  EXPECT_FALSE(file_reader.ReadExactlyInt(0, 0xffffffff));
+  EXPECT_FALSE(file_reader.ReadExactlyInt(0, 0x7fffffff));
 }
 
 TEST(FileReader, ReadExactly_LargeFailure) {
   MockFileReader file_reader;
   InSequence in_sequence;
-  EXPECT_CALL(file_reader, ReadInt(0, 0xffffffff)).WillOnce(Return(0x7fffffff));
-  EXPECT_CALL(file_reader, ReadInt(0x7fffffff, 0x80000000))
+  EXPECT_CALL(file_reader, ReadInt(0, 0x7fffffff)).WillOnce(Return(0x3fffffff));
+  EXPECT_CALL(file_reader, ReadInt(0x3fffffff, 0x40000000))
       .WillOnce(Return(-1));
   EXPECT_CALL(file_reader, Seek(_, _)).Times(0);
-  EXPECT_FALSE(file_reader.ReadExactlyInt(0, 0xffffffff));
+  EXPECT_FALSE(file_reader.ReadExactlyInt(0, 0x7fffffff));
 }
 
 TEST(FileReader, ReadExactly_TripleMax) {
   MockFileReader file_reader;
   InSequence in_sequence;
-  constexpr size_t max = std::numeric_limits<size_t>::max();
-  constexpr size_t increment =
-      std::numeric_limits<std::make_signed<size_t>::type>::max();
+  // ReadExactly supports at most int32_t bytes.
+  constexpr size_t max = std::numeric_limits<int32_t>::max();
+  constexpr size_t increment = max / 2;
   EXPECT_CALL(file_reader, ReadInt(0, max)).WillOnce(Return(increment));
   EXPECT_CALL(file_reader, ReadInt(increment, max - increment))
       .WillOnce(Return(increment));
