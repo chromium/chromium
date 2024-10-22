@@ -6,6 +6,7 @@
 #define ASH_AUTH_VIEWS_AUTH_CONTAINER_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -72,7 +73,7 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
     raw_ptr<FingerprintView> GetFingerprintView();
 
-    AuthInputType GetCurrentInputType();
+    std::optional<AuthInputType> GetCurrentInputType();
 
     raw_ptr<AuthContainerView> GetView();
 
@@ -156,7 +157,7 @@ class ASH_EXPORT AuthContainerView : public views::View {
   raw_ptr<views::LabelButton> switch_button_ = nullptr;
 
   // State:
-  AuthInputType current_input_type_ = AuthInputType::kPassword;
+  std::optional<AuthInputType> current_input_type_;
 
   base::ObserverList<Observer> observers_;
 
