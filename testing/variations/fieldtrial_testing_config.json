@@ -3061,6 +3061,67 @@
             ]
         }
     ],
+    "BackForwardTransitions": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "NoIPH",
+                    "enable_features": [
+                        "BackForwardTransitions",
+                        "MirrorBackForwardGesturesInRTL"
+                    ],
+                    "disable_features": [
+                        "IPH_RtlGestureNavigation"
+                    ]
+                },
+                {
+                    "name": "RTLOnly",
+                    "enable_features": [
+                        "MirrorBackForwardGesturesInRTL"
+                    ],
+                    "disable_features": [
+                        "BackForwardTransitions",
+                        "IPH_RtlGestureNavigation"
+                    ]
+                },
+                {
+                    "name": "IPHOnUnsuccessfulBackNav",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:rtl_gesture_iph_trigger;comparator:==0;window:365;storage:365",
+                        "event_used": "name:rtl_gesture_iph_show;comparator:==0;window:365;storage:365",
+                        "session_rate": "<1",
+                        "x_trigger": "",
+                        "x_unhandled_gesture_threshold": "2"
+                    },
+                    "enable_features": [
+                        "BackForwardTransitions",
+                        "IPH_RtlGestureNavigation",
+                        "MirrorBackForwardGesturesInRTL"
+                    ]
+                },
+                {
+                    "name": "IPHOnFirstSuccessfulBackNav",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:rtl_gesture_iph_trigger;comparator:==0;window:365;storage:365",
+                        "event_used": "name:rtl_gesture_iph_show;comparator:==0;window:365;storage:365",
+                        "session_rate": "<1",
+                        "x_trigger": "non-empty-stack",
+                        "x_unhandled_gesture_threshold": "2"
+                    },
+                    "enable_features": [
+                        "BackForwardTransitions",
+                        "IPH_RtlGestureNavigation",
+                        "MirrorBackForwardGesturesInRTL"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackNavigationMenuIPH": [
         {
             "platforms": [
