@@ -19,7 +19,8 @@ import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
 import {getCss} from './declutter_page.css.js';
 import {getHtml} from './declutter_page.html.js';
 
-const MAX_SCROLLABLE_HEIGHT: number = 280;
+const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 238;
+const NON_SCROLLABLE_VERTICAL_SPACING: number = 164;
 
 function getEventTargetIndex(e: Event): number {
   return Number((e.currentTarget as HTMLElement).dataset['index']);
@@ -32,11 +33,13 @@ export class DeclutterPageElement extends CrLitElement {
 
   static override get properties() {
     return {
+      availableHeight: {type: Number},
       showBackButton: {type: Boolean},
       staleTabDatas_: {type: Array},
     };
   }
 
+  availableHeight: number = 0;
   showBackButton: boolean = false;
 
   protected staleTabDatas_: TabData[] = [];
@@ -87,6 +90,9 @@ export class DeclutterPageElement extends CrLitElement {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
+    if (changedPrivateProperties.has('availableHeight')) {
+      this.onAvailableHeightChange_();
+    }
     if (changedPrivateProperties.has('staleTabDatas_')) {
       this.updateScroll_();
     }
@@ -105,17 +111,32 @@ export class DeclutterPageElement extends CrLitElement {
         DeclutterCTREvent.MAX_VALUE + 1);
   }
 
-  private async updateScroll_() {
-    await this.updateComplete;
+  private getMaxScrollableHeight_(): number {
+    return Math.max(
+        MINIMUM_SCROLLABLE_MAX_HEIGHT,
+        (this.availableHeight - NON_SCROLLABLE_VERTICAL_SPACING));
+  }
+
+  private onAvailableHeightChange_() {
     const scrollable = this.shadowRoot!.querySelector('#scrollable');
     if (scrollable) {
+      this.updateScroll_();
+    }
+  }
+
+  private async updateScroll_() {
+    await this.updateComplete;
+    const scrollable =
+        this.shadowRoot!.querySelector<HTMLElement>('#scrollable');
+    if (scrollable) {
+      const maxHeight = this.getMaxScrollableHeight_();
+      scrollable.style.maxHeight = maxHeight + 'px';
       scrollable.classList.toggle(
           'can-scroll', scrollable.clientHeight < scrollable.scrollHeight);
       scrollable.classList.toggle('is-scrolled', scrollable.scrollTop > 0);
       scrollable.classList.toggle(
           'scrolled-to-bottom',
-          scrollable.scrollTop + MAX_SCROLLABLE_HEIGHT >=
-              scrollable.scrollHeight);
+          scrollable.scrollTop + maxHeight >= scrollable.scrollHeight);
     }
   }
 

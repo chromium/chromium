@@ -51,7 +51,6 @@ tab-search-item {
   border-top: var(--non-scroll-border);
   /* Render the scroll bar and scroll borders at the edge of the dialog */
   margin: 0 calc(-1 * var(--external-margin));
-  max-height: 280px;
   overflow-y: auto;
   padding: 0 calc(var(--external-margin) - var(--scrollbar-width))
            0 var(--external-margin);

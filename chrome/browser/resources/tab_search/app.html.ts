@@ -44,7 +44,9 @@ function getOrganizationPage(
         <auto-tab-groups-page available-height="${availableHeight}">
         </auto-tab-groups-page>`;
   } else if (declutterEnabled) {
-    return html`<declutter-page></declutter-page>`;
+    return html`
+        <declutter-page available-height="${availableHeight}">
+        </declutter-page>`;
   } else {
     return '';
   }

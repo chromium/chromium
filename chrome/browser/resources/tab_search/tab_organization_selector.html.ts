@@ -42,6 +42,7 @@ export function getHtml(this: TabOrganizationSelectorElement) {
 <div ?hidden=${
     this.getVisibleFeature_() !== TabOrganizationFeature.kDeclutter}>
   <declutter-page id="declutterPage" ?show-back-button="${true}"
+      available-height="${this.availableHeight}"
       @back-click="${this.onBackClick_}">
   </declutter-page>
 </div>
