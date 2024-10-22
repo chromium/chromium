@@ -1377,7 +1377,7 @@ deps = {
     Var('quiche_git') + '/quiche.git' + '@' +  Var('quiche_revision'),
 
   'src/testing/libfuzzer/fuzzers/wasm_corpus':
-    Var('chromium_git') + '/v8/fuzzer_wasm_corpus.git' + '@' +  'f650ff816f2ef227f61ea2e9f222aa69708ab367',
+    Var('chromium_git') + '/v8/fuzzer_wasm_corpus.git' + '@' +  '1df5e50a45db9518a56ebb42cb020a94a090258b',
 
   'src/tools/copybara': {
       'packages' : [
