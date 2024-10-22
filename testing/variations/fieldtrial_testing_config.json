@@ -5280,6 +5280,29 @@
             ]
         }
     ],
+    "ChromnientSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "LvUA3D5Ts0ugnJ3q1cK0SHbD7uPa",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "LensOverlaySurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClankFeedSyntheticCapabilities": [
         {
             "platforms": [
