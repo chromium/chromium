@@ -512,6 +512,17 @@ if we want to translate this file.
           Can't create any more plus addresses for this site or app.
         </message>
 
+        <!-- Strings for the top toast that is shown after full form filling -->
+        <message name="IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_MESSAGE" desc="The text shown in the Chrome top toast that is displayed after a plus address was automatically swapped in during full form filling." translateable="false">
+          Chrome filled your plus address for this site
+        </message>
+        <message name="IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_UNDO" desc="The label of the menu option in the Chrome top toast to fill the profile's email address instead of the plus address." translateable="false">
+          Replace with <ph name="EMAIL">$1<ex>foo@gmail.com</ex></ph>
+        </message>
+        <message name="IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_MANAGE" desc="The label of the menu option in the Chrome top toast to go to the plus address management surface." translateable="false">
+          Manage plus addresses...
+        </message>
+
         <!-- Manual fallback strings -->
         <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
           Lorem Ipsum

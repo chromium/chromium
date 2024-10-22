@@ -26,6 +26,8 @@ std::string GetToastName(ToastId toast_id) {
       return "AddedToComparisonTable";
     case ToastId::kClearBrowsingData:
       return "ClearBrowsingData";
+    case ToastId::kPlusAddressOverride:
+      return "PlusAddressOverride";
   }
 
   NOTREACHED();

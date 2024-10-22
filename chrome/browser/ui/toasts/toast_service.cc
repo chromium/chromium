@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -24,9 +25,16 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/menus/simple_menu_model.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/ui/views/user_education/low_usage_promo.h"
+#include "components/plus_addresses/resources/vector_icons.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 ToastService::ToastService(BrowserWindowInterface* browser_window_interface) {
   toast_registry_ = std::make_unique<ToastRegistry>();
@@ -114,6 +122,22 @@ void ToastService::RegisterToasts(
                                        ->OnOpenComparePageClicked();
                                  },
                                  base::Unretained(browser_window_interface)))
+            .Build());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled) &&
+      base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressFullFormFill)) {
+    toast_registry_->RegisterToast(
+        ToastId::kPlusAddressOverride,
+        ToastSpecification::Builder(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            plus_addresses::kPlusAddressLogoSmallIcon,
+#else
+            vector_icons::kEmailIcon,
+#endif
+            IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_MESSAGE)
             .Build());
   }
 }

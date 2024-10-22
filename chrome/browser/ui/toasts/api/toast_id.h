@@ -27,7 +27,8 @@ enum class ToastId {
   kNonMilestoneUpdate = 5,
   kAddedToComparisonTable = 6,
   kClearBrowsingData = 7,
-  kMaxValue = kClearBrowsingData
+  kPlusAddressOverride = 8,
+  kMaxValue = kPlusAddressOverride
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 
