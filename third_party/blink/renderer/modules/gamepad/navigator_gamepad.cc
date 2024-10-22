@@ -23,11 +23,6 @@
  * DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/gamepad/navigator_gamepad.h"
 
 #include "base/auto_reset.h"
@@ -243,10 +238,10 @@ GamepadHapticActuator* NavigatorGamepad::GetVibrationActuatorForGamepad(
   return vibration_actuators_[pad_index].Get();
 }
 
-void NavigatorGamepad::SetTouchEvents(const Gamepad& gamepad,
-                                      GamepadTouchVector& touch_events,
-                                      unsigned count,
-                                      const device::GamepadTouch* data) {
+void NavigatorGamepad::SetTouchEvents(
+    const Gamepad& gamepad,
+    GamepadTouchVector& touch_events,
+    base::span<const device::GamepadTouch> data) {
   int pad_index = gamepad.index();
   DCHECK_GE(pad_index, 0);
 
@@ -255,7 +250,7 @@ void NavigatorGamepad::SetTouchEvents(const Gamepad& gamepad,
 
   uint32_t the_id = 0u;
   TouchIdMap the_id_map{};
-  for (unsigned i = 0u; i < count; ++i) {
+  for (size_t i = 0u; i < data.size(); ++i) {
     if (auto search = id_map.find(data[i].touch_id); search != id_map.end()) {
       the_id = search->value;
     } else {

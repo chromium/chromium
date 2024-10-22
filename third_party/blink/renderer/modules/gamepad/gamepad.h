@@ -52,8 +52,7 @@ class MODULES_EXPORT Gamepad final : public ScriptWrappable {
         const Gamepad&) = 0;
     virtual void SetTouchEvents(const Gamepad&,
                                 GamepadTouchVector&,
-                                unsigned count,
-                                const device::GamepadTouch* data) {}
+                                base::span<const device::GamepadTouch> data) {}
 
     virtual ~Client() = default;
   };
@@ -83,11 +82,11 @@ class MODULES_EXPORT Gamepad final : public ScriptWrappable {
   void SetMapping(device::GamepadMapping mapping);
 
   const DoubleVector& axes();
-  void SetAxes(unsigned count, const double* data);
+  void SetAxes(base::span<const double> data);
   bool isAxisDataDirty() const { return is_axis_data_dirty_; }
 
   const GamepadButtonVector& buttons();
-  void SetButtons(unsigned count, const device::GamepadButton* data);
+  void SetButtons(base::span<const device::GamepadButton> data);
   bool isButtonDataDirty() const { return is_button_data_dirty_; }
 
   GamepadHapticActuator* vibrationActuator() const;
@@ -98,7 +97,7 @@ class MODULES_EXPORT Gamepad final : public ScriptWrappable {
   }
 
   const GamepadTouchVector* touchEvents();
-  void SetTouchEvents(unsigned count, const device::GamepadTouch* data);
+  void SetTouchEvents(base::span<const device::GamepadTouch> data);
 
   bool HasTouchEvents() const { return has_touch_events_; }
   bool IsTouchDataDirty() const { return is_touch_data_dirty_; }
