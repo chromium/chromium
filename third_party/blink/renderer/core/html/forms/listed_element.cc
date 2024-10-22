@@ -212,28 +212,6 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
   }
 }
 
-HTMLFormElement* ListedElement::FindAssociatedForm(
-    const HTMLElement* element,
-    const AtomicString& form_id,
-    HTMLFormElement* form_ancestor) {
-  // 3. If the element is reassociateable, has a form content attribute, and
-  // is itself in a Document, then run these substeps:
-  if (!form_id.IsNull() && element->isConnected()) {
-    // 3.1. If the first element in the Document to have an ID that is
-    // case-sensitively equal to the element's form content attribute's
-    // value is a form element, then associate the form-associated element
-    // with that form element.
-    // 3.2. Abort the "reset the form owner" steps.
-    Element* new_form_candidate =
-        element->GetTreeScope().getElementById(form_id);
-    return DynamicTo<HTMLFormElement>(new_form_candidate);
-  }
-  // 4. Otherwise, if the form-associated element in question has an ancestor
-  // form element, then associate the form-associated element with the nearest
-  // such ancestor form element.
-  return form_ancestor;
-}
-
 void ListedElement::FormRemovedFromTree(const Node& form_root) {
   DCHECK(form_);
   if (NodeTraversal::HighestAncestorOrSelf(ToHTMLElement()) == form_root)
@@ -306,19 +284,42 @@ void ListedElement::FieldSetAncestorsSetNeedsValidityCheck(Node* node) {
   }
 }
 
+// https://html.spec.whatwg.org/multipage/C#reset-the-form-owner
 void ListedElement::ResetFormOwner() {
+  // 1. Unset element's parser inserted flag.
   form_was_set_by_parser_ = false;
   HTMLElement& element = ToHTMLElement();
   const AtomicString& form_id(element.FastGetAttribute(html_names::kFormAttr));
   HTMLFormElement* nearest_form = element.FindFormAncestor();
-  // 1. If the element's form owner is not null, and either the element is not
-  // reassociateable or its form content attribute is not present, and the
-  // element's form owner is its nearest form element ancestor after the
-  // change to the ancestor chain, then do nothing, and abort these steps.
+  // 2. If all of the following are true:
+  //    - element's form owner is not null;
+  //    - element is not listed or its form content attribute is not present;
+  //      and
+  //    - element's form owner is its nearest form element ancestor after the
+  //      change to the ancestor chain,
+  // then return.
   if (form_ && form_id.IsNull() && form_.Get() == nearest_form)
     return;
 
-  SetForm(FindAssociatedForm(&element, form_id, nearest_form));
+  // 3. Set element's form owner to null.
+  // 4. If element is listed, has a form content attribute, and is connected,
+  //    then:
+  //    1. If the first element in element's tree, in tree order, to have an
+  //       ID that is identical to element's form content attribute's value,
+  //       is a form element, then associate the element with that form
+  //       element.
+  HTMLFormElement* new_form = nullptr;
+  if (!form_id.IsNull() && element.isConnected()) {
+    Element* new_form_candidate =
+        element.GetTreeScope().getElementById(form_id);
+    new_form = DynamicTo<HTMLFormElement>(new_form_candidate);
+  } else {
+    // 5. Otherwise, if element has an ancestor form element, then associate
+    //    element with the nearest such ancestor form element.
+    new_form = nearest_form;
+  }
+
+  SetForm(new_form);
 }
 
 void ListedElement::FormAttributeChanged() {
