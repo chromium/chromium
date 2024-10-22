@@ -690,7 +690,7 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
         break;
       case ContentSuggestionsModuleType::kTips:
       case ContentSuggestionsModuleType::kTipsWithProductImage: {
-        if (IsTipsMagicStackEnabled()) {
+        if (IsTipsMagicStackEnabled() && _tipsMediator && _tipsMediator.state) {
           [magicStackOrder addObject:_tipsMediator.state];
         }
         break;
