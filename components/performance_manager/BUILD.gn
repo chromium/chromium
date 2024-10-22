@@ -247,6 +247,8 @@ static_library("performance_manager") {
     "scenarios/loading_scenario_data.h",
     "scenarios/loading_scenario_observer.cc",
     "scenarios/loading_scenario_observer.h",
+    "scenarios/performance_scenario_data.cc",
+    "scenarios/performance_scenario_data.h",
     "scenarios/performance_scenarios.cc",
     "service_worker_context_adapter.cc",
     "service_worker_context_adapter.h",

@@ -9,19 +9,13 @@
 #include <utility>
 
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/scoped_refptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/render_process_host_id.h"
-#include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/public/scenarios/performance_scenarios.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
-#include "content/public/browser/site_instance.h"
-#include "content/public/test/mock_render_process_host.h"
-#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
 
@@ -38,25 +32,8 @@ class LoadingScenarioObserverTest : public GraphTestHarness {
     graph->PassToGraph(std::make_unique<LoadingScenarioObserver>());
   }
 
-  // Creates a mock RenderProcessHost that can store the process scenario
-  // mapping for a ProcessNode.
-  content::RenderProcessHost* CreateMockRenderProcessHost() {
-    return rph_factory_.CreateRenderProcessHost(&dummy_browser_context_,
-                                                dummy_site_instance_.get());
-  }
-
  private:
   ScopedGlobalScenarioMemory scenario_memory_;
-
-  // Dummy BrowserContext and SiteInstance for mock RenderProcessHosts. The
-  // BrowserContext must outlive the SiteInstance.
-  content::TestBrowserContext dummy_browser_context_;
-  scoped_refptr<content::SiteInstance> dummy_site_instance_ =
-      content::SiteInstance::Create(&dummy_browser_context_);
-
-  // Factory to create mock RenderProcessHosts. This must be deleted before
-  // the BrowserContext and SiteInstance to clean up all RPH's it created.
-  content::MockRenderProcessHostFactory rph_factory_;
 };
 
 LoadingScenario GlobalLoadingScenario() {
@@ -360,30 +337,24 @@ TEST_F(LoadingScenarioObserverTest, PageNodeRemovedWhileFocusedPageLoading) {
 }
 
 TEST_F(LoadingScenarioObserverTest, PerProcessState) {
-  // Process state needs RenderProcessHosts.
-  content::RenderProcessHost* rph1 = CreateMockRenderProcessHost();
-  content::RenderProcessHost* rph2 = CreateMockRenderProcessHost();
+  // Create two mock processes, initially empty.
+  auto process1 = CreateRendererProcessNode();
+  auto process2 = CreateRendererProcessNode();
 
   // Map in the read-only scenario memory for the first mock process as the
   // "current process" state.
   base::ReadOnlySharedMemoryRegion process_region =
-      GetSharedScenarioRegionForProcess(rph1);
+      GetSharedScenarioRegionForProcessNode(process1.get());
   ASSERT_TRUE(process_region.IsValid());
   blink::performance_scenarios::ScopedReadOnlyScenarioMemory
       process_scenario_memory(Scope::kCurrentProcess,
                               std::move(process_region));
 
   // Create a page with a frame backed by the "current" mock process.
-  auto process1 =
-      CreateRendererProcessNode(RenderProcessHostProxy::CreateForTesting(
-          RenderProcessHostId(rph1->GetID())));
   auto page1 = CreateNode<PageNodeImpl>();
   auto frame1 = CreateFrameNodeAutoId(process1.get(), page1.get());
 
   // Create a second page with a frame backed by a different process.
-  auto process2 =
-      CreateRendererProcessNode(RenderProcessHostProxy::CreateForTesting(
-          RenderProcessHostId(rph2->GetID())));
   auto page2 = CreateNode<PageNodeImpl>();
   auto frame2 = CreateFrameNodeAutoId(process2.get(), page2.get());
 

@@ -281,13 +281,14 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
 TEST_F(ProcessNodeImplTest, RequestSharedPerformanceScenarioRegions) {
   auto process_node = CreateNode<ProcessNodeImpl>();
 
-  // No memory mapped.
+  // No global memory mapped. ProcessNodeImpl automatically creates a process
+  // memory region on request.
   process_node->RequestSharedPerformanceScenarioRegions(
       base::BindLambdaForTesting(
           [&](base::ReadOnlySharedMemoryRegion global_region,
               base::ReadOnlySharedMemoryRegion process_region) {
             EXPECT_FALSE(global_region.IsValid());
-            EXPECT_FALSE(process_region.IsValid());
+            EXPECT_TRUE(process_region.IsValid());
           })
           .Then(task_env().QuitClosure()));
   task_env().RunUntilQuit();
@@ -299,13 +300,10 @@ TEST_F(ProcessNodeImplTest, RequestSharedPerformanceScenarioRegions) {
           [&](base::ReadOnlySharedMemoryRegion global_region,
               base::ReadOnlySharedMemoryRegion process_region) {
             EXPECT_TRUE(global_region.IsValid());
-            EXPECT_FALSE(process_region.IsValid());
+            EXPECT_TRUE(process_region.IsValid());
           })
           .Then(task_env().QuitClosure()));
   task_env().RunUntilQuit();
-
-  // TODO(crbug.com/365586676): Mapping process memory needs a RenderProcessHost
-  // so can't be tested here.
 
   // In single process mode, memory shouldn't be shared even if it's mapped,
   // because the request isn't actually sent from a different process.

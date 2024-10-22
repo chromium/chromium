@@ -46,12 +46,12 @@ class ScopedGlobalScenarioMemory {
       read_only_mapping_;
 };
 
-// Returns a copy of the shared memory handle for the scenario state of a
-// renderer process, or an invalid handle if there is none. Also returns an
-// invalid handle if `host` is null. The handle can be passed to child processes
-// to map in the scenario state. Must be called from the UI thread.
-base::ReadOnlySharedMemoryRegion GetSharedScenarioRegionForProcess(
-    content::RenderProcessHost* host);
+// Returns a copy of the shared memory handle for the scenario state of
+// `process_node`, or an invalid handle if there is none. The handle can be
+// passed to the child process to map in the scenario state. Must be called from
+// the PM sequence.
+base::ReadOnlySharedMemoryRegion GetSharedScenarioRegionForProcessNode(
+    const ProcessNode* process_node);
 
 // Returns a copy of the shared memory handle for the global scenario state, or
 // an invalid handle if there is none. The handle can be passed to child

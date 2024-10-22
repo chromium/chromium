@@ -27,6 +27,7 @@
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/resource_attribution/cpu_measurement_data.h"
 #include "components/performance_manager/scenarios/loading_scenario_data.h"
+#include "components/performance_manager/scenarios/performance_scenario_data.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -59,6 +60,7 @@ class ProcessNodeImpl
       public mojom::ProcessCoordinationUnit,
       public SupportsNodeInlineData<ProcessPriorityAggregatorData,
                                     FrozenData,
+                                    PerformanceScenarioMemoryData,
                                     resource_attribution::CPUMeasurementData,
                                     LoadingScenarioCounts,
                                     // Keep this last to avoid merge conflicts.

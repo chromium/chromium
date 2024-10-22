@@ -37,12 +37,6 @@ content::ProcessType ValidateBrowserChildProcessType(
   return process_type;
 }
 
-base::ReadOnlySharedMemoryRegion GetProcessSharedScenarioRegionOnUI(
-    const RenderProcessHostProxy& proxy) {
-  return proxy.Get() ? GetSharedScenarioRegionForProcess(proxy.Get())
-                     : base::ReadOnlySharedMemoryRegion();
-}
-
 }  // namespace
 
 ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
@@ -196,11 +190,8 @@ void ProcessNodeImpl::RequestSharedPerformanceScenarioRegions(
                             base::ReadOnlySharedMemoryRegion());
     return;
   }
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&GetProcessSharedScenarioRegionOnUI,
-                     GetRenderProcessHostProxy()),
-      base::BindOnce(std::move(callback), GetGlobalSharedScenarioRegion()));
+  std::move(callback).Run(GetGlobalSharedScenarioRegion(),
+                          GetSharedScenarioRegionForProcessNode(this));
 }
 
 content::ProcessType ProcessNodeImpl::GetProcessType() const {
