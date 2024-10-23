@@ -31,12 +31,9 @@ namespace audio {
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
-BASE_FEATURE(kDynamicAudioTimeout,
-             "DynamicAudioTimeout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<double> kBufferDurationPercent{
-    &kDynamicAudioTimeout, "buffer_duration_percent", 0.95};
+constexpr double kBufferDurationPercent = 0.95;
+#else
+constexpr double kBufferDurationPercent = 0.5;
 #endif
 
 SyncReader::SyncReader(
@@ -60,20 +57,9 @@ SyncReader::SyncReader(
       output_bus_buffer_size_(
           media::AudioBus::CalculateMemorySize(params.channels(),
                                                params.frames_per_buffer())),
+      maximum_wait_time_(params.GetBufferDuration() * kBufferDurationPercent),
       read_timeout_glitch_{.duration = params.GetBufferDuration(), .count = 1},
       glitch_counter_(std::move(glitch_counter)) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
-  maximum_wait_time_ = params.GetBufferDuration() / 2;
-#else
-  if (base::FeatureList::IsEnabled(kDynamicAudioTimeout)) {
-    maximum_wait_time_ =
-        params.GetBufferDuration() * kBufferDurationPercent.Get();
-  } else {
-    maximum_wait_time_ = base::Milliseconds(20);
-  }
-#endif
-
   base::CheckedNumeric<size_t> memory_size =
       media::ComputeAudioOutputBufferSizeChecked(params);
   if (!memory_size.IsValid())
