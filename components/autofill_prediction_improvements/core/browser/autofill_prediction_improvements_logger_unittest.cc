@@ -139,7 +139,7 @@ class MockAutofillPredictionImprovementsClient
               (const autofill::FormData& form_data),
               (override));
   MOCK_METHOD(std::u16string,
-              GetAutofillFillingValue,
+              GetAutofillNameFillingValue,
               (const std::string& autofill_profile_guid,
                autofill::FieldType field_type,
                const autofill::FormFieldData& field),

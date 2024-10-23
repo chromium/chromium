@@ -91,9 +91,10 @@ class AutofillPredictionImprovementsClient {
   virtual autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormData& form_data) = 0;
 
-  // Returns the Autofill filling value for `field` for the Autofill profile
-  // identified by `autofill_profile_guid`, if any.
-  virtual std::u16string GetAutofillFillingValue(
+  // Returns the Autofill filling value for `field` of type `field_type` for the
+  // Autofill profile identified by `autofill_profile_guid`, if any. Only
+  // supports name types, and returns an empty string for all other types.
+  virtual std::u16string GetAutofillNameFillingValue(
       const std::string& autofill_profile_guid,
       autofill::FieldType field_type,
       const autofill::FormFieldData& field) = 0;

@@ -52,7 +52,7 @@ class ChromeAutofillPredictionImprovementsClient
   bool IsUserEligible() override;
   autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormData& form_data) override;
-  std::u16string GetAutofillFillingValue(
+  std::u16string GetAutofillNameFillingValue(
       const std::string& autofill_profile_guid,
       autofill::FieldType field_type,
       const autofill::FormFieldData& field) override;

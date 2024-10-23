@@ -355,8 +355,8 @@ bool AutofillPredictionImprovementsManager::CacheHasMatchingAutofillSuggestion(
     if (autofill_field->Type().GetStorableType() == field_type) {
       const std::u16string normalized_autofill_filling_value =
           autofill::NormalizeValue(
-              client_->GetAutofillFillingValue(autofill_profile_guid,
-                                               field_type, *autofill_field),
+              client_->GetAutofillNameFillingValue(autofill_profile_guid,
+                                                   field_type, *autofill_field),
               /*keep_white_space=*/false);
       if (normalized_autofill_filling_value.empty() ||
           !cache_->contains(autofill_field->global_id())) {

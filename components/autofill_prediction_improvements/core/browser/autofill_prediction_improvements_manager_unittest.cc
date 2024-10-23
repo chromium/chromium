@@ -122,7 +122,7 @@ class MockAutofillPredictionImprovementsClient
               (const autofill::FormData& form_data),
               (override));
   MOCK_METHOD(std::u16string,
-              GetAutofillFillingValue,
+              GetAutofillNameFillingValue,
               (const std::string& autofill_profile_guid,
                autofill::FieldType field_type,
                const autofill::FormFieldData& field),
@@ -737,7 +737,7 @@ TEST_F(
   autofill_suggestions[0].payload =
       autofill::Suggestion::AutofillProfilePayload(
           autofill::Suggestion::Guid("guid"));
-  EXPECT_CALL(client_, GetAutofillFillingValue).WillOnce(Return(u""));
+  EXPECT_CALL(client_, GetAutofillNameFillingValue).WillOnce(Return(u""));
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
@@ -1195,11 +1195,11 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       {form.fields()[1].global_id(), {u"Doe", u"Last Name"}}});
   EXPECT_CALL(client_, GetCachedFormStructure)
       .WillRepeatedly(Return(&form_structure));
-  EXPECT_CALL(client_,
-              GetAutofillFillingValue(_, autofill::FieldType::NAME_FIRST, _))
+  EXPECT_CALL(client_, GetAutofillNameFillingValue(
+                           _, autofill::FieldType::NAME_FIRST, _))
       .WillOnce(Return(u"j ǎ Ņ ë"));
   EXPECT_CALL(client_,
-              GetAutofillFillingValue(_, autofill::FieldType::NAME_LAST, _))
+              GetAutofillNameFillingValue(_, autofill::FieldType::NAME_LAST, _))
       .WillOnce(Return(u"  d o Ê"));
   EXPECT_TRUE(test_api(*manager_).ShouldSkipAutofillSuggestion(
       form, autofill_suggestion));

@@ -4,9 +4,12 @@
 
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -14,17 +17,26 @@
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_annotations/test_user_annotations_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill_prediction_improvements {
 namespace {
 
 using ::testing::NiceMock;
@@ -38,6 +50,11 @@ std::unique_ptr<KeyedService> CreateOptimizationGuideKeyedService(
 std::unique_ptr<KeyedService> CreateUserAnnotationsServiceFactory(
     content::BrowserContext* context) {
   return std::make_unique<user_annotations::TestUserAnnotationsService>();
+}
+
+std::unique_ptr<KeyedService> CreateTestPersonalDataManager(
+    content::BrowserContext* context) {
+  return std::make_unique<autofill::TestPersonalDataManager>();
 }
 
 class ChromeAutofillPredictionImprovementsClientTest
@@ -67,7 +84,10 @@ class ChromeAutofillPredictionImprovementsClientTest
                 base::BindRepeating(&CreateOptimizationGuideKeyedService)},
             TestingProfile::TestingFactory{
                 UserAnnotationsServiceFactory::GetInstance(),
-                base::BindRepeating(&CreateUserAnnotationsServiceFactory)}};
+                base::BindRepeating(&CreateUserAnnotationsServiceFactory)},
+            TestingProfile::TestingFactory{
+                autofill::PersonalDataManagerFactory::GetInstance(),
+                base::BindRepeating(&CreateTestPersonalDataManager)}};
   }
 
  private:
@@ -209,4 +229,47 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
           web_contents(), profile()));
 }
 
+// Tests that
+// ChromeAutofillPredictionImprovementsClient::GetAutofillNameFillingValue
+// returns accurate information about the value for filling of an
+// AutofillProfile for a given name type.
+TEST_F(ChromeAutofillPredictionImprovementsClientTest,
+       GetAutofillNameFillingValue) {
+  autofill::FormFieldData test_field;
+  autofill::AutofillProfile test_autofill_profile =
+      autofill::test::GetFullProfile();
+
+  // Currently the client should not see any info since no
+  // `test_autofill_profile` is not stored.
+  EXPECT_TRUE(client()
+                  .GetAutofillNameFillingValue(test_autofill_profile.guid(),
+                                               autofill::NAME_FIRST, test_field)
+                  .empty());
+
+  // Add `test_profile` to the autofill profile storage.
+  autofill::PersonalDataManager* pdm =
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(
+          browser_context());
+  pdm->address_data_manager().AddProfile(test_autofill_profile);
+
+  // Now, the client should have access to the profile since it was stored in
+  // memory, and should return an accurate value for filling.
+  ASSERT_TRUE(test_autofill_profile.HasInfo(autofill::NAME_FIRST));
+  EXPECT_EQ(client().GetAutofillNameFillingValue(
+                test_autofill_profile.guid(), autofill::NAME_FIRST, test_field),
+            test_autofill_profile.GetRawInfo(autofill::NAME_FIRST));
+
+  // Nevertheless, the client should not have access to more than the values
+  // of the profiles for the name types, since by design those additional values
+  // are not needed.
+  ASSERT_TRUE(
+      test_autofill_profile.HasInfo(autofill::ADDRESS_HOME_STREET_ADDRESS));
+  EXPECT_TRUE(client()
+                  .GetAutofillNameFillingValue(
+                      test_autofill_profile.guid(),
+                      autofill::ADDRESS_HOME_STREET_ADDRESS, test_field)
+                  .empty());
+}
+
 }  // namespace
+}  // namespace autofill_prediction_improvements

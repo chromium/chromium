@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/autofill_prediction_improvements/autofill_prediction_improvements_util.h"
 #include "chrome/browser/browser_process.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/field_filling_address_util.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -199,18 +201,13 @@ ChromeAutofillPredictionImprovementsClient::GetCachedFormStructure(
 }
 
 std::u16string
-ChromeAutofillPredictionImprovementsClient::GetAutofillFillingValue(
+ChromeAutofillPredictionImprovementsClient::GetAutofillNameFillingValue(
     const std::string& autofill_profile_guid,
     autofill::FieldType field_type,
     const autofill::FormFieldData& field) {
-  autofill::ContentAutofillDriverFactory* driver_factory =
-      autofill::ContentAutofillDriverFactory::FromWebContents(
-          &web_contents_.get());
-  if (!driver_factory) {
-    return u"";
-  }
   autofill::PersonalDataManager* pdm =
-      driver_factory->client().GetPersonalDataManager();
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(
+          web_contents_->GetBrowserContext());
   if (!pdm) {
     return u"";
   }
@@ -219,19 +216,16 @@ ChromeAutofillPredictionImprovementsClient::GetAutofillFillingValue(
   if (!autofill_profile) {
     return u"";
   }
-  std::vector<std::pair<autofill::FieldGlobalId, std::u16string>>
-      autofill_filling_values;
-
-  const autofill::AutofillType autofill_type =
-      autofill::AutofillType(field_type);
-  if (autofill::FieldTypeGroupToFormType(autofill_type.group()) !=
-      autofill::FormType::kAddressForm) {
+  if (autofill::GroupTypeOfFieldType(field_type) !=
+      autofill::FieldTypeGroup::kName) {
     return u"";
   }
+  // Note that since we are only interested in name values, the address
+  // normalizer is not needed.
   const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
       *autofill_profile, g_browser_process->GetApplicationLocale(),
-      autofill::AutofillType(autofill_type), field,
-      driver_factory->client().GetAddressNormalizer());
+      autofill::AutofillType(field_type), field,
+      /*address_normalizer=*/nullptr);
 
   return filling_value;
 }
