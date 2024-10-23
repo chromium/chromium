@@ -1380,7 +1380,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
   EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionX(extension_host));
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRightScrollToPage) {
+// TODO(crbug.com/369947144): Fix flakiness and reenable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WithArrowLeftRightScrollToPage \
+  DISABLED_WithArrowLeftRightScrollToPage
+#else
+#define MAYBE_WithArrowLeftRightScrollToPage WithArrowLeftRightScrollToPage
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
+                       MAYBE_WithArrowLeftRightScrollToPage) {
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(extension_host);
