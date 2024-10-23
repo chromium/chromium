@@ -161,8 +161,11 @@ suite('ExtensionManagerTest', function() {
     assertEquals('Extensions', document.title);
   });
 
+  // Tests that navigating to site permissions pages is a no-op when
+  // enableEnhancedSiteControls is false.
   test('NavigateToSitePermissionsFail', function() {
-    assertFalse(manager.enableEnhancedSiteControls);
+    manager.enableEnhancedSiteControls = false;
+    flush();
 
     // Try to open the site permissions page.
     navigation.navigateTo({page: Page.SITE_PERMISSIONS});
@@ -180,8 +183,9 @@ suite('ExtensionManagerTest', function() {
     assertViewActive('extensions-item-list');
   });
 
+  // Test that navigating to site permissions pages opens the corresponding page
+  // when enableEnhancedSiteControls is true.
   test('NavigateToSitePermissionsSuccess', function() {
-    // Set the enableEnhancedSiteControls flag to true.
     manager.enableEnhancedSiteControls = true;
     flush();
 
