@@ -1659,6 +1659,51 @@ TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintMinAndMaxVersion) {
   }
 }
 
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintNameConstraints) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+
+  // If the the CRS root has dns name constraints and the cert's names don't
+  // match the name constraints, verification should fail.
+  {
+    std::array<std::string_view, 2> permitted_dns_names = {
+        std::string_view("example.org"),
+        std::string_view("foo.example.com"),
+    };
+    SetMockChromeRootConstraints(
+        {{.permitted_dns_names = permitted_dns_names}});
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf->GetX509Certificate(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  // If cert's names match the CRS name constraints, verification should
+  // succeed.
+  {
+    std::array<std::string_view, 2> permitted_dns_names = {
+        std::string_view("example.org"),
+        std::string_view("example.com"),
+    };
+    SetMockChromeRootConstraints(
+        {{.permitted_dns_names = permitted_dns_names}});
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf->GetX509Certificate(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+}
+
 // Tests multiple constraint objects in the constraints vector. The CRS
 // constraints are satisfied if at least one of the constraint objects is
 // satisfied.

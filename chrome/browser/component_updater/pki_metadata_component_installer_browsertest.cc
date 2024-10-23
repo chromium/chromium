@@ -599,13 +599,7 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
     raw_ptr<PKIMetadataComponentChromeRootStoreUpdateTest> test_;
   };
 
-  void InstallCRSUpdate(const std::vector<std::string>& der_roots) {
-    chrome_root_store::RootStore root_store_proto;
-    root_store_proto.set_version_major(++last_used_crs_version_);
-    for (const auto& der_root : der_roots) {
-      root_store_proto.add_trust_anchors()->set_der(der_root);
-    }
-
+  void InstallCRSUpdate(chrome_root_store::RootStore root_store_proto) {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       ASSERT_TRUE(
@@ -618,6 +612,16 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
     PKIMetadataComponentInstallerService::GetInstance()
         ->ConfigureChromeRootStore();
     waiter.Wait();
+  }
+
+  void InstallCRSUpdate(const std::vector<std::string>& der_roots) {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++last_used_crs_version_);
+    for (const auto& der_root : der_roots) {
+      root_store_proto.add_trust_anchors()->set_der(der_root);
+    }
+
+    InstallCRSUpdate(std::move(root_store_proto));
   }
 
  protected:
@@ -758,6 +762,83 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
             u"Title Of Awesomeness");
   EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(),
             u"Title Of More Awesomeness");
+  ssl_test_util::CheckAuthenticationBrokenState(
+      tab, net::CERT_STATUS_AUTHORITY_INVALID,
+      ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
+}
+
+IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
+                       CheckCRSUpdateDnsConstraint) {
+  net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::EmbeddedTestServer::ServerCertificateConfig server_config;
+  server_config.dns_names = {"*.example.com"};
+  https_server_ok.SetSSLConfig(server_config);
+  https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
+
+  // Clear test roots so that cert validation only happens with
+  // what's in Chrome Root Store.
+  net::TestRootCerts::GetInstance()->Clear();
+
+  ASSERT_TRUE(https_server_ok.Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("a.example.com", "/simple.html")));
+
+  // The page should be blocked as the test root is not trusted yet.
+  content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
+  EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
+  ssl_test_util::CheckAuthenticationBrokenState(
+      tab, net::CERT_STATUS_AUTHORITY_INVALID,
+      ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
+
+  int64_t crs_version = net::CompiledChromeRootStoreVersion();
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  // Install CRS update that trusts root with a constraint that matches the
+  // leaf's subjectAltName.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->add_constraints()->add_permitted_dns_names("example.com");
+
+    InstallCRSUpdate(std::move(root_store_proto));
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("b.example.com", "/simple.html")));
+
+  // Check that the page is allowed now.
+  tab = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
+  EXPECT_EQ(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
+  ssl_test_util::CheckAuthenticatedState(tab, ssl_test_util::AuthState::NONE);
+
+  // Install CRS update that trusts root with a constraint that does not match
+  // the leaf's subjectAltName.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->add_constraints()->add_permitted_dns_names("example.org");
+
+    InstallCRSUpdate(std::move(root_store_proto));
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
+
+  // Check that the page is blocked now.
+  tab = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
+  EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_AUTHORITY_INVALID,
       ssl_test_util::AuthState::SHOWING_INTERSTITIAL);

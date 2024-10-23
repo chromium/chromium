@@ -18,9 +18,14 @@ trust_anchors {
   constraints: {
     sct_not_after_sec: 0x5AF
     max_version_exclusive: "125.0.6368.2"
+    permitted_dns_names: "foo.example.com"
+    permitted_dns_names: "bar.example.com"
   }
   constraints: {
     sct_all_after_sec: 0x2579
     min_version: "128"
+  }
+  constraints: {
+    permitted_dns_names: "baz.example.com"
   }
 }

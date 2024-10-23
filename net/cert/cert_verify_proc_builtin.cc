@@ -477,6 +477,30 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       }
     }
 
+    if (!constraint.permitted_dns_names.empty()) {
+      bssl::GeneralNames permitted_names;
+      for (const auto& dns_name : constraint.permitted_dns_names) {
+        permitted_names.dns_names.push_back(dns_name);
+      }
+      permitted_names.present_name_types |=
+          bssl::GeneralNameTypes::GENERAL_NAME_DNS_NAME;
+
+      std::unique_ptr<bssl::NameConstraints> nc =
+          bssl::NameConstraints::CreateFromPermittedSubtrees(
+              std::move(permitted_names));
+
+      const std::shared_ptr<const bssl::ParsedCertificate>& leaf_cert =
+          path->certs[0];
+      bssl::CertErrors name_constraint_errors;
+      nc->IsPermittedCert(leaf_cert->normalized_subject(),
+                          leaf_cert->subject_alt_names(),
+                          &name_constraint_errors);
+      if (name_constraint_errors.ContainsAnyErrorWithSeverity(
+              bssl::CertError::SEVERITY_HIGH)) {
+        return false;
+      }
+    }
+
     if (constraint.min_version.has_value() &&
         version_info::GetVersion() < constraint.min_version.value()) {
       return false;

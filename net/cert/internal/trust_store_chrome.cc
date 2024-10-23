@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,17 +33,23 @@ ChromeRootCertConstraints::ChromeRootCertConstraints(
     std::optional<base::Time> sct_not_after,
     std::optional<base::Time> sct_all_after,
     std::optional<base::Version> min_version,
-    std::optional<base::Version> max_version_exclusive)
+    std::optional<base::Version> max_version_exclusive,
+    std::vector<std::string> permitted_dns_names)
     : sct_not_after(sct_not_after),
       sct_all_after(sct_all_after),
       min_version(std::move(min_version)),
-      max_version_exclusive(std::move(max_version_exclusive)) {}
+      max_version_exclusive(std::move(max_version_exclusive)),
+      permitted_dns_names(std::move(permitted_dns_names)) {}
+
 ChromeRootCertConstraints::ChromeRootCertConstraints(
     const StaticChromeRootCertConstraints& constraints)
     : sct_not_after(constraints.sct_not_after),
       sct_all_after(constraints.sct_all_after),
       min_version(constraints.min_version),
       max_version_exclusive(constraints.max_version_exclusive) {
+  for (std::string_view name : constraints.permitted_dns_names) {
+    permitted_dns_names.emplace_back(name);
+  }
   if (min_version) {
     CHECK(min_version->IsValid());
   }
@@ -50,6 +57,7 @@ ChromeRootCertConstraints::ChromeRootCertConstraints(
     CHECK(max_version_exclusive->IsValid());
   }
 }
+
 ChromeRootCertConstraints::~ChromeRootCertConstraints() = default;
 ChromeRootCertConstraints::ChromeRootCertConstraints(
     const ChromeRootCertConstraints& other) = default;
@@ -134,7 +142,8 @@ ChromeRootStoreData::CreateChromeRootStoreData(
               ? std::optional(base::Time::UnixEpoch() +
                               base::Seconds(constraint.sct_all_after_sec()))
               : std::nullopt,
-          min_version, max_version_exclusive);
+          min_version, max_version_exclusive,
+          base::ToVector(constraint.permitted_dns_names()));
     }
     root_store_data.anchors_.emplace_back(std::move(parsed),
                                           std::move(constraints));
@@ -298,6 +307,8 @@ TrustStoreChrome::ParseCrsConstraintsSwitch(std::string_view switch_value) {
           continue;
         }
         constraint.max_version_exclusive = version;
+      } else if (constraint_name_lower == "dns") {
+        constraint.permitted_dns_names.push_back(constraint_value);
       } else {
         LOG(ERROR) << "unrecognized constraint " << constraint_name_lower;
       }
