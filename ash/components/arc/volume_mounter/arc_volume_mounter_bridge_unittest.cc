@@ -603,35 +603,87 @@ TEST_F(ArcVolumeMounterBridgeTest,
   EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 0);
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, PrepareForRemovableMediaUnmount_Success) {
-  bridge()->set_unmount_timeout_for_testing(base::Seconds(0));
+// Tests that DropArcCaches() can be called serially multiple times and calls
+// back the correct callback.
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Sequential) {
+  bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
 
   base::test::TestFuture<bool> future1, future2;
-  // Test that DropArcCaches() can be called serially multiple times and calls
-  // back the correct callback.
+
+  // Schedule one DropArcCaches request.
   bridge()->DropArcCaches(
       ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED1"),
       future1.GetCallback());
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC finishes the first request successfully.
+  volume_mounter_instance()->RunCallback(true /* success */);
+
+  // The callback has run with true and the timer is stopped.
   EXPECT_TRUE(future1.Get());
+  EXPECT_FALSE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // Schedule another DropArcCaches request.
   bridge()->DropArcCaches(
       ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED2"),
       future2.GetCallback());
-  EXPECT_TRUE(future2.Get());
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC finishes the second request unsuccessfully.
+  volume_mounter_instance()->RunCallback(false /* success */);
+
+  // The callback has run with false and the timer is stopped.
+  EXPECT_FALSE(future2.Get());
+  EXPECT_FALSE(bridge()->GetUnmountTimerForTesting()->IsRunning());
 }
 
-TEST_F(ArcVolumeMounterBridgeTest,
-       PrepareForRemovableMediaUnmount_UnresponsiveARC) {
-  bridge()->set_unmount_timeout_for_testing(base::Seconds(0));
+// Tests that DropArcCaches() can be called concurrently multiple times and
+// calls back the correct callback.
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Concurrent) {
+  bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
 
-  // Test the situation where ARC does not call the
-  // PrepareForRemovableMediaUnmount callback.
-  volume_mounter_instance()->ShouldCallBack(false);
+  base::test::TestFuture<bool> future1, future2;
+
+  // Schedule multiple DropArcCaches requests.
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED1"),
+      future1.GetCallback());
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED2"),
+      future2.GetCallback());
+
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC finishes the first request successfully.
+  volume_mounter_instance()->RunCallback(true /* success */);
+
+  // The first callback has run with true, but the second one hasn't run yet.
+  EXPECT_TRUE(future1.Get());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC finishes the second request unsuccessfully.
+  volume_mounter_instance()->RunCallback(false /* success */);
+
+  // The second callback has run with false.
+  EXPECT_FALSE(future2.Get());
+  EXPECT_FALSE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+}
+
+// Tests the scenario where PrepareForRemovableMediaUnmount mojo call times out.
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Timeout) {
+  bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
 
   base::test::TestFuture<bool> future;
   bridge()->DropArcCaches(
       ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED"),
       future.GetCallback());
-  // The callback will be called with false due to timeout.
+
+  // The timer is fired before ARC replies.
+  bridge()->GetUnmountTimerForTesting()->FireNow();
+  volume_mounter_instance()->RunCallback(true /* success */);
+
+  // The callback has run with false due to timeout.
   EXPECT_FALSE(future.Get());
 }
 

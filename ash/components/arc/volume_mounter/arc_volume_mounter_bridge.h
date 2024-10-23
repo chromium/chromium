@@ -106,9 +106,11 @@ class ArcVolumeMounterBridge
   // Send all existing mount events. Usually is called around service startup.
   void SendAllMountEvents();
 
-  void set_unmount_timeout_for_testing(const base::TimeDelta& timeout) {
+  // Utility methods for testing.
+  void SetUnmountTimeoutForTesting(const base::TimeDelta& timeout) {
     unmount_timeout_ = timeout;
   }
+  base::OneShotTimer* GetUnmountTimerForTesting() { return &unmount_timer_; }
 
   static void EnsureFactoryBuilt();
 
