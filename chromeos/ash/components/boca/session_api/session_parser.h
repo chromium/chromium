@@ -24,6 +24,8 @@ namespace ash::boca {
 // Proto to Json
 void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
                                ::boca::Session* session);
+void ParseJoinCodeProtoFromJson(base::Value::Dict* session_dict,
+                                ::boca::Session* session);
 void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
                               ::boca::Session* session);
 void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,

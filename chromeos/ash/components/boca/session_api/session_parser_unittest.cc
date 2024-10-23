@@ -14,8 +14,9 @@
 namespace ash::boca {
 namespace {
 
-// Unit test cases for proto2json conversion is covered in
-// create_session_request_unittest.cc, not duplicating here.
+// TODO(crbug.com/374364083):Refactor existing get session unit test.
+// Currently this file doesn't have full coverage for session_parser, the reset
+// is covered in get_session_request_unittest, we should move those here.
 constexpr char kFullSessionResponse[] = R"(
   {
   "startTime":{
@@ -24,6 +25,10 @@ constexpr char kFullSessionResponse[] = R"(
   "sessionId": "111",
   "duration": {
     "seconds": 120
+  },
+  "joinCode":{
+    "enabled":true,
+    "code":"testCode"
   },
   "studentStatuses": {
     "2": {
@@ -159,6 +164,13 @@ TEST_F(SessionParserTest, TestParseTeacherProtoFromJson) {
   ParseTeacherProtoFromJson(session_dict_partial->GetIfDict(),
                             session_partial.get());
   EXPECT_EQ("1", session_partial->teacher().gaia_id());
+}
+
+TEST_F(SessionParserTest, TestParseJoinCodeProtoFromJson) {
+  ParseJoinCodeProtoFromJson(session_dict_full->GetIfDict(),
+                             session_full.get());
+  EXPECT_TRUE(session_full->join_code().enabled());
+  EXPECT_EQ("testCode", session_full->join_code().code());
 }
 
 TEST_F(SessionParserTest, TestParseRosterProtoFromJson) {

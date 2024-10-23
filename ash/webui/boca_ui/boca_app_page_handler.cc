@@ -118,12 +118,18 @@ mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
         seconds +
         static_cast<double>(nanos) / base::Time::kNanosecondsPerSecond);
   }
+
+  std::string access_code;
+  if (session->has_join_code()) {
+    access_code = session->join_code().code();
+  }
+
   return mojom::Config::New(
       // Nanos are not used throughout session lifecycle so it's
       // safe to only parse seconds.
       base::Seconds(session->duration().seconds()), start_time,
       std::move(teacher), std::move(students), std::move(on_task_config),
-      std::move(caption_config));
+      std::move(caption_config), access_code);
 }
 }  // namespace
 
@@ -409,6 +415,11 @@ void BocaAppHandler::OnConsumerActivityUpdated(
     }
   }
   OnStudentActivityUpdated(std::move(result));
+}
+
+void BocaAppHandler::OnSessionStarted(const std::string& session_id,
+                                      const ::boca::UserIdentity& producer) {
+  UpdateSessionConfig();
 }
 
 void BocaAppHandler::OnSessionEnded(const std::string& session_id) {

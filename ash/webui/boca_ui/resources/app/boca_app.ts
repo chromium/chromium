@@ -95,6 +95,7 @@ export declare interface SessionConfig {
   teacher?: Identity;
   onTaskConfig: OnTaskConfig;
   captionConfig: CaptionConfig;
+  accessCode?: string;
 }
 
 /**

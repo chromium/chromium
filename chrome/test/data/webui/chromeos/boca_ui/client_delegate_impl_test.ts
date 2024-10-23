@@ -111,6 +111,7 @@ class MockRemoteHandler extends PageHandlerRemote {
             email: 'teacher@gmail.com',
             photoUrl: {url: 'cdn0'},
           },
+          accessCode: 'testCode',
           students: [
             {
               id: '1',
@@ -329,6 +330,7 @@ suite('ClientDelegateTest', function() {
               {id: '1', name: 'cat', email: 'cat@gmail.com', photoUrl: 'cdn1'},
               {id: '2', name: 'dog', email: 'dog@gmail.com', photoUrl: 'cdn2'},
             ],
+            accessCode: 'testCode',
             onTaskConfig: {
               isLocked: true,
               tabs: [
@@ -379,6 +381,7 @@ suite('ClientDelegateTest', function() {
             email: 'teacher@gmail.com',
             photoUrl: {url: 'cdn0'},
           },
+          accessCode: null,
           captionConfig: {
             sessionCaptionEnabled: true,
             localCaptionEnabled: true,
@@ -401,6 +404,7 @@ suite('ClientDelegateTest', function() {
                 isLocked: false,
                 tabs: [],
               },
+              accessCode: '',
               captionConfig: {
                 sessionCaptionEnabled: true,
                 localCaptionEnabled: true,

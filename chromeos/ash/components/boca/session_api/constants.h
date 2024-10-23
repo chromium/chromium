@@ -74,6 +74,9 @@ inline constexpr char kDeviceId[] = "deviceId";
 inline constexpr char kActivity[] = "activity";
 inline constexpr char kUsers[] = "users";
 inline constexpr char kTachyonGroupId[] = "tachyonGroupId";
+inline constexpr char kJoinCode[] = "joinCode";
+inline constexpr char kJoinCodeEnabled[] = "enabled";
+inline constexpr char kCode[] = "code";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(

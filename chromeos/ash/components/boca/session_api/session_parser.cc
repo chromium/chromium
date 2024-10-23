@@ -89,6 +89,20 @@ void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
   }
 }
 
+void ParseJoinCodeProtoFromJson(base::Value::Dict* session_dict,
+                                ::boca::Session* session) {
+  if (!session_dict->FindDict(kJoinCode)) {
+    return;
+  }
+  auto* join_code = session->mutable_join_code();
+  join_code->set_enabled(session_dict->FindDict(kJoinCode)
+                             ->FindBool(kJoinCodeEnabled)
+                             .value_or(false));
+  if (auto* ptr = session_dict->FindDict(kJoinCode)->FindString(kCode)) {
+    join_code->set_code(*ptr);
+  }
+}
+
 void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
                               ::boca::Session* session) {
   auto* roster_dict = session_dict->FindDict(kRoster);
@@ -299,6 +313,8 @@ std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json,
   }
 
   ParseTeacherProtoFromJson(session_dict, session.get());
+
+  ParseJoinCodeProtoFromJson(session_dict, session.get());
 
   ParseRosterProtoFromJson(session_dict, session.get());
 

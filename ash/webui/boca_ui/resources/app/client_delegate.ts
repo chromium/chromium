@@ -66,6 +66,7 @@ export function getSessionConfigMojomToUI(session: Config|
           }),
         },
         captionConfig: session.captionConfig,
+        accessCode: session.accessCode ? session.accessCode : ''
   }
 };
 

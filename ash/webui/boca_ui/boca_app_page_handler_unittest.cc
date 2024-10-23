@@ -257,7 +257,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
 
   const auto config = mojom::Config::New(
       session_duration, std::nullopt, nullptr, std::move(students),
-      GetCommonTestLockOnTaskConfig(), GetCommonCaptionConfig());
+      GetCommonTestLockOnTaskConfig(), GetCommonCaptionConfig(), "");
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
                                         google_apis::ApiErrorCode>>
@@ -391,7 +391,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
   const auto config = mojom::Config::New(
       session_duration, std::nullopt, nullptr,
       std::vector<mojom::IdentityPtr>{}, mojom::OnTaskConfigPtr(nullptr),
-      mojom::CaptionConfigPtr(nullptr));
+      mojom::CaptionConfigPtr(nullptr), "");
 
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id(kGaiaId);
@@ -450,6 +450,9 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
         teacher->set_gaia_id("000");
         teacher->set_photo_url("cdn://s");
 
+        auto* access_code = session->mutable_join_code();
+        access_code->set_code("testCode");
+
         auto* student_groups_1 =
             session->mutable_roster()->mutable_student_groups()->Add();
         student_groups_1->set_title(kMainStudentGroupName);
@@ -495,6 +498,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   EXPECT_EQ("000", result->teacher->id);
   EXPECT_EQ("cdn://s", result->teacher->photo_url->spec());
 
+  EXPECT_EQ("testCode", result->access_code);
   EXPECT_EQ(true, result->caption_config->session_caption_enabled);
   EXPECT_EQ(true, result->caption_config->session_translation_enabled);
 
@@ -1329,6 +1333,18 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentWithNonActiveSession) {
   boca_app_handler()->RemoveStudent("any", future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::RemoveStudentError::kInvalid, future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest, OnSessionSessionStartedSucceed) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
+  base::test::TestFuture<mojom::SessionResultPtr> future;
+  boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
+      future.GetCallback());
+  boca_app_handler()->OnSessionStarted(std::string(), ::boca::UserIdentity());
+  auto result = future.Take();
+  ASSERT_TRUE(result->is_config());
 }
 
 TEST_F(BocaAppPageHandlerTest, OnSessionEndedSucceed) {

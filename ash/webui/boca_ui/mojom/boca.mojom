@@ -60,6 +60,9 @@ struct Config{
   array<Identity> students;
   OnTaskConfig on_task_config;
   CaptionConfig caption_config;
+  // Strings allow consumer to type and join a session. Will be alphabetic
+  // characters.
+  string? access_code;
 };
 
 struct CaptionConfig {

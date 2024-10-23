@@ -76,10 +76,9 @@ class BocaAppHandler : public mojom::PageHandler,
   // BocaSessionManager::Observer
   void OnConsumerActivityUpdated(
       const std::map<std::string, ::boca::StudentStatus>& activities) override;
-  // When session start, UI is already most update to date, do
-  // not handle the event
+
   void OnSessionStarted(const std::string& session_id,
-                        const ::boca::UserIdentity& producer) override {}
+                        const ::boca::UserIdentity& producer) override;
   void OnSessionEnded(const std::string& session_id) override;
   void OnBundleUpdated(const ::boca::Bundle& bundle) override;
   void OnSessionCaptionConfigUpdated(
