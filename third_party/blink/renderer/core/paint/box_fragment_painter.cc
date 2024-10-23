@@ -679,8 +679,9 @@ void BoxFragmentPainter::PaintObject(const PaintInfo& paint_info,
       (!fragment.Children().empty() || fragment.HasItems() ||
        inline_box_cursor_) &&
       !paint_info.DescendantPaintingBlocked()) {
-    if (is_visible && paint_phase == PaintPhase::kForeground &&
-        fragment.IsCSSBox() && style.HasColumnRule()) [[unlikely]] {
+    if (paint_phase == PaintPhase::kDescendantBlockBackgroundsOnly &&
+        is_visible && fragment.IsCSSBox() && style.HasColumnRule())
+        [[unlikely]] {
       PaintColumnRules(paint_info, paint_offset);
     }
 
