@@ -443,7 +443,7 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionForegrounded) {
 
 // TODO(crbug.com/375065072): Re-enable once not flaky.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TransferSharedLastForegroundTime \
   DISABLED_TransferSharedLastForegroundTime
 #else
