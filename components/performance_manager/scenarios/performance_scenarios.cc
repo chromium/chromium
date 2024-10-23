@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
@@ -58,12 +59,6 @@ scoped_refptr<RefCountedScenarioMemory> GetScenarioMemoryForProcessNode(
   return data.shared_mem;
 }
 
-scoped_refptr<RefCountedScenarioMemory> GetScenarioMemoryForWeakProcessNode(
-    base::WeakPtr<ProcessNode> process_node) {
-  return process_node ? GetScenarioMemoryForProcessNode(process_node.get())
-                      : nullptr;
-}
-
 // Returns a pointer to the global shared memory region that can be read by all
 // processes, or nullptr if none exists. GlobalPerformanceScenarioMemory
 // manages the lifetime of the region.
@@ -72,24 +67,58 @@ scoped_refptr<RefCountedScenarioMemory> GetGlobalScenarioMemory() {
   return GlobalSharedMemPtr();
 }
 
-void SetLoadingScenario(LoadingScenario scenario,
-                        scoped_refptr<RefCountedScenarioMemory> shared_mem) {
-  if (shared_mem) {
-    // std::memory_order_relaxed is sufficient since no other memory depends on
-    // the scenario value.
-    shared_mem->data.WritableRef().loading.store(scenario,
-                                                 std::memory_order_relaxed);
-  }
+// Convenience accessors to return references to the correct member of `state`
+// for Scenario.
+template <typename Scenario>
+std::atomic<Scenario>& GetScenarioRef(SharedScenarioState& state);
+
+template <>
+std::atomic<LoadingScenario>& GetScenarioRef(SharedScenarioState& state) {
+  return state.WritableRef().loading;
 }
 
-void SetInputScenario(InputScenario scenario,
+template <>
+std::atomic<InputScenario>& GetScenarioRef(SharedScenarioState& state) {
+  return state.WritableRef().input;
+}
+
+template <typename Scenario>
+void SetScenarioValue(Scenario scenario,
                       scoped_refptr<RefCountedScenarioMemory> shared_mem) {
   if (shared_mem) {
     // std::memory_order_relaxed is sufficient since no other memory depends on
     // the scenario value.
-    shared_mem->data.WritableRef().input.store(scenario,
-                                               std::memory_order_relaxed);
+    GetScenarioRef<Scenario>(shared_mem->data)
+        .store(scenario, std::memory_order_relaxed);
   }
+}
+
+template <typename Scenario>
+void SetScenarioValueForProcessNode(Scenario scenario,
+                                    const ProcessNode* process_node) {
+  SetScenarioValue(scenario, GetScenarioMemoryForProcessNode(process_node));
+}
+
+template <typename Scenario>
+void SetScenarioValueForRenderProcessHost(Scenario scenario,
+                                          content::RenderProcessHost* host) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  PerformanceManager::CallOnGraph(
+      FROM_HERE,
+      base::BindOnce(
+          [](Scenario scenario, base::WeakPtr<ProcessNode> process_node) {
+            if (process_node) {
+              SetScenarioValue(scenario, GetScenarioMemoryForProcessNode(
+                                             process_node.get()));
+            }
+          },
+          scenario,
+          PerformanceManager::GetProcessNodeForRenderProcessHost(host)));
+}
+
+template <typename Scenario>
+void SetGlobalScenarioValue(Scenario scenario) {
+  SetScenarioValue(scenario, GetGlobalScenarioMemory());
 }
 
 }  // namespace
@@ -126,48 +155,30 @@ base::ReadOnlySharedMemoryRegion GetGlobalSharedScenarioRegion() {
 
 void SetLoadingScenarioForProcess(LoadingScenario scenario,
                                   content::RenderProcessHost* host) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          &GetScenarioMemoryForWeakProcessNode,
-          PerformanceManager::GetProcessNodeForRenderProcessHost(host))
-          .Then(base::BindOnce(&SetLoadingScenario, scenario)));
+  SetScenarioValueForRenderProcessHost(scenario, host);
 }
 
 void SetLoadingScenarioForProcessNode(LoadingScenario scenario,
                                       const ProcessNode* process_node) {
-  if (!process_node) {
-    return;
-  }
-  SetLoadingScenario(scenario, GetScenarioMemoryForProcessNode(process_node));
+  SetScenarioValueForProcessNode(scenario, process_node);
 }
 
 void SetGlobalLoadingScenario(LoadingScenario scenario) {
-  SetLoadingScenario(scenario, GetGlobalScenarioMemory());
+  SetGlobalScenarioValue(scenario);
 }
 
 void SetInputScenarioForProcess(InputScenario scenario,
                                 content::RenderProcessHost* host) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          &GetScenarioMemoryForWeakProcessNode,
-          PerformanceManager::GetProcessNodeForRenderProcessHost(host))
-          .Then(base::BindOnce(&SetInputScenario, scenario)));
+  SetScenarioValueForRenderProcessHost(scenario, host);
 }
 
 void SetInputScenarioForProcessNode(InputScenario scenario,
                                     const ProcessNode* process_node) {
-  if (!process_node) {
-    return;
-  }
-  SetInputScenario(scenario, GetScenarioMemoryForProcessNode(process_node));
+  SetScenarioValueForProcessNode(scenario, process_node);
 }
 
 void SetGlobalInputScenario(InputScenario scenario) {
-  SetInputScenario(scenario, GetGlobalScenarioMemory());
+  SetGlobalScenarioValue(scenario);
 }
 
 }  // namespace performance_manager
