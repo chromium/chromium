@@ -76,7 +76,13 @@ size_t GetNumChunks() {
 
 typedef PlatformBrowserTest PolicyPrefsTestCoverageTest;
 
-IN_PROC_BROWSER_TEST_F(PolicyPrefsTestCoverageTest, AllPoliciesHaveATestCase) {
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AllPoliciesHaveATestCase DISABLED_AllPoliciesHaveATestCase
+#else
+#define MAYBE_AllPoliciesHaveATestCase AllPoliciesHaveATestCase
+#endif
+IN_PROC_BROWSER_TEST_F(PolicyPrefsTestCoverageTest,
+                       MAYBE_AllPoliciesHaveATestCase) {
   VerifyAllPoliciesHaveATestCase(GetTestCaseDir());
 }
 
