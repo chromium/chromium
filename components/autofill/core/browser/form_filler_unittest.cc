@@ -1756,7 +1756,7 @@ TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
   // Expect that this test doesn't cause a crash.
 }
 
-TEST_F(FormFillerTest, FillOrPreviewFormExperimental) {
+TEST_F(FormFillerTest, FillOrPreviewFormWithPredictionImprovements) {
   test::FormDescription form_description = {
       .fields = {{.role = NAME_FIRST, .heuristic_type = NAME_FIRST},
                  {.role = NAME_LAST, .heuristic_type = NAME_LAST},
@@ -1779,8 +1779,8 @@ TEST_F(FormFillerTest, FillOrPreviewFormExperimental) {
   EXPECT_CALL(autofill_driver_, ApplyFormAction)
       .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
                       Return(std::vector<FieldGlobalId>())));
-  browser_autofill_manager_->FillOrPreviewFormExperimental(
-      mojom::ActionPersistence::kFill, FillingProduct::kAddress,
+  browser_autofill_manager_->FillOrPreviewFormWithPredictionImprovements(
+      mojom::ActionPersistence::kFill,
       /*field_types_to_fill=*/{UNKNOWN_TYPE, NAME_FIRST, NAME_LAST},
       /*ignorable_skip_reasons=*/{FieldFillingSkipReason::kNoFillableGroup},
       form, form.fields().front(), values_to_fill);

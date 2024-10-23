@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -19,9 +20,11 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_logger.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_utils.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_value_filter.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -625,6 +628,7 @@ void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
     const autofill::FormFieldData& trigger_field,
     AutofillPredictionImprovementsManager::UpdateSuggestionsCallback
         update_suggestions_callback) {
+  logger_.OnTriggeredFillingSuggestions(form.global_id());
   if (kTriggerAutomatically.Get() &&
       prediction_retrieval_state_ !=
           PredictionRetrievalState::kIsLoadingPredictions) {
@@ -654,13 +658,45 @@ void AutofillPredictionImprovementsManager::OnSuggestionsShown(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
+  logger_.OnSuggestionsShown(form.global_id());
   if (shown_suggestion_types.contains(
           autofill::SuggestionType::kPredictionImprovementsLoadingState)) {
     OnLoadingSuggestionShown(form, trigger_field, update_suggestions_callback);
-  } else if (shown_suggestion_types.contains(
-                 autofill::SuggestionType::kPredictionImprovementsError)) {
+  }
+  if (shown_suggestion_types.contains(
+          autofill::SuggestionType::kPredictionImprovementsError)) {
     OnErrorOrNoInfoSuggestionShown();
   }
+  if (shown_suggestion_types.contains(
+          autofill::SuggestionType::kFillPredictionImprovements)) {
+    logger_.OnFillingSuggestionsShown(form.global_id());
+  }
+}
+
+void AutofillPredictionImprovementsManager::OnFormSeen(
+    const autofill::FormStructure& form) {
+  bool is_eligible = IsFormEligibleForFilling(form);
+  logger_.OnFormEligibilityAvailable(form.global_id(), is_eligible);
+  if (is_eligible) {
+    HasDataStored(base::BindOnce(
+        [](base::WeakPtr<AutofillPredictionImprovementsManager> manager,
+           autofill::FormGlobalId form_id, HasData has_data) {
+          if (manager && has_data) {
+            manager->logger_.OnFormHasDataToFill(form_id);
+          }
+        },
+        weak_ptr_factory_.GetWeakPtr(), form.global_id()));
+  }
+}
+
+void AutofillPredictionImprovementsManager::OnDidFillSuggestion(
+    autofill::FormGlobalId form_id) {
+  logger_.OnDidFillSuggestion(form_id);
+}
+
+void AutofillPredictionImprovementsManager::OnEditedAutofilledField(
+    autofill::FormGlobalId form_id) {
+  logger_.OnDidCorrectFillingSuggestion(form_id);
 }
 
 void AutofillPredictionImprovementsManager::Reset() {

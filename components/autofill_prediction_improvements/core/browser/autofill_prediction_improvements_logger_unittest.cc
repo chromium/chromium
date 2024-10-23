@@ -4,18 +4,24 @@
 
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_logger.h"
 
+#include <memory>
 #include <tuple>
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager_test_api.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/user_annotations/test_user_annotations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -172,6 +178,8 @@ class BaseAutofillPredictionImprovementsTest : public testing::Test {
          {"extract_ax_tree_for_predictions", "true"}});
     manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
         &client_, &decider_, &strike_database_);
+    ON_CALL(client_, GetUserAnnotationsService)
+        .WillByDefault(testing::Return(&user_annotations_service_));
   }
 
   AutofillPredictionImprovementsManager& manager() { return *manager_; }
@@ -182,6 +190,7 @@ class BaseAutofillPredictionImprovementsTest : public testing::Test {
   testing::NiceMock<MockAutofillPredictionImprovementsClient> client_;
   std::unique_ptr<AutofillPredictionImprovementsManager> manager_;
   autofill::TestStrikeDatabase strike_database_;
+  user_annotations::TestUserAnnotationsService user_annotations_service_;
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
@@ -317,6 +326,33 @@ class AutofillPredictionImprovementsFunnelMetricsTest
           GetCorrectionAfterFillHistogram(submitted()), 0);
     }
   }
+
+  std::unique_ptr<autofill::FormStructure> CreateEligibleForm() {
+    autofill::FormData form_data;
+    auto form = std::make_unique<autofill::FormStructure>(form_data);
+    autofill::AutofillField& prediction_improvement_field =
+        test_api(*form).PushField();
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+    prediction_improvement_field.set_heuristic_type(
+        autofill::HeuristicSource::kPredictionImprovementRegexes,
+        autofill::IMPROVED_PREDICTION);
+#else
+    prediction_improvement_field.set_heuristic_type(
+        autofill::HeuristicSource::kLegacyRegexes,
+        autofill::IMPROVED_PREDICTION);
+#endif
+    return form;
+  }
+
+  std::unique_ptr<autofill::FormStructure> CreateIneligibleForm() {
+    autofill::FormData form_data;
+    auto form = std::make_unique<autofill::FormStructure>(form_data);
+    autofill::AutofillField& prediction_improvement_field =
+        test_api(*form).PushField();
+    prediction_improvement_field.SetTypeTo(
+        autofill::AutofillType(autofill::CREDIT_CARD_NUMBER));
+    return form;
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -324,8 +360,9 @@ INSTANTIATE_TEST_SUITE_P(
     AutofillPredictionImprovementsFunnelMetricsTest,
     testing::Combine(testing::Bool(), testing::Values(0, 1, 2, 3, 4, 5, 6, 7)));
 
-// Tests that explicit calls to the logger result in correct metric logging.
-TEST_P(AutofillPredictionImprovementsFunnelMetricsTest, Explicit) {
+// Tests that appropriate calls in `AutofillPredictionImprovementsLogger`
+// result in correct metric logging.
+TEST_P(AutofillPredictionImprovementsFunnelMetricsTest, Logger) {
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
@@ -356,6 +393,52 @@ TEST_P(AutofillPredictionImprovementsFunnelMetricsTest, Explicit) {
 
   base::HistogramTester histogram_tester;
   test_api(manager()).logger().RecordMetricsForForm(form.global_id(),
+                                                    submitted());
+  ExpectCorrectFunnelRecording(histogram_tester);
+}
+
+// Tests that appropriate calls in `AutofillPredictionImprovementsManager`
+// result in correct metric logging.
+TEST_P(AutofillPredictionImprovementsFunnelMetricsTest, Manager) {
+  // This will dictate whether the form will be eligible for filling or not.
+  std::unique_ptr<autofill::FormStructure> form =
+      is_form_eligible() ? CreateEligibleForm() : CreateIneligibleForm();
+  // This will dictate whether we consider the form ready to be filled or not.
+  user_annotations_service_.ReplaceAllEntries(
+      {user_has_data()
+           ? std::vector<optimization_guide::proto::
+                             UserAnnotationsEntry>{optimization_guide::proto::
+                                                       UserAnnotationsEntry()}
+           : std::vector<optimization_guide::proto::UserAnnotationsEntry>{}});
+  manager().OnFormSeen(*form);
+
+  if (user_saw_suggestions()) {
+    manager().OnSuggestionsShown(
+        {autofill::SuggestionType::kRetrievePredictionImprovements},
+        form->ToFormData(), autofill::FormFieldData(),
+        /*update_suggestions_callback=*/{});
+  }
+  if (user_triggered_loading()) {
+    manager().OnSuggestionsShown(
+        {autofill::SuggestionType::kPredictionImprovementsLoadingState},
+        form->ToFormData(), autofill::FormFieldData(),
+        /*update_suggestions_callback=*/{});
+  }
+  if (user_saw_filling_suggestions()) {
+    manager().OnSuggestionsShown(
+        {autofill::SuggestionType::kFillPredictionImprovements},
+        form->ToFormData(), autofill::FormFieldData(),
+        /*update_suggestions_callback=*/{});
+  }
+  if (user_filled_suggestion()) {
+    manager().OnDidFillSuggestion(form->global_id());
+  }
+  if (user_corrected_filling()) {
+    manager().OnEditedAutofilledField(form->global_id());
+  }
+
+  base::HistogramTester histogram_tester;
+  test_api(manager()).logger().RecordMetricsForForm(form->global_id(),
                                                     submitted());
   ExpectCorrectFunnelRecording(histogram_tester);
 }

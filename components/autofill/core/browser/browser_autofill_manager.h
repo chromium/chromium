@@ -190,11 +190,10 @@ class BrowserAutofillManager : public AutofillManager {
   /////////////////
   // DO NOT USE! //
   /////////////////
-  // See `FormFiller::FillOrPreviewFormExperimental()`.
-  // TODO(crbug.com/40227071): Clean up the API.
-  virtual void FillOrPreviewFormExperimental(
+  // See `FormFiller::FillOrPreviewFormWithPredictionImprovements()`.
+  // TODO(crbug.com/40227071): Clean up the API and remove this function.
+  virtual void FillOrPreviewFormWithPredictionImprovements(
       mojom::ActionPersistence action_persistence,
-      FillingProduct filling_product,
       const FieldTypeSet& field_types_to_fill,
       const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
       const FormData& form,
