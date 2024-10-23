@@ -1156,9 +1156,7 @@ bool CompositorAnimations::CanStartScrollTimelineOnCompositor(Node* target) {
     return false;
   }
   if (auto* properties = layout_box->FirstFragment().PaintProperties()) {
-    return properties->Scroll() &&
-           (!RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() ||
-            properties->Scroll()->UserScrollable());
+    return properties->Scroll() && properties->Scroll()->UserScrollable();
   }
   return false;
 }

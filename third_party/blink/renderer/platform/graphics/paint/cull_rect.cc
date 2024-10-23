@@ -75,8 +75,7 @@ bool CanExpandForScroll(const ScrollPaintPropertyNode& scroll) {
       CompositedScrollingPreference::kNotPreferred) {
     return false;
   }
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() &&
-      !scroll.UserScrollable()) {
+  if (!scroll.UserScrollable()) {
     return false;
   }
   if (scroll.ContentsRect().width() <= scroll.ContainerRect().width() &&

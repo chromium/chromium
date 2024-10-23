@@ -2141,11 +2141,7 @@ TEST_F(PaintLayerScrollableAreaWithWebFrameTest,
   scroller->scrollTo(0, 200);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(scrollable_area->ShouldScrollOnMainThread());
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
-    EXPECT_TRUE(box->FirstFragment().PaintProperties()->Scroll());
-  } else {
-    EXPECT_FALSE(box->FirstFragment().PaintProperties()->Scroll());
-  }
+  EXPECT_TRUE(box->FirstFragment().PaintProperties()->Scroll());
 }
 
 }  // namespace blink

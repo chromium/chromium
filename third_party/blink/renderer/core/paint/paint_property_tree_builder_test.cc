@@ -3928,14 +3928,10 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowHiddenScrollProperties) {
   ASSERT_NE(nullptr, scroll_translation);
   EXPECT_EQ(gfx::Vector2dF(0, -37), scroll_translation->Get2dTranslation());
   auto* scroll = scroll_translation->ScrollNode();
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
-    ASSERT_NE(nullptr, scroll);
-    EXPECT_EQ(scroll, overflow_hidden_scroll_properties->Scroll());
-    EXPECT_FALSE(scroll->UserScrollableHorizontal());
-    EXPECT_FALSE(scroll->UserScrollableVertical());
-  } else {
-    EXPECT_EQ(nullptr, scroll);
-  }
+  ASSERT_NE(nullptr, scroll);
+  EXPECT_EQ(scroll, overflow_hidden_scroll_properties->Scroll());
+  EXPECT_FALSE(scroll->UserScrollableHorizontal());
+  EXPECT_FALSE(scroll->UserScrollableVertical());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, FrameOverflowHiddenScrollProperties) {
@@ -6218,39 +6214,24 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
                   ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 60),
             outer_properties->StickyTranslation()->Get2dTranslation());
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
-    EXPECT_NE(nullptr,
-              outer_properties->StickyTranslation()->GetStickyConstraint());
-  } else {
-    EXPECT_EQ(nullptr,
-              outer_properties->StickyTranslation()->GetStickyConstraint());
-  }
+  EXPECT_NE(nullptr,
+            outer_properties->StickyTranslation()->GetStickyConstraint());
 
   ASSERT_TRUE(middle_properties && middle_properties->StickyTranslation());
   EXPECT_TRUE(middle_properties->StickyTranslation()
                   ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 15),
             middle_properties->StickyTranslation()->Get2dTranslation());
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
-    EXPECT_NE(nullptr,
-              middle_properties->StickyTranslation()->GetStickyConstraint());
-  } else {
-    EXPECT_EQ(nullptr,
-              middle_properties->StickyTranslation()->GetStickyConstraint());
-  }
+  EXPECT_NE(nullptr,
+            middle_properties->StickyTranslation()->GetStickyConstraint());
 
   ASSERT_TRUE(inner_properties && inner_properties->StickyTranslation());
   EXPECT_TRUE(inner_properties->StickyTranslation()
                   ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 20),
             inner_properties->StickyTranslation()->Get2dTranslation());
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
-    EXPECT_NE(nullptr,
-              inner_properties->StickyTranslation()->GetStickyConstraint());
-  } else {
-    EXPECT_EQ(nullptr,
-              inner_properties->StickyTranslation()->GetStickyConstraint());
-  }
+  EXPECT_NE(nullptr,
+            inner_properties->StickyTranslation()->GetStickyConstraint());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, StickyUnderScrollerWithoutOverflow) {
