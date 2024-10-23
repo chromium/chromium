@@ -7,16 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <vector>
-
 @class AccountErrorUIInfo;
-enum class IdentityAvatarSize;
-@class LegacyAccountsTableViewController;
 struct ManagementState;
-@protocol SystemIdentity;
-@class TableViewAccountItem;
 
-// Identity data source for AccountMenuTableViewController instance, to
+// Identity data source for AccountMenuViewController instance, to
 // manage the model.
 @protocol AccountMenuDataSource <NSObject>
 
@@ -38,10 +32,10 @@ struct ManagementState;
 // The management state of this browser and profile.
 @property(nonatomic, readonly) ManagementState managementState;
 
-// The identity for the user with `gaiaID`.
+// The full name for the user with `gaiaID`.
 - (NSString*)nameForGaiaID:(NSString*)gaiaID;
 
-// The identity for the user with `gaiaID`.
+// The email for the user with `gaiaID`.
 - (NSString*)emailForGaiaID:(NSString*)gaiaID;
 
 // The image for the user with `gaiaID`.
