@@ -234,16 +234,16 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
 }
 
 bool AuthenticationService::IsAccountSwitchInProgress() {
-  return accountSwitchInProgress_;
+  return account_switch_in_progress_;
 }
 
 base::ScopedClosureRunner
 AuthenticationService::DeclareAccountSwitchInProgress() {
-  CHECK(!accountSwitchInProgress_);
-  accountSwitchInProgress_ = true;
+  CHECK(!account_switch_in_progress_);
+  account_switch_in_progress_ = true;
   return base::ScopedClosureRunner(base::BindOnce(
       [](AuthenticationService* service) {
-        service->accountSwitchInProgress_ = false;
+        service->account_switch_in_progress_ = false;
       },
       this));
 }
@@ -330,14 +330,13 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
       base::SysNSStringToUTF8(identity.userEmail));
 
   // Ensure that the account the user is trying to sign into has been loaded
-  // from the SSO library and that hosted_domain is set (should be the proper
-  // hosted domain or kNoHostedDomainFound that are both non-empty strings).
+  // from the SSO library.
   CHECK(identity_manager_->HasAccountWithRefreshToken(account_id));
   const AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   CHECK(!account_info.IsEmpty());
 
-  // `PrimaryAccountManager::SetAuthenticatedAccountId` simply ignores the call
+  // `PrimaryAccountMutator::SetPrimaryAccount` simply ignores the call
   // if there is already a signed in user. Check that there is no signed in
   // account or that the new signed in account matches the old one to avoid a
   // mismatch between the old and the new authenticated accounts.
@@ -388,6 +387,9 @@ void AuthenticationService::GrantSyncConsent(
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
       base::SysNSStringToUTF8(identity.gaiaID),
       base::SysNSStringToUTF8(identity.userEmail));
+  // Ensure that the account the user is trying to sign into has been loaded
+  // from the SSO library and that hosted_domain is set (should be the proper
+  // hosted domain or kNoHostedDomainFound that are both non-empty strings).
   const AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   CHECK(!account_info.IsEmpty());

@@ -25,10 +25,14 @@
 @protocol SystemIdentityInteractionManager;
 class SystemIdentityManagerObserver;
 
-// SystemIdentityManager abstracts the signin flow on iOS.
+// SystemIdentityManager is Chrome's interface to the iOS shared authentication
+// library: It provides access to accounts on the device and information about
+// them, independent of whether or not the user is signed in to Chrome, and
+// whether the accounts were added through Chrome or through some other Google
+// app. It also allows adding accounts to the device via
+// `SystemIdentityInteractionManager`, and displaying some account-related UIs.
 class SystemIdentityManager {
  public:
-  // Alias SystemIdentityCapabilityResult.
   using CapabilityResult = SystemIdentityCapabilityResult;
 
   // Value returned by IdentityIteratorCallback.
@@ -37,7 +41,7 @@ class SystemIdentityManager {
     kInterruptIteration,
   };
 
-  // Value representing a refresh access token.
+  // Value representing an OAuth access token.
   struct AccessTokenInfo {
     // The access token itself.
     std::string token;
