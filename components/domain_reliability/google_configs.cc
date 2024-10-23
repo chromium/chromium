@@ -356,6 +356,7 @@ const GoogleConfigParams kGoogleConfigs[] = {
     {"recaptcha.net", true, false, false},
     {"stackdriver.com", true, false, false},
     {"staging.via.google", true, false, false},
+    {"usercontent.google.com", true, false, false},
     {"waze.com", true, false, false},
     {"withgoogle.com", true, false, false},
     {"youtu.be", true, false, false},
