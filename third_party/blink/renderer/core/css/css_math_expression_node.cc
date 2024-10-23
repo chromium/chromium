@@ -345,7 +345,7 @@ bool CanEagerlySimplify(const CSSMathExpressionNode* operand) {
     case CalculationResultCategory::kCalcTime:
     case CalculationResultCategory::kCalcFrequency:
     case CalculationResultCategory::kCalcResolution:
-      return true;
+      return operand->ComputeValueInCanonicalUnit().has_value();
     case CalculationResultCategory::kCalcLength:
       return !CSSPrimitiveValue::IsRelativeUnit(operand->ResolvedUnitType()) &&
              !operand->IsAnchorQuery();
