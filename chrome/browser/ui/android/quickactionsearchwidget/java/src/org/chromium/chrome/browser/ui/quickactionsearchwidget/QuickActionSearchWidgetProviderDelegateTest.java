@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetButtonSettings;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetVariant;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -79,7 +80,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
                         .getTargetContext()
                         .getApplicationContext();
 
-        mClient = new SearchActivityClientImpl();
+        mClient = new SearchActivityClientImpl(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET);
 
         mDelegate =
                 new QuickActionSearchWidgetProviderDelegate(

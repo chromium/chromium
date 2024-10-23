@@ -34,7 +34,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
@@ -80,23 +79,21 @@ public class SearchActivityClientImplUnitTest {
                     IntentOrigin.CUSTOM_TAB,
                 };
 
-        SearchActivityClient client = new SearchActivityClientImpl();
         for (int origin : origins) {
             String action =
                     String.format(
                             SearchActivityClientImpl.ACTION_SEARCH_FORMAT, origin, SearchType.TEXT);
 
             // null URL
-            var intent = client.createIntent(mActivity, origin, null, SearchType.TEXT);
+            var client = new SearchActivityClientImpl(origin);
+            var intent = client.createIntent(mActivity, null, SearchType.TEXT);
             assertEquals(action, intent.getAction());
             assertNull(intent.getStringExtra(SearchActivityExtras.EXTRA_CURRENT_URL));
             assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
 
             // non-null URL
-            intent =
-                    client.createIntent(
-                            mActivity, origin, new GURL("http://abc.xyz"), SearchType.TEXT);
+            intent = client.createIntent(mActivity, new GURL("http://abc.xyz"), SearchType.TEXT);
             assertEquals(action, intent.getAction());
             assertEquals(
                     "http://abc.xyz/",
@@ -116,7 +113,6 @@ public class SearchActivityClientImplUnitTest {
                     IntentOrigin.CUSTOM_TAB,
                 };
 
-        SearchActivityClient client = new SearchActivityClientImpl();
         for (int origin : origins) {
             String action =
                     String.format(
@@ -125,16 +121,15 @@ public class SearchActivityClientImplUnitTest {
                             SearchType.VOICE);
 
             // null URL
-            var intent = client.createIntent(mActivity, origin, null, SearchType.VOICE);
+            var client = new SearchActivityClientImpl(origin);
+            var intent = client.createIntent(mActivity, null, SearchType.VOICE);
             assertEquals(action, intent.getAction());
             assertNull(intent.getStringExtra(SearchActivityExtras.EXTRA_CURRENT_URL));
             assertEquals(SearchType.VOICE, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
 
             // non-null URL
-            intent =
-                    client.createIntent(
-                            mActivity, origin, new GURL("http://abc.xyz"), SearchType.VOICE);
+            intent = client.createIntent(mActivity, new GURL("http://abc.xyz"), SearchType.VOICE);
             assertEquals(action, intent.getAction());
             assertEquals(
                     "http://abc.xyz/",
@@ -154,23 +149,21 @@ public class SearchActivityClientImplUnitTest {
                     IntentOrigin.CUSTOM_TAB,
                 };
 
-        SearchActivityClient client = new SearchActivityClientImpl();
         for (int origin : origins) {
             String action =
                     String.format(
                             SearchActivityClientImpl.ACTION_SEARCH_FORMAT, origin, SearchType.LENS);
 
             // null URL
-            var intent = client.createIntent(mActivity, origin, null, SearchType.LENS);
+            var client = new SearchActivityClientImpl(origin);
+            var intent = client.createIntent(mActivity, null, SearchType.LENS);
             assertEquals(action, intent.getAction());
             assertNull(intent.getStringExtra(SearchActivityExtras.EXTRA_CURRENT_URL));
             assertEquals(SearchType.LENS, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
 
             // non-null URL
-            intent =
-                    client.createIntent(
-                            mActivity, origin, new GURL("http://abc.xyz"), SearchType.LENS);
+            intent = client.createIntent(mActivity, new GURL("http://abc.xyz"), SearchType.LENS);
             assertEquals(action, intent.getAction());
             assertEquals(
                     "http://abc.xyz/",
@@ -204,20 +197,14 @@ public class SearchActivityClientImplUnitTest {
 
     @Test
     public void requestOmniboxForResult_noActionWhenActivityIsNull() {
-        new SearchActivityClientImpl()
-                .requestOmniboxForResult(
-                        null, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null, /* isIncognito= */ false);
+        new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB)
+                .requestOmniboxForResult(null, EMPTY_URL, null, /* isIncognito= */ false);
     }
 
     @Test
     public void requestOmniboxForResult_propagatesCurrentUrl() {
-        new SearchActivityClientImpl()
-                .requestOmniboxForResult(
-                        mActivity,
-                        GOOD_URL,
-                        IntentOrigin.CUSTOM_TAB,
-                        null,
-                        /* isIncognito= */ false);
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
+        client.requestOmniboxForResult(mActivity, GOOD_URL, null, /* isIncognito= */ false);
 
         var intentForResult = Shadows.shadowOf(mActivity).getNextStartedActivityForResult();
 
@@ -225,19 +212,14 @@ public class SearchActivityClientImplUnitTest {
                 IntentUtils.safeGetStringExtra(
                         intentForResult.intent, SearchActivityExtras.EXTRA_CURRENT_URL),
                 GOOD_URL.getSpec());
-        assertEquals(SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, intentForResult.requestCode);
+        assertEquals(client.getClientUniqueRequestCode(), intentForResult.requestCode);
     }
 
     @Test
     public void requestOmniboxForResult_acceptsEmptyUrl() {
         // This is technically an invalid case. The test verifies we still do the right thing.
-        new SearchActivityClientImpl()
-                .requestOmniboxForResult(
-                        mActivity,
-                        EMPTY_URL,
-                        IntentOrigin.CUSTOM_TAB,
-                        null,
-                        /* isIncognito= */ false);
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
+        client.requestOmniboxForResult(mActivity, EMPTY_URL, null, /* isIncognito= */ false);
 
         var intentForResult = Shadows.shadowOf(mActivity).getNextStartedActivityForResult();
 
@@ -248,18 +230,13 @@ public class SearchActivityClientImplUnitTest {
                 TextUtils.isEmpty(
                         IntentUtils.safeGetStringExtra(
                                 intentForResult.intent, SearchActivityExtras.EXTRA_CURRENT_URL)));
-        assertEquals(SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, intentForResult.requestCode);
+        assertEquals(client.getClientUniqueRequestCode(), intentForResult.requestCode);
     }
 
     @Test
     public void requestOmniboxForResult_propagatesIncognitoStatus() {
-        new SearchActivityClientImpl()
-                .requestOmniboxForResult(
-                        mActivity,
-                        GOOD_URL,
-                        IntentOrigin.CUSTOM_TAB,
-                        null,
-                        /* isIncognito= */ true);
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
+        client.requestOmniboxForResult(mActivity, GOOD_URL, null, /* isIncognito= */ true);
 
         var intentForResult = Shadows.shadowOf(mActivity).getNextStartedActivityForResult();
 
@@ -270,7 +247,7 @@ public class SearchActivityClientImplUnitTest {
                 IntentUtils.safeGetBooleanExtra(
                         intentForResult.intent, SearchActivityExtras.EXTRA_IS_INCOGNITO, false),
                 true);
-        assertEquals(SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, intentForResult.requestCode);
+        assertEquals(client.getClientUniqueRequestCode(), intentForResult.requestCode);
     }
 
     @Test
@@ -283,9 +260,8 @@ public class SearchActivityClientImplUnitTest {
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
 
         // Our own responses should always be valid.
-        assertTrue(
-                SearchActivityClientImpl.isOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, intent));
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
+        assertTrue(client.isOmniboxResult(client.getClientUniqueRequestCode(), intent));
     }
 
     @Test
@@ -297,11 +273,10 @@ public class SearchActivityClientImplUnitTest {
         SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
 
-        assertFalse(
-                SearchActivityClientImpl.isOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE - 1, intent));
-        assertFalse(SearchActivityClientImpl.isOmniboxResult(0, intent));
-        assertFalse(SearchActivityClientImpl.isOmniboxResult(~0, intent));
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
+        assertFalse(client.isOmniboxResult(client.getClientUniqueRequestCode() - 1, intent));
+        assertFalse(client.isOmniboxResult(0, intent));
+        assertFalse(client.isOmniboxResult(~0, intent));
     }
 
     @Test
@@ -311,12 +286,12 @@ public class SearchActivityClientImplUnitTest {
                 new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
         var params = getLoadUrlParamsBuilder().build();
         SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
-        var intent = Shadows.shadowOf(mActivity).getResultIntent();
 
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
-        assertFalse(
-                SearchActivityClientImpl.isOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, intent));
+
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
+        assertFalse(client.isOmniboxResult(client.getClientUniqueRequestCode(), intent));
     }
 
     @Test
@@ -326,12 +301,12 @@ public class SearchActivityClientImplUnitTest {
                 new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
         var params = getLoadUrlParamsBuilder().build();
         SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
-        var intent = Shadows.shadowOf(mActivity).getResultIntent();
 
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
         intent.setData(null);
-        assertFalse(
-                SearchActivityClientImpl.isOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, intent));
+
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
+        assertFalse(client.isOmniboxResult(client.getClientUniqueRequestCode(), intent));
     }
 
     @Test
@@ -340,9 +315,11 @@ public class SearchActivityClientImplUnitTest {
         intent.setComponent(COMPONENT_TRUSTED);
         intent.setData(Uri.parse("a b"));
         IntentUtils.addTrustedIntentExtras(intent);
+
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
         assertNull(
-                SearchActivityClientImpl.getOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, Activity.RESULT_OK, intent));
+                client.getOmniboxResult(
+                        client.getClientUniqueRequestCode(), Activity.RESULT_OK, intent));
     }
 
     @Test
@@ -354,9 +331,10 @@ public class SearchActivityClientImplUnitTest {
         SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
 
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
         LoadUrlParams result =
-                SearchActivityClientImpl.getOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, Activity.RESULT_OK, intent);
+                client.getOmniboxResult(
+                        client.getClientUniqueRequestCode(), Activity.RESULT_OK, intent);
 
         assertEquals("https://abc.xyz/", result.getUrl());
         assertNull(result.getVerbatimHeaders());
@@ -371,9 +349,10 @@ public class SearchActivityClientImplUnitTest {
         intent.putExtra(IntentHandler.EXTRA_POST_DATA, new byte[] {1, 2});
         IntentUtils.addTrustedIntentExtras(intent);
 
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
         LoadUrlParams result =
-                SearchActivityClientImpl.getOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, Activity.RESULT_OK, intent);
+                client.getOmniboxResult(
+                        client.getClientUniqueRequestCode(), Activity.RESULT_OK, intent);
 
         assertEquals("https://abc.xyz/", result.getUrl());
         assertNull(result.getVerbatimHeaders());
@@ -388,9 +367,10 @@ public class SearchActivityClientImplUnitTest {
         intent.putExtra(IntentHandler.EXTRA_POST_DATA_TYPE, "data");
         IntentUtils.addTrustedIntentExtras(intent);
 
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
         LoadUrlParams result =
-                SearchActivityClientImpl.getOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, Activity.RESULT_OK, intent);
+                client.getOmniboxResult(
+                        client.getClientUniqueRequestCode(), Activity.RESULT_OK, intent);
 
         assertEquals("https://abc.xyz/", result.getUrl());
         assertNull(result.getVerbatimHeaders());
@@ -406,9 +386,10 @@ public class SearchActivityClientImplUnitTest {
         intent.putExtra(IntentHandler.EXTRA_POST_DATA, new byte[] {});
         IntentUtils.addTrustedIntentExtras(intent);
 
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
         LoadUrlParams result =
-                SearchActivityClientImpl.getOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, Activity.RESULT_OK, intent);
+                client.getOmniboxResult(
+                        client.getClientUniqueRequestCode(), Activity.RESULT_OK, intent);
 
         assertEquals("https://abc.xyz/", result.getUrl());
         assertNull(result.getVerbatimHeaders());
@@ -426,9 +407,10 @@ public class SearchActivityClientImplUnitTest {
 
         // We should see the same URL on the receiving side.
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
         LoadUrlParams result =
-                SearchActivityClientImpl.getOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE, Activity.RESULT_OK, intent);
+                client.getOmniboxResult(
+                        client.getClientUniqueRequestCode(), Activity.RESULT_OK, intent);
 
         assertEquals("https://abc.xyz/", result.getUrl());
         assertEquals("Content-Type: data", result.getVerbatimHeaders());
@@ -447,9 +429,8 @@ public class SearchActivityClientImplUnitTest {
 
         // We should see no GURL object on the receiving side: this is not our intent.
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
-        assertNull(
-                SearchActivityClientImpl.getOmniboxResult(
-                        /* requestCode= */ ~0, Activity.RESULT_OK, intent));
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
+        assertNull(client.getOmniboxResult(/* requestCode= */ ~0, Activity.RESULT_OK, intent));
     }
 
     @Test
@@ -464,10 +445,9 @@ public class SearchActivityClientImplUnitTest {
 
         // We should see an empty GURL on the receiving side.
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
+        var client = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
         assertNull(
-                SearchActivityClientImpl.getOmniboxResult(
-                        SearchActivityClientImpl.OMNIBOX_REQUEST_CODE,
-                        Activity.RESULT_CANCELED,
-                        intent));
+                client.getOmniboxResult(
+                        client.getClientUniqueRequestCode(), Activity.RESULT_CANCELED, intent));
     }
 }

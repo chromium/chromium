@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ComponentName;
@@ -34,9 +33,12 @@ import java.util.Locale;
 public class SearchActivityClientImpl implements SearchActivityClient {
     private static final String TAG = "SAClient";
 
+    // Base identifier used by the SAClient to identify requests for result.
     @VisibleForTesting
-    /* package */ static final int OMNIBOX_REQUEST_CODE = 'O' << 24 | 'M' << 16 | 'N' << 8 | 'I';
+    /* package */ static final int OMNIBOX_REQUEST_CODE = 'O' << 24 | 'M' << 16 | 'N' << 8;
 
+    // Intent Action format string, used to uniquely identify specific type of action requested
+    // by the widget.
     // Note: while we don't rely on Actions, PendingIntents do require them to be Unique.
     // Responsibility to define values for PendingIntents could be offset to Caller; meantime we
     // offer complimentary default values.
@@ -44,20 +46,28 @@ public class SearchActivityClientImpl implements SearchActivityClient {
     /* package */ static final String ACTION_SEARCH_FORMAT =
             "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_SEARCH:%d:%d";
 
+    private final @IntentOrigin int mOrigin;
+
+    /**
+     * Creates new instance of the SearchActivityClient.
+     *
+     * @param origin The {@link IntentOrigin} value representing the client.
+     */
+    public SearchActivityClientImpl(@IntentOrigin int origin) {
+        mOrigin = origin;
+    }
+
     @Override
     public Intent createIntent(
-            @NonNull Context context,
-            @IntentOrigin int origin,
-            @Nullable GURL url,
-            @SearchType int searchType) {
+            @NonNull Context context, @Nullable GURL url, @SearchType int searchType) {
         // Ensure `action` is unique especially across different Widget implementations.
         // Otherwise, a QuickActionSearchWidget action may override the SearchActivity widget,
         // triggering functionality we might not want to activate.
-        @SuppressLint("DefaultLocale")
-        String action = String.format(ACTION_SEARCH_FORMAT, origin, searchType);
+        String action =
+                String.format(Locale.getDefault(), ACTION_SEARCH_FORMAT, mOrigin, searchType);
 
         var intent = buildTrustedIntent(context, action);
-        intent.putExtra(SearchActivityExtras.EXTRA_ORIGIN, origin)
+        intent.putExtra(SearchActivityExtras.EXTRA_ORIGIN, mOrigin)
                 .putExtra(SearchActivityExtras.EXTRA_SEARCH_TYPE, searchType)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
@@ -72,7 +82,6 @@ public class SearchActivityClientImpl implements SearchActivityClient {
     public void requestOmniboxForResult(
             @Nullable Activity activity,
             @NonNull GURL currentUrl,
-            @IntentOrigin int intentOrigin,
             @Nullable String referrer,
             boolean isIncognito) {
         if (activity == null) return;
@@ -89,40 +98,26 @@ public class SearchActivityClientImpl implements SearchActivityClient {
         activity.startActivityForResult(
                 createServiceRequestIntent(
                         activity,
-                        intentOrigin,
+                        mOrigin,
                         GURL.isEmptyOrInvalid(currentUrl) ? null : currentUrl.getSpec(),
                         referrer,
                         /* isServiceIntent= */ true,
                         isIncognito),
-                OMNIBOX_REQUEST_CODE,
+                getClientUniqueRequestCode(),
                 ActivityOptions.makeCustomAnimation(
                                 activity, android.R.anim.fade_in, R.anim.no_anim)
                         .toBundle());
     }
 
-    /**
-     * Utility method to determine whether the {@link Activity#onActivityResult} payload carries the
-     * response to {@link requestOmniboxForResult}.
-     *
-     * @param requestCode the request code received in {@link Activity#onActivityResult}
-     * @param intent the intent data received in {@link Activity#onActivityResult}
-     * @return true if the response captures legitimate Omnibox result.
-     */
-    public static boolean isOmniboxResult(int requestCode, @NonNull Intent intent) {
-        return requestCode == OMNIBOX_REQUEST_CODE
+    @Override
+    public boolean isOmniboxResult(int requestCode, @NonNull Intent intent) {
+        return requestCode == getClientUniqueRequestCode()
                 && IntentUtils.isTrustedIntentFromSelf(intent)
                 && !TextUtils.isEmpty(intent.getDataString());
     }
 
-    /**
-     * Process the {@link Activity#onActivityResult} payload for Omnibox navigation result.
-     *
-     * @param requestCode the request code received in {@link Activity#onActivityResult}
-     * @param resultCode the result code received in {@link Activity#onActivityResult}
-     * @param intent the intent data received in {@link Activity#onActivityResult}
-     * @return null, if result is not a valid Omnibox result, otherwise valid LoadUrlParams object
-     */
-    public static @Nullable LoadUrlParams getOmniboxResult(
+    @Override
+    public @Nullable LoadUrlParams getOmniboxResult(
             int requestCode, int resultCode, @NonNull Intent intent) {
         if (!isOmniboxResult(requestCode, intent)) return null;
         if (resultCode != Activity.RESULT_OK) return null;
@@ -153,6 +148,12 @@ public class SearchActivityClientImpl implements SearchActivityClient {
                 new Intent(action).setComponent(new ComponentName(context, SearchActivity.class));
         IntentUtils.addTrustedIntentExtras(intent);
         return intent;
+    }
+
+    /** Returns the Request Code to be used with startActivityForResult/onActivityResult. */
+    @VisibleForTesting
+    /* package */ int getClientUniqueRequestCode() {
+        return OMNIBOX_REQUEST_CODE | mOrigin;
     }
 
     /**

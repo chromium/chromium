@@ -237,6 +237,8 @@ import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactor
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -501,6 +503,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     // Manager for tab group visual data lifecycle updates.
     private TabGroupVisualDataManager mTabGroupVisualDataManager;
+    private SearchActivityClient mJumpStartSearchClient =
+            new SearchActivityClientImpl(IntentOrigin.LAUNCHER);
+    private SearchActivityClient mHubSearchClient = new SearchActivityClientImpl(IntentOrigin.HUB);
 
     /**
      * This class is used to warm up the chrome split ClassLoader. See SplitChromeApplication for
@@ -591,7 +596,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (getClass().equals(ChromeTabbedActivity.class)
                 && Intent.ACTION_MAIN.equals(intent.getAction())) {
             if (OmniboxFeatures.shouldJumpStartOmniboxEngage()) {
-                return LaunchIntentDispatcher.dispatchToSearchActivity(this, intent);
+                return LaunchIntentDispatcher.dispatchToSearchActivity(
+                        mJumpStartSearchClient, this, intent);
             }
             // Call dispatchToTabbedActivity() for MAIN intents to activate proper multi-window
             // TabbedActivity (i.e. if CTA2 is currently running and Chrome is started, CTA2
@@ -875,7 +881,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         getTabModelSelectorSupplier(),
                         () -> getToolbarManager().getOverviewModeMenuButtonCoordinator(),
                         mEdgeToEdgeControllerSupplier,
-                        new SearchActivityClientImpl());
+                        mHubSearchClient);
         var builder = mHubProvider.getPaneListBuilder();
         builder.registerPane(
                 PaneId.TAB_SWITCHER,
@@ -3574,16 +3580,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (SearchActivityClientImpl.isOmniboxResult(requestCode, data)) {
+        if (mJumpStartSearchClient.isOmniboxResult(requestCode, data)) {
             // This path is taken by the Jump-start Omnibox, after the user finished interaction
             // with the SearchActivity.
             // The absence of LoadUrlParams signifies that the user has made no selection, in which
             // case we take the user back to the most recently visited website.
             LoadUrlParams params =
-                    SearchActivityClientImpl.getOmniboxResult(requestCode, resultCode, data);
-            if (params != null) {
-                getActivityTab().loadUrl(params);
-            }
+                    mJumpStartSearchClient.getOmniboxResult(requestCode, resultCode, data);
+            var tab = getActivityTab();
+            if (params != null && tab != null) tab.loadUrl(params);
             return;
         }
 

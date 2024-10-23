@@ -19,6 +19,7 @@ android_library("java") {
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/ui/android/omnibox:util_java",
     "//components/search_engines/android:java",
+    "//content/public/android:content_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",

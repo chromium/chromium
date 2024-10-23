@@ -47,9 +47,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
-import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -109,14 +108,21 @@ public class LaunchIntentDispatcher {
         return new LaunchIntentDispatcher(currentActivity, intent).dispatchToTabbedActivity();
     }
 
-    public static @Action int dispatchToSearchActivity(Activity currentActivity, Intent intent) {
-        new SearchActivityClientImpl()
-                .requestOmniboxForResult(
-                        currentActivity,
-                        new GURL(UrlConstants.NTP_URL),
-                        IntentOrigin.LAUNCHER,
-                        /* referrer= */ null,
-                        /* isIncognito= */ false);
+    /**
+     * Dispatches the intent to Search Activity.
+     *
+     * @param client SearchActivityClient instance
+     * @param currentActivity activity that received the intent
+     * @param intent intent to dispatch
+     * @return action to take
+     */
+    public static @Action int dispatchToSearchActivity(
+            SearchActivityClient client, Activity currentActivity, Intent intent) {
+        client.requestOmniboxForResult(
+                currentActivity,
+                new GURL(UrlConstants.NTP_URL),
+                /* referrer= */ null,
+                /* isIncognito= */ false);
         return Action.CONTINUE;
     }
 

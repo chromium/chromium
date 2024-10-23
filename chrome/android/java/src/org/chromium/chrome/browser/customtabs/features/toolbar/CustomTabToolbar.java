@@ -84,7 +84,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualS
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -99,7 +98,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -366,12 +365,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     /**
      * Enables the interactive Omnibox in CCT.
      *
+     * @param searchClient the SearchActivityClient instance used to request Omnibox.
      * @param clientPackageName the package name of the custom tabs embedder.
      * @param tapHandler a handler for taps on the omnibox, or null if the default handler should be
      *     used.
      */
-    public void setOmniboxEnabled(String clientPackageName, @Nullable Consumer<Tab> tapHandler) {
-        mLocationBar.setOmniboxEnabled(clientPackageName, tapHandler);
+    public void setOmniboxEnabled(
+            SearchActivityClient searchClient,
+            String clientPackageName,
+            @Nullable Consumer<Tab> tapHandler) {
+        mLocationBar.setOmniboxEnabled(searchClient, clientPackageName, tapHandler);
     }
 
     private void setButtonsVisibility() {
@@ -1886,7 +1889,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mPageInfoIphController = pageInfoIphController;
         }
 
-        void setOmniboxEnabled(String clientPackageName, @Nullable Consumer<Tab> tapHandler) {
+        void setOmniboxEnabled(
+                SearchActivityClient searchClient,
+                String clientPackageName,
+                @Nullable Consumer<Tab> tapHandler) {
             mOmniboxEnabled = true;
             mOmniboxBackground =
                     AppCompatResources.getDrawable(
@@ -1925,13 +1931,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         if (tapHandler != null) {
                             tapHandler.accept(tab);
                         } else {
-                            new SearchActivityClientImpl()
-                                    .requestOmniboxForResult(
-                                            tab.getWindowAndroid().getActivity().get(),
-                                            tab.getUrl(),
-                                            IntentOrigin.CUSTOM_TAB,
-                                            clientPackageName,
-                                            tab.isIncognitoBranded());
+                            searchClient.requestOmniboxForResult(
+                                    tab.getWindowAndroid().getActivity().get(),
+                                    tab.getUrl(),
+                                    clientPackageName,
+                                    tab.isIncognitoBranded());
                         }
                     });
 

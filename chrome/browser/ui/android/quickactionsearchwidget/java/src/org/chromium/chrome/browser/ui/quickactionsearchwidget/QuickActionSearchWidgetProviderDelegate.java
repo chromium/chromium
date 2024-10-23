@@ -19,7 +19,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 
@@ -521,9 +520,7 @@ public class QuickActionSearchWidgetProviderDelegate {
             @NonNull Context context,
             @NonNull SearchActivityClient client,
             @SearchType int searchType) {
-        Intent intent =
-                client.createIntent(
-                        context, IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, null, searchType);
+        Intent intent = client.createIntent(context, null, searchType);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return createPendingIntent(context, intent);
     }

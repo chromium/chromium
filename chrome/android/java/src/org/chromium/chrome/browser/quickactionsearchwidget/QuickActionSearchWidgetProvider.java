@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -59,7 +60,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             return getDelegate()
                     .createSearchWidgetRemoteViews(
                             context,
-                            new SearchActivityClientImpl(),
+                            new SearchActivityClientImpl(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
                             prefs,
                             areaWidthDp,
                             areaHeightDp);
@@ -102,7 +103,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             return getDelegate()
                     .createDinoWidgetRemoteViews(
                             context,
-                            new SearchActivityClientImpl(),
+                            new SearchActivityClientImpl(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
                             prefs,
                             areaWidthDp,
                             areaHeightDp);

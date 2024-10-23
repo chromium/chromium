@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarCon
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
+import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
@@ -84,6 +85,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
@@ -107,6 +110,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<CustomTabActivityTabController> mTabController;
     private final Supplier<CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
     private final Supplier<CustomTabFeatureOverridesManager> mFeatureOverridesManagerSupplier;
+    private final SearchActivityClient mCustomTabSearchClient;
 
     private CustomTabHeightStrategy mCustomTabHeightStrategy;
 
@@ -248,6 +252,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;
+        mCustomTabSearchClient = new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
+
         boolean isAuthTab = intentDataProvider.get().isAuthTab();
         if ((activityType == ActivityType.CUSTOM_TAB || isAuthTab)
                 && !intentDataProvider.get().isOpenedByChrome()
@@ -335,6 +341,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 "CustomTabs.Omnibox.EnabledState", shouldEnableOmnibox);
         if (shouldEnableOmnibox) {
             toolbar.setOmniboxEnabled(
+                    mCustomTabSearchClient,
                     mIntentDataProvider.get().getClientPackageName(),
                     connection.getAlternateOmniboxTapHandler(mIntentDataProvider.get()));
         }
@@ -779,5 +786,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     CustomTabHeightStrategy getCustomTabSizeStrategyForTesting() {
         return mCustomTabHeightStrategy;
+    }
+
+    /** Returns SearchActivityClient instance used by Search in CCT. */
+    /* package */ SearchActivityClient getCustomTabSearchClient() {
+        return mCustomTabSearchClient;
     }
 }

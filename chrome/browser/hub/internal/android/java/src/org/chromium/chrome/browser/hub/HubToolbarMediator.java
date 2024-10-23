@@ -29,7 +29,6 @@ import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -240,7 +239,6 @@ public class HubToolbarMediator {
         mSearchActivityClient.requestOmniboxForResult(
                 mActivity,
                 new GURL(UrlConstants.NTP_NON_NATIVE_URL),
-                IntentOrigin.HUB,
                 null,
                 mPropertyModel.get(IS_INCOGNITO));
     }
