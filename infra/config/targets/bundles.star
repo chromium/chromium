@@ -1822,34 +1822,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "fieldtrial_ios_simulator_tests",
-    targets = [
-        targets.bundle(
-            targets = "ios_eg2_cq_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "disable_field_trial_config_for_earl_grey",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPHONE_14_17_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "disable_field_trial_config_for_earl_grey",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPHONE_14_17_5",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
     name = "fieldtrial_browser_tests_mac",
     targets = [
         "accessibility_unittests_no_field_trial",
@@ -1885,6 +1857,34 @@ targets.bundle(
             ci_only = True,
         ),
     },
+)
+
+targets.bundle(
+    name = "fieldtrial_ios_simulator_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "disable_field_trial_config_for_earl_grey",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPHONE_14_17_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "disable_field_trial_config_for_earl_grey",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPHONE_14_17_5",
+            ],
+        ),
+    ],
 )
 
 # Runs only the accessibility tests in CI/CQ to reduce accessibility
