@@ -12,7 +12,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_session_initialized_waiter.h"
+#include "chrome/browser/ash/app_mode/test/scoped_device_settings.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"  // IWYU pragma: keep
 #include "chrome/browser/ash/policy/core/device_local_account.h"

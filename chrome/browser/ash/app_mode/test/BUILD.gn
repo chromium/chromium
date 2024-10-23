@@ -10,11 +10,19 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "kiosk_session_initialized_waiter.cc",
+    "kiosk_session_initialized_waiter.h",
     "network_state_mixin.cc",
     "network_state_mixin.h",
+    "scoped_device_settings.cc",
+    "scoped_device_settings.h",
   ]
 
   deps = [
+    "//chrome/browser",
+    "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/network:test_support",
   ]
