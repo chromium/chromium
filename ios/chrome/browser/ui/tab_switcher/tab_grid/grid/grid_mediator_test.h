@@ -12,7 +12,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios_forward.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_id.h"
@@ -24,13 +23,14 @@ class Browser;
 class BrowserList;
 @class FakeTabCollectionConsumer;
 @class FakeTabGridToolbarsMediator;
+@class FakeURLLoadingDelegate;
 class GURL;
 class IOSChromeScopedTestingLocalState;
 class PlatformTest;
 @class SceneState;
+class TestProfileIOS;
 class TestSceneUrlLoadingService;
 class UrlLoadingBrowserAgent;
-@class FakeURLLoadingDelegate;
 
 namespace web {
 class FakeWebState;

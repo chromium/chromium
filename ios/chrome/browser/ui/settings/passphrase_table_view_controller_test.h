@@ -10,7 +10,6 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios_forward.h"
 #include "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -24,6 +23,7 @@ class MockSyncService;
 class Browser;
 @class SceneState;
 @class SettingsNavigationController;
+class TestProfileIOS;
 @class UINavigationController;
 @class UIViewController;
 
