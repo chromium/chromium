@@ -4157,6 +4157,11 @@ if (!is_android) {
         "../browser/user_bypass/user_bypass_web_contents_observer_browsertest.cc",
       ]
 
+      data += [
+        "//chrome/test/data/controlled_frame/resources/expected_properties.json",
+        "//chrome/test/data/controlled_frame/resources/mangle.js",
+      ]
+
       if (is_win) {
         data_deps += [
           "//chrome/browser/extensions/api:native_messaging_test_echo_&_host",
