@@ -19,7 +19,7 @@
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 10px 16px 10px;
 }
 
 .data-section-header {
@@ -46,7 +46,7 @@
 }
 
 #toggle {
-  margin-inline-start: 10px;
+  margin-inline-start: 5px;
 }
 
 #data-items-list {
@@ -62,6 +62,7 @@
   align-items: center;
   display: flex;
   flex-direction: row;
+  width: 100%;
 }
 
 .data-item-content {
@@ -74,6 +75,13 @@
   width: var(--item-icon-size);
 }
 
+.item-info {
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: fit-content(50%) 1fr;
+  width: 100%;
+}
+
 .item-title {
   color: var(--cr-primary-text-color);
   font-weight: 500;
@@ -81,6 +89,12 @@
 
 .item-subtitle {
   color: var(--cr-secondary-text-color);
+}
+
+.text-elide {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 cr-collapse {
