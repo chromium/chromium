@@ -160,3 +160,31 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   EXPECT_EQ(vals1, with_additional2.additional_properties["key1"]);
   EXPECT_EQ(vals2, with_additional2.additional_properties["key2"]);
 }
+
+TEST(JsonSchemaCompilerMovableObjectsTest, Cloning) {
+  std::vector<objects_movable::MovablePod> pods;
+  {
+    objects_movable::MovablePod pod;
+    pod.foo = objects_movable::Foo::kBar;
+    pod.str = "str1";
+    pod.num = 42;
+    pod.b = true;
+    pods.push_back(std::move(pod));
+  }
+  {
+    objects_movable::MovablePod pod;
+    pod.foo = objects_movable::Foo::kBaz;
+    pod.str = "str2";
+    pod.num = 45;
+    pod.b = false;
+    pods.push_back(std::move(pod));
+  }
+  objects_movable::MovableParent parent;
+  parent.pods = std::move(pods);
+  parent.strs.push_back("pstr");
+  parent.blob.additional_properties.Set("key", "val");
+  parent.choice.as_string = "string";
+
+  auto cloned_parend = parent.Clone();
+  EXPECT_EQ(cloned_parend.ToValue(), parent.ToValue());
+}
