@@ -36,6 +36,7 @@
 #include "base/auto_reset.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -624,6 +625,51 @@ TEST_F(SunfishTest, CaptureRegionOverlay) {
   EXPECT_FALSE(session->active_behavior()->CanPaintRegionOverlay());
 }
 
+// Tests that the action container widget's opacity is updated properly before a
+// region is selected, while a region is selected, and while the region is being
+// adjusted.
+TEST_F(SunfishTest, ActionContainerWidgetOpacity) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+
+  // The action container widget should be transparent before a region has been
+  // selected.
+  auto* container_widget = session_test_api.GetActionContainerWidget();
+  ASSERT_TRUE(container_widget);
+  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 0.f);
+
+  // Attempt to add a new action button using the API. The container widget
+  // opacity should not change.
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Do not show", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kOther, 0));
+  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 0.f);
+
+  // Select a new capture region. The container widget should be opaque when we
+  // have finished selecting a region.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(50, 50, 100, 100),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
+
+  // Begin adjusting the capture region by dragging from the bottom right
+  // corner. The container widget should be transluscent while the region is
+  // being adjusted.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(150, 150));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(300, 300));
+  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 0.f);
+
+  // Finish adjusting the region. The widget should now be visible.
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
+}
+
 class SunfishWithScannerTest : public SunfishTest {
  public:
   SunfishWithScannerTest() = default;
@@ -664,6 +710,37 @@ TEST_F(SunfishWithScannerTest, CreatesScannerActionButtons) {
   GetFakeScannerProfileScopedDelegate(*scanner_controller)
       ->SendFakeActionsResponse(std::move(output), manta::MantaStatus());
 
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
+}
+
+// Tests that action buttons are created when the Scanner response returns as
+// fast as possible.
+TEST_F(SunfishWithScannerTest, FetchActionsImmediately) {
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+
+  // Synchronously send the fake actions response after the image is captured.
+  base::test::TestFuture<void> future;
+  ash::CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
+      base::BindLambdaForTesting([&]() {
+        GetFakeScannerProfileScopedDelegate(*scanner_controller)
+            ->SendFakeActionsResponse(std::move(output), manta::MantaStatus());
+        future.SetValue();
+      }));
+  ASSERT_TRUE(future.Wait());
+
+  // We should have successfully created two action buttons.
   const CaptureModeSessionTestApi session_test_api(
       capture_mode_controller->capture_mode_session());
   EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));

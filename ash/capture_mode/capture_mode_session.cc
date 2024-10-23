@@ -894,6 +894,9 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   if (capture_label_widget_) {
     widget_opacity_map[capture_label_widget_.get()] = 1.f;
   }
+  if (action_container_widget_) {
+    widget_opacity_map[action_container_widget_.get()] = 1.f;
+  }
 
   const bool is_settings_visible = capture_mode_settings_widget_ &&
                                    capture_mode_settings_widget_->IsVisible();
@@ -960,6 +963,25 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
 
     if (IsWidgetOverlappedWithCameraPreview(widget)) {
       opacity = capture_mode::kCaptureUiOverlapOpacity;
+    }
+
+    if (widget == action_container_widget_.get()) {
+      // If drag for capture region is in progress, action buttons should be
+      // hidden.
+      if (is_drag_in_progress_) {
+        opacity = 0.f;
+        continue;
+      }
+
+      // TODO: crbug.com/375075185 - Add a unit test for when the capture source
+      // is not `kRegion`.
+      // If our capture source is not `kRegion`, or the region is empty, hide
+      // the action buttons.
+      if (controller_->source() != CaptureModeSource::kRegion ||
+          controller_->user_capture_region().IsEmpty()) {
+        opacity = 0.f;
+        continue;
+      }
     }
   }
 
@@ -1380,8 +1402,6 @@ void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image) {
   auto* search_results_panel = views::AsViewClass<SearchResultsPanel>(
       search_results_panel_widget_->GetContentsView());
   search_results_panel->SetSearchBoxImage(image);
-
-  UpdateActionContainerWidget();
 }
 
 // TODO(crbug.com/372740410): Determine behavior when we add a button with the
@@ -1395,6 +1415,13 @@ void CaptureModeSession::AddActionButton(
   // created, or while it is invalid. In these cases, we don't want to do
   // anything.
   if (!action_container_widget_) {
+    return;
+  }
+
+  // If we are in the midst of selecting a region, or a region has not been
+  // selected yet, don't add a button.
+  if (controller_->source() != CaptureModeSource::kRegion ||
+      is_selecting_region_ || controller_->user_capture_region().IsEmpty()) {
     return;
   }
 
@@ -2477,6 +2504,7 @@ void CaptureModeSession::UpdateCaptureRegion(
   controller_->SetUserCaptureRegion(new_capture_region, by_user);
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  UpdateActionContainerWidget();
 }
 
 void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
@@ -3028,7 +3056,11 @@ bool CaptureModeSession::IsPointOverSelectedWindow(
 
 // TODO(http://b/363069895): Upload strings for translation.
 void CaptureModeSession::UpdateActionContainerWidget() {
-  DCHECK_EQ(active_behavior()->behavior_type(), BehaviorType::kSunfish);
+  // TODO: crbug.com/373896226 - Allow this widget to be shown when the
+  // "Search with Lens" button is added to a regular capture session.
+  if (active_behavior()->behavior_type() != BehaviorType::kSunfish) {
+    return;
+  }
 
   if (!action_container_widget_) {
     action_container_widget_ = std::make_unique<views::Widget>();
@@ -3047,6 +3079,10 @@ void CaptureModeSession::UpdateActionContainerWidget() {
             .Build());
 
     action_container_widget_->Show();
+
+    // Set the starting opacity to zero as we don't want to show the widget
+    // until a region has been selected.
+    action_container_widget_->SetOpacity(0.f);
   }
 
   UpdateActionContainerWidgetBounds();
@@ -3147,6 +3183,7 @@ void CaptureModeSession::InitInternal() {
   }
 
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  UpdateActionContainerWidget();
 
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);

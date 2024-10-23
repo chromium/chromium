@@ -48,6 +48,8 @@ class CaptureModeSessionTestApi {
 
   views::Widget* GetCaptureLabelWidget();
 
+  views::Widget* GetActionContainerWidget();
+
   views::Widget* GetRecordingTypeMenuWidget();
 
   views::Widget* GetDimensionsLabelWidget();
