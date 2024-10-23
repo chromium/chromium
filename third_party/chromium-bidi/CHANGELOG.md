@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.9.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.8.1...chromium-bidi-v0.9.0) (2024-10-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 132.0.6779.0 ([#2680](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2680))
+
+### Features
+
+* align abort navigation with the spec ([#2715](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2715)) ([6edf07b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/6edf07b9891e9cc75a5af17feabe6c54c0adfbca))
+* **chrome:** update the pinned browser version to 132.0.6779.0 ([#2680](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2680)) ([c80f6b5](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c80f6b5fc6c6231af7611e635c84b2894d8c07ab))
+* implement browsingContext.historyUpdated ([#2656](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2656)) ([48d496a](https://github.com/GoogleChromeLabs/chromium-bidi/commit/48d496aee4215fd79e6e2a6eb80b6f8d2d6f92b4))
+
+
+### Bug Fixes
+
+* don't unblock on interception removed ([#2135](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2135)) ([b6cc9a1](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b6cc9a1479e78954fdc93d1d37a6bfab70fff85d))
+
 ## [0.8.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.8.0...chromium-bidi-v0.8.1) (2024-10-11)
 
 
