@@ -40,8 +40,6 @@ build_webui("build") {
   if (!is_android && !is_ios) {
     web_component_files += [ "cr_a11y_announcer/cr_a11y_announcer.ts" ]
 
-    icons_html_files = [ "icons.html" ]
-
     non_web_component_files += [
       "cr_container_shadow_mixin.ts",
       "cr_container_shadow_mixin_lit.ts",
@@ -60,6 +58,7 @@ build_webui("build") {
       "focus_row_mixin_lit.ts",
       "i18n_mixin.ts",
       "i18n_mixin_lit.ts",
+      "icons.html.ts",
       "list_property_update_mixin.ts",
       "mouse_hoverable_mixin.ts",
       "mouse_hoverable_mixin_lit.ts",

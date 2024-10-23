@@ -1,12 +1,22 @@
-<!--
-List commonly used icons here to prevent duplication.
-Do not add rarely used icons here; place those in your application.
-Note that 20px and 24px icons are specified separately (size="", below).
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-Icons are rendered at 20x20 px, but we don't have 20 px SVGs for everything.
-The 24 px icons are used where 20 px icons are unavailable (which may appear
-blurry at 20 px). Please use 20 px icons when available.
--->
+import './cr_icon/cr_iconset.js';
+
+import {getTrustedHTML} from '//resources/js/static_types.js';
+
+/* List commonly used icons here to prevent duplication.
+ * Do not add rarely used icons here; place those in your application.
+ * Note that 20px and 24px icons are specified separately (size="", below).
+ *
+ * Icons are rendered at 20x20 px, but we don't have 20 px SVGs for everything.
+ * The 24 px icons are used where 20 px icons are unavailable (which may appear
+ * blurry at 20 px). Please use 20 px icons when available.
+ */
+
+const div = document.createElement('div');
+div.innerHTML = getTrustedHTML`
 <cr-iconset name="cr20" size="20">
   <svg>
     <defs>
@@ -348,4 +358,9 @@ blurry at 20 px). Please use 20 px icons when available.
       </g>
     </defs>
   </svg>
-</cr-iconset>
+</cr-iconset>`;
+
+const iconsets = div.querySelectorAll('cr-iconset');
+for (const iconset of iconsets) {
+  document.head.appendChild(iconset);
+}

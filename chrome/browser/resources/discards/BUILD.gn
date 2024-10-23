@@ -43,5 +43,9 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+  ts_path_mappings =
+      [ "chrome://resources/d3/d3.min.js|" +
+        rebase_path("//third_party/d3/src/d3.min.js", target_gen_dir) ]
+
   webui_context_type = "trusted"
 }

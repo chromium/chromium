@@ -69,6 +69,9 @@ build_webui("build") {
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]
+  ts_path_mappings = [ "/images/icons.html.js|" + rebase_path(
+                           "$target_gen_dir/preprocessed/images/icons.html.ts",
+                           target_gen_dir) ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
