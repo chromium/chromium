@@ -11,8 +11,9 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator_delegate.h"
@@ -26,7 +27,7 @@
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "url/gurl.h"
 
-@interface UserPolicySceneAgent () <AppStateObserver> {
+@interface UserPolicySceneAgent () <ProfileStateObserver> {
   // Scoped UI blocker that blocks the other scenes/windows if the dialog is
   // shown on this scene.
   std::unique_ptr<ScopedUIBlocker> _uiBlocker;
@@ -97,14 +98,14 @@
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
 
-  [self.sceneState.profileState.appState addObserver:self];
+  [self.sceneState.profileState addObserver:self];
 }
 
 #pragma mark - SceneStateObserver
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   // Tear down objects tied to the scene state before it is deleted.
-  [self.sceneState.profileState.appState removeObserver:self];
+  [self.sceneState.profileState removeObserver:self];
   [self stopUserPolicyPromptCoordinator];
 }
 
@@ -124,12 +125,13 @@
   [self maybeShowUserPolicyNotification];
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(AppInitStage)previousInitStage {
-  // Monitor the app intialization stages to consider showing the sign-in
-  // prompts at a point in the initialization of the app that allows it.
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  // Monitor the profile intialization stages to consider showing the sign-in
+  // prompts at a point in the initialization of the profile that allows it.
   [self maybeShowUserPolicyNotification];
 }
 
@@ -158,7 +160,7 @@
 
 // Returns YES if the scene UI is available to show the notification dialog.
 - (BOOL)isUIAvailableToShowNotification {
-  if (self.sceneState.profileState.appState.initStage < AppInitStage::kFinal) {
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     // Return NO when the app isn't yet fully initialized.
     return NO;
   }
