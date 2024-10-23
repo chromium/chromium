@@ -863,7 +863,7 @@ struct MediaFoundationVideoEncodeAccelerator::BitstreamBufferRef {
   BitstreamBufferRef& operator=(const BitstreamBufferRef&) = delete;
 
   const int32_t id;
-  const base::WritableSharedMemoryMapping mapping;
+  base::WritableSharedMemoryMapping mapping;
   const size_t size;
 };
 

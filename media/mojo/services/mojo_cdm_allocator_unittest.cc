@@ -36,7 +36,7 @@ class MojoCdmAllocatorTest : public testing::Test {
     return allocator_.CreateCdmVideoFrame();
   }
 
-  const base::MappedReadOnlyRegion& GetRegion(cdm::Buffer* buffer) {
+  base::MappedReadOnlyRegion& GetRegion(cdm::Buffer* buffer) {
     return allocator_.GetRegionForTesting(buffer);
   }
 

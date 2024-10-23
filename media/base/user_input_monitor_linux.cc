@@ -16,7 +16,7 @@ namespace media {
 namespace {
 
 using WriteKeyPressCallback =
-    base::RepeatingCallback<void(const base::WritableSharedMemoryMapping& shmem,
+    base::RepeatingCallback<void(base::WritableSharedMemoryMapping& shmem,
                                  uint32_t count)>;
 
 // Provides a unified interface for using user input monitors of unrelated

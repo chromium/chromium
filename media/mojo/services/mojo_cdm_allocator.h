@@ -54,8 +54,7 @@ class MEDIA_MOJO_EXPORT MojoCdmAllocator final : public CdmAllocator {
 
   // Returns the base::MappedReadOnlyRegion for a cdm::Buffer allocated by this
   // class.
-  const base::MappedReadOnlyRegion& GetRegionForTesting(
-      cdm::Buffer* buffer) const;
+  base::MappedReadOnlyRegion& GetRegionForTesting(cdm::Buffer* buffer);
 
   // Returns the number of buffers in |available_regions_|.
   size_t GetAvailableRegionCountForTesting();

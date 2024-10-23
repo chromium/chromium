@@ -189,7 +189,7 @@ class RefCountedWritableSharedMemoryMapping
       const RefCountedWritableSharedMemoryMapping&) = delete;
 
   const unsigned char* front() const {
-    return static_cast<unsigned char*>(mapping_.memory());
+    return static_cast<const unsigned char*>(mapping_.memory());
   }
   unsigned char* front() {
     return static_cast<unsigned char*>(mapping_.memory());
@@ -200,7 +200,7 @@ class RefCountedWritableSharedMemoryMapping
   friend class ThreadSafeRefCounted<RefCountedWritableSharedMemoryMapping>;
   ~RefCountedWritableSharedMemoryMapping() = default;
 
-  const base::WritableSharedMemoryMapping mapping_;
+  base::WritableSharedMemoryMapping mapping_;
 };
 
 class EncodedDataWrapper : public webrtc::EncodedImageBufferInterface {

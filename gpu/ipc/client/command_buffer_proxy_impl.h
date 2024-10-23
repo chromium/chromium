@@ -234,7 +234,11 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void DisconnectChannel();
 
   // The shared memory area used to update state.
-  gpu::CommandBufferSharedState* shared_state() const;
+  gpu::CommandBufferSharedState* shared_state() {
+    return const_cast<gpu::CommandBufferSharedState*>(
+        std::as_const(*this).shared_state());
+  }
+  const gpu::CommandBufferSharedState* shared_state() const;
 
   base::HistogramBase* GetUMAHistogramEnsureWorkVisibleDuration();
 

@@ -76,7 +76,7 @@ class MojoCdmBuffer final : public cdm::Buffer {
 
   uint32_t Size() const final { return size_; }
 
-  const base::MappedReadOnlyRegion& Region() const { return *mapped_region_; }
+  base::MappedReadOnlyRegion& Region() { return *mapped_region_; }
   std::unique_ptr<base::MappedReadOnlyRegion> TakeRegion() {
     return std::move(mapped_region_);
   }
@@ -236,8 +236,8 @@ void MojoCdmAllocator::AddRegionToAvailableMap(
   available_regions_.insert({capacity, std::move(mapped_region)});
 }
 
-const base::MappedReadOnlyRegion& MojoCdmAllocator::GetRegionForTesting(
-    cdm::Buffer* buffer) const {
+base::MappedReadOnlyRegion& MojoCdmAllocator::GetRegionForTesting(
+    cdm::Buffer* buffer) {
   MojoCdmBuffer* mojo_buffer = static_cast<MojoCdmBuffer*>(buffer);
   return mojo_buffer->Region();
 }

@@ -22,8 +22,9 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformUserInputMonitor {
  public:
   // Via this callback, the platform implementation of the monitor gets the
   // WriteKeyPressMonitorCount defined in media/base/user_input_monitor.h.
-  using WriteKeyPressCallback = base::RepeatingCallback<
-      void(const base::WritableSharedMemoryMapping& shmem, uint32_t count)>;
+  using WriteKeyPressCallback =
+      base::RepeatingCallback<void(base::WritableSharedMemoryMapping& shmem,
+                                   uint32_t count)>;
 
   PlatformUserInputMonitor();
   PlatformUserInputMonitor(const PlatformUserInputMonitor&) = delete;

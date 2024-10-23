@@ -25,7 +25,7 @@ uint32_t ReadKeyPressMonitorCount(
 }
 
 void WriteKeyPressMonitorCount(
-    const base::WritableSharedMemoryMapping& writable_mapping,
+    base::WritableSharedMemoryMapping& writable_mapping,
     uint32_t count) {
   if (!writable_mapping.IsValid())
     return;

@@ -672,8 +672,9 @@ void CommandBufferProxyImpl::TryUpdateStateDontReportError() {
     shared_state()->Read(&last_state_);
 }
 
-gpu::CommandBufferSharedState* CommandBufferProxyImpl::shared_state() const {
-  return reinterpret_cast<gpu::CommandBufferSharedState*>(
+const gpu::CommandBufferSharedState* CommandBufferProxyImpl::shared_state()
+    const {
+  return reinterpret_cast<const gpu::CommandBufferSharedState*>(
       shared_state_mapping_.memory());
 }
 

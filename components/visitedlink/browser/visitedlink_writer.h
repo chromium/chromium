@@ -403,7 +403,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // Returns a pointer to the start of the hash table, given the mapping
   // containing the hash table.
   static Fingerprint* GetHashTableFromMapping(
-      const base::WritableSharedMemoryMapping& hash_table_mapping);
+      base::WritableSharedMemoryMapping& hash_table_mapping);
 
   // Reference to the browser context that this object belongs to
   // (it knows the path to where the data is stored)

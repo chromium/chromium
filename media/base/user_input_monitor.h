@@ -26,7 +26,7 @@ namespace media {
 uint32_t MEDIA_EXPORT
 ReadKeyPressMonitorCount(const base::ReadOnlySharedMemoryMapping& shmem);
 void MEDIA_EXPORT
-WriteKeyPressMonitorCount(const base::WritableSharedMemoryMapping& shmem,
+WriteKeyPressMonitorCount(base::WritableSharedMemoryMapping& shmem,
                           uint32_t count);
 
 // Base class for audio:: and media:: UserInputMonitor implementations.

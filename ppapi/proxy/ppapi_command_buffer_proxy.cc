@@ -301,7 +301,7 @@ void PpapiCommandBufferProxy::TryUpdateState() {
     shared_state()->Read(&last_state_);
 }
 
-gpu::CommandBufferSharedState* PpapiCommandBufferProxy::shared_state() const {
+gpu::CommandBufferSharedState* PpapiCommandBufferProxy::shared_state() {
   return reinterpret_cast<gpu::CommandBufferSharedState*>(
       shared_state_mapping_.memory());
 }

@@ -215,7 +215,8 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
   // Use `span(mapping)` to make a span of `uint8_t`, `GetMemoryAs<T>()` to
   // access the memory as a single `T` or `GetMemoryAsSpan<T>()` to access it as
   // an array of `T`.
-  uint8_t* data() const { return mapped_memory().data(); }
+  uint8_t* data() { return mapped_memory().data(); }
+  const uint8_t* data() const { return mapped_memory().data(); }
 
   // Iterate memory as bytes up to the end of its logical size.
   iterator begin() {
@@ -240,7 +241,8 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
   // of `uint8_t`, `GetMemoryAs<T>()` to access the memory as a single `T`, or
   // `GetMemoryAsSpan<T>()` to access it as an array of `T` or `data()` for an
   // unbounded pointer.
-  void* memory() const { return data(); }
+  void* memory() { return data(); }
+  const void* memory() const { return data(); }
 
   // Returns a pointer to a page-aligned T if the mapping is valid and large
   // enough to contain a T, or nullptr otherwise.

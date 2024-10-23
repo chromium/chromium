@@ -241,7 +241,7 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // Returns a pointer to the start of the hash table, given the mapping
   // containing the hash table.
   static Fingerprint* GetHashTableFromMapping(
-      const base::WritableSharedMemoryMapping& hash_table_mapping);
+      base::WritableSharedMemoryMapping& hash_table_mapping);
 
   // Returns the default table size. It can be overridden in unit tests.
   uint32_t DefaultTableSize() const;

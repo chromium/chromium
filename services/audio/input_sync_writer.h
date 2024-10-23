@@ -103,7 +103,7 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // false if failure.
   bool SignalDataWrittenAndUpdateCounters();
 
-  media::AudioInputBuffer* GetSharedInputBuffer(uint32_t segment_id) const;
+  media::AudioInputBuffer* GetSharedInputBuffer(uint32_t segment_id);
 
   const base::RepeatingCallback<void(const std::string&)> log_callback_;
 
@@ -112,7 +112,7 @@ class InputSyncWriter final : public InputController::SyncWriter {
 
   // Shared memory for audio data and associated metadata.
   base::ReadOnlySharedMemoryRegion shared_memory_region_;
-  const base::WritableSharedMemoryMapping shared_memory_mapping_;
+  base::WritableSharedMemoryMapping shared_memory_mapping_;
 
   // The size in bytes of a single audio segment in the shared memory.
   const uint32_t shared_memory_segment_size_;

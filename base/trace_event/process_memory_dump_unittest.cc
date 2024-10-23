@@ -60,7 +60,7 @@ void Unmap(void* addr, size_t size) {
 }
 
 std::optional<size_t> CountResidentBytesInSharedMemory(
-    const WritableSharedMemoryMapping& mapping) {
+    WritableSharedMemoryMapping& mapping) {
   // SAFETY: We need the actual mapped memory size here. There's no public
   // method to get this as a span, so we need to construct it unsafely. The
   // mapped_size() is larger than `mem.size()` but represents the actual memory

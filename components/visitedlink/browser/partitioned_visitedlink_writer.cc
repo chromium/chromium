@@ -772,7 +772,7 @@ std::optional<uint64_t> PartitionedVisitedLinkWriter::GetOrAddOriginSalt(
 // static
 VisitedLinkCommon::Fingerprint*
 PartitionedVisitedLinkWriter::GetHashTableFromMapping(
-    const base::WritableSharedMemoryMapping& hash_table_mapping) {
+    base::WritableSharedMemoryMapping& hash_table_mapping) {
   DCHECK(hash_table_mapping.IsValid());
   // Our table pointer is just the data immediately following the header.
   return reinterpret_cast<Fingerprint*>(
