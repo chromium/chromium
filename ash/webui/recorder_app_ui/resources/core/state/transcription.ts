@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {usePlatformHandler} from '../lit/context.js';
+import {LanguageCode} from '../soda/language_info.js';
 import {assertExhaustive} from '../utils/assert.js';
 
-import {settings, TranscriptionEnableState} from './settings.js';
+import {
+  settings,
+  TranscriptionEnableState,
+} from './settings.js';
 
 /**
  * Disables transcription.
@@ -26,7 +30,11 @@ export function enableTranscription(): void {
   settings.mutate((s) => {
     s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
   });
-  usePlatformHandler().installSoda();
+  // TODO(hsuanling): Move download logic to language picker.
+  settings.mutate((s) => {
+    s.transcriptionLanguage = LanguageCode.EN_US;
+  });
+  usePlatformHandler().installSoda(LanguageCode.EN_US);
 }
 
 /**

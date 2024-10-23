@@ -26,6 +26,7 @@ core_files = [
   "recording_session.ts",
   "soda/soda.ts",
   "soda/types.ts",
+  "soda/language_info.ts",
   "state/route.ts",
   "state/settings.ts",
   "state/transcription.ts",

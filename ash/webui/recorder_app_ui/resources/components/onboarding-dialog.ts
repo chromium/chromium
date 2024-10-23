@@ -157,12 +157,9 @@ export class OnboardingDialog extends ReactiveLitElement {
   }
 
   private sendOnboardEvent(): void {
-    const sodaState = this.platformHandler.sodaState.value.kind;
-    const isAvailable = sodaState !== 'unavailable' && sodaState !== 'error';
-
     this.platformHandler.eventsSender.sendOnboardEvent({
       speakerLabelEnableState: settings.value.speakerLabelEnabled,
-      transcriptionAvailable: isAvailable,
+      transcriptionAvailable: this.platformHandler.isSodaAvailable(),
       transcriptionEnableState: settings.value.transcriptionEnabled,
     });
   }
@@ -216,7 +213,7 @@ export class OnboardingDialog extends ReactiveLitElement {
     switch (this.step) {
       case 0: {
         const nextStep = () => {
-          if (this.platformHandler.sodaState.value.kind === 'unavailable') {
+          if (!this.platformHandler.isSodaAvailable()) {
             // SODA isn't available on this platform. Don't ask for enabling
             // transcription or speaker label.
             this.close();

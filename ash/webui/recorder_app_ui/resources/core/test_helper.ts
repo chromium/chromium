@@ -5,6 +5,7 @@
 import {RecorderApp} from '../pages/recorder-app.js';
 
 import {usePlatformHandler, useRecordingDataManager} from './lit/context.js';
+import {LanguageCode} from './soda/language_info.js';
 import {TextToken, Transcription} from './soda/soda.js';
 import {navigateTo} from './state/route.js';
 import {
@@ -116,7 +117,8 @@ export class TestHelper {
    * Installs the model used for transcription.
    */
   static installTranscriptionModel(): void {
-    usePlatformHandler().installSoda();
+    // TODO(hsuanling): Support testing different languages
+    usePlatformHandler().installSoda(LanguageCode.EN_US);
   }
 
   /**
@@ -125,7 +127,8 @@ export class TestHelper {
    * @return Boolean indicating if the transcription model is installed.
    */
   static isTranscriptionModelInstalled(): boolean {
-    const state = usePlatformHandler().sodaState.value;
+    // TODO(hsuanling): Support testing different languages
+    const state = usePlatformHandler().getSodaState(LanguageCode.EN_US).value;
     return state.kind === 'installed';
   }
 

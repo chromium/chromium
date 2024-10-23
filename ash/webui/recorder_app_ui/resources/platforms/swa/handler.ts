@@ -24,8 +24,13 @@ import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
 import {computed, Signal, signal} from '../../core/reactive/signal.js';
+import {LanguageCode} from '../../core/soda/language_info.js';
 import {SodaSession} from '../../core/soda/types.js';
-import {assertInstanceof} from '../../core/utils/assert.js';
+import {settings} from '../../core/state/settings.js';
+import {
+  assertExists,
+  assertInstanceof,
+} from '../../core/utils/assert.js';
 import {parseTopFrameInfo} from '../../core/utils/errors.js';
 
 import {EventsSender} from './metrics.js';
@@ -45,13 +50,13 @@ import {
 } from './types.js';
 
 const CRASH_SERVER_PRODUCT_NAME = 'ChromeOS_RecorderApp';
-// TODO(hsuanling): Expose language parameter to platform handler interface.
-const DEFAULT_LANGUAGE = 'en-US';
+// TODO(hsuanling): Get available languages through mojom
+const DEFAULT_LANGUAGE = LanguageCode.EN_US;
 
 export class PlatformHandler extends PlatformHandlerBase {
   private readonly remote = MojoPageHandler.getRemote();
 
-  override readonly sodaState = signal<ModelState>({kind: 'unavailable'});
+  private readonly sodaStates = new Map<LanguageCode, Signal<ModelState>>();
 
   override summaryModelLoader: SummaryModelLoader;
 
@@ -100,18 +105,23 @@ export class PlatformHandler extends PlatformHandlerBase {
     this.canCaptureSystemAudioWithLoopback.value =
       (await this.remote.canCaptureSystemAudioWithLoopback()).supported;
 
-    const update = (state: MojoModelState) => {
-      this.sodaState.value = mojoModelStateToModelState(state);
-    };
-    const monitor = new ModelStateMonitorReceiver({update});
-    // This should be relatively quick since in recorder_app_ui.cc we just
-    // return the cached state here, but we await here to avoid UI showing
-    // temporary unavailabe state.
-    const {state} = await this.remote.addSodaMonitor(
-      DEFAULT_LANGUAGE,
-      monitor.$.bindNewPipeAndPassRemote(),
-    );
-    update(state);
+    // TODO(hsuanling): Get available languages through mojom
+    for (const language of [DEFAULT_LANGUAGE]) {
+      const sodaState = signal<ModelState>({kind: 'unavailable'});
+      this.sodaStates.set(language, sodaState);
+      function update(state: MojoModelState) {
+        sodaState.value = mojoModelStateToModelState(state);
+      }
+      const monitor = new ModelStateMonitorReceiver({update});
+      // This should be relatively quick since in recorder_app_ui.cc we just
+      // return the cached state here, but we await here to avoid UI showing
+      // temporary unavailabe state.
+      const {state} = await this.remote.addSodaMonitor(
+        language,
+        monitor.$.bindNewPipeAndPassRemote(),
+      );
+      update(state);
+    }
 
     const quietModeMonitor = new QuietModeMonitorReceiver({
       update: (inQuietMode: boolean) => {
@@ -127,18 +137,40 @@ export class PlatformHandler extends PlatformHandlerBase {
     await this.titleSuggestionModelLoader.init();
   }
 
-  override installSoda(): void {
+  override installSoda(language: LanguageCode): void {
     // We don't care about the returned promise as long as the request goes
     // through. The install progress is separately tracked in `sodaState`.
-    void this.remote.installSoda(DEFAULT_LANGUAGE);
+    void this.remote.installSoda(language);
   }
 
-  override async newSodaSession(): Promise<SodaSession> {
+  override isSodaAvailable(): boolean {
+    for (const state of this.sodaStates.values()) {
+      if (state.value.kind !== 'unavailable') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  override getSodaState(language: LanguageCode): Signal<ModelState> {
+    // All language states should be initialized in `init`.
+    return assertExists(this.sodaStates.get(language));
+  }
+
+  override getSelectedLanguageState(): Signal<ModelState>|null {
+    const selectedLanguage = settings.value.transcriptionLanguage;
+    return selectedLanguage === null ? null :
+                                       this.getSodaState(selectedLanguage);
+  }
+
+  override async newSodaSession(
+    language: LanguageCode,
+  ): Promise<SodaSession> {
     const recognizer = new SodaRecognizerRemote();
     const session = new MojoSodaSession(recognizer);
     const client = new SodaClientReceiver(session);
     const {result} = await this.remote.loadSpeechRecognizer(
-      DEFAULT_LANGUAGE,
+      language,
       client.$.bindNewPipeAndPassRemote(),
       recognizer.$.bindNewPipeAndPassReceiver(),
     );

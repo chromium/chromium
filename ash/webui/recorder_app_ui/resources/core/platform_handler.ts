@@ -8,6 +8,7 @@ import {InternalMicInfo} from './microphone_manager.js';
 import {ModelLoader, ModelState} from './on_device_model/types.js';
 import {PerfLogger} from './perf.js';
 import {ReadonlySignal, Signal} from './reactive/signal.js';
+import {LanguageCode} from './soda/language_info.js';
 import {SodaSession} from './soda/types.js';
 
 export abstract class PlatformHandler {
@@ -44,21 +45,32 @@ export abstract class PlatformHandler {
   abstract titleSuggestionModelLoader: ModelLoader<string[]>;
 
   /**
-   * Requests installation of SODA library and language pack.
+   * Requests installation of SODA library and language pack of given language.
    *
    * Installation state and error will be reported through the `sodaState`.
    */
-  abstract installSoda(): void;
+  abstract installSoda(language: LanguageCode): void;
 
   /**
-   * The SODA installation state.
+   * Returns whether SODA is available on the device.
    */
-  abstract readonly sodaState: ReadonlySignal<ModelState>;
+  abstract isSodaAvailable(): boolean;
 
   /**
-   * Creates a new soda session for transcription.
+   * Returns the SODA installation state of given language.
    */
-  abstract newSodaSession(): Promise<SodaSession>;
+  abstract getSodaState(language: LanguageCode): ReadonlySignal<ModelState>;
+
+  /**
+   * Returns the SODA installation state of the selected language.
+   * Returns null when no language is selected.
+   */
+  abstract getSelectedLanguageState(): ReadonlySignal<ModelState>|null;
+
+  /**
+   * Creates a new soda session for transcription using given language.
+   */
+  abstract newSodaSession(language: LanguageCode): Promise<SodaSession>;
 
   /**
    * Returns the additional microphone info of a mic with |deviceId|.

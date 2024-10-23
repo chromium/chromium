@@ -29,6 +29,7 @@ import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
+import {LanguageCode} from '../core/soda/language_info.js';
 import {
   settings,
   SpeakerLabelEnableState,
@@ -343,8 +344,11 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderTranscriptionDetailSettings() {
-    if (!this.transcriptionEnabled ||
-        this.platformHandler.sodaState.value.kind === 'notInstalled') {
+    // TODO(hsuanling): Currently shows settings when en-US is installed.
+    // Discuss with UXR about the logic to show detail settings when there're
+    // multiple languages.
+    const sodaState = this.platformHandler.getSodaState(LanguageCode.EN_US);
+    if (!this.transcriptionEnabled || sodaState.value.kind === 'notInstalled') {
       return nothing;
     }
     return [
@@ -383,7 +387,10 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderTranscriptionDescriptionAndAction() {
-    const sodaState = this.platformHandler.sodaState.value;
+    // TODO(hsuanling): Move the download logic to language picker, and always
+    // show the toggle switch.
+    const sodaState =
+      this.platformHandler.getSodaState(LanguageCode.EN_US).value;
     if (sodaState.kind === 'notInstalled') {
       // Shows the "download" button when SODA is not installed, even if it's
       // already enabled by user. This shouldn't happen in normal case, but
@@ -445,7 +452,7 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderTranscriptionSection() {
-    if (this.platformHandler.sodaState.value.kind === 'unavailable') {
+    if (!this.platformHandler.isSodaAvailable()) {
       return nothing;
     }
     return html`

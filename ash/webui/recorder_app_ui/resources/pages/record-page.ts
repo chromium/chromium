@@ -50,7 +50,6 @@ import {
   settings,
   SpeakerLabelEnableState,
   TranscriptionEnableState,
-  TranscriptionLanguage,
 } from '../core/state/settings.js';
 import {
   disableTranscription,
@@ -376,7 +375,7 @@ export class RecordPage extends ReactiveLitElement {
   );
 
   private readonly transcriptionAvailable = computed(
-    () => this.platformHandler.sodaState.value.kind !== 'unavailable',
+    () => this.platformHandler.isSodaAvailable(),
   );
 
   private transcriptionEnableDispose: Dispose|null = null;
@@ -428,6 +427,7 @@ export class RecordPage extends ReactiveLitElement {
       // are gated behind transcriptionAvailable.
       await session.start(
         this.transcriptionEnabled.value && this.transcriptionAvailable.value,
+        settings.value.transcriptionLanguage,
       );
     } catch (e) {
       if (e instanceof DOMException &&
@@ -452,8 +452,9 @@ export class RecordPage extends ReactiveLitElement {
       // or add untrack() to specify region that dependencies shouldn't be
       // tracked.
       if (this.transcriptionEnabled.value &&
-          this.transcriptionAvailable.value) {
-        session.startNewSodaSession();
+          this.transcriptionAvailable.value &&
+          settings.value.transcriptionLanguage !== null) {
+        session.startNewSodaSession(settings.value.transcriptionLanguage);
       } else {
         session.stopSodaSession();
       }
@@ -499,8 +500,8 @@ export class RecordPage extends ReactiveLitElement {
 
     const transcription = session.progress.value.transcription;
     const locale = this.transcriptionEnabled.value ?
-      TranscriptionLanguage.EN_US :
-      TranscriptionLanguage.NONE;
+      settings.value.transcriptionLanguage :
+      null;
 
     this.platformHandler.eventsSender.sendRecordEvent({
       audioDuration: Math.round(session.progress.value.length * 1000),

@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import {ModelResponseError} from './on_device_model/types.js';
+import {LanguageCode} from './soda/language_info.js';
 import {
   ExportSettings,
   SpeakerLabelEnableState,
   SummaryEnableState,
   TranscriptionEnableState,
-  TranscriptionLanguage,
 } from './state/settings.js';
 
 export interface StartSessionEventParams {
@@ -32,7 +32,7 @@ export interface RecordEventParams {
   speakerLabelEnableState: SpeakerLabelEnableState;
   transcriptionAvailable: boolean;
   transcriptionEnableState: TranscriptionEnableState;
-  transcriptionLocale: TranscriptionLanguage;
+  transcriptionLocale: LanguageCode|null;
   wordCount: number;
 }
 

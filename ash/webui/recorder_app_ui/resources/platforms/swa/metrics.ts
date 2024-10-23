@@ -46,6 +46,7 @@ import {
   SummarizeEventParams,
 } from '../../core/events_sender.js';
 import {ModelResponseError} from '../../core/on_device_model/types.js';
+import {LanguageCode} from '../../core/soda/language_info.js';
 import {
   ExportAudioFormat,
   ExportSettings,
@@ -53,7 +54,6 @@ import {
   SpeakerLabelEnableState,
   SummaryEnableState,
   TranscriptionEnableState,
-  TranscriptionLanguage,
 } from '../../core/state/settings.js';
 import {assertExhaustive} from '../../core/utils/assert.js';
 
@@ -128,12 +128,12 @@ function convertToMicrophoneType(
 }
 
 function convertTranscriptionLocaleType(
-  language: TranscriptionLanguage,
+  language: LanguageCode|null,
 ): CrOSEvents_RecorderAppTranscriptionLocale {
   switch (language) {
-    case TranscriptionLanguage.NONE:
+    case null:
       return CrOSEvents_RecorderAppTranscriptionLocale.NONE;
-    case TranscriptionLanguage.EN_US:
+    case LanguageCode.EN_US:
       return CrOSEvents_RecorderAppTranscriptionLocale.EN_US;
     default:
       assertExhaustive(language);
