@@ -184,7 +184,7 @@ constexpr CGFloat kVerticalInset = 12;
       base::BindOnce(
           ^(optimization_guide::OptimizationGuideModelExecutionResult result,
             std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
-            [weakSelf onServerModelExecuteResponse:result
+            [weakSelf onServerModelExecuteResponse:std::move(result)
                                       withLogEntry:std::move(entry)];
           }));
 #endif
@@ -229,17 +229,18 @@ constexpr CGFloat kVerticalInset = 12;
                                 log_entry {
   std::string response = "";
 
-  if (result.has_value()) {
+  if (result.response.has_value()) {
     auto parsed = optimization_guide::ParsedAnyMetadata<
-        optimization_guide::proto::StringValue>(result.value());
+        optimization_guide::proto::StringValue>(result.response.value());
     if (parsed->has_value()) {
       response = parsed->value();
     } else {
       response = "Failed to parse server response as a string";
     }
   } else {
-    response = base::StringPrintf("Server model execution error: %d",
-                                  static_cast<int>(result.error().error()));
+    response =
+        base::StringPrintf("Server model execution error: %d",
+                           static_cast<int>(result.response.error().error()));
   }
 
   _responseContainer.text = base::SysUTF8ToNSString(response);
