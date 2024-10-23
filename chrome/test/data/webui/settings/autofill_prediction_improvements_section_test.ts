@@ -5,6 +5,7 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsSimpleConfirmationDialogElement, SettingsAutofillPredictionImprovementsSectionElement} from 'chrome://settings/lazy_load.js';
@@ -224,6 +225,8 @@ suite('AutofillPredictionImprovementsSectionToggleTest', function() {
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+
     userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
     UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
 
@@ -244,19 +247,103 @@ suite('AutofillPredictionImprovementsSectionToggleTest', function() {
     await flushTasks();
   });
 
-  test('testTriggerBootstrappingCalledWhenToggleEnabled', async function() {
+  test('testTriggerBootstrappingCalledWhenConditionsMet', async function() {
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    userAnnotationManager.setEntries([]);
+
     userAnnotationManager.reset();
 
     section.$.prefToggle.click();
     await flushTasks();
 
+    await userAnnotationManager.whenCalled('hasEntries');
     await userAnnotationManager.whenCalled('triggerBootstrapping');
+
     assertEquals(
         1, userAnnotationManager.getCallCount('triggerBootstrapping'),
-        'triggerBootstrapping should be called when toggle is enabled');
+        'triggerBootstrapping should be called when all conditions are met');
   });
 
-  test('testGetEntriesCalledWhenBootstrappingReturnsTrue', async function() {
+  test(
+      'testTriggerBootstrappingNotCalledWhenBootstrappingDisabled',
+      async function() {
+        loadTimeData.overrideValues(
+            {autofillPredictionBootstrappingEnabled: false});
+        userAnnotationManager.setEntries([]);
+
+        userAnnotationManager.reset();
+
+        section.$.prefToggle.click();
+        await flushTasks();
+
+        await userAnnotationManager.whenCalled('hasEntries');
+
+        assertEquals(
+            0, userAnnotationManager.getCallCount('triggerBootstrapping'),
+            'triggerBootstrapping shouldn\'t be called if feature is disabled');
+      });
+
+  test('testTriggerBootstrappingNotCalledWhenToggleDisabled', async function() {
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    userAnnotationManager.setEntries([]);
+
+    userAnnotationManager.reset();
+
+    section.setPrefValue('autofill.prediction_improvements.enabled', true);
+    await flushTasks();
+
+    section.$.prefToggle.click();
+    await flushTasks();
+
+    await userAnnotationManager.whenCalled('hasEntries');
+
+    assertEquals(
+        0, userAnnotationManager.getCallCount('triggerBootstrapping'),
+        'triggerBootstrapping should not be called when toggle is disabled');
+  });
+
+  test('testTriggerBootstrappingNotCalledWhenHasEntries', async function() {
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    userAnnotationManager.setEntries([
+      {
+        entryId: 1,
+        key: 'Test Key',
+        value: 'Test Value',
+      },
+    ]);
+
+    userAnnotationManager.reset();
+
+    section.$.prefToggle.click();
+    await flushTasks();
+
+    await userAnnotationManager.whenCalled('hasEntries');
+
+    assertEquals(
+        0, userAnnotationManager.getCallCount('triggerBootstrapping'),
+        'triggerBootstrapping should not be called when entries exist');
+  });
+
+  test('testTriggerBootstrappingNotCalledWhenComponentDisabled', async function() {
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    userAnnotationManager.setEntries([]);
+
+    userAnnotationManager.reset();
+
+    section.disabled = true;
+
+    section.$.prefToggle.click();
+    await flushTasks();
+
+    assertEquals(
+        0, userAnnotationManager.getCallCount('triggerBootstrapping'),
+        'triggerBootstrapping should not be called when component is disabled');
+  });
+
+  test('testGetEntriesCalledWhenBootstrappingAddsEntries', async function() {
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+
+    userAnnotationManager.setEntries([]);
     userAnnotationManager.setEntriesBootstrapped(true);
 
     userAnnotationManager.reset();
@@ -264,53 +351,12 @@ suite('AutofillPredictionImprovementsSectionToggleTest', function() {
     section.$.prefToggle.click();
     await flushTasks();
 
+    await userAnnotationManager.whenCalled('hasEntries');
     await userAnnotationManager.whenCalled('triggerBootstrapping');
-
     await userAnnotationManager.whenCalled('getEntries');
+
     assertEquals(
         1, userAnnotationManager.getCallCount('getEntries'),
         'getEntries should be called if bootstrapping added entries');
-  });
-
-  test('testGetEntriesNotCalledWhenBootstrappingReturnsFalse', async function() {
-    userAnnotationManager.setEntriesBootstrapped(false);
-
-    userAnnotationManager.reset();
-
-    section.$.prefToggle.click();
-    await flushTasks();
-
-    await userAnnotationManager.whenCalled('triggerBootstrapping');
-
-    assertEquals(
-        0, userAnnotationManager.getCallCount('getEntries'),
-        'getEntries should not be called if bootstrapping did not add entries');
-  });
-
-  test('testTriggerBootstrappingNotCalledWhenDisabled', async function() {
-    section.disabled = true;
-
-    userAnnotationManager.reset();
-
-    section.$.prefToggle.click();
-    await flushTasks();
-
-    assertEquals(
-        0, userAnnotationManager.getCallCount('triggerBootstrapping'),
-        'triggerBootstrapping should not be called when disabled');
-  });
-
-  test('testTriggerBootstrappingNotCalledWhenPrefValueIsFalse', async function() {
-    section.setPrefValue('autofill.prediction_improvements.enabled', true);
-    await flushTasks();
-
-    userAnnotationManager.reset();
-
-    section.$.prefToggle.click();
-    await flushTasks();
-
-    assertEquals(
-        0, userAnnotationManager.getCallCount('triggerBootstrapping'),
-        'triggerBootstrapping should not be called when pref value is false');
   });
 });

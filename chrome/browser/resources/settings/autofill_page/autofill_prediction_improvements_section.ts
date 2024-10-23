@@ -103,10 +103,21 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
         loadTimeData.getString('addressesAndPaymentMethodsLearnMoreURL'));
   }
 
-  private async onPrefToggleChanged_() {
+  private onPrefToggleChanged_() {
     this.userAnnotationsManager_.predictionImprovementsIphFeatureUsed();
 
-    if (this.disabled || !this.$.prefToggle.checked) {
+    this.maybeTriggerBootstrapping_();
+  }
+
+  private async maybeTriggerBootstrapping_() {
+    const bootstrappingDisabled =
+        !loadTimeData.getBoolean('autofillPredictionBootstrappingEnabled');
+    const toggleDisabled = !this.$.prefToggle.checked;
+    const hasEntries = await this.userAnnotationsManager_.hasEntries();
+    // Only trigger bootstrapping if the pref was just enabled and there are no
+    // entries yet.
+    if (bootstrappingDisabled || this.disabled || toggleDisabled ||
+        hasEntries) {
       return;
     }
 
