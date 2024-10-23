@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
+import org.chromium.chrome.browser.customtabs.features.branding.MismatchNotificationChecker;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabHeightStrategy;
@@ -90,6 +92,7 @@ import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -252,13 +255,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if ((activityType == ActivityType.CUSTOM_TAB || isAuthTab)
                 && !intentDataProvider.get().isOpenedByChrome()
                 && intentDataProvider.get().getCustomTabMode() != INCOGNITO) {
-            String appId = null;
-            // AuthTab sets the ID to null by design to show the default branding (toast)
+            String packageName = null;
+            // AuthTab sets the package name to null by design to show the default branding (toast)
             // every time one is launched.
             if (!isAuthTab) {
-                appId = mIntentDataProvider.get().getClientPackageName();
-                if (TextUtils.isEmpty(appId)) {
-                    appId = CustomTabIntentDataProvider.getAppIdFromReferrer(activity);
+                packageName = mIntentDataProvider.get().getClientPackageName();
+                if (TextUtils.isEmpty(packageName)) {
+                    packageName = CustomTabIntentDataProvider.getAppIdFromReferrer(activity);
                 }
             }
             String browserName = activity.getResources().getString(R.string.app_name);
@@ -266,12 +269,14 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     isAuthTab
                             ? R.string.auth_tab_secured_by_chrome_template
                             : R.string.twa_running_in_chrome_template;
+            String appId = packageName; // effective final for lambda func
             mBrandingController =
                     new BrandingController(
                             activity,
                             appId,
                             browserName,
                             toastTemplateId,
+                            () -> createMismatchNotificationChecker(appId),
                             new ChromePureJavaExceptionReporter());
         }
         // TODO(353517557): Do initialization necessary for ActivityType.AUTH_TAB
@@ -284,6 +289,45 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             getAppBrowserControlsVisibilityDelegate()
                     .addDelegate(browserControlsManager.getBrowserVisibilityDelegate());
         }
+    }
+
+    MismatchNotificationChecker createMismatchNotificationChecker(String appId) {
+        // MismatchNotificationChecker requires Profile which becomes available after
+        // native init. This method is expected to be called lazily, when it is actually
+        // needed.
+        boolean signInPromptEnabled =
+                appId != null
+                        && FeatureList.isInitialized()
+                        && SigninFeatureMap.sCctSignInPrompt.isEnabled();
+        if (!signInPromptEnabled) return null;
+
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        Intent intent = mIntentDataProvider.get().getIntent();
+        if (!connection.isAppForAccountMismatchNotification(intent)) return null;
+
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return null;
+        return new MismatchNotificationChecker(
+                profile,
+                (lastShownTime, onClose) -> {
+                    boolean show =
+                            connection.shouldShowAccountMismatchNotification(
+                                    intent, profile, lastShownTime);
+                    if (show) {
+                        MismatchNotificationController.get(
+                                        mWindowAndroid,
+                                        profile,
+                                        connection.getAppAccountName(intent))
+                                .showSignedOutMessage(
+                                        mActivity,
+                                        (closeType) -> {
+                                            onClose.onResult(closeType);
+                                            connection.onCloseMismatchNotification(
+                                                    intent, profile, closeType);
+                                        });
+                    }
+                    return show;
+                });
     }
 
     @Override

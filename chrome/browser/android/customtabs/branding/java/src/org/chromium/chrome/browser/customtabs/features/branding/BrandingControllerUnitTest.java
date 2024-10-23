@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.customtabs.features.branding;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.customtabs.features.branding.BrandingController.BRANDING_CADENCE_MS;
 import static org.chromium.chrome.browser.customtabs.features.branding.BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS;
@@ -61,6 +63,7 @@ public class BrandingControllerUnitTest {
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock ToolbarBrandingDelegate mToolbarBrandingDelegate;
+    @Mock MismatchNotificationChecker mMismatchNotificationChecker;
 
     private BrandingController mBrandingController;
     private ShadowPostTask.TestImpl mShadowPostTaskImpl;
@@ -126,6 +129,27 @@ public class BrandingControllerUnitTest {
                 .assertShownEmptyLocationBar(true)
                 .assertShownBrandingLocationBar(false)
                 .assertShownRegularLocationBar(true);
+    }
+
+    @Test
+    public void testBrandingWorkflow_MismatchPrecedenceOverBranding() {
+        new BrandingCheckTester()
+                .newBrandingController()
+                .setMaybeShowMimatchNotification(true)
+                .idleMainLooper()
+                .onToolbarInitialized()
+                // Even though the branding decision was TOAST, mismatch notification
+                // overwrites the decision and gets shown instead.
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
+                .assertShownToastBranding(false)
+                .advanceMills(BRANDING_CADENCE_MS + 1)
+                .newBrandingController()
+                .setMaybeShowMimatchNotification(false)
+                .idleMainLooper()
+                .onToolbarInitialized()
+                // The branding decision is respected if mismatch notification doesn't show.
+                .assertBrandingDecisionMade(BrandingDecision.TOOLBAR)
+                .assertShownBrandingLocationBar(true);
     }
 
     @Test
@@ -271,6 +295,7 @@ public class BrandingControllerUnitTest {
                             "appName",
                             context.getPackageName(),
                             R.string.twa_running_in_chrome_template,
+                            () -> mMismatchNotificationChecker,
                             null);
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.
@@ -287,6 +312,7 @@ public class BrandingControllerUnitTest {
                             /* appId= */ null,
                             context.getPackageName(),
                             R.string.auth_tab_secured_by_chrome_template,
+                            () -> null,
                             null);
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.
@@ -340,6 +366,11 @@ public class BrandingControllerUnitTest {
         public BrandingCheckTester advanceMills(long duration) {
             ShadowSystemClock.advanceBy(duration, TimeUnit.MILLISECONDS);
             mFakeTimeTestRule.advanceMillis(duration);
+            return this;
+        }
+
+        public BrandingCheckTester setMaybeShowMimatchNotification(boolean show) {
+            when(mMismatchNotificationChecker.maybeShow(anyLong())).thenReturn(show);
             return this;
         }
 

@@ -999,6 +999,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/cookies:java",
       "//chrome/browser/android/cookies:junit",
       "//chrome/browser/android/crypto:java",
+      "//chrome/browser/android/customtabs/branding:java",
       "//chrome/browser/android/customtabs/branding:junit",
       "//chrome/browser/android/httpclient:junit_tests",
       "//chrome/browser/android/intents:java",

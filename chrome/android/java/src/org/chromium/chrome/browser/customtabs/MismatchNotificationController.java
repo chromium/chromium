@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,7 +54,9 @@ public class MismatchNotificationController {
                         .getId();
     }
 
-    public void showSignedOutMessage(Context context) {
+    public void showSignedOutMessage(Context context, Callback<Integer> onClose) {
+        // TODO(crbug.com/369564573): Hook up |onClose| to return the user action (or lack thereof)
+        // with which the notification is closed.
         PropertyModel propertyModel =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
