@@ -18183,12 +18183,27 @@ be describing additional metrics about the same event.
   <owner>chrome-instant-ecosystem@google.com</owner>
   <summary>
     This event is logged for each preloading attempt i.e., for preloading
-    features like Preresolve, Preconnect, Prerender, Prefetch, and others when
-    the user navigates or when the WebContents is being destroyed.
+    features like preresolve, preconnect, prerender, prefetch, and others, as
+    long as the user navigated to another page after the preloading attempt
+    occurred.
 
-    Associated with the Source ID of the page user navigates to. Contains
-    information about the type of attempt, its eligibility, triggering outcome,
-    failure reason and whether the attempt was triggered accurately or not.
+    It is associated with the Source ID of the page user navigates to, i.e., the
+    page the user visits *after* a browser feature or the previous page
+    attempted to preload. The page the user navigates to may or may not be the
+    same as the URL that was attempted to be preloaded. If they are the same,
+    AccurateTriggering will be true; otherwise, it will be false. As such, there
+    can be many Preloading.Attempts for a single UKM source, of which only one
+    will have AccurateTriggering set to true.
+
+    This event is logged when the user navigates onward from that successor
+    page, or that sucessor page's WebContents is being destroyed. This means
+    that if a UKM source that attempts a preload is not followed by another
+    navigation to a successor page, e.g. because the user closed their browser,
+    then the Preloading.Attempt event is not recorded: only the
+    Preloading.Attempt.PreviousPrimaryPage is recorded. On the other hand, in
+    cases where there is no initiating page, e.g. because the preload is
+    initiated via Chrome UI, then only Preloading.Attempt is recorded, and not
+    Preloading.Attempt.PreviousPrimaryPage.
 
     Note that this event is sampled based on the PreloadingConfig feature
     configuration (in addition to the normal UKM sampling mechanism). The
@@ -18305,14 +18320,27 @@ be describing additional metrics about the same event.
   <owner>domenic@chromium.org</owner>
   <owner>chrome-instant-ecosystem@google.com</owner>
   <summary>
-    This is same as Preloading.Attempt but UKM is associated with the primary
-    triggering page (if exists) and logged when the user navigates away or when
-    the WebContents is being destroyed.
+    This event is logged for each preloading attempt i.e., for preloading
+    features like preresolve, preconnect, prerender, prefetch, and others, as
+    long as there is a triggering page.
 
-    Associated with the Source ID of the WebContents primary page where the
-    preloading attempt is triggered (user navigates from). All the metrics data
-    are similar to Preloading.Attempt and please see the comments for more
-    details.
+    The difference from Preloading.Attempt is that it is associated with the
+    Source ID of the primary triggering page instead of the navigated-to page.
+    This allows you to find all preloading attempts initiated by a given UKM
+    source, in order to, e.g., filter by URL.
+
+    This event is logged when the user navigates onward from that initiating
+    page, or that initiating page's WebContents is being destroyed. This means
+    that in cases where there is no initiating page, e.g. because the preload is
+    initiated via Chrome UI, then the Preloading.Attempt.PreviousPrimaryPage UKM
+    is not recorded; only the Preloading.Attempt UKM is recorded. On the other
+    hand, if a preload attempt is not followed by a navigation, e.g. because the
+    user closed their browser, then only Preloading.Attempt.PreviousPrimaryPage
+    is recorded, and not Preloading.Attempt.
+
+    Note that some UKM sources that record
+    Preloading.Attempt.PreviousPrimaryPage may not appear as normal page loads.
+    For example, the New Tab Page.
 
     Note that this event is sampled based on the PreloadingConfig feature
     configuration (in addition to the normal UKM sampling mechanism). The
