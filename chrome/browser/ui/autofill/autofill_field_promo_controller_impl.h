@@ -44,6 +44,12 @@ class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
 
   void Show(const gfx::RectF& bounds) override;
   void Hide() override;
+  // TODO(crbug.com/374250832): This method relies on
+  // `BrowserUserEducationInterface`, which, according to `CanShowFeaturePromo`
+  // and `MaybeShowFeaturePromo` implementation may return `true` even if no
+  // bubble end up showing. This is supposed to happen rarely, and depending
+  // on this frequency, should be investigated together with the IPH team sooner
+  // or later.
   bool IsMaybeShowing() const override;
   const base::Feature& GetFeaturePromo() const override;
 

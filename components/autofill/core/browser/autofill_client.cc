@@ -159,9 +159,11 @@ void AutofillClient::ShowPlusAddressEmailOverrideNotification(
     const std::string& original_email,
     EmailOverrideUndoCallback email_override_undo_callback) {}
 
-void AutofillClient::ShowAutofillFieldIphForFeature(
+bool AutofillClient::ShowAutofillFieldIphForFeature(
     const FormFieldData&,
-    AutofillClient::IphFeature feature) {}
+    AutofillClient::IphFeature feature) {
+  return false;
+}
 
 void AutofillClient::HideAutofillFieldIph() {}
 

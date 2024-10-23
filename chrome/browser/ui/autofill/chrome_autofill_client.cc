@@ -810,13 +810,13 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
 #endif
 }
 
-void ChromeAutofillClient::ShowAutofillFieldIphForFeature(
+bool ChromeAutofillClient::ShowAutofillFieldIphForFeature(
     const FormFieldData& field,
     IphFeature autofill_feature) {
 #if !BUILDFLAG(IS_ANDROID)
   if (autofill_field_promo_controller_ &&
       autofill_field_promo_controller_->IsMaybeShowing()) {
-    return;
+    return true;
   }
 
   const base::Feature& feature = GetFeature(autofill_feature);
@@ -831,6 +831,9 @@ void ChromeAutofillClient::ShowAutofillFieldIphForFeature(
   }
 
   autofill_field_promo_controller_->Show(field.bounds());
+  return autofill_field_promo_controller_->IsMaybeShowing();
+#else
+  return false;
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

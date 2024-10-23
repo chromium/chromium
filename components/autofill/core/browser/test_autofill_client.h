@@ -301,10 +301,11 @@ class TestAutofillClientTemplate : public T {
 
   SuggestionHidingReason popup_hiding_reason() { return popup_hidden_reason_; }
 
-  void ShowAutofillFieldIphForFeature(
+  bool ShowAutofillFieldIphForFeature(
       const FormFieldData& field,
       AutofillClient::IphFeature feature) override {
     autofill_iph_showing_ = feature;
+    return true;
   }
 
   void HideAutofillFieldIph() override { autofill_iph_showing_ = std::nullopt; }

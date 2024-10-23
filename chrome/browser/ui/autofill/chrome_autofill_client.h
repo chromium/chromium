@@ -181,7 +181,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
-  void ShowAutofillFieldIphForFeature(
+  bool ShowAutofillFieldIphForFeature(
       const FormFieldData& field,
       AutofillClient::IphFeature feature) override;
   void HideAutofillFieldIph() override;
