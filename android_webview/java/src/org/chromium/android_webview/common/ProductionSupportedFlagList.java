@@ -1094,6 +1094,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("CacheStylusSettings", "Cache stylus related settings."),
         Flag.baseFeature(
                 "AsyncFastCheckout", "When enabled, run FastCheckoutTabHelper asynchronously."),
+        Flag.baseFeature("Prerender2FallbackPrefetchSpecRules"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
