@@ -208,11 +208,14 @@
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING" desc="Heading for answer section in history search results." translateable="false">
     Summary
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_LOADING_HEADING" desc="Heading for answer section in history search results when the answer is loading." translateable="false">
+    Generating summary based on your browsing history
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_SOURCE_VISIT_DATE_LABEL" desc="Label for visited date for answer section in history search results." translateable="false">
     Visited <ph name="DATE"><ex>Oct 4, 2024</ex>$1</ph>
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_UNANSWERABLE" desc="Error message for when history embeddings answerer determines a question cannot be answered." translateable="false">
-    Sorry, can't help you with that.
+    Sorry, I can't help you with that.
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_TRY_AGAIN" desc="Error message for when history embeddings answerer fails and the user can try again later." translateable="false">
     Something went wrong. Please try again later.

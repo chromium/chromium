@@ -991,6 +991,10 @@ struct AutocompleteMatch {
   std::u16string iph_link_text;
   GURL iph_link_url;
 
+  // The text to show above the match contents & description for
+  // `HISTORY_EMBEDDINGS_ANSWER` matches.
+  std::u16string history_embeddings_answer_header_text;
+
   // The user feedback on the match.
   FeedbackType feedback_type = FeedbackType::kNone;
 

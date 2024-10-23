@@ -4,10 +4,13 @@
 
 #include "history_embeddings_provider.h"
 
+#include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
@@ -18,39 +21,29 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
-constexpr int kMaxScore = 1000;
+// The max relevance a history embedding match will receive.
+constexpr int kMaxRelevance = 1000;
 
-// TODO(crbug.com/364329824) Use real/mock answer from service.
-AutocompleteMatch CreateMockAnswer(HistoryEmbeddingsProvider* provider) {
-  AutocompleteMatch match(provider, 1 * kMaxScore, /*deletable=*/false,
-                          AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER);
-  match.destination_url = GURL("chrome://history");
-
-  match.description = AutocompleteMatch::SanitizeString(
-      u"The Matenadaran (Armenian: Մատենադարան), officially the Mesrop "
-      u"Mashtots Institute of Ancient Manuscripts,[a] is a museum, "
-      u"repository of manuscripts, and a research institute in Yerevan, "
-      u"Armenia. It is the world's largest repository of Armenian "
-      u"manuscripts.[5]\n"
-      "\n"
-      "It was established in 1959 on the basis of the nationalized "
-      "collection of the Armenian Church, formerly held at Etchmiadzin. Its "
-      "collection has gradually expanded since its establishment, mostly "
-      "from individual donations. One of the most prominent landmarks of "
-      "Yerevan, it is named after Mesrop Mashtots, the inventor of the "
-      "Armenian alphabet, whose statue stands in front of the building. Its "
-      "collection is included in the register of the UNESCO Memory of the "
-      "World program.");
-  match.description_class = {{0, ACMatchClassification::NONE}};
-
-  match.contents = u"wikipedia.org/wiki/  •  Visited September 30,2024";
-  match.contents_class = {{0, ACMatchClassification::DIM}};
-
-  return match;
+// Whether the received `status` is expected to be the last or there should be
+// more updates..
+bool IsAnswerDone(history_embeddings::ComputeAnswerStatus status) {
+  switch (status) {
+    case history_embeddings::ComputeAnswerStatus::kUnspecified:
+    case history_embeddings::ComputeAnswerStatus::kLoading:
+      return false;
+    case history_embeddings::ComputeAnswerStatus::kSuccess:
+    case history_embeddings::ComputeAnswerStatus::kUnanswerable:
+    case history_embeddings::ComputeAnswerStatus::kModelUnavailable:
+    case history_embeddings::ComputeAnswerStatus::kExecutionFailure:
+    case history_embeddings::ComputeAnswerStatus::kExecutionCancelled:
+    case history_embeddings::ComputeAnswerStatus::kFiltered:
+      return true;
+  }
 }
-
 }  // namespace
 
 HistoryEmbeddingsProvider::HistoryEmbeddingsProvider(
@@ -67,6 +60,9 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   done_ = true;
   matches_.clear();
 
+  if (input.omit_asynchronous_matches())
+    return;
+
   if (!client()->IsHistoryEmbeddingsEnabled()) {
     return;
   }
@@ -76,6 +72,7 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   const auto [adjusted_input, starter_pack_engine] =
       KeywordProvider::AdjustInputForStarterPackEngines(
           input, client()->GetTemplateURLService());
+  input_ = adjusted_input;
   starter_pack_engine_ = starter_pack_engine;
 
   int num_terms =
@@ -86,7 +83,6 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   history_embeddings::HistoryEmbeddingsService* service =
       client()->GetHistoryEmbeddingsService();
   CHECK(service);
-  last_search_input_ = adjusted_input.text();
   done_ = false;
   client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
       metrics::OmniboxEventProto_Feature_HISTORY_EMBEDDINGS_FEATURE);
@@ -94,12 +90,7 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
       nullptr, base::UTF16ToUTF8(adjusted_input.text()), {},
       provider_max_matches_,
       base::BindRepeating(&HistoryEmbeddingsProvider::OnReceivedSearchResult,
-                          weak_factory_.GetWeakPtr(), adjusted_input.text()));
-
-  if (history_embeddings::kAnswersInOmniboxScoped.Get()) {
-    matches_.push_back(CreateMockAnswer(this));
-    NotifyListeners(true);
-  }
+                          weak_factory_.GetWeakPtr()));
 }
 
 void HistoryEmbeddingsProvider::Stop(bool clear_cached_results,
@@ -110,44 +101,145 @@ void HistoryEmbeddingsProvider::Stop(bool clear_cached_results,
 }
 
 void HistoryEmbeddingsProvider::OnReceivedSearchResult(
-    std::u16string input_text,
-    history_embeddings::SearchResult result) {
+    history_embeddings::SearchResult search_result) {
   // Check `done_` in case the stop timer fired or the user closed the omnibox
   // before `Search()` completed. Check `last_search_input_` in case this is the
   // result for an earlier `Search()` request; there's usually 2 requests
   // ongoing as the user types.
-  if (done_ || last_search_input_ != input_text)
+  if (done_ || search_result.query != base::UTF16ToUTF8(input_.text()))
+    return;
+
+  // `OnReceivedSearchResult()` can be called multiple times per `Search()`
+  // request. Clear `matches_``to avoid aggregating duplicates.
+  matches_.clear();
+
+  if (search_result.scored_url_rows.empty())
     return;
 
   for (const history_embeddings::ScoredUrlRow& scored_url_row :
-       result.scored_url_rows) {
-    AutocompleteMatch match(this, scored_url_row.scored_url.score * kMaxScore,
-                            client()->AllowDeletingBrowserHistory(),
-                            AutocompleteMatchType::HISTORY_EMBEDDINGS);
-    match.destination_url = scored_url_row.row.url();
-
-    match.description =
-        AutocompleteMatch::SanitizeString(scored_url_row.row.title());
-    match.description_class = ClassifyTermMatches(
-        FindTermMatches(input_text, match.description),
-        match.description.size(), ACMatchClassification::MATCH,
-        ACMatchClassification::NONE);
-
-    match.contents = base::UTF8ToUTF16(scored_url_row.row.url().spec());
-    match.contents_class = ClassifyTermMatches(
-        FindTermMatches(input_text, match.contents), match.contents.size(),
-        ACMatchClassification::MATCH, ACMatchClassification::URL);
-
-    if (starter_pack_engine_) {
-      match.keyword = starter_pack_engine_->keyword();
-      match.transition = ui::PAGE_TRANSITION_KEYWORD;
-    }
-
-    match.RecordAdditionalInfo("passages", scored_url_row.GetBestPassage());
-
-    matches_.push_back(match);
+       search_result.scored_url_rows) {
+    matches_.push_back(CreateMatch(scored_url_row));
   }
 
-  done_ = true;
+  bool answers_enabled = history_embeddings::kAnswersInOmniboxScoped.Get() &&
+                         input_.InKeywordMode();
+  if (answers_enabled) {
+    auto optional_match = CreateAnswerMatch(
+        search_result.answerer_result,
+        search_result.scored_url_rows[search_result.AnswerIndex()],
+        matches_[search_result.AnswerIndex()]);
+    if (optional_match)
+      matches_.push_back(optional_match.value());
+  }
+
+  done_ =
+      !answers_enabled || IsAnswerDone(search_result.answerer_result.status);
   NotifyListeners(!matches_.empty());
+}
+
+AutocompleteMatch HistoryEmbeddingsProvider::CreateMatch(
+    const history_embeddings::ScoredUrlRow& scored_url_row) {
+  AutocompleteMatch match(
+      this, std::min(scored_url_row.scored_url.score, 1.f) * kMaxRelevance,
+      client()->AllowDeletingBrowserHistory(),
+      AutocompleteMatchType::HISTORY_EMBEDDINGS);
+  match.destination_url = scored_url_row.row.url();
+
+  match.description =
+      AutocompleteMatch::SanitizeString(scored_url_row.row.title());
+  match.description_class = ClassifyTermMatches(
+      FindTermMatches(input_.text(), match.description),
+      match.description.size(), ACMatchClassification::MATCH,
+      ACMatchClassification::NONE);
+
+  match.contents = base::UTF8ToUTF16(scored_url_row.row.url().spec());
+  match.contents_class = ClassifyTermMatches(
+      FindTermMatches(input_.text(), match.contents), match.contents.size(),
+      ACMatchClassification::MATCH, ACMatchClassification::URL);
+
+  if (starter_pack_engine_) {
+    match.keyword = starter_pack_engine_->keyword();
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
+  }
+
+  match.RecordAdditionalInfo("passages", scored_url_row.GetBestPassage());
+
+  return match;
+}
+
+std::optional<AutocompleteMatch> HistoryEmbeddingsProvider::CreateAnswerMatch(
+    const history_embeddings::AnswererResult& answerer_result,
+    const history_embeddings::ScoredUrlRow& scored_url_row,
+    const AutocompleteMatch& match) {
+  // If the match is outscored and not shown, then the answer shouldn't show
+  // either.
+  int score = std::max(match.relevance - 1, 1);
+
+  switch (answerer_result.status) {
+    case history_embeddings::ComputeAnswerStatus::kUnspecified:
+      return std::nullopt;
+
+    case history_embeddings::ComputeAnswerStatus::kLoading:
+      return CreateAnswerMatchHelper(
+          score,
+          l10n_util::GetStringUTF16(
+              IDS_HISTORY_EMBEDDINGS_ANSWER_LOADING_HEADING),
+          u"");
+
+    case history_embeddings::ComputeAnswerStatus::kSuccess: {
+      AutocompleteMatch answer_match = CreateAnswerMatchHelper(
+          score,
+          l10n_util::GetStringUTF16(IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING),
+          AutocompleteMatch::SanitizeString(
+              base::UTF8ToUTF16(answerer_result.answer.text())));
+      answer_match.destination_url =
+          GURL{"chrome://history/?q=" + answerer_result.query};
+      answer_match.contents = AutocompleteMatch::SanitizeString(
+          base::UTF8ToUTF16(answerer_result.url) + u"  •  " +
+          l10n_util::GetStringFUTF16(
+              IDS_HISTORY_EMBEDDINGS_ANSWER_SOURCE_VISIT_DATE_LABEL,
+              base::TimeFormatShortDate(scored_url_row.row.last_visit())));
+      answer_match.contents_class = {{0, ACMatchClassification::DIM}};
+      return answer_match;
+    }
+
+    case history_embeddings::ComputeAnswerStatus::kUnanswerable:
+    case history_embeddings::ComputeAnswerStatus::kFiltered:
+      return CreateAnswerMatchHelper(
+          score,
+          l10n_util::GetStringUTF16(IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING),
+          l10n_util::GetStringUTF16(
+              IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_UNANSWERABLE));
+
+    case history_embeddings::ComputeAnswerStatus::kModelUnavailable:
+    case history_embeddings::ComputeAnswerStatus::kExecutionFailure:
+      return CreateAnswerMatchHelper(
+          score,
+          l10n_util::GetStringUTF16(IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING),
+          l10n_util::GetStringUTF16(
+              IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_TRY_AGAIN));
+
+    case history_embeddings::ComputeAnswerStatus::kExecutionCancelled:
+      return std::nullopt;
+  }
+}
+
+AutocompleteMatch HistoryEmbeddingsProvider::CreateAnswerMatchHelper(
+    int score,
+    const std::u16string& history_embeddings_answer_header_text,
+    const std::u16string& description) {
+  AutocompleteMatch match(this, score, /*deletable=*/false,
+                          AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER);
+  match.history_embeddings_answer_header_text =
+      history_embeddings_answer_header_text;
+  match.description = description;
+  if (!description.empty())
+    match.description_class = {{0, ACMatchClassification::NONE}};
+  match.RecordAdditionalInfo("history_embeddings_answer_header_text",
+                             history_embeddings_answer_header_text);
+  if (starter_pack_engine_) {
+    match.keyword = starter_pack_engine_->keyword();
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
+  }
+  return match;
 }
