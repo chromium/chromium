@@ -767,6 +767,11 @@ need to be translated for each locale.-->
           Win
         </message>
       </if>
+      <if expr="is_linux">
+        <message name="IDS_APP_SUPER_KEY" desc="Windows key on Windows keyboards, and Command key on Mac keyboards.">
+          Super
+        </message>
+      </if>
       <if expr="chromeos_ash">
         <message name="IDS_APP_META_KEY" desc="External Meta key (Search key on ChromeOS keyboards, Windows key on Windows keyboards, and Command key on Mac keyboards)">
           Meta
