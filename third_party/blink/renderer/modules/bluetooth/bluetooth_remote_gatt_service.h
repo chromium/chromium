@@ -65,10 +65,10 @@ class BluetoothRemoteGATTService final : public ScriptWrappable {
           Vector<mojom::blink::WebBluetoothRemoteGATTCharacteristicPtr>>
           characteristics);
 
-  void GetCharacteristicsImpl(ScriptPromiseResolverBase*,
-                              ExceptionState&,
-                              mojom::blink::WebBluetoothGATTQueryQuantity,
-                              const String& characteristic_uuid = String());
+  ScriptPromise<IDLSequence<BluetoothRemoteGATTCharacteristic>>
+  GetCharacteristicsImpl(ScriptState*,
+                         ExceptionState&,
+                         const String& characteristic_uuid = String());
 
   mojom::blink::WebBluetoothRemoteGATTServicePtr service_;
   const bool is_primary_;

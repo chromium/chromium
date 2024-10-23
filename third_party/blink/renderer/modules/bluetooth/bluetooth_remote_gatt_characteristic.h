@@ -158,10 +158,10 @@ class BluetoothRemoteGATTCharacteristic final
       mojom::blink::WebBluetoothWriteType,
       ExceptionState&);
 
-  void GetDescriptorsImpl(ScriptPromiseResolverBase*,
-                          ExceptionState&,
-                          mojom::blink::WebBluetoothGATTQueryQuantity,
-                          const String& descriptor_uuid = String());
+  ScriptPromise<IDLSequence<BluetoothRemoteGATTDescriptor>> GetDescriptorsImpl(
+      ScriptState*,
+      ExceptionState&,
+      const String& descriptor_uuid = String());
 
   void GetDescriptorsCallback(
       const String& requested_descriptor_uuid,
