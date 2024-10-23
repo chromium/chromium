@@ -31,8 +31,8 @@ void FencedFrameTask::Activate() {
   embedder_task_->Activate();
 }
 
-const task_manager::Task* FencedFrameTask::GetParentTask() const {
-  return embedder_task_.get();
+base::WeakPtr<task_manager::Task> FencedFrameTask::GetParentTask() const {
+  return embedder_task_;
 }
 
 void FencedFrameTask::UpdateTitle() {

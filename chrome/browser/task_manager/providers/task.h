@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
@@ -135,7 +136,7 @@ class Task {
   // embedded in a page), this returns the Task representing the parent
   // activity.
   bool HasParentTask() const;
-  virtual const Task* GetParentTask() const;
+  virtual base::WeakPtr<Task> GetParentTask() const;
 
   // Getting the Sqlite used memory (in bytes). Not all tasks reports Sqlite
   // memory, in this case a default invalid value of -1 will be returned.
@@ -174,6 +175,8 @@ class Task {
   const gfx::ImageSkia& icon() const { return icon_; }
   const base::ProcessHandle& process_handle() const { return process_handle_; }
   const base::ProcessId& process_id() const { return process_id_; }
+
+  base::WeakPtr<Task> AsWeakPtr();
 
  protected:
   // If |*result_image| is not already set, fetch the image with id
@@ -224,6 +227,8 @@ class Task {
 
   // The PID of the process on which this task is running.
   base::ProcessId process_id_;
+
+  base::WeakPtrFactory<Task> weak_ptr_factory_{this};
 };
 
 }  // namespace task_manager

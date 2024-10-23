@@ -26,7 +26,7 @@ class FencedFrameTask : public RendererTask {
 
   // task_manager::Task:
   void Activate() override;
-  const task_manager::Task* GetParentTask() const override;
+  base::WeakPtr<task_manager::Task> GetParentTask() const override;
   // task_manager::RendererTask:
   void UpdateTitle() override;
   void UpdateFavicon() override {}

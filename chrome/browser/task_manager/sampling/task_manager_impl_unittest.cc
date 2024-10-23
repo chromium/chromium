@@ -45,16 +45,19 @@ class FakeTask : public Task {
 
   int GetChildProcessUniqueID() const override { return 0; }
 
-  const Task* GetParentTask() const override { return parent_; }
+  base::WeakPtr<Task> GetParentTask() const override { return parent_; }
 
   SessionID GetTabId() const override { return tab_id_; }
 
-  void SetParent(Task* parent) { parent_ = parent; }
+  void SetParent(base::WeakPtr<Task> parent) { parent_ = parent; }
+
+  base::WeakPtr<FakeTask> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
  private:
   Type type_;
-  raw_ptr<Task, DanglingUntriaged> parent_;
+  base::WeakPtr<Task> parent_;
   SessionID tab_id_;
+  base::WeakPtrFactory<FakeTask> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -72,15 +75,15 @@ class TaskManagerImplTest : public testing::Test, public TaskManagerObserver {
     observed_task_manager()->RemoveObserver(this);
   }
 
-  FakeTask* AddTask(int pid_offset,
-                    Task::Type type,
-                    const std::string& title,
-                    SessionID tab_id) {
+  base::WeakPtr<FakeTask> AddTask(int pid_offset,
+                                  Task::Type type,
+                                  const std::string& title,
+                                  SessionID tab_id) {
     // Offset based on the current process id, to avoid collisions with the
     // browser process task.
     base::ProcessId process_id = base::GetCurrentProcId() + pid_offset;
     tasks_.emplace_back(new FakeTask(process_id, type, title, tab_id));
-    return tasks_.back().get();
+    return tasks_.back()->AsWeakPtr();
   }
 
   std::string DumpSortedTasks() {
@@ -103,13 +106,16 @@ TEST_F(TaskManagerImplTest, SortingTypes) {
 
   AddTask(100, Task::GPU, "Gpu Process", /*tab_id=*/SessionID::InvalidValue());
 
-  Task* tab1 = AddTask(200, Task::RENDERER, "Tab One", kTabId1);
+  base::WeakPtr<Task> tab1 =
+      AddTask(200, Task::RENDERER, "Tab One", kTabId1)->AsWeakPtr();
   AddTask(400, Task::EXTENSION, "Extension Subframe: Tab One", kTabId1)
       ->SetParent(tab1);
   AddTask(300, Task::RENDERER, "Subframe: Tab One", kTabId1)->SetParent(tab1);
 
-  Task* tab2 = AddTask(200, Task::RENDERER,
-                       "Tab Two: sharing process with Tab One", kTabId2);
+  base::WeakPtr<Task> tab2 =
+      AddTask(200, Task::RENDERER, "Tab Two: sharing process with Tab One",
+              kTabId2)
+          ->AsWeakPtr();
 
   AddTask(301, Task::RENDERER, "Subframe: Tab Two", kTabId2)->SetParent(tab2);
   AddTask(400, Task::EXTENSION, "Extension Subframe: Tab Two", kTabId2)
@@ -171,10 +177,12 @@ TEST_F(TaskManagerImplTest, SortingCycles) {
   // Two tabs, with subframes in the other's process. This induces a cycle in
   // the TaskGroup dependencies, without being a cycle in the Tasks. This can
   // happen in practice.
-  Task* tab1 = AddTask(200, Task::RENDERER, "Tab 1: Process 200", kTabId1);
+  base::WeakPtr<Task> tab1 =
+      AddTask(200, Task::RENDERER, "Tab 1: Process 200", kTabId1)->AsWeakPtr();
   AddTask(300, Task::RENDERER, "Subframe in Tab 1: Process 300", kTabId1)
       ->SetParent(tab1);
-  Task* tab2 = AddTask(300, Task::RENDERER, "Tab 2: Process 300", kTabId2);
+  base::WeakPtr<Task> tab2 =
+      AddTask(300, Task::RENDERER, "Tab 2: Process 300", kTabId2)->AsWeakPtr();
   AddTask(200, Task::RENDERER, "Subframe in Tab 2: Process 200", kTabId2)
       ->SetParent(tab2);
 
@@ -184,31 +192,36 @@ TEST_F(TaskManagerImplTest, SortingCycles) {
   // Two subframes that list each other as a parent (a true cycle). This
   // shouldn't happen in practice, but we want the sorting code to handle it
   // gracefully.
-  FakeTask* cycle1 = AddTask(501, Task::SANDBOX_HELPER, "Cycle 1",
-                             /*tab_id=*/SessionID::InvalidValue());
-  FakeTask* cycle2 =
+  base::WeakPtr<FakeTask> cycle1 =
+      AddTask(501, Task::SANDBOX_HELPER, "Cycle 1",
+              /*tab_id=*/SessionID::InvalidValue());
+  base::WeakPtr<FakeTask> cycle2 =
       AddTask(500, Task::ARC, "Cycle 2", /*tab_id=*/SessionID::InvalidValue());
   cycle1->SetParent(cycle2);
   cycle2->SetParent(cycle1);
 
   // A cycle where both elements are in the same group.
-  FakeTask* cycle3 = AddTask(600, Task::SANDBOX_HELPER, "Cycle 3",
-                             /*tab_id=*/SessionID::InvalidValue());
-  FakeTask* cycle4 =
+  base::WeakPtr<FakeTask> cycle3 =
+      AddTask(600, Task::SANDBOX_HELPER, "Cycle 3",
+              /*tab_id=*/SessionID::InvalidValue());
+  base::WeakPtr<FakeTask> cycle4 =
       AddTask(600, Task::ARC, "Cycle 4", /*tab_id=*/SessionID::InvalidValue());
   cycle3->SetParent(cycle4);
   cycle4->SetParent(cycle3);
 
   // Tasks listing a cycle as their parent.
-  FakeTask* lollipop5 = AddTask(701, Task::EXTENSION, "Child of Cycle 3",
-                                /*tab_id=*/SessionID::InvalidValue());
+  base::WeakPtr<FakeTask> lollipop5 =
+      AddTask(701, Task::EXTENSION, "Child of Cycle 3",
+              /*tab_id=*/SessionID::InvalidValue());
   lollipop5->SetParent(cycle3);
-  FakeTask* lollipop6 = AddTask(700, Task::PLUGIN, "Child of Cycle 4",
-                                /*tab_id=*/SessionID::InvalidValue());
+  base::WeakPtr<FakeTask> lollipop6 =
+      AddTask(700, Task::PLUGIN, "Child of Cycle 4",
+              /*tab_id=*/SessionID::InvalidValue());
   lollipop6->SetParent(cycle4);
 
   // A task listing itself as parent.
-  FakeTask* self_cycle = AddTask(800, Task::RENDERER, "Self Cycle", kTabId3);
+  base::WeakPtr<FakeTask> self_cycle =
+      AddTask(800, Task::RENDERER, "Self Cycle", kTabId3);
   self_cycle->SetParent(self_cycle);
 
   // Add a plugin child to tab1 and tab2.

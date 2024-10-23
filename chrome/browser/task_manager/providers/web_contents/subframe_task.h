@@ -32,7 +32,7 @@ class SubframeTask : public RendererTask {
   void Activate() override;
 
   // task_manager::Task:
-  Task* GetParentTask() const override;
+  base::WeakPtr<Task> GetParentTask() const override;
 
  private:
   std::u16string GetTitle();

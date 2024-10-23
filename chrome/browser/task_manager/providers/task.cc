@@ -149,7 +149,7 @@ bool Task::HasParentTask() const {
   return GetParentTask() != nullptr;
 }
 
-const Task* Task::GetParentTask() const {
+base::WeakPtr<Task> Task::GetParentTask() const {
   return nullptr;
 }
 
@@ -202,6 +202,10 @@ gfx::ImageSkia* Task::FetchIcon(int id, gfx::ImageSkia** result_image) {
       (*result_image)->MakeThreadSafe();
   }
   return *result_image;
+}
+
+base::WeakPtr<Task> Task::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace task_manager

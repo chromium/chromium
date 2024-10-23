@@ -22,14 +22,14 @@ class WebContentsTaskProvider;
 class BackForwardCacheTask : public RendererTask {
  public:
   BackForwardCacheTask(content::RenderFrameHost* render_frame_host,
-                       RendererTask* parent_task,
+                       base::WeakPtr<RendererTask> parent_task,
                        WebContentsTaskProvider* task_provider);
   BackForwardCacheTask(const BackForwardCacheTask&) = delete;
   BackForwardCacheTask& operator=(const BackForwardCacheTask&) = delete;
   ~BackForwardCacheTask() override;
 
   // task_manager::Task:
-  Task* GetParentTask() const override;
+  base::WeakPtr<Task> GetParentTask() const override;
 
   // task_manager::RendererTask:
   void Activate() override;
