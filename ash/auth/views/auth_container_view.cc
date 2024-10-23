@@ -140,13 +140,9 @@ raw_ptr<AuthContainerView> AuthContainerView::TestApi::GetView() {
 
 AuthContainerView::AuthContainerView(AuthFactorSet auth_factors)
     : available_auth_factors_(auth_factors) {
-  CHECK(!auth_factors.empty());
-
-  CHECK(auth_factors.Has(AuthInputType::kPassword) ||
-        auth_factors.Has(AuthInputType::kPin));
   if (auth_factors.Has(AuthInputType::kPassword)) {
     current_input_type_ = AuthInputType::kPassword;
-  } else {
+  } else if (auth_factors.Has(AuthInputType::kPin)) {
     current_input_type_ = AuthInputType::kPin;
   }
 

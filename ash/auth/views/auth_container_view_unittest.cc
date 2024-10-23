@@ -361,7 +361,7 @@ class AuthContainerWithPinTest : public AuthContainerBaseUnitTest {
   void SetUp() override {
     AuthContainerBaseUnitTest::SetUp();
 
-    // At start the the password is visible and the pin is hidden.
+    // At start the password is hidden and the pin is visible.
     CHECK(!test_api_password_->GetView()->GetVisible());
     CHECK(test_api_pin_container_->GetView()->GetVisible());
     CHECK(!test_api_->GetSwitchButton()->GetVisible());
@@ -390,6 +390,45 @@ TEST_F(AuthContainerWithPinTest, PinSubmitTest) {
 }
 
 TEST_F(AuthContainerWithPinTest, LockoutTest) {
+  const std::u16string status_message = u"Too many PIN attempts";
+
+  cryptohome::PinStatus pin_status(base::TimeDelta::Max());
+
+  test_api_->GetView()->SetPinStatus(
+      std::make_unique<cryptohome::PinStatus>(pin_status));
+
+  EXPECT_EQ(test_pin_status_->GetCurrentText(), status_message);
+  EXPECT_TRUE(test_pin_status_->GetView()->GetVisible());
+
+  CHECK(!test_api_password_->GetView()->GetVisible());
+  CHECK(!test_api_pin_container_->GetView()->GetVisible());
+
+  // Now set the status back to an empty string.
+  test_api_->GetView()->SetPinStatus(nullptr);
+  EXPECT_FALSE(test_pin_status_->GetView()->GetVisible());
+}
+
+class AuthContainerWithLockedOutPinTest : public AuthContainerBaseUnitTest {
+ public:
+  AuthContainerWithLockedOutPinTest() : AuthContainerBaseUnitTest({}) {}
+  AuthContainerWithLockedOutPinTest(const AuthContainerWithLockedOutPinTest&) =
+      delete;
+  AuthContainerWithLockedOutPinTest& operator=(
+      const AuthContainerWithLockedOutPinTest&) = delete;
+  ~AuthContainerWithLockedOutPinTest() override = default;
+
+ protected:
+  void SetUp() override {
+    AuthContainerBaseUnitTest::SetUp();
+
+    // At start both the password and the pin are hidden.
+    CHECK(!test_api_password_->GetView()->GetVisible());
+    CHECK(!test_api_pin_container_->GetView()->GetVisible());
+    CHECK(!test_api_->GetSwitchButton()->GetVisible());
+  }
+};
+
+TEST_F(AuthContainerWithLockedOutPinTest, LockoutReopenTest) {
   const std::u16string status_message = u"Too many PIN attempts";
 
   cryptohome::PinStatus pin_status(base::TimeDelta::Max());

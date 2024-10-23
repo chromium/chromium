@@ -313,7 +313,7 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
     }
   }
 
-  if (available_factors_.empty()) {
+  if (available_factors_.empty() && pin_factor == nullptr) {
     LOG(ERROR) << "No password/PIN found for user.";
     StartClose();
     return;
