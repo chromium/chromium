@@ -142,6 +142,10 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
     this.deleteAllEntriesConfirmationShown_ = false;
   }
 
+  private onPredictionImprovementsPrefChanged_() {
+    this.userAnnotationsManager_.predictionImprovementsIphFeatureUsed();
+  }
+
   private getDeleteEntryConfirmationText_(entry?: UserAnnotationsEntry):
       string {
     if (!entry) {

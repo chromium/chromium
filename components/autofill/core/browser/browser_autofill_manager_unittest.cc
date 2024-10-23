@@ -7232,7 +7232,8 @@ TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
   NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
-  ON_CALL(delegate, IsFormAndFieldEligible).WillByDefault(Return(true));
+  ON_CALL(delegate, IsPredictionImprovementsEligible)
+      .WillByDefault(Return(true));
   EXPECT_CALL(delegate, HasDataStored)
       .WillOnce(RunOnceCallback<0>(
           AutofillPredictionImprovementsDelegate::HasData(true)));
@@ -7247,6 +7248,28 @@ TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
       external_delegate()->suggestions(),
       ElementsAre(Field(&Suggestion::type,
                         Eq(SuggestionType::kRetrievePredictionImprovements))));
+}
+
+// Tests that the prediction improvements IPH is shown when the user and form
+// are eligible but the pref is disabled.
+TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsIPH) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
+  ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
+      .WillByDefault(Return(&delegate));
+  ON_CALL(delegate, IsPredictionImprovementsEligible)
+      .WillByDefault(Return(false));
+  ON_CALL(delegate, ShouldDisplayIph).WillByDefault(Return(true));
+
+  EXPECT_CALL(autofill_client_,
+              ShowAutofillFieldIphForFeature(
+                  _, AutofillClient::IphFeature::kPredictionImprovements));
+
+  GetAutofillSuggestions(
+      form, form.fields().front(),
+      AutofillSuggestionTriggerSource::kPredictionImprovements);
 }
 
 // Tests that an Autofill profile is not imported into the address data manager

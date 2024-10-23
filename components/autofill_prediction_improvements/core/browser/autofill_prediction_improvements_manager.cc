@@ -39,6 +39,12 @@ namespace {
 
 constexpr int kNumberFieldsToShowInSuggestionLabel = 2;
 
+bool IsFormAndFieldEligible(const autofill::FormStructure& form,
+                            const autofill::AutofillField& field) {
+  return IsFieldEligibleByTypeCriteria(field) &&
+         IsFormEligibleForFillingByFieldCriteria(form);
+}
+
 // Define `field_types_to_fill` as Autofill address types +
 // `IMPROVED_PREDICTION`.
 // TODO(crbug.com/364808228): Remove `UNKNOWN_TYPE` from `field_types_to_fill`.
@@ -324,11 +330,10 @@ bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
   return cache_->contains(field.global_id());
 }
 
-bool AutofillPredictionImprovementsManager::IsFormAndFieldEligible(
+bool AutofillPredictionImprovementsManager::IsPredictionImprovementsEligible(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
-  return IsFieldEligibleByTypeCriteria(field) &&
-         IsFormEligibleForFillingByFieldCriteria(form) &&
+  return IsFormAndFieldEligible(form, field) &&
          ShouldProvidePredictionImprovements(form.main_frame_origin().GetURL());
 }
 
@@ -531,26 +536,28 @@ void AutofillPredictionImprovementsManager::UserClickedLearnMore() {
   client_->OpenPredictionImprovementsSettings();
 }
 
-bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
-    const GURL& url) const {
-  if (!IsUserEligible()) {
-    return false;
-  }
-  if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
-    return false;
-  }
+bool AutofillPredictionImprovementsManager::
+    IsURLEligibleForPredictionImprovements(const GURL& url) const {
   if (!decider_) {
     return false;
   }
+
   if (kSkipAllowlist.Get()) {
     return true;
   }
+
   optimization_guide::OptimizationGuideDecision decision =
       decider_->CanApplyOptimization(
           url,
           optimization_guide::proto::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST,
           /*optimization_metadata=*/nullptr);
   return decision == optimization_guide::OptimizationGuideDecision::kTrue;
+}
+
+bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
+    const GURL& url) const {
+  return client_->IsAutofillPredictionImprovementsEnabledPref() &&
+         IsUserEligible() && IsURLEligibleForPredictionImprovements(url);
 }
 
 base::flat_map<autofill::FieldGlobalId, std::u16string>
@@ -724,8 +731,15 @@ void AutofillPredictionImprovementsManager::HasDataStored(
 bool AutofillPredictionImprovementsManager::ShouldDisplayIph(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
+  // Iph can be shown if:
+  // 1. The pref is off.
+  // 2. The user can access the feature (for example the experiment flag is on).
+  // 2. The focused form/field can trigger the feature.
+  // 3. The current domain can trigger the feature.
   return !client_->IsAutofillPredictionImprovementsEnabledPref() &&
-         IsFormAndFieldEligible(form, field);
+         IsUserEligible() && IsFormAndFieldEligible(form, field) &&
+         IsURLEligibleForPredictionImprovements(
+             form.main_frame_origin().GetURL());
 }
 
 void AutofillPredictionImprovementsManager::GoToSettings() const {

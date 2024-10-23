@@ -772,6 +772,13 @@ var availableTests = [
       chrome.test.succeed();
     });
   },
+
+  function predictionImprovementsIphFeatureUsed() {
+    chrome.autofillPrivate.predictionImprovementsIphFeatureUsed();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
 ];
 
 /** @const */
@@ -815,6 +822,8 @@ var TESTS_FOR_CONFIG = {
       ['hasUserAnnotationsEntries_WithEntries'],
   'isUserEligibleForAutofillImprovements':
       ['isUserEligibleForAutofillImprovements'],
+  'predictionImprovementsIphFeatureUsed':
+      ['predictionImprovementsIphFeatureUsed'],
 };
 
 var testConfig = window.location.search.substring(1);

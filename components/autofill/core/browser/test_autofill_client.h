@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -308,6 +309,12 @@ class TestAutofillClientTemplate : public T {
     return autofill_iph_showing_ == AutofillClient::IphFeature::kManualFallback;
   }
 
+  void NotifyIphFeatureUsed(AutofillClient::IphFeature feature) override {
+    if (notify_iph_feature_used_mock_callback_) {
+      notify_iph_feature_used_mock_callback_->Run(feature);
+    }
+  }
+
   bool IsAutocompleteEnabled() const override { return true; }
 
   bool IsPasswordManagerEnabled() override { return true; }
@@ -469,6 +476,11 @@ class TestAutofillClientTemplate : public T {
     suggestion_ui_session_id_ = session_id;
   }
 
+  void set_notify_iph_feature_used_mock_callback(
+      base::RepeatingCallback<void(AutofillClient::IphFeature)> callback) {
+    notify_iph_feature_used_mock_callback_ = std::move(callback);
+  }
+
   GURL form_origin() { return form_origin_; }
 
   ukm::TestUkmRecorder* GetTestUkmRecorder() { return &test_ukm_recorder_; }
@@ -554,6 +566,9 @@ class TestAutofillClientTemplate : public T {
 
   std::optional<AutofillClient::SuggestionUiSessionId>
       suggestion_ui_session_id_;
+
+  std::optional<base::RepeatingCallback<void(AutofillClient::IphFeature)>>
+      notify_iph_feature_used_mock_callback_;
 
   LogRouter log_router_;
   struct LogToTerminal {

@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
@@ -323,4 +325,20 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveAllUserAnnotations) {
   EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
+                       PredictionImprovementsIphFeatureUsed) {
+  using NotifyIphMockCallback =
+      testing::MockFunction<void(autofill::AutofillClient::IphFeature)>;
+  NotifyIphMockCallback mock_callback;
+  autofill_client()->set_notify_iph_feature_used_mock_callback(
+      base::BindRepeating(&NotifyIphMockCallback::Call,
+                          base::Unretained(&mock_callback)));
+
+  EXPECT_CALL(
+      mock_callback,
+      Call(autofill::AutofillClient::IphFeature::kPredictionImprovements));
+
+  RunAutofillSubtest("predictionImprovementsIphFeatureUsed");
+  EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
+}
 }  // namespace

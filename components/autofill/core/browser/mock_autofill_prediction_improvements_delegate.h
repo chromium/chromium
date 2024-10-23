@@ -36,7 +36,7 @@ class MockAutofillPredictionImprovementsDelegate
               (AutofillPredictionImprovementsDelegate::UserFeedback feedback),
               (override));
   MOCK_METHOD(bool,
-              IsFormAndFieldEligible,
+              IsPredictionImprovementsEligible,
               (const autofill::FormStructure& form,
                const autofill::AutofillField& field),
               (const override));

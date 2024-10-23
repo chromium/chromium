@@ -491,6 +491,28 @@ class AutofillPrivateDeleteAllUserAnnotationsEntriesFunction
   void OnAllEntriesDeleted();
 };
 
+class AutofillPrivatePredictionImprovementsIphFeatureUsedFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivatePredictionImprovementsIphFeatureUsedFunction() = default;
+  AutofillPrivatePredictionImprovementsIphFeatureUsedFunction(
+      const AutofillPrivatePredictionImprovementsIphFeatureUsedFunction&) =
+      delete;
+  AutofillPrivatePredictionImprovementsIphFeatureUsedFunction& operator=(
+      const AutofillPrivatePredictionImprovementsIphFeatureUsedFunction&) =
+      delete;
+  DECLARE_EXTENSION_FUNCTION(
+      "autofillPrivate.predictionImprovementsIphFeatureUsed",
+      AUTOFILLPRIVATE_PREDICTIONIMPROVEMENTSIPHFFEATUREUSED)
+
+ protected:
+  ~AutofillPrivatePredictionImprovementsIphFeatureUsedFunction() override =
+      default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_
