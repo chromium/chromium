@@ -189,6 +189,9 @@ export class ClientDelegateFactory {
         );
         return !result.error;
       },
+      setFloatMode: async (isFloatMode: boolean) => {
+        return (await pageHandler.setFloatMode(isFloatMode)).success;
+      },
     };
   }
 

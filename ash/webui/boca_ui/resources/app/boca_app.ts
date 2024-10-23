@@ -174,6 +174,10 @@ export declare interface ClientApiDelegate {
    * Update caption config
    */
   updateCaptionConfig(captionConfig: CaptionConfig): Promise<boolean>;
+  /**
+   * Set float mode
+   */
+  setFloatMode(isFloatMode: boolean): Promise<boolean>;
 }
 
 /**

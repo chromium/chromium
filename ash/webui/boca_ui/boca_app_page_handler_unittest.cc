@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/test/ash_test_base.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
@@ -25,6 +26,7 @@
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -36,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/window.h"
 #include "ui/base/resource/resource_bundle.h"
 
 using ::testing::_;
@@ -1372,6 +1375,44 @@ TEST_F(BocaAppPageHandlerTest, OnSessionRosterUpdatedSucceed) {
   boca_app_handler()->OnSessionRosterUpdated("any", {});
   auto result = future.Take();
   ASSERT_TRUE(result->is_config());
+}
+
+class BocaAppPageHandlerFloatModeTest : public AshTestBase {
+ public:
+  BocaAppPageHandlerFloatModeTest() = default;
+  void SetUp() override {
+    ui::ResourceBundle::CleanupSharedInstance();
+    AshTestSuite::LoadTestResources();
+    AshTestBase::SetUp();
+  }
+};
+
+TEST_F(BocaAppPageHandlerFloatModeTest, SetFloatModeTest) {
+  UpdateDisplay("1366x768");
+  std::unique_ptr<aura::Window> window = CreateToplevelTestWindow(
+      gfx::Rect(800, 200, 500, 150), desks_util::GetActiveDeskContainerId());
+
+  base::test::TestFuture<bool> future;
+  BocaAppHandler::SetFloatModeAndBoundsForWindow(true, window.get(),
+                                                 future.GetCallback());
+
+  // TODO(crbug.com/374881187)We don't have a way to verify float state in unit
+  // test, verify bounds for now. Move to browser test in the future.
+  // WindowState* window_state = WindowState::Get(window.get());
+  // EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_EQ(400, window->bounds().width());
+  EXPECT_EQ(600, window->bounds().height());
+  EXPECT_EQ(958, window->bounds().x());
+  EXPECT_EQ(8, window->bounds().y());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(BocaAppPageHandlerFloatModeTest, SetFloatModeTestWithFalse) {
+  base::test::TestFuture<bool> future;
+  BocaAppHandler::SetFloatModeAndBoundsForWindow(false, nullptr,
+                                                 future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
 }
 }  // namespace
 }  // namespace ash::boca

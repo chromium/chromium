@@ -161,7 +161,8 @@ interface PageHandler {
   // Update caption config.
   UpdateCaptionConfig(CaptionConfig caption_config)
   => (UpdateSessionError? error);
-
+  // Set app float mode.
+  SetFloatMode(bool isFloatMode)=> (bool success);
 };
 
 // Implemented by renderer process

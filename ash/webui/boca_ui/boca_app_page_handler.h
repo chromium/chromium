@@ -46,6 +46,10 @@ class BocaAppHandler : public mojom::PageHandler,
   BocaAppHandler& operator=(const BocaAppHandler&) = delete;
 
   ~BocaAppHandler() override;
+  // Static
+  static void SetFloatModeAndBoundsForWindow(bool isFloatMode,
+                                             aura::Window* window,
+                                             SetFloatModeCallback callback);
 
   // mojom::PageHandler:
   void GetWindowsTabsList(GetWindowsTabsListCallback callback) override;
@@ -62,6 +66,7 @@ class BocaAppHandler : public mojom::PageHandler,
                           UpdateOnTaskConfigCallback callback) override;
   void UpdateCaptionConfig(mojom::CaptionConfigPtr config,
                            UpdateCaptionConfigCallback callback) override;
+  void SetFloatMode(bool isFloatMode, SetFloatModeCallback callback) override;
 
   void OnStudentActivityUpdated(
       std::vector<mojom::IdentifiedActivityPtr> activities) override;
@@ -124,9 +129,11 @@ class BocaAppHandler : public mojom::PageHandler,
   ActivityInterceptorCallback test_activity_callback_;
   SessionConfigInterceptorCallback test_config_callback_;
   raw_ptr<SessionClientImpl> session_client_impl_;
+  raw_ptr<content::WebUI> web_ui_;
   raw_ptr<BocaUI> boca_ui_;  // Owns |this|.
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
+
 }  // namespace ash::boca
 
 #endif  // ASH_WEBUI_BOCA_UI_BOCA_APP_PAGE_HANDLER_H_

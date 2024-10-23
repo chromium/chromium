@@ -205,6 +205,10 @@ class MockRemoteHandler extends PageHandlerRemote {
     id;
     return Promise.resolve({error: null});
   }
+  override setFloatMode(isFloatMode: boolean): Promise<{success: boolean}> {
+    isFloatMode;
+    return Promise.resolve({success: true});
+  }
 }
 
 suite('ClientDelegateTest', function() {
@@ -505,5 +509,10 @@ suite('ClientDelegateTest', function() {
             ],
             result);
       });
+
+  test('client delegate should translate data for set float', async () => {
+    const result = await clientDelegateImpl.getInstance().setFloatMode(true);
+    assertTrue(result);
+  });
 
 });

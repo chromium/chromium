@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/boca_ui/boca_ui.h"
@@ -15,6 +16,8 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +33,9 @@
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
+#include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
+#include "chromeos/ui/wm/constants.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
 namespace ash::boca {
@@ -133,6 +139,7 @@ BocaAppHandler::BocaAppHandler(
       receiver_(this, std::move(receiver)),
       remote_(std::move(remote)),
       session_client_impl_(session_client_impl),
+      web_ui_(web_ui),
       boca_ui_(boca_ui) {
   auto* user = user_manager::UserManager::Get()->GetActiveUser();
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
@@ -361,6 +368,13 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
   session_client_impl_->UpdateSession(std::move(request));
 }
 
+void BocaAppHandler::SetFloatMode(bool isFloatMode,
+                                  SetFloatModeCallback callback) {
+  SetFloatModeAndBoundsForWindow(
+      isFloatMode, web_ui_->GetWebContents()->GetTopLevelNativeWindow(),
+      std::move(callback));
+}
+
 void BocaAppHandler::OnStudentActivityUpdated(
     std::vector<mojom::IdentifiedActivityPtr> activities) {
   if (!test_activity_callback_.is_null()) {
@@ -426,6 +440,31 @@ void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
   local_caption_config.set_translations_enabled(config->local_caption_enabled);
   BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
       std::move(local_caption_config));
+}
+
+void BocaAppHandler::SetFloatModeAndBoundsForWindow(
+    bool isFloatMode,
+    aura::Window* window,
+    SetFloatModeCallback callback) {
+  if (!isFloatMode) {
+    // We don't unset float mode, do nothing here.
+    std::move(callback).Run(false);
+    return;
+  }
+  auto* window_state = ash::WindowState::Get(window);
+  const ash::WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
+  // Have to explicitly set bound. Default to no animation.
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window);
+  const int padding_dp = chromeos::wm::kFloatedWindowPaddingDp;
+  const ash::SetBoundsWMEvent set_bound_event(
+      gfx::Rect(gfx::Point(work_area.right() - padding_dp - 400,
+                           work_area.y() + padding_dp),
+                gfx::Size(400, 600)));
+  window_state->OnWMEvent(&float_event);
+  window_state->OnWMEvent(&set_bound_event);
+  std::move(callback).Run(true);
 }
 
 void BocaAppHandler::SetActivityInterceptorCallbackForTesting(

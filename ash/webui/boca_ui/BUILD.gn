@@ -38,6 +38,8 @@ static_library("boca_ui") {
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ui/frame",
+    "//chromeos/ui/wm",
     "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",
@@ -91,5 +93,6 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/aura",
   ]
 }
