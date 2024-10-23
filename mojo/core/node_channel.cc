@@ -759,11 +759,17 @@ void NodeChannel::OnChannelMessage(
         if (payload_size <= sizeof(Header) + sizeof(data))
           break;
 
+        Channel::HandlePolicy handle_policy;
+        {
+          base::AutoLock lock(channel_lock_);
+          handle_policy = channel_->handle_policy();
+        }
+
         const void* message_start = reinterpret_cast<const uint8_t*>(payload) +
                                     sizeof(Header) + sizeof(data);
         Channel::MessagePtr message = Channel::Message::Deserialize(
             message_start, payload_size - sizeof(Header) - sizeof(data),
-            Channel::HandlePolicy::kAcceptHandles, from_process);
+            handle_policy, from_process);
         if (!message) {
           DLOG(ERROR) << "Dropping invalid relay message.";
           break;

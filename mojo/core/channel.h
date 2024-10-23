@@ -369,6 +369,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   // Allows the caller to change the Channel's HandlePolicy after construction.
   void set_handle_policy(HandlePolicy policy) { handle_policy_ = policy; }
 
+  // Allows the caller to determine the current HandlePolicy.
+  HandlePolicy handle_policy() const { return handle_policy_; }
+
   // Request that the channel be shut down. This should always be called before
   // releasing the last reference to a Channel to ensure that it's cleaned up
   // on its I/O task runner's thread.
@@ -410,9 +413,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   virtual ~Channel();
 
   Delegate* delegate() const { return delegate_; }
-
-  // Allows the caller to determine the current HandlePolicy.
-  HandlePolicy handle_policy() const { return handle_policy_; }
 
   // Called by the implementation when it wants somewhere to stick data.
   // |*buffer_capacity| may be set by the caller to indicate the desired buffer
