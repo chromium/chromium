@@ -2661,6 +2661,11 @@ void RenderViewContextMenu::AppendPasswordItems() {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManualFallbackAvailable)) {
+    return;
+  }
+
   bool add_separator = false;
 
   // Don't show the item for guest or incognito profiles and also when the
