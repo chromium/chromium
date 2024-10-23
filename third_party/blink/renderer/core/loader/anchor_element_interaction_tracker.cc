@@ -258,9 +258,16 @@ AnchorElementInteractionTracker::AnchorElementInteractionTracker(
               TaskType::kInternalDefault)));
   if (base::FeatureList::IsEnabled(
           blink::features::kPreloadingViewportHeuristics)) {
-    if (auto* anchor_viewport_observer =
-            AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
-                document)) {
+    auto* anchor_metrics_sender =
+        AnchorElementMetricsSender::GetForFrame(GetDocument()->GetFrame());
+    auto* anchor_viewport_observer =
+        AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(document);
+    // The viewport-based heuristic implemented by this class isn't as accurate
+    // when all anchors are not sampled in (i.e. not reported to
+    // `anchor_viewport_observer`), so we don't register for notifications (and
+    // don't run the heuristic) in that case.
+    if (anchor_viewport_observer && anchor_metrics_sender &&
+        anchor_metrics_sender->AllAnchorsSampledIn()) {
       anchor_viewport_observer->AddObserver(this);
     }
   }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstddef>
+#include <optional>
 #include <string_view>
 #include <tuple>
 
@@ -822,6 +823,30 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
   // anchor from being selected.
   EXPECT_EQ(hosts_[0]->event_type_, PointerEventType::kNone);
   EXPECT_FALSE(hosts_[0]->url_received_.has_value());
+}
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       PredictorDisabledIfAllAnchorsNotSampledIn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kNavigationPredictor, {{"random_anchor_sampling_period", "2"}});
+
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 180),
+                       .scroll_delta = -100});
+
+  // A prediction should not have been made because the sampling rate is not
+  // 1 (not all anchors are sampled in).
+  EXPECT_EQ(hosts_[0]->event_type_, PointerEventType::kNone);
+  EXPECT_EQ(hosts_[0]->url_received_, std::nullopt);
 }
 
 }  // namespace

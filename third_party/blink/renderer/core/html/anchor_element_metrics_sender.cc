@@ -212,6 +212,10 @@ void AnchorElementMetricsSender::Trace(Visitor* visitor) const {
   AnchorElementViewportPositionTracker::Observer::Trace(visitor);
 }
 
+bool AnchorElementMetricsSender::AllAnchorsSampledIn() const {
+  return random_anchor_sampling_period_ == 1;
+}
+
 bool AnchorElementMetricsSender::AssociateInterface() {
   if (metrics_host_.is_bound()) {
     return true;

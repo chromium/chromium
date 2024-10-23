@@ -113,6 +113,10 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // calls.
   static constexpr auto kUpdateMetricsTimeGap = base::Milliseconds(200);
 
+  // Returns true if `random_anchor_sampling_period_` is configured to sample in
+  // all anchors.
+  bool AllAnchorsSampledIn() const;
+
  private:
   // Associates |metrics_host_| with the IPC interface if not already, so it can
   // be used to send messages. Returns true if associated, false otherwise.
