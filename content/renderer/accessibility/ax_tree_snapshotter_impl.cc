@@ -4,6 +4,8 @@
 
 #include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 
+#include <set>
+
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
@@ -29,6 +31,7 @@ using blink::WebDocument;
                                 AXTreeSnapshotErrorReason::k##histogram)
 
 using ErrorSet = std::set<ui::AXSerializationErrorFlag>;
+
 namespace content {
 
 namespace {
@@ -59,12 +62,12 @@ enum class AXTreeSnapshotErrorReason {
 
 AXTreeSnapshotterImpl::AXTreeSnapshotterImpl(RenderFrameImpl* render_frame,
                                              ui::AXMode ax_mode)
-    : render_frame_(render_frame) {
+    : content::RenderFrameObserver(render_frame) {
   // Do not generate inline textboxes, which are expensive to create and just
   // present extra noise to snapshot consumers.
   ax_mode.set_mode(ui::AXMode::kInlineTextBoxes, false);
 
-  DCHECK(render_frame->GetWebFrame());
+  CHECK(render_frame->GetWebFrame());
   blink::WebDocument document_ = render_frame->GetWebFrame()->GetDocument();
   context_ = std::make_unique<WebAXContext>(document_, ax_mode);
 }
@@ -77,7 +80,7 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
   base::UmaHistogramBoolean("Accessibility.AXTreeSnapshotter.Snapshot.Request",
                             true);
 
-  if (!render_frame_->GetWebFrame()) {
+  if (!render_frame() || !render_frame()->GetWebFrame()) {
     RECORD_ERROR(NoWebFrame);
     return;
   }
@@ -122,6 +125,10 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
   DCHECK_EQ(0, response->node_id_to_clear);
   DCHECK_EQ(ax::mojom::EventFrom::kNone, response->event_from);
   DCHECK_EQ(ax::mojom::Action::kNone, response->event_from_action);
+}
+
+void AXTreeSnapshotterImpl::OnDestruct() {
+  // Must implement OnDestruct(), but no need to do anything.
 }
 
 bool AXTreeSnapshotterImpl::SerializeTreeWithLimits(
