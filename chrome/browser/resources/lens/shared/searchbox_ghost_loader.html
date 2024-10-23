@@ -21,18 +21,17 @@
   inset-inline-start: 12px;
 }
 
-#loading-match {
-  display: flex;
+.status-container {
+  display: none;
   align-items: center;
   color: var(--color-searchbox-results-foreground);
   height: 48px;
   padding-inline-start: 18px;
   padding-inline-end: 14px;
-  padding-top: 6px;
+  padding-top: 4px;
 }
 
-#hint-text1,
-#hint-text2 {
+.loader-text {
   position: absolute;
   padding-inline-start: 40px;
   padding-inline-end: 14px;
@@ -67,14 +66,44 @@
 
 .spinner {
   --cr-spinner-color: #DBDBDB;
-  --cr-spinner-size: 16px;
+  --cr-spinner-size: 20px;
 }
 
+#loadingState,
+:host([has-stop-timer-triggered]) #errorState  {
+  display: flex;
+}
+
+:host([has-stop-timer-triggered]) #loadingState,
+#errorState {
+  display: none;
+}
+
+#errorState {
+  height: 64px;
+}
+
+#errorIcon {
+  width: 20px;
+  height: 20px;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-image: url('/lens/shared/info.svg');
+  background-color: var(--color-searchbox-search-icon-background);
+}
 </style>
 <div id="content">
-  <div id="loading-match">
+  <div id="loadingState" class="status-container">
     <div class="spinner"></div>
-    <span id="hint-text1">$i18n{searchboxGhostLoaderHintTextPrimary}</span>
-    <span id="hint-text2">$i18n{searchboxGhostLoaderHintTextSecondary}</span>
+    <span id="hint-text1" class="loader-text">
+      $i18n{searchboxGhostLoaderHintTextPrimary}
+    </span>
+    <span id="hint-text2" class="loader-text">
+      $i18n{searchboxGhostLoaderHintTextSecondary}
+    </span>
+  </div>
+  <div id="errorState" class="status-container">
+    <div id="errorIcon"></div>
+    <span class="loader-text">$i18n{searchboxGhostLoaderErrorText}</span>
   </div>
 </div>

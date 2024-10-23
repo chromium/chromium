@@ -18,6 +18,16 @@ class SearchboxGhostLoaderElement extends PolymerElement {
   static get template() {
     return getTemplate();
   }
+
+  static get properties() {
+    return {
+      hasStopTimerTriggered: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+    };
+  }
 }
 
 customElements.define(
