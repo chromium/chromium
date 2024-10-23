@@ -22,6 +22,7 @@ component("smbprovider") {
     "smb_provider_client.cc",
     "smb_provider_client.h",
   ]
+  deps = [ "//ash/constants" ]
 }
 
 proto_library("proto") {

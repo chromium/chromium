@@ -18,6 +18,9 @@
 
 namespace ash::smb_client {
 
+// Constants for stopping `smbproviderd` upstart job.
+inline constexpr char kSmbProviderdUpstartJobName[] = "smbproviderd";
+
 // The callback run to indicate the scan for hosts on the network is complete.
 using HostDiscoveryResponse = base::OnceClosure;
 
