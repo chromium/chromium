@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -45,6 +46,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
 
   std::vector<std::string> class_list;
   std::string containing_group_name;
+  gfx::Vector2dF border_offset;
 };
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {

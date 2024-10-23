@@ -104,10 +104,7 @@ bool ViewTransitionUtils::IsViewTransitionParticipantFromSupplement(
 bool ViewTransitionUtils::
     ShouldDelegateEffectsAndBoxDecorationsToViewTransitionGroup(
         const LayoutObject& object) {
-  const ComputedStyle& style = object.StyleRef();
-  return RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled() &&
-         style.ViewTransitionCaptureMode() ==
-             StyleViewTransitionCaptureMode::kLayered &&
+  return UseLayeredCapture(object.StyleRef()) &&
          IsViewTransitionParticipantFromSupplement(object);
 }
 

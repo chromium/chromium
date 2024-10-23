@@ -25,7 +25,8 @@ bool StructTraits<blink::mojom::ViewTransitionElementDataView,
           &out->captured_rect_in_layout_space) ||
       !data.ReadCapturedCssProperties(&out->captured_css_properties) ||
       !data.ReadClassList(&out->class_list) ||
-      !data.ReadContainingGroupName(&out->containing_group_name)) {
+      !data.ReadContainingGroupName(&out->containing_group_name) ||
+      !data.ReadBorderOffset(&out->border_offset)) {
     return false;
   }
 

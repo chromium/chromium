@@ -53,6 +53,9 @@ struct ViewTransitionElement {
   // The old containing group name is used for nested exit animations.
   // See https://github.com/w3c/csswg-drafts/pull/10629
   string containing_group_name;
+
+  // The border top/left width. This is required in order to adjust the transform for nested groups.
+  gfx.mojom.Vector2dF border_offset;
 };
 
 // This represents a document state necessary to initiate a view transition for

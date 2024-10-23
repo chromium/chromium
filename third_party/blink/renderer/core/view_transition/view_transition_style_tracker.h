@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -64,7 +65,8 @@ class ViewTransitionStyleTracker
     bool operator==(const ContainerProperties& other) const {
       return border_box_rect_in_css_space ==
                  other.border_box_rect_in_css_space &&
-             snapshot_matrix == other.snapshot_matrix;
+             snapshot_matrix == other.snapshot_matrix &&
+             border_offset == other.border_offset;
     }
     bool operator!=(const ContainerProperties& other) const {
       return !(*this == other);
@@ -75,6 +77,10 @@ class ViewTransitionStyleTracker
     // Transforms a point from local space into the snapshot viewport. For
     // details of the snapshot viewport, see README.md.
     gfx::Transform snapshot_matrix;
+
+    // This is needed to correctly position nested groups, to ensure the border
+    // is not computed twice when determining their relative transform.
+    gfx::Vector2dF border_offset;
   };
 
   explicit ViewTransitionStyleTracker(
@@ -297,6 +303,10 @@ class ViewTransitionStyleTracker
     Vector<AtomicString> class_list;
 
     AtomicString containing_group_name;
+
+    // Whether effects and box decorations are captured as style or as part of
+    // the snapshot. See https://github.com/w3c/csswg-drafts/issues/10585
+    bool use_layered_capture;
   };
 
   // In physical pixels. Returns the snapshot root rect, relative to the

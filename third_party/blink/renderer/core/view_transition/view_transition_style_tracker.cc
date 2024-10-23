@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -63,6 +64,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 namespace {
@@ -1433,7 +1435,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       layout_view_size_in_css_space.Scale(1 / device_pixel_ratio_);
       container_properties = ContainerProperties{
           PhysicalRect(PhysicalOffset(), layout_view_size_in_css_space),
-          gfx::Transform()};
+          gfx::Transform(), gfx::Vector2dF()};
       visual_overflow_rect_in_layout_space.size = layout_view_size;
     } else {
       ComputeLiveElementGeometry(
@@ -1459,9 +1461,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       capture_property(id);
     }
 
-    if (RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled() &&
-        layout_object->StyleRef().ViewTransitionCaptureMode() ==
-            StyleViewTransitionCaptureMode::kLayered) {
+    if (ViewTransitionUtils::UseLayeredCapture(layout_object->StyleRef())) {
       for (CSSPropertyID id : kLayeredCaptureProperties) {
         capture_property(id);
       }
@@ -1621,8 +1621,12 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   snapshot_matrix_in_css_space = ConvertFromTopLeftToCenter(
       snapshot_matrix_in_css_space, border_box_size_in_css_space);
 
+  gfx::Vector2dF border_offset;
   if (auto* box = DynamicTo<LayoutBoxModelObject>(layout_object)) {
     visual_overflow_rect_in_layout_space = ComputeVisualOverflowRect(*box);
+    if (ViewTransitionUtils::UseLayeredCapture(layout_object.StyleRef())) {
+      border_offset = gfx::Vector2dF(box->BorderOutsets().Offset());
+    }
   }
 
   // This is intentionally computed in layout space to include scaling from
@@ -1633,8 +1637,10 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
       snapshot_matrix_in_layout_space, *snapshot_root_layout_size_at_capture_);
 
   container_properties = ContainerProperties{
-      PhysicalRect(offset_in_css_space, border_box_size_in_css_space),
-      snapshot_matrix_in_css_space};
+      .border_box_rect_in_css_space =
+          PhysicalRect(offset_in_css_space, border_box_size_in_css_space),
+      .snapshot_matrix = snapshot_matrix_in_css_space,
+      .border_offset = border_offset};
 }
 
 bool ViewTransitionStyleTracker::HasActiveAnimations() const {
@@ -2037,10 +2043,17 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
           containing_group_data->cached_container_properties.snapshot_matrix
               .InverseOrIdentity();
 
+      old_parent_inverse_transform.Translate(
+          -containing_group_data->cached_container_properties.border_offset);
+
       if (!containing_group_data->container_properties.empty()) {
+        const auto& new_container_properties =
+            containing_group_data->container_properties.back();
         new_parent_inverse_transform =
-            containing_group_data->container_properties.back()
-                .snapshot_matrix.InverseOrIdentity();
+
+            new_container_properties.snapshot_matrix.InverseOrIdentity();
+        new_parent_inverse_transform.Translate(
+            -new_container_properties.border_offset);
       }
     }
 
@@ -2199,9 +2212,7 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     // coordinate space.
     auto rect = box.EnclosingLayer()
                     ->LocalBoundingBoxIncludingSelfPaintingDescendants();
-    if (!RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled() &&
-        box.StyleRef().ViewTransitionCaptureMode() ==
-            StyleViewTransitionCaptureMode::kLayered) {
+    if (!ViewTransitionUtils::UseLayeredCapture(box.StyleRef())) {
       rect = box.ApplyFiltersToRect(rect);
     }
 
@@ -2221,8 +2232,7 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
       box.StyleRef().UsedVisibility() == EVisibility::kVisible ||
       !box.VisualRectRespectsVisibility();
   const bool layered_effects_contribute_to_visual_overflow =
-      ancestor ||
-      !RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled();
+      ancestor || !ViewTransitionUtils::UseLayeredCapture(box.StyleRef());
   PhysicalRect result;
 
   if (layered_effects_contribute_to_visual_overflow) {
