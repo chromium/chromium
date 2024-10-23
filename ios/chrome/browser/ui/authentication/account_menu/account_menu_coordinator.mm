@@ -213,6 +213,7 @@
       initWithBaseViewController:_navigationController
                          browser:self.browser
        closeSettingsOnAddAccount:NO];
+  _manageAccountsCoordinator.showAddAccountButton = NO;
   _manageAccountsCoordinator.signoutDismissalByParentCoordinator = YES;
   [_manageAccountsCoordinator start];
 }

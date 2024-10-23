@@ -46,6 +46,9 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 
   // If YES, offers the sign-out button on the UI.
   BOOL _offerSignout;
+
+  // If YES, offers the add-account button on the UI.
+  BOOL _offerAddAccount;
 }
 
 @end
@@ -54,10 +57,12 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 
 @synthesize modelIdentityDataSource;
 
-- (instancetype)initWithOfferSignout:(BOOL)offerSignout {
+- (instancetype)initWithOfferSignout:(BOOL)offerSignout
+                     offerAddAccount:(BOOL)offerAddAccount {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _offerSignout = offerSignout;
+    _offerAddAccount = offerAddAccount;
   }
 
   return self;
@@ -111,9 +116,11 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
     [mutableIdentityMap setObject:accountItem forKey:identityViewItem.gaiaID];
   }
 
-  TableViewItem* addAccountItem = [self addAccountItem];
-  [model addSectionWithIdentifier:nextSection];
-  [model addItem:addAccountItem toSectionWithIdentifier:nextSection++];
+  if (_offerAddAccount) {
+    TableViewItem* addAccountItem = [self addAccountItem];
+    [model addSectionWithIdentifier:nextSection];
+    [model addItem:addAccountItem toSectionWithIdentifier:nextSection++];
+  }
 
   if (_offerSignout) {
     TableViewItem* signOutItem = [self signOutItem];

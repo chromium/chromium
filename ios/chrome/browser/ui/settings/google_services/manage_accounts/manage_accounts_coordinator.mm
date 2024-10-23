@@ -82,6 +82,7 @@ using signin_metrics::PromoAction;
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
+    _showAddAccountButton = YES;
   }
   return self;
 }
@@ -91,12 +92,8 @@ using signin_metrics::PromoAction;
                                          browser:(Browser*)browser
                        closeSettingsOnAddAccount:
                            (BOOL)closeSettingsOnAddAccount {
-  DCHECK(browser);
-  DCHECK(!browser->GetProfile()->IsOffTheRecord());
-
-  if ((self = [super initWithBaseViewController:navigationController
-                                        browser:browser])) {
-    _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
+  if ((self = [self initWithBaseViewController:navigationController
+                                       browser:browser])) {
     _baseNavigationController = navigationController;
   }
   return self;
@@ -117,7 +114,8 @@ using signin_metrics::PromoAction;
       !syncService->HasSyncConsent()) {
     ManageAccountsTableViewController* viewController =
         [[ManageAccountsTableViewController alloc]
-            initWithOfferSignout:self.showSignoutButton];
+            initWithOfferSignout:self.showSignoutButton
+                 offerAddAccount:self.showAddAccountButton];
     _viewController = viewController;
     _mediator.consumer = viewController;
     _mediator.delegate = self;
