@@ -317,6 +317,10 @@ public class StripLayoutHelper
                         @Nullable Token oldTabGroupId,
                         @DidRemoveTabGroupReason int removalReason) {
                     releaseResourcesForGroupTitle(oldRootId);
+                    if (mGroupIdToHideSupplier.get() == oldRootId) {
+                        // Clear the hidden group ID if the group has been removed from the model.
+                        mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
+                    }
 
                     // dismiss the iph text bubble when the synced tab group is unsynced.
                     if (oldRootId == mLastSyncedGroupId) {
@@ -2430,20 +2434,7 @@ public class StripLayoutHelper
                     rootId,
                     /* draggingLastTabOffStrip= */ false,
                     /* tabClosing= */ true,
-                    () -> {
-                        // Remove the tab from the group before animating the closure, so the group
-                        // title does not unexpectedly reappear. This is because the tab closure
-                        // animation doesn't actually remove the tab from the model (and therefore
-                        // delete the tab group), until after the animation finishes.
-                        mTabGroupModelFilter.moveTabOutOfGroupInDirection(
-                                tab.getTabId(), /* trailing= */ true);
-
-                        // Clear the hidden group ID now. This will prevent a rebuild from occurring
-                        // right after we kick off the closure, clobbering the close animation.
-                        mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
-
-                        handleCloseTab(tab);
-                    });
+                    () -> handleCloseTab(tab));
         } else {
             handleCloseTab(tab);
         }
