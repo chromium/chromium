@@ -178,6 +178,9 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN)
           switches::kEnableBoundSessionCredentials,
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+          features::kEnableCertManagementUIV2Write,
+#endif
           blink::features::kBrowsingTopics,
           blink::features::kEnableBuiltInAIAPI,
           net::features::kTopLevelTpcdOriginTrial,
