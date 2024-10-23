@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -592,7 +591,6 @@ FieldType GetActualFieldType(const FieldTypeSet& possible_types,
   if (collapsed_field_types.size() == 1)
     actual_type = *collapsed_field_types.begin();
 
-  DVLOG(2) << "Inferred Type: " << FieldTypeToStringView(actual_type);
   return actual_type;
 }
 
@@ -631,7 +629,6 @@ void LogOnlyFillWhenFocusedRationalizationQuality(
   if (actual_type == UNKNOWN_TYPE) {
     // Only log aggregate true negative; do not log type specific metrics
     // for UNKNOWN/EMPTY.
-    DVLOG(2) << "TRUE NEGATIVE";
     base::UmaHistogramSparse(
         aggregate_histogram,
         (is_empty ? AutofillMetrics::TRUE_NEGATIVE_EMPTY
@@ -651,7 +648,6 @@ void LogOnlyFillWhenFocusedRationalizationQuality(
   // already in previous fields, this means autofill could have filled it
   // automatically if there has been no rationalization.
   if (predicted_type == actual_type) {
-    DVLOG(2) << "TRUE POSITIVE";
     base::UmaHistogramSparse(aggregate_histogram,
                              AutofillMetrics::TRUE_POSITIVE);
     base::UmaHistogramSparse(type_specific_histogram,
@@ -667,7 +663,6 @@ void LogOnlyFillWhenFocusedRationalizationQuality(
     return;
   }
 
-  DVLOG(2) << "MISMATCH";
   // Here the prediction is wrong, but user has to provide some value still.
   // This should be a false negative.
   base::UmaHistogramSparse(aggregate_histogram,
@@ -703,7 +698,6 @@ void LogPredictionQualityMetricsForCommonFields(
     if (actual_type == UNKNOWN_TYPE) {
       // Only log aggregate true negative; do not log type specific metrics
       // for UNKNOWN/EMPTY.
-      DVLOG(2) << "TRUE NEGATIVE";
       base::UmaHistogramSparse(
           aggregate_histogram,
           (is_empty ? AutofillMetrics::TRUE_NEGATIVE_EMPTY
@@ -712,7 +706,6 @@ void LogPredictionQualityMetricsForCommonFields(
       return;
     }
 
-    DVLOG(2) << "TRUE POSITIVE";
     // Log both aggregate and type specific true positive if we correctly
     // predict that type with which the field was filled.
     base::UmaHistogramSparse(aggregate_histogram,
@@ -728,7 +721,6 @@ void LogPredictionQualityMetricsForCommonFields(
   // Further specialize the type of false positive by whether the field was
   // empty or contained an unknown value.
   if (actual_type == UNKNOWN_TYPE) {
-    DVLOG(2) << "FALSE POSITIVE";
     auto metric =
         (is_empty ? AutofillMetrics::FALSE_POSITIVE_EMPTY
                   : (is_ambiguous ? AutofillMetrics::FALSE_POSITIVE_AMBIGUOUS
@@ -744,7 +736,6 @@ void LogPredictionQualityMetricsForCommonFields(
   // If predicted type is UNKNOWN_TYPE then the prediction is a false negative
   // unknown.
   if (predicted_type == UNKNOWN_TYPE) {
-    DVLOG(2) << "FALSE NEGATIVE";
     base::UmaHistogramSparse(aggregate_histogram,
                              AutofillMetrics::FALSE_NEGATIVE_UNKNOWN);
     base::UmaHistogramSparse(
@@ -753,8 +744,6 @@ void LogPredictionQualityMetricsForCommonFields(
             actual_type, AutofillMetrics::FALSE_NEGATIVE_UNKNOWN));
     return;
   }
-
-  DVLOG(2) << "MISMATCH";
 
   // Note: At this point predicted_type != actual type, actual_type != UNKNOWN,
   //       predicted_type != UNKNOWN.
@@ -802,9 +791,6 @@ void LogPredictionQualityMetrics(
 
   // Get the best type classification we can for the field.
   FieldType actual_type = GetActualFieldType(possible_types, predicted_type);
-
-  DVLOG(2) << "Predicted: " << FieldTypeToStringView(predicted_type) << "; "
-           << "Actual: " << FieldTypeToStringView(actual_type);
 
   DCHECK_LE(predicted_type, UINT16_MAX);
   DCHECK_LE(actual_type, UINT16_MAX);
