@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -386,7 +387,9 @@ class MagicStackRankingModelTest : public PlatformTest {
                       _priceTrackingPromoMediator,
                     ]
                         tipsManager:TipsManagerIOSFactory::GetForProfile(
-                                        browser_->GetProfile())];
+                                        browser_->GetProfile())
+                 templateURLService:ios::TemplateURLServiceFactory::
+                                        GetForProfile(browser_->GetProfile())];
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:GetLocalState()];
