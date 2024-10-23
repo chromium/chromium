@@ -48,7 +48,7 @@ void GpuTaskSchedulerHelper::ScheduleGpuTask(
     command_buffer_helper_->Flush();
 
   task_sequence_->ScheduleTask(std::move(callback), std::move(sync_tokens),
-                               std::move(report_callback));
+                               SyncToken(), std::move(report_callback));
 }
 
 void GpuTaskSchedulerHelper::ScheduleOrRetainGpuTask(
@@ -56,7 +56,8 @@ void GpuTaskSchedulerHelper::ScheduleOrRetainGpuTask(
     std::vector<SyncToken> sync_tokens) {
   DCHECK(!using_command_buffer_);
   DCHECK(!command_buffer_helper_);
-  task_sequence_->ScheduleOrRetainTask(std::move(task), sync_tokens);
+  task_sequence_->ScheduleOrRetainTask(std::move(task), sync_tokens,
+                                       SyncToken());
 }
 
 SequenceId GpuTaskSchedulerHelper::GetSequenceId() {

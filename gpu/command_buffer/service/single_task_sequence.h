@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
+#include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace base {
@@ -37,9 +38,9 @@ class GPU_GLES2_EXPORT SingleTaskSequence {
   using ReportingCallback =
       base::OnceCallback<void(base::TimeTicks task_ready)>;
 
-  // Schedule a task with provided sync token dependencies. The dependencies
-  // are hints for sync token waits within the task, and can be ignored by the
-  // implementation.
+  // Schedule a task with provided sync token dependencies and release. The
+  // dependencies are hints for sync token waits within the task, and can be
+  // ignored by the implementation.
   // For scheduling from viz thread, due to limitations in Android WebView,
   // ScheduleTask is only available to be called inside initialization,
   // teardown, and DrawAndSwap.
@@ -47,22 +48,29 @@ class GPU_GLES2_EXPORT SingleTaskSequence {
   virtual void ScheduleTask(
       base::OnceClosure task,
       std::vector<SyncToken> sync_token_fences,
+      const SyncToken& release,
       ReportingCallback report_callback = ReportingCallback()) = 0;
 
   // If |ScheduleGpuTask| is available, then this is equivalent to
-  // ScheduleGpuTask. Otherwise, the |task| and |sync_tokens| are retained
-  // and run when |ScheduleGpuTask| becomes available. Either case, tasks in
-  // |ScheduleTask| and |ScheduleOrRetainTask| are sequenced by the call order;
-  // calling this instead of |ScheduleTask| can only delay but not reorder
-  // tasks.
+  // ScheduleGpuTask. Otherwise, the |task|, |sync_token_fences| and |release|
+  // are retained and run when |ScheduleGpuTask| becomes available. Either case,
+  // tasks in |ScheduleTask| and |ScheduleOrRetainTask| are sequenced by the
+  // call order; calling this instead of |ScheduleTask| can only delay but not
+  // reorder tasks.
   // |report_callback| will be called on the same thread and before |task| runs.
   virtual void ScheduleOrRetainTask(
       base::OnceClosure task,
       std::vector<SyncToken> sync_token_fences,
+      const SyncToken& release,
       ReportingCallback report_callback = ReportingCallback()) = 0;
 
   // Continue running the current task after yielding execution.
   virtual void ContinueTask(base::OnceClosure task) = 0;
+
+  // Creates a SyncPointClientState associated with the sequence.
+  [[nodiscard]] virtual ScopedSyncPointClientState CreateSyncPointClientState(
+      CommandBufferNamespace namespace_id,
+      CommandBufferId command_buffer_id) = 0;
 };
 }  // namespace gpu
 

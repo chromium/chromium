@@ -100,7 +100,7 @@ SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
         base::BindOnce(&SharedImageInterfaceInProcess::SetUpOnGpu,
                        base::Unretained(this), std::move(params)),
 
-        {});
+        /*sync_token_fences=*/{}, SyncToken());
   } else {
     CHECK_EQ(owner_thread_, OwnerThread::kGpu);
     SetUpOnGpu(std::move(params));
@@ -116,7 +116,7 @@ SharedImageInterfaceInProcess::~SharedImageInterfaceInProcess() {
     task_sequence_->ScheduleTask(
         base::BindOnce(&SharedImageInterfaceInProcess::DestroyOnGpu,
                        base::Unretained(this), &completion),
-        {});
+        /*sync_token_fences=*/{}, SyncToken());
   } else {
     CHECK_EQ(owner_thread_, OwnerThread::kGpu);
     DestroyOnGpu(&completion);
@@ -137,7 +137,7 @@ SharedImageInterfaceInProcess::GetCapabilities() {
         base::BindOnce(&SharedImageInterfaceInProcess::GetCapabilitiesOnGpu,
                        base::Unretained(this), &completion,
                        shared_image_capabilities_.get()),
-        {});
+        /*sync_token_fences=*/{}, SyncToken());
     completion.Wait();
   }
   return *shared_image_capabilities_;
@@ -415,7 +415,7 @@ SharedImageInterfaceInProcess::GetGpuMemoryBufferHandleInfo(
                          GetGpuMemoryBufferHandleInfoOnGpuThread,
                      base::Unretained(this), mailbox, &handle, &format, &size,
                      &buffer_usage, &completion),
-      {});
+      /*sync_token_fences=*/{}, SyncToken());
   completion.Wait();
   return GpuMemoryBufferHandleInfo(std::move(handle), format, size,
                                    buffer_usage);
@@ -739,7 +739,8 @@ scoped_refptr<gfx::NativePixmap> SharedImageInterfaceInProcess::GetNativePixmap(
 void SharedImageInterfaceInProcess::ScheduleGpuTask(
     base::OnceClosure task,
     std::vector<SyncToken> sync_token_fences) {
-  task_sequence_->ScheduleTask(std::move(task), std::move(sync_token_fences));
+  task_sequence_->ScheduleTask(std::move(task), std::move(sync_token_fences),
+                               SyncToken());
 }
 
 scoped_refptr<ClientSharedImage>

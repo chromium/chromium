@@ -205,7 +205,8 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
   task_sequence_->ScheduleTask(
-      WrapTaskWithResult(std::move(init_task), &result, &completion), {});
+      WrapTaskWithResult(std::move(init_task), &result, &completion),
+      /*sync_token_fences=*/{}, SyncToken());
   completion.Wait();
 
   if (result == gpu::ContextResult::kSuccess) {
@@ -484,7 +485,8 @@ void InProcessCommandBuffer::Destroy() {
   base::OnceCallback<bool(void)> destroy_task = base::BindOnce(
       &InProcessCommandBuffer::DestroyOnGpuThread, base::Unretained(this));
   task_sequence_->ScheduleTask(
-      WrapTaskWithResult(std::move(destroy_task), &result, &completion), {});
+      WrapTaskWithResult(std::move(destroy_task), &result, &completion),
+      /*sync_token_fences=*/{}, SyncToken());
 
   completion.Wait();
   task_sequence_ = nullptr;
@@ -567,7 +569,7 @@ void InProcessCommandBuffer::ScheduleGpuTask(
       &InProcessCommandBuffer::RunTaskOnGpuThread,
       gpu_thread_weak_ptr_factory_.GetWeakPtr(), std::move(task));
   task_sequence_->ScheduleTask(std::move(gpu_task),
-                               std::move(sync_token_fences),
+                               std::move(sync_token_fences), SyncToken(),
                                std::move(report_callback));
 }
 

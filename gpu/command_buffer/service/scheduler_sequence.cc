@@ -62,6 +62,7 @@ bool SchedulerSequence::ShouldYield() {
 
 void SchedulerSequence::ScheduleTask(base::OnceClosure task,
                                      std::vector<SyncToken> sync_token_fences,
+                                     const SyncToken& release,
                                      ReportingCallback report_callback) {
   // If your CL is failing this DCHECK, then that means you are probably calling
   // ScheduleGpuTask at a point that cannot be supported by Android Webview.
@@ -78,21 +79,29 @@ void SchedulerSequence::ScheduleTask(base::OnceClosure task,
 #endif
   }
 
-  ScheduleOrRetainTask(std::move(task), std::move(sync_token_fences),
+  ScheduleOrRetainTask(std::move(task), std::move(sync_token_fences), release,
                        std::move(report_callback));
 }
 
 void SchedulerSequence::ScheduleOrRetainTask(
     base::OnceClosure task,
     std::vector<gpu::SyncToken> sync_token_fences,
+    const SyncToken& release,
     ReportingCallback report_callback) {
-  scheduler_->ScheduleTask(Scheduler::Task(sequence_id_, std::move(task),
-                                           std::move(sync_token_fences),
-                                           std::move(report_callback)));
+  scheduler_->ScheduleTask(Scheduler::Task(
+      sequence_id_, std::move(task), std::move(sync_token_fences), release,
+      std::move(report_callback)));
 }
 
 void SchedulerSequence::ContinueTask(base::OnceClosure task) {
   scheduler_->ContinueTask(sequence_id_, std::move(task));
+}
+
+ScopedSyncPointClientState SchedulerSequence::CreateSyncPointClientState(
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
+  return scheduler_->CreateSyncPointClientState(sequence_id_, namespace_id,
+                                                command_buffer_id);
 }
 
 }  // namespace gpu

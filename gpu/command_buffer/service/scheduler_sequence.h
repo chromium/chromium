@@ -94,12 +94,17 @@ class GPU_GLES2_EXPORT SchedulerSequence : public SingleTaskSequence {
   void ScheduleTask(
       base::OnceClosure task,
       std::vector<SyncToken> sync_token_fences,
+      const SyncToken& release,
       ReportingCallback report_callback = ReportingCallback()) override;
   void ScheduleOrRetainTask(
       base::OnceClosure task,
       std::vector<SyncToken> sync_token_fences,
+      const SyncToken& release,
       ReportingCallback report_callback = ReportingCallback()) override;
   void ContinueTask(base::OnceClosure task) override;
+  [[nodiscard]] ScopedSyncPointClientState CreateSyncPointClientState(
+      CommandBufferNamespace namespace_id,
+      CommandBufferId command_buffer_id) override;
 
  private:
   const raw_ptr<Scheduler> scheduler_;

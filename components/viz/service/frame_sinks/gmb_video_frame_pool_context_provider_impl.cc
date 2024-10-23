@@ -49,7 +49,7 @@ class GmbVideoFramePoolContext
     sequence_->ScheduleTask(
         base::BindOnce(&GmbVideoFramePoolContext::InitializeOnGpu,
                        base::Unretained(this), &event),
-        {});
+        /*sync_token_fences=*/{}, gpu::SyncToken());
 
     event.Wait();
   }
@@ -64,7 +64,7 @@ class GmbVideoFramePoolContext
     sequence_->ScheduleTask(
         base::BindOnce(&GmbVideoFramePoolContext::DestroyOnGpu,
                        base::Unretained(this), &event),
-        {});
+        /*sync_token_fences=*/{}, gpu::SyncToken());
 
     event.Wait();
 

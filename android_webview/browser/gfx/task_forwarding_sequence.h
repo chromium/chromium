@@ -47,15 +47,21 @@ class TaskForwardingSequence : public gpu::SingleTaskSequence {
   void ScheduleTask(
       base::OnceClosure task,
       std::vector<gpu::SyncToken> sync_token_fences,
+      const gpu::SyncToken& release,
       ReportingCallback report_callback = ReportingCallback()) override;
   void ScheduleOrRetainTask(
       base::OnceClosure task,
       std::vector<gpu::SyncToken> sync_token_fences,
+      const gpu::SyncToken& release,
       ReportingCallback report_callback = ReportingCallback()) override;
 
   // Should not be called because tasks aren't reposted to wait for sync tokens,
   // or for yielding execution since ShouldYield() returns false.
   void ContinueTask(base::OnceClosure task) override;
+
+  [[nodiscard]] gpu::ScopedSyncPointClientState CreateSyncPointClientState(
+      gpu::CommandBufferNamespace namespace_id,
+      gpu::CommandBufferId command_buffer_id) override;
 
  private:
   // Method to wrap scheduled task with the order number processing required for

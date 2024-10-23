@@ -907,7 +907,8 @@ void OverlayProcessorWebView::UpdateOverlayResource(
         base::BindOnce(&Manager::UpdateOverlayBuffer, manager_,
                        overlay->second.id, result.mailbox, color_space, uv_rect,
                        frame_rate_, std::move(result.unlock_cb)),
-        {result.sync_token, overlay->second.create_sync_token});
+        {result.sync_token, overlay->second.create_sync_token},
+        gpu::SyncToken());
   }
 }
 

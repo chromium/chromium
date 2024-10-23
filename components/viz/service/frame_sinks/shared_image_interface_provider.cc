@@ -67,7 +67,7 @@ void SharedImageInterfaceProvider::CreateSharedImageInterface() {
       base::BindOnce(
           &SharedImageInterfaceProvider::CreateSharedImageInterfaceOnGpu,
           base::Unretained(this), &event),
-      {});
+      /*sync_token_fences=*/{}, gpu::SyncToken());
   event.Wait();
 }
 

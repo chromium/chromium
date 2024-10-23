@@ -51,7 +51,8 @@ DisplayCompositorMemoryAndTaskController::
   auto callback =
       base::BindOnce(&DisplayCompositorMemoryAndTaskController::DestroyOnGpu,
                      base::Unretained(this), &event);
-  gpu_task_scheduler_->GetTaskSequence()->ScheduleTask(std::move(callback), {});
+  gpu_task_scheduler_->GetTaskSequence()->ScheduleTask(
+      std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
   event.Wait();
 }
 

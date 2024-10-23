@@ -263,13 +263,15 @@ scoped_refptr<gl::GLShareGroup> TestGpuServiceHolder::GetShareGroup() {
 
 void TestGpuServiceHolder::ScheduleGpuMainTask(base::OnceClosure callback) {
   DCHECK(gpu_main_task_sequence_);
-  gpu_main_task_sequence_->ScheduleTask(std::move(callback), {});
+  gpu_main_task_sequence_->ScheduleTask(
+      std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
 }
 
 void TestGpuServiceHolder::ScheduleCompositorGpuTask(
     base::OnceClosure callback) {
   if (compositor_gpu_task_sequence_)
-    compositor_gpu_task_sequence_->ScheduleTask(std::move(callback), {});
+    compositor_gpu_task_sequence_->ScheduleTask(
+        std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
   else
     ScheduleGpuMainTask(std::move(callback));
 }

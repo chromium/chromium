@@ -6,6 +6,7 @@
 
 #include "android_webview/browser/gfx/task_queue_webview.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -39,7 +40,11 @@ bool TaskForwardingSequence::ShouldYield() {
 void TaskForwardingSequence::ScheduleTask(
     base::OnceClosure task,
     std::vector<gpu::SyncToken> sync_token_fences,
+    const gpu::SyncToken& release,
     ReportingCallback report_callback) {
+  // TODO(crbug.com/324276400): Add support.
+  DCHECK(!release.HasData());
+
   uint32_t order_num = sync_point_order_data_->GenerateUnprocessedOrderNumber();
 
   // |sync_point_manager_| is global so it's safe to pass raw pointer.
@@ -54,7 +59,11 @@ void TaskForwardingSequence::ScheduleTask(
 void TaskForwardingSequence::ScheduleOrRetainTask(
     base::OnceClosure task,
     std::vector<gpu::SyncToken> sync_token_fences,
+    const gpu::SyncToken& release,
     ReportingCallback report_callback) {
+  // TODO(crbug.com/324276400): Add support.
+  DCHECK(!release.HasData());
+
   uint32_t order_num = sync_point_order_data_->GenerateUnprocessedOrderNumber();
 
   // |sync_point_manager_| is global so it's safe to pass raw pointer.
@@ -101,6 +110,15 @@ void TaskForwardingSequence::RunTask(
   sync_point_order_data->BeginProcessingOrderNumber(order_num);
   std::move(task).Run();
   sync_point_order_data->FinishProcessingOrderNumber(order_num);
+}
+
+gpu::ScopedSyncPointClientState
+TaskForwardingSequence::CreateSyncPointClientState(
+    gpu::CommandBufferNamespace namespace_id,
+    gpu::CommandBufferId command_buffer_id) {
+  // TODO(crbug.com/324276400): Add support.
+  NOTIMPLEMENTED();
+  return {};
 }
 
 }  // namespace android_webview
