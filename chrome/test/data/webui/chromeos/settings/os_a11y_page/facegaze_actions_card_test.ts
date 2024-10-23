@@ -238,6 +238,28 @@ suite('<facegaze-actions-card>', () => {
     assertEquals(2, commandPairs.length);
   });
 
+  test(
+      'actions updates command pairs from prefs when feature is enabled',
+      async () => {
+        await initPage();
+
+        let commandPairs = faceGazeActionsCard.get(
+            FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME);
+        assertEquals(0, commandPairs.length);
+
+        const expectedMacro: MacroName = MacroName.MOUSE_CLICK_LEFT;
+        const expectedGesture: FacialGesture = FacialGesture.EYES_BLINK;
+        faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_macros
+            .value[expectedGesture] = expectedMacro;
+        faceGazeActionsCard.set(
+            'prefs.settings.a11y.face_gaze.enabled.value', true);
+        await flushTasks();
+
+        commandPairs = faceGazeActionsCard.get(
+            FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME);
+        assertEquals(1, commandPairs.length);
+      });
+
   test('actions update prefs with added command pair', async () => {
     await initPage();
 

@@ -110,6 +110,10 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     };
   }
 
+  static get observers() {
+    return [`initFromPrefs_(prefs.settings.a11y.face_gaze.enabled.value)`];
+  }
+
   private shouldAnnounceAlert_(): boolean {
     return this.faceGazeActionsAlert_ !== '';
   }
@@ -398,7 +402,13 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     this.set(FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF, assignedKeyCombos);
   }
 
+  // Initialize list of command pairs to display from the user prefs on load or
+  // when the feature is turned on for the first time.
   private initFromPrefs_(): void {
+    if (this.commandPairs_.length !== 0) {
+      // Only initialize if loading for the first time.
+      return;
+    }
     const assignedGestures = this.getCurrentAssignedGestures_();
     const currentKeyCombos = this.getCurrentKeyCombos_();
 
