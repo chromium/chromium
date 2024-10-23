@@ -138,6 +138,10 @@ const char kStandardizedBrowserZoomEnabled[] =
 // If this is set to True, the page will be accessible.
 const char kPolicyTestPageEnabled[] = "policy_test_page_enabled";
 
+// Boolean indicating if the user has permanently dismissed the promotion
+// banner on the chrome://policy page. If it's true, it means the user
+// has clicked the "dismiss" button and has the banner turned off, if the
+// value is false, the user has taken no action to turn off the banner.
 const char kHasDismissedPolicyPagePromotionBanner[] =
     "has_dismissed_policy_page_promotion_banner";
 
