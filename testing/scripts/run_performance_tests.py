@@ -716,19 +716,18 @@ class CrossbenchTest(object):
     self.is_android = self._is_android(browser_arg)
     self._find_browser(browser_arg)
     self.driver_path_arg = self._find_chromedriver(browser_arg)
-    self.network = self._get_network_arg(options.passthrough_args,
-                                         self.is_android)
+    self.network = self._get_network_arg(options.passthrough_args)
 
   def _get_browser_arg(self, args):
     browser_arg = self._get_arg(args, '--browser=', must_exists=True)
     return browser_arg.split('=', 1)[1]
 
-  def _get_network_arg(self, args, is_android):
+  def _get_network_arg(self, args):
     if _arg := self._get_arg(args, '--network='):
       return [_arg]
     if _arg := self._get_arg(args, '--fileserver'):
       return self._create_fileserver_network(_arg)
-    if is_android or self._get_arg(args, '--wpr'):
+    if self._get_arg(args, '--wpr'):
       return self._create_wpr_network(args)
     return []
 
