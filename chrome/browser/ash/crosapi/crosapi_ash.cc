@@ -78,7 +78,6 @@
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
 #include "chrome/browser/ash/crosapi/media_app_ash.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
-#include "chrome/browser/ash/crosapi/message_center_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_reporting_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
@@ -151,7 +150,6 @@
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
-#include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "chromeos/crosapi/mojom/passkeys.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
@@ -273,7 +271,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           std::make_unique<ash::MagicBoostControllerAsh>()),
       media_app_ash_(std::make_unique<MediaAppAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
-      message_center_ash_(std::make_unique<MessageCenterAsh>()),
       metrics_ash_(std::make_unique<MetricsAsh>()),
       metrics_reporting_ash_(registry->CreateMetricsReportingAsh(
           g_browser_process->metrics_service())),
@@ -786,11 +783,6 @@ void CrosapiAsh::BindMediaSessionController(
         receiver) {
   content::GetMediaSessionService().BindMediaControllerManager(
       std::move(receiver));
-}
-
-void CrosapiAsh::BindMessageCenter(
-    mojo::PendingReceiver<mojom::MessageCenter> receiver) {
-  message_center_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindMetrics(mojo::PendingReceiver<mojom::Metrics> receiver) {

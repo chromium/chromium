@@ -10,7 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"

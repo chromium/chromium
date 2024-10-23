@@ -87,7 +87,6 @@
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/crosapi/mojom/media_app.mojom.h"
 #include "chromeos/crosapi/mojom/media_ui.mojom.h"
-#include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
@@ -492,9 +491,6 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::MediaUI,
                   &crosapi::mojom::Crosapi::BindMediaUI,
                   Crosapi::MethodMinVersions::kBindMediaUIMinVersion>();
-  ConstructRemote<crosapi::mojom::MessageCenter,
-                  &crosapi::mojom::Crosapi::BindMessageCenter,
-                  Crosapi::MethodMinVersions::kBindMessageCenterMinVersion>();
   ConstructRemote<crosapi::mojom::Metrics,
                   &crosapi::mojom::Crosapi::BindMetrics,
                   Crosapi::MethodMinVersions::kBindMetricsMinVersion>();

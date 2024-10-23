@@ -72,7 +72,6 @@ import "chromeos/crosapi/mojom/login_screen_storage.mojom";
 import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_namespace.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
-import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/magic_boost.mojom";
 import "chromeos/crosapi/mojom/mahi.mojom";
 import "chromeos/crosapi/mojom/media_app.mojom";
@@ -542,10 +541,6 @@ interface Crosapi {
   // Binds the MediaUI interface for the Global Media Controls UI.
   // Added in M113.
   [MinVersion=105] BindMediaUI@108(pending_receiver<MediaUI> receiver);
-
-  // Binds the MessageCenter interface for showing notification messages.
-  // Added in M86.
-  BindMessageCenter@3(pending_receiver<MessageCenter> receiver);
 
   // Binds the NativeThemeService interface for reading native theme changes.
   // Added in M93.
