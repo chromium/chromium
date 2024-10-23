@@ -28,11 +28,6 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
     id<SystemIdentity> identity,
     NSError* error) {
   DCHECK(error);
-  if ([error.domain isEqualToString:kAuthenticationErrorDomain]) {
-    if (error.code == NO_AUTHENTICATED_USER) {
-      return kAuthenticationErrorCategoryUnknownIdentityErrors;
-    }
-  }
   if ([error.domain isEqualToString:kSystemIdentityManagerErrorDomain]) {
     SystemIdentityManagerErrorCode error_code =
         static_cast<SystemIdentityManagerErrorCode>(error.code);

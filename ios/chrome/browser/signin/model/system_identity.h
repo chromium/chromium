@@ -32,8 +32,6 @@
 @property(nonatomic, readonly) NSString* hashedGaiaID;
 
 // Returns NO if the identity is in auth error and requires a reauth.
-// This property is optional until all classes have an implementation for it.
-@optional
 @property(nonatomic, readonly) BOOL hasValidAuth;
 
 @end

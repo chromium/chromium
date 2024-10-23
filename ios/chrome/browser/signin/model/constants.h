@@ -30,9 +30,6 @@ extern NSString* const kAuthenticationErrorDomain;
 
 // Error code for `kAuthenticationErrorDomain`.
 typedef enum {
-  GOOGLE_SERVICE_AUTH_ERROR = -200,
-  NO_AUTHENTICATED_USER = -201,
-  CLIENT_ID_MISMATCH = -203,
   AUTHENTICATION_FLOW_ERROR = -206,
   TIMED_OUT_FETCH_POLICY = -210,
 } AuthenticationErrorCode;
