@@ -185,6 +185,23 @@ class TestAuctionProcessManager
       receiver_set_;
 };
 
+// ContentBrowserClient to disable strict site isolation.
+class PartialSiteIsolationContentBrowserClient
+    : public TestContentBrowserClient {
+ public:
+  bool ShouldEnableStrictSiteIsolation() override { return false; }
+
+  bool ShouldDisableSiteIsolation(
+      SiteIsolationMode site_isolation_mode) override {
+    switch (site_isolation_mode) {
+      case SiteIsolationMode::kStrictSiteIsolation:
+        return true;
+      case SiteIsolationMode::kPartialSiteIsolation:
+        return false;
+    }
+  }
+};
+
 // The three ways the base test fixture can be configured.
 enum class ProcessMode {
   // Use DedicatedAuctionProcessManager.
@@ -221,13 +238,24 @@ class AuctionProcessManagerTestBase
                 features::kOriginKeyedProcessesByDefault});
         scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
             switches::kSitePerProcess);
+        original_browser_client_ =
+            content::SetBrowserClientForTesting(&browser_client_);
         break;
     }
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(
         &rph_factory_);
+
+    // This StartIsolatingSite() call should be done before any SiteInstances
+    // are created, so that it applies to them.
+    SiteInstance::StartIsolatingSite(
+        &test_browser_context_, kIsolatedOrigin.GetURL(),
+        ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
   }
 
   virtual ~AuctionProcessManagerTestBase() {
+    if (original_browser_client_) {
+      content::SetBrowserClientForTesting(original_browser_client_);
+    }
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
   }
 
@@ -321,6 +349,10 @@ class AuctionProcessManagerTestBase
 
   virtual SiteInstance* GetSiteInstance() = 0;
 
+  // Isolated by StartIsolatingSite() call in the constructor.
+  const url::Origin kIsolatedOrigin =
+      url::Origin::Create(GURL("https://bank.test"));
+
   const url::Origin kOriginA = url::Origin::Create(GURL("https://a.test"));
   const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
   const url::Origin kOriginC = url::Origin::Create(GURL("https://c.test"));
@@ -334,6 +366,12 @@ class AuctionProcessManagerTestBase
   base::test::ScopedCommandLine scoped_command_line_;
 
   MockRenderProcessHostFactory rph_factory_;
+
+  TestBrowserContext test_browser_context_;
+
+  // Used by the kInRendererSharedProcess case to disable strict site isolation.
+  PartialSiteIsolationContentBrowserClient browser_client_;
+  raw_ptr<ContentBrowserClient> original_browser_client_;
 };
 
 class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
@@ -373,7 +411,6 @@ class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
         []() { ADD_FAILURE() << "This should not be called"; });
   }
 
-  TestBrowserContext test_browser_context_;
   scoped_refptr<SiteInstance> site_instance_;
   TestAuctionProcessManager<DedicatedAuctionProcessManager>
       auction_process_manager_;
@@ -1303,22 +1340,6 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
   EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle3), 0u);
 }
 
-class PartialSiteIsolationContentBrowserClient
-    : public TestContentBrowserClient {
- public:
-  bool ShouldEnableStrictSiteIsolation() override { return false; }
-
-  bool ShouldDisableSiteIsolation(
-      SiteIsolationMode site_isolation_mode) override {
-    switch (site_isolation_mode) {
-      case SiteIsolationMode::kStrictSiteIsolation:
-        return true;
-      case SiteIsolationMode::kPartialSiteIsolation:
-        return false;
-    }
-  }
-};
-
 // A base class for AuctionProcessManager tests that sets up the basic test
 // environment. Since this class creates SiteInstances and (implicitly)
 // BrowsingInstances, it's important that it knows whether to use
@@ -1332,10 +1353,6 @@ class InRendererAuctionProcessManagerTestBase
         features::kFledgeStartAnticipatoryProcesses,
         {{"AnticipatoryProcessHoldTime", "3s"}});
 
-    SiteInstance::StartIsolatingSite(
-        &test_browser_context_, kIsolatedOrigin.GetURL(),
-        ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
-    // Created these after StartIsolatingSite so they are affected by it.
     site_instance1_ = SiteInstance::Create(&test_browser_context_);
     site_instance2_ = SiteInstance::Create(&test_browser_context_);
   }
@@ -1363,16 +1380,11 @@ class InRendererAuctionProcessManagerTestBase
         []() { ADD_FAILURE() << "This should not be called"; });
   }
 
-  TestBrowserContext test_browser_context_;
-
   // `site_instance1_` and `site_instance2_` are in different browsing
   // instances.
   scoped_refptr<SiteInstance> site_instance1_, site_instance2_;
   TestAuctionProcessManager<InRendererAuctionProcessManager>
       auction_process_manager_;
-
-  const url::Origin kIsolatedOrigin =
-      url::Origin::Create(GURL("https://bank.test"));
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1405,21 +1417,6 @@ class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
   InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault()
       : InRendererAuctionProcessManagerTestBase(
             ProcessMode::kInRendererSharedProcess) {}
-
-  void SetUp() override {
-    InRendererAuctionProcessManagerTestBase::SetUp();
-    original_browser_client_ =
-        content::SetBrowserClientForTesting(&browser_client_);
-  }
-
-  void TearDown() override {
-    content::SetBrowserClientForTesting(original_browser_client_);
-    InRendererAuctionProcessManagerTestBase::TearDown();
-  }
-
- private:
-  PartialSiteIsolationContentBrowserClient browser_client_;
-  raw_ptr<ContentBrowserClient> original_browser_client_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
