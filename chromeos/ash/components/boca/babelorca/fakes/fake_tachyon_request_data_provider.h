@@ -8,13 +8,14 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
 
 namespace ash::babelorca {
 
 class FakeTachyonRequestDataProvider : public TachyonRequestDataProvider {
  public:
+  FakeTachyonRequestDataProvider();
   FakeTachyonRequestDataProvider(std::optional<std::string> session_id,
                                  std::optional<std::string> tachyon_token,
                                  std::optional<std::string> group_id,
@@ -27,15 +28,22 @@ class FakeTachyonRequestDataProvider : public TachyonRequestDataProvider {
 
   ~FakeTachyonRequestDataProvider() override;
 
+  // TachyonRequestDataProvider:
   void SigninToTachyonAndRespond(
       base::OnceCallback<void(bool)> on_response_cb) override;
-
   std::optional<std::string> session_id() const override;
   std::optional<std::string> tachyon_token() const override;
   std::optional<std::string> group_id() const override;
   std::optional<std::string> sender_email() const override;
 
+  void set_tachyon_token(std::optional<std::string> tachyon_token);
+  void set_group_id(std::optional<std::string> group_id);
+
+  base::OnceCallback<void(bool)> TakeSigninCb();
+
  private:
+  base::OnceCallback<void(bool)> signin_cb_;
+
   std::optional<std::string> session_id_;
   std::optional<std::string> tachyon_token_;
   std::optional<std::string> group_id_;

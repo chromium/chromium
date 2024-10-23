@@ -29,6 +29,8 @@ class BabelOrcaSpeechRecognizer {
 
   virtual ~BabelOrcaSpeechRecognizer() = default;
 
+  virtual void Start() = 0;
+  virtual void Stop() = 0;
   virtual void ObserveTranscriptionResult(
       TranscriptionResultCallback transcription_result_callback) = 0;
   virtual void RemoveTranscriptionResultObservation() = 0;

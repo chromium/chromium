@@ -12,6 +12,8 @@ static_library("babelorca") {
     "babel_orca_controller.h",
     "babel_orca_manager.cc",
     "babel_orca_manager.h",
+    "babel_orca_producer.cc",
+    "babel_orca_producer.h",
     "babel_orca_speech_recognizer.h",
     "live_caption_controller_wrapper.h",
     "live_caption_controller_wrapper_impl.cc",
@@ -100,6 +102,7 @@ source_set("unit_tests") {
 
   sources = [
     "babel_orca_manager_unittest.cc",
+    "babel_orca_producer_unittest.cc",
     "oauth_token_fetcher_unittest.cc",
     "tachyon_authed_client_impl_unittest.cc",
     "tachyon_client_impl_unittest.cc",

@@ -12,6 +12,8 @@
 
 namespace ash::babelorca {
 
+FakeTachyonRequestDataProvider::FakeTachyonRequestDataProvider() = default;
+
 FakeTachyonRequestDataProvider::FakeTachyonRequestDataProvider(
     std::optional<std::string> session_id,
     std::optional<std::string> tachyon_token,
@@ -25,7 +27,9 @@ FakeTachyonRequestDataProvider::FakeTachyonRequestDataProvider(
 FakeTachyonRequestDataProvider::~FakeTachyonRequestDataProvider() = default;
 
 void FakeTachyonRequestDataProvider::SigninToTachyonAndRespond(
-    base::OnceCallback<void(bool)> on_response_cb) {}
+    base::OnceCallback<void(bool)> on_response_cb) {
+  signin_cb_ = std::move(on_response_cb);
+}
 
 std::optional<std::string> FakeTachyonRequestDataProvider::session_id() const {
   return session_id_;
@@ -43,6 +47,20 @@ std::optional<std::string> FakeTachyonRequestDataProvider::group_id() const {
 std::optional<std::string> FakeTachyonRequestDataProvider::sender_email()
     const {
   return sender_email_;
+}
+
+void FakeTachyonRequestDataProvider::set_tachyon_token(
+    std::optional<std::string> tachyon_token) {
+  tachyon_token_ = tachyon_token;
+}
+
+void FakeTachyonRequestDataProvider::set_group_id(
+    std::optional<std::string> group_id) {
+  group_id_ = group_id;
+}
+
+base::OnceCallback<void(bool)> FakeTachyonRequestDataProvider::TakeSigninCb() {
+  return std::move(signin_cb_);
 }
 
 }  // namespace ash::babelorca

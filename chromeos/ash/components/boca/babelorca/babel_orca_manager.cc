@@ -41,6 +41,8 @@ void BabelOrcaManager::OnSessionStarted(const std::string& session_id,
                                         const ::boca::UserIdentity& producer) {
   session_id_ = session_id;
   sender_email_ = producer.email();
+  group_id_.reset();
+  registrar_.ResetToken();
 }
 
 void BabelOrcaManager::OnSessionEnded(const std::string& session_id) {
