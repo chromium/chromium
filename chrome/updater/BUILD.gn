@@ -337,7 +337,6 @@ if (is_win || is_mac || is_linux) {
       defines += [ "SECURITY_WIN32" ]
 
       libs = [
-        "runtimeobject.lib",
         "msxml2.lib",
         "secur32.lib",
         "taskschd.lib",
