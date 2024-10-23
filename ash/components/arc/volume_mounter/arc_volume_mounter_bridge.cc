@@ -380,11 +380,9 @@ void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
   // is set to ensure that host-side unmount is not blocked for too long even
   // when ARC is not responsive or takes too long to drop caches.
 
-  unmount_mojo_callback_.Reset(base::BindPostTask(
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
-      base::BindOnce(
-          &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
-          weak_ptr_factory_.GetWeakPtr(), mount_path, false /* is_timeout */)));
+  unmount_mojo_callback_.Reset(base::BindOnce(
+      &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
+      weak_ptr_factory_.GetWeakPtr(), mount_path, false /* is_timeout */));
 
   unmount_mojo_start_time_ = base::TimeTicks::Now();
 
