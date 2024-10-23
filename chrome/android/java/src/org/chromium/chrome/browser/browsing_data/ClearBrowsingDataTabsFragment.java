@@ -19,19 +19,25 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 /**
  * Fragment with a {@link TabLayout} containing a basic and an advanced version of the CBD dialog.
  */
-public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDependentSetting {
+public class ClearBrowsingDataTabsFragment extends Fragment
+        implements ProfileDependentSetting, EmbeddableSettingsPage {
     public static final int CBD_TAB_COUNT = 2;
 
     private Profile mProfile;
     private ClearBrowsingDataFetcher mFetcher;
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +48,8 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mPageTitle.set(getString(R.string.clear_browsing_data_title));
+
         if (savedInstanceState == null) {
             mFetcher = new ClearBrowsingDataFetcher();
             mFetcher.fetchImportantSites(mProfile);
@@ -112,6 +120,11 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
             default:
                 throw new RuntimeException("invalid position: " + position);
         }
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

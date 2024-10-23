@@ -452,6 +452,14 @@ public class ClearBrowsingDataFragmentTest {
                 });
     }
 
+    @Test
+    @MediumTest
+    public void testTitleShown() {
+        startPreferences();
+        ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
+        onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
+    }
+
     /**
      * A helper Runnable that opens the Settings activity containing a ClearBrowsingDataFragment
      * fragment and clicks the "Clear" button.
