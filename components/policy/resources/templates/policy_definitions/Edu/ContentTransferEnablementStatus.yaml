@@ -62,7 +62,7 @@ schema:
           type: integer
       type: object
   type: object
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:132-
 tags: []
 type: dict
