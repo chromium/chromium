@@ -532,8 +532,8 @@ class AutofillClient {
   // Shows a bubble asking whether the user wants to save prediction
   // improvements data.
   virtual void ShowSaveAutofillPredictionImprovementsBubble(
-      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
-          to_be_upserted_entries,
+      std::unique_ptr<user_annotations::FormAnnotationResponse>
+          form_annotation_response,
       user_annotations::PromptAcceptanceCallback prompt_acceptance_callback);
 
   // Stores test addresses provided by devtools and used to help developers

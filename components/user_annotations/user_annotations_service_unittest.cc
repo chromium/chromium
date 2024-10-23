@@ -102,9 +102,12 @@ class UserAnnotationsServiceTest : public testing::Test,
         GURL("example.com"), "title", ax_tree_update, std::move(form),
         base::BindLambdaForTesting(
             [&entries](std::unique_ptr<autofill::FormStructure> form,
-                       UserAnnotationsEntries upserted_entries,
+                       std::unique_ptr<user_annotations::FormAnnotationResponse>
+                           form_annotation_response,
                        PromptAcceptanceCallback prompt_acceptance_callback) {
-              entries = upserted_entries;
+              if (form_annotation_response) {
+                entries = form_annotation_response->to_be_upserted_entries;
+              }
               std::move(prompt_acceptance_callback)
                   .Run({/*prompt_was_accepted=*/true,
                         /*did_user_interact=*/true});
@@ -480,7 +483,8 @@ TEST_P(UserAnnotationsServiceTest, FormNotImported) {
       std::make_unique<autofill::FormStructure>(test_request.form_data),
       base::BindLambdaForTesting(
           [](std::unique_ptr<autofill::FormStructure> form,
-             UserAnnotationsEntries upserted_entries,
+             std::unique_ptr<user_annotations::FormAnnotationResponse>
+                 form_annotation_response,
              PromptAcceptanceCallback prompt_acceptance_callback) {
             std::move(prompt_acceptance_callback)
                 .Run({/*prompt_was_accepted=*/false});
@@ -513,7 +517,8 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
       base::BindLambdaForTesting(
           [&first_prompt_acceptance_callback](
               std::unique_ptr<autofill::FormStructure> form,
-              UserAnnotationsEntries upserted_entries,
+              std::unique_ptr<user_annotations::FormAnnotationResponse>
+                  form_annotation_response,
               PromptAcceptanceCallback callback) {
             first_prompt_acceptance_callback = std::move(callback);
           }));
@@ -537,7 +542,8 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
       base::BindLambdaForTesting(
           [&second_prompt_acceptance_callback](
               std::unique_ptr<autofill::FormStructure> form,
-              UserAnnotationsEntries upserted_entries,
+              std::unique_ptr<user_annotations::FormAnnotationResponse>
+                  form_annotation_response,
               PromptAcceptanceCallback callback) {
             second_prompt_acceptance_callback = std::move(callback);
           }));

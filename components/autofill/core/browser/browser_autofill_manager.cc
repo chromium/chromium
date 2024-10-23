@@ -980,17 +980,18 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
                const FormData& form, SubmissionSource source,
                base::TimeTicks form_submitted_timestamp,
                std::unique_ptr<FormStructure> submitted_form,
-               std::vector<optimization_guide::proto::UserAnnotationsEntry>
-                   to_be_upserted_entries,
+               std::unique_ptr<user_annotations::FormAnnotationResponse>
+                   form_annotation_response,
                user_annotations::PromptAcceptanceCallback
                    prompt_acceptance_callback) {
               // The manager may have been destroyed already.
               // See crbug.com/373831707#comment5.
               const bool should_show_prediction_improvements_bubble =
-                  !to_be_upserted_entries.empty();
+                  form_annotation_response &&
+                  !form_annotation_response->to_be_upserted_entries.empty();
               if (client && should_show_prediction_improvements_bubble) {
                 client->ShowSaveAutofillPredictionImprovementsBubble(
-                    std::move(to_be_upserted_entries),
+                    std::move(form_annotation_response),
                     std::move(prompt_acceptance_callback));
               }
               if (manager) {

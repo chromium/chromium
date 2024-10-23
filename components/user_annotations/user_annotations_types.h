@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
@@ -62,18 +63,31 @@ struct PromptAcceptanceResult {
   bool did_thumbs_down_triggered = false;
 };
 
+// Encapsulates the result of annotating a form submission.
+// `to_be_upserted_entries` is the updated entries, that will be shown in the
+// Autofill prediction improvements prompt. `model_execution_id` is the server
+// log id for model execution, and can be sent in any user submitted feedback.
+struct FormAnnotationResponse {
+  std::vector<optimization_guide::proto::UserAnnotationsEntry>
+      to_be_upserted_entries;
+  std::string model_execution_id;
+
+  FormAnnotationResponse(
+      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+          to_be_upserted_entries,
+      const std::string& model_execution_id);
+  ~FormAnnotationResponse();
+};
+
 using PromptAcceptanceCallback =
     base::OnceCallback<void(PromptAcceptanceResult result)>;
 
-// `ImportFormCallback` carries `to_be_upserted_entries` that will be shown
-// in the Autofill prediction improvements prompt. The prompt then notifies
-// the `UserAnnotationsService` about the user decision by running
-// `prompt_acceptance_callback`, that is also provided by
-// `ImportFormCallback`.
+// Callback for notifying the form annotation result to Autofill. User decision
+// for importing the updated form entries is notified to
+// `UserAnnotationsService` via the `prompt_acceptance_callback`.
 using ImportFormCallback = base::OnceCallback<void(
     std::unique_ptr<autofill::FormStructure> form,
-    std::vector<optimization_guide::proto::UserAnnotationsEntry>
-        to_be_upserted_entries,
+    std::unique_ptr<FormAnnotationResponse> form_annotation_response,
     PromptAcceptanceCallback prompt_acceptance_callback)>;
 
 }  // namespace user_annotations

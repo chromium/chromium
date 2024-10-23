@@ -17,7 +17,7 @@ MockAutofillPredictionImprovementsDelegate::
                         user_annotations::ImportFormCallback callback) {
         std::move(callback).Run(
             std::move(form),
-            /*to_be_upserted_entries=*/{},
+            /*form_annotation_response=*/nullptr,
             /*prompt_acceptance_callback=*/base::DoNothing());
       });
 }

@@ -106,11 +106,20 @@ class AutofillPredictionImprovementsManager
   void AddStrikeForImportFromForm(const autofill::FormStructure& form);
   void RemoveStrikesForImportFromForm(const autofill::FormStructure& form);
 
+  // Called when feedback about the feature is given by the user for saving
+  // autofill predictions. `model_execution_id` identifies the model execution
+  // logs and will be sent part of the user feedback.
+  void SaveAutofillPredictionsUserFeedbackReceived(
+      const std::string& model_execution_id,
+      autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback);
+
   base::flat_map<autofill::FieldGlobalId, bool> GetFieldFillingEligibilityMap(
       const autofill::FormData& form_data);
 
   base::flat_map<autofill::FieldGlobalId, bool> GetFieldValueSensitivityMap(
       const autofill::FormData& form_data);
+
+  base::WeakPtr<AutofillPredictionImprovementsManager> GetWeakPtr();
 
  private:
   friend class AutofillPredictionImprovementsManagerTestApi;
@@ -145,7 +154,7 @@ class AutofillPredictionImprovementsManager
       const autofill::FormFieldData& trigger_field,
       AutofillPredictionImprovementsFillingEngine::PredictionsOrError
           predictions_or_error,
-      std::optional<std::string> feedback_id);
+      std::optional<std::string> model_execution_id);
 
   // Method for showing filling or error suggestions, depending on the outcome
   // of the retrieval attempts.
@@ -232,10 +241,11 @@ class AutofillPredictionImprovementsManager
   // `CreateFillingSuggestions()` after prediction improvements was triggered.
   std::vector<autofill::Suggestion> autofill_suggestions_;
 
-  // Stores the execution id for the latest successful retrieval of prediction
-  // improvements. If set, the feedback page will open when the "thumbs down"
-  // icon is clicked.
-  std::optional<std::string> feedback_id_ = std::nullopt;
+  // Stores the model execution id for the latest successful retrieval of
+  // prediction improvements. If set, the feedback page will open when the
+  // "thumbs down" icon is clicked.
+  std::optional<std::string> form_filling_predictions_model_execution_id_ =
+      std::nullopt;
 
   // Updates currently shown suggestions if their
   // `AutofillClient::SuggestionUiSessionId` hasn't changed since the trigger

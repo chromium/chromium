@@ -305,7 +305,7 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
       web_contents()->GetBrowserContext());
 }
 
-AutofillPredictionImprovementsDelegate*
+autofill_prediction_improvements::AutofillPredictionImprovementsManager*
 ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
   if (tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
@@ -864,45 +864,25 @@ void ChromeAutofillClient::NotifyIphFeatureUsed(
 }
 
 void ChromeAutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
-    const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
-        to_be_upserted_entries,
+    std::unique_ptr<user_annotations::FormAnnotationResponse>
+        form_annotation_response,
     user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {
 #if !BUILDFLAG(IS_ANDROID)
   if (SaveAutofillPredictionImprovementsController* controller =
           SaveAutofillPredictionImprovementsController::GetOrCreate(
               web_contents())) {
-    SaveAutofillPredictionImprovementsController::LearnMoreClickedCallback
-        learn_more_clicked_callback = base::BindRepeating(
-            [](base::WeakPtr<ChromeAutofillClient> self,
-               AutofillPredictionImprovementsDelegate* delegate) {
-              if (!self || !delegate) {
-                return;
-              }
-              delegate->UserClickedLearnMore();
-            },
-            weak_ptr_factory_.GetWeakPtr(),
-            GetAutofillPredictionImprovementsDelegate());
-
-    SaveAutofillPredictionImprovementsController::UserFeedbackCallback
-        user_feedback_callback = base::BindRepeating(
-            [](base::WeakPtr<ChromeAutofillClient> self,
-               AutofillPredictionImprovementsDelegate* delegate,
-               AutofillPredictionImprovementsDelegate::UserFeedback
-                   user_feedback) {
-              if (!self || !delegate) {
-                return;
-              }
-              // TODO(crbug.com/369833864): Add `feedback_id` for the savem
-              // prompt case. Otherwise the feedback will not show up.
-              delegate->UserFeedbackReceived(user_feedback);
-            },
-            weak_ptr_factory_.GetWeakPtr(),
-            GetAutofillPredictionImprovementsDelegate());
-
-    controller->OfferSave(std::move(to_be_upserted_entries),
-                          std::move(prompt_acceptance_callback),
-                          std::move(learn_more_clicked_callback),
-                          std::move(user_feedback_callback));
+    controller->OfferSave(
+        std::move(form_annotation_response->to_be_upserted_entries),
+        std::move(prompt_acceptance_callback),
+        base::BindRepeating(
+            &AutofillPredictionImprovementsDelegate::UserClickedLearnMore,
+            GetAutofillPredictionImprovementsDelegate()->GetWeakPtr()),
+        base::BindRepeating(
+            &autofill_prediction_improvements::
+                AutofillPredictionImprovementsManager::
+                    SaveAutofillPredictionsUserFeedbackReceived,
+            GetAutofillPredictionImprovementsDelegate()->GetWeakPtr(),
+            form_annotation_response->model_execution_id));
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

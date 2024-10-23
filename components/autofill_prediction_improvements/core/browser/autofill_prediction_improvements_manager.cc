@@ -586,8 +586,8 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
     const autofill::FormFieldData& trigger_field,
     AutofillPredictionImprovementsFillingEngine::PredictionsOrError
         predictions_or_error,
-    std::optional<std::string> feedback_id) {
-  feedback_id_ = feedback_id;
+    std::optional<std::string> model_execution_id) {
+  form_filling_predictions_model_execution_id_ = model_execution_id;
 
   if (predictions_or_error.has_value()) {
     prediction_retrieval_state_ = PredictionRetrievalState::kDoneSuccess;
@@ -630,10 +630,22 @@ void AutofillPredictionImprovementsManager::
 
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(
     autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback) {
-  if (feedback_id_ && feedback ==
-                          autofill::AutofillPredictionImprovementsDelegate::
-                              UserFeedback::kThumbsDown) {
-    client_->TryToOpenFeedbackPage(*feedback_id_);
+  if (form_filling_predictions_model_execution_id_ &&
+      feedback == autofill::AutofillPredictionImprovementsDelegate::
+                      UserFeedback::kThumbsDown) {
+    client_->TryToOpenFeedbackPage(
+        *form_filling_predictions_model_execution_id_);
+  }
+}
+
+void AutofillPredictionImprovementsManager::
+    SaveAutofillPredictionsUserFeedbackReceived(
+        const std::string& model_execution_id,
+        autofill::AutofillPredictionImprovementsDelegate::UserFeedback
+            feedback) {
+  if (feedback == autofill::AutofillPredictionImprovementsDelegate::
+                      UserFeedback::kThumbsDown) {
+    client_->TryToOpenFeedbackPage(model_execution_id);
   }
 }
 
@@ -781,7 +793,7 @@ void AutofillPredictionImprovementsManager::Reset() {
   cache_ = std::nullopt;
   last_queried_form_global_id_ = std::nullopt;
   update_suggestions_callback_ = base::NullCallback();
-  feedback_id_ = std::nullopt;
+  form_filling_predictions_model_execution_id_ = std::nullopt;
   loading_suggestion_timer_.Stop();
   prediction_retrieval_state_ = PredictionRetrievalState::kReady;
   error_or_no_info_suggestion_shown_ = false;
@@ -826,7 +838,7 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
 
   if (skip_import) {
     std::move(callback).Run(std::move(form),
-                            /*to_be_upserted_entries=*/{},
+                            /*form_annotation_response=*/nullptr,
                             /*prompt_acceptance_callback=*/base::DoNothing());
     return;
   }
@@ -862,8 +874,9 @@ void AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport(
         std::move(callback));
     return;
   }
-  std::move(callback).Run(std::move(form), /*to_be_upserted_entries=*/{},
-                          /*prompt_acceptance_callback=*/base::DoNothing());
+  std::move(callback).Run(std::move(form),
+                          /*form_annotation_response=*/nullptr,
+                          base::DoNothing());
 }
 
 void AutofillPredictionImprovementsManager::HasDataStored(
@@ -919,6 +932,11 @@ void AutofillPredictionImprovementsManager::OnFailedToGenerateSuggestions() {
       UpdateSuggestions(CreateErrorSuggestions());
       break;
   }
+}
+
+base::WeakPtr<AutofillPredictionImprovementsManager>
+AutofillPredictionImprovementsManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace autofill_prediction_improvements

@@ -36,8 +36,9 @@ class AutofillPredictionImprovementsManagerTestApi {
     manager_->autofill_suggestions_ = autofill_suggestions;
   }
 
-  void SetFeedbackId(std::optional<std::string> feedback_id) {
-    manager_->feedback_id_ = feedback_id;
+  void SetFormFillingPredictionsModelExecutionId(
+      std::optional<std::string> model_execution_id) {
+    manager_->form_filling_predictions_model_execution_id_ = model_execution_id;
   }
 
   const base::OneShotTimer& loading_suggestion_timer() {

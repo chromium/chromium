@@ -564,8 +564,8 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(
       void,
       ShowSaveAutofillPredictionImprovementsBubble,
-      (const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
-           to_be_upserted_entries,
+      (std::unique_ptr<user_annotations::FormAnnotationResponse>
+           form_annotation_response,
        user_annotations::PromptAcceptanceCallback prompt_acceptance_callback),
       (override));
 };
@@ -7299,18 +7299,23 @@ TEST_F(BrowserAutofillManagerTest,
   entry.set_entry_id(1LL);
   entry.set_key("key");
   entry.set_value("value");
-  EXPECT_CALL(
-      autofill_client_,
-      ShowSaveAutofillPredictionImprovementsBubble(
-          ElementsAre(AllOf(
-              Property(&UserAnnotationsEntry::entry_id, Eq(entry.entry_id())),
-              Property(&UserAnnotationsEntry::key, Eq(entry.key())),
-              Property(&UserAnnotationsEntry::value, Eq(entry.value())))),
-          _));
+  std::unique_ptr<user_annotations::FormAnnotationResponse>
+      form_annotation_response;
+  EXPECT_CALL(autofill_client_, ShowSaveAutofillPredictionImprovementsBubble)
+      .WillOnce(MoveArg<0>(&form_annotation_response));
+  user_annotations::UserAnnotationsEntries entries{entry};
   std::move(import_form_callback)
       .Run(std::make_unique<FormStructure>(response_data),
-           /*to_be_upserted_entries=*/{std::move(entry)},
+           std::make_unique<user_annotations::FormAnnotationResponse>(
+               std::move(entries),
+               /*model_execution_id=*/std::string()),
            /*prompt_acceptance_callback=*/base::DoNothing());
+  EXPECT_THAT(
+      form_annotation_response->to_be_upserted_entries,
+      ElementsAre(
+          AllOf(Property(&UserAnnotationsEntry::entry_id, Eq(entry.entry_id())),
+                Property(&UserAnnotationsEntry::key, Eq(entry.key())),
+                Property(&UserAnnotationsEntry::value, Eq(entry.value())))));
   EXPECT_TRUE(adm.GetProfiles().empty());
 }
 
@@ -7333,7 +7338,7 @@ TEST_F(BrowserAutofillManagerTest,
                         user_annotations::ImportFormCallback callback) {
         std::move(callback).Run(
             std::move(form),
-            /*to_be_upserted_entries=*/{},
+            /*form_annotation_response=*/nullptr,
             /*prompt_acceptance_callback=*/base::DoNothing());
       });
 

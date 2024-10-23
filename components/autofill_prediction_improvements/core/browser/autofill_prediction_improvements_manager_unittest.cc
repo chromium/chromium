@@ -920,7 +920,8 @@ TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
        TryToOpenFeedbackPageNeverCalledIfUserFeedbackThumbsDown) {
   using UserFeedback =
       autofill::AutofillPredictionImprovementsDelegate::UserFeedback;
-  test_api(*manager_).SetFeedbackId("randomstringrjb");
+  test_api(*manager_).SetFormFillingPredictionsModelExecutionId(
+      "randomstringrjb");
   EXPECT_CALL(client_, TryToOpenFeedbackPage)
       .Times(GetParam() == UserFeedback::kThumbsDown);
   manager_->UserFeedbackReceived(GetParam());
@@ -929,7 +930,7 @@ TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
 // Tests that the feedback page will never be opened if no feedback id is set.
 TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
        TryToOpenFeedbackPageNeverCalledIfNoFeedbackIdPresent) {
-  test_api(*manager_).SetFeedbackId(std::nullopt);
+  test_api(*manager_).SetFormFillingPredictionsModelExecutionId(std::nullopt);
   EXPECT_CALL(client_, TryToOpenFeedbackPage).Times(0);
   manager_->UserFeedbackReceived(GetParam());
 }
@@ -994,16 +995,18 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
   user_annotations_service_.SetShouldImportFormData(
       /*should_import_form_data=*/std::get<0>(GetParam()));
 
-  std::vector<optimization_guide::proto::UserAnnotationsEntry>
-      user_annotations_entries;
+  std::unique_ptr<user_annotations::FormAnnotationResponse>
+      form_annotation_response;
   EXPECT_CALL(import_form_callback, Run)
-      .WillOnce(SaveArg<1>(&user_annotations_entries));
+      .WillOnce(MoveArg<1>(&form_annotation_response));
   manager_->MaybeImportForm(std::move(eligible_form_structure),
                             import_form_callback.Get());
   if (ShouldExtractAXTree()) {
     std::move(axtree_received_callback).Run({});
   }
-  EXPECT_THAT(user_annotations_entries.empty(), !std::get<0>(GetParam()));
+  EXPECT_THAT(!form_annotation_response ||
+                  form_annotation_response->to_be_upserted_entries.empty(),
+              !std::get<0>(GetParam()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1041,16 +1044,16 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   user_annotations_service_.SetShouldImportFormData(
       /*should_import_form_data=*/true);
 
-  std::vector<optimization_guide::proto::UserAnnotationsEntry>
-      user_annotations_entries;
+  std::unique_ptr<user_annotations::FormAnnotationResponse>
+      form_annotation_response;
   EXPECT_CALL(import_form_callback, Run)
-      .WillOnce(SaveArg<1>(&user_annotations_entries));
+      .WillOnce(MoveArg<1>(&form_annotation_response));
   EXPECT_CALL(client_, GetAXTree).Times(0);
   EXPECT_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
       .WillOnce(Return(false));
   manager_->MaybeImportForm(std::move(eligible_form_structure),
                             import_form_callback.Get());
-  EXPECT_TRUE(user_annotations_entries.empty());
+  EXPECT_FALSE(form_annotation_response);
 }
 
 // Tests that `import_form_callback` is run with an empty list of entries when
@@ -1063,14 +1066,14 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       {{"allowed_hosts_for_form_submissions", "otherhost.com"}});
   base::MockCallback<user_annotations::ImportFormCallback> import_form_callback;
 
-  std::vector<optimization_guide::proto::UserAnnotationsEntry>
-      user_annotations_entries;
+  std::unique_ptr<user_annotations::FormAnnotationResponse>
+      form_annotation_response;
   EXPECT_CALL(import_form_callback, Run)
-      .WillOnce(SaveArg<1>(&user_annotations_entries));
+      .WillOnce(MoveArg<1>(&form_annotation_response));
   manager_->MaybeImportForm(
       std::make_unique<autofill::FormStructure>(autofill::FormData()),
       import_form_callback.Get());
-  EXPECT_TRUE(user_annotations_entries.empty());
+  EXPECT_FALSE(form_annotation_response);
 }
 
 // Tests that the callback passed to `HasDataStored()` is called with

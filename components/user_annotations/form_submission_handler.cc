@@ -109,7 +109,7 @@ void FormSubmissionHandler::SendFormSubmissionResult(
     if (callback_) {
       std::move(callback_).Run(
           std::move(form_),
-          /*to_be_upserted_entries=*/{},
+          /*form_annotation_response=*/nullptr,
           /*prompt_acceptance_callback=*/base::DoNothing());
     }
     NotifyCompletion();
@@ -119,16 +119,17 @@ void FormSubmissionHandler::SendFormSubmissionResult(
   if (result->upserted_entries().empty()) {
     optimization_guide::ModelQualityLogEntry::Drop(std::move(log_entry));
     std::move(callback_).Run(std::move(form_),
-                             /*to_be_upserted_entries=*/{},
+                             /*form_annotation_response=*/nullptr,
                              /*prompt_acceptance_callback=*/base::DoNothing());
     NotifyCompletion();
     return;
   }
-
-  UserAnnotationsEntries upserted_entries = UserAnnotationsEntries(
-      result->upserted_entries().begin(), result->upserted_entries().end());
+  auto form_annotation_response = std::make_unique<FormAnnotationResponse>(
+      UserAnnotationsEntries(result->upserted_entries().begin(),
+                             result->upserted_entries().end()),
+      log_entry->model_execution_id());
   std::move(callback_).Run(
-      std::move(form_), upserted_entries,
+      std::move(form_), std::move(form_annotation_response),
       base::BindOnce(&FormSubmissionHandler::OnImportFormConfirmation,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result),
                      std::move(log_entry)));

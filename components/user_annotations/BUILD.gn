@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("types") {
-  sources = [ "user_annotations_types.h" ]
+  sources = [
+    "user_annotations_types.cc",
+    "user_annotations_types.h",
+  ]
   public_deps = [
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",

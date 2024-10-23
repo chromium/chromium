@@ -170,8 +170,8 @@ void AutofillClient::HideAutofillFieldIph() {}
 void AutofillClient::NotifyIphFeatureUsed(AutofillClient::IphFeature feature) {}
 
 void AutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
-    const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
-        to_be_upserted_entries,
+    std::unique_ptr<user_annotations::FormAnnotationResponse>
+        form_annotation_response,
     user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {}
 
 std::optional<AutofillClient::PopupScreenLocation>
