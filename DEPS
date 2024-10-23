@@ -206,20 +206,6 @@ vars = {
   'checkout_simplechrome': '"{cros_boards}" != ""',
   'checkout_simplechrome_with_vms': '"{cros_boards_with_qemu_images}" != ""',
 
-  # By default, do not check out versions of toolschains and sdks that are
-  # specifically only needed by Lacros.
-  'checkout_lacros_sdk': False,
-  # To update the sdk version:
-  # 1 Choose a version that's not newer than the Ash side so it's thoroughly
-  #   tested:
-  #   https://chromium-review.googlesource.com/q/%2522Automated+Commit:+LKGM%2522+status:merged
-  # 2 CL description:
-  # Lacros SDK: Update version <version>
-  #
-  # CQ_INCLUDE_TRYBOTS=luci.chrome.try:lacros-amd64-generic-chrome-skylab
-  # CQ_INCLUDE_TRYBOTS=luci.chrome.try:lacros-arm-generic-chrome-skylab
-  'lacros_sdk_version': '16035.0.0-1063260',
-
   # Generate location tag metadata to include in tests result data uploaded
   # to ResultDB. This isn't needed on some configs and the tool that generates
   # the data may not run on them, so we make it possible for this to be
@@ -5237,86 +5223,6 @@ hooks = [
       '--download-vm',
     ],
   },
-  # Download Lacros's version of the simplechrome sdks. VMs are disregarded
-  # because this version of sdk is only used for compiling Lacros.
-  {
-    'name': 'cros_simplechrome_artifacts_with_vm for lacros',
-    'pattern': '.',
-    'condition': 'checkout_simplechrome_with_vms and not checkout_src_internal and checkout_lacros_sdk',
-    'action': [
-      'vpython3',
-      'src/third_party/chromite/bin/cros',
-      'chrome-sdk',
-      '--fallback-versions=20',
-      '--no-use-remoteexec',
-      '--nogn-gen',
-      '--no-shell',
-      '--log-level=warning',
-      '--cache-dir=src/build/cros_cache/',
-      '--use-external-config',
-      '--boards={cros_boards_with_qemu_images}',
-      '--is-lacros',
-      '--version={lacros_sdk_version}',
-    ],
-  },
-  {
-    'name': 'cros_simplechrome_artifacts_with_no_vm for lacros',
-    'pattern': '.',
-    'condition': 'checkout_simplechrome and not checkout_src_internal and checkout_lacros_sdk',
-    'action': [
-      'vpython3',
-      'src/third_party/chromite/bin/cros',
-      'chrome-sdk',
-      '--fallback-versions=20',
-      '--no-use-remoteexec',
-      '--nogn-gen',
-      '--no-shell',
-      '--log-level=warning',
-      '--cache-dir=src/build/cros_cache/',
-      '--use-external-config',
-      '--boards={cros_boards}',
-      '--is-lacros',
-      '--version={lacros_sdk_version}',
-    ],
-  },
-  {
-    'name': 'cros_simplechrome_artifacts_with_vm_internal for lacros',
-    'pattern': '.',
-    'condition': 'checkout_simplechrome_with_vms and checkout_src_internal and checkout_lacros_sdk',
-    'action': [
-      'vpython3',
-      'src/third_party/chromite/bin/cros',
-      'chrome-sdk',
-      '--fallback-versions=20',
-      '--no-use-remoteexec',
-      '--nogn-gen',
-      '--no-shell',
-      '--log-level=warning',
-      '--cache-dir=src/build/cros_cache/',
-      '--boards={cros_boards_with_qemu_images}',
-      '--is-lacros',
-      '--version={lacros_sdk_version}',
-    ],
-  },
-  {
-    'name': 'cros_simplechrome_artifacts_with_no_vm_internal for lacros',
-    'pattern': '.',
-    'condition': 'checkout_simplechrome and checkout_src_internal and checkout_lacros_sdk',
-    'action': [
-      'vpython3',
-      'src/third_party/chromite/bin/cros',
-      'chrome-sdk',
-      '--fallback-versions=20',
-      '--no-use-remoteexec',
-      '--nogn-gen',
-      '--no-shell',
-      '--log-level=warning',
-      '--cache-dir=src/build/cros_cache/',
-      '--boards={cros_boards}',
-      '--is-lacros',
-      '--version={lacros_sdk_version}',
-    ],
-  },
 
   # Download PGO profiles.
   {
@@ -5381,40 +5287,6 @@ hooks = [
     'action': [ 'python3',
                 'src/tools/update_pgo_profiles.py',
                 '--target=linux',
-                'update',
-                '--gs-url-base=chromium-optimization-profiles/pgo_profiles',
-    ],
-  },
-  {
-    'name': 'Fetch PGO profiles for lacros amd64',
-    'pattern': '.',
-    'condition': 'checkout_pgo_profiles and checkout_lacros_sdk',
-    'action': [ 'python3',
-                'src/tools/update_pgo_profiles.py',
-                '--target=lacros64',
-                'update',
-                '--gs-url-base=chromium-optimization-profiles/pgo_profiles',
-    ],
-  },
-  {
-    'name': 'Fetch PGO profiles for lacros arm',
-    'pattern': '.',
-    'condition': 'checkout_pgo_profiles and checkout_lacros_sdk',
-    'action': [ 'python3',
-                'src/tools/update_pgo_profiles.py',
-                # Use arm64 profile.
-                '--target=lacros-arm64',
-                'update',
-                '--gs-url-base=chromium-optimization-profiles/pgo_profiles',
-    ],
-  },
-  {
-    'name': 'Fetch PGO profiles for lacros arm64',
-    'pattern': '.',
-    'condition': 'checkout_pgo_profiles and checkout_lacros_sdk',
-    'action': [ 'python3',
-                'src/tools/update_pgo_profiles.py',
-                '--target=lacros-arm64',
                 'update',
                 '--gs-url-base=chromium-optimization-profiles/pgo_profiles',
     ],
