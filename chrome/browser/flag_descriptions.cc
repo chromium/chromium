@@ -6050,12 +6050,6 @@ const char kAudioOffloadCrasDSPToSOFDescription[] =
 const char kAudioStyleTransferName[] = "Audio style transfer";
 const char kAudioStyleTransferDescription[] = "Enable audio style transfer";
 
-const char kAudioAecRequiredForCrasProcessorName[] =
-    "Require AEC to be active for an audio stream to run CrasProcessor";
-const char kAudioAecRequiredForCrasProcessorDescription[] =
-    "Require AEC to be active for an audio stream to run CrasProcessor. For "
-    "debug purpose only.";
-
 const char kAudioSelectionImprovementName[] =
     "Enable audio selection improvement algorithm";
 const char kAudioSelectionImprovementDescription[] =

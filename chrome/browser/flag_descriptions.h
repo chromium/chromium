@@ -3484,9 +3484,6 @@ extern const char kAudioOffloadCrasDSPToSOFDescription[];
 extern const char kAudioStyleTransferName[];
 extern const char kAudioStyleTransferDescription[];
 
-extern const char kAudioAecRequiredForCrasProcessorName[];
-extern const char kAudioAecRequiredForCrasProcessorDescription[];
-
 extern const char kAudioSelectionImprovementName[];
 extern const char kAudioSelectionImprovementDescription[];
 
