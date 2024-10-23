@@ -113,11 +113,16 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         webrtc::H264SupportedLevel(width * height, fps);
     const webrtc::H264ProfileLevelId profile_level_id(
         h264_profile, h264_level.value_or(webrtc::H264Level::kLevel1));
+    const std::optional<std::string> h264_profile_level_string =
+        webrtc::H264ProfileLevelIdToString(profile_level_id);
+    if (!h264_profile_level_string) {
+      // Unsupported combination of profile and level.
+      return std::nullopt;
+    }
 
     webrtc::SdpVideoFormat format("H264");
     format.parameters = {
-        {cricket::kH264FmtpProfileLevelId,
-         *webrtc::H264ProfileLevelIdToString(profile_level_id)},
+        {cricket::kH264FmtpProfileLevelId, *h264_profile_level_string},
         {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
         {cricket::kH264FmtpPacketizationMode, "1"}};
     return format;

@@ -32,6 +32,7 @@ constexpr webrtc::VideoEncoderFactory::CodecSupport kUnsupported = {false,
                                                                     false};
 constexpr gfx::Size kMaxResolution = {1920, 1080};
 constexpr uint32_t kMaxFramerateNumerator = 30;
+constexpr gfx::Size kLowResolution = {320, 240};
 
 #if BUILDFLAG(RTC_USE_H265)
 // Settings from video toolbox encoder.
@@ -63,6 +64,10 @@ class MockGpuVideoEncodeAcceleratorFactories
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
          kScalabilityModes},
         {media::H264PROFILE_BASELINE, kMaxResolution, kMaxFramerateNumerator,
+         kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
+         kScalabilityModes},
+        // H264 with mismatch between profile and resolution should be ignored.
+        {media::H264PROFILE_HIGH, kLowResolution, kMaxFramerateNumerator,
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
          kScalabilityModes},
         {media::VP8PROFILE_ANY, kMaxResolution, kMaxFramerateNumerator,
