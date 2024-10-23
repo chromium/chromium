@@ -105,6 +105,16 @@ void InitTabDataCollection(
                        std::move(rank_dispatcher));
 }
 
+void InitializeUkmDatabaseIfNeeded(Profile* profile) {
+  // The client is initialized in
+  // `ChromeBrowserMainExtraPartsSegmentationPlatform::PreProfileInit()` for
+  // production scenarios. But unit tests do not initialize the browser process,
+  // so this code path initializes the UKM client. Use in-memory since only
+  // tests should use this path.
+  UkmDatabaseClientHolder::GetClientInstance(profile).PreProfileInit(
+      /*in_memory_database=*/true);
+}
+
 }  // namespace
 
 // static
@@ -161,6 +171,8 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   auto home_modules_card_registry =
       std::make_unique<home_modules::HomeModulesCardRegistry>(
           profile->GetPrefs());
+
+  InitializeUkmDatabaseIfNeeded(profile);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   auto profile_path = profile->GetPath().value();

@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/public/features.h"
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
@@ -150,7 +151,11 @@ BASE_FEATURE(kSegmentationPlatformComposePromotion,
 
 BASE_FEATURE(kSegmentationPlatformUmaFromSqlDb,
              "SegmentationPlatformUmaFromSqlDb",
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kSegmentationPlatformIosModuleRankerSplitBySurface,
              "SegmentationPlatformIosModuleRankerSplitBySurface",
