@@ -343,7 +343,12 @@ public class MediaSessionHelper implements MediaImageCallback {
 
                     @Override
                     public void onVisibilityChanged(@Visibility int visibility) {
-                        if (visibility == Visibility.VISIBLE) {
+                        // We should activate back the MediaSession eagerly when the WC is visible
+                        // again because some old versions of Android will only notify the latest
+                        // activated MediaSession. However, we shouldn't attempt to activate a
+                        // session that isn't actually active as it needlessly triggers the entire
+                        // internal MediaSession machinery.
+                        if (visibility == Visibility.VISIBLE && !isNotificationHidingOrHidden()) {
                             mDelegate.activateAndroidMediaSession();
                         }
                     }
