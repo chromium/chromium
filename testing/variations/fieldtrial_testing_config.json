@@ -17532,7 +17532,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240312",
+                    "name": "Enabled_20241023",
+                    "params": {
+                        "PrefetchReusableUseNewWaitLoop": "true",
+                        "prefetch_reusable_body_size_limit": "65536"
+                    },
                     "enable_features": [
                         "PrefetchReusable"
                     ]
