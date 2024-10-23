@@ -1480,11 +1480,16 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
   }
 
   // Resets `retries_` and begins attempts to shutdown sequenced with delay
-  // until kKeepAliveHandleFactoryTimeout is reached.
+  // until kKeepAliveHandleFactoryTimeout is reached. Posts the shutdown task to
+  // the task queue as a synchronous process shutdown may update RFH state in a
+  // way callers may not expect.
   void ShutdownForDiscardIfPossible() {
     shutdown_attempt_timer_.Stop();
     retries_ = 0;
-    ShutdownIfPossible();
+    shutdown_attempt_timer_.Start(
+        FROM_HERE, /*delay=*/base::TimeDelta(),
+        base::BindRepeating(&DiscardedRFHProcessHelper::ShutdownIfPossible,
+                            base::Unretained(this)));
   }
 
  private:
