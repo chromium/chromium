@@ -439,7 +439,6 @@ include_rules = [
   "+extensions/grit",
   "+extensions/test",
   "+google_apis",
-  "+google_update",
   "+installer_util_strings",  # For generated headers
   "+media/media_buildflags.h",
   "+media/audio", # For media audio hang monitor.

@@ -39,7 +39,6 @@ DIRECTORIES_TO_SEARCH = [
     'fuchsia_web',
     'gin',
     'google_apis',
-    'google_update',
     'gpu',
     'headless',
     'infra',

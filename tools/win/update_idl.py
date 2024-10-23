@@ -147,7 +147,6 @@ def main():
                 'updater_legacy_idl',
                 'updater_legacy_idl_user',
                 'updater_legacy_idl_system',
-                'google_update',
                 'elevation_service_idl',
                 'gaia_credential_provider_idl',
                 'iaccessible2',
