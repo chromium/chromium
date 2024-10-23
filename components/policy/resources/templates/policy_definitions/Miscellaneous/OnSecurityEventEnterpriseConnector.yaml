@@ -51,6 +51,9 @@ schema:
         type: string
     type: object
   type: array
+future_on:
+- android
+- ios
 supported_on:
 - chrome.*:84-
 - chrome_os:84-
