@@ -44,13 +44,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
-#include "base/containers/extend.h"
-#include "chrome/common/chrome_features.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#endif
-
 namespace web_app {
 
 WebAppBrowserTestBase::WebAppBrowserTestBase()
@@ -66,13 +59,7 @@ WebAppBrowserTestBase::WebAppBrowserTestBase(
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
       update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
           AppIdentityUpdate::kSkipped)) {
-  std::vector<base::test::FeatureRef> all_disabled_features = disabled_features;
-#if BUILDFLAG(IS_CHROMEOS)
-  base::Extend(all_disabled_features,
-               ash::standalone_browser::GetFeatureRefs());
-#endif
-  scoped_feature_list_.InitWithFeatures(enabled_features,
-                                        all_disabled_features);
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 WebAppBrowserTestBase::~WebAppBrowserTestBase() = default;
