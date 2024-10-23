@@ -34,11 +34,11 @@ source_set("profile_controller") {
   deps = [
     ":docking_promo_profile_agent",
     ":first_run_profile_agent",
+    ":identity_confirmation_app_agent",
     ":post_restore_profile_agent",
     ":profile",
     ":search_engine_choice_profile_agent",
     "//base",
-    "//ios/chrome/app:identity_confirmation_app_agent",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/discover_feed/model:discover_feed_profile_agent",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
@@ -128,6 +128,30 @@ source_set("search_engine_choice_profile_agent") {
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/ui/search_engine_choice",
+  ]
+}
+
+source_set("identity_confirmation_app_agent") {
+  sources = [
+    "identity_confirmation_profile_agent.h",
+    "identity_confirmation_profile_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/policy/ui_bundled:management_util",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar",
+    "//ios/chrome/browser/signin/model",
+    "//ios/third_party/material_components_ios",
   ]
 }
 
