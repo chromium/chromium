@@ -46,11 +46,14 @@ _CHROME_PATH_WIN = {
 }
 
 _CHROME_PATH_MAC = {
-  "stable": r"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  "beta": r"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  "dev": r"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  "canary": (r"/Applications/Google Chrome Canary.app/Contents/MacOS/"
-             r"Google Chrome Canary"),
+    "stable":
+    r"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "beta":
+    r"/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta",
+    "dev":
+    r"/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev",
+    "canary": (r"/Applications/Google Chrome Canary.app/Contents/MacOS/"
+               r"Google Chrome Canary"),
 }
 
 _CHROME_PATH_LINUX = {
