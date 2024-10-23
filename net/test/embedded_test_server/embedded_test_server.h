@@ -331,8 +331,15 @@ class EmbeddedTestServer {
     // intermediate cert (if an intermediate is configured).
     std::vector<std::string> policy_oids;
 
+    // Value to use for leaf's basicConstraints isCA field
+    bool leaf_is_ca = false;
+
     // A list of DNS names to include in the leaf subjectAltName extension.
     std::vector<std::string> dns_names;
+
+    // A list of DNS names to include in the root subjectAltName extension. Only
+    // used if root = RootType::kUniqueRoot
+    std::vector<std::string> root_dns_names;
 
     // A list of IP addresses to include in the leaf subjectAltName extension.
     std::vector<net::IPAddress> ip_addresses;
