@@ -19,10 +19,6 @@ class TrustedVaultService;
 
 class IOSTrustedVaultServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static trusted_vault::TrustedVaultService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static trusted_vault::TrustedVaultService* GetForProfile(ProfileIOS* profile);
   static IOSTrustedVaultServiceFactory* GetInstance();
 

@@ -23,9 +23,6 @@ class BrowserState;
 // profile. It returns nullptr for Incognito profiles.
 class RealTimeUrlLookupServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static safe_browsing::RealTimeUrlLookupService* GetForBrowserState(
-      ProfileIOS* profile);
   // Returns null if `profile` is in Incognito mode.
   static safe_browsing::RealTimeUrlLookupService* GetForProfile(
       ProfileIOS* profile);

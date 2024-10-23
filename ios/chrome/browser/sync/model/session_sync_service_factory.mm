@@ -140,12 +140,6 @@ bool SessionSyncServiceFactory::ShouldSyncURLForTesting(const GURL& url) {
 }
 
 // static
-SessionSyncService* SessionSyncServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SessionSyncService* SessionSyncServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<SessionSyncService*>(

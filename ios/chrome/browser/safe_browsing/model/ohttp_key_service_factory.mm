@@ -49,12 +49,6 @@ safe_browsing::OhttpKeyService* OhttpKeyServiceFactory::GetForProfile(
 }
 
 // static
-safe_browsing::OhttpKeyService* OhttpKeyServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 OhttpKeyServiceFactory* OhttpKeyServiceFactory::GetInstance() {
   static base::NoDestructor<OhttpKeyServiceFactory> instance;
   return instance.get();

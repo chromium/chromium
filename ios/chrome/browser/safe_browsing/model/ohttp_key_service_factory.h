@@ -23,10 +23,6 @@ class OhttpKeyServiceFactory : public BrowserStateKeyedServiceFactory {
   // creating one if none exists.
   static safe_browsing::OhttpKeyService* GetForProfile(ProfileIOS* profile);
 
-  // Deprecated: use GetForProfile(...).
-  static safe_browsing::OhttpKeyService* GetForBrowserState(
-      ProfileIOS* profile);
-
   // Returns the singleton instance of OhttpKeyServiceFactory.
   static OhttpKeyServiceFactory* GetInstance();
 

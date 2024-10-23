@@ -21,10 +21,6 @@ class SessionSyncService;
 // ProfileIOS.
 class SessionSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static sync_sessions::SessionSyncService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static sync_sessions::SessionSyncService* GetForProfile(ProfileIOS* profile);
   static SessionSyncServiceFactory* GetInstance();
 

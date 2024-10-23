@@ -24,9 +24,6 @@ class BrowserState;
 class SafeBrowsingMetricsCollectorFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static safe_browsing::SafeBrowsingMetricsCollector* GetForBrowserState(
-      ProfileIOS* profile);
 
   // Returns null if `profile` is in Incognito mode.
   static safe_browsing::SafeBrowsingMetricsCollector* GetForProfile(

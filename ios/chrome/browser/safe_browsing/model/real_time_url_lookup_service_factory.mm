@@ -23,12 +23,6 @@
 
 // static
 safe_browsing::RealTimeUrlLookupService*
-RealTimeUrlLookupServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-safe_browsing::RealTimeUrlLookupService*
 RealTimeUrlLookupServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<safe_browsing::RealTimeUrlLookupService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
