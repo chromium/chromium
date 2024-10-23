@@ -416,23 +416,29 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
 
   void IssueOnQuery(
       const gfx::Rect& caret_bounds,
-      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource) {
+      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource,
+      FieldType trigger_field_type = NAME_FIRST,
+      const std::string& autocomplete_attribute = "given-name") {
     FormGlobalId form_id = test::MakeFormGlobalId();
     FieldGlobalId field_id = test::MakeFieldGlobalId();
-    IssueOnQuery(test::GetFormData({
-                     .fields = {{.role = NAME_FIRST,
-                                 .host_frame = field_id.frame_token,
-                                 .renderer_id = field_id.renderer_id,
-                                 .autocomplete_attribute = "given-name"}},
-                     .host_frame = form_id.frame_token,
-                     .renderer_id = form_id.renderer_id,
-                 }),
-                 caret_bounds, trigger_source);
+    IssueOnQuery(
+        test::GetFormData({
+            .fields = {{.role = trigger_field_type,
+                        .host_frame = field_id.frame_token,
+                        .renderer_id = field_id.renderer_id,
+                        .autocomplete_attribute = autocomplete_attribute}},
+            .host_frame = form_id.frame_token,
+            .renderer_id = form_id.renderer_id,
+        }),
+        caret_bounds, trigger_source);
   }
 
   void IssueOnQuery(
-      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource) {
-    IssueOnQuery(/*caret_bounds=*/gfx::Rect(), trigger_source);
+      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource,
+      FieldType trigger_field_type = NAME_FIRST,
+      const std::string& autocomplete_attribute = "given-name") {
+    IssueOnQuery(/*caret_bounds=*/gfx::Rect(), trigger_source,
+                 trigger_field_type, autocomplete_attribute);
   }
   // Returns the triggering `AutofillField`. This is the only field in the form
   // created in `IssueOnQuery()`.
@@ -2678,7 +2684,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 // without the email override is filled.
 TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
        ExternalDelegateFillsEmailOverrideAndShowsUserNotification) {
-  IssueOnQuery();
+  IssueOnQuery(kDefaultTriggerSource, EMAIL_ADDRESS, "email");
 
   const std::u16string plus_address = u"test+plus@test.example";
   const AutofillProfile profile = test::GetFullProfile();
@@ -2722,10 +2728,13 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
   ASSERT_TRUE(undo_callback);
-  EXPECT_CALL(manager(),
-              FillOrPreviewProfileForm(mojom::ActionPersistence::kFill,
-                                       HasQueriedFormId(), HasQueriedFieldId(),
-                                       profile, _));
+  EXPECT_CALL(
+      manager(),
+      FillOrPreviewField(
+          mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+          HasQueriedFormId(), HasQueriedFieldId(),
+          profile.GetRawInfo(EMAIL_ADDRESS), SuggestionType::kAddressEntry,
+          /*field_type_used=*/std::optional(EMAIL_ADDRESS)));
   std::move(undo_callback).Run();
 }
 

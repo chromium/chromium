@@ -1611,10 +1611,31 @@ void AutofillExternalDelegate::OnEmailOverrideUndone(
     Suggestion::Guid guid,
     const SuggestionMetadata& metadata,
     const AutofillTriggerDetails& trigger_details) {
-  // Fill the unmodified profile by using a payload with no email override.
-  FillAutofillFormData(suggestion_type,
-                       Suggestion::AutofillProfilePayload(guid), metadata,
-                       /*is_preview=*/false, trigger_details);
+  PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
+  const AutofillProfile* profile =
+      pdm->address_data_manager().GetProfileByGUID(guid.value());
+  const FormStructure* form_structure =
+      manager_->FindCachedFormById(query_form_.global_id());
+  if (!profile || !form_structure) {
+    return;
+  }
+
+  const std::vector<std::unique_ptr<AutofillField>>& fields =
+      form_structure->fields();
+  const auto IsEmailField = [](const auto& field) {
+    return field->Type().GetStorableType() == EMAIL_ADDRESS;
+  };
+
+  // Look for the email field in the form.
+  if (auto email_field_it = std::ranges::find_if(fields, IsEmailField);
+      email_field_it != fields.end()) {
+    // Fill the address profile original email.
+    manager_->FillOrPreviewField(
+        mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+        query_form_, **email_field_it, profile->GetRawInfo(EMAIL_ADDRESS),
+        suggestion_type, EMAIL_ADDRESS);
+  }
+
   // TODO(crbug.com/324557053): Add metrics.
 }
 
