@@ -280,6 +280,7 @@ extern const char kAllowNaClSocketAPI[];
     BUILDFLAG(IS_WIN)
 extern const char kEnableNewAppMenuIcon[];
 extern const char kGuest[];
+extern const char kForceNtpMobilePromo[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
