@@ -294,8 +294,17 @@ public class PdfUtils {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DocumentLoadResult", isLoadSuccess);
     }
 
+    static void recordPdfLoadResultPaired(boolean isLoadSuccess) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Pdf.DocumentLoadResult.Paired", isLoadSuccess);
+    }
+
     static void recordPdfLoadTime(long duration) {
         RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime", duration);
+    }
+
+    static void recordPdfLoadTimePaired(long duration) {
+        RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime.Paired", duration);
     }
 
     static void recordFindInPage(int findInPageCounts) {

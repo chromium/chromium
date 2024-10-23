@@ -93,12 +93,20 @@ public class PdfCoordinator {
         @Override
         public void onLoadDocumentSuccess() {
             mIsLoadDocumentSuccess = true;
-            PdfUtils.recordPdfLoadTime(SystemClock.elapsedRealtime() - mDocumentLoadStartTimestamp);
+            long duration = SystemClock.elapsedRealtime() - mDocumentLoadStartTimestamp;
+            if (mDocumentLoadStartTimestamp > 0) {
+                PdfUtils.recordPdfLoadTimePaired(duration);
+                PdfUtils.recordPdfLoadResultPaired(true);
+            }
+            PdfUtils.recordPdfLoadTime(duration);
             PdfUtils.recordPdfLoadResult(true);
         }
 
         @Override
         public void onLoadDocumentError(@NonNull Throwable throwable) {
+            if (mDocumentLoadStartTimestamp > 0) {
+                PdfUtils.recordPdfLoadResultPaired(false);
+            }
             PdfUtils.recordPdfLoadResult(false);
         }
     }
