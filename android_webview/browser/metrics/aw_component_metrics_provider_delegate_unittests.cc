@@ -63,16 +63,6 @@ class AwComponentMetricsProviderDelegateTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(AwComponentMetricsProviderDelegateTest,
-       TestAppsPackageNamesComponent_NotLoaded) {
-  metrics::ComponentMetricsProvider provider(
-      std::make_unique<AwComponentMetricsProviderDelegate>(GetClient()));
-
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideSystemProfileMetrics(&system_profile);
-  EXPECT_TRUE(system_profile.chrome_component().empty());
-}
-
 TEST_F(AwComponentMetricsProviderDelegateTest, TestMultipleComponents) {
   AwComponentMetricsProviderDelegate delegate(GetClient());
 

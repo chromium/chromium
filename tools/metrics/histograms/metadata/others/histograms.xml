@@ -2912,8 +2912,6 @@ chromium-metrics-reviews@google.com.
     <variant name="OriginTrials" summary="OriginTrials"/>
     <variant name="TrustTokenKeyCommitments"
         summary="TrustTokenKeyCommitments"/>
-    <variant name="WebViewAppsPackageNamesAllowlist"
-        summary="WebViewAppsPackageNamesAllowlist"/>
     <variant name="WebViewEmptyComponent" summary="WebViewEmptyComponent"/>
   </token>
 </histogram>
