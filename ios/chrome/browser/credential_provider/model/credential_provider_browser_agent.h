@@ -21,8 +21,8 @@ class PasskeyModel;
 // notification when required.
 class CredentialProviderBrowserAgent
     : public BrowserUserData<CredentialProviderBrowserAgent>,
-      public webauthn::PasskeyModel::Observer,
-      public BrowserObserver {
+      public BrowserObserver,
+      public webauthn::PasskeyModel::Observer {
  public:
   ~CredentialProviderBrowserAgent() override;
 
@@ -32,7 +32,7 @@ class CredentialProviderBrowserAgent
 
   explicit CredentialProviderBrowserAgent(Browser* browser);
 
-  void DisplayInfoBar();
+  void DisplayInfoBar(const sync_pb::WebauthnCredentialSpecifics& passkey);
 
   void RemoveObservers();
 

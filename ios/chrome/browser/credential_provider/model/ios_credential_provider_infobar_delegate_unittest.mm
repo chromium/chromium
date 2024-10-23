@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -18,14 +19,15 @@ class IOSCredentialProviderInfoBarDelegateTest : public PlatformTest {
  public:
   void SetUp() override {
     account_string_ = kAccountString;
-    delegate_ =
-        std::make_unique<IOSCredentialProviderInfoBarDelegate>(account_string_);
+    delegate_ = std::make_unique<IOSCredentialProviderInfoBarDelegate>(
+        account_string_, passkey_, /*settings_handler=*/nil);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::string account_string_;
+  sync_pb::WebauthnCredentialSpecifics passkey_;
   // Infobar delegate to test.
   std::unique_ptr<IOSCredentialProviderInfoBarDelegate> delegate_;
 };

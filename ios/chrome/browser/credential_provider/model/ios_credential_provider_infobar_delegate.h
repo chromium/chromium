@@ -12,14 +12,22 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "ui/base/models/image_model.h"
+
+@protocol SettingsCommands;
 
 class IOSCredentialProviderInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   static std::unique_ptr<IOSCredentialProviderInfoBarDelegate> Create(
-      std::string account_string);
+      std::string account_string,
+      sync_pb::WebauthnCredentialSpecifics passkey,
+      id<SettingsCommands> settings_handler);
 
-  explicit IOSCredentialProviderInfoBarDelegate(std::string account_string);
+  explicit IOSCredentialProviderInfoBarDelegate(
+      std::string account_string,
+      sync_pb::WebauthnCredentialSpecifics passkey,
+      id<SettingsCommands> settings_handler);
 
   IOSCredentialProviderInfoBarDelegate(
       const IOSCredentialProviderInfoBarDelegate&) = delete;
@@ -33,10 +41,23 @@ class IOSCredentialProviderInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetTitleText() const override;
   std::u16string GetMessageText() const override;
   ui::ImageModel GetIcon() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
+  bool Accept() override;
 
  private:
+  void ShowPasskeyDetails() const;
+
   // User account identification string.
   std::string account_string_;
+
+  // Passkey which triggered the inforbar.
+  sync_pb::WebauthnCredentialSpecifics passkey_;
+
+  // Settings handler to open the passkey details menu.
+  __weak id<SettingsCommands> settings_handler_;
+
+  // Whether to open passkey details on infobar exit.
+  bool show_passkey_details_on_exit_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_IOS_CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_H_

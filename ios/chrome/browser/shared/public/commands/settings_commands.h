@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SETTINGS_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SETTINGS_COMMANDS_H_
 
+#import <UIKit/UIKit.h>
+
 namespace autofill {
 class AutofillProfile;
 class CreditCard;

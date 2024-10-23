@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/web/public/web_state.h"
@@ -36,7 +38,12 @@ CredentialProviderBrowserAgent::CredentialProviderBrowserAgent(Browser* browser)
 
 CredentialProviderBrowserAgent::~CredentialProviderBrowserAgent() = default;
 
-void CredentialProviderBrowserAgent::DisplayInfoBar() {
+void CredentialProviderBrowserAgent::DisplayInfoBar(
+    const sync_pb::WebauthnCredentialSpecifics& passkey) {
+  if (!browser_) {
+    return;
+  }
+
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
   if (!web_state || !web_state->IsVisible()) {
     return;
@@ -61,14 +68,18 @@ void CredentialProviderBrowserAgent::DisplayInfoBar() {
 
   CoreAccountInfo account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  id<SettingsCommands> settings_handler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), SettingsCommands);
 
-  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
-      IOSCredentialProviderInfoBarDelegate::Create(std::move(account.email))));
+  infobar_manager->AddInfoBar(
+      CreateConfirmInfoBar(IOSCredentialProviderInfoBarDelegate::Create(
+          std::move(account.email), passkey, settings_handler)));
 }
 
 void CredentialProviderBrowserAgent::RemoveObservers() {
   model_observation_.Reset();
   browser_observation_.Reset();
+  browser_ = nullptr;
 }
 
 void CredentialProviderBrowserAgent::BrowserDestroyed(Browser* browser) {
@@ -85,7 +96,7 @@ void CredentialProviderBrowserAgent::OnPasskeysChanged(
           base::Time::Now() -
           base::Time::FromMillisecondsSinceUnixEpoch(passkey.creation_time());
       if (delay.is_positive() && (delay < kRecentlyAddedDelay)) {
-        DisplayInfoBar();
+        DisplayInfoBar(passkey);
         break;
       }
     }

@@ -12,12 +12,15 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
 class CredentialProviderBrowserAgentTest : public PlatformTest {
@@ -39,6 +42,11 @@ class CredentialProviderBrowserAgentTest : public PlatformTest {
   void SetUpBrowserAgent(bool incognito) {
     browser_ = std::make_unique<TestBrowser>(
         incognito ? profile_->GetOffTheRecordProfile() : profile_.get());
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    mock_settings_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(SettingsCommands));
+    [dispatcher startDispatchingToTarget:mock_settings_commands_handler_
+                             forProtocol:@protocol(SettingsCommands)];
     CredentialProviderBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = CredentialProviderBrowserAgent::FromBrowser(browser_.get());
     model_ = static_cast<webauthn::TestPasskeyModel*>(
@@ -80,6 +88,7 @@ class CredentialProviderBrowserAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
+  id<SettingsCommands> mock_settings_commands_handler_;
   raw_ptr<CredentialProviderBrowserAgent> agent_;
   raw_ptr<webauthn::TestPasskeyModel> model_;
   // Storage vector for navigation items created for test cases.
