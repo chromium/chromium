@@ -5260,7 +5260,8 @@
                     "name": "Enabled",
                     "params": {
                         "en_site_id": "LvUA3D5Ts0ugnJ3q1cK0SHbD7uPa",
-                        "probability": "0.5"
+                        "probability": "0.5",
+                        "results-time": "6s"
                     },
                     "enable_features": [
                         "LensOverlaySurvey"
