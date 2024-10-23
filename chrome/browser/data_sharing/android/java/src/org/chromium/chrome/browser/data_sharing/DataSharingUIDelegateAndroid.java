@@ -21,6 +21,9 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.configs.AvatarConfig;
+import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
+import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
+import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
 import org.chromium.components.data_sharing.configs.MemberPickerConfig;
 import org.chromium.url.GURL;
 
@@ -80,6 +83,44 @@ class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
             AvatarConfig config) {
         if (mInternalDelegate != null) {
             mInternalDelegate.showAvatars(context, views, emails, success, config);
+        }
+    }
+
+    @Override
+    public String showCreateFlow(DataSharingCreateUiConfig createUiConfig) {
+        if (mInternalDelegate != null) {
+            return mInternalDelegate.showCreateFlow(createUiConfig);
+        }
+        return null;
+    }
+
+    @Override
+    public String showJoinFlow(DataSharingJoinUiConfig joinUiConfig) {
+        if (mInternalDelegate != null) {
+            return mInternalDelegate.showJoinFlow(joinUiConfig);
+        }
+        return null;
+    }
+
+    @Override
+    public String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
+        if (mInternalDelegate != null) {
+            return mInternalDelegate.showManageFlow(manageUiConfig);
+        }
+        return null;
+    }
+
+    @Override
+    public void showAvatarsInTile(AvatarConfig avatarConfig) {
+        if (mInternalDelegate != null) {
+            mInternalDelegate.showAvatarsInTile(avatarConfig);
+        }
+    }
+
+    @Override
+    public void destroyFlow(String sessionId) {
+        if (mInternalDelegate != null) {
+            mInternalDelegate.destroyFlow(sessionId);
         }
     }
 
