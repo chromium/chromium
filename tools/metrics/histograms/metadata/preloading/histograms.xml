@@ -97,21 +97,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Unspecified" summary=""/>
 </variants>
 
-<histogram name="Preloading.AnchorElementPreloader.PreloadingTriggered"
-    enum="AnchorElementPreloaderType" expires_after="2024-09-15">
-  <owner>spelchat@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <summary>
-    Logged once for each preconnection request sent by renderer to the browser
-    when intercepting pointerdown events. Note that the browser may ignore some
-    of those requests (like duplicate requests or requests made by users that
-    disabled preloading via the UI) and will not always forward the preconnect
-    request to the network service. Associated with the Source ID of the page
-    triggering the preconnection.
-  </summary>
-</histogram>
-
 <histogram name="Preloading.Experimental.UpdateSpeculationCandidatesReason"
     enum="PreloadingUpdateSpeculationCandidatesReason"
     expires_after="2024-09-29">

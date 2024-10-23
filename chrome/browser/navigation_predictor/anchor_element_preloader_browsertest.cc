@@ -175,12 +175,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
 
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 1);
 
   // Navigate away to the same origin that was preconnected. This should flush
   // the Preloading UKM logs.
@@ -210,12 +204,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorInaccurate) {
 
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 1);
 
   // Navigate away to an origin that was not preconnected. This should flush
   // the Preloading UKM logs.
@@ -306,13 +294,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
   SimulateMouseDownElementWithId("anchor2");
   EXPECT_EQ(0, preresolve_count_);
 
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 0);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 0);
-
   // Navigate away. This should flush the Preloading UKM logs.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto ukm_entries = test_ukm_recorder()->GetEntries(
@@ -331,13 +312,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
       blink::WebMouseEvent::Button::kLeft, gfx::Point(200, 200));
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
-
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
@@ -351,13 +325,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
 
   // Give some time for Preloading APIs creation.
   GiveItSomeTime(base::Milliseconds(100));
-
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 0);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 0);
 
   // Navigate away to the same origin that was preconnected. This should flush
   // the Preloading UKM logs.
@@ -397,18 +364,8 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
   SimulateMouseDownElementWithId("anchor1");
   EXPECT_EQ(0, preresolve_count_);
 
-  while (
-      histogram_tester()
-          ->GetAllSamples(kPreloadingAnchorElementPreloaderPreloadingTriggered)
-          .empty()) {
-    base::RunLoop().RunUntilIdle();
-  }
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 1);
+  // Give some time for Preloading APIs creation.
+  GiveItSomeTime(base::Milliseconds(100));
 
   // Navigate away to the same origin that was preconnected. This should flush
   // the Preloading UKM logs.

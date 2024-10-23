@@ -359,11 +359,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="AllowlistNonEmptyAndAllowNewUsersNotPresent"/>
 </enum>
 
-<enum name="AnchorElementPreloaderType">
-  <int value="0" label="kUnspecified"/>
-  <int value="1" label="kPreconnect"/>
-</enum>
-
 <enum name="AndroidMultiWindowActivityType">
   <int value="0" label="Enter"/>
   <int value="1" label="Exit"/>

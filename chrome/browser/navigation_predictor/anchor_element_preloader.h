@@ -11,17 +11,6 @@
 #include "content/public/browser/preloading.h"
 #include "url/scheme_host_port.h"
 
-extern const char kPreloadingAnchorElementPreloaderPreloadingTriggered[];
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-
-enum class AnchorElementPreloaderType {
-  kUnspecified = 0,
-  kPreconnect = 1,
-  kMaxValue = kPreconnect,
-};
-
 // If you change this, please follow the process in
 // go/preloading-dashboard-updates to update the mapping reflected in dashboard,
 // or if you are not a Googler, please file an FYI bug on https://crbug.new with
@@ -63,10 +52,6 @@ class AnchorElementPreloader : public content::AnchorElementPreconnectDelegate {
   void MaybePreconnect(const GURL& target) override;
 
  private:
-  void RecordUmaPreloadedTriggered(AnchorElementPreloaderType);
-
-  void RecordUkmPreloadType(AnchorElementPreloaderType);
-
   // content::PreloadingDecider, which inherits content::DocumentUserData, owns
   // `this`, so `this` can access `render_frame_host_` safely.
   const raw_ref<content::RenderFrameHost> render_frame_host_;
