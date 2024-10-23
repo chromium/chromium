@@ -25,6 +25,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -1672,6 +1673,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // Force using a different RenderFrameHost when RenderDocument is enabled.
   if (use_current_rfh &&
       render_frame_host_->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
+    // TODO(https://crbug.com/40615943): Remove trigger after we're done with
+    // RenderDocument performance investigations.
+    base::trace_event::EmitNamedTrigger("render-document-swap");
     use_current_rfh = false;
     AppendReason(reason,
                  "GetFrameHostForNavigation / RenderDocument-enforcement");
