@@ -21,6 +21,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.configs.AvatarConfig;
+import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
@@ -121,6 +122,13 @@ class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
     public void destroyFlow(String sessionId) {
         if (mInternalDelegate != null) {
             mInternalDelegate.destroyFlow(sessionId);
+        }
+    }
+
+    @Override
+    public void getAvatarBitmap(DataSharingAvatarBitmapConfig avatarBitmapConfig) {
+        if (mInternalDelegate != null) {
+            mInternalDelegate.getAvatarBitmap(avatarBitmapConfig);
         }
     }
 
