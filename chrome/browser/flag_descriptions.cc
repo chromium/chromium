@@ -6060,11 +6060,6 @@ const char kResetAudioSelectionImprovementPrefName[] =
 const char kResetAudioSelectionImprovementPrefDescription[] =
     "Reset audio selection improvement user preference for testing purpose.";
 
-const char kAudioSuppressSetRTCAudioActiveName[] =
-    "Suppress calling the SetRTCAudioActive D-Bus method";
-const char kAudioSuppressSetRTCAudioActiveDescription[] =
-    "Don't call the SetRTCAudioActive D-Bus method in CRAS.";
-
 const char kAutoFramingOverrideName[] = "Auto-framing control override";
 const char kAutoFramingOverrideDescription[] =
     "Overrides the default to forcibly enable or disable the auto-framing "

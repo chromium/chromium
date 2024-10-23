@@ -3487,9 +3487,6 @@ extern const char kAudioStyleTransferDescription[];
 extern const char kAudioSelectionImprovementName[];
 extern const char kAudioSelectionImprovementDescription[];
 
-extern const char kAudioSuppressSetRTCAudioActiveName[];
-extern const char kAudioSuppressSetRTCAudioActiveDescription[];
-
 extern const char kAutoFramingOverrideName[];
 extern const char kAutoFramingOverrideDescription[];
 
