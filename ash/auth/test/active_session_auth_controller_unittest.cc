@@ -531,6 +531,23 @@ TEST_P(ActiveSessionAuthControllerTest, OnAuthCancel) {
              future);
 }
 
+// Tests that the dialog is not shown if the user has no authentication factors.
+TEST_P(ActiveSessionAuthControllerTest, WithoutAnyFactor) {
+  auto account_identifier =
+        cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
+
+  FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_identifier);
+
+  auto future = ShowAuthDialogForVariant(GetParam());
+
+  base::RunLoop().RunUntilIdle();
+  std::visit(base::Overloaded([](auto&& arg) {
+               EXPECT_TRUE(arg->IsReady());
+               EXPECT_EQ(arg->template Get<bool>(), false);
+             }),
+             future);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ActiveSessionAuthControllerTest,
                          testing::Values(TestVariant::kWebAuthN,

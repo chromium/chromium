@@ -452,9 +452,12 @@ void ActiveSessionAuthControllerImpl::StartClose() {
     uma_recorder_.RecordClose();
   }
   contents_view_observer_.Reset();
-  CHECK(contents_view_);
-  contents_view_->RemoveObserver(this);
-  contents_view_ = nullptr;
+  if (contents_view_) {
+    contents_view_->RemoveObserver(this);
+    contents_view_ = nullptr;
+  } else {
+    CHECK_EQ(state_, ActiveSessionAuthState::kWaitForInit);
+  }
   auth_session_broadcast_id_.clear();
 
   UserDataAuthClient::Get()->RemoveAuthFactorStatusUpdateObserver(this);
