@@ -38,6 +38,8 @@ inline constexpr char kRemoveStudentUrlTemplate[] =
 inline constexpr char kJoinTachyonGroupUrlTemplate[] =
     "/v1/students/$1/sessions/$2/tachyon:join";
 
+inline constexpr char kJoinSessionUrlTemplate[] = "v1/students/$1/session:join";
+
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
 inline constexpr char kRoster[] = "roster";
@@ -80,6 +82,9 @@ inline constexpr char kTachyonGroupId[] = "tachyonGroupId";
 inline constexpr char kJoinCode[] = "joinCode";
 inline constexpr char kJoinCodeEnabled[] = "enabled";
 inline constexpr char kCode[] = "code";
+inline constexpr char kSessionJoinCode[] = "sessionJoinCode";
+inline constexpr char kDeviceInfo[] = "deviceInfo";
+inline constexpr char kStudent[] = "student";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(
