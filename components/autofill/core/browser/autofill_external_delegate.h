@@ -287,9 +287,10 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // Triggered when the user undoes the filling of an address profile using an
   // email override.
   void OnEmailOverrideUndone(SuggestionType suggestion_type,
-                             Suggestion::Guid guid,
+                             const std::u16string& original_email,
                              const SuggestionMetadata& metadata,
-                             const AutofillTriggerDetails& trigger_details);
+                             const AutofillTriggerDetails& trigger_details,
+                             const FormData& query_form);
 
   // Handle applying any Autofill option listings to the Autofill popup.
   // This function should only get called when there is at least one

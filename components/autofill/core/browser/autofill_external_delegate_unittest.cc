@@ -2688,6 +2688,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
   const std::u16string plus_address = u"test+plus@test.example";
   const AutofillProfile profile = test::GetFullProfile();
+  const std::u16string original_email = profile.GetRawInfo(EMAIL_ADDRESS);
   pdm().address_data_manager().AddProfile(profile);
 
   EXPECT_CALL(client(),
@@ -2717,7 +2718,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
                     mojom::ActionPersistence::kFill, HasQueriedFormId(),
                     HasQueriedFieldId(), updated_profile, _));
     EXPECT_CALL(client(), ShowPlusAddressEmailOverrideNotification(
-                              base::UTF16ToUTF8(plus_address), _))
+                              base::UTF16ToUTF8(original_email), _))
         .WillOnce(MoveArg<1>(&undo_callback));
     EXPECT_CALL(client(), HideAutofillSuggestions(
                               SuggestionHidingReason::kAcceptSuggestion));
@@ -2728,13 +2729,12 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
   ASSERT_TRUE(undo_callback);
-  EXPECT_CALL(
-      manager(),
-      FillOrPreviewField(
-          mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-          HasQueriedFormId(), HasQueriedFieldId(),
-          profile.GetRawInfo(EMAIL_ADDRESS), SuggestionType::kAddressEntry,
-          /*field_type_used=*/std::optional(EMAIL_ADDRESS)));
+  EXPECT_CALL(manager(), FillOrPreviewField(
+                             mojom::ActionPersistence::kFill,
+                             mojom::FieldActionType::kReplaceAll,
+                             HasQueriedFormId(), HasQueriedFieldId(),
+                             original_email, SuggestionType::kAddressEntry,
+                             /*field_type_used=*/std::optional(EMAIL_ADDRESS)));
   std::move(undo_callback).Run();
 }
 

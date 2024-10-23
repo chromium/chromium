@@ -1399,11 +1399,15 @@ void AutofillExternalDelegate::FillAutofillFormData(
       // Only show the email override notification when the suggestion is
       // accepted, not previewed.
       if (!is_preview && !profile_payload->email_override.empty()) {
+        const std::u16string original_email =
+            pdm->address_data_manager()
+                .GetProfileByGUID(profile_payload->guid.value())
+                ->GetRawInfo(EMAIL_ADDRESS);
         manager_->client().ShowPlusAddressEmailOverrideNotification(
-            base::UTF16ToUTF8(profile->GetRawInfo(EMAIL_ADDRESS)),
+            base::UTF16ToUTF8(original_email),
             base::BindOnce(&AutofillExternalDelegate::OnEmailOverrideUndone,
-                           GetWeakPtr(), type, std::move(profile_payload->guid),
-                           *metadata, trigger_details));
+                           GetWeakPtr(), type, original_email, *metadata,
+                           trigger_details, query_form_));
       }
     }
     return;
@@ -1608,15 +1612,13 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
 
 void AutofillExternalDelegate::OnEmailOverrideUndone(
     SuggestionType suggestion_type,
-    Suggestion::Guid guid,
+    const std::u16string& original_email,
     const SuggestionMetadata& metadata,
-    const AutofillTriggerDetails& trigger_details) {
-  PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  const AutofillProfile* profile =
-      pdm->address_data_manager().GetProfileByGUID(guid.value());
+    const AutofillTriggerDetails& trigger_details,
+    const FormData& query_form) {
   const FormStructure* form_structure =
-      manager_->FindCachedFormById(query_form_.global_id());
-  if (!profile || !form_structure) {
+      manager_->FindCachedFormById(query_form.global_id());
+  if (!form_structure) {
     return;
   }
 
@@ -1630,10 +1632,10 @@ void AutofillExternalDelegate::OnEmailOverrideUndone(
   if (auto email_field_it = std::ranges::find_if(fields, IsEmailField);
       email_field_it != fields.end()) {
     // Fill the address profile original email.
-    manager_->FillOrPreviewField(
-        mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-        query_form_, **email_field_it, profile->GetRawInfo(EMAIL_ADDRESS),
-        suggestion_type, EMAIL_ADDRESS);
+    manager_->FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                 mojom::FieldActionType::kReplaceAll,
+                                 query_form, **email_field_it, original_email,
+                                 suggestion_type, EMAIL_ADDRESS);
   }
 
   // TODO(crbug.com/324557053): Add metrics.
