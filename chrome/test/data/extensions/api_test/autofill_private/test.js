@@ -779,6 +779,36 @@ var availableTests = [
     chrome.test.succeed();
   },
 
+  function migrateCreditCards() {
+    chrome.autofillPrivate.migrateCreditCards();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function logServerCardLinkClicked() {
+    chrome.autofillPrivate.logServerCardLinkClicked();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function addVirtualCard() {
+    chrome.autofillPrivate.addVirtualCard(/*card_id=*/"a123");
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function removeVirtualCard() {
+    chrome.autofillPrivate.removeVirtualCard(/*card_id=*/"a123");
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function setAutofillSyncToggleEnabled() {
+    chrome.autofillPrivate.setAutofillSyncToggleEnabled(true);
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
 ];
 
 /** @const */
@@ -824,6 +854,11 @@ var TESTS_FOR_CONFIG = {
       ['isUserEligibleForAutofillImprovements'],
   'predictionImprovementsIphFeatureUsed':
       ['predictionImprovementsIphFeatureUsed'],
+  'migrateCreditCards': ['migrateCreditCards'],
+  'logServerCardLinkClicked': ['logServerCardLinkClicked'],
+  'addVirtualCard': ['addVirtualCard'],
+  'removeVirtualCard': ['removeVirtualCard'],
+  'setAutofillSyncToggleEnabled': ['setAutofillSyncToggleEnabled'],
 };
 
 var testConfig = window.location.search.substring(1);
