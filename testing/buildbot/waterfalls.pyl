@@ -1208,9 +1208,27 @@
     },
   },
   {
+    # The following builders in this group have been migrated to set their
+    # targets in the builders' declarations in
+    # //infra/config/subprojects/reclient/reclient.star
+    #   Linux Builder reclient staging
+    #   Linux Builder reclient staging untrusted
+    #   Linux Builder reclient test
+    #   Linux Builder reclient test untrusted
+    #   Mac Builder reclient staging
+    #   Mac Builder reclient staging untrusted
+    #   Simple Chrome Builder reclient staging
+    #   Simple Chrome Builder reclient staging untrusted
+    #   Simple Chrome Builder reclient test
+    #   Simple Chrome Builder reclient test untrusted
+    #   ios-simulator reclient staging
+    #   ios-simulator reclient staging untrusted
+    #   mac-arm64-rel reclient staging
+    #   mac-arm64-rel reclient staging unrtusted
     'name': 'chromium.reclient.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison Linux (reclient vs reclient remote links)': {
         'mixins': [
           'isolate_profile_data',
@@ -1219,142 +1237,13 @@
           'all'
         ],
       },
+      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison Linux (reclient)': {
         'mixins': [
           'isolate_profile_data',
         ],
         'additional_compile_targets': [
           'all'
-        ],
-      },
-      'Linux Builder (reclient compare)': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
-      'Linux Builder reclient staging': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
-      'Linux Builder reclient staging untrusted': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
-      'Linux Builder reclient test': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
-      'Linux Builder reclient test untrusted': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
-      'Mac Builder reclient staging': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'Mac Builder reclient staging untrusted': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'Simple Chrome Builder reclient staging': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=1567;drc=e8a03fce50115b247a6032f8ed922b6db62f11f6
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'Simple Chrome Builder reclient staging untrusted': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=1567;drc=e8a03fce50115b247a6032f8ed922b6db62f11f6
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'Simple Chrome Builder reclient test': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=1567;drc=e8a03fce50115b247a6032f8ed922b6db62f11f6
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'Simple Chrome Builder reclient test untrusted': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=1567;drc=e8a03fce50115b247a6032f8ed922b6db62f11f6
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'ios-simulator reclient staging': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_default_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-      },
-      'ios-simulator reclient staging untrusted': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_default_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-      },
-      'mac-arm64-rel reclient staging': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=5119;drc=0cad2921efb9c2d4248496f10eb24aa1d9769dd4
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-arm64-rel reclient staging untrusted': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=5119;drc=0cad2921efb9c2d4248496f10eb24aa1d9769dd4
-        'additional_compile_targets': [
-          'all',
         ],
       },
     },

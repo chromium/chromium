@@ -1,0 +1,7 @@
+{
+  "Simple Chrome Builder reclient staging untrusted": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ]
+  }
+}
