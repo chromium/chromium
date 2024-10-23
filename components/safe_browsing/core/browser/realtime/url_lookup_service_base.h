@@ -185,6 +185,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       bool is_sampled_report,
       SessionID tab_id);
 
+  bool shutting_down() const { return shutting_down_; }
+
  private:
   class PendingRTLookupRequestData {
    public:
@@ -364,6 +366,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // and in unit tests. If non-null, guaranteed to outlive this object by
   // contract.
   raw_ptr<WebUIDelegate> webui_delegate_ = nullptr;
+
+  // True if Shutdown() has already been called, or started running. This allows
+  // us to skip unnecessary calls to SendRequest().
+  bool shutting_down_ = false;
 
   friend class RealTimeUrlLookupServiceTest;
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
