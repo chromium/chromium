@@ -12,10 +12,6 @@
 
 class Shell;
 
-namespace cc {
-class Layer;
-}
-
 namespace content {
 
 // Creates an Android specific shell view, which is our version of a shell
@@ -26,9 +22,6 @@ base::android::ScopedJavaLocalRef<jobject> CreateShellView(Shell* shell);
 
 // Removes a previously created shell view.
 void RemoveShellView(const base::android::JavaRef<jobject>& shell_view);
-
-void ShellAttachLayer(cc::Layer* layer);
-void ShellRemoveLayer(cc::Layer* layer);
 
 // Destroys the ShellManager on app exit. Must not use the above functions
 // after this is called.
