@@ -261,12 +261,44 @@ TEST(ScannerActionToCommandTest, NewGoogleSheet) {
           /*converted_mime_type=*/drive::util::kGoogleSpreadsheetMimeType)));
 }
 
-TEST(ScannerActionToCommandTest, CopyToClipboard) {
+TEST(ScannerActionHandlerTest, CopyToClipboardWithPlainText) {
+  ScannerCommand command =
+      ScannerActionToCommand(CopyToClipboardAction("Hello", /*html_text=*/""));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<CopyToClipboardCommand>(FieldsAre(Pointee(
+          AllOf(Property("format", &ui::ClipboardData::format,
+                         static_cast<int>(ui::ClipboardInternalFormat::kText)),
+                Property("text", &ui::ClipboardData::text, "Hello"))))));
+}
+
+TEST(ScannerActionHandlerTest, CopyToClipboardWithHtmlText) {
+  ScannerCommand command = ScannerActionToCommand(
+      CopyToClipboardAction(/*plain_text=*/"", "<img />"));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<CopyToClipboardCommand>(FieldsAre(Pointee(
+          AllOf(Property("format", &ui::ClipboardData::format,
+                         static_cast<int>(ui::ClipboardInternalFormat::kHtml)),
+                Property("markup_data", &ui::ClipboardData::markup_data,
+                         "<img />"))))));
+}
+
+TEST(ScannerActionHandlerTest, CopyToClipboardWithMultipleFields) {
   ScannerCommand command =
       ScannerActionToCommand(CopyToClipboardAction("Hello", "<b>Hello</b>"));
 
-  EXPECT_THAT(command, VariantWith<CopyToClipboardAction>(
-                           FieldsAre("Hello", "<b>Hello</b>")));
+  EXPECT_THAT(
+      command,
+      VariantWith<CopyToClipboardCommand>(FieldsAre(Pointee(AllOf(
+          Property("format", &ui::ClipboardData::format,
+                   static_cast<int>(ui::ClipboardInternalFormat::kText) |
+                       static_cast<int>(ui::ClipboardInternalFormat::kHtml)),
+          Property("text", &ui::ClipboardData::text, "Hello"),
+          Property("markup_data", &ui::ClipboardData::markup_data,
+                   "<b>Hello</b>"))))));
 }
 
 TEST(ScannerActionHandlerTest, HandlesOpenUrlCommandWithoutDelegate) {
@@ -399,68 +431,25 @@ TEST(ScannerActionHandlerTest, HandlesCopyToClipboardActionWithoutDelegate) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   base::test::TestFuture<bool> done_future;
-  HandleScannerCommand(nullptr, CopyToClipboardAction("Hello", "<b>Hello</b>"),
-                       done_future.GetCallback());
+  HandleScannerCommand(
+      nullptr, CopyToClipboardCommand{std::make_unique<ui::ClipboardData>()},
+      done_future.GetCallback());
 
   EXPECT_FALSE(done_future.Get());
 }
 
-TEST(ScannerActionHandlerTest, HandlesCopyToClipboardActionOnlyPlainText) {
+TEST(ScannerActionHandlerTest, HandlesCopyToClipboardAction) {
   base::test::SingleThreadTaskEnvironment task_environment;
   TestScannerCommandDelegate delegate;
-  EXPECT_CALL(
-      delegate,
-      SetClipboard(Pointee(
-          AllOf(Property("format", &ui::ClipboardData::format,
-                         static_cast<int>(ui::ClipboardInternalFormat::kText)),
-                Property("text", &ui::ClipboardData::text, "Hello")))))
-      .Times(1);
+  ui::ClipboardData clipboard_data;
+  clipboard_data.set_text("Hello");
+  clipboard_data.set_markup_data("<b>Hello</b>");
+  EXPECT_CALL(delegate, SetClipboard(Pointee(clipboard_data))).Times(1);
 
   base::test::TestFuture<bool> done_future;
   HandleScannerCommand(delegate.GetWeakPtr(),
-                       CopyToClipboardAction("Hello", /*html_text=*/""),
-                       done_future.GetCallback());
-
-  EXPECT_TRUE(done_future.Get());
-}
-
-TEST(ScannerActionHandlerTest, HandlesCopyToClipboardActionOnlyHtmlText) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  TestScannerCommandDelegate delegate;
-  EXPECT_CALL(
-      delegate,
-      SetClipboard(Pointee(
-          AllOf(Property("format", &ui::ClipboardData::format,
-                         static_cast<int>(ui::ClipboardInternalFormat::kHtml)),
-                Property("markup_data", &ui::ClipboardData::markup_data,
-                         "<img />")))))
-      .Times(1);
-
-  base::test::TestFuture<bool> done_future;
-  HandleScannerCommand(delegate.GetWeakPtr(),
-                       CopyToClipboardAction(/*plain_text=*/"", "<img />"),
-                       done_future.GetCallback());
-
-  EXPECT_TRUE(done_future.Get());
-}
-
-TEST(ScannerActionHandlerTest, HandlesCopyToClipboardActionAllSet) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  TestScannerCommandDelegate delegate;
-  EXPECT_CALL(
-      delegate,
-      SetClipboard(Pointee(AllOf(
-          Property("format", &ui::ClipboardData::format,
-                   static_cast<int>(ui::ClipboardInternalFormat::kText) |
-                       static_cast<int>(ui::ClipboardInternalFormat::kHtml)),
-          Property("text", &ui::ClipboardData::text, "Hello"),
-          Property("markup_data", &ui::ClipboardData::markup_data,
-                   "<b>Hello</b>")))))
-      .Times(1);
-
-  base::test::TestFuture<bool> done_future;
-  HandleScannerCommand(delegate.GetWeakPtr(),
-                       CopyToClipboardAction("Hello", "<b>Hello</b>"),
+                       CopyToClipboardCommand(
+                           std::make_unique<ui::ClipboardData>(clipboard_data)),
                        done_future.GetCallback());
 
   EXPECT_TRUE(done_future.Get());

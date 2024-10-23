@@ -5,13 +5,17 @@
 #ifndef ASH_SCANNER_SCANNER_COMMAND_H_
 #define ASH_SCANNER_SCANNER_COMMAND_H_
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <variant>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "url/gurl.h"
+
+namespace ui {
+class ClipboardData;
+}
 
 namespace ash {
 
@@ -51,12 +55,25 @@ struct ASH_EXPORT DriveUploadCommand {
   ~DriveUploadCommand();
 };
 
+struct ASH_EXPORT CopyToClipboardCommand {
+  std::unique_ptr<ui::ClipboardData> clipboard_data;
+
+  explicit CopyToClipboardCommand(
+      std::unique_ptr<ui::ClipboardData> clipboard_data);
+
+  CopyToClipboardCommand(CopyToClipboardCommand&&);
+  CopyToClipboardCommand& operator=(CopyToClipboardCommand&&);
+
+  ~CopyToClipboardCommand();
+};
+
 // Holds a single command that can be applied to the system. Used as an
 // intermediate step between an `ash::ScannerAction` and performing the command.
-// In some cases where `ash::ScannerAction` defines a very specific action,
-// the command type may be the same as the action type.
+// In some cases where `ash::ScannerAction` defines a very specific action
+// without any preprocessing, the command type may be the same as the action
+// type.
 using ScannerCommand =
-    std::variant<OpenUrlCommand, DriveUploadCommand, CopyToClipboardAction>;
+    std::variant<OpenUrlCommand, DriveUploadCommand, CopyToClipboardCommand>;
 
 }  // namespace ash
 

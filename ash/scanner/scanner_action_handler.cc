@@ -294,7 +294,8 @@ ScannerCommand ScannerActionToCommand(ScannerAction action) {
                                       drive::util::kGoogleSpreadsheetMimeType);
           },
           [&](CopyToClipboardAction& action) -> ScannerCommand {
-            return std::move(action);
+            return CopyToClipboardCommand(
+                ClipboardDataFromAction(std::move(action)));
           },
       },
       action);
@@ -313,13 +314,12 @@ void HandleScannerCommand(base::WeakPtr<ScannerCommandDelegate> delegate,
                                             std::move(command),
                                             std::move(callback));
                  },
-                 [&](CopyToClipboardAction& action) {
+                 [&](CopyToClipboardCommand& command) {
                    if (delegate == nullptr) {
                      std::move(callback).Run(false);
                      return;
                    }
-                   delegate->SetClipboard(
-                       ClipboardDataFromAction(std::move(action)));
+                   delegate->SetClipboard(std::move(command.clipboard_data));
                    std::move(callback).Run(true);
                  },
              },

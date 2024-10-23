@@ -4,10 +4,12 @@
 
 #include "ash/scanner/scanner_command.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "ui/base/clipboard/clipboard_data.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -38,5 +40,16 @@ DriveUploadCommand& DriveUploadCommand::operator=(DriveUploadCommand&&) =
     default;
 
 DriveUploadCommand::~DriveUploadCommand() = default;
+
+CopyToClipboardCommand::CopyToClipboardCommand(
+    std::unique_ptr<ui::ClipboardData> clipboard_data)
+    : clipboard_data(std::move(clipboard_data)) {}
+
+CopyToClipboardCommand::CopyToClipboardCommand(CopyToClipboardCommand&&) =
+    default;
+CopyToClipboardCommand& CopyToClipboardCommand::operator=(
+    CopyToClipboardCommand&&) = default;
+
+CopyToClipboardCommand::~CopyToClipboardCommand() = default;
 
 }  // namespace ash
