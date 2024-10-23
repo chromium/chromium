@@ -340,6 +340,7 @@
   X("category1,category2")                                                    \
   X("cc,benchmark")                                                           \
   X("cc,benchmark,input,input.scrolling")                                     \
+  X("cc,benchmark,latency")                                                   \
   X("cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))     \
   X("cc,input")                                                               \
   X("cc,raf_investigation")                                                   \
