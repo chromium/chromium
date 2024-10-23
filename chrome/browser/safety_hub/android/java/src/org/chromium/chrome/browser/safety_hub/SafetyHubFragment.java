@@ -172,6 +172,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
         int weakPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.WEAK_CREDENTIALS_COUNT);
+        int reusedPasswordsCount =
+                UserPrefs.get(getProfile()).getInteger(Pref.REUSED_CREDENTIALS_COUNT);
         int totalPasswordsCount = mDelegate.getAccountPasswordsCount(mPasswordStoreBridge);
         int sitesWithUnusedPermissionsCount =
                 mUnusedSitePermissionsBridge.getRevokedPermissions().length;
@@ -188,6 +190,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
                                 compromisedPasswordsCount)
                         .with(SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount)
+                        .with(
+                                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT,
+                                reusedPasswordsCount)
                         .with(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount)
                         .with(
                                 SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
@@ -654,12 +659,13 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         updateAllModulesExpandState();
     }
 
-    // TODO(crbug.com/370419126): Add reused passwords count.
     private void updatePasswordCheckPreference() {
         int compromisedPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
         int weakPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.WEAK_CREDENTIALS_COUNT);
+        int reusedPasswordsCount =
+                UserPrefs.get(getProfile()).getInteger(Pref.REUSED_CREDENTIALS_COUNT);
         int totalPasswordsCount = mDelegate.getAccountPasswordsCount(mPasswordStoreBridge);
         boolean isPasswordSavingEnabled =
                 UserPrefs.get(getProfile()).getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE);
@@ -671,6 +677,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mPasswordCheckPropertyModel.set(

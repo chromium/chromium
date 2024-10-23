@@ -742,6 +742,7 @@ public final class SafetyHubTest {
         int weakPasswordsCount = 5;
         addCredentialToAccountStore();
         setCompromisedPasswordsCount(0);
+        setReusedPasswordsCount(0);
         setWeakPasswordsCount(weakPasswordsCount);
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -787,6 +788,64 @@ public final class SafetyHubTest {
 
         // Make sure the compromised passwords count is reset at the end of the test.
         clearCompromisedPasswordsCount();
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    @RequiresRestart
+    public void testPasswordModule_WeakAndReusedPasswords() {
+        // Set the passwords module to the information state.
+        int weakPasswordsCount = 5;
+        int reusedPasswordsCount = 4;
+        addCredentialToAccountStore();
+        setCompromisedPasswordsCount(0);
+        setWeakPasswordsCount(weakPasswordsCount);
+        setReusedPasswordsCount(reusedPasswordsCount);
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that passwords module which is in the information state and is expanded by
+        // default.
+        // Reused passwords are prioritized over weak passwords.
+        String reusedPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_reused_passwords_summary,
+                                reusedPasswordsCount,
+                                reusedPasswordsCount);
+        scrollToExpandedPreference(reusedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(reusedPasswordsTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        // Set reused passwords to 0.
+        setReusedPasswordsCount(0);
+        mSafetyHubFragmentTestRule.recreateActivity();
+        safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that the password module is still expanded, but now with the weak passwords title.
+        String weakPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_weak_passwords_summary,
+                                weakPasswordsCount,
+                                weakPasswordsCount);
+        scrollToExpandedPreference(weakPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
+
+        // Verify that the other module in the information state is still expanded.
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
     }
 
     @Test
@@ -1231,6 +1290,13 @@ public final class SafetyHubTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(mProfile).setInteger(Pref.WEAK_CREDENTIALS_COUNT, count);
+                });
+    }
+
+    private void setReusedPasswordsCount(int count) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).setInteger(Pref.REUSED_CREDENTIALS_COUNT, count);
                 });
     }
 

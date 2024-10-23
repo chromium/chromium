@@ -74,6 +74,8 @@ public class SafetyHubModuleProperties {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey WEAK_PASSWORDS_COUNT =
             new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey REUSED_PASSWORDS_COUNT =
+            new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey TOTAL_PASSWORDS_COUNT =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<UpdateStatusProvider.UpdateStatus>
@@ -107,7 +109,10 @@ public class SafetyHubModuleProperties {
             PropertyModel.concatKeys(
                     COMMON_SAFETY_HUB_MODULE_KEYS,
                     new PropertyKey[] {
-                        COMPROMISED_PASSWORDS_COUNT, WEAK_PASSWORDS_COUNT, TOTAL_PASSWORDS_COUNT
+                        COMPROMISED_PASSWORDS_COUNT,
+                        WEAK_PASSWORDS_COUNT,
+                        REUSED_PASSWORDS_COUNT,
+                        TOTAL_PASSWORDS_COUNT
                     });
 
     public static final PropertyKey[] UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS =
@@ -132,6 +137,7 @@ public class SafetyHubModuleProperties {
         IS_SIGNED_IN,
         COMPROMISED_PASSWORDS_COUNT,
         WEAK_PASSWORDS_COUNT,
+        REUSED_PASSWORDS_COUNT,
         TOTAL_PASSWORDS_COUNT,
         UPDATE_STATUS,
         SITES_WITH_UNUSED_PERMISSIONS_COUNT,

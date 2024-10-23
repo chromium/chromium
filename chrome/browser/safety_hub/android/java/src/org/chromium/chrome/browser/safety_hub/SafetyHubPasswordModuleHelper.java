@@ -24,8 +24,8 @@ public final class SafetyHubPasswordModuleHelper {
      */
     private static final int INVALID_BREACHED_CREDENTIALS_COUNT = -1;
 
-    // TODO(crbug.com/370419126): Add `HAS_REUSED_PASSWORDS` and
-    // `UNAVAILABLE_COMPROMISED_AVAILABLE_WEAK_REUSED_PASSWORDS` types.
+    // TODO(crbug.com/370419126): Add `UNAVAILABLE_COMPROMISED_AVAILABLE_WEAK_REUSED_PASSWORDS`
+    // type.
     // Represents the type of password module.
     @IntDef({
         ModuleType.SIGNED_OUT,
@@ -33,7 +33,8 @@ public final class SafetyHubPasswordModuleHelper {
         ModuleType.NO_SAVED_PASSWORDS,
         ModuleType.HAS_COMPROMISED_PASSWORDS,
         ModuleType.NO_COMPROMISED_PASSWORDS,
-        ModuleType.HAS_WEAK_PASSWORDS
+        ModuleType.HAS_WEAK_PASSWORDS,
+        ModuleType.HAS_REUSED_PASSWORDS
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface ModuleType {
@@ -43,6 +44,7 @@ public final class SafetyHubPasswordModuleHelper {
         int HAS_COMPROMISED_PASSWORDS = 3;
         int NO_COMPROMISED_PASSWORDS = 4;
         int HAS_WEAK_PASSWORDS = 5;
+        int HAS_REUSED_PASSWORDS = 6;
     };
 
     // Returns the password module type according to the `model` properties.
@@ -50,6 +52,7 @@ public final class SafetyHubPasswordModuleHelper {
         int compromisedPasswordsCount =
                 model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
         int weakPasswordsCount = model.get(SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT);
+        int reusedPasswordsCount = model.get(SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT);
         int totalPasswordsCount = model.get(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
         boolean isSignedOut = !model.get(SafetyHubModuleProperties.IS_SIGNED_IN);
 
@@ -71,10 +74,18 @@ public final class SafetyHubPasswordModuleHelper {
         if (compromisedPasswordsCount > 0) {
             return ModuleType.HAS_COMPROMISED_PASSWORDS;
         }
-        // TODO(crbug.com/370419126): Add `HAS_REUSED_PASSWORDS` type.
-        if (isWeakAndReusedFeatureEnabled && weakPasswordsCount > 0) {
-            return ModuleType.HAS_WEAK_PASSWORDS;
+        if (isWeakAndReusedFeatureEnabled) {
+            // Reused passwords take priority over the weak passwords count.
+            if (reusedPasswordsCount > 0) {
+                return ModuleType.HAS_REUSED_PASSWORDS;
+            }
+            if (weakPasswordsCount > 0) {
+                return ModuleType.HAS_WEAK_PASSWORDS;
+            }
         }
+
+        // If both reused passwords and weak passwords counts are invalid, ignore them in favour
+        // of showing the compromised passwords count.
         return ModuleType.NO_COMPROMISED_PASSWORDS;
     }
 
@@ -192,6 +203,26 @@ public final class SafetyHubPasswordModuleHelper {
         preference.setSecondaryButtonClickListener(null);
     }
 
+    // Updates `preference` for the password module of type {@link ModuleType.HAS_REUSED_PASSWORDS}.
+    private static void updatePreferenceForHasReusedPasswords(
+            SafetyHubExpandablePreference preference, PropertyModel model) {
+        Context context = preference.getContext();
+        int reusedPasswordsCount = model.get(SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT);
+        preference.setTitle(context.getString(R.string.safety_hub_reused_weak_passwords_title));
+        preference.setSummary(
+                context.getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_reused_passwords_summary,
+                                reusedPasswordsCount,
+                                reusedPasswordsCount));
+        preference.setPrimaryButtonText(
+                context.getString(R.string.safety_hub_passwords_navigation_button));
+        preference.setPrimaryButtonClickListener(
+                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+        preference.setSecondaryButtonText(null);
+        preference.setSecondaryButtonClickListener(null);
+    }
+
     // Overrides summary and primary button fields of `preference` if passwords are controlled by a
     // policy.
     private static void overridePreferenceForManaged(
@@ -236,6 +267,9 @@ public final class SafetyHubPasswordModuleHelper {
             case ModuleType.HAS_WEAK_PASSWORDS:
                 updatePreferenceForHasWeakPasswords(preference, model);
                 break;
+            case ModuleType.HAS_REUSED_PASSWORDS:
+                updatePreferenceForHasReusedPasswords(preference, model);
+                break;
             default:
                 throw new IllegalArgumentException();
         }
@@ -251,6 +285,7 @@ public final class SafetyHubPasswordModuleHelper {
         switch (type) {
             case ModuleType.NO_SAVED_PASSWORDS:
             case ModuleType.HAS_WEAK_PASSWORDS:
+            case ModuleType.HAS_REUSED_PASSWORDS:
                 return ModuleState.INFO;
             case ModuleType.SIGNED_OUT:
             case ModuleType.UNAVAILABLE_PASSWORDS:
