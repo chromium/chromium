@@ -10,8 +10,9 @@ for (const namespace in gCrWeb) {
   for (const itemName in namespaceObject) {
     const exposedItem = namespaceObject[itemName];
     if (typeof exposedItem == 'function') {
+      const funcName = '__gCrWeb.' + namespace + '.' + itemName;
       gCrWeb[namespace][itemName] = function(...args: unknown[]) {
-        return catchAndReportErrors.apply(null, [exposedItem, args]);
+        return catchAndReportErrors.apply(null, [funcName, exposedItem, args]);
       }
     }
   }
