@@ -106,6 +106,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:test_utils",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/policy/ui_bundled/idle:idle_timeout_policy_scene_agent",

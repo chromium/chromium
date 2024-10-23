@@ -11,8 +11,7 @@
 #import "components/enterprise/idle/metrics.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_observer_bridge.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/constants.h"
@@ -36,7 +35,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @interface IdleTimeoutPolicySceneAgent () <
-    AppStateObserver,
     IdleServiceObserving,
     IdleTimeoutConfirmationCoordinatorDelegate>
 @end
@@ -95,13 +93,6 @@
     _idleService = idleService;
   }
   return self;
-}
-
-#pragma mark - ObservingSceneAgent
-
-- (void)setSceneState:(SceneState*)sceneState {
-  [super setSceneState:sceneState];
-  [self.sceneState.profileState.appState addObserver:self];
 }
 
 #pragma mark - SceneStateObserver
@@ -197,7 +188,6 @@
 
 - (void)tearDownObservers {
   _idleServiceObserverBridge.reset();
-  [self.sceneState.profileState.appState removeObserver:self];
 }
 
 - (PrefService*)prefService {
@@ -276,7 +266,7 @@
 // Returns whether the scene and app states allow for the idle timeout
 // confirmation dialog to be shown if it is needed.
 - (BOOL)isUIAvailableToShowDialog {
-  if (self.sceneState.profileState.appState.initStage < AppInitStage::kFinal) {
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     // Return NO when the app isn't yet fully initialized.
     return NO;
   }
