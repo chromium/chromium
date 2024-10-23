@@ -85,8 +85,6 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
  private:
   void LoadV2RemoteDevices();
 
-  void OnV1RemoteDevicesLoaded(
-      const multidevice::RemoteDeviceList& synced_v1_remote_devices);
   void OnV2RemoteDevicesLoaded(
       const multidevice::RemoteDeviceList& synced_v2_remote_devices);
 
