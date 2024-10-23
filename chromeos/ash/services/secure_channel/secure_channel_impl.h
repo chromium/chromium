@@ -51,20 +51,8 @@ class SecureChannelImpl : public mojom::SecureChannel,
                           public ActiveConnectionManager::Delegate,
                           public PendingConnectionManager::Delegate {
  public:
-  class Factory {
-   public:
-    static std::unique_ptr<mojom::SecureChannel> Create(
-        scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
-    static void SetFactoryForTesting(Factory* test_factory);
-
-   protected:
-    virtual ~Factory();
-    virtual std::unique_ptr<mojom::SecureChannel> CreateInstance(
-        scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
-
-   private:
-    static Factory* test_factory_;
-  };
+  explicit SecureChannelImpl(
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
 
   SecureChannelImpl(const SecureChannelImpl&) = delete;
   SecureChannelImpl& operator=(const SecureChannelImpl&) = delete;
@@ -72,9 +60,6 @@ class SecureChannelImpl : public mojom::SecureChannel,
   ~SecureChannelImpl() override;
 
  private:
-  explicit SecureChannelImpl(
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
-
   enum class InvalidRemoteDeviceReason {
     kInvalidPublicKey,
     kInvalidPsk,

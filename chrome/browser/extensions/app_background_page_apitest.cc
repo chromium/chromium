@@ -150,16 +150,17 @@ class AppBackgroundPageApiTest : public extensions::ExtensionApiTest {
   }
 
   bool VerifyBackgroundMode(bool expected_background_mode) {
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
     BackgroundModeManager* manager =
         g_browser_process->background_mode_manager();
+    if (manager && manager->IsBackgroundModePrefEnabled()) {
+      return manager->IsBackgroundModeActive() == expected_background_mode;
+    }
+#endif
     // If background mode is disabled on this platform (e.g. cros), then skip
     // this check.
-    if (!manager || !manager->IsBackgroundModePrefEnabled()) {
-      DLOG(WARNING) << "Skipping check - background mode disabled";
-      return true;
-    }
-
-    return manager->IsBackgroundModeActive() == expected_background_mode;
+    DLOG(WARNING) << "Skipping check - background mode disabled";
+    return true;
   }
 
   void UnloadExtensionViaTask(const std::string& id) {

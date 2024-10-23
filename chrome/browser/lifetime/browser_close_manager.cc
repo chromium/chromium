@@ -158,6 +158,7 @@ void BrowserCloseManager::CloseBrowsers() {
   // exit can restore all browsers open before exiting.
   ProfileManager::ShutdownSessionServices();
 #endif
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   if (!browser_shutdown::IsTryingToQuit()) {
     BackgroundModeManager* background_mode_manager =
         g_browser_process->background_mode_manager();
@@ -165,6 +166,7 @@ void BrowserCloseManager::CloseBrowsers() {
       background_mode_manager->SuspendBackgroundMode();
     }
   }
+#endif
 
   // Make a copy of the BrowserList to simplify the case where we need to
   // destroy a Browser during the loop.

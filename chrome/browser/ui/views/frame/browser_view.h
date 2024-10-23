@@ -804,9 +804,11 @@ class BrowserView : public BrowserWindow,
   // Closes the tab search bubble if open for the given browser instance.
   void CloseTabSearchBubble() override;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   AccessibilityFocusHighlight* GetAccessibilityFocusHighlightForTesting() {
     return accessibility_focus_highlight_.get();
   }
+#endif
 
   bool should_show_window_controls_overlay_toggle() const {
     return should_show_window_controls_overlay_toggle_;
@@ -1315,7 +1317,9 @@ class BrowserView : public BrowserWindow,
   // The last bounds we notified about in TryNotifyWindowBoundsChanged().
   gfx::Rect last_widget_bounds_;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<AccessibilityFocusHighlight> accessibility_focus_highlight_;
+#endif
 
   std::unique_ptr<BrowserFeaturePromoController> feature_promo_controller_ =
       nullptr;
