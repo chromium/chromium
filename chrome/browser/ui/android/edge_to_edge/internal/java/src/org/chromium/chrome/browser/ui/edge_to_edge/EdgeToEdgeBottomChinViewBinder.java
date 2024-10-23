@@ -63,9 +63,13 @@ class EdgeToEdgeBottomChinViewBinder {
     }
 
     private static void updateVisibility(PropertyModel model, ViewHolder viewHolder) {
-        boolean visible = model.get(CAN_SHOW) && model.get(Y_OFFSET) < model.get(HEIGHT);
+        // Even if the chin has scrolled off, the android view should remain in case other browser
+        // controls are showing. The presence of the android view is needed to avoid strange
+        // transparency / cut-off bugs that happen when scrolling browser controls under bottom
+        // inset when drawing edge-to-edge.
+        viewHolder.mAndroidView.setVisibility(model.get(CAN_SHOW) ? View.VISIBLE : View.GONE);
 
-        viewHolder.mAndroidView.setVisibility(visible ? View.VISIBLE : View.GONE);
+        boolean visible = model.get(CAN_SHOW) && model.get(Y_OFFSET) < model.get(HEIGHT);
         viewHolder.mSceneLayer.setIsVisible(visible);
     }
 
