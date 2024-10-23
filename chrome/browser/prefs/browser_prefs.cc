@@ -556,37 +556,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 09/2023.
-const char kPrivacySandboxM1Unrestricted[] = "privacy_sandbox.m1.unrestricted";
-#if BUILDFLAG(IS_WIN)
-const char kSwReporter[] = "software_reporter";
-const char kChromeCleaner[] = "chrome_cleaner";
-const char kSettingsResetPrompt[] = "settings_reset_prompt";
-#endif
-// A boolean specifying whether the new download bubble UI is enabled. If it is
-// set to false, the old download shelf UI will be shown instead.
-const char kDownloadBubbleEnabled[] = "download_bubble_enabled";
-
-// Deprecated 09/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kGestureEducationNotificationShown[] =
-    "ash.gesture_education.notification_shown";
-
-// Note that this very name is used outside ChromeOS Ash, where it isn't
-// deprecated.
-const char kSyncInitialSyncFeatureSetupCompleteOnAsh[] =
-    "sync.has_setup_completed";
-#endif
-
-// Deprecated 09/2023.
-const char kPrivacySandboxManuallyControlled[] =
-    "privacy_sandbox.manually_controlled";
-
-// Deprecated 09/2023.
-#if BUILDFLAG(IS_ANDROID)
-const char kSettingsMigratedToUPM[] = "profile.settings_migrated_to_upm";
-#endif
-
 // Deprecated 10/2023.
 const char kSyncRequested[] = "sync.requested";
 const char kDownloadLastCompleteTime[] = "download.last_complete_time";
@@ -1160,17 +1129,6 @@ inline constexpr char kWallpaperSeaPenMigrationStatus[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 09/2023.
-#if BUILDFLAG(IS_WIN)
-  registry->RegisterDictionaryPref(kSwReporter);
-  registry->RegisterDictionaryPref(kChromeCleaner);
-#endif
-
-  // Deprecated 09/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(kGestureEducationNotificationShown, true);
-#endif
-
   // Deprecated 11/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kIsolatedWebAppsEnabled, false);
@@ -1278,23 +1236,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-  // Deprecated 09/2023.
-  registry->RegisterBooleanPref(kPrivacySandboxM1Unrestricted, false);
-#if BUILDFLAG(IS_WIN)
-  registry->RegisterDictionaryPref(kSwReporter);
-  registry->RegisterDictionaryPref(kSettingsResetPrompt);
-  registry->RegisterDictionaryPref(kChromeCleaner);
-#endif
-  registry->RegisterBooleanPref(kDownloadBubbleEnabled, true);
-  registry->RegisterBooleanPref(kPrivacySandboxManuallyControlled, false);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(kSyncInitialSyncFeatureSetupCompleteOnAsh,
-                                false);
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(kSettingsMigratedToUPM, false);
-#endif
+  // Deprecated 10/2023.
   registry->RegisterBooleanPref(kSyncRequested, false);
 
   // Deprecated 10/2023.
@@ -2469,17 +2411,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 09/2023.
-#if BUILDFLAG(IS_WIN)
-  local_state->ClearPref(kSwReporter);
-  local_state->ClearPref(kChromeCleaner);
-#endif
-
-// Added 09/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  local_state->ClearPref(kGestureEducationNotificationShown);
-#endif
-
 // Added 11/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_state->ClearPref(kIsolatedWebAppsEnabled);
@@ -2617,22 +2548,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // allow this to be cleaned up.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs);
-#endif
-
-  // Added 09/2023.
-  profile_prefs->ClearPref(kPrivacySandboxM1Unrestricted);
-#if BUILDFLAG(IS_WIN)
-  profile_prefs->ClearPref(kSwReporter);
-  profile_prefs->ClearPref(kSettingsResetPrompt);
-  profile_prefs->ClearPref(kChromeCleaner);
-#endif
-  profile_prefs->ClearPref(kDownloadBubbleEnabled);
-  profile_prefs->ClearPref(kPrivacySandboxManuallyControlled);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_prefs->ClearPref(kSyncInitialSyncFeatureSetupCompleteOnAsh);
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  profile_prefs->ClearPref(kSettingsMigratedToUPM);
 #endif
 
   // Added 10/2023.
