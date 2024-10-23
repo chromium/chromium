@@ -108,8 +108,8 @@ bool CanManageProductSpecificationsSets(
 }
 
 bool CanFetchProductSpecificationsData(AccountChecker* account_checker) {
-  // msbb, enterprise, parental controls, sync type, and model execution
-  // features.
+  // msbb, enterprise, parental controls, sync type, model execution
+  // features, and default search engine selection (namely Google).
   return account_checker &&
          IsProductSpecificationsAllowedForEnterprise(
              account_checker->GetPrefs()) &&
@@ -117,6 +117,7 @@ bool CanFetchProductSpecificationsData(AccountChecker* account_checker) {
          account_checker->IsAnonymizedUrlDataCollectionEnabled() &&
          !account_checker->IsSubjectToParentalControls() &&
          account_checker->CanUseModelExecutionFeatures() &&
+         account_checker->IsDefaultSearchEngineGoogle() &&
          IsSyncingProductSpecifications(account_checker) &&
          CanLoadProductSpecificationsFullPageUi(account_checker);
 }

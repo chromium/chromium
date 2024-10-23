@@ -8,7 +8,7 @@
 namespace commerce {
 
 MockAccountChecker::MockAccountChecker()
-    : AccountChecker("", "", nullptr, nullptr, nullptr, nullptr) {
+    : AccountChecker("", "", nullptr, nullptr, nullptr, nullptr, nullptr) {
   // Default to an account checker with the fewest restrictions.
   SetSignedIn(true);
   SetSyncingBookmarks(true);
@@ -17,6 +17,8 @@ MockAccountChecker::MockAccountChecker()
   SetCanUseModelExecutionFeatures(true);
   SetCountry("us");
   SetLocale("en-us");
+  ON_CALL(*this, IsDefaultSearchEngineGoogle)
+      .WillByDefault(testing::Return(true));
 }
 
 MockAccountChecker::~MockAccountChecker() = default;

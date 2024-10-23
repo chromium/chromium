@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -51,6 +52,8 @@ class AccountChecker {
 
   virtual bool IsSubjectToParentalControls();
 
+  virtual bool IsDefaultSearchEngineGoogle();
+
   // Whether a user is allowed to use model execution features.
   virtual bool CanUseModelExecutionFeatures();
 
@@ -73,7 +76,8 @@ class AccountChecker {
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      TemplateURLService* template_url_service);
 
   // Fetch users' pref from server on whether to receive price tracking emails.
   void FetchPriceEmailPref();
@@ -128,6 +132,8 @@ class AccountChecker {
   raw_ptr<syncer::SyncService> sync_service_;
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  raw_ptr<TemplateURLService> template_url_service_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

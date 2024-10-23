@@ -57,7 +57,8 @@ class SpyAccountChecker : public AccountChecker {
                        pref_service,
                        identity_manager,
                        sync_service,
-                       std::move(url_loader_factory)) {}
+                       std::move(url_loader_factory),
+                       nullptr) {}
   SpyAccountChecker(const SpyAccountChecker&) = delete;
   SpyAccountChecker operator=(const SpyAccountChecker&) = delete;
   ~SpyAccountChecker() override = default;

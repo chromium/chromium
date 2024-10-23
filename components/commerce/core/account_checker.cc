@@ -13,6 +13,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/search.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -43,13 +44,15 @@ AccountChecker::AccountChecker(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    TemplateURLService* template_url_service)
     : country_(country),
       locale_(locale),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       url_loader_factory_(url_loader_factory),
+      template_url_service_(template_url_service),
       weak_ptr_factory_(this) {
   // TODO(crbug.com/40239641): Avoid pushing the fetched pref value to the
   // server again.
@@ -121,6 +124,11 @@ bool AccountChecker::IsSubjectToParentalControls() {
 
   return capabilities.is_subject_to_parental_controls() ==
          signin::Tribool::kTrue;
+}
+
+bool AccountChecker::IsDefaultSearchEngineGoogle() {
+  return template_url_service_ &&
+         search::DefaultSearchProviderIsGoogle(template_url_service_);
 }
 
 bool AccountChecker::CanUseModelExecutionFeatures() {

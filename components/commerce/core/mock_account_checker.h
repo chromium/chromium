@@ -36,6 +36,8 @@ class MockAccountChecker : public AccountChecker {
 
   MOCK_METHOD(bool, IsSubjectToParentalControls, (), (override));
 
+  MOCK_METHOD(bool, IsDefaultSearchEngineGoogle, (), (override));
+
   MOCK_METHOD(bool, CanUseModelExecutionFeatures, (), (override));
 
   MOCK_METHOD(std::string, GetCountry, (), (override));

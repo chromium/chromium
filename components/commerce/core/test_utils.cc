@@ -164,6 +164,8 @@ void EnableProductSpecificationsDataFetch(MockAccountChecker* account_checker,
                                           TestingPrefServiceSimple* prefs) {
   ON_CALL(*account_checker, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(true));
+  ON_CALL(*account_checker, IsDefaultSearchEngineGoogle)
+      .WillByDefault(testing::Return(true));
   account_checker->SetAnonymizedUrlDataCollectionEnabled(true);
   account_checker->SetSignedIn(true);
   account_checker->SetIsSubjectToParentalControls(false);
