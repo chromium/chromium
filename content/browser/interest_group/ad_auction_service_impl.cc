@@ -177,6 +177,29 @@ void RecordBaDataConstructionResultMetric(size_t data_size,
                           /*sample=*/base::TimeTicks::Now() - start_time);
 }
 
+// Used to get a possible override to the user-agent string.
+std::optional<std::string> MaybeGetUserAgentOverride(
+    FrameTreeNode* frame_tree_node) {
+  if (base::FeatureList::IsEnabled(features::kFledgeEnableUserAgentOverrides)) {
+    if (frame_tree_node != nullptr) {
+      const bool override_user_agent =
+          frame_tree_node->navigator()
+              .GetDelegate()
+              ->ShouldOverrideUserAgentForRendererInitiatedNavigation();
+      if (override_user_agent) {
+        std::string maybe_user_agent = frame_tree_node->navigator()
+                                           .GetDelegate()
+                                           ->GetUserAgentOverride()
+                                           .ua_string_override;
+        if (!maybe_user_agent.empty()) {
+          return std::move(maybe_user_agent);
+        }
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
@@ -378,10 +401,13 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
     return;
   }
 
+  std::optional<std::string> user_agent_override =
+      MaybeGetUserAgentOverride(GetFrame()->frame_tree_node());
+
   // `base::Unretained` is safe here since the `BrowserContext` owns the
   // `StoragePartition` that owns the interest group manager.
   GetInterestGroupManager().UpdateInterestGroupsOfOwner(
-      origin(), GetClientSecurityState(),
+      origin(), GetClientSecurityState(), user_agent_override,
       base::BindRepeating(
           &AreAllowedReportingOriginsAttested,
           base::Unretained(render_frame_host().GetBrowserContext())));
@@ -471,8 +497,9 @@ void AdAuctionServiceImpl::RunAdAuction(
       base::BindRepeating(
           &AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures,
           weak_ptr_factory_.GetWeakPtr()),
-      config, main_frame_origin_, origin(), GetClientSecurityState(),
-      GetRefCountedTrustedURLLoaderFactory(),
+      config, main_frame_origin_, origin(),
+      MaybeGetUserAgentOverride(GetFrame()->frame_tree_node()),
+      GetClientSecurityState(), GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
       base::BindRepeating(

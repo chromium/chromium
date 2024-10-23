@@ -89,6 +89,7 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     const blink::AuctionConfig& auction_config,
     const url::Origin& main_frame_origin,
     const url::Origin& frame_origin,
+    std::optional<std::string> user_agent_override,
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -101,8 +102,8 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
       std::move(ad_auction_page_data_callback),
       std::move(log_private_aggregation_requests_callback),
       DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
-      frame_origin, std::move(client_security_state),
-      std::move(url_loader_factory),
+      frame_origin, std::move(user_agent_override),
+      std::move(client_security_state), std::move(url_loader_factory),
       std::move(is_interest_group_api_allowed_callback),
       std::move(attestation_callback), std::move(abort_receiver),
       std::move(callback)));
@@ -534,6 +535,7 @@ AuctionRunner::AuctionRunner(
     const blink::AuctionConfig& auction_config,
     const url::Origin& main_frame_origin,
     const url::Origin& frame_origin,
+    std::optional<std::string> user_agent_override,
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -546,6 +548,7 @@ AuctionRunner::AuctionRunner(
       main_frame_origin_(main_frame_origin),
       frame_origin_(frame_origin),
       client_security_state_(std::move(client_security_state)),
+      user_agent_override_(std::move(user_agent_override)),
       url_loader_factory_(std::move(url_loader_factory)),
       is_interest_group_api_allowed_callback_(
           std::move(is_interest_group_api_allowed_callback)),
@@ -713,11 +716,12 @@ void AuctionRunner::UpdateInterestGroupsPostAuction() {
           features::kFledgeDelayPostAuctionInterestGroupUpdate)) {
     interest_group_manager_->UpdateInterestGroupsOfOwnersWithDelay(
         std::move(update_owners), client_security_state_.Clone(),
-        std::move(attestation_callback_), kPostAuctionInterestGroupUpdateDelay);
+        std::move(user_agent_override_), std::move(attestation_callback_),
+        kPostAuctionInterestGroupUpdateDelay);
   } else {
     interest_group_manager_->UpdateInterestGroupsOfOwners(
         std::move(update_owners), client_security_state_.Clone(),
-        attestation_callback_);
+        std::move(user_agent_override_), attestation_callback_);
   }
 }
 

@@ -408,29 +408,35 @@ void InterestGroupManagerImpl::OnClearOriginJoinedInterestGroupsComplete(
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(
     const url::Origin& owner,
     network::mojom::ClientSecurityStatePtr client_security_state,
+    std::optional<std::string> user_agent_override,
     AreReportingOriginsAttestedCallback callback) {
   update_manager_.UpdateInterestGroupsOfOwner(
-      owner, std::move(client_security_state), std::move(callback));
+      owner, std::move(client_security_state), std::move(user_agent_override),
+      std::move(callback));
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwners(
     std::vector<url::Origin> owners,
     network::mojom::ClientSecurityStatePtr client_security_state,
+    std::optional<std::string> user_agent_override,
     AreReportingOriginsAttestedCallback callback) {
   update_manager_.UpdateInterestGroupsOfOwners(
-      owners, std::move(client_security_state), std::move(callback));
+      owners, std::move(client_security_state), std::move(user_agent_override),
+      std::move(callback));
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwnersWithDelay(
     std::vector<url::Origin> owners,
     network::mojom::ClientSecurityStatePtr client_security_state,
+    std::optional<std::string> user_agent_override,
     AreReportingOriginsAttestedCallback callback,
     const base::TimeDelta& delay) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&InterestGroupManagerImpl::UpdateInterestGroupsOfOwners,
                      weak_factory_.GetWeakPtr(), std::move(owners),
-                     std::move(client_security_state), std::move(callback)),
+                     std::move(client_security_state),
+                     std::move(user_agent_override), std::move(callback)),
       delay);
 }
 
