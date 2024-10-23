@@ -19,7 +19,7 @@ interface ColorOption {
   color: string;
 }
 
-export const HIGHLIGHTER_COLORS: ColorOption[] = [
+const HIGHLIGHTER_COLORS: ColorOption[] = [
   // Row 1:
   {name: 'highlighterColorRed300', color: '#f28b82'},
   {name: 'highlighterColorYellow300', color: '#fdd663'},
@@ -34,7 +34,7 @@ export const HIGHLIGHTER_COLORS: ColorOption[] = [
   {name: 'highlighterColorOrange', color: '#ff630c'},
 ];
 
-export const PEN_COLORS: ColorOption[] = [
+const PEN_COLORS: ColorOption[] = [
   // Row 1:
   {name: 'penColorBlack', color: '#000000'},
   {name: 'penColorGrey700', color: '#5f6368'},
@@ -165,7 +165,7 @@ export class InkColorSelectorElement extends CrLitElement {
     };
   }
 
-  currentColor: Color = hexToColor(PEN_COLORS[0]!.color);
+  currentColor: Color = {r: 0, g: 0, b: 0};
   currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
   protected onColorClick_(e: Event) {

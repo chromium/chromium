@@ -2,22 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationBrushType, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {AnnotationBrush, InkBrushSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createMockPdfPluginForTest, getRequiredElement} from './test_util.js';
+import {getRequiredElement, setupTestMockPluginForInk} from './test_util.js';
 
-const controller = PluginController.getInstance();
-const mockPlugin = createMockPdfPluginForTest();
-controller.setPluginForTesting(mockPlugin);
+const viewer = document.body.querySelector('pdf-viewer')!;
+const mockPlugin = setupTestMockPluginForInk();
 
-// Create a standalone side panel and use it for all tests.
-const sidePanel = document.createElement('viewer-side-panel');
-document.body.innerHTML = '';
-document.body.appendChild(sidePanel);
+// Enter annotation mode to get the side panel.
+viewer.$.toolbar.toggleAnnotation();
+await microtasksFinished();
+assert(viewer.$.toolbar.annotationMode);
+
+const sidePanel = getRequiredElement<HTMLElement>(viewer, 'viewer-side-panel');
+
+function setGetAnnotationBrushReply(
+    type: AnnotationBrushType, size: number,
+    color?: {r: number, g: number, b: number}) {
+  mockPlugin.setMessageReply('getAnnotationBrush', {data: {type, size, color}});
+}
 
 /**
  * Tests that the current annotation brush matches `expectedBrush`. Clears all
@@ -202,12 +209,9 @@ chrome.test.runTests([
   // Test that the pen can be selected. Test that its size and color can be
   // selected.
   async function testSelectPen() {
-    // Default to a black pen.
-    assertAnnotationBrush({
-      type: AnnotationBrushType.PEN,
-      color: {r: 0, g: 0, b: 0},
-      size: 3,
-    });
+    // Default to a black pen. Cannot use assertAnnotationBrush() yet, since
+    // there's no need to set the brush in the backend immediately after getting
+    // the default brush.
     assertBrushIcons(AnnotationBrushType.PEN);
     assertSelectedBrush(AnnotationBrushType.PEN);
     assertSelectedSize(/*buttonIndex=*/ 2);
@@ -244,6 +248,7 @@ chrome.test.runTests([
   // Test that the eraser can be selected.
   async function testSelectEraser() {
     // Switch to eraser.
+    setGetAnnotationBrushReply(AnnotationBrushType.ERASER, /*size=*/ 3);
     getBrushSelector().$.eraser.click();
     await microtasksFinished();
 
@@ -275,6 +280,9 @@ chrome.test.runTests([
   // Test that the highlighter can be selected.
   async function testSelectHighlighter() {
     // Switch to highlighter.
+    setGetAnnotationBrushReply(
+        AnnotationBrushType.HIGHLIGHTER, /*size=*/ 8,
+        /*color=*/ {r: 242, g: 139, b: 130});
     getBrushSelector().$.highlighter.click();
     await microtasksFinished();
 
@@ -313,49 +321,6 @@ chrome.test.runTests([
       color: {r: 52, g: 168, b: 83},
       size: 16,
     });
-    chrome.test.succeed();
-  },
-
-  // Test that when brushes are changed again, the selected brush should have
-  // the same settings as last set in previous tests.
-  async function testGoBackToBrushWithPreviousSettings() {
-    // Switch back to pen. It should have the previous color and size.
-    getBrushSelector().$.pen.click();
-    await microtasksFinished();
-
-    assertAnnotationBrush({
-      type: AnnotationBrushType.PEN,
-      color: {r: 253, g: 214, b: 99},
-      size: 1,
-    });
-    assertBrushIcons(AnnotationBrushType.PEN);
-    assertSelectedBrush(AnnotationBrushType.PEN);
-    assertSelectedSize(/*buttonIndex=*/ 0);
-
-    // Switch back to eraser. It should have the previous size.
-    getBrushSelector().$.eraser.click();
-    await microtasksFinished();
-
-    assertAnnotationBrush({
-      type: AnnotationBrushType.ERASER,
-      size: 2,
-    });
-    assertBrushIcons(AnnotationBrushType.ERASER);
-    assertSelectedBrush(AnnotationBrushType.ERASER);
-    assertSelectedSize(/*buttonIndex=*/ 1);
-
-    // Switch back to highlighter. It should have the previous color and size.
-    getBrushSelector().$.highlighter.click();
-    await microtasksFinished();
-
-    assertAnnotationBrush({
-      type: AnnotationBrushType.HIGHLIGHTER,
-      color: {r: 52, g: 168, b: 83},
-      size: 16,
-    });
-    assertBrushIcons(AnnotationBrushType.HIGHLIGHTER);
-    assertSelectedBrush(AnnotationBrushType.HIGHLIGHTER);
-    assertSelectedSize(/*buttonIndex=*/ 4);
     chrome.test.succeed();
   },
 
@@ -501,6 +466,9 @@ chrome.test.runTests([
   // same column.
   async function testArrowKeysChangeColorFirstLastRow() {
     // Switch to pen, which has multiple rows of colors.
+    setGetAnnotationBrushReply(
+        AnnotationBrushType.PEN, /*size=*/ 1,
+        /*color=*/ {r: 253, g: 214, b: 99});
     getBrushSelector().$.pen.click();
     await microtasksFinished();
 

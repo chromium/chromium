@@ -17,7 +17,7 @@ interface SizeOption {
 }
 
 // TODO(crbug.com/341282609): Choose production size values. Add labels.
-export const ERASER_SIZES: SizeOption[] = [
+const ERASER_SIZES: SizeOption[] = [
   {icon: 'eraser-size-1', name: 'sizeExtraThin', size: 1},
   {icon: 'eraser-size-2', name: 'sizeThin', size: 2},
   {icon: 'eraser-size-3', name: 'sizeExtraMedium', size: 3},
@@ -25,7 +25,7 @@ export const ERASER_SIZES: SizeOption[] = [
   {icon: 'eraser-size-5', name: 'sizeExtraThick', size: 8},
 ];
 
-export const HIGHLIGHTER_SIZES: SizeOption[] = [
+const HIGHLIGHTER_SIZES: SizeOption[] = [
   {icon: 'highlighter-size-1', name: 'sizeExtraThin', size: 4},
   {icon: 'highlighter-size-2', name: 'sizeThin', size: 6},
   {icon: 'highlighter-size-3', name: 'sizeExtraMedium', size: 8},
@@ -33,7 +33,7 @@ export const HIGHLIGHTER_SIZES: SizeOption[] = [
   {icon: 'highlighter-size-5', name: 'sizeExtraThick', size: 16},
 ];
 
-export const PEN_SIZES: SizeOption[] = [
+const PEN_SIZES: SizeOption[] = [
   {icon: 'pen-size-1', name: 'sizeExtraThin', size: 1},
   {icon: 'pen-size-2', name: 'sizeThin', size: 2},
   {icon: 'pen-size-3', name: 'sizeExtraMedium', size: 3},
@@ -64,7 +64,7 @@ export class InkSizeSelectorElement extends CrLitElement {
     };
   }
 
-  currentSize: number = PEN_SIZES[2]!.size;
+  currentSize: number = 0;
   currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
   protected isCurrentSize_(size: number): boolean {

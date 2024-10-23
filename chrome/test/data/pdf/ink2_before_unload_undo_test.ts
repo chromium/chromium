@@ -5,12 +5,14 @@
 import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {finishInkStroke, getNewTestBeforeUnloadProxy} from './test_util.js';
+import {finishInkStroke, getNewTestBeforeUnloadProxy, setupTestMockPluginForInk} from './test_util.js';
 
 chrome.test.runTests([
   // Test that the save unedited dialog does not appear when the user navigates
   // away from the PDF after undoing all strokes.
   async function testBeforeUnloadUndo() {
+    setupTestMockPluginForInk();
+
     const toolbar = document.body.querySelector('pdf-viewer')!.$.toolbar;
 
     chrome.test.assertFalse(toolbar.annotationMode);

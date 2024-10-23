@@ -5,13 +5,12 @@
 import {PluginController, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createMockPdfPluginForTest, finishInkStroke, getRequiredElement} from './test_util.js';
+import {finishInkStroke, getRequiredElement, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
 const controller = PluginController.getInstance();
-const mockPlugin = createMockPdfPluginForTest();
-controller.setPluginForTesting(mockPlugin);
+const mockPlugin = setupTestMockPluginForInk();
 
 function getDownloadControls() {
   return getRequiredElement(viewerToolbar, 'viewer-download-controls');

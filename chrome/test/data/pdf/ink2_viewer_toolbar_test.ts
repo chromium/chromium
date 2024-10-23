@@ -7,13 +7,12 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertCheckboxMenuButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement, openToolbarMenu} from './test_util.js';
+import {assertCheckboxMenuButton, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement, openToolbarMenu, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
 const controller = PluginController.getInstance();
-const mockPlugin = createMockPdfPluginForTest();
-controller.setPluginForTesting(mockPlugin);
+const mockPlugin = setupTestMockPluginForInk();
 
 function getUndoRedoModifier() {
   return isMac ? 'meta' : 'ctrl';

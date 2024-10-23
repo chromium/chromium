@@ -6,8 +6,11 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {setupTestMockPluginForInk} from './test_util.js';
+
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
+setupTestMockPluginForInk();
 
 chrome.test.runTests([
   // Test that PDF annotations and the new ink mode are enabled.

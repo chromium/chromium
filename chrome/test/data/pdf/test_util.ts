@@ -7,9 +7,8 @@
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
-import {BeforeUnloadProxyImpl} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {BeforeUnloadProxy, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, BeforeUnloadProxyImpl, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {BeforeUnloadProxy} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -173,6 +172,10 @@ export class MockDocumentDimensions implements DocumentDimensions {
 
 export class MockPdfPluginElement extends HTMLEmbedElement {
   private messages_: any[] = [];
+  // <if expr="enable_pdf_ink2">
+  private messageReply_: Object|null = null;
+  private replyType_: string;
+  // </if>
 
   get messages(): any[] {
     return this.messages_;
@@ -187,8 +190,36 @@ export class MockPdfPluginElement extends HTMLEmbedElement {
   }
 
   postMessage(message: any, _transfer: Transferable[]) {
+    assert(message.type);
+    // <if expr="enable_pdf_ink2">
+    if (message.type === this.replyType_) {
+      assert(this.messageReply_);
+      assert(message.messageId);
+
+      this.dispatchEvent(new MessageEvent('message', {
+        data: {
+          messageId: message.messageId,
+          ...this.messageReply_,
+        },
+        origin: '*',
+      }));
+    }
+    // </if>
     this.messages_.push(message);
   }
+
+  // <if expr="enable_pdf_ink2">
+  /**
+   * Sets what the plugin's reply should be to a message posted using
+   * postMessage() with `type`.
+   * @param type The message type that should receive a reply.
+   * @param reply The reply to the message.
+   */
+  setMessageReply(type: string, reply: Object) {
+    this.replyType_ = type;
+    this.messageReply_ = reply;
+  }
+  // </if>
 }
 customElements.define(
     'mock-pdf-plugin', MockPdfPluginElement, {extends: 'embed'});
@@ -406,5 +437,19 @@ export function getNewTestBeforeUnloadProxy(): TestBeforeUnloadProxy {
   const testProxy = new TestBeforeUnloadProxy();
   BeforeUnloadProxyImpl.setInstance(testProxy);
   return testProxy;
+}
+
+export function setupTestMockPluginForInk(): MockPdfPluginElement {
+  const controller = PluginController.getInstance();
+  const mockPlugin = createMockPdfPluginForTest();
+  controller.setPluginForTesting(mockPlugin);
+  mockPlugin.setMessageReply('getAnnotationBrush', {
+    data: {
+      type: AnnotationBrushType.PEN,
+      size: 3,
+      color: {r: 0, g: 0, b: 0},
+    },
+  });
+  return mockPlugin;
 }
 // </if>
