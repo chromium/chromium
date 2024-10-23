@@ -321,13 +321,13 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest, TestDeclutterTabs) {
   int remaining_tab_count = browser()->tab_strip_model()->GetTabCount();
   EXPECT_EQ(remaining_tab_count, initial_tab_count - stale_tab_count);
 }
-
-// TODO(b/369681212): Enable test after fixing Linux ASan LSan errors.
 IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
-                       DISABLED_TestDoesNotDeclutterTabForAnotherBrowser) {
+                       TestDoesNotDeclutterTabForAnotherBrowser) {
   Browser* browser_two =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::AddTabAt(browser_two, GURL(), -1, true);
+  resource_coordinator::GetTabLifecycleUnitSource()
+      ->SetFocusedTabStripModelForTesting(browser_two->tab_strip_model());
 
   // Add 12 tabs that are 2 days old (not stale) and 4 tabs that are 8 days old
   // (stale) in browser_one.
