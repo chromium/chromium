@@ -5940,8 +5940,6 @@ static_library("browser") {
       "notifications/notification_platform_bridge_chromeos.cc",
       "notifications/notification_platform_bridge_chromeos.h",
       "notifications/notification_platform_bridge_delegate.h",
-      "notifications/notification_platform_bridge_lacros.cc",
-      "notifications/notification_platform_bridge_lacros.h",
       "platform_util_lacros.cc",
       "policy/status_provider/ash_lacros_policy_stack_bridge.cc",
       "policy/status_provider/ash_lacros_policy_stack_bridge.h",

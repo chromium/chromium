@@ -9,6 +9,7 @@
 #include "base/callback_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/notifications/chrome_ash_message_center_client.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/profile_notification.h"
@@ -16,13 +17,6 @@
 #include "chrome/browser/ui/app_icon_loader.h"
 #include "chrome/common/notifications/notification_operation.h"
 #include "ui/gfx/image/image.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/notifications/notification_platform_bridge_lacros.h"
-#include "chromeos/lacros/lacros_service.h"
-#else
-#include "chrome/browser/notifications/chrome_ash_message_center_client.h"
-#endif
 
 // static
 std::unique_ptr<NotificationPlatformBridge>
@@ -36,17 +30,8 @@ bool NotificationPlatformBridge::CanHandleType(
   return true;
 }
 
-NotificationPlatformBridgeChromeOs::NotificationPlatformBridgeChromeOs() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  mojo::Remote<crosapi::mojom::MessageCenter>* remote = nullptr;
-  auto* service = chromeos::LacrosService::Get();
-  if (service->IsAvailable<crosapi::mojom::MessageCenter>())
-    remote = &service->GetRemote<crosapi::mojom::MessageCenter>();
-  impl_ = std::make_unique<NotificationPlatformBridgeLacros>(this, remote);
-#else
-  impl_ = std::make_unique<ChromeAshMessageCenterClient>(this);
-#endif
-}
+NotificationPlatformBridgeChromeOs::NotificationPlatformBridgeChromeOs()
+    : impl_(std::make_unique<ChromeAshMessageCenterClient>(this)) {}
 
 NotificationPlatformBridgeChromeOs::~NotificationPlatformBridgeChromeOs() =
     default;
