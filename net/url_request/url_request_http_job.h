@@ -251,9 +251,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // in a request.
   bool ShouldRecordPartitionedCookieUsage() const;
 
-  // Applies the relevant Sec-Fetch-Storage-Access header if needed.
-  void MaybeSetSecFetchStorageAccessHeader();
-
   RequestPriority priority_ = DEFAULT_PRIORITY;
 
   HttpRequestInfo request_info_;
