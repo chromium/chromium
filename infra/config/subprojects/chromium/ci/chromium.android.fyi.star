@@ -946,6 +946,11 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.content_unittests.filter",
                 ],
             ),
+            "content_shell_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.content_shell_test_apk.filter",
+                ],
+            ),
             "gwp_asan_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.gwp_asan_unittests.filter",
