@@ -5,8 +5,9 @@
 #include "ui/views/controls/bulleted_label_list/bulleted_label_list_view.h"
 
 #include <algorithm>
-#include <vector>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -26,21 +27,27 @@ class BulletView : public View {
  METADATA_HEADER(BulletView, View)
 
  public:
-  BulletView() = default;
+  explicit BulletView(size_t line_height);
   BulletView(const BulletView&) = delete;
   BulletView& operator=(const BulletView&) = delete;
 
   void OnPaint(gfx::Canvas* canvas) override;
+
+  size_t line_height_dp_ = 0;
 };
+
+BulletView::BulletView(size_t line_height) : line_height_dp_(line_height) {}
 
 void BulletView::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
 
   SkScalar radius = std::min(height(), width()) / 8.0;
-  gfx::Point center = GetLocalBounds().CenterPoint();
+  gfx::Point top_center = GetLocalBounds().top_center();
 
   SkPath path;
-  path.addCircle(center.x(), center.y(), radius);
+  path.addCircle(top_center.x(),
+                 static_cast<size_t>(top_center.y()) + (line_height_dp_ / 2),
+                 radius);
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -77,11 +84,12 @@ BulletedLabelListView::BulletedLabelListView(
 
   // Add a label for each of the strings in |texts|.
   for (const auto& text : texts) {
-    AddChildView(std::make_unique<BulletView>());
-    auto* label = AddChildView(std::make_unique<views::Label>(text));
+    auto label = std::make_unique<views::Label>(text);
     label->SetMultiLine(true);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetTextStyle(label_text_style);
+    AddChildView(std::make_unique<BulletView>(label->GetLineHeight()));
+    AddChildView(std::move(label));
   }
 }
 
