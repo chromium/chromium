@@ -8232,6 +8232,26 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
     dialog_manager_->RunBeforeUnloadDialog(
         this, render_frame_host, is_reload,
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false));
+#if BUILDFLAG(IS_ANDROID)
+    // If A embeds a subframe B and B has a BeforeUnload handler whereas A
+    // doesn't, the main frame navigation from A will show a dialog. In that
+    // case `render_frame_host` is B and `initiator` is A. The navigation
+    // request is on A.
+    RenderFrameHostImpl* initiator =
+        render_frame_host->GetBeforeUnloadInitiator();
+    NavigationRequest* request =
+        initiator ? initiator->frame_tree_node()->navigation_request()
+                  : nullptr;
+    auto* animation_manager =
+        static_cast<BackForwardTransitionAnimationManagerAndroid*>(
+            GetBackForwardTransitionAnimationManager());
+    // We might not always have a NavigationRequest at this point (i.e. a
+    // renderer-initiated navigation). However if this is a browser-initiated
+    // history navigation, the request can't be null.
+    if (animation_manager && request) {
+      animation_manager->OnBeforeUnloadDialogShown(request->GetNavigationId());
+    }
+#endif
   }
 }
 

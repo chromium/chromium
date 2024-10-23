@@ -504,12 +504,8 @@ void BackForwardTransitionAnimator::OnGestureInvoked() {
   }
 
   // `StartNavigationAndTrackRequest()` sets `navigation_state_`.
-  if (navigation_state_ == NavigationState::kBeforeUnloadDispatched) {
-    AdvanceAndProcessState(State::kDisplayingCancelAnimation);
-    return;
-  }
-
-  CHECK_EQ(navigation_state_, NavigationState::kStarted);
+  CHECK(navigation_state_ == NavigationState::kStarted ||
+        navigation_state_ == NavigationState::kBeforeUnloadDispatched);
   AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
 }
 
@@ -579,7 +575,7 @@ void BackForwardTransitionAnimator::OnAnimate(
       break;
     }
     case State::kStarted:
-    case State::kWaitingForBeforeUnloadResponse:
+    case State::kWaitingForBeforeUnloadUserInteraction:
     case State::kWaitingForNewRendererToDraw:
     case State::kWaitingForContentForNavigationEntryShown:
     case State::kAnimationFinished:
@@ -603,13 +599,12 @@ void BackForwardTransitionAnimator::OnAnimate(
         break;
       }
       case State::kStarted:
-      case State::kWaitingForBeforeUnloadResponse:
+      case State::kWaitingForBeforeUnloadUserInteraction:
       case State::kWaitingForNewRendererToDraw:
       case State::kWaitingForContentForNavigationEntryShown:
       case State::kAnimationFinished:
       case State::kAnimationAborted:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   } else {
     animation_manager_->web_contents_view_android()
@@ -729,13 +724,28 @@ void BackForwardTransitionAnimator::DidStartNavigation(
     return;
   }
 
-  CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
-  navigation_state_ = NavigationState::kBeforeUnloadAckedProceed;
+  // Starting a cross-document navigation is always async regardless of whether
+  // the renderer has a beforeunload handler.
+  CHECK(
+      // The renderer doesn't have a BeforeUnload handler, or the renderer acks
+      // the BeforeUnload message without showing a dialog.
+      state_ == State::kDisplayingInvokeAnimation ||
+      // The BeforeUnload dialog is shown and the cancel animation is finished
+      // to bring the active page back. The user has interacted with it to start
+      // the navigation.
+      state_ == State::kWaitingForBeforeUnloadUserInteraction ||
+      // The user started the navigation before the cancel animation finishes.
+      state_ == State::kDisplayingCancelAnimation);
+  CHECK(navigation_state_ == NavigationState::kStarted ||
+        navigation_state_ == NavigationState::kBeforeUnloadDispatched);
 
-  CHECK(state_ == State::kWaitingForBeforeUnloadResponse ||
-        state_ == State::kDisplayingCancelAnimation);
-
-  AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
+  if (state_ == State::kDisplayingInvokeAnimation) {
+    CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
+    navigation_state_ = NavigationState::kStarted;
+  } else {
+    navigation_state_ = NavigationState::kBeforeUnloadAckedProceed;
+    AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
+  }
 }
 
 void BackForwardTransitionAnimator::ReadyToCommitNavigation(
@@ -943,6 +953,11 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         if (old_host != new_host) {
           MaybeCloneOldSurfaceLayer(old_host->GetView());
         }
+      } else if (navigation_state_ ==
+                 NavigationState::kBeforeUnloadDispatched) {
+        // Before a dialog is shown, another navigation can start and commit.
+        // We don't need to abort the animation since when the other navigation
+        // commits, we just swap out the live page.
       } else {
         // Our navigation has already committed while a second navigation
         // commits. This can be a client redirect: A.com -> B.com and B.com's
@@ -956,13 +971,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       break;
     }
     case State::kDisplayingCancelAnimation: {
-      // We won't reach `NavigationState::kBeforeUnloadDispatched` because
-      // if the request is blocked on BeforeUnload ack is cancelled, we will
-      // receive `OnUnstartedNavigationCancelled()` where we advance
-      // `navigation_state_` to `NavigationState::kCancelledBeforeStart`.
-
       CHECK(navigation_state_ == NavigationState::kNotStarted ||
-            navigation_state_ == NavigationState::kBeforeUnloadDispatched ||
             navigation_state_ == NavigationState::kCancelled ||
             navigation_state_ == NavigationState::kCancelledBeforeStart)
           << NavigationStateToString(navigation_state_);
@@ -1001,16 +1010,16 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
           AnimationAbortReason::kNewCommitWhileDisplayingCrossFadeAnimation;
       break;
     }
-    case State::kWaitingForBeforeUnloadResponse:
-      abort_reason =
-          AnimationAbortReason::kNewCommitWhileWaitingForBeforeUnloadResponse;
+    case State::kWaitingForBeforeUnloadUserInteraction: {
+      // No-op. We are currently showing the live page with a BeforeUnload
+      // dialog.
       break;
+    }
     case State::kAnimationFinished:
     case State::kAnimationAborted:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "No navigations can commit during the animator's destruction "
              "because the destruction is atomic.";
-      break;
   }
 
   if (abort_reason) {
@@ -1018,8 +1027,6 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
   }
 }
 
-// TODO(https://crbug.com/357094180): We should cancel the transition if a
-// unrelated request shows a beforeunload dialog.
 void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
     NavigationHandle* navigation_handle) {
   if (!tracked_request_ ||
@@ -1044,13 +1051,20 @@ void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
   CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
   navigation_state_ = NavigationState::kCancelledBeforeStart;
 
-  if (state_ == State::kWaitingForBeforeUnloadResponse) {
-    // The cancel animation has already finished.
+  CHECK(
+      // Cancelled before the dialog is shown.
+      state_ == State::kDisplayingInvokeAnimation ||
+      // Cancelled after the dialog is shown and while the cancel animation
+      // playing.
+      state_ == State::kDisplayingCancelAnimation ||
+      // Cancelled after the dialog is shown and after the cancel animation has
+      // finished.
+      state_ == State::kWaitingForBeforeUnloadUserInteraction)
+      << StateToString(state_);
+  if (state_ == State::kDisplayingInvokeAnimation) {
+    AdvanceAndProcessState(State::kDisplayingCancelAnimation);
+  } else if (state_ == State::kWaitingForBeforeUnloadUserInteraction) {
     AdvanceAndProcessState(State::kAnimationFinished);
-  } else {
-    // Let the cancel animation finish playing. We will advance to
-    // `State::kAnimationFinished`.
-    CHECK_EQ(state_, State::kDisplayingCancelAnimation);
   }
 }
 
@@ -1117,6 +1131,20 @@ void BackForwardTransitionAnimator::MaybeRecordIgnoredInput(
   }
 }
 
+void BackForwardTransitionAnimator::OnBeforeUnloadDialogShown(
+    int64_t navigation_id) {
+  if (!tracked_request_ || tracked_request_->navigation_id != navigation_id) {
+    return;
+  }
+  CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
+  if (state_ == State::kDisplayingInvokeAnimation) {
+    AdvanceAndProcessState(State::kDisplayingCancelAnimation);
+  } else {
+    // If multiple frames show dialogs, we might already be playing the cancel
+    // animation or waiting for the user interaction.
+  }
+}
+
 void BackForwardTransitionAnimator::AbortAnimation(
     AnimationAbortReason abort_reason) {
   TRACE_EVENT("browser,navigation",
@@ -1163,7 +1191,7 @@ void BackForwardTransitionAnimator::OnFloatAnimated(
       break;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BackForwardTransitionAnimator::OnTransformAnimated(
@@ -1188,14 +1216,14 @@ void BackForwardTransitionAnimator::OnTransformAnimated(
     case TargetProperty::kFaviconOpacity:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BackForwardTransitionAnimator::OnCancelAnimationDisplayed() {
   CHECK_EQ(effect_.keyframe_models()[0]->TargetProperty(),
            static_cast<int>(TargetProperty::kScrim));
   if (navigation_state_ == NavigationState::kBeforeUnloadDispatched) {
-    AdvanceAndProcessState(State::kWaitingForBeforeUnloadResponse);
+    AdvanceAndProcessState(State::kWaitingForBeforeUnloadUserInteraction);
     return;
   }
   effect_.RemoveAllKeyframeModels();
@@ -1239,14 +1267,14 @@ bool BackForwardTransitionAnimator::CanAdvanceTo(State from, State to) {
       return to == State::kDisplayingCancelAnimation ||
              to == State::kDisplayingInvokeAnimation ||
              to == State::kAnimationAborted;
-    case State::kWaitingForBeforeUnloadResponse:
+    case State::kWaitingForBeforeUnloadUserInteraction:
       return to == State::kDisplayingInvokeAnimation ||
              to == State::kAnimationFinished || to == State::kAnimationAborted;
     case State::kDisplayingInvokeAnimation:
       return to == State::kDisplayingCrossFadeAnimation ||
              to == State::kWaitingForNewRendererToDraw ||
              // A second navigation replaces the current one, or the user hits
-             // the stop button.
+             // the stop button, or a BeforeUnload dialog is shown.
              to == State::kDisplayingCancelAnimation ||
              to == State::kWaitingForContentForNavigationEntryShown ||
              to == State::kAnimationAborted;
@@ -1259,11 +1287,11 @@ bool BackForwardTransitionAnimator::CanAdvanceTo(State from, State to) {
       return to == State::kAnimationFinished || to == State::kAnimationAborted;
     case State::kDisplayingCancelAnimation:
       return to == State::kAnimationFinished ||
-             // The cancel animation has finished for a dispatched BeforeUnload
-             // message.
-             to == State::kWaitingForBeforeUnloadResponse ||
-             // The renderer acks the BeforeUnload message to proceed the
-             // navigation, BEFORE the cancel animation finishes.
+             // A BeforeUnload dialog is shown and we are waiting for the user
+             // to interact with it.
+             to == State::kWaitingForBeforeUnloadUserInteraction ||
+             // The user interacts with the BeforeUnload dialog and proceeds the
+             // navigation before the cancel animation finishes playing.
              to == State::kDisplayingInvokeAnimation ||
              to == State::kWaitingForContentForNavigationEntryShown ||
              to == State::kAnimationAborted;
@@ -1290,10 +1318,10 @@ const char* BackForwardTransitionAnimator::StateToString(State state) {
       return "kDisplayingCrossFadeAnimation";
     case State::kAnimationFinished:
       return "kAnimationFinished";
-    case State::kWaitingForBeforeUnloadResponse:
-      return "kWaitingForBeforeUnloadResponse";
     case State::kAnimationAborted:
       return "kAnimationAborted";
+    case State::kWaitingForBeforeUnloadUserInteraction:
+      return "kWaitingForBeforeUnloadUserInteraction";
   }
   NOTREACHED();
 }
@@ -1409,19 +1437,15 @@ void BackForwardTransitionAnimator::ProcessState() {
           break;
         }
         case NavigationState::kBeforeUnloadDispatched: {
-          // Notify the physics model we need to animate the active page back to
-          // the center of the viewport because the browser has asked the
-          // renderer to ack the BeforeUnload message. The renderer may need to
-          // show a prompt to ask for the user input.
+          // A BeforeUnload dialog is shown for the tracked navigation.
           physics_model_.SwitchSpringForReason(
-              SwitchSpringReason::kBeforeUnloadDispatched);
-          // We don't resume the TAB dialog if there is a BeforeUnload pending.
+              SwitchSpringReason::kBeforeUnloadShown);
           break;
         }
         case NavigationState::kCancelledBeforeStart: {
-          // The user has interacted with the prompt to not start the
-          // navigation. We are waiting for the ongoing cancel animation to
-          // finish.
+          // The navigation is cancelled without showing a BeforeUnload dialog.
+          physics_model_.SwitchSpringForReason(
+              SwitchSpringReason::kCancelledBeforeStart);
           ResumeDialogs();
           break;
         }
@@ -1433,12 +1457,10 @@ void BackForwardTransitionAnimator::ProcessState() {
           ResumeDialogs();
           break;
         }
-        case NavigationState::kBeforeUnloadAckedProceed:
         case NavigationState::kStarted:
         case NavigationState::kCommitted:
-          NOTREACHED_IN_MIGRATION()
-              << NavigationStateToString(navigation_state_);
-          break;
+        case NavigationState::kBeforeUnloadAckedProceed:
+          NOTREACHED() << NavigationStateToString(navigation_state_);
       }
       CHECK(animation_manager_->web_contents_view_android()
                 ->GetTopLevelNativeWindow());
@@ -1448,29 +1470,40 @@ void BackForwardTransitionAnimator::ProcessState() {
       break;
     }
     case State::kDisplayingInvokeAnimation: {
-      if (navigation_state_ == NavigationState::kBeforeUnloadAckedProceed) {
-        // Notify the physics model that the renderer has ack'ed BeforeUnload
-        // and the navigation shall proceed.
-        physics_model_.SwitchSpringForReason(
-            SwitchSpringReason::kBeforeUnloadAckProceed);
-        navigation_state_ = NavigationState::kStarted;
-      } else {
-        // Else, we must have started the navigation.
-        CHECK_EQ(navigation_state_, NavigationState::kStarted);
-        physics_model_.SwitchSpringForReason(
-            SwitchSpringReason::kGestureInvoked);
+      CHECK(navigation_state_ == NavigationState::kStarted ||
+            navigation_state_ == NavigationState::kBeforeUnloadDispatched ||
+            navigation_state_ == NavigationState::kBeforeUnloadAckedProceed);
+      switch (navigation_state_) {
+        case NavigationState::kStarted: {
+          physics_model_.SwitchSpringForReason(
+              SwitchSpringReason::kGestureInvoked);
+          break;
+        }
+        case NavigationState::kBeforeUnloadDispatched: {
+          physics_model_.SwitchSpringForReason(
+              SwitchSpringReason::kBeforeUnloadDispatched);
+          break;
+        }
+        case NavigationState::kBeforeUnloadAckedProceed: {
+          // Notify the physics model that the navigation shall proceed.
+          physics_model_.SwitchSpringForReason(
+              SwitchSpringReason::kBeforeUnloadAckProceed);
+          navigation_state_ = NavigationState::kStarted;
+          break;
+        }
+        case NavigationState::kNotStarted:
+        case NavigationState::kCancelledBeforeStart:
+        case NavigationState::kCommitted:
+        case NavigationState::kCancelled:
+          NOTREACHED();
       }
+
       CHECK(animation_manager_->web_contents_view_android()
                 ->GetTopLevelNativeWindow());
       SetupProgressBar();
       animation_manager_->web_contents_view_android()
           ->GetTopLevelNativeWindow()
           ->SetNeedsAnimate();
-      break;
-    };
-    case State::kWaitingForBeforeUnloadResponse: {
-      // No-op. Waiting for the renderer's ack before we can proceed with the
-      // navigation and animation or cancel everything.
       break;
     }
     case State::kWaitingForNewRendererToDraw: {
@@ -1508,6 +1541,9 @@ void BackForwardTransitionAnimator::ProcessState() {
           ->SetNeedsAnimate();
       break;
     }
+    case State::kWaitingForBeforeUnloadUserInteraction:
+      // No-op. Waiting for the user to interact with the dialog.
+      break;
     case State::kAnimationFinished:
     case State::kAnimationAborted:
       break;

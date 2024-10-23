@@ -129,6 +129,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
 
   void OnPhysicalBackingSizeChanged();
 
+  void OnBeforeUnloadDialogShown(int64_t navigation_id);
+
   WebContentsViewAndroid* web_contents_view_android() const {
     return web_contents_view_android_;
   }

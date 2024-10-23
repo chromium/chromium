@@ -266,6 +266,15 @@ void BackForwardTransitionAnimationManagerAndroid::
   DestroyAnimator();
 }
 
+void BackForwardTransitionAnimationManagerAndroid::OnBeforeUnloadDialogShown(
+    int64_t navigation_id) {
+  if (!animator_) {
+    return;
+  }
+  animator_->OnBeforeUnloadDialogShown(navigation_id);
+  MaybeDestroyAnimator();
+}
+
 SkBitmap BackForwardTransitionAnimationManagerAndroid::
     MaybeCopyContentAreaAsBitmapSync() {
   return web_contents_view_android()

@@ -63,21 +63,14 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     //
     // Also set when the active page has a BeforeUnload handler and we need to
     // animate the active page back so the user can interact with the
-    // BeforeUnload prompt. TODO(liuwilliam): Worth considering a
-    // `kDisplayingCancelAnimationForBeforeUnload` to reduce the compexity in
-    // the `State`'s transition.
+    // BeforeUnload prompt.
     kDisplayingCancelAnimation,
 
-    // Set after the browser has dispatched BeforeUnload IPC to the renderer and
-    // is waiting for the response, and the cancel animation has brought back
-    // the active page to the center of the viewport. This is an optional state:
-    // if the cancel animation hasn't finished before the renderer has
-    // responded, we will skip this state.
-    kWaitingForBeforeUnloadResponse,
-
-    // TODO(crbug.com/40896070): If we were to bring the active page back
-    // to let the user interact with the prompt (e.g., camera access), we need a
-    // state for that.
+    // Set when a BeforeUnload dialog is shown for the tracked navigation, and
+    // the cancel animation has finished to bring the active page back to the
+    // center of the viewport. From here the user can interact with the dialog
+    // to either start ot cancel the navigation.
+    kWaitingForBeforeUnloadUserInteraction,
 
     // Set when `OnGestureInvoked` is called, signaling the user has decided
     // to start the history navigation. Animations are displayed to bring the
@@ -178,7 +171,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // This can happen when the user rotates the phone mid-animation.
     kPhysicalSizeChanged = 18,
 
-    kMaxValue = kPhysicalSizeChanged
+    kMaxValue = kPhysicalSizeChanged,
   };
 
   // Indicates what animation state caused input event suppression.
@@ -235,6 +228,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       RenderFrameHostImpl* new_host);
   void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
   void MaybeRecordIgnoredInput(const blink::WebInputEvent& event);
+  void OnBeforeUnloadDialogShown(int64_t navigation_id);
 
   // Notifies when the transition needs to be aborted.
   void AbortAnimation(AnimationAbortReason abort_reason);
@@ -297,6 +291,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
     // Two states to track the BeforeUnload handler. They are optional if the
     // active page does not have a BeforeUnload handler.
+    //
+    // The browser has asked the renderer to run the BeforeUnload handler.
     kBeforeUnloadDispatched,
     // This state functions as a boolean flag to distinguish how we get to
     // `kStarted`:
@@ -311,11 +307,14 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // The navigation is cancelled before it starts. Terminal state 1/3.
     // Reachable from `kNotStarted` and `kBeforeUnloadDispatched`.
     kCancelledBeforeStart,
+
     // The navigation has started in the browser.
     kStarted,
+
     // The navigation has either committed to a new doc, or an error page.
     // Terminal state 2/3.
     kCommitted,
+
     // The navigation has been cancelled (cancelled by a secondary navigation,
     // or aborted by the user). Terminal state 3/3.
     kCancelled,

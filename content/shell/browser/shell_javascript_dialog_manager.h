@@ -54,6 +54,9 @@ class ShellJavaScriptDialogManager : public JavaScriptDialogManager {
     beforeunload_success_ = success;
   }
 
+  [[nodiscard]] bool RunBeforeUnloadCallback(bool success,
+                                             const std::u16string& title);
+
  private:
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // The dialog being shown. No queueing.
