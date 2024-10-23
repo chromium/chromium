@@ -3307,18 +3307,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
 
-// These tests are disabled on LaCros because <select> elements don't listen
-// to typed characters the same way as other platforms. Sending the characters
-// 'W', 'A' while the state selector is focused does not trigger a selection
-// of the entry "WA".
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_AutofillInteractiveFormSubmissionTest \
-  DISABLED_AutofillInteractiveFormSubmissionTest
-#else
-#define MAYBE_AutofillInteractiveFormSubmissionTest \
-  AutofillInteractiveFormSubmissionTest
-#endif
-class MAYBE_AutofillInteractiveFormSubmissionTest
+class AutofillInteractiveFormSubmissionTest
     : public AutofillInteractiveTestBase {
  public:
   class MockAutofillManager : public BrowserAutofillManager {
@@ -3457,8 +3446,7 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
 
 // Tests that user-triggered submission triggers a submission event in
 // BrowserAutofillManager.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       Submission) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest, Submission) {
   EnterValues();
 
   base::RunLoop run_loop;
@@ -3476,7 +3464,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 
 // Tests that non-link-click, renderer-initiated navigation triggers a
 // submission event in BrowserAutofillManager.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        ProbableSubmission) {
   EnterValues();
 
@@ -3498,7 +3486,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 }
 
 // Tests that a same document navigation can trigger a form submission.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        SameDocumentNavigation) {
   EnterValues();
 
@@ -3531,7 +3519,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 }
 
 // Tests that an XHR request can indicate a form submission.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        XhrSucceededAndHideForm) {
   EnterValues();
 
@@ -3564,7 +3552,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 
 // Tests that an XHR request can indicate a form submission - even if the form
 // is deleted from the DOM.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        XhrSucceededAndDeleteForm) {
   EnterValues();
 
@@ -3597,7 +3585,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 }
 
 // Tests that a DOM mutation after an XHR can indicate a form submission.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        DomMutationAfterXhr) {
   EnterValues();
 
@@ -3632,7 +3620,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 // Tests that FormFieldData::user_input has the text that the user typed into
 // the field. This is needed in order to show the save-card dialog when the
 // page replaces the <input> value with '***'.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        RememberUserInput) {
   const std::vector<NameValueUserInput> kExpectedSubmittedValues{
       {u"name", u"JS Modified Name", u"Sarah"},
@@ -3667,7 +3655,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 // 4) The user submits the form
 // That FormFieldData::user_input is empty and does not contain stale data that
 // the user typed into the form.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        TreatAutofillAsUserInput) {
   CreateTestProfile();
 
@@ -3703,15 +3691,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   run_loop.Run();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_AutofillInteractiveFormlessFormSubmissionTest \
-  DISABLED_AutofillInteractiveFormlessFormSubmissionTest
-#else
-#define MAYBE_AutofillInteractiveFormlessFormSubmissionTest \
-  AutofillInteractiveFormlessFormSubmissionTest
-#endif
-class MAYBE_AutofillInteractiveFormlessFormSubmissionTest
-    : public MAYBE_AutofillInteractiveFormSubmissionTest {
+class AutofillInteractiveFormlessFormSubmissionTest
+    : public AutofillInteractiveFormSubmissionTest {
  public:
   void SetUpOnMainThread() override {
     AutofillInteractiveTestBase::SetUpOnMainThread();
@@ -3744,7 +3725,7 @@ class MAYBE_AutofillInteractiveFormlessFormSubmissionTest
 // 1) User fills <input>s on page without <form>.
 // 2) The page does an XHR
 // 3) The page navigates
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormlessFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormlessFormSubmissionTest,
                        NavigationAfterXhr) {
   const std::vector<FieldValue> kEnteredValues = {
       {"name", "Sarah"}, {"address", "123 Main Road"}, {"city", "Moonbeam"}};
