@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/base_tracing.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/compose/buildflags.h"
@@ -47,6 +48,7 @@ namespace {
 void OnGetInnerTextForModelPrototyping(
     AiDataKeyedService::AiDataCallback continue_callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
+  TRACE_EVENT0("browser", "OnGetInnerTextForModelPrototyping");
   AiDataKeyedService::AiData data;
   if (result) {
     data = std::make_optional<AiDataKeyedService::BrowserData>();
@@ -65,6 +67,7 @@ void GetInnerTextForModelPrototyping(
     int dom_node_id,
     content::WebContents* web_contents,
     AiDataKeyedService::AiDataCallback continue_callback) {
+  TRACE_EVENT0("browser", "GetInnerTextForModelPrototyping");
   DCHECK(web_contents);
   DCHECK(web_contents->GetPrimaryMainFrame());
 
@@ -81,6 +84,7 @@ void GetInnerTextForModelPrototyping(
 void OnRequestAxTreeSnapshotForModelPrototyping(
     AiDataKeyedService::AiDataCallback continue_callback,
     ui::AXTreeUpdate& ax_tree_update) {
+  TRACE_EVENT0("browser", "OnRequestAxTreeSnapshotForModelPrototyping");
   AiDataKeyedService::AiData data;
   if (ax_tree_update.has_tree_data) {
     data = std::make_optional<AiDataKeyedService::BrowserData>();
@@ -96,6 +100,7 @@ void OnRequestAxTreeSnapshotForModelPrototyping(
 void RequestAxTreeSnapshotForModelPrototyping(
     content::WebContents* web_contents,
     AiDataKeyedService::AiDataCallback continue_callback) {
+  TRACE_EVENT0("browser", "RequestAxTreeSnapshotForModelPrototyping");
   DCHECK(web_contents);
   ui::AXTreeUpdate update;
   web_contents->RequestAXTreeSnapshot(
@@ -113,6 +118,7 @@ void RequestAxTreeSnapshotForModelPrototyping(
 void OnDataCollectionsComplete(AiDataKeyedService::AiDataCallback callback,
                                AiDataKeyedService::AiData data,
                                std::vector<AiDataKeyedService::AiData> datas) {
+  TRACE_EVENT0("browser", "OnDataCollectionsComplete");
   DCHECK(data);
   for (const auto& data_slice : datas) {
     if (!data_slice) {
@@ -131,6 +137,7 @@ void OnGetTabInnerText(
     std::string url,
     AiDataKeyedService::AiDataCallback continue_callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
+  TRACE_EVENT0("browser", "OnGetTabInnerText");
   auto data = std::make_optional<AiDataKeyedService::BrowserData>();
   auto* tab = data->add_tabs();
   tab->set_tab_id(tab_id);
@@ -148,6 +155,7 @@ void FillTabInfo(content::WebContents* web_contents,
                  int64_t tab_id,
                  std::string title,
                  std::string url) {
+  TRACE_EVENT0("browser", "FillTabInfo");
   content_extraction::GetInnerText(
       *web_contents->GetPrimaryMainFrame(), std::nullopt,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -160,6 +168,7 @@ void FillTabInfo(content::WebContents* web_contents,
 void GetTabDataForModelPrototyping(
     content::WebContents* web_contents,
     base::ConcurrentCallbacks<AiDataKeyedService::AiData>& concurrent) {
+  TRACE_EVENT0("browser", "GetTabDataForModelPrototyping");
   // Get the browser window that contains the web contents the extension is
   // being targeted on. If there isn't a window, or there isn't a tab strip
   // model, return an empty AiData.
@@ -209,6 +218,7 @@ void GetTabDataForModelPrototyping(
 #endif
 
 std::string EncodePngOnBackgroundThread(const SkBitmap& bitmap) {
+  TRACE_EVENT0("browser", "EncodePngOnBackgroundThread");
   std::vector<unsigned char> data;
   bool encoded = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &data);
   if (!encoded) {
@@ -219,6 +229,7 @@ std::string EncodePngOnBackgroundThread(const SkBitmap& bitmap) {
 
 void OnEncodePng(AiDataKeyedService::AiDataCallback continue_callback,
                  std::string base64_result) {
+  TRACE_EVENT0("browser", "OnEncodePng");
   auto ai_data = std::make_optional<AiDataKeyedService::BrowserData>();
   if (base64_result.empty()) {
     return std::move(continue_callback).Run(std::move(ai_data));
@@ -231,6 +242,7 @@ void OnEncodePng(AiDataKeyedService::AiDataCallback continue_callback,
 void OnGetTabScreenshotForModelPrototyping(
     AiDataKeyedService::AiDataCallback continue_callback,
     const SkBitmap& bitmap) {
+  TRACE_EVENT0("browser", "OnGetTabScreenshotForModelPrototyping");
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -242,6 +254,7 @@ void OnGetTabScreenshotForModelPrototyping(
 void GetTabScreenshotForModelPrototyping(
     content::WebContents* web_contents,
     AiDataKeyedService::AiDataCallback continue_callback) {
+  TRACE_EVENT0("browser", "GetTabScreenshotForModelPrototyping");
   content::RenderWidgetHostView* const view =
       web_contents ? web_contents->GetRenderWidgetHostView() : nullptr;
   if (!view) {
@@ -260,6 +273,7 @@ void GetTabScreenshotForModelPrototyping(
 void GetSiteEngagementScoresForModelPrototyping(
     content::BrowserContext* browser_context,
     AiDataKeyedService::AiDataCallback continue_callback) {
+  TRACE_EVENT0("browser", "GetSiteEngagementScoresForModelPrototyping");
   site_engagement::SiteEngagementService* service =
       site_engagement::SiteEngagementService::Get(browser_context);
   AiDataKeyedService::AiData data =
@@ -288,6 +302,7 @@ void GetModelPrototypingAiData(int dom_node_id,
                                content::WebContents* web_contents,
                                std::string user_input,
                                AiDataKeyedService::AiDataCallback callback) {
+  TRACE_EVENT0("browser", "GetModelPrototypingAiData");
   DCHECK(web_contents);
 
   // Fill data with synchronous information.
@@ -325,6 +340,7 @@ void AiDataKeyedService::GetAiData(int dom_node_id,
                                    content::WebContents* web_contents,
                                    std::string user_input,
                                    AiDataCallback callback) {
+  TRACE_EVENT0("browser", "AiDataKeyedService::GetAiData");
   GetModelPrototypingAiData(dom_node_id, web_contents, user_input,
                             std::move(callback));
 }
