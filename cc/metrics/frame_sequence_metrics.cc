@@ -109,9 +109,10 @@ std::string GetCheckerboardingV3HistogramName(FrameSequenceTrackerType type) {
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
-std::string GetCheckerboardingV4HistogramName(FrameSequenceTrackerType type) {
+std::string GetCheckerboardingV4HistogramName(FrameSequenceTrackerType type,
+                                              const char* thread_name) {
   return base::StrCat(
-      {"Graphics.Smoothness.Checkerboarding4.",
+      {"Graphics.Smoothness.Checkerboarding4.", thread_name, ".",
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
@@ -427,11 +428,11 @@ void FrameSequenceMetrics::ReportMetrics() {
             GetCheckerboardingV3HistogramName(type_), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
     STATIC_HISTOGRAM_POINTER_GROUP(
-        GetCheckerboardingV4HistogramName(type_), static_cast<int>(type_),
-        static_cast<int>(FrameSequenceTrackerType::kMaxType),
+        GetCheckerboardingV4HistogramName(type_, thread_name),
+        GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
         Add(percent_checkerboarded),
         base::LinearHistogram::FactoryGet(
-            GetCheckerboardingV4HistogramName(type_), 1, 100, 101,
+            GetCheckerboardingV4HistogramName(type_, thread_name), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
 
     if (scrolling_thread_ != SmoothEffectDrivingThread::kUnknown) {

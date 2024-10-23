@@ -66,4 +66,29 @@ TEST_F(FrameSequenceMetricsTest, ScrollingThreadMergeMetrics) {
 }
 #endif  // DCHECK_IS_ON()
 
+TEST_F(FrameSequenceMetricsTest, CheckerboardingMetricV4EmitsValidValue) {
+  // Tests historical DCHECK histogram metric array bound check
+  // crash condition (crbug.com/373811619).
+  base::HistogramTester histograms;
+
+  // Create a metric with raster impl frames.
+  FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll);
+  SetFramesExpectedAndProduced(first, 300u, 10u);
+  first.SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kCompositor);
+  EXPECT_TRUE(first.HasEnoughDataForReporting());
+  first.ReportMetrics();
+
+  auto second = std::make_unique<FrameSequenceMetrics>(
+      FrameSequenceTrackerType::kTouchScroll);
+  SetFramesExpectedAndProduced(*second, 150u, 40u);
+  second->SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kMain);
+  second->ReportMetrics();
+
+  // Checkerboarding V4 should be reported per-thread.
+  histograms.ExpectTotalCount(
+      "Graphics.Smoothness.Checkerboarding4.MainThread.TouchScroll", 1u);
+  histograms.ExpectTotalCount(
+      "Graphics.Smoothness.Checkerboarding4.CompositorThread.TouchScroll", 1u);
+}
+
 }  // namespace cc
