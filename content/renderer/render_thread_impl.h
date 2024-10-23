@@ -377,7 +377,7 @@ class CONTENT_EXPORT RenderThreadImpl
 #endif
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(RenderThreadImplBrowserDeathTest,
+  FRIEND_TEST_ALL_PREFIXES(RenderThreadImplBrowserTest,
                            TransferSharedLastForegroundTime);
   friend class RenderThreadImplBrowserTest;
   friend class AgentSchedulingGroup;

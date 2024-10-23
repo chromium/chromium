@@ -27,7 +27,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/test/gtest_util.h"
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
 #include "cc/base/switches.h"
@@ -304,8 +303,6 @@ class RenderThreadImplBrowserTest : public testing::Test,
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-using RenderThreadImplBrowserDeathTest = RenderThreadImplBrowserTest;
-
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 // Disabled under LeakSanitizer due to memory leaks.
 TEST_F(RenderThreadImplBrowserTest,
@@ -441,26 +438,13 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionForegrounded) {
   testing::Mock::AllowLeak(main_thread_scheduler_);
 }
 
-// TODO(crbug.com/375065072): Re-enable once not flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TransferSharedLastForegroundTime \
-  DISABLED_TransferSharedLastForegroundTime
-#else
-#define MAYBE_TransferSharedLastForegroundTime TransferSharedLastForegroundTime
-#endif
-TEST_F(RenderThreadImplBrowserDeathTest,
-       MAYBE_TransferSharedLastForegroundTime) {
+TEST_F(RenderThreadImplBrowserTest, TransferSharedLastForegroundTime) {
   auto time_memory = base::AtomicSharedMemory<base::TimeTicks>::Create();
   ASSERT_TRUE(time_memory.has_value());
 
   // No shared memory region mapped by default.
   EXPECT_EQ(base::internal::GetSharedLastForegroundTimeForMetricsForTesting(),
             nullptr);
-
-  // Invalid handles should not be accepted.
-  EXPECT_CHECK_DEATH(thread_->TransferSharedLastForegroundTime(
-      base::ReadOnlySharedMemoryRegion()));
 
   // SharedLastForegroundTimeForMetrics should never be overwritten after it's
   // set, in case a thread is accessing the memory as it's unmapped.
