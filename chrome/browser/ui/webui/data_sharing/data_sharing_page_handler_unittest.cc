@@ -97,6 +97,19 @@ TEST_F(DataSharingPageHandlerUnitTest, GetShareLink) {
   handler()->GetShareLink("GROUP_ID", "ACCESS_TOKEN", std::move(callback));
 }
 
+TEST_F(DataSharingPageHandlerUnitTest, GetTabGroupPreview) {
+  data_sharing::mojom::PageHandler::GetTabGroupPreviewCallback callback =
+      base::BindLambdaForTesting(
+          [&](data_sharing::mojom::GroupPreviewPtr preview) {
+            EXPECT_EQ(preview->title, "");
+            EXPECT_EQ(preview->shared_tabs.size(), size_t(0));
+            EXPECT_EQ(preview->status_code,
+                      mojo_base::mojom::AbslStatusCode::kUnknown);
+          });
+  handler()->GetTabGroupPreview("GROUP_ID", "ACCESS_TOKEN",
+                                std::move(callback));
+}
+
 TEST_F(DataSharingPageHandlerUnitTest, OnAccessTokenFetched) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   GTEST_SKIP() << "N/A for Google Chrome Branding Build";
