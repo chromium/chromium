@@ -113,9 +113,7 @@
     _latestCommitedTimestamp = timestamp;
     [_snapshotStorage setImage:snapshot withSnapshotID:_snapshotID];
   } else {
-    // Remove any stale snapshot since the snapshot failed.
     _latestCommitedTimestamp = [NSDate distantPast];
-    [_snapshotStorage removeImageWithSnapshotID:_snapshotID];
   }
 }
 

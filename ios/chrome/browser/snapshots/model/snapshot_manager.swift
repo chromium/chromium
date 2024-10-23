@@ -91,7 +91,7 @@ import UIKit
     snapshotGenerator.delegate = delegate
   }
 
-  // Updates the snapshot storage with `snapshot`.
+  // Updates the snapshot storage with `image`.
   func updateSnapshotStorage(image: UIImage?) {
     // This method is bridging into Objective-C and cannot have a default value
     // for timestamp. For this reason, fallback to clasic method overloading
@@ -109,7 +109,6 @@ import UIKit
   private func updateSnapshotStorage(image: UIImage?, timestamp: Date) {
     guard let image = image else {
       latestCommitedTimestamp = .distantPast
-      snapshotStorage?.removeImage(snapshotID: snapshotID)
       return
     }
 
