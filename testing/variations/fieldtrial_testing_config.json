@@ -4873,21 +4873,6 @@
             ]
         }
     ],
-    "ChromeOSIgnoreUiGainsOnAGC": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230905",
-                    "enable_features": [
-                        "IgnoreUiGains"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSMaterialNextWaveOneWithTimeOfDayM117AndBeyond": [
         {
             "platforms": [
