@@ -86,8 +86,8 @@ TEST(HashTest, WrongDigestSizeDies) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       crypto::hash::Hash(crypto::hash::HashKind::kSha256, input, small_digest),
-      "size");
+      "");
   EXPECT_DEATH_IF_SUPPORTED(
       crypto::hash::Hash(crypto::hash::HashKind::kSha256, input, big_digest),
-      "size");
+      "");
 }

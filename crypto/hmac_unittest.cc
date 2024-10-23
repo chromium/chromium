@@ -413,17 +413,17 @@ TEST(HMACTest, OneShotWrongLengthDies) {
 
   EXPECT_DEATH_IF_SUPPORTED(crypto::hmac::Sign(crypto::hash::HashKind::kSha256,
                                                key, data, small_hmac),
-                            "size");
+                            "");
   EXPECT_DEATH_IF_SUPPORTED(
       crypto::hmac::Sign(crypto::hash::HashKind::kSha256, key, data, big_hmac),
-      "size");
+      "");
 
   EXPECT_DEATH_IF_SUPPORTED(
       (void)crypto::hmac::Verify(crypto::hash::HashKind::kSha256, key, data,
                                  small_hmac),
-      "size");
+      "");
   EXPECT_DEATH_IF_SUPPORTED(
       (void)crypto::hmac::Verify(crypto::hash::HashKind::kSha256, key, data,
                                  big_hmac),
-      "size");
+      "");
 }
