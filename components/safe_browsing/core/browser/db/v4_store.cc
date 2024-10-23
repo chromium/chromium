@@ -1007,10 +1007,11 @@ bool V4Store::VerifyChecksum() {
 
   IteratorMap iterator_map;
   HashPrefixStr next_smallest_prefix;
-  InitializeIteratorMap(hash_prefix_map_->view(), &iterator_map);
-  CHECK_EQ(hash_prefix_map_->view().size(), iterator_map.size());
-  bool has_unmerged = GetNextSmallestUnmergedPrefix(
-      hash_prefix_map_->view(), iterator_map, &next_smallest_prefix);
+  HashPrefixMapView map_view = hash_prefix_map_->view();
+  InitializeIteratorMap(map_view, &iterator_map);
+  CHECK_EQ(map_view.size(), iterator_map.size());
+  bool has_unmerged = GetNextSmallestUnmergedPrefix(map_view, iterator_map,
+                                                    &next_smallest_prefix);
 
   std::unique_ptr<crypto::SecureHash> checksum_ctx(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
@@ -1025,8 +1026,8 @@ bool V4Store::VerifyChecksum() {
                          next_smallest_prefix_size);
 
     // Find the next smallest unmerged element in the map.
-    has_unmerged = GetNextSmallestUnmergedPrefix(
-        hash_prefix_map_->view(), iterator_map, &next_smallest_prefix);
+    has_unmerged = GetNextSmallestUnmergedPrefix(map_view, iterator_map,
+                                                 &next_smallest_prefix);
   }
 
   std::array<char, crypto::kSHA256Length> checksum;
