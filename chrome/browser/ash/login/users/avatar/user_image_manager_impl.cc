@@ -941,7 +941,7 @@ bool UserImageManagerImpl::NeedProfileImage() const {
   return IsUserLoggedInAndHasGaiaAccount() &&
          IsCustomizationSelectorsPrefEnabled() &&
          (user->image_index() == user_manager::UserImage::Type::kProfile ||
-          profile_image_requested_);
+          profile_image_requested_ || is_random_image_set_);
 }
 
 void UserImageManagerImpl::DownloadProfileData() {
