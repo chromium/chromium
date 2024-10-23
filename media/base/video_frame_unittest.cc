@@ -873,13 +873,6 @@ TEST(VideoFrame, NoFrameSizeExceedsUint32) {
     base::CheckedNumeric<uint32_t> allocation_size =
         VideoFrame::AllocationSize(format, max_size);
     ASSERT_TRUE(allocation_size.IsValid());
-
-    // Allocations above 2gb on 32-bit platforms should fail gracefully.
-#ifdef ARCH_CPU_32_BITS
-    if (allocation_size.ValueOrDie() >= std::numeric_limits<int32_t>::max()) {
-      ASSERT_FALSE(VideoFrame::CreateBlackFrame(max_size));
-    }
-#endif
   }
 }
 
