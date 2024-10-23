@@ -339,6 +339,10 @@ WebContentsViewAndroid::GetBackForwardTransitionAnimationManager() {
   return back_forward_animation_manager_.get();
 }
 
+void WebContentsViewAndroid::DestroyBackForwardTransitionAnimationManager() {
+  back_forward_animation_manager_.reset();
+}
+
 void WebContentsViewAndroid::ShowContextMenu(RenderFrameHost& render_frame_host,
                                              const ContextMenuParams& params) {
   if (is_active_drag_ && drag_exceeded_movement_threshold_)

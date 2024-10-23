@@ -157,6 +157,9 @@ WebContentsViewChildFrame::GetBackForwardTransitionAnimationManager() {
   return nullptr;
 }
 
+void WebContentsViewChildFrame::DestroyBackForwardTransitionAnimationManager() {
+}
+
 void WebContentsViewChildFrame::RestoreFocus() {
   NOTREACHED_IN_MIGRATION();
 }

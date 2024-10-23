@@ -160,6 +160,8 @@ WebContentsViewMac::GetBackForwardTransitionAnimationManager() {
   return nullptr;
 }
 
+void WebContentsViewMac::DestroyBackForwardTransitionAnimationManager() {}
+
 void WebContentsViewMac::StartDragging(
     const DropData& drop_data,
     const url::Origin& source_origin,
