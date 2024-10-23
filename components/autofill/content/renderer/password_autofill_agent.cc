@@ -1903,21 +1903,14 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
   FindPasswordInfoForElement(user_input, UseFallbackData(false),
                              &username_element, &password_element,
                              &password_info);
-  size_t username_element_index = GetIndexOfElement(form, username_element);
-  if (!username_element || !IsElementEditable(username_element)) {
-    username_element_index = form.fields().size();
-  }
-  size_t password_element_index = GetIndexOfElement(form, password_element);
-  if (!password_element || !IsElementEditable(password_element)) {
-    password_element_index = form.fields().size();
-  }
 
   const bool show_webauthn_credentials =
       field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
   GetPasswordManagerDriver().ShowPasswordSuggestions(PasswordSuggestionRequest(
-      field.renderer_id(), form, trigger_source, username_element_index,
-      password_element_index, field.text_direction(), typed_username,
-      show_webauthn_credentials,
+      field.renderer_id(), form, trigger_source,
+      GetIndexOfElement(form, username_element),
+      GetIndexOfElement(form, password_element), field.text_direction(),
+      typed_username, show_webauthn_credentials,
       gfx::RectF(render_frame()->ConvertViewportToWindow(
           user_input.BoundsInWidget()))));
 }

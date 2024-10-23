@@ -4406,6 +4406,42 @@ TEST_F(PasswordAutofillAgentTest, SuggestPasswordFieldSignInForm) {
   CheckSuggestions(u"", true);
 }
 
+// Tests that filling is suggested in a form with read-only username and that
+// username field index is passed to the driver.
+TEST_F(PasswordAutofillAgentTest, SuggestPasswordWhenUsernameFieldDisabled) {
+  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kPasswordName);
+  // Simulate that the username was pre-filled by website and the username field
+  // is readonly.
+  username_element_.SetValue(WebString::FromUTF16(username1_));
+  SetElementReadOnly(username_element_, true);
+  // Simulate the browser sending back the login info.
+  SimulateOnFillPasswordForm(fill_data_);
+
+  PasswordSuggestionRequest suggestion_request;
+  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions)
+      .WillOnce(testing::SaveArg<0>(&suggestion_request));
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate a user clicking on the password element. This should produce a
+  // dropdown with suggestion of all available usernames.
+  SimulateElementClick(password_element_);
+  fake_driver_.Flush();
+
+  const FormData& form = *fake_driver_.form_data_parsed()->begin();
+  uint64_t username_index = std::distance(
+      form.fields().begin(),
+      base::ranges::find(form.fields(),
+                         form_util::GetFieldRendererId(username_element_),
+                         &autofill::FormFieldData::renderer_id));
+  uint64_t password_index = std::distance(
+      form.fields().begin(),
+      base::ranges::find(form.fields(),
+                         form_util::GetFieldRendererId(password_element_),
+                         &autofill::FormFieldData::renderer_id));
+  EXPECT_EQ(suggestion_request.username_field_index, username_index);
+  EXPECT_EQ(suggestion_request.password_field_index, password_index);
+}
+
 // TODO(crbug.com/40819370): Amend the test to port it on Android if possible.
 // Otherwise, remove the TODO and add the reason why it is excluded.
 #if !BUILDFLAG(IS_ANDROID)
