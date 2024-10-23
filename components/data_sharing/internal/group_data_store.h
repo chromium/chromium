@@ -41,7 +41,7 @@ class GroupDataStore {
 
   // Public methods must not be called until `db_loaded_callback` is invoked
   // with kSuccess.
-  GroupDataStore(const base::FilePath& db_path,
+  GroupDataStore(const base::FilePath& db_dir_path,
                  DBLoadedCallback db_loaded_callback);
 
   GroupDataStore(const GroupDataStore& other) = delete;

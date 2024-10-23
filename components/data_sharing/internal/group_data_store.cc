@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -38,8 +39,12 @@ constexpr int kCurrentSchemaVersion = 1;
 // amount of groups are limited once numbers are known.
 constexpr size_t kMaxNumEntriesInDB = 20000;
 
+base::FilePath GetGroupDataStoreDBPath(const base::FilePath& data_sharing_dir) {
+  return data_sharing_dir.Append(FILE_PATH_LITERAL("DataSharingDB"));
+}
+
 GroupDataStore::DBInitStatus InitOnDBSequence(
-    base::FilePath db_path,
+    base::FilePath db_dir_path,
     sql::Database* db,
     sqlite_proto::ProtoTableManager* table_manager,
     sqlite_proto::KeyValueData<data_sharing_pb::GroupEntity>*
@@ -48,7 +53,15 @@ GroupDataStore::DBInitStatus InitOnDBSequence(
   CHECK(table_manager);
   CHECK(group_entity_data);
 
+  if (!base::CreateDirectory(db_dir_path)) {
+    LOG(ERROR) << "Failed to create or open DB directory: " << db_dir_path;
+    return GroupDataStore::DBInitStatus::kFailure;
+  }
+
+  const base::FilePath db_path = GetGroupDataStoreDBPath(db_dir_path);
   if (!db->Open(db_path)) {
+    LOG(ERROR) << "Failed to open DB " << db_path << ": "
+        << db->GetErrorMessage();
     return GroupDataStore::DBInitStatus::kFailure;
   }
 
@@ -61,7 +74,7 @@ GroupDataStore::DBInitStatus InitOnDBSequence(
 
 }  // namespace
 
-GroupDataStore::GroupDataStore(const base::FilePath& db_path,
+GroupDataStore::GroupDataStore(const base::FilePath& db_dir_path,
                                DBLoadedCallback db_loaded_callback)
     : db_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(kDBTaskTraits)),
@@ -84,7 +97,7 @@ GroupDataStore::GroupDataStore(const base::FilePath& db_path,
   // that these objects outlive any task posted to DB sequence.
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&InitOnDBSequence, db_path, base::Unretained(db_.get()),
+      base::BindOnce(&InitOnDBSequence, db_dir_path, base::Unretained(db_.get()),
                      base::Unretained(proto_table_manager_.get()),
                      base::Unretained(group_entity_data_.get())),
       base::BindOnce(&GroupDataStore::OnDBReady, weak_ptr_factory_.GetWeakPtr(),

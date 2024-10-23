@@ -113,15 +113,10 @@ DataSharingServiceImpl::DataSharingServiceImpl(
     sdk_delegate_->Initialize(data_sharing_network_loader_.get());
 
     const base::FilePath data_sharing_dir = profile_dir.Append(kDataSharingDir);
-    if (base::CreateDirectory(data_sharing_dir)) {
-      // Note: CreateDirectory() returns true if directory already exists.
-      group_data_model_ = std::make_unique<GroupDataModel>(
-          data_sharing_dir, collaboration_group_sync_bridge_.get(),
-          sdk_delegate_.get());
-      group_data_model_->AddObserver(this);
-    } else {
-      LOG(ERROR) << "Failed to create data sharing directory";
-    }
+    group_data_model_ = std::make_unique<GroupDataModel>(
+        data_sharing_dir, collaboration_group_sync_bridge_.get(),
+        sdk_delegate_.get());
+    group_data_model_->AddObserver(this);
   }
 
   // Initialize ServiceStatus.
