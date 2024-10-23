@@ -11,6 +11,8 @@
 
 namespace autofill_prediction_improvements {
 
+class AutofillPredictionImprovementsLogger;
+
 class AutofillPredictionImprovementsManagerTestApi {
  public:
   explicit AutofillPredictionImprovementsManagerTestApi(
@@ -53,11 +55,13 @@ class AutofillPredictionImprovementsManagerTestApi {
         error_or_no_info_suggestion_shown;
   }
 
+  AutofillPredictionImprovementsLogger& logger() { return manager_->logger_; }
+
  private:
   raw_ref<AutofillPredictionImprovementsManager> manager_;
 };
 
-AutofillPredictionImprovementsManagerTestApi test_api(
+inline AutofillPredictionImprovementsManagerTestApi test_api(
     AutofillPredictionImprovementsManager& manager) {
   return AutofillPredictionImprovementsManagerTestApi(&manager);
 }

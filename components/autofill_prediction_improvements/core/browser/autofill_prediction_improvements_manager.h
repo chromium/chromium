@@ -18,6 +18,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_annotation_prompt_strike_database.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_logger.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -199,6 +200,9 @@ class AutofillPredictionImprovementsManager
   // Handles what suggestions to show when the main filling suggestions
   // generation fails.
   void OnFailedToGenerateSuggestions();
+
+  // Logger that records various prediction improvements metrics.
+  AutofillPredictionImprovementsLogger logger_;
 
   // Current state for retrieving predictions.
   PredictionRetrievalState prediction_retrieval_state_ =
