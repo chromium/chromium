@@ -1609,3 +1609,31 @@ TEST_F(OnTaskNavigationThrottleTest,
   // Close all tabs to avoid a DCHECK in the destructor.
   popup_browser->tab_strip_model()->CloseAllTabs();
 }
+
+TEST_F(OnTaskNavigationThrottleTest, AllowClientRedirectToPass) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL url_a(kTabUrl1);
+  AddTab(browser(), url_a);
+  const auto* const tab_strip_model = browser()->tab_strip_model();
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const on_task_blocklist = window_tracker->on_task_blocklist();
+  on_task_blocklist->SetParentURLRestrictionLevel(
+      tab_strip_model->GetWebContentsAt(0), url_a,
+      LockedNavigationOptions::BLOCK_NAVIGATION);
+  window_tracker->RefreshUrlBlocklist();
+  ASSERT_TRUE(base::test::RunUntil([&window_tracker]() {
+    return window_tracker->on_task_blocklist()->GetURLBlocklistState(
+               GURL(kTabUrl1FrontSubDomain1)) ==
+           policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+  }));
+  const std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          url_a, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  simulator->SetTransition(ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT);
+  simulator->Start();
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult());
+}

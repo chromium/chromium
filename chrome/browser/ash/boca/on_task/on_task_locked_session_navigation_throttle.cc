@@ -135,6 +135,12 @@ bool OnTaskLockedSessionNavigationThrottle::
 
 content::NavigationThrottle::ThrottleCheckResult
 OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
+  // If there is a client side redirect, let those through.
+  if (navigation_handle()->GetNavigationEntry() &&
+      (navigation_handle()->GetNavigationEntry()->GetTransitionType() &
+       ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT)) {
+    return PROCEED;
+  }
   LockedSessionWindowTracker* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
@@ -189,10 +195,10 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
     return PROCEED;
   }
 
-  // Check for history navigations via the back and forward shortcuts or via the
-  // context menu. Back needs to be explicitly allowed to go back in the case
-  // this was a one level deep navigation and we do not want to block the
-  // navigation from going back.
+  // Check for history navigations via the back and forward shortcuts or via
+  // the context menu. Back needs to be explicitly allowed to go back in the
+  // case this was a one level deep navigation and we do not want to block
+  // the navigation from going back.
   if (window_tracker->on_task_blocklist()->IsCurrentRestrictionOneLevelDeep() &&
       navigation_handle()->GetNavigationEntry() &&
       navigation_handle()->GetNavigationEntry()->GetTransitionType() &
