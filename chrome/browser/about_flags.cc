@@ -2207,6 +2207,18 @@ const FeatureEntry::FeatureVariation kRichAutocompletionAndroidVariations[] = {
      std::size(kRichAutocompletionNoFullUrlFourMinChar), nullptr},
 };
 
+const FeatureEntry::FeatureParam kJumpStartOmnibox1Minute[] = {
+    {"jump_start_min_away_time_minutes", "1"}};
+const FeatureEntry::FeatureParam kJumpStartOmnibox120Minutes[] = {
+    {"jump_start_min_away_time_minutes", "120"}};
+
+const FeatureEntry::FeatureVariation kJumpStartOmniboxVariations[] = {
+    {"(after 1min)", kJumpStartOmnibox1Minute,
+     std::size(kJumpStartOmnibox1Minute)},
+    {"(after 120min)", kJumpStartOmnibox120Minutes,
+     std::size(kJumpStartOmnibox120Minutes)},
+};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
@@ -11655,7 +11667,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"jump-start-omnibox", flag_descriptions::kJumpStartOmniboxName,
      flag_descriptions::kJumpStartOmniboxDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kJumpStartOmnibox)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kJumpStartOmnibox,
+                                    kJumpStartOmniboxVariations,
+                                    "JumpStartOmnibox")},
     {"retain-omnibox-on-focus", flag_descriptions::kRetainOmniboxOnFocusName,
      flag_descriptions::kRetainOmniboxOnFocusDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kRetainOmniboxOnFocus)},
