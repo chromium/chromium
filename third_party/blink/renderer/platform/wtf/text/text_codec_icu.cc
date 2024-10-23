@@ -323,7 +323,7 @@ void TextCodecICU::CreateICUConverter() const {
   DCHECK(!converter_icu_);
 
 #if defined(USING_SYSTEM_ICU)
-  const char* name = encoding_.GetName();
+  const AtomicString& name = encoding_.GetName();
   needs_gbk_fallbacks_ =
       name[0] == 'G' && name[1] == 'B' && name[2] == 'K' && !name[3];
 #endif
@@ -443,21 +443,21 @@ String TextCodecICU::Decode(base::span<const uint8_t> data,
   // Chrome's copy of ICU does not have the issue described below.
   return result.ToString();
 #else
-  String resultString = result.ToString();
+  String result_string = result.ToString();
 
   // <http://bugs.webkit.org/show_bug.cgi?id=17014>
   // Simplified Chinese pages use the code A3A0 to mean "full-width space", but
   // ICU decodes it as U+E5E5.
-  if (!strcmp(encoding_.GetName(), "GBK")) {
+  if (encoding_.GetName() != "GBK") {
     if (EqualIgnoringASCIICase(encoding_.GetName(), "gb18030"))
-      resultString.Replace(0xE5E5, kIdeographicSpaceCharacter);
+      result_string.Replace(0xE5E5, kIdeographicSpaceCharacter);
     // Make GBK compliant to the encoding spec and align with GB18030
-    resultString.Replace(0x01F9, 0xE7C8);
+    result_string.Replace(0x01F9, 0xE7C8);
     // FIXME: Once https://www.w3.org/Bugs/Public/show_bug.cgi?id=28740#c3
     // is resolved, add U+1E3F => 0xE7C7.
   }
 
-  return resultString;
+  return result_string;
 #endif
 }
 
