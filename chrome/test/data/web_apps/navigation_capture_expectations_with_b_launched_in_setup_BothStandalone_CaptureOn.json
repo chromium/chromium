@@ -85,7 +85,7 @@
       },
       "kNavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
          "_params": "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": "The history of the navigated tab is consistently flaky.",
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -104,6 +104,9 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html",
                   "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  }, {
                      "referrer": "/banners/link_capturing/scope_b/destination.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html"

@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/common/chrome_features.h"
 
@@ -19,6 +20,7 @@ void NavigationCapturingLog::StoreNavigationCapturedDebugData(
       base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo) ? 1000
                                                                      : 20;
 
+  DVLOG(1) << value.DebugString();
   debug_log_.push_front(std::move(value));
   if (debug_log_.size() > kMaxLogLength) {
     debug_log_.resize(kMaxLogLength);

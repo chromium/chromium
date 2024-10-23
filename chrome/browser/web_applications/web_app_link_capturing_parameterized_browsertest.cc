@@ -1469,7 +1469,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
         })";
     }
     test_expectations_ = base::JSONReader::Read(json_data);
-    ASSERT_TRUE(test_expectations_) << "Unable to read test expectation file";
+    ASSERT_TRUE(test_expectations_)
+        << "Unable to read test expectation file: " << json_data;
     ASSERT_TRUE(test_expectations_.value().is_dict());
   }
 

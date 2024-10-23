@@ -1162,6 +1162,30 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   }
   redirection_info.capturing_enabled = true;
 
+  content::WebContents* source_contents = params.source_contents;
+  // Note: Navigations either happen after this function call, or they are
+  // triggered before, but synchronously before (and navigations are async), so
+  // this should not have updated to the new url that will be navigated to.
+  std::optional<webapps::AppId> source_contents_app_id =
+      source_contents
+          ? WebAppTabHelper::FromWebContents(params.source_contents)->app_id()
+          : std::nullopt;
+
+  std::optional<webapps::AppId> referrer_app_id =
+      params.referrer.url.is_valid()
+          ? registrar.FindAppThatCapturesLinksInScope(params.referrer.url)
+          : std::nullopt;
+  debug_data.Set("referrer.url", params.referrer.url.possibly_invalid_spec());
+  debug_data.Set("referrer.controlling_app_id",
+                 referrer_app_id.value_or("<none>"));
+  debug_data.Set(
+      "source_contents.url",
+      source_contents
+          ? source_contents->GetLastCommittedURL().possibly_invalid_spec()
+          : "<nullptr>");
+  debug_data.Set("source_contents.app_id",
+                 source_contents_app_id.value_or("<none>"));
+
   debug_data.Set("controlling_app_id", controlling_app_id.value_or("<none>"));
   debug_data.Set("controlling_app_display_mode",
                  base::ToString(controlling_app_display_mode.value_or(
@@ -1305,142 +1329,146 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
     }
   }
 
-  // Case: Left click, non-user-modified. Capturable.
-  if (params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
-    // Populate the redirection information for left clicks.
-    redirection_info.first_navigation_app_id = app_id;
-    redirection_info.initial_nav_handling_result =
-        NavigationHandlingInitialResult::kAppWindowNavigationCaptured;
-
-    blink::mojom::DisplayMode app_display_mode =
-        registrar.GetAppEffectiveDisplayMode(app_id);
-    // Opening in non-browser-tab requires OS integration. Since os integration
-    // cannot be triggered synchronously, treat this as opening in browser.
-    if (registrar.GetInstallState(app_id) ==
-        proto::INSTALLED_WITHOUT_OS_INTEGRATION) {
-      app_display_mode = blink::mojom::DisplayMode::kBrowser;
-    }
-
-    LaunchHandler::ClientMode client_mode = registrar.GetAppById(app_id)
-                                                ->launch_handler()
-                                                .value_or(LaunchHandler())
-                                                .client_mode;
-    if (client_mode == LaunchHandler::ClientMode::kAuto) {
-      client_mode = LaunchHandler::ClientMode::kNavigateNew;
-    }
-    // Prevent-close requires only focusing the existing tab, and never
-    // navigating.
-    if (registrar.IsPreventCloseEnabled(app_id) &&
-        !registrar.IsTabbedWindowModeEnabled(app_id)) {
-      client_mode = LaunchHandler::ClientMode::kFocusExisting;
-    }
-    debug_data.Set("initial_client_mode", base::ToString(client_mode));
-    debug_data.Set("client_mode", base::ToString(client_mode));
-
-    // Focus existing.
-    if (client_mode == LaunchHandler::ClientMode::kFocusExisting) {
-      if (controlling_app_host_browser_and_tab.has_value() &&
-          controlling_app_host_browser_and_tab->second != -1) {
-        content::WebContents* contents =
-            controlling_app_host_browser_and_tab->first->tab_strip_model()
-                ->GetWebContentsAt(
-                    controlling_app_host_browser_and_tab->second);
-        CHECK(contents);
-        contents->Focus();
-
-        // Abort the navigation by returning a `nullptr`. Because this means
-        // `OnWebAppNavigationAfterWebContentsCreation` won't be called, enqueue
-        // the launch params instantly and record the debug data.
-        EnqueueLaunchParams(contents, app_id, params.url,
-                            /*wait_for_navigation_to_complete=*/false);
-        provider->navigation_capturing_log().StoreNavigationCapturedDebugData(
-            base::Value(std::move(debug_data)));
-
-        MaybeShowNavigationCaptureIph(
-            app_id, profile, controlling_app_host_browser_and_tab->first);
-
-        // TODO(crbug.com/336371044): Update RecordLaunchMetrics() to also work
-        // with apps that open in a new browser tab.
-        RecordLaunchMetrics(
-            app_id, apps::LaunchContainer::kLaunchContainerWindow,
-            apps::LaunchSource::kFromNavigationCapturing, params.url, contents);
-
-        // Do not populate the `redirection_info` since apps that focus existing
-        // windows stop the current navigation, so redirections cannot occur.
-        return {
-            .browser_tab_override =
-                std::make_optional<std::tuple<Browser*, int>>({nullptr, -1}),
-            .perform_app_handling_tasks_in_web_contents = false,
-            .debug_value = std::move(debug_data)};
-      }
-
-      // Fallback to creating a new instance.
-      client_mode = LaunchHandler::ClientMode::kNavigateNew;
-      debug_data.Set("client_mode", base::ToString(client_mode));
-    }
-
-    // Navigate existing.
-    if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
-      if (controlling_app_host_browser_and_tab.has_value()) {
-        redirection_info.effective_launch_handling_mode =
-            InitialNavigationCapturedBehavior::kNavigatedExisting;
-        return {.browser_tab_override =
-                    std::make_optional<std::tuple<Browser*, int>>(
-                        {controlling_app_host_browser_and_tab->first,
-                         controlling_app_host_browser_and_tab->second}),
-                .perform_app_handling_tasks_in_web_contents = true,
-                .redirection_info = redirection_info,
-                .debug_value = std::move(debug_data)};
-      }
-      client_mode = LaunchHandler::ClientMode::kNavigateNew;
-      debug_data.Set("client_mode", base::ToString(client_mode));
-    }
-
-    // Navigate new.
-    CHECK(client_mode == LaunchHandler::ClientMode::kNavigateNew);
-    redirection_info.effective_launch_handling_mode =
-        InitialNavigationCapturedBehavior::kNavigatedNew;
-
-    Browser* host_window = nullptr;
-    switch (app_display_mode) {
-      case blink::mojom::DisplayMode::kBrowser:
-        if (controlling_app_host_browser_and_tab.has_value()) {
-          host_window = controlling_app_host_browser_and_tab->first;
-        } else {
-          host_window = Browser::Create(
-              Browser::CreateParams(profile, params.user_gesture));
-        }
-        break;
-      case blink::mojom::DisplayMode::kMinimalUi:
-      case blink::mojom::DisplayMode::kStandalone:
-      case blink::mojom::DisplayMode::kWindowControlsOverlay:
-      case blink::mojom::DisplayMode::kBorderless:
-        host_window = CreateWebAppWindowFromNavigationParams(app_id, params);
-        break;
-      case blink::mojom::DisplayMode::kTabbed:
-        if (controlling_app_host_browser_and_tab.has_value()) {
-          host_window = controlling_app_host_browser_and_tab->first;
-        } else {
-          host_window = CreateWebAppWindowFromNavigationParams(app_id, params);
-        }
-        break;
-      case blink::mojom::DisplayMode::kUndefined:
-      case blink::mojom::DisplayMode::kPictureInPicture:
-      case blink::mojom::DisplayMode::kFullscreen:
-        NOTREACHED_NORETURN();
-    }
-
-    // TODO(crbug.com/359224477): In all but one case we set `show_iph` to the
-    // same value as `enqueue_launch_params`. Maybe there is an opportunity to
-    // simplify this once the WebAppLaunchProcess logic has been fixed.
-    return {
-        .browser_tab_override =
-            std::make_optional<std::tuple<Browser*, int>>({host_window, -1}),
-        .perform_app_handling_tasks_in_web_contents = true,
-        .redirection_info = redirection_info,
-        .debug_value = std::move(debug_data)};
+  if (params.disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+    return {.redirection_info = redirection_info};
   }
-  return {.redirection_info = redirection_info};
+  // Case: Left click, non-user-modified. Capturable.
+
+  // Populate the redirection information for left clicks.
+  redirection_info.first_navigation_app_id = app_id;
+  redirection_info.initial_nav_handling_result =
+      NavigationHandlingInitialResult::kAppWindowNavigationCaptured;
+
+  blink::mojom::DisplayMode app_display_mode =
+      registrar.GetAppEffectiveDisplayMode(app_id);
+  // Opening in non-browser-tab requires OS integration. Since os integration
+  // cannot be triggered synchronously, treat this as opening in browser.
+  if (registrar.GetInstallState(app_id) ==
+      proto::INSTALLED_WITHOUT_OS_INTEGRATION) {
+    app_display_mode = blink::mojom::DisplayMode::kBrowser;
+  }
+
+  LaunchHandler::ClientMode client_mode = registrar.GetAppById(app_id)
+                                              ->launch_handler()
+                                              .value_or(LaunchHandler())
+                                              .client_mode;
+  debug_data.Set("initial_client_mode", base::ToString(client_mode));
+  if (client_mode == LaunchHandler::ClientMode::kAuto) {
+    client_mode = LaunchHandler::ClientMode::kNavigateNew;
+  }
+
+  // If the developer has an in-scope link that opens a new top level browsing
+  // in their own page, then force the client mode to be navigate-new.
+  // To detect this, we consider both the app_id that controls the referrer url
+  // as well as the app id of the tab that initiated the navigation.
+  if (referrer_app_id == app_id || source_contents_app_id == app_id) {
+    client_mode = LaunchHandler::ClientMode::kNavigateNew;
+  }
+
+  // Prevent-close requires only focusing the existing tab, and never
+  // navigating.
+  if (registrar.IsPreventCloseEnabled(app_id) &&
+      !registrar.IsTabbedWindowModeEnabled(app_id)) {
+    client_mode = LaunchHandler::ClientMode::kFocusExisting;
+  }
+  debug_data.Set("client_mode", base::ToString(client_mode));
+
+  // Focus existing.
+  if (client_mode == LaunchHandler::ClientMode::kFocusExisting) {
+    if (controlling_app_host_browser_and_tab.has_value() &&
+        controlling_app_host_browser_and_tab->second != -1) {
+      content::WebContents* contents =
+          controlling_app_host_browser_and_tab->first->tab_strip_model()
+              ->GetWebContentsAt(controlling_app_host_browser_and_tab->second);
+      CHECK(contents);
+      contents->Focus();
+
+      // Abort the navigation by returning a `nullptr`. Because this means
+      // `OnWebAppNavigationAfterWebContentsCreation` won't be called, enqueue
+      // the launch params instantly and record the debug data.
+      EnqueueLaunchParams(contents, app_id, params.url,
+                          /*wait_for_navigation_to_complete=*/false);
+      provider->navigation_capturing_log().StoreNavigationCapturedDebugData(
+          base::Value(std::move(debug_data)));
+
+      MaybeShowNavigationCaptureIph(
+          app_id, profile, controlling_app_host_browser_and_tab->first);
+
+      // TODO(crbug.com/336371044): Update RecordLaunchMetrics() to also work
+      // with apps that open in a new browser tab.
+      RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
+                          apps::LaunchSource::kFromNavigationCapturing,
+                          params.url, contents);
+
+      // Do not populate the `redirection_info` since apps that focus existing
+      // windows stop the current navigation, so redirections cannot occur.
+      return {.browser_tab_override =
+                  std::make_optional<std::tuple<Browser*, int>>({nullptr, -1}),
+              .perform_app_handling_tasks_in_web_contents = false,
+              .debug_value = std::move(debug_data)};
+    }
+
+    // Fallback to creating a new instance.
+    client_mode = LaunchHandler::ClientMode::kNavigateNew;
+    debug_data.Set("client_mode", base::ToString(client_mode));
+  }
+
+  // Navigate existing.
+  if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
+    if (controlling_app_host_browser_and_tab.has_value()) {
+      redirection_info.effective_launch_handling_mode =
+          InitialNavigationCapturedBehavior::kNavigatedExisting;
+      return {
+          .browser_tab_override = std::make_optional<std::tuple<Browser*, int>>(
+              {controlling_app_host_browser_and_tab->first,
+               controlling_app_host_browser_and_tab->second}),
+          .perform_app_handling_tasks_in_web_contents = true,
+          .redirection_info = redirection_info,
+          .debug_value = std::move(debug_data)};
+    }
+    client_mode = LaunchHandler::ClientMode::kNavigateNew;
+    debug_data.Set("client_mode", base::ToString(client_mode));
+  }
+
+  // Navigate new.
+  CHECK(client_mode == LaunchHandler::ClientMode::kNavigateNew);
+  redirection_info.effective_launch_handling_mode =
+      InitialNavigationCapturedBehavior::kNavigatedNew;
+
+  Browser* host_window = nullptr;
+  switch (app_display_mode) {
+    case blink::mojom::DisplayMode::kBrowser:
+      if (controlling_app_host_browser_and_tab.has_value()) {
+        host_window = controlling_app_host_browser_and_tab->first;
+      } else {
+        host_window = Browser::Create(
+            Browser::CreateParams(profile, params.user_gesture));
+      }
+      break;
+    case blink::mojom::DisplayMode::kMinimalUi:
+    case blink::mojom::DisplayMode::kStandalone:
+    case blink::mojom::DisplayMode::kWindowControlsOverlay:
+    case blink::mojom::DisplayMode::kBorderless:
+      host_window = CreateWebAppWindowFromNavigationParams(app_id, params);
+      break;
+    case blink::mojom::DisplayMode::kTabbed:
+      if (controlling_app_host_browser_and_tab.has_value()) {
+        host_window = controlling_app_host_browser_and_tab->first;
+      } else {
+        host_window = CreateWebAppWindowFromNavigationParams(app_id, params);
+      }
+      break;
+    case blink::mojom::DisplayMode::kUndefined:
+    case blink::mojom::DisplayMode::kPictureInPicture:
+    case blink::mojom::DisplayMode::kFullscreen:
+      NOTREACHED_NORETURN();
+  }
+
+  return {.browser_tab_override =
+              std::make_optional<std::tuple<Browser*, int>>({host_window, -1}),
+          .perform_app_handling_tasks_in_web_contents = true,
+          .redirection_info = redirection_info,
+          .debug_value = std::move(debug_data)};
 }
 
 void EnqueueLaunchParams(content::WebContents* contents,
