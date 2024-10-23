@@ -116,6 +116,10 @@ class MockAutofillPredictionImprovementsClient
               (override));
   MOCK_METHOD(void, OpenPredictionImprovementsSettings, (), (override));
   MOCK_METHOD(bool, IsUserEligible, (), (override));
+  MOCK_METHOD(autofill::FormStructure*,
+              GetCachedFormStructure,
+              (const autofill::FormData& form_data),
+              (override));
 };
 
 class MockOptimizationGuideDecider
@@ -152,12 +156,15 @@ class MockOptimizationGuideDecider
 class MockAutofillPredictionImprovementsFillingEngine
     : public AutofillPredictionImprovementsFillingEngine {
  public:
-  MOCK_METHOD(void,
-              GetPredictions,
-              (autofill::FormData form_data,
-               optimization_guide::proto::AXTreeUpdate ax_tree_update,
-               PredictionsReceivedCallback callback),
-              (override));
+  MOCK_METHOD(
+      void,
+      GetPredictions,
+      (autofill::FormData form_data,
+       (base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map),
+       (base::flat_map<autofill::FieldGlobalId, bool> sensitivity_map),
+       optimization_guide::proto::AXTreeUpdate ax_tree_update,
+       PredictionsReceivedCallback callback),
+      (override));
 };
 
 class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
@@ -269,7 +276,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RetrievalFailed_ShowError) {
     EXPECT_CALL(client_, GetAXTree)
         .WillOnce(MoveArg<0>(&axtree_received_callback));
     EXPECT_CALL(filling_engine_, GetPredictions)
-        .WillOnce(MoveArg<2>(&predictions_received_callback));
+        .WillOnce(MoveArg<4>(&predictions_received_callback));
     EXPECT_CALL(update_suggestions_callback, Run)
         .WillOnce(SaveArg<0>(&post_loading_suggestion));
   }
@@ -325,7 +332,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
     EXPECT_CALL(client_, GetAXTree)
         .WillOnce(MoveArg<0>(&axtree_received_callback));
     EXPECT_CALL(filling_engine_, GetPredictions)
-        .WillOnce(MoveArg<2>(&predictions_received_callback));
+        .WillOnce(MoveArg<4>(&predictions_received_callback));
     EXPECT_CALL(update_suggestions_callback, Run)
         .WillOnce(SaveArg<0>(&post_loading_suggestion));
   }
@@ -380,7 +387,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
     EXPECT_CALL(client_, GetAXTree)
         .WillOnce(MoveArg<0>(&axtree_received_callback));
     EXPECT_CALL(filling_engine_, GetPredictions)
-        .WillOnce(MoveArg<2>(&predictions_received_callback));
+        .WillOnce(MoveArg<4>(&predictions_received_callback));
     EXPECT_CALL(update_suggestions_callback, Run)
         .WillOnce(SaveArg<0>(&filling_suggestion));
   }

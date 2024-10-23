@@ -39,18 +39,25 @@ AutofillPredictionImprovementsFillingEngineImpl::
 
 void AutofillPredictionImprovementsFillingEngineImpl::GetPredictions(
     autofill::FormData form_data,
+    base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
+    base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     PredictionsReceivedCallback callback) {
-  user_annotations_service_->RetrieveAllEntries(
-      base::BindOnce(&AutofillPredictionImprovementsFillingEngineImpl::
-                         OnUserAnnotationsRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
-                     std::move(ax_tree_update), std::move(callback)));
+  user_annotations_service_->RetrieveAllEntries(base::BindOnce(
+      &AutofillPredictionImprovementsFillingEngineImpl::
+          OnUserAnnotationsRetrieved,
+      weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
+      std::move(field_eligibility_map), std::move(field_sensitivity_map),
+      std::move(ax_tree_update), std::move(callback)));
 }
 
 void AutofillPredictionImprovementsFillingEngineImpl::
     OnUserAnnotationsRetrieved(
         autofill::FormData form_data,
+        const base::flat_map<autofill::FieldGlobalId, bool>&
+            field_eligibility_map,
+        const base::flat_map<autofill::FieldGlobalId, bool>&
+            field_sensitivity_map,
         optimization_guide::proto::AXTreeUpdate ax_tree_update,
         PredictionsReceivedCallback callback,
         user_annotations::UserAnnotationsEntries user_annotations) {
@@ -70,8 +77,9 @@ void AutofillPredictionImprovementsFillingEngineImpl::
   page_context->set_url(form_data.url().spec());
   page_context->set_title(ax_tree_update.tree_data().title());
   *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
+
   *request.mutable_form_data() =
-      ToFormDataProto(autofill::FormStructure(form_data));
+      ToFormDataProto(form_data, field_eligibility_map, field_sensitivity_map);
   *request.mutable_entries() = {
       std::make_move_iterator(user_annotations.begin()),
       std::make_move_iterator(user_annotations.end())};

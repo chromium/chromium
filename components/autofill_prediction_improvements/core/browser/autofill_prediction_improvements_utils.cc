@@ -64,20 +64,23 @@ bool IsFieldEligibleByTypeCriteria(const autofill::AutofillField& field) {
   return false;
 }
 
-bool IsFormEligibleForFillingByFieldCriteria(
-    const autofill::FormStructure& form) {
-  int total_number_of_fillable_fields = 0;
+bool IsFieldEligibleForFilling(const AutofillField& form_field) {
+  return IsFieldEligibleByTypeCriteria(form_field) &&
+         form_field.value(autofill::ValueSemantics::kCurrent).empty() &&
+         form_field.IsFocusable();
+}
 
-  // For a field to be fillable
-  //  - it must have the correct field type.
-  //  - its value must be empty.
-  //  - it has to be focusable. In field filling skip reasons select fields may
-  //    be unfocusable, for the estimated `total_number_of_fillable_fields`
-  //    however that exception has shown to offer suggestions too often.
-  for (const std::unique_ptr<AutofillField>& form_field : form.fields()) {
-    if (IsFieldEligibleByTypeCriteria(*form_field) &&
-        form_field->value(autofill::ValueSemantics::kCurrent).empty() &&
-        form_field->IsFocusable()) {
+void SetFieldFillingEligibility(autofill::FormStructure& form) {
+  for (auto& form_field : form) {
+    form_field->set_field_is_eligible_for_prediction_improvements(
+        IsFieldEligibleForFilling(*form_field));
+  }
+}
+
+bool IsFormEligibleForFilling(const autofill::FormStructure& form) {
+  int total_number_of_fillable_fields = 0;
+  for (auto& form_field : form) {
+    if (IsFieldEligibleForFilling(*form_field)) {
       ++total_number_of_fillable_fields;
     }
   }

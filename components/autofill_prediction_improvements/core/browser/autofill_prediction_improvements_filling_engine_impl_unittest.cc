@@ -149,7 +149,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
   optimization_guide::proto::AXTreeUpdate ax_tree;
   base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
       test_future;
-  engine()->GetPredictions(form, ax_tree, test_future.GetCallback());
+  engine()->GetPredictions(form, {}, {}, ax_tree, test_future.GetCallback());
 
   const PredictionsOrError predictions_or_error =
       std::get<0>(test_future.Take());
@@ -182,7 +182,8 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   optimization_guide::proto::AXTreeUpdate ax_tree;
   base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
       test_future;
-  engine()->GetPredictions(form_data, ax_tree, test_future.GetCallback());
+  engine()->GetPredictions(form_data, {}, {}, ax_tree,
+                           test_future.GetCallback());
 
   const PredictionsOrError predictions_or_error =
       std::get<0>(test_future.Take());
@@ -219,7 +220,8 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   optimization_guide::proto::AXTreeUpdate ax_tree;
   base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
       test_future;
-  engine()->GetPredictions(form_data, ax_tree, test_future.GetCallback());
+  engine()->GetPredictions(form_data, {}, {}, ax_tree,
+                           test_future.GetCallback());
 
   const PredictionsOrError predictions_or_error =
       std::get<0>(test_future.Take());
@@ -251,7 +253,8 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   optimization_guide::proto::AXTreeUpdate ax_tree;
   base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
       test_future;
-  engine()->GetPredictions(form_data, ax_tree, test_future.GetCallback());
+  engine()->GetPredictions(form_data, {}, {}, ax_tree,
+                           test_future.GetCallback());
 
   const PredictionsOrError predictions_or_error =
       std::get<0>(test_future.Take());

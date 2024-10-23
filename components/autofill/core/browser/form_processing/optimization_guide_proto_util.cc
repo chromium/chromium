@@ -51,33 +51,71 @@ optimization_guide::proto::FormControlType ToFormControlTypeProto(
 }  // namespace
 
 optimization_guide::proto::FormData ToFormDataProto(
-    const FormStructure& form_structure) {
+    const FormData& form_data,
+    const base::flat_map<autofill::FieldGlobalId, bool>& field_eligibility_map,
+    const base::flat_map<autofill::FieldGlobalId, bool>&
+        field_value_sensitivity_map) {
   optimization_guide::proto::FormData form_data_proto;
-  form_data_proto.set_form_name(base::UTF16ToUTF8(form_structure.form_name()));
-  for (const auto& field : form_structure) {
+  form_data_proto.set_form_name(base::UTF16ToUTF8(form_data.name()));
+  for (const auto& field : form_data.fields()) {
     auto* field_proto = form_data_proto.add_fields();
-    field_proto->set_field_name(base::UTF16ToUTF8(field->name()));
-    field_proto->set_field_label(base::UTF16ToUTF8(field->label()));
-    // Only forward the value if it was not identified as potentially sensitive.
-    if (!field->value_identified_as_potentially_sensitive()) {
-      field_proto->set_field_value(
-          base::UTF16ToUTF8(field->value(ValueSemantics::kCurrent)));
-    }
-    field_proto->set_is_visible(field->is_visible());
-    field_proto->set_is_focusable(field->is_focusable());
-    field_proto->set_placeholder(base::UTF16ToUTF8(field->placeholder()));
+
+    // Unconditionally assign html meta data to the field.
+    field_proto->set_field_name(base::UTF16ToUTF8(field.name()));
+    field_proto->set_field_label(base::UTF16ToUTF8(field.label()));
+    field_proto->set_is_visible(field.is_visible());
+    field_proto->set_is_focusable(field.is_focusable());
+    field_proto->set_placeholder(base::UTF16ToUTF8(field.placeholder()));
     field_proto->set_form_control_type(
-        ToFormControlTypeProto(field->form_control_type()));
-    for (const auto& option : field->options()) {
+        ToFormControlTypeProto(field.form_control_type()));
+    for (const auto& option : field.options()) {
       auto* select_option_proto = field_proto->add_select_options();
       select_option_proto->set_value(base::UTF16ToUTF8(option.value));
       select_option_proto->set_text(base::UTF16ToUTF8(option.text));
     }
-    field_proto->set_form_control_ax_node_id(field->form_control_ax_id());
+    field_proto->set_form_control_ax_node_id(field.form_control_ax_id());
+
+    // Utility function to map the eligibility and value sensitivity to the form
+    // data.
+    auto map_is_true_for_key =
+        [](const base::flat_map<autofill::FieldGlobalId, bool>& map,
+           autofill::FieldGlobalId key) {
+          auto it = map.find(key);
+          return it != map.end() ? it->second : false;
+        };
+
     field_proto->set_is_eligible(
-        field->field_is_eligible_for_prediction_improvements().value_or(false));
+        map_is_true_for_key(field_eligibility_map, field.global_id()));
+
+    // Only forward the value if it was not identified as potentially sensitive.
+    if (!map_is_true_for_key(field_value_sensitivity_map, field.global_id())) {
+      field_proto->set_field_value(base::UTF16ToUTF8(field.value()));
+    }
   }
   return form_data_proto;
+}
+
+optimization_guide::proto::FormData ToFormDataProto(
+    const FormStructure& form_structure) {
+  auto field_eligibility_map = base::MakeFlatMap<autofill::FieldGlobalId, bool>(
+      form_structure.fields(), {}, [](const auto& field) {
+        return std::make_pair(
+            field->global_id(),
+            field->field_is_eligible_for_prediction_improvements().value_or(
+                false));
+      });
+
+  auto field_value_sensitivity_map =
+      base::MakeFlatMap<autofill::FieldGlobalId, bool>(
+          form_structure.fields(), {}, [](const auto& field) {
+            return std::make_pair(
+                field->global_id(),
+                field->value_identified_as_potentially_sensitive());
+          });
+
+  FormData form_data = form_structure.ToFormData();
+  return ToFormDataProto(form_data, field_eligibility_map,
+                         field_value_sensitivity_map);
 }
 
 }  // namespace autofill
