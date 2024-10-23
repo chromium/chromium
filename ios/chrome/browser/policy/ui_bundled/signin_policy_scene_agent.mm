@@ -9,7 +9,9 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
@@ -28,7 +30,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
-@interface SigninPolicySceneAgent () <AppStateObserver,
+@interface SigninPolicySceneAgent () <ProfileStateObserver,
                                       AuthenticationServiceObserving,
                                       IdentityManagerObserverBridgeDelegate,
                                       UIBlockerManagerObserver> {
@@ -77,7 +79,7 @@
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
 
-  [self.sceneState.profileState.appState addObserver:self];
+  [self.sceneState.profileState addObserver:self];
   [self.sceneState.profileState.appState addUIBlockerManagerObserver:self];
 }
 
@@ -86,7 +88,7 @@
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   // Tear down objects tied to the scene state before it is deleted.
   [self tearDownObservers];
-  [self.sceneState.profileState.appState removeObserver:self];
+  [self.sceneState.profileState removeObserver:self];
   [self.sceneState.profileState.appState removeUIBlockerManagerObserver:self];
   [self.sceneState removeObserver:self];
   self.mainBrowser = nullptr;
@@ -122,10 +124,11 @@
   [self handleSigninPromptsIfUIAvailable];
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
   // Monitor the app intialization stages to consider showing the sign-in
   // prompts at a point in the initialization of the app that allows it.
   [self handleSigninPromptsIfUIAvailable];
@@ -257,10 +260,10 @@
       baseViewController:[self.sceneUIProvider activeViewController]];
 }
 
-// YES if the scene and the app are in a state where the UI of the scene is
+// YES if the scene and the profile are in a state where the UI of the scene is
 // available to show sign-in related prompts.
 - (BOOL)isUIAvailableToPrompt {
-  if (self.sceneState.profileState.appState.initStage < AppInitStage::kFinal) {
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     return NO;
   }
 
