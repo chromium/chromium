@@ -128,14 +128,14 @@ union CacheEmbeddingsResult {
   CacheEmbeddingsResponse response;
 };
 
-// The interface is used to provide updates of the |Group.title| field inside
-// the |GroupResponse|. Title generation may take significantly high amount of
+// This interface is used to provide updates of the `Group.title` field inside
+// the `GroupResponse`. Title generation may take significantly high amount of
 // time compared to the grouping process, so this observer is used such that
-// |CoralService::Group| can return the groupings without titles first, then
+// `CoralService::Group` can return the groupings without titles first, then
 // update the title through this observer when they are ready.
 interface TitleObserver {
-  // Updates the title of the group with id |group_id| to |title|.
-  // Currently this should be called exactly once for each group. If |title|
+  // Updates the title of the group with id `group_id` to `title`.
+  // Currently this should be called exactly once for each group. If `title`
   // is empty, that means some error is encountered and can't be generated.
   TitleUpdated(mojo_base.mojom.Token group_id, string title);
 };
@@ -154,4 +154,14 @@ interface CoralService {
   // Generate and cache the embeddings for the request entities.
   CacheEmbeddings@1(CacheEmbeddingsRequest request)
       => (CacheEmbeddingsResult result);
+
+  // Claim necessary resources (dlc download / model loading) for processing
+  // `Group` and `CacheEmbeddings` requests. It is not necessary to call
+  // `PrepareResource` before calling other methods, but in that case the first
+  // method request might take longer to run. Note that some resources might
+  // be released after the service is idle for a while, so if the caller
+  // expects that `Group` could be called soon after, the caller can call this
+  // method again. This method should have little/no overhead when all
+  // resources are already claimed.
+  PrepareResource@2();
 };

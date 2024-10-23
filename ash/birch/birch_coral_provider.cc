@@ -187,6 +187,8 @@ BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
     fake_groups.push_back(std::move(fake_group));
     fake_response->set_groups(std::move(fake_groups));
     OverrideCoralResponseForTest(std::move(fake_response));
+  } else {
+    Shell::Get()->coral_controller()->PrepareResource();
   }
 }
 

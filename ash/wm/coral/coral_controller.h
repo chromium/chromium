@@ -68,6 +68,12 @@ class ASH_EXPORT CoralController {
   CoralController& operator=(const CoralController&) = delete;
   ~CoralController();
 
+  // Claims necessary resources (dlc download / model loading) for processing
+  // `GenerateContentGroups` and `CacheEmbeddings` requests. It is not necessary
+  // to call `PrepareResource` before calling other methods, but in that case
+  // the first method request might take longer to run.
+  void PrepareResource();
+
   // GenerateContentGroups clusters the input ContentItems (which includes web
   // tabs, apps, etc.) into suitable groups based on their topics, and gives
   // each group a suitable title. If GenerateContentGroups request failed,

@@ -85,6 +85,15 @@ CoralController::CoralController() = default;
 
 CoralController::~CoralController() = default;
 
+void CoralController::PrepareResource() {
+  CoralService* coral_service = EnsureCoralService();
+  if (!coral_service) {
+    LOG(ERROR) << "Failed to connect to coral service.";
+    return;
+  }
+  coral_service->PrepareResource();
+}
+
 void CoralController::GenerateContentGroups(
     const CoralRequest& request,
     mojo::PendingRemote<coral::mojom::TitleObserver> title_observer,
@@ -154,14 +163,14 @@ CoralController::CoralService* CoralController::EnsureCoralService() {
     return fake_service_.get();
   }
 
-  if (!coral_service_) {
+  if (!coral_service_ && mojo_service_manager::IsServiceManagerBound()) {
     auto pipe_handle = coral_service_.BindNewPipeAndPassReceiver().PassPipe();
     coral_service_.reset_on_disconnect();
     mojo_service_manager::GetServiceManagerProxy()->Request(
         chromeos::mojo_services::kCrosCoralService, kRequestCoralServiceTimeout,
         std::move(pipe_handle));
   }
-  return coral_service_.get();
+  return coral_service_ ? coral_service_.get() : nullptr;
 }
 
 void CoralController::HandleGroupResult(CoralResponseCallback callback,

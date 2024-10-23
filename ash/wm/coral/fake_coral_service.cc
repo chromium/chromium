@@ -81,4 +81,6 @@ void FakeCoralService::CacheEmbeddings(
       coral::mojom::CacheEmbeddingsResponse::New()));
 }
 
+void FakeCoralService::PrepareResource() {}
+
 }  // namespace ash

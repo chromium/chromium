@@ -23,6 +23,7 @@ class FakeCoralService : public coral::mojom::CoralService {
              GroupCallback callback) override;
   void CacheEmbeddings(coral::mojom::CacheEmbeddingsRequestPtr request,
                        CacheEmbeddingsCallback callback) override;
+  void PrepareResource() override;
 };
 
 }  // namespace ash

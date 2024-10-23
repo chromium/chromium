@@ -1475,6 +1475,8 @@ void Shell::Init(
 
   if (features::IsCoralFeatureEnabled()) {
     tab_cluster_ui_controller_ = std::make_unique<TabClusterUIController>();
+    coral_controller_ = std::make_unique<CoralController>();
+    coral_delegate_ = shell_delegate_->CreateCoralDelegate();
   }
 
   window_tree_host_manager_->Start();
@@ -1826,13 +1828,6 @@ void Shell::Init(
   if (features::IsUserEducationEnabled()) {
     user_education_controller_ = std::make_unique<UserEducationController>(
         shell_delegate_->CreateUserEducationDelegate());
-  }
-
-  if (features::IsCoralFeatureEnabled()) {
-    coral_controller_ = std::make_unique<CoralController>();
-  }
-  if (features::IsCoralFeatureEnabled()) {
-    coral_delegate_ = shell_delegate_->CreateCoralDelegate();
   }
 
   picker_controller_ = std::make_unique<PickerController>();
