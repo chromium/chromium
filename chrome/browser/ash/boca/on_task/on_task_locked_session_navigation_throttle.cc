@@ -23,7 +23,8 @@
 
 namespace ash {  // namespace
 namespace {
-using RestrictionLevel = OnTaskBlocklist::RestrictionLevel;
+
+using ::boca::LockedNavigationOptions;
 
 // Returns whether all the given query parameters are found in the URL.
 bool DoAllQueryParamsExist(const std::set<std::string>& request_params,
@@ -117,7 +118,7 @@ bool OnTaskLockedSessionNavigationThrottle::MaybeProceedForOneLevelDeep(
   }
   on_task_blocklist->MaybeSetURLRestrictionLevel(
       navigation_handle()->GetWebContents(), url,
-      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+      LockedNavigationOptions::BLOCK_NAVIGATION);
   return true;
 }
 
@@ -227,13 +228,14 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
     // exact URL for subsequent navigations. The exact URL matching will occur
     // in `on_task_blocklist->CanPerformOneLevelNavigation()`.
     if (on_task_blocklist->current_page_restriction_level() ==
-        RestrictionLevel::kOneLevelDeepNavigation) {
+        LockedNavigationOptions::LIMITED_NAVIGATION) {
       if (!MaybeProceedForOneLevelDeep(on_task_blocklist->previous_tab(),
                                        url)) {
         return content::NavigationThrottle::CANCEL;
       }
     } else if (on_task_blocklist->current_page_restriction_level() ==
-               RestrictionLevel::kDomainAndOneLevelDeepNavigation) {
+               LockedNavigationOptions::
+                   SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION) {
       // Similar conditions as the above, but we first check if it's the same
       // domain first before checking the one level deep case since we allow
       // same domain navigations as well.
@@ -254,7 +256,8 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
         if (url.DomainIs(source_url.host())) {
           on_task_blocklist->MaybeSetURLRestrictionLevel(
               navigation_handle()->GetWebContents(), url,
-              RestrictionLevel::kDomainAndOneLevelDeepNavigation);
+              LockedNavigationOptions::
+                  SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION);
         } else {
           if (!MaybeProceedForOneLevelDeep(
                   navigation_handle()->GetWebContents(), url)) {

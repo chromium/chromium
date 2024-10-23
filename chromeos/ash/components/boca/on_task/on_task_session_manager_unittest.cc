@@ -58,12 +58,13 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               (SessionID window_id,
                const std::vector<boca::BocaWindowObserver*> observers),
               (override));
-  MOCK_METHOD(SessionID,
-              CreateBackgroundTabWithUrl,
-              (SessionID window_id,
-               GURL url,
-               OnTaskBlocklist::RestrictionLevel restriction_level),
-              (override));
+  MOCK_METHOD(
+      SessionID,
+      CreateBackgroundTabWithUrl,
+      (SessionID window_id,
+       GURL url,
+       ::boca::LockedNavigationOptions::NavigationType restriction_level),
+      (override));
   MOCK_METHOD(void,
               RemoveTabsWithTabIds,
               (SessionID window_id,
@@ -105,7 +106,7 @@ class OnTaskSessionManagerTest : public ::testing::Test {
     return &session_manager_->provider_url_tab_ids_map_;
   }
 
-  base::flat_map<GURL, OnTaskBlocklist::RestrictionLevel>*
+  base::flat_map<GURL, ::boca::LockedNavigationOptions::NavigationType>*
   provider_url_restriction_level_map() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(session_manager_->sequence_checker_);
     return &session_manager_->provider_url_restriction_level_map_;
@@ -256,27 +257,27 @@ TEST_F(OnTaskSessionManagerTest, ShouldApplyRestrictionsToTabsOnBundleUpdated) {
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl1),
-                  OnTaskBlocklist::RestrictionLevel::kNoRestrictions))
+                  ::boca::LockedNavigationOptions::OPEN_NAVIGATION))
       .WillOnce(Return(kTabId_1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl2),
-                  OnTaskBlocklist::RestrictionLevel::kLimitedNavigation))
+                  ::boca::LockedNavigationOptions::BLOCK_NAVIGATION))
       .WillOnce(Return(kTabId_2));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl3),
-                  OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation))
+                  ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION))
       .WillOnce(Return(kTabId_3));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl4),
-                  OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation))
+                  ::boca::LockedNavigationOptions::LIMITED_NAVIGATION))
       .WillOnce(Return(kTabId_4));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl5),
-                  OnTaskBlocklist::RestrictionLevel::kNoRestrictions))
+                  ::boca::LockedNavigationOptions::OPEN_NAVIGATION))
       .WillOnce(Return(kTabId_5));
 
   ::boca::Bundle bundle;
@@ -491,7 +492,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldUpdateRestrictionsToTabOnBundleUpdated) {
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl1),
-                  OnTaskBlocklist::RestrictionLevel::kNoRestrictions))
+                  ::boca::LockedNavigationOptions::OPEN_NAVIGATION))
       .WillOnce(Return(kTabId_1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               RemoveTabsWithTabIds(kWindowId, std::set<SessionID>{kTabId_1}))
@@ -500,7 +501,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldUpdateRestrictionsToTabOnBundleUpdated) {
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl1),
-                  OnTaskBlocklist::RestrictionLevel::kLimitedNavigation))
+                  ::boca::LockedNavigationOptions::BLOCK_NAVIGATION))
       .InSequence(s)
       .WillOnce(Return(kTabId_1));
   ::boca::Bundle bundle;
@@ -532,13 +533,13 @@ TEST_F(OnTaskSessionManagerTest, OnAppReloadWithNoActiveWindow) {
 TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
   // Inject tab ids and nav restrictions tracked by the previous session for
   // testing purposes. It should fall back to
-  // `OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation` if there is no
-  // nav restriction being tracked.
+  // `::boca::LockedNavigationOptions::DOMAIN_NAVIGATION` if
+  // there is no nav restriction being tracked.
   const SessionID kOldTabId1 = SessionID::NewUnique();
   const SessionID kOldTabId2 = SessionID::NewUnique();
   (*provider_url_tab_ids_map())[GURL(kTestUrl1)].insert(kOldTabId1);
   (*provider_url_restriction_level_map())[GURL(kTestUrl1)] =
-      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation;
+      ::boca::LockedNavigationOptions::BLOCK_NAVIGATION;
   (*provider_url_tab_ids_map())[GURL(kTestUrl2)].insert(kOldTabId2);
 
   // Attempt an app reload and verify tabs are restored with newer tab ids.
@@ -562,13 +563,13 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl1),
-                  OnTaskBlocklist::RestrictionLevel::kLimitedNavigation))
+                  ::boca::LockedNavigationOptions::BLOCK_NAVIGATION))
       .InSequence(s)
       .WillOnce(Return(kTabId1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl2),
-                  OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation))
+                  ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION))
       .InSequence(s)
       .WillOnce(Return(kTabId2));
   session_manager_->OnAppReloaded();
@@ -577,11 +578,11 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
   EXPECT_THAT((*provider_url_tab_ids_map())[GURL(kTestUrl1)],
               ElementsAre(kTabId1));
   EXPECT_EQ((*provider_url_restriction_level_map())[GURL(kTestUrl1)],
-            OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+            ::boca::LockedNavigationOptions::BLOCK_NAVIGATION);
   EXPECT_THAT((*provider_url_tab_ids_map())[GURL(kTestUrl2)],
               ElementsAre(kTabId2));
   EXPECT_EQ((*provider_url_restriction_level_map())[GURL(kTestUrl2)],
-            OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
+            ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION);
 }
 
 TEST_F(OnTaskSessionManagerTest,

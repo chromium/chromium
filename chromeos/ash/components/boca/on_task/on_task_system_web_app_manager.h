@@ -49,7 +49,7 @@ class OnTaskSystemWebAppManager {
   virtual SessionID CreateBackgroundTabWithUrl(
       SessionID window_id,
       GURL url,
-      OnTaskBlocklist::RestrictionLevel restriction_level) = 0;
+      ::boca::LockedNavigationOptions::NavigationType restriction_level) = 0;
 
   // Removes tabs with the given tab ids in the specified Boca SWA window.
   virtual void RemoveTabsWithTabIds(

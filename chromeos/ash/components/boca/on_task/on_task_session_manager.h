@@ -69,9 +69,10 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
     ~SystemWebAppLaunchHelper();
 
     void LaunchBocaSWA();
-    void AddTab(GURL url,
-                OnTaskBlocklist::RestrictionLevel restriction_level,
-                base::OnceCallback<void(SessionID)> callback);
+    void AddTab(
+        GURL url,
+        ::boca::LockedNavigationOptions::NavigationType restriction_level,
+        base::OnceCallback<void(SessionID)> callback);
     void RemoveTab(const std::set<SessionID>& tab_ids_to_remove,
                    base::OnceClosure callback);
     void SetPinStateForActiveSWAWindow(bool pinned, base::OnceClosure callback);
@@ -94,9 +95,10 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   };
 
   // Callback triggered when a tab from the bundle is added.
-  void OnBundleTabAdded(GURL url,
-                        OnTaskBlocklist::RestrictionLevel restriction_level,
-                        SessionID tab_id);
+  void OnBundleTabAdded(
+      GURL url,
+      ::boca::LockedNavigationOptions::NavigationType restriction_level,
+      SessionID tab_id);
 
   // Callback triggered when a tab from the bundle is removed.
   void OnBundleTabRemoved(GURL url);
@@ -117,7 +119,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
 
   // Maps the url that providers send to the restriction levels it is currently
   // set to. This map allows for tracking restriction level updates.
-  base::flat_map<GURL, OnTaskBlocklist::RestrictionLevel>
+  base::flat_map<GURL, ::boca::LockedNavigationOptions::NavigationType>
       provider_url_restriction_level_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   const std::unique_ptr<OnTaskExtensionsManager> extensions_manager_;

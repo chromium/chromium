@@ -30,6 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ash::boca::OnTaskSystemWebAppManagerImpl;
+using ::boca::LockedNavigationOptions;
 using ::testing::IsNull;
 using ::testing::NotNull;
 
@@ -121,11 +122,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
 
   // Spawn two tabs for testing purposes (outside the homepage tab).
   system_web_app_manager()->CreateBackgroundTabWithUrl(
-      window_id, GURL(kTabUrl1),
-      OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+      window_id, GURL(kTabUrl1), LockedNavigationOptions::OPEN_NAVIGATION);
   system_web_app_manager()->CreateBackgroundTabWithUrl(
-      window_id, GURL(kTabUrl2),
-      OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+      window_id, GURL(kTabUrl2), LockedNavigationOptions::OPEN_NAVIGATION);
   ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 3);
 
   // Close all tabs and verify that the app window is closed.
@@ -155,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   // Spawns a tab for testing purposes (outside the homepage tab).
   const GURL base_url(kTabUrl1);
   system_web_app_manager()->CreateBackgroundTabWithUrl(
-      window_id, base_url, OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+      window_id, base_url, LockedNavigationOptions::OPEN_NAVIGATION);
   ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
   boca_app_browser->tab_strip_model()->ActivateTabAt(1);
 
@@ -192,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   // Spawns a tab for testing purposes (outside the homepage tab).
   const GURL base_url(kTabUrl1);
   system_web_app_manager()->CreateBackgroundTabWithUrl(
-      window_id, base_url, OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+      window_id, base_url, LockedNavigationOptions::OPEN_NAVIGATION);
   ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
   boca_app_browser->tab_strip_model()->ActivateTabAt(1);
 
@@ -229,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   // Spawns a tab for testing purposes (outside the homepage tab).
   const GURL base_url(kTabUrl1);
   system_web_app_manager()->CreateBackgroundTabWithUrl(
-      window_id, base_url, OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+      window_id, base_url, LockedNavigationOptions::OPEN_NAVIGATION);
   ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
   boca_app_browser->tab_strip_model()->ActivateTabAt(1);
 
@@ -266,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   // Spawns a tab for testing purposes (outside the homepage tab).
   const GURL base_url(kTabUrl1);
   system_web_app_manager()->CreateBackgroundTabWithUrl(
-      window_id, base_url, OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+      window_id, base_url, LockedNavigationOptions::OPEN_NAVIGATION);
   ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
   boca_app_browser->tab_strip_model()->ActivateTabAt(1);
 

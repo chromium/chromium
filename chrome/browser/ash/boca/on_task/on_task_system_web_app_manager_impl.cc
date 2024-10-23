@@ -148,7 +148,7 @@ void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
 SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
     SessionID window_id,
     GURL url,
-    OnTaskBlocklist::RestrictionLevel restriction_level) {
+    ::boca::LockedNavigationOptions::NavigationType restriction_level) {
   Browser* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return SessionID::InvalidValue();

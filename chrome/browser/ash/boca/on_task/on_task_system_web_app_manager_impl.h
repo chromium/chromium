@@ -41,7 +41,8 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   SessionID CreateBackgroundTabWithUrl(
       SessionID window_id,
       GURL url,
-      OnTaskBlocklist::RestrictionLevel restriction_level) override;
+      ::boca::LockedNavigationOptions::NavigationType restriction_level)
+      override;
   void RemoveTabsWithTabIds(
       SessionID window_id,
       const std::set<SessionID>& tab_ids_to_remove) override;

@@ -33,22 +33,6 @@ constexpr base::TimeDelta kRemoveTabRetryDelay = base::Seconds(3);
 // Delay in seconds before we attempt to pin or unpin the active SWA window.
 constexpr base::TimeDelta kSetPinnedStateDelay = base::Seconds(3);
 
-OnTaskBlocklist::RestrictionLevel NavigationTypeToRestrictionLevel(
-    ::boca::LockedNavigationOptions::NavigationType navigation_type) {
-  switch (navigation_type) {
-    case ::boca::LockedNavigationOptions::OPEN_NAVIGATION:
-      return OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
-    case ::boca::LockedNavigationOptions::BLOCK_NAVIGATION:
-      return OnTaskBlocklist::RestrictionLevel::kLimitedNavigation;
-    case ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION:
-      return OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation;
-    case ::boca::LockedNavigationOptions::LIMITED_NAVIGATION:
-      return OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation;
-    default:
-      return OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
-  }
-}
-
 }  // namespace
 
 OnTaskSessionManager::OnTaskSessionManager(
@@ -118,13 +102,13 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     const GURL url(content_config.url());
     current_urls_set.insert(url);
 
-    OnTaskBlocklist::RestrictionLevel restriction_level;
+    ::boca::LockedNavigationOptions::NavigationType restriction_level;
     if (content_config.has_locked_navigation_options()) {
       ::boca::LockedNavigationOptions_NavigationType navigation_type =
           content_config.locked_navigation_options().navigation_type();
-      restriction_level = NavigationTypeToRestrictionLevel(navigation_type);
+      restriction_level = navigation_type;
     } else {
-      restriction_level = OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
+      restriction_level = ::boca::LockedNavigationOptions::OPEN_NAVIGATION;
     }
 
     // No need to add the tab if the tab is already tracked as opened in the
@@ -187,8 +171,9 @@ void OnTaskSessionManager::OnAppReloaded() {
   // clear stale tab ids that were tracked with the previous instance.
   for (auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
     tab_ids.clear();
-    OnTaskBlocklist::RestrictionLevel restriction_level = OnTaskBlocklist::
-        RestrictionLevel::kSameDomainNavigation;  // Default restriction.
+    ::boca::LockedNavigationOptions::NavigationType restriction_level =
+        ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION;  // Default
+                                                             // restriction.
     if (provider_url_restriction_level_map_.contains(provider_sent_url)) {
       restriction_level =
           provider_url_restriction_level_map_[provider_sent_url];
@@ -253,7 +238,7 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::LaunchBocaSWA() {
 
 void OnTaskSessionManager::SystemWebAppLaunchHelper::AddTab(
     GURL url,
-    OnTaskBlocklist::RestrictionLevel restriction_level,
+    ::boca::LockedNavigationOptions::NavigationType restriction_level,
     base::OnceCallback<void(SessionID)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (launch_in_progress_) {
@@ -339,7 +324,7 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
 
 void OnTaskSessionManager::OnBundleTabAdded(
     GURL url,
-    OnTaskBlocklist::RestrictionLevel restriction_level,
+    ::boca::LockedNavigationOptions::NavigationType restriction_level,
     SessionID tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (tab_id.is_valid()) {

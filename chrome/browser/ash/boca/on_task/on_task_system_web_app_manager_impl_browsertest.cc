@@ -24,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
+using ::boca::LockedNavigationOptions;
 using ::testing::IsNull;
 using ::testing::NotNull;
 using ::testing::Sequence;
@@ -179,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   system_web_app_manager.SetWindowTrackerForTesting(&window_tracker);
   system_web_app_manager.CreateBackgroundTabWithUrl(
       boca_app_browser->session_id(), GURL(kTestUrl),
-      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+      LockedNavigationOptions::BLOCK_NAVIGATION);
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
   content::WebContents* web_contents =
       boca_app_browser->tab_strip_model()->GetWebContentsAt(1);
@@ -193,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       blocklist
           ->parent_tab_to_nav_filters()[sessions::SessionTabHelper::IdForTab(
               web_contents)],
-      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+      LockedNavigationOptions::BLOCK_NAVIGATION);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
@@ -223,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   system_web_app_manager.SetWindowTrackerForTesting(&window_tracker);
   const SessionID tab_id = system_web_app_manager.CreateBackgroundTabWithUrl(
       boca_app_browser->session_id(), GURL(kTestUrl),
-      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+      LockedNavigationOptions::BLOCK_NAVIGATION);
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
   content::WebContents* const web_contents_1 =
       boca_app_browser->tab_strip_model()->GetWebContentsAt(1);
@@ -263,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   // Create tab so we can verify it gets cleaned up with window prep.
   system_web_app_manager.CreateBackgroundTabWithUrl(
       boca_app_browser->session_id(), GURL(kTestUrl),
-      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+      LockedNavigationOptions::BLOCK_NAVIGATION);
   ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
 
   // Verify that the tab is cleaned up after window prep.
