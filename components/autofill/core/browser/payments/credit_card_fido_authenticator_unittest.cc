@@ -58,8 +58,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
-#include "components/variations/variations_associated_data.h"
-#include "components/variations/variations_params_manager.h"
 #include "components/version_info/channel.h"
 #include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
