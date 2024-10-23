@@ -2036,7 +2036,7 @@ void BrowserAutofillManager::FillOrPreviewField(
       GetCachedFormAndField(form, field, &form_structure, &autofill_field);
   const FillingProduct filling_product =
       GetFillingProductFromSuggestionType(type);
-  form_filler_->FillOrPreviewField(action_persistence, action_type, form, field,
+  form_filler_->FillOrPreviewField(action_persistence, action_type, field,
                                    autofill_field, value, filling_product,
                                    field_type_used);
   if (action_persistence == mojom::ActionPersistence::kFill) {

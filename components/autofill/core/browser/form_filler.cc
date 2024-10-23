@@ -484,7 +484,6 @@ FillingProduct FormFiller::UndoAutofill(
 
 void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                     mojom::FieldActionType action_type,
-                                    const FormData& form,
                                     const FormFieldData& field,
                                     AutofillField* autofill_field,
                                     const std::u16string& value,
