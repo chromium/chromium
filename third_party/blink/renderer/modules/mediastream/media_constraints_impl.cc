@@ -98,7 +98,6 @@ const char kMediaStreamRenderToAssociatedSink[] =
 // RenderToAssociatedSink will be going away some time.
 const char kEchoCancellation[] = "echoCancellation";
 const char kDisableLocalEcho[] = "disableLocalEcho";
-const char kGoogEchoCancellation[] = "googEchoCancellation";
 const char kGoogAutoGainControl[] = "googAutoGainControl";
 const char kGoogNoiseSuppression[] = "googNoiseSuppression";
 const char kGoogExperimentalNoiseSuppression[] = "googNoiseSuppression2";
@@ -213,8 +212,6 @@ static void ParseOldStyleNames(
       // Should give TypeError when it's not parseable.
       // https://crbug.com/576582
       result.render_to_associated_sink.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogEchoCancellation) {
-      result.goog_echo_cancellation.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogAutoGainControl) {
       result.goog_auto_gain_control.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogNoiseSuppression) {

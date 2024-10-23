@@ -392,7 +392,7 @@ using IntegerDiscreteContainer =
     NumericDiscreteSetContainer<int, blink::LongConstraint>;
 
 // Container to manage the properties related to echo cancellation:
-// echoCancellation, googEchoCancellation and echoCancellationType.
+// echoCancellation and echoCancellationType.
 class EchoCancellationContainer {
  public:
   // Default constructor intended to temporarily create an empty object.
@@ -444,21 +444,14 @@ class EchoCancellationContainer {
     // Convert the constraints into discrete sets.
     BoolSet ec_set = blink::media_constraints::BoolSetFromConstraint(
         constraint_set.echo_cancellation);
-    BoolSet goog_ec_set = blink::media_constraints::BoolSetFromConstraint(
-        constraint_set.goog_echo_cancellation);
 
     // Apply echoCancellation constraint.
     ec_allowed_values_ = ec_allowed_values_.Intersection(ec_set);
     if (ec_allowed_values_.IsEmpty())
       return constraint_set.echo_cancellation.GetName();
-    // Intersect echoCancellation with googEchoCancellation and determine if
-    // there is a contradiction.
-    auto ec_intersection = ec_allowed_values_.Intersection(goog_ec_set);
-    if (ec_intersection.IsEmpty())
-      return constraint_set.echo_cancellation.GetName();
     // Translate the boolean values into EC modes.
     ec_mode_allowed_values_ = ec_mode_allowed_values_.Intersection(
-        ToEchoCancellationTypes(ec_intersection));
+        ToEchoCancellationTypes(ec_allowed_values_));
 
     // Finally, if this container is empty, fail due to contradiction of the
     // resulting allowed values for goog_ec, ec, and/or ec_type.
@@ -546,8 +539,7 @@ class EchoCancellationContainer {
 
     // Try to use an ideal candidate, if supplied.
     bool is_ec_preferred =
-        ShouldUseEchoCancellation(constraint_set.echo_cancellation,
-                                  constraint_set.goog_echo_cancellation);
+        ShouldUseEchoCancellation(constraint_set.echo_cancellation);
 
     if (!is_ec_preferred &&
         ec_mode_allowed_values_.Contains(
@@ -614,18 +606,12 @@ class EchoCancellationContainer {
         EchoCancellationType::kEchoCancellationDisabled);
   }
 
-  bool ShouldUseEchoCancellation(
-      const BooleanConstraint& ec_constraint,
-      const BooleanConstraint& goog_ec_constraint) const {
+  bool ShouldUseEchoCancellation(const BooleanConstraint& ec_constraint) const {
     DCHECK(!ec_mode_allowed_values_.is_universal());
 
     if (ec_constraint.HasIdeal() &&
         EchoCancellationModeContains(ec_constraint.Ideal()))
       return ec_constraint.Ideal();
-
-    if (goog_ec_constraint.HasIdeal() &&
-        EchoCancellationModeContains(goog_ec_constraint.Ideal()))
-      return goog_ec_constraint.Ideal();
 
     // Echo cancellation is enabled by default for device capture and disabled
     // by default for content capture.
