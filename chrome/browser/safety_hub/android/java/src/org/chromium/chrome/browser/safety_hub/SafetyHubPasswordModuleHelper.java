@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -23,13 +24,16 @@ public final class SafetyHubPasswordModuleHelper {
      */
     private static final int INVALID_BREACHED_CREDENTIALS_COUNT = -1;
 
+    // TODO(crbug.com/370419126): Add `HAS_REUSED_PASSWORDS` and
+    // `UNAVAILABLE_COMPROMISED_AVAILABLE_WEAK_REUSED_PASSWORDS` types.
     // Represents the type of password module.
     @IntDef({
         ModuleType.SIGNED_OUT,
         ModuleType.UNAVAILABLE_PASSWORDS,
         ModuleType.NO_SAVED_PASSWORDS,
         ModuleType.HAS_COMPROMISED_PASSWORDS,
-        ModuleType.NO_COMPROMISED_PASSWORDS
+        ModuleType.NO_COMPROMISED_PASSWORDS,
+        ModuleType.HAS_WEAK_PASSWORDS
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface ModuleType {
@@ -38,20 +42,27 @@ public final class SafetyHubPasswordModuleHelper {
         int NO_SAVED_PASSWORDS = 2;
         int HAS_COMPROMISED_PASSWORDS = 3;
         int NO_COMPROMISED_PASSWORDS = 4;
+        int HAS_WEAK_PASSWORDS = 5;
     };
 
     // Returns the password module type according to the `model` properties.
     private static @ModuleType int getModuleType(PropertyModel model) {
         int compromisedPasswordsCount =
                 model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
+        int weakPasswordsCount = model.get(SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT);
         int totalPasswordsCount = model.get(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
         boolean isSignedOut = !model.get(SafetyHubModuleProperties.IS_SIGNED_IN);
+
+        boolean isWeakAndReusedFeatureEnabled =
+                ChromeFeatureList.sSafetyHubWeakAndReusedPasswords.isEnabled();
 
         if (isSignedOut) {
             assert compromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT;
             return ModuleType.SIGNED_OUT;
         }
         if (compromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
+            // TODO(crbug.com/370419126): Add
+            // `UNAVAILABLE_COMPROMISED_AVAILABLE_WEAK_REUSED_PASSWORDS` type.
             return ModuleType.UNAVAILABLE_PASSWORDS;
         }
         if (totalPasswordsCount == 0) {
@@ -59,6 +70,10 @@ public final class SafetyHubPasswordModuleHelper {
         }
         if (compromisedPasswordsCount > 0) {
             return ModuleType.HAS_COMPROMISED_PASSWORDS;
+        }
+        // TODO(crbug.com/370419126): Add `HAS_REUSED_PASSWORDS` type.
+        if (isWeakAndReusedFeatureEnabled && weakPasswordsCount > 0) {
+            return ModuleType.HAS_WEAK_PASSWORDS;
         }
         return ModuleType.NO_COMPROMISED_PASSWORDS;
     }
@@ -157,6 +172,26 @@ public final class SafetyHubPasswordModuleHelper {
                 model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
     }
 
+    // Updates `preference` for the password module of type {@link ModuleType.HAS_WEAK_PASSWORDS}.
+    private static void updatePreferenceForHasWeakPasswords(
+            SafetyHubExpandablePreference preference, PropertyModel model) {
+        Context context = preference.getContext();
+        int weakPasswordsCount = model.get(SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT);
+        preference.setTitle(context.getString(R.string.safety_hub_reused_weak_passwords_title));
+        preference.setSummary(
+                context.getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_weak_passwords_summary,
+                                weakPasswordsCount,
+                                weakPasswordsCount));
+        preference.setPrimaryButtonText(
+                context.getString(R.string.safety_hub_passwords_navigation_button));
+        preference.setPrimaryButtonClickListener(
+                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+        preference.setSecondaryButtonText(null);
+        preference.setSecondaryButtonClickListener(null);
+    }
+
     // Overrides summary and primary button fields of `preference` if passwords are controlled by a
     // policy.
     private static void overridePreferenceForManaged(
@@ -198,6 +233,9 @@ public final class SafetyHubPasswordModuleHelper {
             case ModuleType.NO_COMPROMISED_PASSWORDS:
                 updatePreferenceForNoCompromisedPasswords(preference, model);
                 break;
+            case ModuleType.HAS_WEAK_PASSWORDS:
+                updatePreferenceForHasWeakPasswords(preference, model);
+                break;
             default:
                 throw new IllegalArgumentException();
         }
@@ -212,6 +250,7 @@ public final class SafetyHubPasswordModuleHelper {
         @ModuleType int type = getModuleType(model);
         switch (type) {
             case ModuleType.NO_SAVED_PASSWORDS:
+            case ModuleType.HAS_WEAK_PASSWORDS:
                 return ModuleState.INFO;
             case ModuleType.SIGNED_OUT:
             case ModuleType.UNAVAILABLE_PASSWORDS:

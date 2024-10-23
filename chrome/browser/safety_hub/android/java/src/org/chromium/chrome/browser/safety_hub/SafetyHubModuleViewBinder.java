@@ -38,6 +38,7 @@ public class SafetyHubModuleViewBinder {
             PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
         if (SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
+                || SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT == propertyKey
                 || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey
                 || SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey
                 || SafetyHubModuleProperties.IS_SIGNED_IN == propertyKey
@@ -98,6 +99,7 @@ public class SafetyHubModuleViewBinder {
                 || SafetyHubModuleProperties.UPDATE_STATUS == propertyKey
                 || SafetyHubModuleProperties.IS_SIGNED_IN == propertyKey
                 || SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
+                || SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT == propertyKey
                 || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey) {
             updateBrowserStateModule(preference, model);
         }

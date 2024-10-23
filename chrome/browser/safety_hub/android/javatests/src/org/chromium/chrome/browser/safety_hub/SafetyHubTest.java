@@ -733,6 +733,64 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    @RequiresRestart
+    public void testPasswordModule_WeakPasswords() {
+        // Set the passwords module to the information state.
+        int weakPasswordsCount = 5;
+        addCredentialToAccountStore();
+        setCompromisedPasswordsCount(0);
+        setWeakPasswordsCount(weakPasswordsCount);
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that passwords module which is in the information state is expanded by default.
+        String weakPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_weak_passwords_summary,
+                                weakPasswordsCount,
+                                weakPasswordsCount);
+        scrollToExpandedPreference(weakPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        // Make the password module state be warning.
+        int compromisedPasswordsCount = 5;
+        setCompromisedPasswordsCount(compromisedPasswordsCount);
+        mSafetyHubFragmentTestRule.recreateActivity();
+        safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that the password module is expanded, since it's on the warning state.
+        String compromisedPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_check_passwords_compromised_exist,
+                                compromisedPasswordsCount,
+                                compromisedPasswordsCount);
+        scrollToExpandedPreference(compromisedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(compromisedPasswordsTitle, true);
+
+        // Verify that the other module in the information state is now collapsed.
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
+
+        // Make sure the compromised passwords count is reset at the end of the test.
+        clearCompromisedPasswordsCount();
+    }
+
+    @Test
+    @MediumTest
     @Feature({"SafetyHubPermissions"})
     public void testPermissionsModule_ClearList() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
@@ -1166,6 +1224,13 @@ public final class SafetyHubTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(mProfile).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
+                });
+    }
+
+    private void setWeakPasswordsCount(int count) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).setInteger(Pref.WEAK_CREDENTIALS_COUNT, count);
                 });
     }
 
