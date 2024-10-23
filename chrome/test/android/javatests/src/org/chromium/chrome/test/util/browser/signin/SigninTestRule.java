@@ -35,11 +35,19 @@ import org.chromium.components.sync.SyncService;
  */
 public class SigninTestRule extends AccountManagerTestRule {
     private boolean mIsSignedIn;
+    private final SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher =
+            new SigninTestUtil.CustomDeviceLockActivityLauncher();
 
     public SigninTestRule() {}
 
     public SigninTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade) {
         super(fakeAccountManagerFacade);
+    }
+
+    @Override
+    public void setUpRule() {
+        super.setUpRule();
+        DeviceLockActivityLauncherImpl.setInstanceForTesting(mDeviceLockActivityLauncher);
     }
 
     /** Signs out if user is signed in. */
@@ -213,9 +221,6 @@ public class SigninTestRule extends AccountManagerTestRule {
 
     /** Completes the device lock flow when on automotive devices. */
     public void completeDeviceLockIfOnAutomotive() {
-        SigninTestUtil.CustomDeviceLockActivityLauncher deviceLockActivityLauncher =
-                new SigninTestUtil.CustomDeviceLockActivityLauncher();
-        DeviceLockActivityLauncherImpl.setInstanceForTesting(deviceLockActivityLauncher);
-        SigninTestUtil.completeDeviceLockIfOnAutomotive(deviceLockActivityLauncher);
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
     }
 }

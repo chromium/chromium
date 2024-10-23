@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -84,7 +83,6 @@ public class MismatchNotificationControllerTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "TODO(crbug.com/374056362): Fix and re-enable.")
     public void testSignedOutMessagePrimaryButton() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
