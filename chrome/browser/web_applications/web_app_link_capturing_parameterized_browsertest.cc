@@ -1382,7 +1382,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
     const base::Value::Dict& test_case = GetTestCaseDataFromParam();
 
     // Skip current test-case if the test is disabled in the expectations file.
-    if (test_case.FindBool("disabled").value_or(false)) {
+    // If the "disabled" value is a string (which can be used to specify why the
+    // test is disabled), then also consider it disabled.
+    if (test_case.FindBool("disabled").value_or(false) ||
+        test_case.FindString("disabled")) {
       return true;
     }
 
@@ -1536,36 +1539,56 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
         testing::Values(AppUserDisplayMode::kBothStandalone),
-        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
-                        LinkCapturing::kDisabled  // LinkCapturing turned off.
-                        ),
+        testing::Values(LinkCapturing::kEnabled,    // LinkCapturing turned on.
+                        LinkCapturing::kDisabled),  // LinkCapturing turned off.
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
-            StartingPoint::kTab         // Starting point is a tab.
-            ),
-        testing::Values(Destination::kScopeA2A,  // Navigate in-scope A.
-                        Destination::kScopeA2B,  // Navigate A -> B.
-                        Destination::kScopeA2X   // A -> X (X is not installed).
-                        ),
+            StartingPoint::kTab),       // Starting point is a tab.
+        testing::Values(
+            Destination::kScopeA2A,   // Navigate in-scope A.
+            Destination::kScopeA2B,   // Navigate A -> B.
+            Destination::kScopeA2X),  // A -> X (X is not installed).
         testing::Values(RedirectType::kNone),
         testing::Values(
-            NavigationElement::kElementLink,   // Navigate via element.
-            NavigationElement::kElementButton  // Navigate via button.
-            ),
+            NavigationElement::kElementLink,     // Navigate via element.
+            NavigationElement::kElementButton),  // Navigate via button.
         testing::Values(
-            test::ClickMethod::kLeftClick,    // Simulate left-mouse click.
-            test::ClickMethod::kMiddleClick,  // Simulate middle-mouse click.
-            test::ClickMethod::kShiftClick    // Simulate shift click.
-            ),
-        testing::Values(OpenerMode::kOpener,   // Supply 'opener' property.
-                        OpenerMode::kNoOpener  // Supply 'noopener' property.
-                        ),
+            test::ClickMethod::kLeftClick,       // Simulate left-mouse click.
+            test::ClickMethod::kMiddleClick,     // Simulate middle-mouse click.
+            test::ClickMethod::kShiftClick),     // Simulate shift click.
+        testing::Values(OpenerMode::kOpener,     // Supply 'opener' property.
+                        OpenerMode::kNoOpener),  // Supply 'noopener' property.
         testing::Values(
-            NavigationTarget::kSelf,    // Use target _self.
-            NavigationTarget::kFrame,   // Use named frame as target.
-            NavigationTarget::kBlank,   // User Target is _blank.
-            NavigationTarget::kNoFrame  // Target is non-existing frame.
-            )),
+            NavigationTarget::kSelf,     // Use target _self.
+            NavigationTarget::kFrame,    // Use named frame as target.
+            NavigationTarget::kBlank,    // User Target is _blank.
+            NavigationTarget::kNoFrame)  // Target is non-existing frame.
+        ),
+    LinkCaptureTestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(
+    DisplayBrowser,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(AppUserDisplayMode::kAppAStandaloneAppBBrowser),
+        testing::Values(LinkCapturing::kEnabled,    // LinkCapturing turned on.
+                        LinkCapturing::kDisabled),  // LinkCapturing turned off.
+        testing::Values(
+            StartingPoint::kAppWindow,  // Starting point is app window.
+            StartingPoint::kTab),       // Starting point is a tab.
+        testing::Values(Destination::kScopeA2B),  // Navigate A -> B.
+        testing::Values(RedirectType::kNone),
+        testing::Values(
+            NavigationElement::kElementLink,     // Navigate via element.
+            NavigationElement::kElementButton),  // Navigate via button.
+        testing::Values(
+            test::ClickMethod::kLeftClick,       // Simulate left-mouse click.
+            test::ClickMethod::kMiddleClick,     // Simulate middle-mouse click.
+            test::ClickMethod::kShiftClick),     // Simulate shift click.
+        testing::Values(OpenerMode::kOpener,     // Supply 'opener' property.
+                        OpenerMode::kNoOpener),  // Supply 'noopener' property.
+        testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1623,22 +1646,6 @@ INSTANTIATE_TEST_SUITE_P(
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
-    DisplayModeBrowser,
-    WebAppLinkCapturingParameterizedBrowserTest,
-    testing::Combine(
-        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
-        testing::Values(AppUserDisplayMode::kBothBrowser),
-        testing::Values(LinkCapturing::kEnabled),
-        testing::Values(StartingPoint::kTab),
-        testing::Values(Destination::kScopeA2A),
-        testing::Values(RedirectType::kNone),
-        testing::Values(NavigationElement::kElementLink),
-        testing::Values(test::ClickMethod::kLeftClick),
-        testing::Values(OpenerMode::kNoOpener),
-        testing::Values(NavigationTarget::kBlank)),
-    LinkCaptureTestParamToString);
-
-INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
@@ -1679,6 +1686,52 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementLink,
                         NavigationElement::kElementButton),
+        testing::Values(test::ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// Tests for browser-tab apps
+INSTANTIATE_TEST_SUITE_P(
+    DisplayModeBrowser,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(
+            blink::mojom::ManifestLaunchHandler_ClientMode::kAuto,
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
+        testing::Values(AppUserDisplayMode::kBothBrowser),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2A, Destination::kScopeA2B),
+        testing::Values(RedirectType::kNone),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// Test that the navigate-existing and focus-existing behavior works for browser
+// apps if there isn't a tab open. There is a
+// NavigationCapturingTestWithAppBLaunched suite version for testing the client
+// mode specifically.
+INSTANTIATE_TEST_SUITE_P(
+    CapturableToBrowserTabApp,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
+        testing::Values(AppUserDisplayMode::kAppAStandaloneAppBBrowser),
+        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
+                        LinkCapturing::kDisabled  // LinkCapturing turned off.
+                        ),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2B  // Navigate A -> B.
+                        ),
+        // TODO: Add redirection cases.
+        testing::Values(RedirectType::kNone),
+        testing::Values(NavigationElement::kElementLink),
         testing::Values(test::ClickMethod::kLeftClick),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
@@ -1905,6 +1958,26 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
 
-}  // namespace
+INSTANTIATE_TEST_SUITE_P(
+    CapturableToBrowserTabApp,
+    NavigationCapturingTestWithAppBLaunched,
+    testing::Combine(
+        testing::Values(
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
+        testing::Values(AppUserDisplayMode::kAppAStandaloneAppBBrowser),
+        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
+                        LinkCapturing::kDisabled  // LinkCapturing turned off.
+                        ),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2B),
+        // TODO: Add redirection cases.
+        testing::Values(RedirectType::kNone),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
 
+}  // namespace
 }  // namespace web_app

@@ -1,0 +1,1086 @@
+{
+   "tests": {
+      "AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP_POPUP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaButton_MiddleClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaButton_MiddleClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaButton_MiddleClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaButton_MiddleClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaButton_ShiftClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaButton_ShiftClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP_POPUP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaButton_ShiftClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaButton_ShiftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaLink_MiddleClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_MiddleClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaLink_MiddleClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_MiddleClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaLink_ShiftClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_ShiftClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "AppWnd_ScopeA2B_Direct_ViaLink_ShiftClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_ShiftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               } ]
+            }, {
+               "browser_type": "TYPE_POPUP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaButton_MiddleClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaButton_MiddleClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               }, {
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaButton_MiddleClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaButton_MiddleClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               }, {
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaButton_ShiftClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaButton_ShiftClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               } ]
+            }, {
+               "browser_type": "TYPE_POPUP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaButton_ShiftClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaButton_ShiftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               } ]
+            }, {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaLink_MiddleClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_MiddleClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               }, {
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaLink_MiddleClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_MiddleClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               }, {
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaLink_ShiftClick_WithOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_ShiftClick_WithOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               } ]
+            }, {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "Tab_ScopeA2B_Direct_ViaLink_ShiftClick_WithoutOpener_TargetBlank": {
+         "_params": "AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_ShiftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               } ]
+            }, {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "kFocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+         "_params": "kFocusExisting_AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "kFocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+         "_params": "kFocusExisting_AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "kNavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+         "_params": "kNavigateExisting_AppAStandaloneAppBBrowser_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "blank",
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_bookmark",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      },
+      "kNavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+         "_params": "kNavigateExisting_AppAStandaloneAppBBrowser_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
+         "expected_state": {
+            "browsers": [ {
+               "browser_type": "TYPE_NORMAL",
+               "tabs": [ {
+                  "current_url": "/banners/link_capturing/scope_a/start.html",
+                  "frames": [ {
+                     "current_url": "blank",
+                     "frame_name": "iframe"
+                  } ],
+                  "history": [ {
+                     "transition": "auto_toplevel",
+                     "url": "blank"
+                  }, {
+                     "transition": "typed",
+                     "url": "/banners/link_capturing/scope_a/start.html"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
+            } ],
+            "launch_metric_buckets": [  ]
+         }
+      }
+   }
+}

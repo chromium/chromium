@@ -168,8 +168,13 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
-// Searches all browsers and tabs to find an applicable browser and (contained)
-// tab that matches the given `requested_display_mode`.
+// Searches all browsers and tabs to find an applicable browser for the given
+// `requested_display_mode` and `app_id`. Then, the tabs in that browser are
+// searched for one that matches the given `app_id`. This will prioritize
+// returning where both a browser & tab are found. If an applicable browser was
+// found with out an applicable tab, then the first applicable browser found is
+// returned with `-1` as the tab index. If no browser is found, then
+// std::nullopt is returned.
 std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     const Profile& profile,
     const webapps::AppId& app_id,
