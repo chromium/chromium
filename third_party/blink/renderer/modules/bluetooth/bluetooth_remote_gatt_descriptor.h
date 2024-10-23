@@ -43,7 +43,7 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
   ScriptPromise<NotShared<DOMDataView>> readValue(ScriptState*,
                                                   ExceptionState&);
   ScriptPromise<IDLUndefined> writeValue(ScriptState*,
-                                         const DOMArrayPiece&,
+                                         base::span<const uint8_t> value,
                                          ExceptionState&);
 
   // Interface required by garbage collection.

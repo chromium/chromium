@@ -90,14 +90,16 @@ class BluetoothRemoteGATTCharacteristic final
   ScriptPromise<NotShared<DOMDataView>> readValue(ScriptState*,
                                                   ExceptionState&);
   ScriptPromise<IDLUndefined> writeValue(ScriptState*,
-                                         const DOMArrayPiece&,
+                                         base::span<const uint8_t> value,
                                          ExceptionState&);
-  ScriptPromise<IDLUndefined> writeValueWithResponse(ScriptState*,
-                                                     const DOMArrayPiece&,
-                                                     ExceptionState&);
-  ScriptPromise<IDLUndefined> writeValueWithoutResponse(ScriptState*,
-                                                        const DOMArrayPiece&,
-                                                        ExceptionState&);
+  ScriptPromise<IDLUndefined> writeValueWithResponse(
+      ScriptState*,
+      base::span<const uint8_t> value,
+      ExceptionState&);
+  ScriptPromise<IDLUndefined> writeValueWithoutResponse(
+      ScriptState*,
+      base::span<const uint8_t> value,
+      ExceptionState&);
   ScriptPromise<BluetoothRemoteGATTCharacteristic> startNotifications(
       ScriptState*,
       ExceptionState&);
@@ -154,7 +156,7 @@ class BluetoothRemoteGATTCharacteristic final
 
   ScriptPromise<IDLUndefined> WriteCharacteristicValue(
       ScriptState*,
-      const DOMArrayPiece& value,
+      base::span<const uint8_t> value,
       mojom::blink::WebBluetoothWriteType,
       ExceptionState&);
 

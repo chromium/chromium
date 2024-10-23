@@ -185,7 +185,7 @@ void BluetoothRemoteGATTCharacteristic::WriteValueCallback(
 ScriptPromise<IDLUndefined>
 BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
     ScriptState* script_state,
-    const DOMArrayPiece& value,
+    base::span<const uint8_t> value,
     mojom::blink::WebBluetoothWriteType write_type,
     ExceptionState& exception_state) {
   if (!GetGatt()->connected() || !GetBluetooth()->IsServiceBound()) {
@@ -204,19 +204,13 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
     return EmptyPromise();
   }
 
-  if (value.IsDetached()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Value buffer has been detached.");
-    return EmptyPromise();
-  }
-
   // Partial implementation of writeValue algorithm:
   // https://webbluetoothcg.github.io/web-bluetooth/#dom-bluetoothremotegattcharacteristic-writevalue
 
   // If bytes is more than 512 bytes long (the maximum length of an attribute
   // value, per Long Attribute Values) return a promise rejected with an
   // InvalidModificationError and abort.
-  if (value.ByteLength() > 512) {
+  if (value.size() > 512) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
         "Value can't exceed 512 bytes.");
@@ -225,7 +219,7 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
 
   // Let valueVector be a copy of the bytes held by value.
   Vector<uint8_t> value_vector;
-  value_vector.AppendSpan(value.ByteSpan());
+  value_vector.AppendSpan(value);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
@@ -244,7 +238,7 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
 
 ScriptPromise<IDLUndefined> BluetoothRemoteGATTCharacteristic::writeValue(
     ScriptState* script_state,
-    const DOMArrayPiece& value,
+    base::span<const uint8_t> value,
     ExceptionState& exception_state) {
   return WriteCharacteristicValue(
       script_state, value,
@@ -255,7 +249,7 @@ ScriptPromise<IDLUndefined> BluetoothRemoteGATTCharacteristic::writeValue(
 ScriptPromise<IDLUndefined>
 BluetoothRemoteGATTCharacteristic::writeValueWithResponse(
     ScriptState* script_state,
-    const DOMArrayPiece& value,
+    base::span<const uint8_t> value,
     ExceptionState& exception_state) {
   return WriteCharacteristicValue(
       script_state, value,
@@ -265,7 +259,7 @@ BluetoothRemoteGATTCharacteristic::writeValueWithResponse(
 ScriptPromise<IDLUndefined>
 BluetoothRemoteGATTCharacteristic::writeValueWithoutResponse(
     ScriptState* script_state,
-    const DOMArrayPiece& value,
+    base::span<const uint8_t> value,
     ExceptionState& exception_state) {
   return WriteCharacteristicValue(
       script_state, value,
