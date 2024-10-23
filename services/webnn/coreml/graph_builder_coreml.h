@@ -300,6 +300,8 @@ class GraphBuilderCoreml {
   void AddOperationForScatterElements(
       const mojom::ScatterElements& operation,
       CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForScatterND(const mojom::ScatterND& operation,
+                                CoreML::Specification::MILSpec::Block& block);
   void AddOperationForSlice(const mojom::Slice& operation,
                             CoreML::Specification::MILSpec::Block& block);
   void AddOperationForSoftmax(const mojom::Softmax& operation,

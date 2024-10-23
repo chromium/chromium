@@ -138,6 +138,7 @@ constexpr char kOpPadTypeName[] = "pad";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpReshapeTypeName[] = "reshape";
 constexpr char kOpScatterElementsTypeName[] = "scatter_along_axis";
+constexpr char kOpScatterNDTypeName[] = "scatter_nd";
 constexpr char kOpSigmoidTypeName[] = "sigmoid";
 constexpr char kOpSliceTypeName[] = "slice_by_size";
 constexpr char kOpSoftmaxTypeName[] = "softmax";
@@ -826,9 +827,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*reshape_input=*/kFloatsAndInt32,
        /*scatter_elements_input=*/kFloatsAndInt32,
        /*scatter_elements_indices=*/{OperandDataType::kInt32},
-       // TODO(crbug.com/363544348): Implement ScatterND.
-       /*scatter_nd_input=*/{},
-       /*scatter_nd_indices=*/{},
+       /*scatter_nd_input=*/kFloatsAndInt32,
+       /*scatter_nd_indices=*/{OperandDataType::kInt32},
        /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
        // Note that BOOL, INT16, and UINT16 is also supported by CoreML, but
        // WebNN does not have corresponding types. See docs here:
@@ -1068,6 +1068,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
                                        block);
         break;
       }
+      case mojom::Operation::Tag::kScatterNd: {
+        AddOperationForScatterND(*operation->get_scatter_nd(), block);
+        break;
+      }
       case mojom::Operation::Tag::kSigmoid: {
         CHECK(context_properties_.data_type_limits.sigmoid_input.Has(
             MILDataTypeToOperandType(
@@ -1138,7 +1142,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kScatterNd:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
   }
@@ -2924,6 +2927,39 @@ void GraphBuilderCoreml::AddOperationForScatterElements(
       {{kOpParamAxis, CreateScalarImmediateValue(
                           base::checked_cast<int32_t>(operation.axis))},
        {kOpParamMode, CreateStringImmediateValue(kOpParamScatterModeValue)},
+       {kOpParamValidateIndices, CreateScalarImmediateValue(false)}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+}
+
+void GraphBuilderCoreml::AddOperationForScatterND(
+    const mojom::ScatterND& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  CHECK(context_properties_.data_type_limits.gather_input.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.input_operand_id).mil_data_type)));
+  CHECK(context_properties_.data_type_limits.gather_indices.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.indices_operand_id).mil_data_type)));
+  CHECK(context_properties_.data_type_limits.gather_input.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.updates_operand_id).mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpScatterNDTypeName);
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamData,
+                      operation.input_operand_id);
+
+  // TODO(crbug.com/363544348): Handle negative and out-of-bounds indices.
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamIndices,
+                      operation.indices_operand_id);
+
+  SetInputFromOperand(*op->mutable_inputs(), kOpParamUpdates,
+                      operation.updates_operand_id);
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kOpParamMode, CreateStringImmediateValue(kOpParamScatterModeValue)},
        {kOpParamValidateIndices, CreateScalarImmediateValue(false)}});
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
