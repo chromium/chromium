@@ -35,16 +35,18 @@ export class ViewerSidePanelElement extends CrLitElement {
 
   static override get properties() {
     return {
-      brushDirty_: {type: Boolean},
-      currentType_: {type: String},
+      currentColor: {type: Object},
+      currentSize: {type: Number},
+      currentType: {type: String},
     };
   }
 
-  protected currentType_: AnnotationBrushType = AnnotationBrushType.PEN;
-
-  // Indicates the brush has changes and should be updated in
-  // `this.pluginController_`.
-  private brushDirty_: boolean = false;
+  // TODO(crbug.com/373672165): Set these to null once PdfViewerElement fully
+  // handles these properties. For now, set them to actual default values to
+  // pass PDFExtensionJSInk2Test.Ink2SidePanel.
+  currentColor: Color|undefined = hexToColor(PEN_COLORS[0]!.color);
+  currentSize: number = PEN_SIZES[2]!.size;
+  currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
   private brushes_: Map<AnnotationBrushType, AnnotationBrush>;
   private pluginController_: PluginController = PluginController.getInstance();
@@ -82,46 +84,30 @@ export class ViewerSidePanelElement extends CrLitElement {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('brushDirty_') &&
-        (this.brushDirty_ ||
-         changedPrivateProperties.get('brushDirty_') === undefined)) {
-      this.onBrushChanged_();
-    }
+    this.onBrushChanged_();
   }
 
   protected onBrushChange_(e: CustomEvent<{value: AnnotationBrushType}>) {
-    this.currentType_ = e.detail.value;
-    this.brushDirty_ = true;
+    this.currentType = e.detail.value;
+    this.currentSize = this.getCurrentBrush_().size;
+    this.currentColor = this.getCurrentBrush_().color;
   }
 
   protected onSizeChange_(e: CustomEvent<{value: number}>) {
-    this.getCurrentBrush_().size = e.detail.value;
-    this.brushDirty_ = true;
+    const size = e.detail.value;
+    this.currentSize = size;
+    this.getCurrentBrush_().size = size;
   }
 
   protected onColorChange_(e: CustomEvent<{value: Color}>) {
     assert(this.shouldShowColorOptions_());
-
-    this.getCurrentBrush_().color = e.detail.value;
-    this.brushDirty_ = true;
+    const color = e.detail.value;
+    this.currentColor = color;
+    this.getCurrentBrush_().color = color;
   }
 
   protected shouldShowColorOptions_(): boolean {
-    return this.currentType_ !== AnnotationBrushType.ERASER;
-  }
-
-  protected getCurrentSize_(): number {
-    return this.getCurrentBrush_().size;
-  }
-
-  protected getCurrentColor_(): Color {
-    const color = this.getCurrentBrush_().color;
-    assert(color);
-    return color;
+    return this.currentType !== AnnotationBrushType.ERASER;
   }
 
   /**
@@ -130,11 +116,10 @@ export class ViewerSidePanelElement extends CrLitElement {
    */
   private onBrushChanged_(): void {
     this.pluginController_.setAnnotationBrush(this.getCurrentBrush_());
-    this.brushDirty_ = false;
   }
 
   private getCurrentBrush_(): AnnotationBrush {
-    const brush = this.brushes_.get(this.currentType_);
+    const brush = this.brushes_.get(this.currentType);
     assert(brush);
     return brush;
   }

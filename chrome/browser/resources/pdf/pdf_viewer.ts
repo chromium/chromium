@@ -24,6 +24,10 @@ import {BeforeUnloadProxyImpl} from './before_unload_proxy.js';
 // </if>
 import type {Bookmark} from './bookmark_type.js';
 import type {BrowserApi} from './browser_api.js';
+// <if expr="enable_pdf_ink2">
+import {AnnotationBrushType} from './constants.js';
+import type {Color} from './constants.js';
+// </if>
 import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './constants.js';
 import {FittingType, FormFieldFocusType, SaveRequestType} from './constants.js';
 import type {MessageData} from './controller.js';
@@ -33,6 +37,10 @@ import {PluginControllerEventType} from './controller.js';
 // </if>
 // <if expr="enable_ink">
 import type {ContentController} from './controller.js';
+// </if>
+// <if expr="enable_pdf_ink2">
+import {PEN_COLORS} from './elements/ink_color_selector.js';
+import {PEN_SIZES} from './elements/ink_size_selector.js';
 // </if>
 import type {ChangePageAndXyDetail, ChangePageDetail, NavigateDetail} from './elements/viewer_bookmark.js';
 import {ChangePageOrigin} from './elements/viewer_bookmark.js';
@@ -60,6 +68,9 @@ import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
 import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+// <if expr="enable_pdf_ink2">
+import {hexToColor} from './pdf_viewer_utils.js';
+// </if>
 
 /**
  * Keep in sync with the values for enum PDFPostMessageDataType in
@@ -169,6 +180,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       canSerializeDocument_: {type: Boolean},
       clockwiseRotations_: {type: Number},
 
+      // <if expr="enable_pdf_ink2">
+      currentBrushColor_: {type: Object},
+      currentBrushSize_: {type: Number},
+      currentBrushType_: {type: AnnotationBrushType},
+      // </if>
+
       /** The number of pages in the PDF document. */
       docLength_: {type: Number},
       documentHasFocus_: {type: Boolean},
@@ -214,6 +231,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected bookmarks_: Bookmark[] = [];
   private canSerializeDocument_: boolean = false;
   protected clockwiseRotations_: number = 0;
+  // <if expr="enable_pdf_ink2">
+  // TODO(crbug.com/373672165): These values should be retrieved from the
+  // plugin.
+  protected currentBrushColor_: Color|undefined =
+      hexToColor(PEN_COLORS[0]!.color);
+  protected currentBrushSize_: number = PEN_SIZES[2]!.size;
+  protected currentBrushType_: AnnotationBrushType = AnnotationBrushType.PEN;
+  // </if>
   protected docLength_: number = 0;
   protected documentHasFocus_: boolean = false;
   protected documentMetadata_: DocumentMetadata = {
@@ -1119,6 +1144,18 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // strokes have updated. If the user hasn't saved, only show the
     // beforeunload dialog if there's edits.
     this.setShowBeforeUnloadDialog_(this.hasSavedEdits_ || this.hasInk2Edits_);
+  }
+
+  protected onBrushColorChanged_(e: CustomEvent<{value: Color}>) {
+    this.currentBrushColor_ = e.detail.value;
+  }
+
+  protected onBrushSizeChanged_(e: CustomEvent<{value: number}>) {
+    this.currentBrushSize_ = e.detail.value;
+  }
+
+  protected onBrushTypeChanged_(e: CustomEvent<{value: AnnotationBrushType}>) {
+    this.currentBrushType_ = e.detail.value;
   }
   // </if>
 

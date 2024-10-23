@@ -68,7 +68,13 @@
   </div>
   <if expr="enable_pdf_ink2">
     ${this.inInk2AnnotationMode_() ? html`
-      <viewer-side-panel></viewer-side-panel>` : ''}
+      <viewer-side-panel .currentColor="${this.currentBrushColor_}"
+            .currentSize="${this.currentBrushSize_}"
+            .currentType="${this.currentBrushType_}"
+            @current-color-changed="${this.onBrushColorChanged_}"
+            @current-size-changed="${this.onBrushSizeChanged_}"
+            @current-type-changed="${this.onBrushTypeChanged_}">
+      </viewer-side-panel>` : ''}
   </if>
 </div>
 
