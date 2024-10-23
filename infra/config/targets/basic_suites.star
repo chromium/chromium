@@ -662,17 +662,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "headless_shell_wpt_tests_isolated_scripts",
-    tests = {
-        "headless_shell_wpt_tests_include_all": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 10,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "clang_tot_gtests",
     tests = {
         "base_unittests": targets.legacy_test_config(),
@@ -2406,28 +2395,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "perfetto_gtests",
-    tests = {
-        "base_unittests": targets.legacy_test_config(),
-        "browser_tests": targets.legacy_test_config(
-            args = [
-                "--gtest_filter=ChromeTracingDelegateBrowserTest.*",
-            ],
-        ),
-        "content_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 8,
-            ),
-            android_swarming = targets.swarming(
-                shards = 15,
-            ),
-        ),
-        "perfetto_unittests": targets.legacy_test_config(),
-        "services_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "pixel_browser_tests_gtests",
     tests = {
         "pixel_browser_tests": targets.legacy_test_config(
@@ -2570,13 +2537,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "test_traffic_annotation_auditor_script",
-    tests = {
-        "test_traffic_annotation_auditor": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "updater_gtests_linux",
     tests = {
         "updater_tests": targets.legacy_test_config(
@@ -2640,13 +2600,6 @@ targets.legacy_basic_suite(
                 "updater-win-uac-pool",
             ],
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "upload_perfetto",
-    tests = {
-        "upload_trace_processor": targets.legacy_test_config(),
     },
 )
 

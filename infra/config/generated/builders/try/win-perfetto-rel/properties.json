@@ -37,7 +37,8 @@
           "builder": "win-perfetto-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win-perfetto-rel/targets"
     }
   },
   "$build/reclient": {

@@ -3452,6 +3452,20 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "headless_shell_wpt_tests_isolated_scripts",
+    targets = [
+        "headless_shell_wpt_tests_include_all",
+    ],
+    per_test_modifications = {
+        "headless_shell_wpt_tests_include_all": targets.mixin(
+            swarming = targets.swarming(
+                shards = 10,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "ios17_beta_simulator_tests",
     targets = [
         targets.bundle(
@@ -4429,6 +4443,32 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "perfetto_gtests",
+    targets = [
+        "base_unittests",
+        "browser_tests",
+        "content_browsertests",
+        "perfetto_unittests",
+        "services_unittests",
+    ],
+    per_test_modifications = {
+        "browser_tests": targets.mixin(
+            args = [
+                "--gtest_filter=ChromeTracingDelegateBrowserTest.*",
+            ],
+        ),
+        "content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+            android_swarming = targets.swarming(
+                shards = 15,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "perfetto_gtests_android",
     targets = [
         "android_browsertests",
@@ -4661,6 +4701,20 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "test_traffic_annotation_auditor_script",
+    targets = [
+        "test_traffic_annotation_auditor",
+    ],
+)
+
+targets.bundle(
+    name = "upload_perfetto",
+    targets = [
+        "upload_trace_processor",
+    ],
 )
 
 targets.bundle(

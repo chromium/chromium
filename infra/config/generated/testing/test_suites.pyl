@@ -2621,30 +2621,6 @@
       },
     },
 
-    'headless_shell_wpt_tests_isolated_scripts': {
-      'headless_shell_wpt_tests_include_all': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-          'args': [
-            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-          ],
-          'merge': {
-            'script': '//third_party/blink/tools/merge_web_test_results.py',
-            'args': [
-              '--verbose',
-            ],
-          },
-        },
-        'test': 'headless_shell_wpt',
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-
     'ios_common_tests': {
       'absl_hardening_tests': {},
       'boringssl_crypto_tests': {},
@@ -3112,25 +3088,6 @@
       },
     },
 
-    'perfetto_gtests': {
-      'base_unittests': {},
-      'browser_tests': {
-        'args': [
-          '--gtest_filter=ChromeTracingDelegateBrowserTest.*',
-        ],
-      },
-      'content_browsertests': {
-        'swarming': {
-          'shards': 8,
-        },
-        'android_swarming': {
-          'shards': 15,
-        },
-      },
-      'perfetto_unittests': {},
-      'services_unittests': {},
-    },
-
     'pixel_browser_tests_gtests': {
       'pixel_browser_tests': {
         'test_common': {
@@ -3292,17 +3249,6 @@
       },
     },
 
-    'test_traffic_annotation_auditor_script': {
-      'test_traffic_annotation_auditor': {
-        'test_common': {
-          'precommit_args': [
-            '--no-update-sheet',
-          ],
-        },
-        'script': 'test_traffic_annotation_auditor.py',
-      },
-    },
-
     'updater_gtests_linux': {
       'updater_tests': {
         'mixins': [
@@ -3355,10 +3301,6 @@
           'updater-win-uac-pool',
         ],
       },
-    },
-
-    'upload_perfetto': {
-      'upload_trace_processor': {},
     },
 
     'vr_android_specific_chromium_tests': {

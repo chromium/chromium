@@ -1738,6 +1738,7 @@
   "trace_processor_shell": {
     "label": "//third_party/perfetto/src/trace_processor:trace_processor_shell",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "tracing_perftests": {
     "label": "//components/tracing:tracing_perftests",
@@ -1842,6 +1843,7 @@
   "upload_trace_processor": {
     "label": "//tools/perf/core/perfetto_binary_roller:upload_trace_processor",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "url_unittests": {
     "label": "//url:url_unittests",

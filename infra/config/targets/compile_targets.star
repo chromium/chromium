@@ -396,6 +396,8 @@ targets.compile_target(
 targets.compile_target(
     name = "trace_processor_shell",
     label = "//third_party/perfetto/src/trace_processor:trace_processor_shell",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(

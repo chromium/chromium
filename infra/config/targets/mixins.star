@@ -634,6 +634,7 @@ targets.mixin(
 
 targets.mixin(
     name = "finch-chromium-swarming-pool",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "pool": "chromium.tests.finch",

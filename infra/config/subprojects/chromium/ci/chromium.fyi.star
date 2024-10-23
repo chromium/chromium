@@ -1231,6 +1231,17 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "perfetto_gtests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "win10",
+        ],
+    ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -1256,6 +1267,70 @@ ci.builder(
             "win",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win10_gtests",
+            "chromium_win_rel_isolated_scripts",
+        ],
+        mixins = [
+            targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "pool": "chromium.tests.no-external-ip",
+                    },
+                    expiration_sec = 43200,
+                ),
+            ),
+            "x86-64",
+            "win10",
+            "isolate_profile_data",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
+            "blink_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 18,
+                ),
+            ),
+            "browser_tests": targets.mixin(
+                # crbug.com/868082
+                args = [
+                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
+                ],
+                swarming = targets.swarming(
+                    shards = 15,
+                ),
+            ),
+            "browser_tests_no_field_trial": targets.remove(
+                reason = "crbug.com/40630866",
+            ),
+            "components_browsertests_no_field_trial": targets.remove(
+                reason = "crbug.com/40630866",
+            ),
+            "content_browsertests": targets.mixin(
+                # crbug.com/868082
+                args = [
+                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
+                ],
+            ),
+            "interactive_ui_tests_no_field_trial": targets.remove(
+                reason = "crbug.com/40630866",
+            ),
+            "sync_integration_tests_no_field_trial": targets.remove(
+                reason = "crbug.com/40630866",
+            ),
+            "telemetry_perf_unittests": targets.remove(
+                reason = "crbug.com/40622135",
+            ),
+            "telemetry_unittests": targets.remove(
+                reason = "crbug.com/40622135",
+            ),
+        },
     ),
     builderless = False,
     os = os.WINDOWS_ANY,
@@ -1330,6 +1405,17 @@ ci.builder(
             "win",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "upload_perfetto",
+        ],
+        additional_compile_targets = [
+            "trace_processor_shell",
+        ],
+    ),
+    targets_settings = targets.settings(
+        use_swarming = False,
     ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,
@@ -1861,6 +1947,16 @@ ci.builder(
             "x64",
         ],
     ),
+    # Copied from
+    # https://source.chromium.org/chromium/chromium/src/+/7b147a6777cb32d6a12e1716c61a0ed50dc1229a:testing/buildbot/waterfalls.pyl;l=6023-6030
+    targets = targets.bundle(
+        targets = [
+            "chromium_win_scripts",
+        ],
+        additional_compile_targets = [
+            "pdf_fuzzers",
+        ],
+    ),
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -1900,6 +1996,16 @@ ci.builder(
             "minimal_symbols",
             "win",
             "x64",
+        ],
+    ),
+    # Copied from
+    # https://source.chromium.org/chromium/chromium/src/+/7b147a6777cb32d6a12e1716c61a0ed50dc1229a:testing/buildbot/waterfalls.pyl;l=6023-6030
+    targets = targets.bundle(
+        targets = [
+            "chromium_win_scripts",
+        ],
+        additional_compile_targets = [
+            "pdf_fuzzers",
         ],
     ),
     builderless = True,
@@ -2600,6 +2706,14 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win_gtests",
+        ],
+    ),
+    targets_settings = targets.settings(
+        use_swarming = False,
+    ),
     builderless = False,
     os = os.WINDOWS_10,
     console_view_entry = consoles.console_view_entry(
@@ -2636,6 +2750,35 @@ ci.builder(
             "win",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "headless_shell_wpt_tests_isolated_scripts",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "x86-64",
+            "win10",
+            "isolate_profile_data",
+        ],
+        per_test_modifications = {
+            "headless_shell_wpt_tests_include_all": targets.mixin(
+                args = [
+                    "--test-type",
+                    "testharness",
+                    "reftest",
+                    "crashtest",
+                    "print-reftest",
+                    "--exit-after-n-crashes-or-timeouts=10000",
+                    "--exit-after-n-failures=10000",
+                    "--no-retry-failures",
+                ],
+                experiment_percentage = 100,
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.WINDOWS,
     ),
     builderless = True,
     os = os.WINDOWS_10,
@@ -2705,6 +2848,15 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "fieldtrial_browser_tests",
+        ],
+        mixins = [
+            "win10",
+            "finch-chromium-swarming-pool",
+        ],
+    ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -2732,6 +2884,11 @@ ci.builder(
             "remoteexec",
             "win",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "test_traffic_annotation_auditor_script",
         ],
     ),
     builderless = True,

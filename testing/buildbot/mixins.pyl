@@ -226,13 +226,6 @@
   'experiments': {
     'experiment_percentage': 100,
   },
-  'finch-chromium-swarming-pool': {
-    'swarming': {
-      'dimensions': {
-        'pool': 'chromium.tests.finch',
-      },
-    },
-  },
   'gce': {
     'swarming': {
       'dimensions': {

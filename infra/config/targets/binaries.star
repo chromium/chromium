@@ -2051,6 +2051,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.generated_script(
     name = "upload_trace_processor",
     label = "//tools/perf/core/perfetto_binary_roller:upload_trace_processor",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(

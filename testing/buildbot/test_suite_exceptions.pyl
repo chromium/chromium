@@ -135,11 +135,6 @@
           'hard_timeout': 2400,
         },
       },
-      'win10-rel-no-external-ip': {
-        'swarming': {
-          "shards": 12
-        },
-      },
       'win10.20h2-blink-rel': {
         'swarming': {
           'shards': 6,
@@ -228,11 +223,6 @@
       'mac12.0.arm64-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
-        },
-      },
-      'win10-rel-no-external-ip': {
-        'swarming': {
-          "shards": 18
         },
       },
       'win10.20h2-blink-rel': {
@@ -338,21 +328,7 @@
           'shards': 60,
         },
       },
-      'win10-rel-no-external-ip': {
-        # crbug.com/868082
-        'args': [
-          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
-        ],
-        'swarming': {
-          'shards': 15,
-        }
-      },
     },
-  },
-  'browser_tests_no_field_trial': {
-    'remove_from': [
-      'win10-rel-no-external-ip',
-    ],
   },
   'capture_unittests': {
     'modifications': {
@@ -422,11 +398,6 @@
         },
       },
     },
-  },
-  'components_browsertests_no_field_trial': {
-    'remove_from': [
-      'win10-rel-no-external-ip',
-    ],
   },
   'components_unittests': {
     'modifications': {
@@ -518,12 +489,6 @@
           # ASAN bot is slow: https://crbug.com/1484550#c3
           'shards': 32,
         },
-      },
-      'win10-rel-no-external-ip': {
-        # crbug.com/868082
-        'args': [
-          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
-        ],
       },
     },
   },
@@ -738,23 +703,6 @@
       'Linux ChromiumOS MSan Tests',
     ],
   },
-  'headless_shell_wpt_tests_include_all': {
-    'modifications': {
-      'win10-wpt-chromium-rel': {
-        'args': [
-          '--test-type',
-          'testharness',
-          'reftest',
-          'crashtest',
-          'print-reftest',
-          '--exit-after-n-crashes-or-timeouts=10000',
-          '--exit-after-n-failures=10000',
-          '--no-retry-failures',
-        ],
-        'experiment_percentage': 100,
-      },
-    },
-  },
   'info_collection_tests': {
     'remove_from': [
       'Android V8 FYI Release (Nexus 5X)',
@@ -838,11 +786,6 @@
         },
       },
     },
-  },
-  'interactive_ui_tests_no_field_trial': {
-    'remove_from': [
-      'win10-rel-no-external-ip',
-    ],
   },
   'ipc_tests': {
     'modifications': {
@@ -1140,11 +1083,6 @@
       },
     },
   },
-  'sync_integration_tests_no_field_trial': {
-    'remove_from': [
-      'win10-rel-no-external-ip',
-    ],
-  },
   'telemetry_perf_unittests': {
     'modifications': {
       'chromeos-eve-chrome': {
@@ -1156,14 +1094,12 @@
     },
     'remove_from': [
       'Linux - Future (dbg)',  # client.v8.chromium
-      'win10-rel-no-external-ip',
     ],
   },
   'telemetry_unittests': {
     'remove_from': [
       # TODO(crbug.com/40727045): Restore when there's more DUTs
       'chromeos-eve-chrome',
-      'win10-rel-no-external-ip',
     ],
   },
   'trace_test 8086:9bc5': {
