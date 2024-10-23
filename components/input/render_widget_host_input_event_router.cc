@@ -1411,6 +1411,10 @@ void RenderWidgetHostInputEventRouter::CancelScrollBubbling() {
 
 void RenderWidgetHostInputEventRouter::CancelScrollBubblingIfConflicting(
     const RenderWidgetHostViewInput* target) {
+  TRACE_EVENT1(
+      "input",
+      "RenderWidgetHostInputEventRouter::CancelScrollBubblingIfConflicting",
+      "target", static_cast<const void*>(target));
   if (!target)
     return;
   if (!bubbling_gesture_scroll_target_ || !bubbling_gesture_scroll_origin_)
@@ -1549,6 +1553,11 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
     const blink::WebGestureEvent& gesture_event,
     const ui::LatencyInfo& latency,
     const std::optional<gfx::PointF>& target_location) {
+  TRACE_EVENT2(
+      "input",
+      "RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent",
+      "type", blink::WebInputEvent::GetName(gesture_event.GetType()), "target",
+      static_cast<const void*>(target));
   if (gesture_event.GetType() ==
       blink::WebInputEvent::Type::kGesturePinchBegin) {
     if (root_view == touchscreen_gesture_target_.get()) {
@@ -1934,6 +1943,9 @@ void RenderWidgetHostInputEventRouter::SetTouchscreenGestureTarget(
     RenderWidgetHostViewInput* target,
     bool moved_recently,
     bool moved_recently_for_iov2) {
+  TRACE_EVENT1("input",
+               "RenderWidgetHostInputEventRouter::SetTouchscreenGestureTarget",
+               "target", static_cast<const void*>(target));
   touchscreen_gesture_target_ = target ? target->GetInputWeakPtr() : nullptr;
   touchscreen_gesture_target_moved_recently_ = moved_recently;
   touchscreen_gesture_target_moved_recently_for_iov2_ = moved_recently_for_iov2;
