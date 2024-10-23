@@ -324,8 +324,6 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
               &views::Label::GetText, kFakePlusAddressU16),
           // Ensure hidden elements are not present.
-          EnsureNotPresent(
-              PlusAddressCreationView::kPlusAddressErrorTextElementId),
           EnsureNotPresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           // Simulate confirming plus address.
           PressButton(
@@ -373,8 +371,6 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
               &views::Label::GetText, kFakePlusAddressU16),
           // Ensure hidden elements are not present.
-          EnsureNotPresent(
-              PlusAddressCreationView::kPlusAddressErrorTextElementId),
           EnsureNotPresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           // Simulate refresh.
           PressButton(
@@ -735,8 +731,6 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsTest,
           views::View, Enabled, true)),
       InSameContext(Steps(
           // Ensure hidden elements are not present.
-          EnsureNotPresent(
-              PlusAddressCreationView::kPlusAddressErrorTextElementId),
           EnsureNotPresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),

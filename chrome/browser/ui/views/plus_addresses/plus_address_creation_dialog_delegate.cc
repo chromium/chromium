@@ -75,8 +75,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressDescriptionTextElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressErrorTextElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressGenerationMessageElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressNoticeElementId);
