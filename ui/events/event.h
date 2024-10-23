@@ -51,7 +51,9 @@ enum class DomCode : uint32_t;
 // ancestors have provided an implementation.
 class EVENTS_EXPORT Event {
  public:
-  using Properties = base::flat_map<std::string, std::vector<uint8_t>>;
+  using PropertyKey = std::string;
+  using PropertyValue = std::vector<uint8_t>;
+  using Properties = base::flat_map<PropertyKey, PropertyValue>;
 
   virtual ~Event();
 
@@ -101,8 +103,13 @@ class EVENTS_EXPORT Event {
   int source_device_id() const { return source_device_id_; }
   void set_source_device_id(int id) { source_device_id_ = id; }
 
-  // Sets the properties associated with this Event.
+  // Sets and rewrites the properties associated with this Event. Please use
+  // SetProperty() if you only intend to modify an existing event.
+  // TODO(crbug.com/374334456): Switch to using SetProperty() where appropriate.
   void SetProperties(const Properties& properties);
+
+  // Sets the property value for the given key associated with this Event.
+  void SetProperty(const PropertyKey& key, const PropertyValue& value);
 
   // Returns the properties associated with this event, which may be null.
   // The properties are meant to provide a way to associate arbitrary key/value

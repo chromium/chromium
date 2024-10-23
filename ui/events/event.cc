@@ -129,6 +129,13 @@ void Event::SetProperties(const Properties& properties) {
   properties_ = std::make_unique<Properties>(properties);
 }
 
+void Event::SetProperty(const PropertyKey& key, const PropertyValue& value) {
+  if (!properties_) {
+    properties_ = std::make_unique<Properties>();
+  }
+  properties_->emplace(key, value);
+}
+
 CancelModeEvent* Event::AsCancelModeEvent() {
   CHECK(IsCancelModeEvent());
   return static_cast<CancelModeEvent*>(this);

@@ -4,6 +4,14 @@ specific_include_rules = {
   "hwnd_util.*": [
     "+ui/views",
   ],
+  # Used for the feature flag check. Should be deleted once the feature is
+  # enabled by default.
+  "pen_event_processor.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
+  "pen_event_processor_unittest.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
 }
 
 # The rest of the code here is intended to be distinct from the rest of

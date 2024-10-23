@@ -766,6 +766,7 @@ component("views") {
       "/DELAYLOAD:user32.dll",
     ]
     deps += [
+      "//components/stylus_handwriting/win:win",
       "//services/tracing/public/cpp:cpp",
       "//third_party/iaccessible2",
       "//third_party/wtl",
@@ -1421,7 +1422,10 @@ test("views_unittests") {
       "//third_party/wtl",
     ]
 
-    deps += [ "//ui/base:data_exchange" ]
+    deps += [
+      "//components/stylus_handwriting/win:win",
+      "//ui/base:data_exchange",
+    ]
 
     libs = [
       "imm32.lib",

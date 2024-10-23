@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/stylus_handwriting/win/features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 
@@ -107,8 +108,19 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
                               point, pointer_details, device_id);
   }
 
+  std::optional<ui::StylusHandwritingPropertiesWin> handwriting_properties;
+  if (stylus_handwriting::win::IsStylusHandwritingWinEnabled() &&
+      message == WM_POINTERDOWN) {
+    handwriting_properties =
+        std::make_optional<ui::StylusHandwritingPropertiesWin>();
+    handwriting_properties->handwriting_pointer_id = pointer_id;
+    handwriting_properties->handwriting_stroke_id =
+        ui::GetHandwritingStrokeId(pointer_id);
+  }
+
   return GenerateTouchEvent(message, pointer_id, pointer_pen_info.pointerInfo,
-                            point, pointer_details, device_id);
+                            point, pointer_details, handwriting_properties,
+                            device_id);
 }
 
 std::unique_ptr<ui::Event> PenEventProcessor::GenerateMouseEvent(
@@ -180,6 +192,8 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateTouchEvent(
     const POINTER_INFO& pointer_info,
     const gfx::Point& point,
     const ui::PointerDetails& pointer_details,
+    const std::optional<ui::StylusHandwritingPropertiesWin>&
+        handwriting_properties,
     int32_t device_id) {
   int flags = GetFlagsFromPointerMessage(message, pointer_info);
 
@@ -218,6 +232,9 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateTouchEvent(
   event->latency()->AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, event_time);
   event->set_source_device_id(device_id);
+  if (handwriting_properties.has_value()) {
+    ui::SetStylusHandwritingProperties(*event, handwriting_properties.value());
+  }
   return event;
 }
 

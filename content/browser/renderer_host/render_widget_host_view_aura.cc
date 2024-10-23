@@ -2322,6 +2322,29 @@ void RenderWidgetHostViewAura::OnScrollEvent(ui::ScrollEvent* event) {
 
 void RenderWidgetHostViewAura::OnTouchEvent(ui::TouchEvent* event) {
   last_pointer_type_ = event->pointer_details().pointer_type;
+
+#if BUILDFLAG(IS_WIN)
+  if (stylus_handwriting::win::IsStylusHandwritingWinEnabled() &&
+      last_pointer_type_ == ui::EventPointerType::kPen &&
+      event->type() == ui::EventType::kTouchPressed) {
+    // The raw pointer and stroke id will be later used during the stylus
+    // handwriting request in OnStartStylusWriting().
+    last_stylus_handwriting_properties_ =
+        ui::GetStylusHandwritingProperties(*event);
+    TRACE_EVENT2(
+        "ime", "RenderWidgetHostViewAura::OnTouchEvent",
+        "handwriting_pointer_id",
+        last_stylus_handwriting_properties_.has_value()
+            ? last_stylus_handwriting_properties_->handwriting_pointer_id
+            : 0,
+        "handwriting_stroke_id",
+        last_stylus_handwriting_properties_.has_value()
+            ? last_stylus_handwriting_properties_->handwriting_stroke_id
+            : 0);
+    // TODO(crbug.com/355578906): Add telemetry.
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   event_handler_->OnTouchEvent(event);
 }
 

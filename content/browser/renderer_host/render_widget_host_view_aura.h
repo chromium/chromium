@@ -53,6 +53,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/browser/renderer_host/virtual_keyboard_controller_win.h"
+#include "ui/events/win/stylus_handwriting_properties_win.h"
 #endif
 
 namespace aura_extra {
@@ -439,6 +440,13 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   DelegatedFrameHost* GetDelegatedFrameHostForTesting() const {
     return delegated_frame_host_.get();
   }
+
+#if BUILDFLAG(IS_WIN)
+  const std::optional<ui::StylusHandwritingPropertiesWin>&
+  last_stylus_handwriting_properties() const {
+    return last_stylus_handwriting_properties_;
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
  protected:
   ~RenderWidgetHostViewAura() override;
@@ -848,7 +856,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   base::ScopedObservation<DevicePosturePlatformProvider,
                           DevicePosturePlatformProvider::Observer>
       device_posture_observation_{this};
-#endif
+
+  // Stores last stylus handwriting specific details including a handwriting
+  // pointer id and a handwriting stroke id.
+  std::optional<ui::StylusHandwritingPropertiesWin>
+      last_stylus_handwriting_properties_;
+#endif  // BUILDFLAG(IS_WIN)
 
   std::optional<display::ScopedDisplayObserver> display_observer_;
 
