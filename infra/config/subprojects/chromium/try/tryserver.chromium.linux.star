@@ -20,6 +20,10 @@ try_.defaults.set(
     os = os.LINUX_DEFAULT,
     compilator_cores = 8,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
@@ -325,8 +329,6 @@ try_.builder(
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -380,8 +382,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # b/346598710
         "chromium.luci_analysis_v2": 100,
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
@@ -537,8 +537,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # b/346598710
         "chromium.luci_analysis_v2": 100,
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     siso_remote_linking = True,
@@ -663,8 +661,6 @@ try_.builder(
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
@@ -762,8 +758,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # b/346598710
         "chromium.luci_analysis_v2": 100,
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
