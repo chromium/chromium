@@ -49,6 +49,7 @@
 #include "chrome/browser/sync/chrome_sync_controller_builder.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
@@ -344,18 +345,32 @@ syncer::DataTypeController::TypeVector CreateControllers(
   return controllers;
 }
 
+std::unique_ptr<syncer::SyncClient> BuildSyncClient(Profile* profile) {
+  CHECK(profile);
+
+  return std::make_unique<browser_sync::ChromeSyncClient>(
+      profile->GetBaseName(), profile->GetPrefs(),
+      IdentityManagerFactory::GetForProfile(profile),
+      TrustedVaultServiceFactory::GetForProfile(profile),
+      SyncInvalidationsServiceFactory::GetForProfile(profile),
+      DeviceInfoSyncServiceFactory::GetForProfile(profile),
+      DataTypeStoreServiceFactory::GetForProfile(profile),
+      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey()),
+      std::make_unique<browser_sync::ExtensionsActivityMonitor>(profile));
+}
+
 std::unique_ptr<KeyedService> BuildSyncService(
     content::BrowserContext* context) {
   syncer::SyncServiceImpl::InitParams init_params;
 
   Profile* profile = Profile::FromBrowserContext(context);
+  CHECK(profile);
 
   // Incognito, guest, or system profiles aren't relevant for Sync, and
   // no SyncService should be created for those types of profiles.
   CHECK(profiles::IsRegularUserProfile(profile));
 
-  init_params.sync_client =
-      std::make_unique<browser_sync::ChromeSyncClient>(profile);
+  init_params.sync_client = BuildSyncClient(profile);
   init_params.url_loader_factory = profile->GetDefaultStoragePartition()
                                        ->GetURLLoaderFactoryForBrowserProcess();
   init_params.network_connection_tracker =
