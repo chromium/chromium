@@ -522,57 +522,42 @@ class Cache::BarrierCallbackForPutComplete final
 // Used to handle the GlobalFetch::ScopedFetcher::Fetch promise in AddAllImpl.
 // TODO(nhiroki): Unfortunately, we have to go through V8 to wait for the fetch
 // promise. It should be better to achieve this only within C++ world.
-class Cache::FetchHandler final : public ScriptFunction::Callable {
+class Cache::FetchResolveHandler final
+    : public ThenCallable<Response, FetchResolveHandler> {
  public:
-  // |exception_state| is passed so that the context_type, interface_name and
-  // property_name can be copied and then used to construct a new ExceptionState
-  // object asynchronously later.
-  FetchHandler(ResponseBodyLoader* response_loader,
-               BarrierCallbackForPutResponse* barrier_callback,
-               const ExceptionContext& exception_context)
-      : response_loader_(response_loader),
-        barrier_callback_(barrier_callback),
-        exception_context_(exception_context) {}
+  explicit FetchResolveHandler(ResponseBodyLoader* response_loader)
+      : response_loader_(response_loader) {}
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    // We always resolve undefined from this promise handler since the
-    // promise is never returned to script or chained to another handler.
-    // If we return our real result and an exception occurs then unhandled
-    // promise errors will occur.
-    ScriptValue rtn(script_state->GetIsolate(),
-                    ToResolvedUndefinedPromise(script_state).V8Promise());
-
-    // If there is no loader, we were created as a reject handler.
-    if (!response_loader_) {
-      barrier_callback_->OnError(value);
-      return rtn;
-    }
-
-    v8::TryCatch try_catch(script_state->GetIsolate());
-
-    // Resolve handler, so try to process a Response.
-    Response* response = NativeValueTraits<Response>::NativeValue(
-        script_state->GetIsolate(), value.V8Value(),
-        PassThroughException(script_state->GetIsolate()));
-    if (try_catch.HasCaught()) {
-      barrier_callback_->OnError(try_catch.Exception());
-    } else {
-      response_loader_->OnResponse(response, ASSERT_NO_EXCEPTION);
-    }
-
-    return rtn;
+  void React(ScriptState*, Response* response) {
+    response_loader_->OnResponse(response, ASSERT_NO_EXCEPTION);
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(response_loader_);
-    visitor->Trace(barrier_callback_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<Response, FetchResolveHandler>::Trace(visitor);
   }
 
  private:
   Member<ResponseBodyLoader> response_loader_;
+};
+
+class Cache::FetchRejectHandler final
+    : public ThenCallable<IDLAny, FetchRejectHandler> {
+ public:
+  explicit FetchRejectHandler(BarrierCallbackForPutResponse* barrier_callback)
+      : barrier_callback_(barrier_callback) {}
+
+  void React(ScriptState*, ScriptValue value) {
+    barrier_callback_->OnError(value);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(barrier_callback_);
+    ThenCallable<IDLAny, FetchRejectHandler>::Trace(visitor);
+  }
+
+ private:
   Member<BarrierCallbackForPutResponse> barrier_callback_;
-  const ExceptionContext exception_context_;
 };
 
 class Cache::CodeCacheHandleCallbackForPut final
@@ -1102,18 +1087,14 @@ ScriptPromise<IDLUndefined> Cache::AddAllImpl(
     auto* response_loader = MakeGarbageCollected<ResponseBodyLoader>(
         script_state, barrier_callback, i, /*require_ok_response=*/true,
         trace_id);
-    auto* on_resolve = MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<FetchHandler>(response_loader, barrier_callback,
-                                           exception_state.GetContext()));
+    auto* on_resolve =
+        MakeGarbageCollected<FetchResolveHandler>(response_loader);
     // The |response_loader=nullptr| makes this handler a reject handler
     // internally.
-    auto* on_reject = MakeGarbageCollected<ScriptFunction>(
-        script_state, MakeGarbageCollected<FetchHandler>(
-                          /*response_loader=*/nullptr, barrier_callback,
-                          exception_state.GetContext()));
+    auto* on_reject =
+        MakeGarbageCollected<FetchRejectHandler>(barrier_callback);
     scoped_fetcher_->Fetch(script_state, info, init, exception_state)
-        .Then(on_resolve, on_reject);
+        .ThenTyped(script_state, on_resolve, on_reject);
   }
 
   return promise;

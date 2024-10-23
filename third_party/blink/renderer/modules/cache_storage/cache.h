@@ -107,7 +107,8 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   class BarrierCallbackForPutComplete;
   class CodeCacheHandleCallbackForPut;
   class ResponseBodyLoader;
-  class FetchHandler;
+  class FetchResolveHandler;
+  class FetchRejectHandler;
 
   ScriptPromise<V8UnionResponseOrUndefined> MatchImpl(ScriptState*,
                                                       const Request*,

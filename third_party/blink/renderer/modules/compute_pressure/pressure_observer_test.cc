@@ -36,8 +36,6 @@ constexpr uint64_t kChangeCount = 2;
 constexpr base::TimeDelta kDelayTime = base::Seconds(1);
 constexpr base::TimeDelta kPenaltyDuration = base::Seconds(4);
 
-// Helper class for WaitForPromiseFulfillment(). It provides a
-// function that invokes |callback| when a ScriptPromiseUntyped is resolved.
 class ClosureRunnerCallable final : public ScriptFunction::Callable {
  public:
   explicit ClosureRunnerCallable(base::OnceClosure callback)
@@ -48,6 +46,24 @@ class ClosureRunnerCallable final : public ScriptFunction::Callable {
       std::move(callback_).Run();
     }
     return ScriptValue();
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
+// Helper class for WaitForPromiseFulfillment(). It provides a
+// function that invokes |callback| when a ScriptPromise is resolved.
+class ThenClosureRunner final
+    : public ThenCallable<IDLUndefined, ThenClosureRunner> {
+ public:
+  explicit ThenClosureRunner(base::OnceClosure callback)
+      : callback_(std::move(callback)) {}
+
+  void React(ScriptState*) {
+    if (callback_) {
+      std::move(callback_).Run();
+    }
   }
 
  private:
@@ -93,11 +109,10 @@ class PressureRecordAccumulator final : public ScriptFunction::Callable {
 };
 
 void WaitForPromiseFulfillment(ScriptState* script_state,
-                               ScriptPromiseUntyped promise) {
+                               ScriptPromise<IDLUndefined> promise) {
   base::RunLoop run_loop;
-  promise.Then(MakeGarbageCollected<ScriptFunction>(
-      script_state,
-      MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
+  promise.React(script_state, MakeGarbageCollected<ThenClosureRunner>(
+                                  run_loop.QuitClosure()));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(

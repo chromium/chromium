@@ -19,7 +19,7 @@
 
 namespace blink {
 
-class Lock::ThenFunction final : public ScriptFunction::Callable {
+class Lock::ThenFunction final : public ThenCallable<IDLAny, ThenFunction> {
  public:
   enum ResolveType {
     kFulfilled,
@@ -31,21 +31,19 @@ class Lock::ThenFunction final : public ScriptFunction::Callable {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(lock_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLAny, ThenFunction>::Trace(visitor);
   }
 
-  ScriptValue Call(ScriptState*, ScriptValue value) override {
+  void React(ScriptState*, ScriptValue value) {
     DCHECK(lock_);
     DCHECK(resolve_type_ == kFulfilled || resolve_type_ == kRejected);
     lock_->ReleaseIfHeld();
     if (resolve_type_ == kFulfilled) {
       lock_->resolver_->Resolve(value);
       lock_ = nullptr;
-      return value;
     } else {
       lock_->resolver_->Reject(value);
       lock_ = nullptr;
-      return ScriptValue();
     }
   }
 
@@ -92,12 +90,10 @@ void Lock::HoldUntil(ScriptPromise<IDLAny> promise,
 
   ScriptState* script_state = resolver->GetScriptState();
   resolver_ = resolver;
-  promise.Then(MakeGarbageCollected<ScriptFunction>(
-                   script_state, MakeGarbageCollected<ThenFunction>(
-                                     this, ThenFunction::kFulfilled)),
-               MakeGarbageCollected<ScriptFunction>(
-                   script_state, MakeGarbageCollected<ThenFunction>(
-                                     this, ThenFunction::kRejected)));
+  promise.React(
+      script_state,
+      MakeGarbageCollected<ThenFunction>(this, ThenFunction::kFulfilled),
+      MakeGarbageCollected<ThenFunction>(this, ThenFunction::kRejected));
 }
 
 // static

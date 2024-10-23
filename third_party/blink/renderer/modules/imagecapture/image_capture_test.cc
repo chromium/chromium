@@ -72,7 +72,8 @@ constexpr double kZoomDelta = 12;
 
 // CaptureErrorFunction implements a javascript function which captures
 // name, message and constraint of the exception passed as its argument.
-class CaptureErrorFunction final : public ScriptFunction::Callable {
+class CaptureErrorFunction final
+    : public ThenCallable<IDLAny, CaptureErrorFunction> {
  public:
   CaptureErrorFunction() = default;
 
@@ -81,7 +82,7 @@ class CaptureErrorFunction final : public ScriptFunction::Callable {
   const String& Message() const { return message_; }
   const String& Constraint() const { return constraint_; }
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+  void React(ScriptState* script_state, ScriptValue value) {
     was_called_ = true;
 
     v8::Isolate* isolate = script_state->GetIsolate();
@@ -103,8 +104,6 @@ class CaptureErrorFunction final : public ScriptFunction::Callable {
             .ToLocalChecked();
     constraint_ =
         ToCoreString(isolate, constraint->ToString(context).ToLocalChecked());
-
-    return ScriptValue();
   }
 
  private:
@@ -1032,8 +1031,7 @@ TEST_F(ImageCaptureConstraintTest, ApplyBasicOverconstrainedConstraints) {
   auto* capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
   scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
@@ -1051,8 +1049,7 @@ TEST_F(ImageCaptureConstraintTest, ApplyBasicOverconstrainedConstraints) {
   capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
   scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
@@ -1069,8 +1066,7 @@ TEST_F(ImageCaptureConstraintTest, ApplyBasicOverconstrainedConstraints) {
   capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
   scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
@@ -1087,8 +1083,7 @@ TEST_F(ImageCaptureConstraintTest, ApplyBasicOverconstrainedConstraints) {
   capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
   scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
@@ -1105,8 +1100,7 @@ TEST_F(ImageCaptureConstraintTest, ApplyBasicOverconstrainedConstraints) {
   capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
   scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
@@ -1123,8 +1117,7 @@ TEST_F(ImageCaptureConstraintTest, ApplyBasicOverconstrainedConstraints) {
   capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
   scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
@@ -1138,8 +1131,7 @@ TEST_F(ImageCaptureConstraintTest, ApplyBasicOverconstrainedConstraints) {
   capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
   scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
@@ -1277,8 +1269,7 @@ TEST_F(ImageCaptureConstraintTest,
   auto* capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   // TODO(crbug.com/1408091): This is not spec compliant. This should not fail.
   // Instead, should discard the first advanced constraint set and succeed.
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
@@ -1301,8 +1292,7 @@ TEST_F(ImageCaptureConstraintTest,
   capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   // TODO(crbug.com/1408091): This is not spec compliant. This should not fail.
   // Instead, should discard the first advanced constraint set and succeed.
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
@@ -1327,8 +1317,7 @@ TEST_F(ImageCaptureConstraintTest,
   capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   // TODO(crbug.com/1408091): This is not spec compliant. This should not fail.
   // Instead, should discard the first advanced constraint set and succeed.
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
@@ -1569,8 +1558,7 @@ TEST_F(ImageCaptureConstraintTest, ApplySecurityErrorConstraints) {
   auto* capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
   scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
@@ -1587,8 +1575,7 @@ TEST_F(ImageCaptureConstraintTest, ApplySecurityErrorConstraints) {
   capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
   scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
@@ -1605,8 +1592,7 @@ TEST_F(ImageCaptureConstraintTest, ApplySecurityErrorConstraints) {
   capture_error = MakeGarbageCollected<CaptureErrorFunction>();
   resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
-                                        scope.GetScriptState(), capture_error));
+  resolver->Promise().Catch(scope.GetScriptState(), capture_error);
   EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
   scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.

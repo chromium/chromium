@@ -17,60 +17,28 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
-class UnionToBlobResolverFunction final : public ScriptFunction::Callable {
+
+class UnionToBlobResolverFunction final
+    : public ThenCallable<V8UnionBlobOrString,
+                          UnionToBlobResolverFunction,
+                          Blob> {
  public:
-  enum class ResolveType { kFulfill, kReject };
+  explicit UnionToBlobResolverFunction(const String& mime_type)
+      : mime_type_(mime_type) {}
 
-  static void Create(ScriptState* script_state,
-                     ScriptPromise<V8UnionBlobOrString> promise,
-                     ScriptPromiseResolver<Blob>* resolver,
-                     const String& mime_type) {
-    promise.Then(
-        MakeGarbageCollected<ScriptFunction>(
-            script_state, MakeGarbageCollected<UnionToBlobResolverFunction>(
-                              resolver, mime_type, ResolveType::kFulfill)),
-        MakeGarbageCollected<ScriptFunction>(
-            script_state, MakeGarbageCollected<UnionToBlobResolverFunction>(
-                              resolver, mime_type, ResolveType::kReject)));
-  }
-
-  UnionToBlobResolverFunction(ScriptPromiseResolver<Blob>* resolver,
-                              const String& mime_type,
-                              ResolveType resolve_type)
-      : resolver_(resolver),
-        mime_type_(mime_type),
-        resolve_type_(resolve_type) {}
-
-  void Trace(Visitor* visitor) const final {
-    ScriptFunction::Callable::Trace(visitor);
-    visitor->Trace(resolver_);
-  }
-
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
-    if (resolve_type_ == ResolveType::kReject) {
-      resolver_->Reject(value);
-    } else {
-      auto* union_value =
-          NativeValueTraits<blink::V8UnionBlobOrString>::NativeValue(
-              script_state->GetIsolate(), value.V8Value(),
-              PassThroughException(script_state->GetIsolate()));
-      if (union_value->IsBlob()) {
-        resolver_->Resolve(union_value->GetAsBlob());
-      } else if (union_value->IsString()) {
-        // ClipboardItem::getType() returns a Blob, so we need to convert the
-        // string to a Blob here.
-        Blob* blob =
-            Blob::Create(union_value->GetAsString().Span8(), mime_type_);
-        resolver_->Resolve(blob);
-      }
+  Blob* React(ScriptState* script_state, V8UnionBlobOrString* union_value) {
+    if (union_value->IsBlob()) {
+      return union_value->GetAsBlob();
+    } else if (union_value->IsString()) {
+      // ClipboardItem::getType() returns a Blob, so we need to convert the
+      // string to a Blob here.
+      return Blob::Create(union_value->GetAsString().Span8(), mime_type_);
     }
-    return ScriptValue();
+    return nullptr;
   }
 
  private:
-  Member<ScriptPromiseResolver<Blob>> resolver_;
   String mime_type_;
-  ResolveType resolve_type_;
 };
 
 // static
@@ -130,28 +98,15 @@ Vector<String> ClipboardItem::types() const {
   return types;
 }
 
-ScriptPromise<Blob> ConvertUnionToBlob(
-    ScriptState* script_state,
-    ScriptPromise<V8UnionBlobOrString> union_promise,
-    const String& mime_type,
-    ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Blob>>(
-      script_state, exception_state.GetContext());
-
-  UnionToBlobResolverFunction::Create(script_state, union_promise, resolver,
-                                      mime_type);
-
-  return resolver->Promise();
-}
-
 ScriptPromise<Blob> ClipboardItem::getType(
     ScriptState* script_state,
     const String& type,
     ExceptionState& exception_state) const {
   for (const auto& item : representations_) {
     if (type == item.first) {
-      return ConvertUnionToBlob(script_state, item.second, type,
-                                exception_state);
+      return item.second.ThenTyped(
+          script_state,
+          MakeGarbageCollected<UnionToBlobResolverFunction>(type));
     }
   }
 
