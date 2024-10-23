@@ -60,9 +60,6 @@ class TestMethods {
 
   // Installs the application under test via the bundled installer.
   virtual void Install();
-
-  // Runs the "install if needed" command on the application under test.
-  virtual void InstallIfNeeded();
 };
 
 TestMethods& GetTestMethods();

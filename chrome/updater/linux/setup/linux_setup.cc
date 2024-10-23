@@ -61,23 +61,6 @@ int Setup(UpdaterScope scope) {
     return kErrorFailedToCopyBinary;
   }
 
-#ifdef INCLUDE_ENTERPRISE_COMPANION_IN_INSTALLER
-  // Copy the adjacent enterprise companion app at best effort.
-  base::FilePath enterprise_companion_src_path = exe_path.DirName().AppendASCII(
-      base::StrCat({kCompanionAppExecutableName, kExecutableSuffix}));
-  std::optional<base::FilePath> enterprise_companion_dest_path =
-      GetBundledEnterpriseCompanionExecutablePath(scope);
-  if (!enterprise_companion_dest_path) {
-    VLOG(1) << "Failed to get the bundled enterprise companion path.";
-  } else if (!base::CopyFile(enterprise_companion_src_path,
-                             *enterprise_companion_dest_path) ||
-             !base::SetPosixFilePermissions(*enterprise_companion_dest_path,
-                                            permissions_mask)) {
-    VLOG(1) << "Failed to copy " << enterprise_companion_src_path << " to "
-            << enterprise_companion_dest_path;
-  }
-#endif  // INCLUDE_ENTERPRISE_COMPANION_IN_INSTALLER
-
   return kErrorOk;
 }
 

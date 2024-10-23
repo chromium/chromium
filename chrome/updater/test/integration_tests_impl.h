@@ -517,20 +517,6 @@ void ExpectEnterpriseCompanionAppNotInstalled();
 // Uninstalls the enterprise companion app, always at the system scope.
 void UninstallEnterpriseCompanionApp();
 
-// Expects device management requests from either the Enterprise Companion App
-// or the updater, depending on the build configuration.
-#ifdef INCLUDE_ENTERPRISE_COMPANION_IN_INSTALLER
-#define ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent \
-  ExpectDeviceManagementRegistrationRequestViaCompanionApp
-#define ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent \
-  ExpectDeviceManagementPolicyFetchRequestViaCompanionApp
-#else
-#define ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent \
-  ExpectDeviceManagementRegistrationRequest
-#define ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent \
-  ExpectDeviceManagementPolicyFetchRequest
-#endif
-
 void ExpectDeviceManagementRegistrationRequest(
     ScopedServer* test_server,
     const std::string& enrollment_token,

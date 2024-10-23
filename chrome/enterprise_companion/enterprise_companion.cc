@@ -102,10 +102,6 @@ std::unique_ptr<App> CreateAppForCommandLine(base::CommandLine* command_line) {
     return CreateAppInstall();
   }
 
-  if (command_line->HasSwitch(kInstallIfNeededSwitch)) {
-    return CreateAppInstallIfNeeded();
-  }
-
   if (command_line->HasSwitch(kUninstallSwitch)) {
     return CreateAppUninstall();
   }

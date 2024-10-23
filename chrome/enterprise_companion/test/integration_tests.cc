@@ -301,7 +301,6 @@ class IntegrationTests : public ::testing::Test {
 
     ASSERT_NO_FATAL_FAILURE(
         CopyApplicationArtifacts(*install_dir, artifacts_dir));
-
   }
 
   void CopyApplicationArtifacts(const base::FilePath& install_dir,
@@ -354,53 +353,6 @@ TEST_F(IntegrationTests, Uninstall) {
   server_process_ = base::Process();
 
   ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectClean());
-}
-
-// Running the application's "install if needed" command should install the
-// application if an enrollment token is present.
-TEST_F(IntegrationTests, InstallIfNeeded_WithEnrollmentToken_Installs) {
-  StoreEnrollmentToken(kFakeEnrollmentToken);
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallIfNeeded());
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
-}
-
-// Running the application's "install if needed" command should install the
-// application if a device management token is present.
-TEST_F(IntegrationTests, InstallIfNeeded_WithDMToken_Installs) {
-  StoreDMToken(policy::kFakeDeviceToken);
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallIfNeeded());
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
-}
-
-// Running the application's "install if needed" command should not install the
-// application if the device does not appear to be managed.
-TEST_F(IntegrationTests, InstallIfNeeded_NotManaged_SkipsInstall) {
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallIfNeeded());
-
-  std::optional<base::FilePath> install_dir = GetInstallDirectory();
-  ASSERT_TRUE(install_dir);
-  EXPECT_FALSE(base::PathExists(install_dir->AppendASCII(kExecutableName)));
-}
-
-// Running the application's "install if needed" command should not install the
-// application if the application is already installed.
-TEST_F(IntegrationTests, InstallIfNeeded_AlreadyInstalled_SkipsInstall) {
-  std::optional<base::FilePath> install_dir = GetInstallDirectory();
-  ASSERT_TRUE(install_dir);
-  ASSERT_TRUE(base::CreateDirectory(*install_dir));
-  ASSERT_TRUE(
-      base::WriteFile(install_dir->AppendASCII(kExecutableName), "fake_exe"));
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallIfNeeded());
-
-  std::string exe_contents;
-  ASSERT_TRUE(base::ReadFileToStringWithMaxSize(
-      install_dir->AppendASCII(kExecutableName), &exe_contents, 64));
-  EXPECT_EQ(exe_contents, "fake_exe");
 }
 
 // Attempting to shut down the server when it's not running should fail.

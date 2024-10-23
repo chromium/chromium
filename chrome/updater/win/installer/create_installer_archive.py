@@ -62,14 +62,10 @@ def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose, fast):
     RunSystemCommand(cmd, verbose)
 
 
-def CopyAllFilesToStagingDir(config, staging_dir, build_dir, timestamp,
-                             include_enterprise_companion):
+def CopyAllFilesToStagingDir(config, staging_dir, build_dir, timestamp):
     """Copies the files required for installer archive."""
     CopySectionFilesToStagingDir(config, 'GENERAL', staging_dir, build_dir,
                                  timestamp)
-    if include_enterprise_companion:
-        CopySectionFilesToStagingDir(config, 'ENTERPRISE_COMPANION',
-                                     staging_dir, build_dir, timestamp)
 
 
 def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
@@ -290,8 +286,7 @@ def main(options):
 
     # Copy the files from the build dir.
     CopyAllFilesToStagingDir(config, staging_dir, options.build_dir,
-                             options.timestamp,
-                             options.include_enterprise_companion)
+                             options.timestamp)
 
     if options.component_build == '1':
         DoComponentBuildTasks(staging_dir, options.build_dir,
@@ -359,14 +354,6 @@ def _ParseOptions():
     parser.add_option('--timestamp',
                       type='int',
                       help='Timestamp to set archive entry modified times to.')
-    parser.add_option(
-        '--include_enterprise_companion',
-        action='store_true',
-        dest='include_enterprise_companion',
-        default=False,
-        help=
-        'Whether the Chrome Enterprise Companion App should be included in the '
-        'archive.')
 
     options, _ = parser.parse_args()
     if not options.build_dir:
