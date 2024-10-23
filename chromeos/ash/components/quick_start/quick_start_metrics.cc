@@ -121,8 +121,8 @@ constexpr const char kScreenClosedQSComplete[] =
     "QuickStart.ScreenClosed.QSComplete";
 constexpr const char kScreenClosedQSConnectingToWifi[] =
     "QuickStart.ScreenClosed.QSConnectingToWifi";
-constexpr const char kScreenClosedQSResumingConnectionAfterUpdate[] =
-    "QuickStart.ScreenClosed.QSResumingConnectionAfterUpdate";
+constexpr const char kScreenClosedQSConnectingToPhone[] =
+    "QuickStart.ScreenClosed.QSConnectingToPhone";
 constexpr const char kScreenClosedQSSelectGoogleAccount[] =
     "QuickStart.ScreenClosed.QSSelectGoogleAccount";
 constexpr const char kScreenClosedQSSetUpWithAndroidPhone[] =
@@ -199,8 +199,8 @@ std::string MapScreenNameToMetric(QuickStartMetrics::ScreenName screen_name) {
       return kScreenClosedChooseChromebookSetup;
     case QuickStartMetrics::ScreenName::kConsumerUpdate:
       return kScreenClosedConsumerUpdate;
-    case QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate:
-      return kScreenClosedQSResumingConnectionAfterUpdate;
+    case QuickStartMetrics::ScreenName::kQSConnectingToPhone:
+      return kScreenClosedQSConnectingToPhone;
     case QuickStartMetrics::ScreenName::kQSGettingGoogleAccountInfo:
       return kScreenClosedQSGettingGoogleAccountInfo;
     case QuickStartMetrics::ScreenName::kQSComplete:
@@ -663,8 +663,8 @@ std::ostream& operator<<(
     case QuickStartMetrics::ScreenName::kConsumerUpdate:
       stream << "[consumer update]";
       break;
-    case QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate:
-      stream << "[QS resuming connection after update]";
+    case QuickStartMetrics::ScreenName::kQSConnectingToPhone:
+      stream << "[QS Connecting to Phone]";
       break;
     case QuickStartMetrics::ScreenName::kQSGettingGoogleAccountInfo:
       stream << "[QS getting Google account info]";

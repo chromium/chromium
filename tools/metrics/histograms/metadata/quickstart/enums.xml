@@ -141,7 +141,8 @@ chromium-metrics-reviews@google.com.
       label="Checking for Update and Determining Device Configuration"/>
   <int value="8" label="Choose Chromebook Setup"/>
   <int value="9" label="Installing Latest Update (Consumer Update)"/>
-  <int value="10" label="QS Screen: Resuming Connection After Update"/>
+  <int value="10"
+      label="QS Screen: Connecting to Phone (PIN flow or after update)"/>
   <int value="11" label="QS Screen: Getting Google Account Info"/>
   <int value="12" label="Quick Start Complete"/>
   <int value="13" label="Setup Device PIN"/>

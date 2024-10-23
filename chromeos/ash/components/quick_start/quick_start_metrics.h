@@ -37,7 +37,9 @@ class QuickStartMetrics {
     kCheckingForUpdateAndDeterminingDeviceConfiguration = 7,  // Critical Update
     kChooseChromebookSetup = 8,
     kConsumerUpdate = 9,
-    kQSResumingConnectionAfterUpdate = 10,
+    kQSConnectingToPhone =
+        10,  // UI when advertising without a QR code, either when automatically
+             // resuming after an update or at the start of PIN flow.
     kQSGettingGoogleAccountInfo = 11,
     kQSComplete = 12,
     kSetupDevicePIN = 13,         // After Quick Start flow is complete.

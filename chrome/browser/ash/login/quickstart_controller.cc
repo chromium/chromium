@@ -134,11 +134,7 @@ QuickStartMetrics::ScreenName ScreenNameFromUiState(
     case QuickStartController::UiState::FALLBACK_URL_FLOW:
       return QuickStartMetrics::ScreenName::kQSFallbackURL;
     case QuickStartController::UiState::CONNECTING_TO_PHONE:
-      if (controller_state == QuickStartController::ControllerState::
-                                  WAITING_TO_RESUME_AFTER_UPDATE) {
-        return QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate;
-      }
-      [[fallthrough]];
+      return QuickStartMetrics::ScreenName::kQSConnectingToPhone;
     case QuickStartController::UiState::EXIT_SCREEN:
       [[fallthrough]];
     case QuickStartController::UiState::SHOWING_BLUETOOTH_DIALOG:

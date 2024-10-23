@@ -494,11 +494,11 @@ chromium-metrics-reviews@google.com.
     <variant name="None"/>
     <variant name="Other"/>
     <variant name="QSComplete"/>
+    <variant name="QSConnectingToPhone"/>
     <variant name="QSConnectingToWifi"/>
     <variant name="QSCreatingAccount"/>
     <variant name="QSFallbackURL"/>
     <variant name="QSGettingGoogleAccountInfo"/>
-    <variant name="QSResumingConnectionAfterUpdate"/>
     <variant name="QSSelectGoogleAccount"/>
     <variant name="QSSetUpWithAndroidPhone"/>
     <variant name="QSWifiCredentialsReceived"/>
@@ -529,11 +529,11 @@ chromium-metrics-reviews@google.com.
     <variant name="None"/>
     <variant name="Other"/>
     <variant name="QSComplete"/>
+    <variant name="QSConnectingToPhone"/>
     <variant name="QSConnectingToWifi"/>
     <variant name="QSCreatingAccount"/>
     <variant name="QSFallbackURL"/>
     <variant name="QSGettingGoogleAccountInfo"/>
-    <variant name="QSResumingConnectionAfterUpdate"/>
     <variant name="QSSelectGoogleAccount"/>
     <variant name="QSSetUpWithAndroidPhone"/>
     <variant name="QSWifiCredentialsReceived"/>
