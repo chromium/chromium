@@ -1399,7 +1399,7 @@
       // events every time it is closed or opened.
       // https://bugs.chromium.org/p/chromium/issues/detail?id=1521813
       name: "DialogElementToggleEvents",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "DialogNewFocusBehavior",
