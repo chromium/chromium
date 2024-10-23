@@ -199,10 +199,10 @@ void TraceValue::Append(unsigned char type,
       // So as not to lose bits from a 64-bit pointer, output as a hex string.
       // For consistency, do the same for non-JSON strings, but without the
       // surrounding quotes.
-      const std::string value = StringPrintf(
+      std::string value = StringPrintf(
           "0x%" PRIx64,
           static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this->as_pointer)));
-      *out += as_json ? StrCat({"\"", value, "\""}) : value;
+      *out += as_json ? StrCat({"\"", value, "\""}) : std::move(value);
     } break;
     case TRACE_VALUE_TYPE_STRING:
     case TRACE_VALUE_TYPE_COPY_STRING:
@@ -328,7 +328,7 @@ void ConvertableToTraceFormat::Add(
 
   std::string json;
   AppendAsTraceFormat(&json);
-  annotation->set_legacy_json_value(json);
+  annotation->set_legacy_json_value(std::move(json));
 }
 
 }  // namespace trace_event

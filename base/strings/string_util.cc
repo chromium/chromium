@@ -408,8 +408,7 @@ std::u16string ReplaceStringPlaceholders(
           /*should_escape_multiple_placeholder_prefixes*/ true,
           /*is_strict_mode*/ false, offsets);
 
-  DCHECK(replacement);
-  return replacement.value();
+  return std::move(replacement).value();
 }
 
 std::string ReplaceStringPlaceholders(std::string_view format_string,
@@ -422,8 +421,7 @@ std::string ReplaceStringPlaceholders(std::string_view format_string,
           /*should_escape_multiple_placeholder_prefixes*/ true,
           /*is_strict_mode*/ false, offsets);
 
-  DCHECK(replacement);
-  return replacement.value();
+  return std::move(replacement).value();
 }
 
 std::u16string ReplaceStringPlaceholders(const std::u16string& format_string,

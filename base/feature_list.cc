@@ -242,8 +242,8 @@ bool ParseEnableFeatures(const std::string& enable_features,
       force_fieldtrial_params_list.push_back(study + "." + group + ":" +
                                              feature_params);
     }
-    enable_features_list.push_back(
-        study.empty() ? feature_name : (feature_name + "<" + study));
+    enable_features_list.push_back(study.empty() ? std::move(feature_name)
+                                                 : feature_name + "<" + study);
   }
 
   *parsed_enable_features = JoinString(enable_features_list, ",");
@@ -533,8 +533,8 @@ bool FeatureList::ParseEnableFeatureString(std::string_view enable_feature,
   // feature and its feature params to a synthetic field trial as the
   // feature params only make sense when it's combined with a field trial.
   if (!feature_params.empty()) {
-    study = study.empty() ? "Study" + enable_feature_name : study;
-    group = group.empty() ? "Group" + enable_feature_name : group;
+    study = study.empty() ? "Study" + enable_feature_name : std::move(study);
+    group = group.empty() ? "Group" + enable_feature_name : std::move(group);
   }
 
   feature_name->swap(enable_feature_name);

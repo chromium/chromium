@@ -638,7 +638,7 @@ Histogram::Histogram(const char* name,
 
 Histogram::~Histogram() = default;
 
-const std::string Histogram::GetAsciiBucketRange(size_t i) const {
+std::string Histogram::GetAsciiBucketRange(size_t i) const {
   return GetSimpleAsciiBucketRange(ranges(i));
 }
 
@@ -904,7 +904,7 @@ LinearHistogram::LinearHistogram(
     HistogramSamples::Metadata* logged_meta)
     : Histogram(name, ranges, counts, logged_counts, meta, logged_meta) {}
 
-const std::string LinearHistogram::GetAsciiBucketRange(size_t i) const {
+std::string LinearHistogram::GetAsciiBucketRange(size_t i) const {
   int range = ranges(i);
   BucketDescriptionMap::const_iterator it = bucket_description_.find(range);
   if (it == bucket_description_.end())
