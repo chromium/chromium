@@ -68,10 +68,15 @@ DesktopMediaPickerFactoryImpl* DesktopMediaPickerFactoryImpl::GetInstance() {
 
 std::unique_ptr<DesktopMediaPicker> DesktopMediaPickerFactoryImpl::CreatePicker(
     const content::MediaStreamRequest* request) {
-// DesktopMediaPicker is implemented only for Windows, OSX and Aura Linux
-// builds.
+  // DesktopMediaPicker is implemented only for Windows, OSX, Aura Linux, and
+  // desktop Android builds.
 #if defined(TOOLKIT_VIEWS)
   return DesktopMediaPicker::Create(request);
+#elif BUILDFLAG(IS_DESKTOP_ANDROID)
+  if (base::FeatureList::IsEnabled(kAndroidMediaPicker)) {
+    return DesktopMediaPicker::Create(request);
+  }
+  return nullptr;
 #else
   return nullptr;
 #endif

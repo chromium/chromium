@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//content/public/common/features.gni")
+
 chrome_java_sources = [
   "java/src/com/google/android/apps/chrome/appwidget/bookmarks/BookmarkThumbnailWidgetProvider.java",
   "java/src/org/chromium/chrome/browser/ActivityTabProvider.java",
@@ -1222,3 +1224,10 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
   "java/src/org/chromium/chrome/browser/webshare/ShareServiceImplementationFactory.java",
 ]
+
+if (enable_screen_capture) {
+  chrome_java_sources += [
+    "java/src/org/chromium/chrome/browser/media/MediaCapturePickerDialog.java",
+    "java/src/org/chromium/chrome/browser/media/MediaCapturePickerDialogBridge.java",
+  ]
+}
