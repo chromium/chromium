@@ -315,8 +315,7 @@ WebContents* RenderFrameDevToolsAgentHost::GetWebContents() {
   return web_contents();
 }
 
-bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
-                                                 bool acquire_wake_lock) {
+bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   if (!ShouldAllowSession(frame_host_, session)) {
     return false;
   }
@@ -407,8 +406,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
   if (sessions().empty()) {
     UpdateRawHeadersAccess(frame_host_);
 #if BUILDFLAG(IS_ANDROID)
-    if (acquire_wake_lock)
-      GetWakeLock()->RequestWakeLock();
+    GetWakeLock()->RequestWakeLock();
 #endif
   }
   return true;

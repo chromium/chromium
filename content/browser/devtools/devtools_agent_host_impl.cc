@@ -291,17 +291,12 @@ DevToolsSession* DevToolsAgentHostImpl::SessionByClient(
 
 bool DevToolsAgentHostImpl::AttachInternal(
     std::unique_ptr<DevToolsSession> session_owned) {
-  return AttachInternal(std::move(session_owned), true);
-}
-
-bool DevToolsAgentHostImpl::AttachInternal(
-    std::unique_ptr<DevToolsSession> session_owned,
-    bool acquire_wake_lock) {
   scoped_refptr<DevToolsAgentHostImpl> protect(this);
   DevToolsSession* session = session_owned.get();
   session->SetAgentHost(this);
-  if (!AttachSession(session, acquire_wake_lock))
+  if (!AttachSession(session)) {
     return false;
+  }
   renderer_channel_.AttachSession(session);
   sessions_.push_back(session);
   DCHECK(!base::Contains(session_by_client_, session->GetClient()));
@@ -318,17 +313,7 @@ bool DevToolsAgentHostImpl::AttachClient(DevToolsAgentHostClient* client) {
   if (SessionByClient(client))
     return false;
   return AttachInternal(
-      std::make_unique<DevToolsSession>(client, GetSessionMode()),
-      /*acquire_wake_lock=*/true);
-}
-
-bool DevToolsAgentHostImpl::AttachClientWithoutWakeLock(
-    content::DevToolsAgentHostClient* client) {
-  if (SessionByClient(client))
-    return false;
-  return AttachInternal(
-      std::make_unique<DevToolsSession>(client, GetSessionMode()),
-      /*acquire_wake_lock=*/false);
+      std::make_unique<DevToolsSession>(client, GetSessionMode()));
 }
 
 bool DevToolsAgentHostImpl::DetachClient(DevToolsAgentHostClient* client) {
@@ -474,8 +459,7 @@ void DevToolsAgentHostImpl::ForceDetachRestrictedSessions(
   }
 }
 
-bool DevToolsAgentHostImpl::AttachSession(DevToolsSession* session,
-                                          bool acquire_wake_lock) {
+bool DevToolsAgentHostImpl::AttachSession(DevToolsSession* session) {
   return false;
 }
 

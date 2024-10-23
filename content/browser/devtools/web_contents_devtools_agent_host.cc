@@ -367,8 +367,7 @@ DevToolsSession::Mode WebContentsDevToolsAgentHost::GetSessionMode() {
   return DevToolsSession::Mode::kSupportsTabTarget;
 }
 
-bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session,
-                                                 bool acquire_wake_lock) {
+bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   if (web_contents() && !RenderFrameDevToolsAgentHost::ShouldAllowSession(
                             web_contents()->GetPrimaryMainFrame(), session)) {
     return false;

@@ -82,8 +82,7 @@ bool SharedStorageWorkletDevToolsAgentHost::Close() {
 }
 
 bool SharedStorageWorkletDevToolsAgentHost::AttachSession(
-    DevToolsSession* session,
-    bool acquire_wake_lock) {
+    DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::InspectorHandler>();
   session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),

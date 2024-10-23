@@ -37,7 +37,7 @@ class DedicatedWorkerDevToolsAgentHost final
   std::string GetType() override;
 
   // DevToolsAgentHostImpl overrides
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
   protocol::TargetAutoAttacher* auto_attacher() override;
   std::optional<network::CrossOriginEmbedderPolicy>
   cross_origin_embedder_policy(const std::string& id) override;

@@ -54,8 +54,7 @@ DedicatedWorkerDevToolsAgentHost::GetDedicatedWorkerHost() {
       blink::DedicatedWorkerToken(devtools_worker_token()));
 }
 
-bool DedicatedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
-                                                     bool acquire_wake_lock) {
+bool DedicatedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),

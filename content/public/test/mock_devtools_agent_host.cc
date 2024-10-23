@@ -19,11 +19,6 @@ bool MockDevToolsAgentHost::AttachClient(
   return true;
 }
 
-bool MockDevToolsAgentHost::AttachClientWithoutWakeLock(
-    content::DevToolsAgentHostClient* client) {
-  return AttachClient(client);
-}
-
 bool MockDevToolsAgentHost::DetachClient(
     content::DevToolsAgentHostClient* client) {
   if (client != client_) {
