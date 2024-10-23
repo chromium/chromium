@@ -330,6 +330,7 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
+  CHECK(data.sandbox_type.has_value());
   if (data.sandbox_type ==
       sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
     return;
@@ -353,6 +354,7 @@ void ProcessMonitor::BrowserChildProcessHostDisconnected(
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
+  CHECK(data.sandbox_type.has_value());
   if (data.sandbox_type ==
       sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
     return;
@@ -391,6 +393,7 @@ void ProcessMonitor::OnBrowserChildProcessExited(
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
+  CHECK(data.sandbox_type.has_value());
   if (data.sandbox_type ==
       sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
     return;

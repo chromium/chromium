@@ -356,6 +356,7 @@ class SystemNetworkContextManager::NetworkProcessLaunchWatcher
   void BrowserChildProcessLaunchFailed(
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override {
+    CHECK(data.sandbox_type.has_value());
     if (data.sandbox_type == sandbox::mojom::Sandbox::kNetwork) {
       // This histogram duplicates data recorded in
       // ChildProcess.LaunchFailed.UtilityProcessErrorCode but is specific to

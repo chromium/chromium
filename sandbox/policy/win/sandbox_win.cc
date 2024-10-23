@@ -1053,8 +1053,12 @@ void BlocklistAddOneDllForTesting(const wchar_t* module_name,
 }
 
 // static
-std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
-  switch (sandbox_type) {
+std::string SandboxWin::GetSandboxTypeInEnglish(
+    const std::optional<Sandbox>& sandbox_type) {
+  if (!sandbox_type.has_value()) {
+    return "Unknown";
+  }
+  switch (sandbox_type.value()) {
     case Sandbox::kNoSandbox:
       return "Unsandboxed";
     case Sandbox::kNoSandboxAndElevatedPrivileges:
