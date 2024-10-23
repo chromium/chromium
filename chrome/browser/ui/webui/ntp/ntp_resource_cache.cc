@@ -43,6 +43,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
@@ -288,7 +289,9 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
   replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_INCOGNITO_TAB_TITLE);
 
-  if (is_tracking_protection_3pcd_enabled) {
+  if (is_tracking_protection_3pcd_enabled ||
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kAlwaysBlock3pcsIncognito)) {
     replacements["hideBlockCookiesToggle"] = "hidden";
     replacements["hideTooltipIcon"] = "hidden";
 
