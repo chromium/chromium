@@ -156,13 +156,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   // Delegate class for ARC-side operations.
   class ArcDelegate {
    public:
-    typedef base::OnceCallback<void(bool success)> PreparationCallback;
+    typedef base::OnceCallback<void(bool success)> Callback;
 
-    // Instruct ARC to prpeare for removable media unmount mounted on
-    // `mount_path` by dropping any references to the volume.
-    virtual void PrepareForRemovableMediaUnmount(
-        const base::FilePath& mount_path,
-        PreparationCallback callback) {}
+    // Drop ARC caches for the given removable drive.
+    virtual void DropArcCaches(const base::FilePath& mount_path,
+                               Callback callback) = 0;
   };
 
   virtual ~DiskMountManager() = default;

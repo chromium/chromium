@@ -332,9 +332,9 @@ void ArcVolumeMounterBridge::OnMountEvent(
   }
 }
 
-void ArcVolumeMounterBridge::PrepareForRemovableMediaUnmount(
+void ArcVolumeMounterBridge::DropArcCaches(
     const base::FilePath& mount_path,
-    DiskMountManager::ArcDelegate::PreparationCallback callback) {
+    DiskMountManager::ArcDelegate::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(
       ash::CrosDisksClient::GetRemovableDiskMountPoint().IsParent(mount_path));

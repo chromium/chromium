@@ -87,10 +87,9 @@ class ArcVolumeMounterBridge
       const ash::disks::DiskMountManager::MountPoint& mount_info) override;
 
   // ash::disks::DiskMountManager::ArcDelegate overrides:
-  void PrepareForRemovableMediaUnmount(
+  void DropArcCaches(
       const base::FilePath& mount_path,
-      ash::disks::DiskMountManager::ArcDelegate::PreparationCallback callback)
-      override;
+      ash::disks::DiskMountManager::ArcDelegate::Callback callback) override;
 
   // ConnectionObserver<mojom::VolumeMounterInstance> overrides:
   void OnConnectionClosed() override;
@@ -148,9 +147,9 @@ class ArcVolumeMounterBridge
                                              bool is_timeout,
                                              bool success);
 
-  using UnmountRequest = std::tuple<
-      base::FilePath,
-      ash::disks::DiskMountManager::ArcDelegate::PreparationCallback>;
+  using UnmountRequest =
+      std::tuple<base::FilePath,
+                 ash::disks::DiskMountManager::ArcDelegate::Callback>;
 
   // Pending requests for PrepareForRemovableMediaUnmount().
   base::queue<UnmountRequest> unmount_requests_
@@ -161,10 +160,10 @@ class ArcVolumeMounterBridge
   // This will be cancelled if not run by the timeout.
   base::CancelableOnceCallback<void(bool)> unmount_mojo_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  // Stores the callback passed from PrepareForRemovableMediaUnmount() call that
-  // triggered the current in-flight mojo call.
-  ash::disks::DiskMountManager::ArcDelegate::PreparationCallback
-      unmount_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Stores the callback passed from DropArcCaches() call that triggered the
+  // current in-flight mojo call.
+  ash::disks::DiskMountManager::ArcDelegate::Callback unmount_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   // When the callback for PrepareForRemovableMediaUnmount mojo does not run
   // within this timeout, the callback will be called with false.
   base::TimeDelta unmount_timeout_ = base::Seconds(10);

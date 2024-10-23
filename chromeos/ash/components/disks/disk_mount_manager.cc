@@ -155,7 +155,7 @@ class DiskMountManagerImpl : public DiskMountManager,
         cros_disks_client_->GetRemovableDiskMountPoint().IsParent(
             mount_file_path)) {
       VLOG(1) << "Dropping ARC caches for " << Redact(mount_path);
-      arc_delegate_->PrepareForRemovableMediaUnmount(
+      arc_delegate_->DropArcCaches(
           mount_file_path, BindOnce(&DiskMountManagerImpl::UnmountPathContinue,
                                     weak_ptr_factory_.GetWeakPtr(), mount_path,
                                     std::move(callback)));

@@ -42,7 +42,7 @@ mojom::MountPointInfoPtr FakeVolumeMounterInstance::GetMountPointInfo(
 void FakeVolumeMounterInstance::PrepareForRemovableMediaUnmount(
     const base::FilePath& mount_path,
     PrepareForRemovableMediaUnmountCallback callback) {
-  if (call_prepare_for_removable_media_unmount_callback_) {
+  if (should_call_back_) {
     std::move(callback).Run(true);
   }
 }

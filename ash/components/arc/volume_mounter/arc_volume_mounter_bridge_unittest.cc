@@ -607,13 +607,13 @@ TEST_F(ArcVolumeMounterBridgeTest, PrepareForRemovableMediaUnmount_Success) {
   bridge()->set_unmount_timeout_for_testing(base::Seconds(0));
 
   base::test::TestFuture<bool> future1, future2;
-  // Test that PrepareForRemovableMediaUnmount() can be called serially
-  // multiple times and calls back the correct callback.
-  bridge()->PrepareForRemovableMediaUnmount(
+  // Test that DropArcCaches() can be called serially multiple times and calls
+  // back the correct callback.
+  bridge()->DropArcCaches(
       ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED1"),
       future1.GetCallback());
   EXPECT_TRUE(future1.Get());
-  bridge()->PrepareForRemovableMediaUnmount(
+  bridge()->DropArcCaches(
       ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED2"),
       future2.GetCallback());
   EXPECT_TRUE(future2.Get());
@@ -625,11 +625,10 @@ TEST_F(ArcVolumeMounterBridgeTest,
 
   // Test the situation where ARC does not call the
   // PrepareForRemovableMediaUnmount callback.
-  volume_mounter_instance()
-      ->set_call_prepare_for_removable_media_unmount_callback(false);
+  volume_mounter_instance()->ShouldCallBack(false);
 
   base::test::TestFuture<bool> future;
-  bridge()->PrepareForRemovableMediaUnmount(
+  bridge()->DropArcCaches(
       ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED"),
       future.GetCallback());
   // The callback will be called with false due to timeout.
