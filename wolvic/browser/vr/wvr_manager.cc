@@ -264,6 +264,17 @@ void WvrManager::CreateSurfaceBridge(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+static bool
+supportsBlendMode(mozilla::gfx::VRDisplayState& display_state, const mozilla::gfx::VRDisplayBlendMode blend_mode) {
+  for (auto& supported_blend_mode : display_state.blendModes) {
+    if (supported_blend_mode == mozilla::gfx::VRDisplayBlendMode::_empty)
+      return false;
+    if (supported_blend_mode == blend_mode)
+      return true;
+  }
+  return false;
+}
+
 void WvrManager::ConnectPresentingService(
     device::mojom::XRRuntimeSessionOptionsPtr options,
     base::OnceCallback<void(device::mojom::XRSessionPtr)> callback) {
@@ -315,25 +326,29 @@ void WvrManager::ConnectPresentingService(
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   auto* config = session->device_config.get();
 
-  config->views = std::move(views);
-  config->supports_viewport_scaling = true;
-  session->enviroment_blend_mode =
-      PickEnvironmentBlendModeForSession(options->mode);
-  config->default_framebuffer_scale =
-      wvr_api_->get_system_state().displayState.nativeFramebufferScaleFactor;
-  session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
-
-  auto toGfxBlendMode = [](device::mojom::XREnvironmentBlendMode mode) {
+  auto toMojoBlendMode = [](mozilla::gfx::VRDisplayBlendMode mode) {
     switch (mode) {
-      case device::mojom::XREnvironmentBlendMode::kOpaque:
-        return mozilla::gfx::VRDisplayBlendMode::Opaque;
-      case device::mojom::XREnvironmentBlendMode::kAlphaBlend:
-        return mozilla::gfx::VRDisplayBlendMode::AlphaBlend;
-      case device::mojom::XREnvironmentBlendMode::kAdditive:
-        return mozilla::gfx::VRDisplayBlendMode::Additive;
+      case mozilla::gfx::VRDisplayBlendMode::Opaque:
+        return device::mojom::XREnvironmentBlendMode::kOpaque;
+      case mozilla::gfx::VRDisplayBlendMode::AlphaBlend:
+        return device::mojom::XREnvironmentBlendMode::kAlphaBlend;
+      case mozilla::gfx::VRDisplayBlendMode::Additive:
+        return device::mojom::XREnvironmentBlendMode::kAdditive;
+      case mozilla::gfx::VRDisplayBlendMode::_empty:
+        NOTREACHED();
+        return device::mojom::XREnvironmentBlendMode::kOpaque;
     }
   };
-  blend_mode_ = toGfxBlendMode(session->enviroment_blend_mode);
+
+  config->views = std::move(views);
+  config->supports_viewport_scaling = true;
+  auto session_blend_mode = PickEnvironmentBlendModeForSession(options->mode);
+  session->enviroment_blend_mode = toMojoBlendMode(session_blend_mode);
+  auto display_state = wvr_api_->get_system_state().displayState;
+  config->default_framebuffer_scale = display_state.nativeFramebufferScaleFactor;
+  session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
+
+  blend_mode_ = supportsBlendMode(display_state, session_blend_mode) ? session_blend_mode : display_state.blendModes[0];
 
   auto toGfxSessionType = [](device::mojom::XRSessionMode mode) {
     switch (mode) {
@@ -875,64 +890,31 @@ void WvrManager::UpdateLayerBounds(int16_t frame_index,
   CreateOrResizeWebXrSurface(source_size);
 }
 
-device::mojom::XREnvironmentBlendMode
+// Returns the blend mode that should be used by the WebXR session depending on
+// the display technology (i.e. the supported blend modes). See
+// https://www.w3.org/TR/webxr-ar-module-1/#xr-compositor-behaviors
+mozilla::gfx::VRDisplayBlendMode
 WvrManager::PickEnvironmentBlendModeForSession(
     device::mojom::XRSessionMode session_mode) {
-  DCHECK(wvr_api_->get_system_state().enumerationCompleted);
+  auto system_state = wvr_api_->get_system_state();
+  DCHECK(system_state.enumerationCompleted);
 
-  const auto& display_state = wvr_api_->get_system_state().displayState;
-  auto supportsBlendMode =
-      [&display_state](const mozilla::gfx::VRDisplayBlendMode blend_mode) {
-        for (auto& supported_blend_mode : display_state.blendModes) {
-          if (supported_blend_mode ==
-              mozilla::gfx::VRDisplayBlendMode::_empty) {
-            return false;
-          }
-          if (supported_blend_mode == blend_mode) {
-            return true;
-          }
-        }
-        return false;
-      };
+  auto& display_state = system_state.displayState;
+
+  // Additive displays must use this regardless of the mode
+  if (supportsBlendMode(display_state, mozilla::gfx::VRDisplayBlendMode::Additive))
+    return mozilla::gfx::VRDisplayBlendMode::Additive;
 
   switch (session_mode) {
     case device::mojom::XRSessionMode::kImmersiveVr:
-      if (supportsBlendMode(mozilla::gfx::VRDisplayBlendMode::Opaque)) {
-        return device::mojom::XREnvironmentBlendMode::kOpaque;
-      }
-      break;
-    case device::mojom::XRSessionMode::kImmersiveAr:
-      // Prefer Alpha Blend when both Alpha Blend and Additive modes are
-      // supported. This only concerns video see through devices with an
-      // Additive compatibility mode
-      if (supportsBlendMode(mozilla::gfx::VRDisplayBlendMode::AlphaBlend)) {
-        return device::mojom::XREnvironmentBlendMode::kAlphaBlend;
-      }
-
-      if (supportsBlendMode(mozilla::gfx::VRDisplayBlendMode::Additive)) {
-        return device::mojom::XREnvironmentBlendMode::kAdditive;
-      }
-
-      break;
     case device::mojom::XRSessionMode::kInline:
-      NOTREACHED();
+      return mozilla::gfx::VRDisplayBlendMode::Opaque;
+    case device::mojom::XRSessionMode::kImmersiveAr:
+      // Even if the device does not support the blend mode we should pass an AR blend
+      // mode to the Web Engine to let it add the alpha channel. Note that the device
+      // might use a compositor layer to enable AR instead of a blend mode (like Meta).
+      return mozilla::gfx::VRDisplayBlendMode::AlphaBlend;
   }
-
-  auto toMojoBlendMode = [](mozilla::gfx::VRDisplayBlendMode mode) {
-    switch (mode) {
-      case mozilla::gfx::VRDisplayBlendMode::Opaque:
-        return device::mojom::XREnvironmentBlendMode::kOpaque;
-      case mozilla::gfx::VRDisplayBlendMode::AlphaBlend:
-        return device::mojom::XREnvironmentBlendMode::kAlphaBlend;
-      case mozilla::gfx::VRDisplayBlendMode::Additive:
-        return device::mojom::XREnvironmentBlendMode::kAdditive;
-      case mozilla::gfx::VRDisplayBlendMode::_empty:
-        NOTREACHED();
-        return device::mojom::XREnvironmentBlendMode::kOpaque;
-    }
-  };
-
-  return toMojoBlendMode(display_state.blendModes[0]);
 }
 
 }  // namespace wolvic

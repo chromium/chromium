@@ -117,7 +117,7 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   void ClosePresentationBindings();
   void OnSubmitClientMojoConnectionError();
 
-  device::mojom::XREnvironmentBlendMode PickEnvironmentBlendModeForSession(
+  mozilla::gfx::VRDisplayBlendMode PickEnvironmentBlendModeForSession(
       device::mojom::XRSessionMode);
 
   device::mojom::XRFrameDataProvider::GetFrameDataCallback
