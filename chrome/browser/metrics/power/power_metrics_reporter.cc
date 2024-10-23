@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
@@ -198,6 +199,11 @@ void PowerMetricsReporter::ReportMetrics(
   // suffix.
   const std::vector<const char*> long_interval_suffixes{
       "", long_interval_scenario_params.histogram_suffix};
+
+  if (aggregated_process_metrics.cpu_usage) {
+    TRACE_COUNTER("power", "AverageCPU.Total",
+                  *aggregated_process_metrics.cpu_usage);
+  }
 
   // Report process metrics histograms.
   ReportAggregatedProcessMetricsHistograms(aggregated_process_metrics,
