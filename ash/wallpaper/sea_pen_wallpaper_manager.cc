@@ -48,40 +48,11 @@ namespace ash {
 
 namespace {
 
-constexpr char kMigrationHistogramName[] = "Ash.SeaPen.MigrationStatus";
-
 // The max number of Sea Pen image files to keep in Sea Pen directory before
 // adding a new file.
 constexpr int kMaxSeaPenFiles = 11;
 
 SeaPenWallpaperManager* g_instance = nullptr;
-
-bool MigrateFiles(const base::FilePath& source, const base::FilePath& target) {
-  DCHECK(!source.empty());
-  DCHECK(!target.empty());
-  DCHECK_EQ(target.GetComponents().back(),
-            wallpaper_constants::kSeaPenWallpaperDirName);
-
-  if (!base::PathExists(source) || base::IsDirectoryEmpty(source)) {
-    VLOG(0) << "Skip migration as there are no files to move";
-    return true;
-  }
-
-  if (base::PathExists(target) && !base::DeletePathRecursively(target)) {
-    LOG(ERROR) << "Failed to delete existing storage directory";
-    return false;
-  }
-
-  // Create the parents of `target` so that the future mv command will create
-  // the actual `target`. Still succeeds if the directory already exists.
-  base::File::Error error;
-  if (!base::CreateDirectoryAndGetError(target.DirName(), &error)) {
-    LOG(ERROR) << "Failed to stage new directory with error: " << error;
-    return false;
-  }
-
-  return base::Move(source, target);
-}
 
 std::vector<uint32_t> GetImageIdsImpl(const base::FilePath& directory) {
   std::vector<std::pair<base::FilePath, base::Time>> jpg_paths_with_timestamp;
@@ -221,15 +192,6 @@ SeaPenWallpaperManager* SeaPenWallpaperManager::GetInstance() {
   return g_instance;
 }
 
-// static
-void SeaPenWallpaperManager::RegisterProfilePrefs(
-    PrefRegistrySimple* pref_registry_simple) {
-  pref_registry_simple->RegisterIntegerPref(
-      ::ash::prefs::kWallpaperSeaPenMigrationStatus,
-      base::to_underlying(
-          SeaPenWallpaperManager::MigrationStatus::kNotStarted));
-}
-
 void SeaPenWallpaperManager::SaveSeaPenImage(
     const AccountId& account_id,
     const SeaPenImage& sea_pen_image,
@@ -306,68 +268,6 @@ void SeaPenWallpaperManager::GetImage(const AccountId& account_id,
                       base::BindOnce(&DropImageInfo).Then(std::move(callback)));
 }
 
-bool SeaPenWallpaperManager::ShouldMigrate(const AccountId& account_id) {
-  // Fake accounts used in test may not have a valid account id key and will
-  // fail.
-  if (!account_id.HasAccountIdKey()) {
-    return false;
-  }
-  auto* pref_service = session_delegate_->GetPrefService(account_id);
-  const auto migration_status = static_cast<MigrationStatus>(
-      pref_service->GetInteger(prefs::kWallpaperSeaPenMigrationStatus));
-  base::UmaHistogramEnumeration(kMigrationHistogramName, migration_status);
-  switch (migration_status) {
-    case MigrationStatus::kNotStarted:
-    case MigrationStatus::kFailed:
-      return true;
-    case MigrationStatus::kCrashed:
-    case MigrationStatus::kSuccess:
-      return false;
-  }
-  return true;
-}
-
-void SeaPenWallpaperManager::Migrate(
-    const AccountId& account_id,
-    const base::FilePath& source,
-    MigrateSeaPenFilesIfNecessaryCallback callback) {
-  DVLOG(0) << "Begin SeaPen migration";
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(ShouldMigrate(account_id));
-  DCHECK(!source.empty());
-  DCHECK_EQ(source.BaseName().value(), account_id.GetAccountIdKey());
-
-  auto* pref_service = session_delegate_->GetPrefService(account_id);
-
-  const base::FilePath target =
-      session_delegate_->GetStorageDirectory(account_id);
-
-  if (target.empty()) {
-    LOG(ERROR) << "Storage directory path is empty, try migration later";
-    pref_service->SetInteger(::ash::prefs::kWallpaperSeaPenMigrationStatus,
-                             base::to_underlying(MigrationStatus::kFailed));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
-    return;
-  }
-
-  auto migration_task = base::BindOnce(&MigrateFiles, source, target);
-
-  auto on_migration_complete = base::BindOnce(
-      &SeaPenWallpaperManager::OnMigrationComplete, weak_factory_.GetWeakPtr(),
-      account_id, std::move(callback));
-
-  // Preemptively write kCrashed status. Success or failure will overwrite this
-  // value. If the user begins migration again and still has `kCrashed` status,
-  // something went wrong.
-  pref_service->SetInteger(::ash::prefs::kWallpaperSeaPenMigrationStatus,
-                           base::to_underlying(MigrationStatus::kCrashed));
-
-  pref_service->CommitPendingWrite(base::BindOnce(
-      &SeaPenWallpaperManager::BeginMigration, weak_factory_.GetWeakPtr(),
-      std::move(migration_task), std::move(on_migration_complete)));
-}
-
 void SeaPenWallpaperManager::SetSessionDelegateForTesting(
     std::unique_ptr<SessionDelegate> session_delegate) {
   session_delegate_ = std::move(session_delegate);
@@ -379,32 +279,6 @@ base::FilePath SeaPenWallpaperManager::GetFilePathForImageId(
   return session_delegate_->GetStorageDirectory(account_id)
       .Append(base::NumberToString(image_id))
       .AddExtension(".jpg");
-}
-
-void SeaPenWallpaperManager::BeginMigration(
-    base::OnceCallback<bool()> migration_task,
-    base::OnceCallback<void(bool)> on_migration_complete) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(0) << __PRETTY_FUNCTION__;
-  blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, std::move(migration_task), std::move(on_migration_complete));
-}
-
-void SeaPenWallpaperManager::OnMigrationComplete(
-    const AccountId& account_id,
-    MigrateSeaPenFilesIfNecessaryCallback callback,
-    bool success) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(0) << __func__ << " " << (success ? "succeeded" : "failed");
-
-  auto* pref_service = session_delegate_->GetPrefService(account_id);
-
-  pref_service->SetInteger(
-      ::ash::prefs::kWallpaperSeaPenMigrationStatus,
-      base::to_underlying(success ? MigrationStatus::kSuccess
-                                  : MigrationStatus::kFailed));
-
-  std::move(callback).Run(success);
 }
 
 void SeaPenWallpaperManager::OnSeaPenImageDecoded(

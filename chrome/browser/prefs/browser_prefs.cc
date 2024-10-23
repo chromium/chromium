@@ -1151,6 +1151,12 @@ const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
 // Deprecated 10/2024.
 inline constexpr char kDocumentSuggestEnabled[] = "documentsuggest.enabled";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 10/2024
+inline constexpr char kWallpaperSeaPenMigrationStatus[] =
+    "ash.wallpaper.sea_pen.migration_status";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1630,6 +1636,9 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Deprecated 10/2024
   registry->RegisterIntegerPref(kAccessibilityFaceGazeCursorSmoothing, 7);
+
+  // Deprecated 10/2024
+  registry->RegisterIntegerPref(kWallpaperSeaPenMigrationStatus, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Deprecated 10/2024
@@ -3005,6 +3014,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 10/2024
   profile_prefs->ClearPref(kAccessibilityFaceGazeCursorSmoothing);
+
+  // Added 10/2024
+  profile_prefs->ClearPref(kWallpaperSeaPenMigrationStatus);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 10/2024

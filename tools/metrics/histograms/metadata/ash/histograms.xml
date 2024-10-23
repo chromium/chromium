@@ -8314,15 +8314,6 @@ chromium-metrics-reviews@google.com.
   <token key="Source" variants="SeaPenImageSource"/>
 </histogram>
 
-<histogram name="Ash.SeaPen.MigrationStatus"
-    enum="SeaPenWallpaperManagerMigrationStatus" expires_after="2025-04-13">
-  <owner>cowmoo@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Records result of migrating user SeaPen files to new directory.
-  </summary>
-</histogram>
-
 <histogram name="Ash.SeaPen.Template" enum="SeaPenTemplateId"
     expires_after="2025-03-30">
   <owner>thuongphan@google.com</owner>

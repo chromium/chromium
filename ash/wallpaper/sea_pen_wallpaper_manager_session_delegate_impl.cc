@@ -11,7 +11,6 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/files/file_path.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -37,14 +36,6 @@ base::FilePath SeaPenWallpaperManagerSessionDelegateImpl::GetStorageDirectory(
   }
   return profile_path.Append(kWallpaperDirName)
       .Append(wallpaper_constants::kSeaPenWallpaperDirName);
-}
-
-PrefService* SeaPenWallpaperManagerSessionDelegateImpl::GetPrefService(
-    const AccountId& account_id) {
-  auto* pref_service =
-      Shell::Get()->session_controller()->GetUserPrefServiceForUser(account_id);
-  DCHECK(pref_service);
-  return pref_service;
 }
 
 }  // namespace ash

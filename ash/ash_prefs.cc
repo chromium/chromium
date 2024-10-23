@@ -181,7 +181,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   quick_pair::Mediator::RegisterProfilePrefs(registry);
   RegisterSystemShortcutBehaviorProfilePrefs(registry);
   ScreensaverImagesPolicyHandler::RegisterPrefs(registry);
-  SeaPenWallpaperManager::RegisterProfilePrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
   SnoopingProtectionController::RegisterProfilePrefs(registry);
   system::BrightnessControllerChromeos::RegisterProfilePrefs(registry);

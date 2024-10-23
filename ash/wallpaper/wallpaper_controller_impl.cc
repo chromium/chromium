@@ -1791,15 +1791,6 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   AccountId account_id = GetActiveAccountId();
 
-  // Tests may not initialize global wallpaper dirs before logging in a user.
-  if (sea_pen_wallpaper_manager_.ShouldMigrate(account_id) &&
-      !GlobalChromeOSSeaPenWallpaperDir().empty()) {
-    sea_pen_wallpaper_manager_.Migrate(
-        account_id, GetUserSeaPenWallpaperDir(account_id),
-        base::BindOnce(&WallpaperControllerImpl::OnSeaPenFilesMigrated,
-                       weak_factory_.GetWeakPtr(), account_id));
-  }
-
   WallpaperInfo local_info;
   if (pref_manager_->GetLocalWallpaperInfo(account_id, &local_info) &&
       wallpaper_info_migrator_.ShouldMigrate(local_info)) {
