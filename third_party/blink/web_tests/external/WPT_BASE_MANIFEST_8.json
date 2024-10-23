@@ -6070,6 +6070,13 @@
        {}
       ]
      ],
+     "delete-to-join-inline-blocks.html": [
+      "a299c519cb5d4999118c349d79518cffbb891177",
+      [
+       null,
+       {}
+      ]
+     ],
      "designMode-caret-change.html": [
       "be80afd4ab8a474572d1732baecdcb1f052c57fb",
       [
@@ -242845,6 +242852,35 @@
         }
        ]
       ],
+      "border-uneven.tentative.html": [
+       "eeec263e27aa4bc920b24b99033f400038519709",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/layered-capture/border-uneven-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             255
+            ],
+            [
+             0,
+             515
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "box-decorations.tentative.html": [
        "436ba4d3ded5c16d9f65f5788b7dd1790276f102",
        [
@@ -356965,6 +357001,10 @@
       []
      ],
      "layered-capture": {
+      "border-uneven-ref.html": [
+       "15b27166371ed989b41c33eb8f48a1ae0f588ecf",
+       []
+      ],
       "box-model-capture-ref.html": [
        "b8d14fed501b1e90d4a5d055fdb1ca6b60cb4dac",
        []
@@ -369210,27 +369250,11 @@
       "bf0cb2f53c51a444e2d7b6e209e1b1b49368702f",
       []
      ],
-     "web-bluetooth-inner.html": [
-      "a490bc2127df17acd100eaf7a6d67408be03a604",
-      []
-     ],
-     "web-bluetooth-inner.html.headers": [
-      "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
-      []
-     ],
      "web-nfc-inner.https.html": [
       "682805d5d2ccc352f3a645469c2f8d7ccdc1cca6",
       []
      ],
      "web-nfc-inner.https.html.headers": [
-      "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
-      []
-     ],
-     "web-share-inner.html": [
-      "eb80587b78257baf6d18f25a9042e7c33e89c721",
-      []
-     ],
-     "web-share-inner.html.headers": [
       "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
       []
      ],
@@ -398697,7 +398721,7 @@
       []
      ],
      "partitioned-popins.cookies-popin.py": [
-      "74024dd2f002b122bbd6363af2e52fbea184068e",
+      "503164028dffcf54c1e0ec174c98274fbf724299",
       []
      ],
      "partitioned-popins.cookies-window.html": [
@@ -421300,7 +421324,7 @@
     ],
     "BlobURL": {
      "cross-partition-navigation.tentative.https.html": [
-      "4abe5aa639bb95321ab9f1eb13e0580505553c37",
+      "05f54b0ae0afa905ab2dfb03a9ac86bea4971449",
       [
        null,
        {
@@ -421318,7 +421342,7 @@
       ]
      ],
      "cross-partition.tentative.https.html": [
-      "5cdaad5f0af2d55f688b1ddce4e2e9c9205e4e2e",
+      "31b86bbd5b765934a44b0e3883ddb8f53e9620e1",
       [
        null,
        {
@@ -507157,6 +507181,13 @@
          {}
         ]
        ],
+       "fire-focusin-focusout.html": [
+        "d655dd65302190c08436d2c79d023de32c98b995",
+        [
+         null,
+         {}
+        ]
+       ],
        "focus-preserve.html": [
         "a00e8b77880697a51d4418fc15637b1dcef6914b",
         [
@@ -529723,7 +529754,7 @@
      ]
     ],
     "web-bluetooth.https.html": [
-     "9ed90b339e0743318cdfa0494b8358357c8d207c",
+     "97aac8ecd48b26913f4f7d8367ea4d170f90a26c",
      [
       null,
       {
@@ -529739,7 +529770,7 @@
      ]
     ],
     "web-share.https.html": [
-     "f2644f58fd6e1f85c798da30d9322a3403efdc4e",
+     "721d5915e8c3f848c8cdcc3ffccdc25457fc24d8",
      [
       null,
       {
@@ -609349,7 +609380,7 @@
          ]
         ],
         "select-keyboard-behavior.tentative.html": [
-         "c7894e63c6c5fcdd37e3fdcf879e0cbfcf67d2bb",
+         "4dbffb852cf8955bf5402c0213573eb4d060d24a",
          [
           null,
           {
@@ -609359,7 +609390,7 @@
          ]
         ],
         "select-mouse-behavior.tentative.html": [
-         "d4959c34bc9e9039cfad1d2dca42fe4bee28d219",
+         "b5a91111f46056edda3381e355add8ecba5f1154",
          [
           null,
           {
@@ -637637,10 +637668,10 @@
     ]
    },
    "partitioned-popins": {
-    "partitioned-popins.cookies.tentative.sub.https.window.js": [
-     "952e78a6eb0d66fb5f88b8db20c3bfbfbe2b736d",
+    "partitioned-popins.cookies-allowed.tentative.sub.https.window.js": [
+     "93b6aa57ef90ac798bf094b2e511bbfb22a285dd",
      [
-      "partitioned-popins/partitioned-popins.cookies.tentative.sub.https.window.html",
+      "partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html",
       {
        "script_metadata": [
         [
@@ -637650,6 +637681,32 @@
         [
          "script",
          "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/storage-access-api/helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "partitioned-popins.cookies-blocked.tentative.sub.https.window.js": [
+     "2e76570c25e293fe8b6ab2c6f128daec64471385",
+     [
+      "partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/storage-access-api/helpers.js"
         ]
        ]
       }
@@ -711547,7 +711604,7 @@
       ]
      ],
      "gatherElements.https.any.js": [
-      "ed08346e392ca304c406256fe8c60e12bfbefc30",
+      "2cd3159ca0ed7826402d500ec9543bc1e7e7dbb8",
       [
        "webnn/conformance_tests/gatherElements.https.any.html?cpu",
        {
@@ -711766,7 +711823,7 @@
       ]
      ],
      "gatherND.https.any.js": [
-      "b40507d2dcebd95590a74e0279dea160e513ba5f",
+      "4e9adf4c1bf8d9e33c59bd4f64b17779d9e6169e",
       [
        "webnn/conformance_tests/gatherND.https.any.html?cpu",
        {
@@ -722685,6 +722742,225 @@
          [
           "title",
           "test WebNN API reshape operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "scalars.https.any.js": [
+      "7cb3ceeff7f9975f893c062239c0c9d334fe1e6b",
+      [
+       "webnn/conformance_tests/scalars.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that scalar values work as expected"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/scalars.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that scalar values work as expected"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/scalars.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that scalar values work as expected"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/scalars.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that scalar values work as expected"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/scalars.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that scalar values work as expected"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/scalars.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that scalar values work as expected"
          ],
          [
           "global",
@@ -756154,7 +756430,7 @@
      ]
     ],
     "usbDevice.https.any.js": [
-     "a716e847c415b90e3904cb5d4f60c570bd856c7c",
+     "3ec2e0008f0ddaa2899ac2b258aab3f5024b9d34",
      [
       "webusb/usbDevice.https.any.html",
       {

@@ -8236,4 +8236,4 @@ crbug.com/374891025 [ Linux ] virtual/speculation-rules-prerender-target-hint/ex
 crbug.com/374891025 [ Win ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/csp-script-src-self.html?target_hint=_self [ Failure Pass ]
 
 # Fix importer 2024-10-22
-crbug.com/374978346 [ Linux ] virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-dedicated-worker.https.tentative.window.html [ Timeout Pass ]
+crbug.com/374978346 [ Linux ] virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-dedicated-worker.https.tentative.window.html [ Pass Timeout ]
