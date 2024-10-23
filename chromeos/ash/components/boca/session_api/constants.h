@@ -35,6 +35,9 @@ inline constexpr char kInsertStudentActivity[] =
 inline constexpr char kRemoveStudentUrlTemplate[] =
     "v1/teachers/$1/sessions/$2/students:remove";
 
+inline constexpr char kJoinTachyonGroupUrlTemplate[] =
+    "/v1/students/$1/sessions/$2/tachyon:join";
+
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
 inline constexpr char kRoster[] = "roster";
