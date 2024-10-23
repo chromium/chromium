@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_configuration.h"
 #import "ios/public/provider/chrome/browser/share_kit/share_kit_api.h"
@@ -18,11 +17,7 @@ class ChromiumShareKitService final : public ShareKitService {
   // ShareKitService.
   bool IsSupported() const override { return false; }
   void ShareGroup(ShareKitShareGroupConfiguration* config) override {}
-  void ShareGroup(const TabGroup* group,
-                  UIViewController* base_view_controller,
-                  id<ApplicationCommands> commandsHandler) override {}
   void JoinGroup(ShareKitJoinConfiguration* configuration) override {}
-  UIViewController* FacePile(NSString* collab_id) override { return nil; }
   UIViewController* FacePile(ShareKitFacePileConfiguration* config) override {
     return nil;
   }

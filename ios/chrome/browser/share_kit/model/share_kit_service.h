@@ -10,11 +10,9 @@
 #import "base/memory/weak_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 
-@protocol ApplicationCommands;
 @class ShareKitFacePileConfiguration;
 @class ShareKitJoinConfiguration;
 @class ShareKitShareGroupConfiguration;
-class TabGroup;
 
 // Service for ShareKit, allowing to manage tab groups sharing.
 class ShareKitService : public KeyedService {
@@ -28,24 +26,14 @@ class ShareKitService : public KeyedService {
   // execution of the application.
   virtual bool IsSupported() const = 0;
 
-  // TODO(crbug.com/373825718): Make the API pure virtual.
   // Initiates the share group flow for the given `config`.
-  virtual void ShareGroup(ShareKitShareGroupConfiguration* config);
-  // TODO(crbug.com/373825718): Remove this API.
-  // Initiates the share of `group`, presenting a view controller on top of
-  // `base_view_controller`. `commandsHandler` is used to open new tabs.
-  virtual void ShareGroup(const TabGroup* group,
-                          UIViewController* base_view_controller,
-                          id<ApplicationCommands> commandsHandler);
+  virtual void ShareGroup(ShareKitShareGroupConfiguration* config) = 0;
 
-  // TODO(crbug.com/373825718): Make it pure virtual.
   // Initiates the flow to join the group, using `configuration`.
-  virtual void JoinGroup(ShareKitJoinConfiguration* configuration);
+  virtual void JoinGroup(ShareKitJoinConfiguration* configuration) = 0;
 
   // Returns a new FacePile view controller for the given `config`.
-  virtual UIViewController* FacePile(ShareKitFacePileConfiguration* config);
-  // TODO(crbug.com/374689843): Remove this API.
-  virtual UIViewController* FacePile(NSString* collab_id);
+  virtual UIViewController* FacePile(ShareKitFacePileConfiguration* config) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_SERVICE_H_
