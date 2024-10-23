@@ -1329,9 +1329,9 @@ class SunfishLauncherButtonTest : public AshTestBase,
  public:
   SunfishLauncherButtonTest() {
     if (IsSunfishEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kSunfishFeature);
+      scoped_feature_list_.InitAndEnableFeature(features::kScannerUpdate);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kSunfishFeature);
+      scoped_feature_list_.InitAndDisableFeature(features::kScannerUpdate);
     }
   }
   ~SunfishLauncherButtonTest() override = default;

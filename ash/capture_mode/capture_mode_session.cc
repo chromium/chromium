@@ -1390,6 +1390,7 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
 }
 
 void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image) {
+  DCHECK(features::IsSunfishFeatureEnabled());
   DCHECK_EQ(active_behavior()->behavior_type(), BehaviorType::kSunfish);
 
   if (!search_results_panel_widget_) {
@@ -3215,8 +3216,7 @@ void CaptureModeSession::InitInternal() {
   capture_mode_bar_view_->OnCaptureTypeChanged(controller_->type());
   MaybeCreateUserNudge();
 
-  // TODO(crbug.com/374209296): Update to Scanner flag.
-  if (features::IsSunfishFeatureEnabled() &&
+  if (features::IsScannerEnabled() &&
       active_behavior_->ShouldRegionOverlayBeAllowed()) {
     capture_region_overlay_controller_ =
         std::make_unique<CaptureRegionOverlayController>();

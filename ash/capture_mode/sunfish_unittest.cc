@@ -65,9 +65,15 @@ FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
       scanner_controller.delegate_for_testing()->GetProfileScopedDelegate());
 }
 
+// TODO(crbug.com/374831944): Move non-search specific tests to ScannerTest.
 class SunfishTest : public AshTestBase {
  public:
-  SunfishTest() = default;
+  SunfishTest() {
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
+                                          {features::kSunfishFeature,
+                                           features::kScannerUpdate},
+                                          /*disabled_features=*/{});
+  }
   SunfishTest(const SunfishTest&) = delete;
   SunfishTest& operator=(const SunfishTest&) = delete;
   ~SunfishTest() override = default;
@@ -83,7 +89,7 @@ class SunfishTest : public AshTestBase {
   // Calling the factory constructor is enough to set it up.
   TestAshWebViewFactory test_web_view_factory_;
 
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSunfishFeature};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the accelerator starts capture mode in a new behavior.
@@ -670,12 +676,12 @@ TEST_F(SunfishTest, ActionContainerWidgetOpacity) {
   EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
 }
 
-class SunfishWithScannerTest : public SunfishTest {
+class ScannerTest : public AshTestBase {
  public:
-  SunfishWithScannerTest() = default;
-  SunfishWithScannerTest(const SunfishWithScannerTest&) = delete;
-  SunfishWithScannerTest& operator=(const SunfishWithScannerTest&) = delete;
-  ~SunfishWithScannerTest() override = default;
+  ScannerTest() = default;
+  ScannerTest(const ScannerTest&) = delete;
+  ScannerTest& operator=(const ScannerTest&) = delete;
+  ~ScannerTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kScannerUpdate};
@@ -684,7 +690,7 @@ class SunfishWithScannerTest : public SunfishTest {
 };
 
 // Tests that a Scanner session is created when a Sunfish session begins.
-TEST_F(SunfishWithScannerTest, CreatesScannerSession) {
+TEST_F(ScannerTest, CreatesScannerSession) {
   CaptureModeController::Get()->StartSunfishSession();
 
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
@@ -694,7 +700,7 @@ TEST_F(SunfishWithScannerTest, CreatesScannerSession) {
 
 // Tests that action buttons are created when a Scanner response includes
 // suggested actions.
-TEST_F(SunfishWithScannerTest, CreatesScannerActionButtons) {
+TEST_F(ScannerTest, CreatesScannerActionButtons) {
   auto* capture_mode_controller = CaptureModeController::Get();
   capture_mode_controller->StartSunfishSession();
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
@@ -717,7 +723,7 @@ TEST_F(SunfishWithScannerTest, CreatesScannerActionButtons) {
 
 // Tests that action buttons are created when the Scanner response returns as
 // fast as possible.
-TEST_F(SunfishWithScannerTest, FetchActionsImmediately) {
+TEST_F(ScannerTest, FetchActionsImmediately) {
   auto* capture_mode_controller = CaptureModeController::Get();
   capture_mode_controller->StartSunfishSession();
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),

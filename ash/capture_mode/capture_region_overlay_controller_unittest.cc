@@ -34,8 +34,7 @@ class CaptureRegionOverlayControllerTest : public testing::Test {
   ~CaptureRegionOverlayControllerTest() override = default;
 
  private:
-  // TODO(crbug.com/374209296): Update to Scanner flag.
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSunfishFeature};
+  base::test::ScopedFeatureList scoped_feature_list_{features::kScannerUpdate};
 };
 
 TEST_F(CaptureRegionOverlayControllerTest, PaintsDetectedTextRegions) {

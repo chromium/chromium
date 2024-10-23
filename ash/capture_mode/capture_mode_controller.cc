@@ -500,7 +500,7 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
       CHECK(features::IsGameDashboardEnabled());
       return BehaviorType::kGameDashboard;
     case CaptureModeEntryType::kSunfish:
-      CHECK(features::IsSunfishFeatureEnabled());
+      CHECK(features::IsScannerEnabled());
       return BehaviorType::kSunfish;
     default:
       return BehaviorType::kDefault;
@@ -720,8 +720,7 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 }
 
 void CaptureModeController::StartSunfishSession() {
-  DCHECK(features::IsSunfishFeatureEnabled());
-  // TODO(b/357658506): Determine whether to close the results panel.
+  DCHECK(features::IsScannerEnabled());
   StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
 }
 
@@ -1707,9 +1706,11 @@ void CaptureModeController::OnImageCapturedForSearch(
   // TODO(b/356878705): This currently shows the results panel immediately for
   // debugging purposes. After the backend interface is implemented, we might
   // want to wait for the backend response before showing the results panel.
-  SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
-  const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-  capture_mode_session_->ShowSearchResultsPanel(image);
+  if (features::IsSunfishFeatureEnabled()) {
+    SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
+    const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    capture_mode_session_->ShowSearchResultsPanel(image);
+  }
 
   if (on_image_captured_for_search_callback_for_test_) {
     std::move(on_image_captured_for_search_callback_for_test_).Run();
