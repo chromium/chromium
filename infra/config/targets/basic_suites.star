@@ -80,13 +80,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "ash_pixel_gtests",
-    tests = {
-        "ash_pixeltests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "aura_gtests",
     tests = {
         "aura_unittests": targets.legacy_test_config(),
@@ -187,110 +180,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromeos_annotation_scripts",
-    tests = {
-        "check_network_annotations": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromeos_arm_gtests",
-    tests = {
-        "video_decode_accelerator_tests_v4l2_vp8": targets.legacy_test_config(
-            ci_only = True,
-            # TODO(b/303119905): Remove experimental status first.
-            # Then promote out of ci-only optionally.
-            experiment_percentage = 100,
-        ),
-        "video_decode_accelerator_tests_v4l2_vp9": targets.legacy_test_config(
-            ci_only = True,
-            # TODO(b/303119905): Remove experimental status first.
-            # Then promote out of ci-only optionally.
-            experiment_percentage = 100,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromeos_browser_all_tast_tests",
-    tests = {
-        "chrome_all_tast_tests": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            args = [
-                "--tast-retries=1",
-            ],
-            swarming = targets.swarming(
-                shards = 10,
-                # Tast test doesn't always output. See crbug.com/1306300
-                io_timeout_sec = 3600,
-                idempotent = False,  # https://crbug.com/923426#c27
-            ),
-        ),
-    },
-)
-
-# Test suite for running criticalstaging Tast tests.
-targets.legacy_basic_suite(
-    name = "chromeos_browser_criticalstaging_tast_tests",
-    tests = {
-        "chrome_criticalstaging_tast_tests": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            ci_only = True,
-            swarming = targets.swarming(
-                shards = 2,
-                # Tast test doesn't always output. See crbug.com/1306300
-                io_timeout_sec = 3600,
-                idempotent = False,  # https://crbug.com/923426#c27
-            ),
-            experiment_percentage = 100,
-        ),
-    },
-)
-
-# Test suite for running disabled Tast tests to collect data to re-enable
-# them. The test suite should not be critical to builders.
-targets.legacy_basic_suite(
-    name = "chromeos_browser_disabled_tast_tests",
-    tests = {
-        "chrome_disabled_tast_tests": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            ci_only = True,
-            swarming = targets.swarming(
-                shards = 2,
-                # Tast test doesn't always output. See crbug.com/1306300
-                io_timeout_sec = 3600,
-                idempotent = False,  # https://crbug.com/923426#c27
-            ),
-            experiment_percentage = 100,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromeos_browser_integration_tests",
-    tests = {
-        "disk_usage_tast_test": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            args = [
-                # Stripping gives more accurate disk usage data.
-                "--strip-chrome",
-            ],
-            swarming = targets.swarming(
-                idempotent = False,  # https://crbug.com/923426#c27
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "chromeos_chrome_all_tast_tests",
     tests = {
         "chrome_all_tast_tests": targets.legacy_test_config(
@@ -358,48 +247,6 @@ targets.legacy_basic_suite(
     name = "chromeos_integration_tests_suite",
     tests = {
         "chromeos_integration_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromeos_isolated_scripts",
-    tests = {
-        "telemetry_perf_unittests": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            args = [
-                "--browser=cros-chrome",
-                targets.magic_args.CROS_TELEMETRY_REMOTE,
-                "--xvfb",
-                # 3 is arbitrary, but if we're having more than 3 of these tests
-                # fail in a single shard, then something is probably wrong, so fail
-                # fast.
-                "--typ-max-failures=3",
-            ],
-            swarming = targets.swarming(
-                shards = 12,
-                idempotent = False,  # https://crbug.com/549140
-            ),
-        ),
-        "telemetry_unittests": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            args = [
-                "--jobs=1",
-                "--browser=cros-chrome",
-                targets.magic_args.CROS_TELEMETRY_REMOTE,
-                # 3 is arbitrary, but if we're having more than 3 of these tests
-                # fail in a single shard, then something is probably wrong, so fail
-                # fast.
-                "--typ-max-failures=3",
-            ],
-            swarming = targets.swarming(
-                shards = 24,
-                idempotent = False,  # https://crbug.com/549140
-            ),
-        ),
     },
 )
 
@@ -597,18 +444,6 @@ targets.legacy_basic_suite(
         "vaapi_unittest": targets.legacy_test_config(
             mixins = [
                 "vaapi_unittest_args",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromeos_vaapi_fakelib_gtests",
-    tests = {
-        "vaapi_unittest": targets.legacy_test_config(
-            mixins = [
-                "vaapi_unittest_args",
-                "vaapi_unittest_libfake_args",
             ],
         ),
     },
@@ -2072,31 +1907,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_webgl_conformance_telemetry_tests",
-    tests = {
-        "webgl_conformance_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-            args = [
-                # On dual-GPU devices we want the high-performance GPU to be active
-                "--extra-browser-args=--force_high_performance_gpu",
-                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-            android_swarming = targets.swarming(
-                shards = 12,
-            ),
-            chromeos_swarming = targets.swarming(
-                shards = 20,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_webgl_conformance_validating_telemetry_tests",
     tests = {
         "webgl_conformance_validating_tests": targets.legacy_test_config(
@@ -2178,14 +1988,6 @@ targets.legacy_basic_suite(
 )
 
 # END tests which run on the GPU bots
-
-targets.legacy_basic_suite(
-    name = "linux_cfm_gtests",
-    tests = {
-        "chromeos_unittests": targets.legacy_test_config(),
-        "unit_tests": targets.legacy_test_config(),
-    },
-)
 
 targets.legacy_basic_suite(
     name = "linux_chromeos_lacros_gtests",
@@ -2634,15 +2436,6 @@ targets.legacy_basic_suite(
             ),
         ),
         "pixel_interactive_ui_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "pixel_experimental_browser_tests_gtests",
-    tests = {
-        "pixel_experimental_browser_tests": targets.legacy_test_config(
-            experiment_percentage = 100,
-        ),
     },
 )
 

@@ -1,0 +1,7 @@
+{
+  "chromeos-amd64-generic-dbg": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ]
+  }
+}

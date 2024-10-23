@@ -114,6 +114,7 @@
   "ash_pixeltests": {
     "label": "//ash:ash_pixeltests",
     "type": "windowed_test_launcher",
+    "skip_usage_check": True,
   },
   "ash_unittests": {
     "label": "//ash:ash_unittests",
@@ -819,6 +820,7 @@
   "disk_usage_tast_test": {
     "label": "//chromeos:disk_usage_tast_test",
     "type": "generated_script",
+    "skip_usage_check": True,
     "args": [
       "--logs-dir=${ISOLATED_OUTDIR}",
     ],

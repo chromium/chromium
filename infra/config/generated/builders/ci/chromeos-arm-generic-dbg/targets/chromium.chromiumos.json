@@ -1,0 +1,7 @@
+{
+  "chromeos-arm-generic-dbg": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ]
+  }
+}

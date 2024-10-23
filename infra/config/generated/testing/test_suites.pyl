@@ -74,19 +74,6 @@
       },
     },
 
-    'ash_pixel_gtests': {
-      'ash_pixeltests': {
-        'test_common': {
-          'mixins': [
-            'skia_gold_test',
-          ],
-          'args': [
-            '--enable-pixel-output-in-tests',
-          ],
-        },
-      },
-    },
-
     'aura_gtests': {
       'aura_unittests': {},
       'compositor_unittests': {},
@@ -277,106 +264,6 @@
       'chromedriver_replay_unittests': {},
     },
 
-    'chromeos_annotation_scripts': {
-      'check_network_annotations': {
-        'script': 'check_network_annotations.py',
-      },
-    },
-
-    'chromeos_arm_gtests': {
-      'video_decode_accelerator_tests_v4l2_vp8': {
-        'test_common': {
-          'args': [
-            '--as-root',
-            '--validator_type=none',
-            '../../media/test/data/test-25fps.vp8',
-            '../../media/test/data/test-25fps.vp8.json',
-          ],
-        },
-        'test': 'video_decode_accelerator_tests',
-        'ci_only': True,
-        'experiment_percentage': 100,
-      },
-      'video_decode_accelerator_tests_v4l2_vp9': {
-        'test_common': {
-          'args': [
-            '--as-root',
-            '--validator_type=none',
-            '../../media/test/data/test-25fps.vp9',
-            '../../media/test/data/test-25fps.vp9.json',
-          ],
-        },
-        'test': 'video_decode_accelerator_tests',
-        'ci_only': True,
-        'experiment_percentage': 100,
-      },
-    },
-
-    'chromeos_browser_all_tast_tests': {
-      'chrome_all_tast_tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--tast-retries=1',
-        ],
-        'swarming': {
-          'shards': 10,
-          'io_timeout': 3600,
-          'idempotent': False,
-        },
-      },
-    },
-
-    'chromeos_browser_criticalstaging_tast_tests': {
-      'chrome_criticalstaging_tast_tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 2,
-          'io_timeout': 3600,
-          'idempotent': False,
-        },
-        'experiment_percentage': 100,
-      },
-    },
-
-    'chromeos_browser_disabled_tast_tests': {
-      'chrome_disabled_tast_tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 2,
-          'io_timeout': 3600,
-          'idempotent': False,
-        },
-        'experiment_percentage': 100,
-      },
-    },
-
-    'chromeos_browser_integration_tests': {
-      'disk_usage_tast_test': {
-        'test_common': {
-          'merge': {
-            'script': '//tools/perf/process_perf_results.py',
-          },
-        },
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--strip-chrome',
-        ],
-        'swarming': {
-          'idempotent': False,
-        },
-      },
-    },
-
     'chromeos_chrome_all_tast_tests': {
       'chrome_all_tast_tests': {
         'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
@@ -414,39 +301,6 @@
 
     'chromeos_integration_tests_suite': {
       'chromeos_integration_tests': {},
-    },
-
-    'chromeos_isolated_scripts': {
-      'telemetry_perf_unittests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--browser=cros-chrome',
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-          '--xvfb',
-          '--typ-max-failures=3',
-        ],
-        'swarming': {
-          'shards': 12,
-          'idempotent': False,
-        },
-      },
-      'telemetry_unittests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--jobs=1',
-          '--browser=cros-chrome',
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-          '--typ-max-failures=3',
-        ],
-        'swarming': {
-          'shards': 24,
-          'idempotent': False,
-        },
-      },
     },
 
     'chromeos_system_friendly_gtests': {
@@ -699,15 +553,6 @@
       'rust_gtest_interop_unittests': {},
       'sql_unittests': {},
       'url_unittests': {},
-    },
-
-    'chromeos_vaapi_fakelib_gtests': {
-      'vaapi_unittest': {
-        'mixins': [
-          'vaapi_unittest_args',
-          'vaapi_unittest_libfake_args',
-        ],
-      },
     },
 
     'chromeos_vaapi_gtests': {
@@ -2732,33 +2577,6 @@
       },
     },
 
-    'gpu_webgl_conformance_telemetry_tests': {
-      'webgl_conformance_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-        },
-        'telemetry_test_name': 'webgl1_conformance',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--extra-browser-args=--force_high_performance_gpu',
-          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-        'android_swarming': {
-          'shards': 12,
-        },
-        'chromeos_swarming': {
-          'shards': 20,
-        },
-      },
-    },
-
     'gpu_webgl_conformance_validating_telemetry_tests': {
       'webgl_conformance_validating_tests': {
         'test_common': {
@@ -2858,11 +2676,6 @@
       'ios_web_view_unittests': {},
       'skia_unittests': {},
       'ui_base_unittests': {},
-    },
-
-    'linux_cfm_gtests': {
-      'chromeos_unittests': {},
-      'unit_tests': {},
     },
 
     'linux_chromeos_lacros_gtests': {
@@ -3351,23 +3164,6 @@
       },
     },
 
-    'pixel_experimental_browser_tests_gtests': {
-      'pixel_experimental_browser_tests': {
-        'test_common': {
-          'mixins': [
-            'skia_gold_test',
-          ],
-          'args': [
-            '--browser-ui-tests-verify-pixels',
-            '--enable-pixel-output-in-tests',
-            '--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.pixel_tests.filter',
-          ],
-        },
-        'test': 'browser_tests',
-        'experiment_percentage': 100,
-      },
-    },
-
     'swangle_gtests': {
       'angle_deqp_egl_tests': {
         'args': [
@@ -3816,19 +3612,6 @@
       'chrome_private_code_test_isolated_scripts',
     ],
 
-    'chromeos_vm_gtests': [
-      'chromeos_integration_tests_suite',
-      'chromeos_system_friendly_gtests',
-      'chromeos_vaapi_fakelib_gtests',
-    ],
-
-    'chromeos_vm_tast': [
-      'chromeos_browser_all_tast_tests',
-      'chromeos_browser_criticalstaging_tast_tests',
-      'chromeos_browser_disabled_tast_tests',
-      'chromeos_browser_integration_tests',
-    ],
-
     'chromium_android_gtests': [
       'android_smoke_tests',
       'android_specific_chromium_gtests',
@@ -3955,10 +3738,6 @@
       'devtools_browser_tests_suite',
     ],
 
-    'gpu_chromeos_telemetry_tests': [
-      'gpu_webgl_conformance_telemetry_tests',
-    ],
-
     'gpu_fyi_linux_release_vulkan_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
@@ -4044,20 +3823,6 @@
     'linux_chromeos_isolated_scripts': [
       'blink_web_tests_ppapi_isolated_scripts',
       'chrome_sizes_suite',
-    ],
-
-    'linux_chromeos_rel_cq': [
-      'ash_pixel_gtests',
-      'aura_gtests',
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'chromium_gtests_for_linux_and_chromeos_only',
-      'chromium_gtests_for_win_and_linux_only',
-      'linux_chromeos_lacros_gtests',
-      'linux_chromeos_specific_gtests',
-      'linux_flavor_specific_chromium_gtests',
-      'non_android_chromium_gtests',
-      'pixel_experimental_browser_tests_gtests',
     ],
 
     'win_specific_isolated_scripts_and_sizes': [

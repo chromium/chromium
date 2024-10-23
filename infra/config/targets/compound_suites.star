@@ -20,25 +20,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "chromeos_vm_gtests",
-    basic_suites = [
-        "chromeos_system_friendly_gtests",
-        "chromeos_vaapi_fakelib_gtests",
-        "chromeos_integration_tests_suite",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "chromeos_vm_tast",
-    basic_suites = [
-        "chromeos_browser_all_tast_tests",
-        "chromeos_browser_criticalstaging_tast_tests",
-        "chromeos_browser_disabled_tast_tests",
-        "chromeos_browser_integration_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "chromium_android_gtests",
     basic_suites = [
         "android_smoke_tests",
@@ -209,13 +190,6 @@ targets.legacy_compound_suite(
 
 # BEGIN composition test suites used by the GPU bots
 
-targets.legacy_compound_suite(
-    name = "gpu_chromeos_telemetry_tests",
-    basic_suites = [
-        "gpu_webgl_conformance_telemetry_tests",
-    ],
-)
-
 # TODO(jonross): remove this once Vulkan Swiftshader and Vulkan GL interop
 # paths are merged. This should mirror
 # `gpu_fyi_linux_release_telemetry_tests` but with additional
@@ -338,24 +312,6 @@ targets.legacy_compound_suite(
     basic_suites = [
         "blink_web_tests_ppapi_isolated_scripts",
         "chrome_sizes_suite",
-    ],
-)
-
-# This is for linux-chromeos-rel CQ builder.
-targets.legacy_compound_suite(
-    name = "linux_chromeos_rel_cq",
-    basic_suites = [
-        "aura_gtests",
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chromium_gtests_for_linux_and_chromeos_only",
-        "chromium_gtests_for_win_and_linux_only",
-        "linux_chromeos_lacros_gtests",
-        "linux_chromeos_specific_gtests",
-        "linux_flavor_specific_chromium_gtests",
-        "non_android_chromium_gtests",
-        "pixel_experimental_browser_tests_gtests",
-        "ash_pixel_gtests",
     ],
 )
 

@@ -458,73 +458,25 @@
     },
   },
   {
+    # The following builders in this group have been migrated to set their
+    # targets in the builders' declarations in
+    # //infra/config/subprojects/ci/chromium.chromiumos.star
+    #   chromeos-amd64-generic-asan-rel
+    #   chromeos-amd64-generic-cfi-thin-lto-rel
+    #   chromeos-amd64-generic-dbg
+    #   chromeos-amd64-generic-rel
+    #   chromeos-amd64-generic-rel-gtest
+    #   chromeos-amd64-generic-rel-tast
+    #   chromeos-arm-generic-dbg
+    #   chromeos-arm-generic-rel
+    #   chromeos-arm64-generic-rel
+    #   linux-cfm-rel
+    #   linux-chromeos-dbg
+    #   linux-chromeos-rel
     'name': 'chromium.chromiumos',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'chromeos-amd64-generic-asan-rel': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'chromeos-amd64-generic-cfi-thin-lto-rel': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'chromeos-amd64-generic-dbg': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'chromeos-amd64-generic-rel': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'chromeos-amd64-generic-rel-gtest': {
-        'browser_config': 'cros-chrome',
-        'mixins': [
-          'chromeos-generic-vm',
-        ],
-        'os_type': 'chromeos',
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_chromeos_telemetry_tests',
-          'gtest_tests': 'chromeos_vm_gtests',
-          'isolated_scripts': 'chromeos_isolated_scripts',
-        },
-      },
-      'chromeos-amd64-generic-rel-tast': {
-        'browser_config': 'cros-chrome',
-        'mixins': [
-          'chromeos-generic-vm',
-        ],
-        'os_type': 'chromeos',
-        'test_suites': {
-          'gtest_tests': 'chromeos_vm_tast',
-        },
-      },
-      'chromeos-arm-generic-dbg': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'chromeos-arm-generic-rel': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'chromeos-arm64-generic-rel': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'browser_config': 'cros-chrome',
-        'mixins': [
-          'chromeos-generic-vm',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_arm_gtests',
-        },
-      },
+      # Builders running skylab tests cannot be migrated to starlark currently
       'chromeos-jacuzzi-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -538,6 +490,7 @@
         'os_type': 'chromeos',
         'cros_board': 'jacuzzi',
       },
+      # Builders running skylab tests cannot be migrated to starlark currently
       'chromeos-octopus-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -550,40 +503,6 @@
         },
         'os_type': 'chromeos',
         'cros_board': 'octopus',
-      },
-      'linux-cfm-rel': {
-        'mixins': [
-          'linux-jammy',
-          'x86-64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_cfm_gtests',
-        },
-      },
-      'linux-chromeos-dbg': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_chromeos_gtests',
-          'isolated_scripts': 'linux_chromeos_isolated_scripts',
-        },
-      },
-      'linux-chromeos-rel': {
-        'mixins': [
-          'x86-64',
-          'isolate_profile_data',
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_chromeos_rel_cq',
-          'isolated_scripts': 'linux_chromeos_isolated_scripts',
-          'scripts': 'chromeos_annotation_scripts',
-        },
       },
     },
   },

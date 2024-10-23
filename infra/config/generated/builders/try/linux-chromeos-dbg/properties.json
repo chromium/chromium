@@ -42,7 +42,8 @@
           "builder": "linux-chromeos-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-chromeos-dbg/targets"
     }
   },
   "$build/reclient": {

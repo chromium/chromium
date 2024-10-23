@@ -50,13 +50,6 @@
       # Times out listing tests crbug.com/1167314
       'android-asan',
     ],
-    'modifications': {
-      'linux-chromeos-rel': {
-        # b/41493162: angle_unittests has a high failure rate.
-        # Re-enable cq when the issue is fixed.
-        'ci_only': True,
-      },
-    },
   },
   'blink_web_tests': {
     'modifications': {
@@ -334,23 +327,6 @@
           'shards': 20,
         },
       },
-      'linux-chromeos-dbg': {
-        'swarming': {
-          'shards': 140,
-        },
-      },
-      'linux-chromeos-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1473501
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 60,
-          'dimensions': {
-            'kvm': '1',
-          },
-        },
-      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -400,11 +376,6 @@
   },
   'chrome_all_tast_tests': {
     'modifications': {
-      'chromeos-amd64-generic-rel-tast': {
-        'args': [
-          '--tast-shard-method=hash',
-        ],
-      },
       'chromeos-eve-chrome': {
         'swarming': {
           # Increased timeout to 4 hours due to shard timeout.
@@ -536,20 +507,6 @@
         ],
         'swarming': {
           'shards': 25,
-        },
-      },
-      'linux-chromeos-dbg': {
-        'swarming': {
-          'shards': 16,
-        },
-      },
-      'linux-chromeos-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1475852
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 6,
         },
       },
       'win-asan': {
@@ -871,19 +828,6 @@
           '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
         ],
       },
-      'linux-chromeos-dbg': {
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'linux-chromeos-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 5,
-        },
-      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -961,11 +905,6 @@
         'swarming': {
           'shards': 4,
         }
-      },
-      'linux-chromeos-dbg': {
-        'swarming': {
-          'shards': 2,
-        },
       },
       'win-asan': {
         # TODO(crbug.com/40200867): net_unittests is slow under ASan.
@@ -1141,13 +1080,6 @@
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
     ],
   },
-  'pthreadpool_unittests': {
-    'remove_from': [
-      # pthreadpool is not built for ChromeOS currently.
-      'linux-chromeos-dbg',
-      'linux-chromeos-rel',
-    ],
-  },
   'sandbox_linux_unittests': {
     'remove_from': [
       'android-asan',  # https://crbug.com/962650
@@ -1196,11 +1128,6 @@
         'swarming': {
           'shards': 3,
           },
-      },
-      'linux-chromeos-rel': {
-        'swarming': {
-          'shards': 2,
-        },
       },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
@@ -1301,19 +1228,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter',
         ],
       },
-      'linux-chromeos-dbg': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'linux-chromeos-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'win-asan': {
         'swarming': {
           # ASAN bot is slow: https://crbug.com/1484550#c4
@@ -1376,11 +1290,6 @@
         },
       },
     },
-  },
-  'wayland_client_perftests': {
-    'remove_from': [
-      'linux-chromeos-dbg',  # https://crbug.com/859307
-    ],
   },
   'webgl2_conformance_d3d11_passthrough_tests': {
     'remove_from': [

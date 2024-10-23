@@ -1834,6 +1834,7 @@ targets.mixin(
 
 targets.mixin(
     name = "vaapi_unittest_libfake_args",
+    generate_pyl_entry = False,
     args = [
         # Tell libva to do dummy encoding/decoding. For more info, see:
         # https://github.com/intel/libva/blob/v2.14-branch/va/va_fool.c#L52

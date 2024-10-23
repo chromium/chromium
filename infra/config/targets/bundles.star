@@ -718,6 +718,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "ash_pixel_gtests",
+    targets = [
+        "ash_pixeltests",
+    ],
+)
+
+targets.bundle(
     name = "bfcache_android_gtests",
     targets = [
         "bf_cache_android_browsertests",
@@ -893,6 +900,178 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromeos_annotation_scripts",
+    targets = [
+        "check_network_annotations",
+    ],
+)
+
+targets.bundle(
+    name = "chromeos_arm_gtests",
+    targets = [
+        "video_decode_accelerator_tests_v4l2_vp8",
+        "video_decode_accelerator_tests_v4l2_vp9",
+    ],
+    per_test_modifications = {
+        "video_decode_accelerator_tests_v4l2_vp8": targets.mixin(
+            ci_only = True,
+            # TODO(crbug.com/303119905): Remove experimental status first.
+            # Then promote out of ci-only optionally.
+            experiment_percentage = 100,
+        ),
+        "video_decode_accelerator_tests_v4l2_vp9": targets.mixin(
+            ci_only = True,
+            # TODO(crbug.com/303119905): Remove experimental status first.
+            # Then promote out of ci-only optionally.
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.bundle(
+    name = "chromeos_browser_all_tast_tests",
+    targets = [
+        "chrome_all_tast_tests",
+    ],
+    per_test_modifications = {
+        "chrome_all_tast_tests": [
+            targets.mixin(
+                args = [
+                    "--tast-retries=1",
+                ],
+                swarming = targets.swarming(
+                    shards = 10,
+                    # Tast test doesn't always output. See crbug.com/1306300
+                    io_timeout_sec = 3600,
+                    # https://crbug.com/923426#c27
+                    idempotent = False,
+                ),
+            ),
+            "has_native_resultdb_integration",
+        ],
+    },
+)
+
+# Test suite for running criticalstaging Tast tests.
+targets.bundle(
+    name = "chromeos_browser_criticalstaging_tast_tests",
+    targets = [
+        "chrome_criticalstaging_tast_tests",
+    ],
+    per_test_modifications = {
+        "chrome_criticalstaging_tast_tests": [
+            targets.mixin(
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 2,
+                    # Tast test doesn't always output. See crbug.com/1306300
+                    io_timeout_sec = 3600,
+                    # https://crbug.com/923426#c27
+                    idempotent = False,
+                ),
+                experiment_percentage = 100,
+            ),
+            "has_native_resultdb_integration",
+        ],
+    },
+)
+
+# Test suite for running disabled Tast tests to collect data to re-enable
+# them. The test suite should not be critical to builders.
+targets.bundle(
+    name = "chromeos_browser_disabled_tast_tests",
+    targets = [
+        "chrome_disabled_tast_tests",
+    ],
+    per_test_modifications = {
+        "chrome_disabled_tast_tests": [
+            targets.mixin(
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 2,
+                    # Tast test doesn't always output. See crbug.com/1306300
+                    io_timeout_sec = 3600,
+                    # https://crbug.com/923426#c27
+                    idempotent = False,
+                ),
+                experiment_percentage = 100,
+            ),
+            "has_native_resultdb_integration",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "chromeos_browser_integration_tests",
+    targets = [
+        "disk_usage_tast_test",
+    ],
+    per_test_modifications = {
+        "disk_usage_tast_test": [
+            targets.mixin(
+                args = [
+                    # Stripping gives more accurate disk usage data.
+                    "--strip-chrome",
+                ],
+                swarming = targets.swarming(
+                    # https://crbug.com/923426#c27
+                    idempotent = False,
+                ),
+            ),
+            "has_native_resultdb_integration",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "chromeos_isolated_scripts",
+    targets = [
+        "telemetry_perf_unittests",
+        "telemetry_unittests",
+    ],
+    per_test_modifications = {
+        "telemetry_perf_unittests": [
+            targets.mixin(
+                args = [
+                    "--browser=cros-chrome",
+                    targets.magic_args.CROS_TELEMETRY_REMOTE,
+                    "--xvfb",
+                    # 3 is arbitrary, but if we're having more than 3 of these tests
+                    # fail in a single shard, then something is probably wrong, so fail
+                    # fast.
+                    "--typ-max-failures=3",
+                ],
+                swarming = targets.swarming(
+                    shards = 12,
+                    # https://crbug.com/549140
+                    idempotent = False,
+                ),
+            ),
+            "has_native_resultdb_integration",
+        ],
+        "telemetry_unittests": [
+            targets.mixin(
+                args = [
+                    "--jobs=1",
+                    "--browser=cros-chrome",
+                    targets.magic_args.CROS_TELEMETRY_REMOTE,
+                    # 3 is arbitrary, but if we're having more than 3 of these tests
+                    # fail in a single shard, then something is probably wrong, so fail
+                    # fast.
+                    "--typ-max-failures=3",
+                ],
+                swarming = targets.swarming(
+                    shards = 24,
+                    # https://crbug.com/549140
+                    idempotent = False,
+                ),
+            ),
+            "has_native_resultdb_integration",
+        ],
+    },
+)
+
+targets.bundle(
     name = "chromeos_js_code_coverage_browser_tests_suite",
     targets = [
         "chromeos_js_code_coverage_browser_tests",
@@ -904,6 +1083,38 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "chromeos_vaapi_fakelib_gtests",
+    targets = [
+        "vaapi_unittest",
+    ],
+    per_test_modifications = {
+        "vaapi_unittest": [
+            "vaapi_unittest_args",
+            "vaapi_unittest_libfake_args",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "chromeos_vm_gtests",
+    targets = [
+        "chromeos_integration_tests_suite",
+        "chromeos_system_friendly_gtests",
+        "chromeos_vaapi_fakelib_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "chromeos_vm_tast",
+    targets = [
+        "chromeos_browser_all_tast_tests",
+        "chromeos_browser_criticalstaging_tast_tests",
+        "chromeos_browser_disabled_tast_tests",
+        "chromeos_browser_integration_tests",
+    ],
 )
 
 targets.bundle(
@@ -2289,6 +2500,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_chromeos_telemetry_tests",
+    targets = [
+        "gpu_webgl_conformance_telemetry_tests",
+    ],
+)
+
+targets.bundle(
     name = "gpu_common_android_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
@@ -3188,6 +3406,34 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_webgl_conformance_telemetry_tests",
+    targets = [
+        "webgl_conformance_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_tests": [
+            targets.mixin(
+                args = [
+                    # On dual-GPU devices we want the high-performance GPU to be active
+                    "--extra-browser-args=--force_high_performance_gpu",
+                    targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
+                ],
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 12,
+                ),
+                chromeos_swarming = targets.swarming(
+                    shards = 20,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
     name = "gpu_win_gtests",
     targets = [
         "gpu_angle_unit_gtests",
@@ -4050,6 +4296,32 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "linux_cfm_gtests",
+    targets = [
+        "chromeos_unittests",
+        "unit_tests",
+    ],
+)
+
+# This is for linux-chromeos-rel CQ builder.
+targets.bundle(
+    name = "linux_chromeos_rel_cq",
+    targets = [
+        "ash_pixel_gtests",
+        "aura_gtests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "chromium_gtests_for_linux_and_chromeos_only",
+        "chromium_gtests_for_win_and_linux_only",
+        "linux_chromeos_lacros_gtests",
+        "linux_chromeos_specific_gtests",
+        "linux_flavor_specific_chromium_gtests",
+        "non_android_chromium_gtests",
+        "pixel_experimental_browser_tests_gtests",
+    ],
+)
+
+targets.bundle(
     name = "linux_force_accessibility_gtests",
     targets = [
         "browser_tests",
@@ -4200,6 +4472,18 @@ targets.bundle(
             resultdb = targets.resultdb(
                 enable = True,
             ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "pixel_experimental_browser_tests_gtests",
+    targets = [
+        "pixel_experimental_browser_tests",
+    ],
+    per_test_modifications = {
+        "pixel_experimental_browser_tests": targets.mixin(
+            experiment_percentage = 100,
         ),
     },
 )
