@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.search_engines.choice_screen;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -51,6 +53,8 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         View getView();
 
         void updateViewForType(@DialogType int dialogType);
+
+        void destroy();
     }
 
     private final Context mContext;
@@ -92,14 +96,14 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
      * @return {@code true} if the dialog will be shown, {@code false} otherwise.
      */
     public static boolean maybeShow(
-            Context context,
+            Activity activity,
             ModalDialogManager modalDialogManager,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         return maybeShowInternal(
                 searchEngineChoiceService ->
                         new ChoiceDialogCoordinator(
-                                context,
-                                new ViewHolderImpl(context),
+                                activity,
+                                new ViewHolderImpl(activity),
                                 modalDialogManager,
                                 lifecycleDispatcher,
                                 searchEngineChoiceService));
@@ -220,6 +224,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     @Override
     public void dismissDialog() {
         mModalDialogManager.dismissDialog(mModel, DialogDismissalCause.UNKNOWN);
+        mViewHolder.destroy();
     }
 
     @Override
@@ -300,12 +305,15 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 .removeKey(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS);
     }
 
-    private static class ViewHolderImpl implements ViewHolder {
+    private static class ViewHolderImpl implements ViewHolder, View.OnLayoutChangeListener {
+        private final View mContentView;
         private final View mView;
 
         @SuppressLint("InflateParams")
-        ViewHolderImpl(Context context) {
-            mView = LayoutInflater.from(context).inflate(R.layout.blocking_choice_dialog, null);
+        ViewHolderImpl(Activity activity) {
+            mContentView = activity.findViewById(android.R.id.content);
+            mView = LayoutInflater.from(activity).inflate(R.layout.blocking_choice_dialog, null);
+            mContentView.addOnLayoutChangeListener(this);
         }
 
         @Override
@@ -315,19 +323,18 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
         @Override
         public void updateViewForType(@DialogType int dialogType) {
-            View illustration = mView.findViewById(R.id.illustration);
+            ImageView illustration = mView.findViewById(R.id.illustration);
             TextView title = mView.findViewById(R.id.choice_dialog_title);
             TextView message = mView.findViewById(R.id.choice_dialog_message);
 
             switch (dialogType) {
                 case DialogType.LOADING, DialogType.CHOICE_LAUNCH -> {
-                    illustration.setBackgroundResource(
-                            R.drawable.blocking_choice_dialog_illustration);
+                    illustration.setImageResource(R.drawable.blocking_choice_dialog_illustration);
                     title.setText(R.string.blocking_choice_dialog_first_title);
                     message.setText(R.string.blocking_choice_dialog_first_message);
                 }
                 case DialogType.CHOICE_CONFIRM -> {
-                    illustration.setBackgroundResource(
+                    illustration.setImageResource(
                             R.drawable.blocking_choice_confirmation_illustration);
                     title.setText(R.string.blocking_choice_dialog_second_title);
                     message.setText(R.string.blocking_choice_dialog_second_message);
@@ -337,6 +344,34 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
             // As the dialog states change the text, focus accessibility every time the state
             // changes.
             title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        }
+
+        @Override
+        public void destroy() {
+            mContentView.removeOnLayoutChangeListener(this);
+        }
+
+        @Override
+        public void onLayoutChange(
+                View view,
+                int left,
+                int top,
+                int right,
+                int bottom,
+                int oldLeft,
+                int oldTop,
+                int oldRight,
+                int oldBottom) {
+            int oldHeight = oldBottom - oldTop;
+            int newHeight = bottom - top;
+            if (newHeight == oldHeight) return;
+
+            int requiredHeight =
+                    mView.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.blocking_dialog_required_height_for_illustration);
+            View illustration = mView.findViewById(R.id.illustration);
+            illustration.setVisibility(newHeight < requiredHeight ? View.GONE : View.VISIBLE);
         }
     }
 }
