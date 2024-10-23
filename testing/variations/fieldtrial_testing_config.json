@@ -961,6 +961,21 @@
             ]
         }
     ],
+    "ArcOnDemandV2_holdback": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcOnDemandV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmBlkMultipleWorkers": [
         {
             "platforms": [
