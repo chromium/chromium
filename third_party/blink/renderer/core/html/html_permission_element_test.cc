@@ -1346,6 +1346,48 @@ TEST_F(HTMLPemissionElementSimTest, BlockedByMissingFrameAncestorsCSP) {
   }
 }
 
+// Test that a permission element can be hidden (and shown again) by using the
+// ":granted" pseudo-class selector.
+TEST_F(HTMLPemissionElementSimTest, GrantedSelectorDisplayNone) {
+  SimRequest main_resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  main_resource.Complete(R"(
+    <body>
+    <style>
+      permission:granted { display: none; }
+    </style>
+    </body>
+  )");
+
+  auto* permission_element =
+      CreatePermissionElement(GetDocument(), "geolocation");
+  permission_service()->WaitForPermissionObserverAdded();
+
+  EXPECT_TRUE(permission_element->GetComputedStyle());
+  EXPECT_EQ(
+      EDisplay::kInlineBlock,
+      permission_element->GetComputedStyle()->GetDisplayStyle().Display());
+
+  // The permission becomes granted, hiding the permission element because of
+  // the style.
+  permission_service()->NotifyPermissionStatusChange(
+      PermissionName::GEOLOCATION, MojoPermissionStatus::GRANTED);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  // An element with "display: none" does not have a computed style.
+  EXPECT_FALSE(permission_element->GetComputedStyle());
+
+  // The permission stops being granted, the permission element is no longer
+  // hidden.
+  permission_service()->NotifyPermissionStatusChange(
+      PermissionName::GEOLOCATION, MojoPermissionStatus::DENIED);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  EXPECT_TRUE(permission_element->GetComputedStyle());
+  EXPECT_EQ(
+      EDisplay::kInlineBlock,
+      permission_element->GetComputedStyle()->GetDisplayStyle().Display());
+}
+
 class HTMLPemissionElementIntersectionTest
     : public HTMLPemissionElementSimTest {
  public:
