@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/heap_array.h"
 #include "base/notreached.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/draw_image.h"
@@ -1118,12 +1119,12 @@ void PaintOpWriter::Write(const PaintRecord& record,
 
 void PaintOpWriter::Write(const SkRegion& region) {
   size_t bytes_required = region.writeToMemory(nullptr);
-  std::unique_ptr<char[]> data(new char[bytes_required]);
-  size_t bytes_written = region.writeToMemory(data.get());
+  auto data = base::HeapArray<char>::Uninit(bytes_required);
+  size_t bytes_written = region.writeToMemory(data.data());
   DCHECK_EQ(bytes_required, bytes_written);
 
   WriteSize(bytes_written);
-  WriteData(bytes_written, data.get());
+  WriteData(bytes_written, data.data());
 }
 
 }  // namespace cc
