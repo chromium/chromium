@@ -15,6 +15,7 @@ declare_args() {
 }
 
 if (use_system_libdrm) {
+  assert(!is_linux, "System libdrm is not supported in linux")
   pkg_config("libdrm_config") {
     packages = [ "libdrm" ]
   }
