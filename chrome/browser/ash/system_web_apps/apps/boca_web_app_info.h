@@ -38,6 +38,7 @@ class BocaSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldPinTab(GURL url) const override;
   bool IsAppEnabled() const override;
   bool HasCustomTabMenuModel() const override;
+  gfx::Size GetMinimumWindowSize() const override;
   std::unique_ptr<ui::SimpleMenuModel> GetTabMenuModel(
       ui::SimpleMenuModel::Delegate* delegate) const override;
   Browser* LaunchAndNavigateSystemWebApp(

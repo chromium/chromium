@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace {
@@ -64,6 +65,10 @@ TEST_F(BocaSystemAppProviderDelegateTest, AllowResize) {
 
 TEST_F(BocaSystemAppProviderDelegateTest, AllowMaximize) {
   EXPECT_TRUE(delegate()->ShouldAllowMaximize());
+}
+
+TEST_F(BocaSystemAppProviderDelegateTest, HasMinimalSize) {
+  EXPECT_EQ(gfx::Size(400, 100), delegate()->GetMinimumWindowSize());
 }
 
 TEST_F(BocaSystemAppProviderDelegateTest, UsesDefaultTabMenuModel) {

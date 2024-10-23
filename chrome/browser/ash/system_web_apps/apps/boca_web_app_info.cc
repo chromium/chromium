@@ -99,6 +99,13 @@ bool BocaSystemAppDelegate::HasCustomTabMenuModel() const {
   return IsConsumerProfile(profile());
 }
 
+gfx::Size BocaSystemAppDelegate::GetMinimumWindowSize() const {
+  if (!IsConsumerProfile(profile())) {
+    return {400, 100};
+  }
+  return SystemWebAppDelegate::GetMinimumWindowSize();
+}
+
 std::unique_ptr<ui::SimpleMenuModel> BocaSystemAppDelegate::GetTabMenuModel(
     ui::SimpleMenuModel::Delegate* delegate) const {
   std::unique_ptr<ui::SimpleMenuModel> tab_menu =
