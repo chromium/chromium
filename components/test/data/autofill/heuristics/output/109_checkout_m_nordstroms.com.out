@@ -1,17 +1,3 @@
-UNKNOWN_TYPE |  |  |  | _1
-NAME_FIRST |  | First Name |  | _1
-NAME_MIDDLE_INITIAL |  | M.I. |  | _1
-NAME_LAST |  | Last Name |  | _1
-ADDRESS_HOME_LINE1 |  | Address 1 |  | _1
-ADDRESS_HOME_LINE2 |  | Address 2 (Optional) |  | _1
-ADDRESS_HOME_CITY |  | City |  | _1
-ADDRESS_HOME_STATE |  | State |  | _1
-ADDRESS_HOME_ZIP |  | ZIP Code |  | _1
-PHONE_HOME_CITY_AND_NUMBER |  | Phone Information |  | _1
-UNKNOWN_TYPE |  | Use this as my billing address. | on | _1
-UNKNOWN_TYPE | multiple-address | No | false | _1
-UNKNOWN_TYPE | multiple-address | Yes | true | _1
-
 UNKNOWN_TYPE |  | Note Number |  | _1
 UNKNOWN_TYPE |  | Access Code |  | _1
 UNKNOWN_TYPE |  | Gift Card Number |  | _1
@@ -23,8 +9,8 @@ UNKNOWN_TYPE | discount | % |  | _1
 UNKNOWN_TYPE | discount | % |  | _1
 UNKNOWN_TYPE |  | CREDIT CARD |  | _1
 CREDIT_CARD_NUMBER |  | Card Number Information |  | _2
-CREDIT_CARD_EXP_MONTH |  |  |  | _2
-CREDIT_CARD_EXP_4_DIGIT_YEAR |  |  |  | _2
+CREDIT_CARD_EXP_MONTH |  | Month |  | _2
+CREDIT_CARD_EXP_4_DIGIT_YEAR |  | Year |  | _2
 CREDIT_CARD_VERIFICATION_CODE | credit-ccv | Security Code Information |  | _2
 UNKNOWN_TYPE |  | Yes, I would like to save my credit card information. | on | _1
 UNKNOWN_TYPE |  | BILL TO |  | _1
@@ -40,3 +26,17 @@ ADDRESS_HOME_COUNTRY |  | Country | 0 | _1
 EMAIL_ADDRESS |  | E-mail Information Information |  | _1
 PHONE_HOME_CITY_AND_NUMBER |  | Phone Information Information |  | _1
 UNKNOWN_TYPE |  | Yes! Send me e-mail updates about the latest trends, products and promotions online and in store. | on | _1
+
+UNKNOWN_TYPE |  | Select or Add New Address |  | _1
+NAME_FIRST |  | First Name |  | _1
+NAME_MIDDLE_INITIAL |  | M.I. |  | _1
+NAME_LAST |  | Last Name |  | _1
+ADDRESS_HOME_LINE1 |  | Address 1 |  | _1
+ADDRESS_HOME_LINE2 |  | Address 2 (Optional) |  | _1
+ADDRESS_HOME_CITY |  | City |  | _1
+ADDRESS_HOME_STATE |  | State |  | _1
+ADDRESS_HOME_ZIP |  | ZIP Code |  | _1
+PHONE_HOME_CITY_AND_NUMBER |  | Phone Information |  | _1
+UNKNOWN_TYPE |  | Use this as my billing address. | on | _1
+UNKNOWN_TYPE | multiple-address | No | false | _1
+UNKNOWN_TYPE | multiple-address | Yes | true | _1
