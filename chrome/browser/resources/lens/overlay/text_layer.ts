@@ -33,9 +33,9 @@ import type {TranslateState} from './translate_button.js';
 import {toPercent} from './values_converter.js';
 
 // Lowest font size that translate text can be rendered at in pixels.
-const MIN_FONT_SIZE = 1;
+const MIN_FONT_SIZE = 3;
 // Largest font size that translate text can be rendered at in pixels.
-const MAX_FONT_SIZE = 100;
+const MAX_FONT_SIZE = 150;
 // Highest font size where the opacity of the background should be 100%.
 const FONT_SIZE_OPAQUE_BOUND = 10;
 // Lowest font size where the opacity of the background should be transparent
