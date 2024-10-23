@@ -1541,7 +1541,11 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   std::stable_sort(
       accounts_.begin(), accounts_.end(),
       [&](const auto& account1, const auto& account2) {
-        // First, show newly logged in accounts, if any.
+        // Show filtered accounts after valid ones.
+        if (account1->is_filtered_out || account2->is_filtered_out) {
+          return !account1->is_filtered_out;
+        }
+        // Show newly logged in accounts, if any.
         bool is_account1_new = IsNewlyLoggedIn(*account1);
         bool is_account2_new = IsNewlyLoggedIn(*account2);
         if (is_account1_new || is_account2_new) {
@@ -2023,11 +2027,42 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
             TokenStatus::kAccountsListEmpty);
         return;
       }
-      // TODO(crbug.com/354977893): pass filtered out accounts to UI.
       auto filter = [](const IdentityRequestAccountPtr& account) {
         return account->is_filtered_out;
       };
-      std::erase_if(accounts, filter);
+      if (!IsFedCmShowFilteredAccountsEnabled() ||
+          !fetch_data_.for_idp_signin ||
+          login_url_ != idp_info->metadata.idp_login_url) {
+        std::erase_if(accounts, filter);
+      } else {
+        // If the user is logging in to new accounts, only show filtered
+        // accounts if there are no new unfiltered accounts. This includes in
+        // particular the case where all accounts are filtered out.
+        size_t new_unfiltered = std::count_if(
+            accounts.begin(), accounts.end(),
+            [&](const IdentityRequestAccountPtr& account) {
+              return !account->is_filtered_out &&
+                     !account_ids_before_login_.contains(account->id);
+            });
+        if (new_unfiltered > 0u) {
+          std::erase_if(accounts, filter);
+        }
+      }
+      if (accounts.size() == 0u) {
+        // No accounts remain, so treat as account fetch failure.
+        render_frame_host().AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kError,
+            "Accounts were received, but none matched the login hint, domain "
+            "hint, and/or account labels provided.");
+        // If there are no accounts after filtering,treat this exactly the same
+        // as if we had received an empty accounts list, i.e.
+        // IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+        HandleAccountsFetchFailure(
+            std::move(idp_info), old_idp_signin_status,
+            FederatedAuthRequestResult::kAccountsListEmpty,
+            TokenStatus::kAccountsListEmpty);
+        return;
+      }
       RecordReadyToShowAccountsSize(accounts.size());
       ComputeLoginStates(idp_info->provider->config->config_url, accounts);
 
@@ -3101,7 +3136,8 @@ bool FederatedAuthRequestImpl::GetAccountForAutoReauthn(
     }
   }
   for (const auto& account : accounts_) {
-    if (account->login_state == LoginState::kSignUp) {
+    if (account->login_state == LoginState::kSignUp ||
+        account->is_filtered_out) {
       continue;
     }
     // account.login_state could be set to kSignIn if the client is on the
@@ -3216,6 +3252,7 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
                                           GURL login_url) {
   const auto& it = idp_login_infos_.find(login_url);
   CHECK(it != idp_login_infos_.end());
+  login_url_ = login_url;
   if (can_append_hints) {
     // Before invoking UI, append the query parameters to the `idp_login_url` if
     // needed.
@@ -3233,7 +3270,6 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
     }
   }
 
-  login_url_ = login_url;
   ShowModalDialog(kLoginToIdpPopup, idp_config_url, login_url);
 }
 
@@ -3347,7 +3383,9 @@ bool FederatedAuthRequestImpl::IsNewlyLoggedIn(
       login_url_ != account.identity_provider->idp_metadata.idp_login_url) {
     return false;
   }
-  return !account_ids_before_login_.contains(account.id);
+  // Exclude filtered out accounts so they are not shown at the top.
+  return !account.is_filtered_out &&
+         !account_ids_before_login_.contains(account.id);
 }
 
 bool FederatedAuthRequestImpl::FilterAccountsWithLabel(
@@ -3370,7 +3408,7 @@ bool FederatedAuthRequestImpl::FilterAccountsWithLabel(
     }
   }
   fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "AccountLabel");
-  return accounts_remaining > 0u;
+  return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
 }
 
 bool FederatedAuthRequestImpl::FilterAccountsWithLoginHint(
@@ -3396,7 +3434,7 @@ bool FederatedAuthRequestImpl::FilterAccountsWithLoginHint(
     }
   }
   fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "LoginHint");
-  return accounts_remaining > 0u;
+  return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
 }
 
 bool FederatedAuthRequestImpl::FilterAccountsWithDomainHint(
@@ -3423,7 +3461,7 @@ bool FederatedAuthRequestImpl::FilterAccountsWithDomainHint(
     ++accounts_remaining;
   }
   fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "DomainHint");
-  return accounts_remaining > 0u;
+  return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
 }
 
 }  // namespace content

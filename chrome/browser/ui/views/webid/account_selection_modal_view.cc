@@ -520,6 +520,7 @@ AccountSelectionModalView::CreateSingleAccountChooser(
     row->AddChildView(std::make_unique<views::Separator>());
   }
 
+  CHECK(!account.is_filtered_out);
   // Add account row.
   row->AddChildView(CreateAccountRow(
       account, should_hover ? std::make_optional<int>(0) : std::nullopt,

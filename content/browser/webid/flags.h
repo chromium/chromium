@@ -61,6 +61,9 @@ bool IsFedCmSameSiteLaxEnabled();
 // Whether specifying a subset of the default fields is enabled.
 bool IsFedCmFlexibleFieldsEnabled();
 
+// Whether showing filtered accounts is enabled.
+bool IsFedCmShowFilteredAccountsEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

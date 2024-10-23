@@ -79,4 +79,8 @@ bool IsFedCmFlexibleFieldsEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmFlexibleFields);
 }
 
+bool IsFedCmShowFilteredAccountsEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmShowFilteredAccounts);
+}
+
 }  // namespace content

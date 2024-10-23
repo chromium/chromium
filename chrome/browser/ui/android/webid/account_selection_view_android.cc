@@ -215,6 +215,8 @@ bool AccountSelectionViewAndroid::Show(
 
   // Serialize the `idp_list` and `accounts` into a Java array and
   // instruct the bridge to show it together with |url| to the user.
+  // TODO(crbug.com/40945672): render filtered out accounts differently on
+  // Android.
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> accounts_obj =
       ConvertToJavaAccounts(env, accounts);

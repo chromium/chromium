@@ -591,8 +591,14 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     if (should_include_idp) {
       row->SetFooterTextStyle(views::style::CONTEXT_LABEL, account_email_style);
     }
+    if (account.is_filtered_out) {
+      // TODO(crbug.com/40945672): improve the UI.
+      row->SetEnabled(false);
+    }
     return row;
   }
+  // We should only create non-button account rows for valid accounts.
+  CHECK(!account.is_filtered_out);
   account_image_view->SetAccountImage(account, *image_fetcher_, avatar_size);
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(

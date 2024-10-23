@@ -145,9 +145,17 @@ bool FedCmAccountSelectionView::Show(
 
   size_t returning_accounts_size =
       std::count_if(accounts.begin(), accounts.end(), [](const auto& account) {
-        return account->login_state ==
-               content::IdentityRequestAccount::LoginState::kSignIn;
+        return !account->is_filtered_out &&
+               account->login_state ==
+                   content::IdentityRequestAccount::LoginState::kSignIn;
       });
+  bool has_filtered_out_accounts = false;
+  for (const auto& account : accounts) {
+    if (account->is_filtered_out) {
+      has_filtered_out_accounts = true;
+      break;
+    }
+  }
 
   std::optional<std::u16string> idp_title =
       idp_list_.size() == 1u
@@ -253,12 +261,8 @@ bool FedCmAccountSelectionView::Show(
       }
     }
   } else if (idp_list_.size() == 1u && accounts_or_mismatches_size == 1u) {
-    if (GetDialogType() == DialogType::MODAL) {
-      state_ = State::SINGLE_ACCOUNT_PICKER;
-      account_selection_view_->ShowSingleAccountConfirmDialog(
-          *accounts_[0],
-          /*show_back_button=*/false);
-    } else if (supports_add_account) {
+    if (GetDialogType() == DialogType::BUBBLE &&
+        (supports_add_account || has_filtered_out_accounts)) {
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
       ShowMultiAccountPicker(accounts_, idp_list_, /*show_back_button=*/false,

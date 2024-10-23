@@ -455,18 +455,18 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   bool IsNewlyLoggedIn(const IdentityRequestAccount& account);
 
-  // Returns whether there are accounts remaining after applying the account
+  // Returns whether the algorithm should terminate after applying the account
   // label filter.
   bool FilterAccountsWithLabel(
       const std::string& label,
       std::vector<IdentityRequestAccountPtr>& accounts);
-  // Returns whether there are accounts remaining after applying the login hint
-  // filter.
+  // Returns whether the algorithm should terminate after applying the login
+  // hint filter.
   bool FilterAccountsWithLoginHint(
       const std::string& login_hint,
       std::vector<IdentityRequestAccountPtr>& accounts);
-  // Returns whether there are accounts remaining after applying the domain hint
-  // filter.
+  // Returns whether the algorithm should terminate after applying the domain
+  // hint filter.
   bool FilterAccountsWithDomainHint(
       const std::string& domain_hint,
       std::vector<IdentityRequestAccountPtr>& accounts);
@@ -575,7 +575,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   std::vector<GURL> idp_order_;
 
   // If dialog_type_ is kConfirmIdpLogin, this is the login URL for the IDP. If
-  // LoginToIdp() is called, this is the login URL for the IDP.
+  // LoginToIdp() is called, this is the login URL for the IDP. Does not include
+  // the filters as query parameters, if any.
   GURL login_url_;
 
   // If dialog_type_ is kError or a popup is open, this is the config URL for

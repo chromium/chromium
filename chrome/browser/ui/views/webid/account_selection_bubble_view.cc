@@ -284,6 +284,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
+  CHECK(!account.is_filtered_out);
   row->AddChildView(CreateAccountRow(account,
                                      /*clickable_position=*/std::nullopt,
                                      /*should_include_idp=*/false));
@@ -638,6 +639,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(0, kLeftRightPadding), kVerticalSpacing));
+  CHECK(!account.is_filtered_out);
   row->AddChildView(CreateAccountRow(account,
                                      /*clickable_position=*/std::nullopt,
                                      /*should_include_idp=*/false));
@@ -856,6 +858,7 @@ AccountSelectionBubbleView::CreateSingleReturningAccountChooser(
           ? std::make_optional<std::u16string>(l10n_util::GetStringUTF16(
                 IDS_MULTI_IDP_ACCOUNT_LAST_USED_ON_THIS_SITE))
           : std::nullopt;
+  CHECK(!accounts[0]->is_filtered_out);
   content->AddChildView(CreateAccountRow(*accounts[0],
                                          /*clickable_position=*/0,
                                          /*should_include_idp=*/true,
