@@ -102,6 +102,17 @@ std::optional<PdfInkBrush::Type> PdfInkBrush::StringToType(
 }
 
 // static
+std::string PdfInkBrush::TypeToString(Type brush_type) {
+  switch (brush_type) {
+    case Type::kHighlighter:
+      return "highlighter";
+    case Type::kPen:
+      return "pen";
+  }
+  NOTREACHED();
+}
+
+// static
 bool PdfInkBrush::IsToolSizeInRange(float size) {
   return size >= 1 && size <= 16;
 }

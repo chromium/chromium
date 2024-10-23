@@ -20,11 +20,13 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/draw_utils/page_boundary_intersect.h"
 #include "pdf/input_utils.h"
+#include "pdf/message_util.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_conversions.h"
@@ -227,6 +229,8 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
       base::MakeFixedFlatMap<std::string_view, MessageHandler>({
           {"annotationRedo", &PdfInkModule::HandleAnnotationRedoMessage},
           {"annotationUndo", &PdfInkModule::HandleAnnotationUndoMessage},
+          {"getAnnotationBrush",
+           &PdfInkModule::HandleGetAnnotationBrushMessage},
           {"setAnnotationBrush",
            &PdfInkModule::HandleSetAnnotationBrushMessage},
           {"setAnnotationMode", &PdfInkModule::HandleSetAnnotationModeMessage},
@@ -599,6 +603,53 @@ void PdfInkModule::HandleAnnotationUndoMessage(
   ApplyUndoRedoCommands(undo_redo_model_.Undo());
 }
 
+void PdfInkModule::HandleGetAnnotationBrushMessage(
+    const base::Value::Dict& message) {
+  CHECK(enabled_);
+
+  base::Value::Dict reply = PrepareReplyMessage(message);
+
+  // Get the brush type from `message` or the current brush type if not
+  // provided.
+  const std::string* brush_type_message = message.FindString("brushType");
+  std::string brush_type_string;
+  if (brush_type_message) {
+    brush_type_string = *brush_type_message;
+  } else {
+    brush_type_string =
+        is_drawing_stroke()
+            ? PdfInkBrush::TypeToString(drawing_stroke_state().brush_type)
+            : "eraser";
+  }
+
+  base::Value::Dict data;
+  data.Set("type", brush_type_string);
+
+  if (brush_type_string == "eraser") {
+    data.Set("size", eraser_size_);
+    reply.Set("data", std::move(data));
+    client_->PostMessage(std::move(reply));
+    return;
+  }
+
+  std::optional<PdfInkBrush::Type> brush_type =
+      PdfInkBrush::StringToType(brush_type_string);
+  CHECK(brush_type.has_value());
+
+  const ink::Brush& ink_brush = GetBrush(brush_type.value()).ink_brush();
+  data.Set("size", ink_brush.GetSize());
+
+  SkColor color = GetSkColorFromInkBrush(ink_brush);
+  base::Value::Dict color_reply;
+  color_reply.Set("r", static_cast<int>(SkColorGetR(color)));
+  color_reply.Set("g", static_cast<int>(SkColorGetG(color)));
+  color_reply.Set("b", static_cast<int>(SkColorGetB(color)));
+  data.Set("color", std::move(color_reply));
+
+  reply.Set("data", std::move(data));
+  client_->PostMessage(std::move(reply));
+}
+
 void PdfInkModule::HandleSetAnnotationBrushMessage(
     const base::Value::Dict& message) {
   CHECK(enabled_);
@@ -658,7 +709,11 @@ PdfInkBrush& PdfInkModule::GetDrawingBrush() {
 
 const PdfInkBrush& PdfInkModule::GetDrawingBrush() const {
   CHECK(is_drawing_stroke());
-  switch (drawing_stroke_state().brush_type) {
+  return GetBrush(drawing_stroke_state().brush_type);
+}
+
+const PdfInkBrush& PdfInkModule::GetBrush(PdfInkBrush::Type brush_type) const {
+  switch (brush_type) {
     case (PdfInkBrush::Type::kHighlighter):
       return highlighter_brush_;
     case (PdfInkBrush::Type::kPen):

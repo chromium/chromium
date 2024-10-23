@@ -2066,14 +2066,16 @@ bool PdfViewWebPlugin::IsPageVisible(int page_index) {
   return engine_->IsPageVisible(page_index);
 }
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
 void PdfViewWebPlugin::OnAnnotationModeToggled(bool enable) {
   engine_->SetFormHighlight(/*enable_form=*/!enable);
   if (enable) {
     engine_->ClearTextSelection();
   }
 }
-#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+void PdfViewWebPlugin::PostMessage(base::Value::Dict message) {
+  client_->PostMessage(std::move(message));
+}
 
 void PdfViewWebPlugin::StrokeFinished() {
   base::Value::Dict message;

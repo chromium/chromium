@@ -52,6 +52,9 @@ class PdfInkModuleClient {
   // Notifies the client whether annotation mode is enabled or not.
   virtual void OnAnnotationModeToggled(bool enable) {}
 
+  // Asks the client to post `message`.
+  virtual void PostMessage(base::Value::Dict message) {}
+
   // Notifies the client that a stroke has finished drawing or erasing.
   virtual void StrokeFinished() {}
 

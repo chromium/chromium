@@ -243,6 +243,7 @@ class PdfInkModule {
 
   void HandleAnnotationRedoMessage(const base::Value::Dict& message);
   void HandleAnnotationUndoMessage(const base::Value::Dict& message);
+  void HandleGetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
 
@@ -268,6 +269,9 @@ class PdfInkModule {
   // Returns the current brush. Must be in a drawing stroke state.
   PdfInkBrush& GetDrawingBrush();
   const PdfInkBrush& GetDrawingBrush() const;
+
+  // Returns the brush with type `brush_type`.
+  const PdfInkBrush& GetBrush(PdfInkBrush::Type brush_type) const;
 
   // Converts `current_tool_state_` into segments of `ink::InProgressStroke`.
   // Requires `current_tool_state_` to hold a `DrawingStrokeState`. If there is

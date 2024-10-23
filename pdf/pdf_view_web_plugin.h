@@ -437,6 +437,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   float GetZoom() const override;
   bool IsPageVisible(int page_index) override;
   void OnAnnotationModeToggled(bool enable) override;
+  void PostMessage(base::Value::Dict message) override;
   void StrokeFinished() override;
   void UpdateInkCursorImage(SkBitmap bitmap) override;
   void UpdateThumbnail(int page_index) override;

@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
@@ -153,6 +154,17 @@ std::map<int, std::vector<raw_ref<const ink::Stroke>>> CollectVisibleStrokes(
   return visible_stroke_shapes;
 }
 
+base::Value::Dict CreateGetAnnotationBrushMessageForTesting(
+    const std::string& brush_type) {
+  base::Value::Dict message;
+  message.Set("type", "getAnnotationBrush");
+  message.Set("messageId", "foo");
+  if (!brush_type.empty()) {
+    message.Set("brushType", brush_type);
+  }
+  return message;
+}
+
 // Optional parameters that the `setAnnotationBrushMessage` may have, depending
 // on the brush type.
 struct TestAnnotationBrushMessageParams {
@@ -211,6 +223,8 @@ class FakeClient : public PdfInkModuleClient {
   bool IsPageVisible(int page_index) override {
     return base::Contains(visible_page_indices_, page_index);
   }
+
+  MOCK_METHOD(void, PostMessage, (base::Value::Dict message), (override));
 
   void StrokeFinished() override { ++stroke_finished_count_; }
 
@@ -299,6 +313,137 @@ TEST_F(PdfInkModuleTest, UnknownMessage) {
   base::Value::Dict message;
   message.Set("type", "nonInkMessage");
   EXPECT_FALSE(ink_module().OnMessage(message));
+}
+
+// Verify that a get eraser message gets the eraser parameters.
+TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageEraser) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAnnotationBrushReply",
+            "messageId": "foo",
+            "data": {
+              "type": "eraser",
+              "size": 3.0,
+            },
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateGetAnnotationBrushMessageForTesting("eraser")));
+}
+
+// Verify that a get pen message gets the pen brush parameters.
+TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessagePen) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAnnotationBrushReply",
+            "messageId": "foo",
+            "data": {
+              "type": "pen",
+              "size": 3.0,
+              "color": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+              },
+            },
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("pen")));
+}
+
+// Verify that a get highlighter message gets the highlighter brush parameters.
+TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageHighlighter) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAnnotationBrushReply",
+            "messageId": "foo",
+            "data": {
+              "type": "highlighter",
+              "size": 8.0,
+              "color": {
+                "r": 242,
+                "g": 139,
+                "b": 130,
+              },
+            },
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateGetAnnotationBrushMessageForTesting("highlighter")));
+}
+
+// Verify that a get brush message without a parameter gets the default brush
+// parameters.
+TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageDefault) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAnnotationBrushReply",
+            "messageId": "foo",
+            "data": {
+              "type": "pen",
+              "size": 3.0,
+              "color": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+              },
+            },
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("")));
+}
+
+// Verify that a get brush message without a parameter gets the current brush
+// parameters if the brush has changed from the default brush.
+TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageCurrent) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  // Set the brush to eraser.
+  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationBrushMessageForTesting(
+      "eraser", /*size=*/4.5, nullptr)));
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAnnotationBrushReply",
+            "messageId": "foo",
+            "data": {
+              "type": "eraser",
+              "size": 4.5,
+            },
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("")));
 }
 
 // Verify that a set eraser message sets the annotation brush to an eraser.
