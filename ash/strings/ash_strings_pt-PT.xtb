@@ -445,6 +445,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de 30 segundos.</tra
 <translation id="2530896289327917474">Ativar ou desativar a navegação por cursor</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2531107890083353124">Prima <ph name="KEY_ONE" /> enquanto arrasta o separador</translation>
+<translation id="2545334090614121435">Está a tentar usar a tecla Home? Use</translation>
 <translation id="254900897760075745">Copiar o conteúdo selecionado para a área de transferência</translation>
 <translation id="2549711466868162843">Melhorar a iluminação</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
@@ -563,6 +564,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de 30 segundos.</tra
 <translation id="2985148236010982088">Ver todas as apps</translation>
 <translation id="2992272421330787632">Ocultar todas as sugestões de multimédia</translation>
 <translation id="2992327365391326550">O botão do microfone do dispositivo está desativado.</translation>
+<translation id="2993956882370897557">Está a tentar usar a tecla End? Use</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3001391739687111021">Editar tamanho do ecrã</translation>
 <translation id="3009178788565917040">Saída</translation>
@@ -615,6 +617,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de 30 segundos.</tra
 <translation id="316356270129335934"><ph name="MANAGER" /> está a reverter o dispositivo <ph name="DEVICE_TYPE" />. O seu dispositivo será reposto e todos os dados serão eliminados.</translation>
 <translation id="316798519864381606">Apresentação do Google Slides</translation>
 <translation id="3171170659304083361">Definições dos métodos de introdução</translation>
+<translation id="3174897399179348329">Está a tentar usar a tecla Página para cima? Use</translation>
 <translation id="3176221688814061633">O Chromebook ou o dispositivo Bluetooth está a usar uma versão mais antiga do Bluetooth. Ative a Super-resolução Bluetooth ou use o microfone interno para desfrutar de uma melhor qualidade de áudio.</translation>
 <translation id="3181441307743005334">O reinício poderá demorar algum tempo</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ligado a um dispositivo}other{Ligado a # dispositivos}}</translation>
@@ -1261,6 +1264,7 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5297704307811127955">Desativada</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5302531370473608800">Atualize o <ph name="DEVICE_TYPE" /> para usar o YouTube Music</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% de bateria restante.
 Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</translation>
 <translation id="5308380583665731573">Ligar</translation>
@@ -1820,6 +1824,7 @@ Nova instalação</translation>
 <translation id="7144942256906679589">Estado da bateria</translation>
 <translation id="7145639536026937076">A bateria está <ph name="PERCENTAGE" />% cheia e a carregar. A Poupança de bateria está ativada.</translation>
 <translation id="7147587499155271409">Sem histórico de navegação</translation>
+<translation id="7147657298465433425">Para aceder às teclas F, prima a tecla fn + as teclas da linha superior</translation>
 <translation id="7149149900052329230">Faça a gestão dos seus ficheiros locais e do Google Drive, tudo na app Files.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1929,6 +1934,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de 30 segundos.</tra
 <translation id="7557816257942363084">A app <ph name="APP_NAME" /> está a usar o microfone neste momento</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outro ambiente de trabalho pode provocar um comportamento inesperado. É possível dividir as notificações, as janelas e as caixas de diálogo subsequentes entre ambientes de trabalho.</translation>
+<translation id="7568154670718626683">Está a tentar usar a tecla Delete? Use</translation>
 <translation id="7568790562536448087">A atualizar</translation>
 <translation id="7569509451529460200">O braille e o ChromeVox estão ativados</translation>
 <translation id="7569886975397378678">Ignorar configuração da visualização das notificações e das apps do telemóvel</translation>
@@ -2131,6 +2137,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de 30 segundos.</tra
 <translation id="820256110035940528"><ph name="TITLE" /> Acabou de se focar durante <ph name="FOCUSED_TIME" />. Abra as Definições rápidas para se focar novamente.</translation>
 <translation id="8203224998425013577">Mostrar mais emojis e GIFs</translation>
 <translation id="8203795194971602413">Clicar com o botão direito do rato</translation>
+<translation id="8205469348819768313">Está a tentar usar a tecla Página para baixo? Use</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">O Chromebook tem de permanecer ativo e ligado à alimentação durante este período. Certifique-se de que os cabos do carregador ou transformador estão completamente ligados à tomada elétrica e à respetiva entrada do Chromebook. Não desligue o Chromebook.</translation>
 <translation id="8220076512072059941">Adicionar <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2323,6 +2330,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de 30 segundos.</tra
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">O Assistente Google não fala este idioma.</translation>
 <translation id="8926951137623668982">Prateleira sempre oculta</translation>
+<translation id="8929566928381252430">Está a tentar usar o Caps Lock? Use</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desativada</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira direita)</translation>

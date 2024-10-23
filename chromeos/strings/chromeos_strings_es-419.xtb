@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">Se superó la cantidad máxima de intentos permitidos.</translation>
 <translation id="1908234395526491708">Fallos de solicitudes de UDP</translation>
 <translation id="1908394185991500139">flecha hacia la izquierda</translation>
+<translation id="1914144885717544695">el viernes</translation>
 <translation id="1923388006036088459">Colores de los elementos destacados</translation>
 <translation id="1945403655450283000">Grabadora</translation>
 <translation id="1947737735496445907">Impreso</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">Sigue flotando</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Hoy</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2154460308960858308">Borrar búsqueda</translation>
 <translation id="2157660087437850958">selector de emojis</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2715723665057727940">un río</translation>
 <translation id="2717139507051041123">Habilitar el modo de color oscuro</translation>
+<translation id="2726755229438917165">el lunes</translation>
 <translation id="2728460467788544679">Borrar todo el historial de impresiones</translation>
 <translation id="2731700343119398978">Espera...</translation>
 <translation id="2740531572673183784">Aceptar</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">Extremo</translation>
 <translation id="3060579846059757016">Puntos destacados</translation>
 <translation id="3061850252076394168">habilita Seleccionar para pronunciar</translation>
+<translation id="3066772729299747758">el martes</translation>
 <translation id="3069085583900247081">No se pudo realizar la prueba</translation>
 <translation id="3078740164268491126">tabla</translation>
 <translation id="3081652522083185657">claro</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">sushi</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresiones? No se quitarán tus trabajos de impresión en curso.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Fondo de pantalla Flujo de la Tierra</translation>
 <translation id="33736539805963175">Fondo <ph name="LETTERS_COLOR" /> con la letra <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusivo</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">Sigue colocando el cursor sobre otras opciones de diseño</translation>
 <translation id="4130750466177569591">Acepto</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
+<translation id="4137700675046373159">el sábado</translation>
 <translation id="4143226836069425823">Presionar otra tecla del teclado para reemplazar</translation>
 <translation id="4145784616224233563">Firewall de HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515">La contraseña caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hay trabajos de impresión en curso</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">el domingo</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4251839292699800785">Oficina elegante</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">el protocolo de seguridad Wi-Fi es desconocido</translation>
 <translation id="6535178685492749208">No tienes conexión. Los comentarios se enviarán más tarde.</translation>
 <translation id="6543412779435705598">tacos</translation>
+<translation id="6550369542114086980">el jueves</translation>
 <translation id="6551839203326557324">manzanas</translation>
 <translation id="65526652485742171">Se habilitó el botón para confirmar</translation>
 <translation id="6557784757915238407">El APN es de tipo <ph name="ATTACH" />.</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7182063559013288142">Hotspot instantáneo</translation>
 <translation id="7184043045742675738">Haz clic en cualquier tecla para personalizar tu botón. Cambia la posición de la tecla con las teclas del mouse o de flecha.</translation>
+<translation id="7187669805838282391">el miércoles</translation>
 <translation id="7206979415662233817">Condiciones del Servicio</translation>
 <translation id="7210635925306941239">cian</translation>
 <translation id="7212547870105584639">Administra la configuración del APN de red. Los APN establecen una conexión entre Internet y una red móvil. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7388959671917308825">Panel táctil integrado</translation>
 <translation id="7397270852490618635">Desactivar el tema claro</translation>
 <translation id="7401543881546089382">Eliminar acceso directo</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> está listo para actualizarse</translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
 <translation id="7425037327577270384">Ayúdame a escribir</translation>
@@ -1325,6 +1335,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7500205272584643581">¿Quieres permitir que la Grabadora detecte y etiquete a los interlocutores?</translation>
 <translation id="7501957181231305652">o</translation>
 <translation id="7502658306369382406">Dirección IPv6</translation>
+<translation id="7503342217608032738">No se puede usar el dispositivo</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> radiante de color <ph name="FLOWER_COLOR" /></translation>
 <translation id="7513770521371759388">inferior</translation>
 <translation id="7514365320538308">Descargar</translation>
@@ -1337,6 +1348,8 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7544853251252956727">Reproducir aleatoriamente</translation>
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7551123448725492271">El dispositivo es un dispositivo de audio.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />El administrador de <ph name="MANAGER" /> estableció cuándo se puede usar este dispositivo <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Podrás volver a usar este dispositivo <ph name="DAY" /> a las <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Obtener vista previa de la captura de pantalla</translation>
 <translation id="7561454561030345039">El administrador controla esta acción</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" se inició automáticamente}other{Se iniciaron # apps automáticamente}}</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8010765388850538088">Más información sobre la IA generativa</translation>
 <translation id="8017679124341497925">Se editó el acceso directo</translation>
 <translation id="802154636333426148">Error en la descarga</translation>
 <translation id="8028993641010258682">Tamaño</translation>
@@ -1434,6 +1448,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8045012663542226664">Micrófono silenciado</translation>
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> de color <ph name="CHARACTERS_COLOR" /> sobre un fondo <ph name="CHARACTERS_BACKGROUND" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">El APN está conectado.</translation>
 <translation id="8067208048261192356">marrón</translation>
 <translation id="8067224607978179455">Borrar <ph name="ACTION_NAME" /></translation>
@@ -1537,6 +1552,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Es posible que tu proveedor necesite que esta opción esté habilitada para que puedas conectarte a su red. Comunícate con el proveedor para obtener más detalles.</translation>
 <translation id="8576249514688522074">No se inicializó</translation>
+<translation id="8584654835905316966">Es necesario reiniciar el dispositivo para completar la instalación del firmware de <ph name="DEVICE_NAME" /> a la versión <ph name="VERSION" />. Es posible que la computadora parezca reiniciarse varias veces. Se espera que esto suceda.</translation>
 <translation id="8593058461203131755">pausar contenido multimedia</translation>
 <translation id="8620617069779373398">Estado de roaming</translation>
 <translation id="8626489604350149811">Más acciones para <ph name="APN_NAME" /></translation>
@@ -1671,6 +1687,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="917720651393141712">Probar</translation>
 <translation id="9188992814426075118">El teclado puede coincidir automáticamente con tu fondo de pantalla</translation>
 <translation id="9189000703457422362">No se puede establecer una conexión con esta red usando los APN detectados automáticamente. Comunícate con tu operador de telefonía celular para obtener más información.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">Las teclas del joystick seleccionadas son <ph name="KEYS" />. Presionar el botón para editar el control</translation>
 <translation id="9204237731135241582">No se puede establecer contacto con la puerta de enlace desde apps para Android</translation>

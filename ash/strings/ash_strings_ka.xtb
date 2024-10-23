@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">კურსორით დათვალიერების ჩართვა ან გამორთვა</translation>
 <translation id="2531025035050312891">მოწყობილობა ნელია</translation>
 <translation id="2531107890083353124">ჩანართის ჩავლებით გადატანისას დაჭერით აირჩიეთ <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">მთავარ გვერდზე გადასვლის (Home) კლავიშის გამოყენებას ცდილობთ? გამოყენება</translation>
 <translation id="254900897760075745">არჩეული კონტენტის კოპირება გაცვლის ბუფერში</translation>
 <translation id="2549711466868162843">განათების გაუმჯობესება</translation>
 <translation id="2549985041256363841">ჩაწერის დაწყება</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">ყველა აპის ნახვა</translation>
 <translation id="2992272421330787632">მედიის ყველა შემოთავაზების დამალვა</translation>
 <translation id="2992327365391326550">მოწყობილობის მიკროფონის ღილაკი გამორთულია.</translation>
+<translation id="2993956882370897557">ბოლოში გადასვლის (End) კლავიშის გამოყენებას ცდილობთ? გამოყენება</translation>
 <translation id="3000461861112256445">მონო აუდიო</translation>
 <translation id="3001391739687111021">ეკრანის ზომის რედაქტირება</translation>
 <translation id="3009178788565917040">გამოტანა</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> აბრუნებს თქვენს <ph name="DEVICE_TYPE" />-ს წინა ვერსიაზე. თქვენი მოწყობილობა გადაყენდება და ყველა მონაცემი წაიშლება.</translation>
 <translation id="316798519864381606">Google Slide</translation>
 <translation id="3171170659304083361">შეყვანის მეთოდების პარამეტრები</translation>
+<translation id="3174897399179348329">ერთი გვერდით ზემოთ გადასვლის (Page Up) კლავიშის გამოყენებას ცდილობთ? გამოყენება</translation>
 <translation id="3176221688814061633">თქვენი Chromebook ან Bluetooth მოწყობილობა Bluetooth-ის მოძველებულ ვერსიას იყენებს. აუდიოს უკეთესი ხარისხის მისაღებად ჩართეთ Bluetooth-ის სუპერგარჩევადობა, ან გამოიყენეთ შიდა მიკროფონი.</translation>
 <translation id="3181441307743005334">გადატვირთვას შეიძლება გარკვეული დრო დასჭირდეს</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{დაკავშირებულია მოწყობილობასთან}other{დაკავშირებულია # მოწყობილობასთან}}</translation>
@@ -1261,6 +1264,7 @@
 <translation id="5297704307811127955">გამორთვა</translation>
 <translation id="5300589172476337783">ჩვენება</translation>
 <translation id="5302048478445481009">ენა</translation>
+<translation id="5302531370473608800">YouTube Music-ით სარგებლობისთვის განაახლეთ <ph name="DEVICE_TYPE" /></translation>
 <translation id="5303319262469238330">დარჩენილია ბატარეის <ph name="PERCENTAGE" />%.
 ზოგიერთი ფუნქცია შეზღუდულია, ბატარეის მუშაობის ხანგრძლივობა რომ გაიზარდოს.</translation>
 <translation id="5308380583665731573">დაკავშირება</translation>
@@ -1820,6 +1824,7 @@
 <translation id="7144942256906679589">ბატარეის სტატუსი</translation>
 <translation id="7145639536026937076">ბატარეის დონეა <ph name="PERCENTAGE" />% და ის იტენება. ბატარეის დამზოგი ჩართულია.</translation>
 <translation id="7147587499155271409">დათვალიერების ისტორია არ არის</translation>
+<translation id="7147657298465433425">F ღილაკებზე წვდომისთვის დააჭირეთ fn კლავიშს + ზედა ზოლის კლავიშებს</translation>
 <translation id="7149149900052329230">მართეთ თქვენი ლოკალური ფაილები და თქვენი Google Drive ფაილები Files აპში.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1929,6 +1934,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს მიკროფონს</translation>
 <translation id="7561982940498449837">მენიუს დახურვა</translation>
 <translation id="7564874036684306347">ფანჯრების სხვა დესკტოპზე გადატანამ შეიძლება მოულოდნელი ქცევა გამოიწვიოს. შემდგომი შეტყობინებები, ფანჯრები და დიალოგები შეიძლება გაიყოს დესკტოპებს შორის.</translation>
+<translation id="7568154670718626683">წაშლის კლავიშის გამოყენებას ცდილობთ? გამოყენება</translation>
 <translation id="7568790562536448087">განახლება</translation>
 <translation id="7569509451529460200">ბრაილის შრიფტი და ChromeVox ჩართულია</translation>
 <translation id="7569886975397378678">თქვენი ტელეფონის შეტყობინებებისა და აპების ნახვის დაყენების დახურვა</translation>
@@ -2131,6 +2137,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> თქვენი ფოკუსირების რეჟიმის ხანგრძლივობა იყო <ph name="FOCUSED_TIME" />. ფოკუსირების რეჟიმის ხელახლა ჩასართავად გახსენით სწრაფი პარამეტრები.</translation>
 <translation id="8203224998425013577">მეტი emoji-ს და GIF-ის ჩვენება</translation>
 <translation id="8203795194971602413">მარჯვენა დაწკაპუნება</translation>
+<translation id="8205469348819768313">ერთი გვერდით ქვემოთ გადასვლის (Page Down) კლავიშის გამოყენებას ცდილობთ? გამოყენება</translation>
 <translation id="8214996719228530800">Canary არხი</translation>
 <translation id="8219451629189078428">თქვენი Chromebook ამ დროის განმავლობაში ჩართული და კვების წყაროსთან მიერთებული უნდა იყოს. დარწმუნდით, რომ დამტენის ან ადაპტერის კაბელები კარგად არის შეერთებული როგორც Chromebook-ში, ისე როზეტში. არ გამორთოთ Chromebook.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" />-ის დამატება</translation>
@@ -2323,6 +2330,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google ასისტენტი არ საუბრობს ამ ენაზე.</translation>
 <translation id="8926951137623668982">თარო ყოველთვის დამალულია</translation>
+<translation id="8929566928381252430">Caps Lock კლავიშის გამოყენებას ცდილობთ? გამოყენება</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ფაილი}other{# ფაილი}}</translation>
 <translation id="8936501819958976551">დეაქტივირებულია</translation>
 <translation id="8938800817013097409">USB-C მოწყობილობა (უკან მდებარე მარჯვენა პორტი)</translation>

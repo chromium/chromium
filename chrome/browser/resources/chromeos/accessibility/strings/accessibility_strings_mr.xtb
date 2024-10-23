@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="100421257800558142">राइट अ‍ॅरो की प्रेस करा</translation>
 <translation id="100506692671054486">कोणतीही मागील कमांड नाही</translation>
 <translation id="1009046985747440431">नेव्हिगेट करण्यासाठी अप किंवा डाउन ॲरो प्रेस करा; ॲक्टिव्हेट करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="1011903154582639569">की शोधा, नंतर टाइप करण्यासाठी उचला</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">टॉगल बटण</translation>
 <translation id="1299774449519412690">फिकट आकाशी</translation>
 <translation id="1303806948938513162">ChromeVox मेनूमध्ये एंटर करण्यासाठी चार बोटांनी टॅप करा</translation>
+<translation id="1304162325618937178">स्पेस की प्रेस करा</translation>
 <translation id="1313373992684326101">मागील विभागात जा. उदाहरणांमध्ये स्टेटस ट्रे आणि लाँचरचा समावेश आहे.</translation>
 <translation id="1315077335264761176">टच ओरिएंटेशन</translation>
 <translation id="1325363694295259631"><ph name="NAME" /> या मेनू आयटम रेडिओ बटणाची निवड रद्द केली</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">गव्हाळ</translation>
 <translation id="1618597272655350600">वर्तमान स्‍थितीबद्दल पूर्ण वर्णन घोषित करते</translation>
 <translation id="1627222324347828322">धुसर पांढरा</translation>
+<translation id="1632810692616643246">स्क्रोल मोडमध्ये जा किंवा त्यामधून बाहेर पडा</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{पेक्षा मोठे}other{# पेक्षा मोठे चिन्हे}}</translation>
 <translation id="1653266918374749391">मागील स्तर 3 शीर्षक</translation>
 <translation id="1657616855184033958">इव्हेंट स्ट्रीम फिल्टर दाखवा</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">मागील नियंत्रण नाही</translation>
 <translation id="2045606329038304310">फॉर्म भाग नियंत्रण</translation>
 <translation id="2063539687800151747">बोधवाक्य</translation>
+<translation id="2067158561093481039">कस्टम की कॉंबिनेशन तयार करा</translation>
 <translation id="2086961585857038472">पुढील शब्द</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">en</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">भडक नारिंगी</translation>
 <translation id="2199994615414171367">मागील गणित</translation>
 <translation id="2203046366315513658">मूल्य कमी करा</translation>
+<translation id="2206580811360135054">विंडोचे अवलोकन दाखवा किंवा लपवा</translation>
 <translation id="2216790501338699346">लिंक URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">एक वर्ण मागे जा</translation>
 <translation id="2220529011494928058">समस्या नोंदवा</translation>
+<translation id="2239819015858077439">डाउन अ‍ॅरो की प्रेस करा</translation>
 <translation id="2243633977138166243">नेव्हिगेट करण्यासाठी लेफ्ट किंवा राइट अ‍ॅरो प्रेस करा; ॲक्टिव्हेट करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="224426591676115802">या भाषेसाठी व्हॉइस उपलब्ध नाही: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">जाणून घ्या मोड थांबवत आहे</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">लाल</translation>
 <translation id="4432896207833262240">मार्क केलेला आशय</translation>
 <translation id="4437615272777527928">मेनू शोधण्यासाठी टाइप करा. परिणामांवर जाण्यासाठी अप आणि डाउन ॲरो वापरा. मजकूर कॅरेट ॲडजस्ट करण्यासाठी आणि मेनूदरम्यान हलवण्यासाठी डावा आणि उजवा ॲरो वापरा.</translation>
+<translation id="4441677939526091190">अप अ‍ॅरो की प्रेस करा</translation>
 <translation id="4453530046591759283">टूलबार किंवा सिस्टीम ट्रे यांसारख्या स्क्रीनच्या इतर भागांवर थेट जाण्यासाठी, Control+F1 प्रेस करा. F1 ही एस्केप कीच्या उजवीकडील पहिली की आहे.</translation>
 <translation id="4457472090507035117">विद्यमान आवाज निवडा:</translation>
 <translation id="4476183483923481720">नवीन रेखा</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Chromebook टच स्क्रीन ॲक्सेसिबिलिटी वैशिष्ट्ये वापरा</translation>
 <translation id="5655682562155942719">जाण्याचे आदेश</translation>
 <translation id="56637627897541303">मजकूर क्षेत्र</translation>
+<translation id="5666746275818170484">लेफ्ट अ‍ॅरो की प्रेस करा</translation>
 <translation id="5669637233317991674">हा धडा नेव्हिगेट करण्यासाठी Search + Right Arrow किंवा Search + Left Arrow प्रेस करा</translation>
 <translation id="5677240841070992068">सध्याचे स्थान</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">पॉप-अप बटण</translation>
 <translation id="7167657087543110">वर्ण प्रतिध्वनी</translation>
 <translation id="7173102181852295013">भडक निळा</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">विस्‍तृत केलेले</translation>
 <translation id="7209751026933045237">पुढील स्‍लायडर नाही</translation>
 <translation id="7218782500591078391">भडक सोनेरी</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">प्रदेश</translation>
 <translation id="8382679411218029383">ऑटोकंप्लीशन इनलाइन आणि सूची</translation>
 <translation id="8394908167088220973">मीडिया प्ले करा/विराम द्या</translation>
+<translation id="8409502156784390079">स्क्रोल मोड अ‍ॅक्टिव्ह आहे</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8428603554127842284">स्तर <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">विसरा</translation>
 <translation id="8989104346085848538">सध्याचे कोणतेही ChromeVox भाषण थांबवण्यासाठी कंट्रोल की प्रेस करा.</translation>
 <translation id="9014206344398081366">ChromeVox ट्यूटोरियल</translation>
+<translation id="9034592733577768445">फेस नियंत्रण थांबवले</translation>
 <translation id="9040132695316389094">मथळा 1</translation>
 <translation id="9061884144798498064">8-बिंदू ब्रेल सारणी निवडा:</translation>
 <translation id="9063946545000394379">मागील वर्णावर हलवा</translation>

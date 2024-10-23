@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
 <translation id="1908234395526491708">UDP विनंती पूर्ण करता आली नाही</translation>
 <translation id="1908394185991500139">अ‍ॅरो लेफ्ट</translation>
+<translation id="1914144885717544695">शुक्रवारी</translation>
 <translation id="1923388006036088459">ॲक्सेंट रंग</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">प्रिंट केले</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">तरंगत रहा</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">आज</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> फोटो</translation>
 <translation id="2154460308960858308">शोध साफ करा</translation>
 <translation id="2157660087437850958">इमोजी पिकर</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">पांढरा</translation>
 <translation id="2715723665057727940">नदी</translation>
 <translation id="2717139507051041123">गडद रंगाचा मोड सुरू करा</translation>
+<translation id="2726755229438917165">सोमवारी</translation>
 <translation id="2728460467788544679">सर्व प्रिंट इतिहास साफ करा</translation>
 <translation id="2731700343119398978">कृपया प्रतीक्षा करा...</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">एंडपॉइंट</translation>
 <translation id="3060579846059757016">रूपरेषा</translation>
 <translation id="3061850252076394168">बोलण्यासाठी निवडा सुरू करा</translation>
+<translation id="3066772729299747758">मंगळवारी</translation>
 <translation id="3069085583900247081">चाचणी करता आली नाही</translation>
 <translation id="3078740164268491126">सारणी</translation>
 <translation id="3081652522083185657">फिकट</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">सुशी</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
 <translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">अर्थ फ्लो वॉलपेपर</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> या अक्षरासह <ph name="LETTERS_COLOR" /> बॅकग्राउंड</translation>
 <translation id="3383623117265110236">विशिष्ट</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">आणखी लेआउट पर्यायांसाठी फिरवत रहा</translation>
 <translation id="4130750466177569591">मला मान्य आहे</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
+<translation id="4137700675046373159">शनिवारी</translation>
 <translation id="4143226836069425823">बदलण्यासाठी दुसऱ्या कीबोर्ड की वर टॅप करा</translation>
 <translation id="4145784616224233563">HTTP फायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515"><ph name="TIME" /> मध्ये पासवर्ड एक्स्पायर होईल</translation>
 <translation id="4238516577297848345">कोणतेही प्रिंट जॉब प्रगतीपथावर नाहीत</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">रविवारी</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4251839292699800785">शैलीदार कार्यालय</translation>
 <translation id="4258281355379922695">HTTP लेटन्सी</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">अनोळखी वायफाय सुरक्षा प्रोटोकॉल</translation>
 <translation id="6535178685492749208">तुम्ही ऑफलाइन आहात. फीडबॅक हा नंतर पाठवला जाईल.</translation>
 <translation id="6543412779435705598">टाको</translation>
+<translation id="6550369542114086980">गुरुवारी</translation>
 <translation id="6551839203326557324">सफरचंद</translation>
 <translation id="65526652485742171">कन्फर्म करा बटण आता सुरू केलेले आहे</translation>
 <translation id="6557784757915238407">APN हे <ph name="ATTACH" /> या प्रकारचे आहे.</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">कस्टमाइझ करा</translation>
 <translation id="7182063559013288142">इंस्टंट हॉटस्पॉट</translation>
 <translation id="7184043045742675738">तुमचे बटण कस्टमाइझ करण्यासाठी कोणत्याही कीवर क्लिक करा. माउस आणि अ‍ॅरो की वापरून कीची स्थिती पुन्हा बदला.</translation>
+<translation id="7187669805838282391">बुधवारी</translation>
 <translation id="7206979415662233817">सेवा अटी</translation>
 <translation id="7210635925306941239">निळसर</translation>
 <translation id="7212547870105584639">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APNs ही मोबाइल नेटवर्क आणि इंटरनेटदरम्यान कनेक्शन तयार करतात. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@
 <translation id="7388959671917308825">बिल्ट-इन टचपॅड</translation>
 <translation id="7397270852490618635">फिकट थीम बंद करा</translation>
 <translation id="7401543881546089382">शॉर्टकट हटवा</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> हे अपडेट केले जाण्यासाठी तयार आहे</translation>
 <translation id="741244894080940828">रूपांतर</translation>
 <translation id="7415801143053185905">अत्युच्च HTTP लेटन्सी</translation>
 <translation id="7425037327577270384">मला लिहिण्यात मदत करा</translation>
@@ -1325,6 +1335,7 @@
 <translation id="7500205272584643581">Recorder ला लेबल स्पीकर डिटेक्ट करण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="7501957181231305652">किंवा</translation>
 <translation id="7502658306369382406">IPv6 पत्ता</translation>
+<translation id="7503342217608032738">डिव्हाइस वापरले जाऊ शकत नाही</translation>
 <translation id="7507061649493508884">तजेलदार <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">तळाशी</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
@@ -1337,6 +1348,8 @@
 <translation id="7544853251252956727">शफल करा</translation>
 <translation id="7550715992156305117">निदानाशी संबंधित रूटीन</translation>
 <translation id="7551123448725492271">डिव्हाइस हे ऑडिओ डिव्हाइस आहे.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />हे <ph name="DEVICE_TYPE" /> कधी वापरले जाऊ शकते हे <ph name="MANAGER" /> अ‍ॅडमिनिस्ट्रेटरने सेट केले आहे.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />हे डिव्हाइस तुम्हाला <ph name="DAY" /> रोजी <ph name="TIME" /> वाजता पुन्हा वापरता येईल.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">स्क्रीनशॉटचे पूर्वावलोकन करा</translation>
 <translation id="7561454561030345039">ही कृती तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केली जाते</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" आपोआप सुरू केले गेले होते}other{# ॲप्स आपोआप सुरू केली गेली होती}}</translation>
 <translation id="7994702968232966508">EAP पद्धत</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
+<translation id="8010765388850538088">जनरेटिव्ह AI बद्दल अधिक जाणून घ्या</translation>
 <translation id="8017679124341497925">शॉर्टकट संपादित केला</translation>
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
 <translation id="8028993641010258682">आकार</translation>
@@ -1434,6 +1448,7 @@
 <translation id="8045012663542226664">मायक्रोफोन म्यूट</translation>
 <translation id="8054112564438735763">बेज</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> बॅकग्राउंडवरील <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN कनेक्ट केले आहे.</translation>
 <translation id="8067208048261192356">तपकिरी</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> हटवा</translation>
@@ -1537,6 +1552,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">तुमच्या वाहकाला त्यांच्या नेटवर्कशी कनेक्ट करण्यासाठी या पर्यायाची आवश्यकता असू शकते. तपशिलांसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="8576249514688522074">सुरुवात केलेली नाही</translation>
+<translation id="8584654835905316966"><ph name="DEVICE_NAME" /> साठी <ph name="VERSION" /> आवृत्तीवर फर्मवेअरचे इंस्टॉलेशन पूर्ण करण्यासाठी रीस्‍टार्टची आवश्‍यकता आहे. तुमचा काँप्युटर अनेक वेळा रीबूट होताना दिसेल. हे वर्तन अपेक्षित आहे.</translation>
 <translation id="8593058461203131755">मीडिया थांबवा</translation>
 <translation id="8620617069779373398">रोमिंग स्थिती</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> साठी आणखी कृती</translation>
@@ -1671,6 +1687,7 @@
 <translation id="917720651393141712">चाचणी करा</translation>
 <translation id="9188992814426075118">तुमचा कीबोर्ड तुमच्या वॉलपेपरशी आपोआप जुळवून घेऊ शकतो</translation>
 <translation id="9189000703457422362">आपोआप डिटेक्ट केलेली APNs वापरून या नेटवर्कशी कनेक्ट करू शकत नाही. अधिक माहितीसाठी तुमच्या मोबाइल वाहकाशी संपर्क साधा.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">निवडलेल्या जॉयस्टिक की <ph name="KEYS" /> आहेत. नियंत्रण संपादित करण्यासाठी बटणावर टॅप करा</translation>
 <translation id="9204237731135241582">Android अ‍ॅप्सवरून गेटवेशी संपर्क साधू शकत नाही</translation>
