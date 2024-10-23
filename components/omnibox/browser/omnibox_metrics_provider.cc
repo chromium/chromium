@@ -125,6 +125,8 @@ ClientSummarizedResultType GetClientSummarizedResultType(
            ClientSummarizedResultType::kUrl},
           {OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH,
            ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS_ANSWER,
+           ClientSummarizedResultType::kUrl},
       });
 
   const auto it = kResultTypesToClientSummarizedResultTypes->find(type);

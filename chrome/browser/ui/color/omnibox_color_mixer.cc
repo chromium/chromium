@@ -29,6 +29,7 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
                               const ui::ColorProviderKey& key) {
   mixer[kColorOmniboxText] = {ui::kColorSysOnSurface};
   mixer[kColorOmniboxTextDimmed] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorOmniboxResultsTextAnswer] = {ui::kColorSysOnSurfacePrimary};
   mixer[kColorOmniboxSelectionBackground] = {ui::kColorSysStateTextHighlight};
   mixer[kColorOmniboxSelectionForeground] = {ui::kColorSysStateOnTextHighlight};
 

@@ -158,10 +158,15 @@ gfx::Size OmniboxTextView::CalculatePreferredSize(
     return gfx::Size(width, GetLineHeight());
   }
 
-  render_text_->SetDisplayRect(gfx::Rect(width, 0));
-  gfx::Size string_size = render_text_->GetStringSize();
-  string_size.Enlarge(0, kVerticalPadding);
-  return string_size;
+  if (cached_available_size_ != available_size ||
+      cached_calculate_preferred_size_.IsEmpty()) {
+    cached_available_size_ = available_size;
+    render_text_->SetDisplayRect(gfx::Rect(width, 0));
+    gfx::Size string_size = render_text_->GetStringSize();
+    string_size.Enlarge(0, kVerticalPadding);
+    cached_calculate_preferred_size_ = string_size;
+  }
+  return cached_calculate_preferred_size_;
 }
 
 bool OmniboxTextView::GetCanProcessEventsWithinSubtree() const {
@@ -213,7 +218,7 @@ void OmniboxTextView::SetTextWithStyling(
       std::make_unique<ACMatchClassifications>(classifications);
   render_text_ = CreateRenderText(new_text);
 
-  // ReapplyStyling will update the preferred size and request a repaint.
+  // `ReapplyStyling()` will update the preferred size and request a repaint.
   ReapplyStyling();
 }
 
@@ -270,6 +275,27 @@ void OmniboxTextView::SetMultilineText(
     render_text_->SetMaxLines(1);
   }
   AppendTextWithStyling(formatted_string, /*fragment_index=*/0u, answer_type);
+}
+
+void OmniboxTextView::SetMultilineText(const std::u16string& text) {
+  // This is a "dirty" check to check if this call is a no-op and no state
+  // change is required. It works only because `SetMultilineText()` is the only
+  // place to set max lines to 3. It's not 100% correct because some of the
+  // other setters don't reset max lines back to 1. Ideally, all these setter
+  // methods would have a clean and robust way to verify no state change is
+  // required and early exit. See comment at `wrap_text_lines_`'s declaration.
+  if (!cached_classifications_ && GetText() == text && render_text_ &&
+      render_text_->max_lines() == 3) {
+    return;
+  }
+  cached_classifications_.reset();
+  render_text_ = CreateRenderText(text);
+  render_text_->SetColor(result_view_->GetColorProvider()->GetColor(
+      kColorOmniboxResultsTextAnswer));
+  render_text_->SetMultiline(true);
+  render_text_->SetMaxLines(3);
+  wrap_text_lines_ = true;
+  OnStyleChanged();
 }
 
 void OmniboxTextView::AppendExtraText(const SuggestionAnswer::ImageLine& line) {
@@ -339,6 +365,8 @@ std::unique_ptr<gfx::RenderText> OmniboxTextView::CreateRenderText(
       CONTEXT_OMNIBOX_POPUP, kTextStyle);
   render_text->SetFontList(font);
   render_text->SetText(text);
+  // Increase space between lines for multiline texts.
+  render_text->SetMinLineHeight(19);
   return render_text;
 }
 
@@ -366,7 +394,14 @@ void OmniboxTextView::OnStyleChanged() {
   font_height_ = std::max(height_normal, height_bold);
   font_height_ += kVerticalPadding;
 
-  SetPreferredSize(CalculatePreferredSize({}));
+  // Cache preferred size for 1-line matches only since their heights don't
+  // depend on the available width.
+  if (!wrap_text_lines_) {
+    SetPreferredSize(CalculatePreferredSize({}));
+  } else {
+    SetPreferredSize({});
+    cached_calculate_preferred_size_.SetSize(0, 0);
+  }
   SchedulePaint();
 }
 

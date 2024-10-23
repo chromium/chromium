@@ -52,6 +52,8 @@ enum ChromeTextContext {
   CONTEXT_OMNIBOX_PRIMARY,
 
   // Primary text in the omnibox dropdown.
+  // TODO(crbug.com/370088101): The contexts below used for omnibox controls
+  //   should reuse `CONTEXT_OMNIBOX_POPUP` with a custom style if necessary.
   CONTEXT_OMNIBOX_POPUP,
 
   // Text in the suggestions section header in the omnibox dropdown.
@@ -94,6 +96,9 @@ enum ChromeTextStyle {
 
   // A solid shade of green.
   STYLE_GREEN,
+
+  // 2px smaller.
+  STYLE_SMALL,
 };
 
 // Takes a desired font size and returns the size delta to request from
@@ -104,6 +109,8 @@ int GetFontSizeDeltaBoundedByAvailableHeight(int available_height,
                                              int desired_font_size);
 
 // Sets the |details| for text that should not be affected by the Harmony spec.
+// TODO(crbug.com/370088101) Merge into the callsite
+//   `ChromeTypographyProvider::GetFontDetailsImpl()`.
 void ApplyCommonFontStyles(int context,
                            int style,
                            ui::ResourceBundle::FontDetails& details);

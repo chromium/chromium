@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_RESULT_VIEW_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <utility>
 
@@ -24,6 +25,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
+class OmniboxLocalAnswerHeaderView;
 class OmniboxMatchCellView;
 class OmniboxPopupViewViews;
 class OmniboxResultSelectionIndicator;
@@ -133,11 +135,22 @@ class OmniboxResultView : public views::View {
   AutocompleteMatch match_;
 
   // Weak pointers for easy reference.
-  raw_ptr<OmniboxMatchCellView>
-      suggestion_view_;  // The leading (or left) view.
 
   // The blue bar used to indicate selection.
   raw_ptr<OmniboxResultSelectionIndicator> selection_indicator_ = nullptr;
+
+  // A container view for layout.
+  raw_ptr<views::View> local_answer_header_and_suggestion_and_buttons_;
+
+  // The answer header; e.g. 'Summary' or 'Generating...'. Lazily initialized.
+  raw_ptr<OmniboxLocalAnswerHeaderView> local_answer_header_ = nullptr;
+
+  // The icon, contents, description, etc depicting the match.
+  raw_ptr<OmniboxMatchCellView> suggestion_view_;
+
+  // The row of buttons that appears when actions such as tab switch or Pedals
+  // are on the suggestion. It is owned by the base view, not this raw pointer.
+  raw_ptr<OmniboxSuggestionButtonRowView> button_row_ = nullptr;
 
   // The thumbs up button used to submit feedback for suggestions.
   raw_ptr<views::ImageButton> thumbs_up_button_;
@@ -147,10 +160,6 @@ class OmniboxResultView : public views::View {
 
   // The "X" button at the end of the match cell, used to remove suggestions.
   raw_ptr<views::ImageButton> remove_suggestion_button_;
-
-  // The row of buttons that appears when actions such as tab switch or Pedals
-  // are on the suggestion. It is owned by the base view, not this raw pointer.
-  raw_ptr<OmniboxSuggestionButtonRowView> button_row_ = nullptr;
 
   // Keeps track of mouse-enter and mouse-exit events of child Views.
   OmniboxMouseEnterExitHandler mouse_enter_exit_handler_;

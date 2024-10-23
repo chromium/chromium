@@ -73,6 +73,9 @@ class OmniboxTextView : public views::View {
   void SetMultilineText(const omnibox::FormattedString& formatted_string,
                         const omnibox::AnswerType& answer_type);
 
+  // Used for history embedding answers.
+  void SetMultilineText(const std::u16string& text);
+
   // Used for search answers not using `RichAnswerTemplate` (e.g. because the
   // feature is disabled). Adds the "additional" and "status" text from |line|,
   // if any.
@@ -107,9 +110,16 @@ class OmniboxTextView : public views::View {
   int font_height_ = 0;
 
   // Whether to wrap lines if the width is too narrow for the whole string.
-  // TODO(crbug.com/370088101): Confirm this is always false and remove. If it's
-  //   needed, ensure it's set correctly in the `SetTextWithStyling()` and
-  //   related methods above.
+  // TODO(crbug.com/370088101): Ensure `wrap_text_lines_` is set correctly in
+  //   the `SetTextWithStyling()` and related methods above. Can we use
+  //   `render_text_->multiline()` instead? Ideally, all the text setting
+  //   methods should detect if nothing has changed (i.e. text, style, and other
+  //   options like wrapping / multiline, etc are all unchanged). If nothing has
+  //   changed, then they should early exit because those methods are called
+  //   1000's of times per keystroke and cause noticeable lag when not
+  //   early-exiting. Otherwise, if something has changed, the methods should
+  //   explicitly set all these states and not assume they still hold their
+  //   default values from initialization since `OmniboxTextView`s are reused.
   bool wrap_text_lines_ = false;
 
   // The primary data for this class.
@@ -118,6 +128,20 @@ class OmniboxTextView : public views::View {
   // early instead of setting text when the text and classifications
   // match the current state of the view.
   std::unique_ptr<ACMatchClassifications> cached_classifications_;
+
+  // Caches the param and return value of `CalculatePreferredSize()` for
+  // multiline texts. `CalculatePreferredSize()` is called 100's of times per
+  // keystroke. For 1-line texts, it's cached via `View::SetPreferredSize()`.
+  // But the size of multiline texts depends on `available_size`. Caching for
+  // the most recent `available_size` reduces the need to recompute preferred
+  // size from 300 to 4 times per keystroke. Increasing the cache size to 2
+  // would reduce it further to 0 times per keystroke, but that seems
+  // unnecessary. Unused for 1-line texts.
+  // The most recent `available_size` param passed to
+  // `CalculatePreferredSize()`.
+  mutable views::SizeBounds cached_available_size_;
+  // The most recent return value from `CalculatePreferredSize()`.
+  mutable gfx::Size cached_calculate_preferred_size_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_TEXT_VIEW_H_

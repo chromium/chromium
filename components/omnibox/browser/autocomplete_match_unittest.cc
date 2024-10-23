@@ -150,12 +150,8 @@ TEST_F(AutocompleteMatchTest, MoreRelevant) {
     int r2;
     bool expected_result;
   } cases[] = {
-    {  10,   0, true  },
-    {  10,  -5, true  },
-    {  -5,  10, false },
-    {   0,  10, false },
-    { -10,  -5, false  },
-    {  -5, -10, true },
+      {10, 0, true},  {10, -5, true},   {-5, 10, false},
+      {0, 10, false}, {-10, -5, false}, {-5, -10, true},
   };
 
   AutocompleteMatch m1(nullptr, 0, false,
@@ -173,71 +169,93 @@ TEST_F(AutocompleteMatchTest, MoreRelevant) {
 TEST_F(AutocompleteMatchTest, MergeClassifications) {
   // Merging two empty vectors should result in an empty vector.
   EXPECT_EQ(std::string(),
-      AutocompleteMatch::ClassificationsToString(
-          AutocompleteMatch::MergeClassifications(
-              AutocompleteMatch::ACMatchClassifications(),
-              AutocompleteMatch::ACMatchClassifications())));
+            AutocompleteMatch::ClassificationsToString(
+                AutocompleteMatch::MergeClassifications(
+                    AutocompleteMatch::ACMatchClassifications(),
+                    AutocompleteMatch::ACMatchClassifications())));
 
   // If one vector is empty and the other is "trivial" but non-empty (i.e. (0,
   // NONE)), the non-empty vector should be returned.
+  EXPECT_EQ("0,0", AutocompleteMatch::ClassificationsToString(
+                       AutocompleteMatch::MergeClassifications(
+                           AutocompleteMatch::ClassificationsFromString("0,0"),
+                           AutocompleteMatch::ACMatchClassifications())));
   EXPECT_EQ("0,0",
-      AutocompleteMatch::ClassificationsToString(
-          AutocompleteMatch::MergeClassifications(
-              AutocompleteMatch::ClassificationsFromString("0,0"),
-              AutocompleteMatch::ACMatchClassifications())));
-  EXPECT_EQ("0,0",
-      AutocompleteMatch::ClassificationsToString(
-          AutocompleteMatch::MergeClassifications(
-              AutocompleteMatch::ACMatchClassifications(),
-              AutocompleteMatch::ClassificationsFromString("0,0"))));
+            AutocompleteMatch::ClassificationsToString(
+                AutocompleteMatch::MergeClassifications(
+                    AutocompleteMatch::ACMatchClassifications(),
+                    AutocompleteMatch::ClassificationsFromString("0,0"))));
 
   // Ditto if the one-entry vector is non-trivial.
+  EXPECT_EQ("0,1", AutocompleteMatch::ClassificationsToString(
+                       AutocompleteMatch::MergeClassifications(
+                           AutocompleteMatch::ClassificationsFromString("0,1"),
+                           AutocompleteMatch::ACMatchClassifications())));
   EXPECT_EQ("0,1",
-      AutocompleteMatch::ClassificationsToString(
-          AutocompleteMatch::MergeClassifications(
-              AutocompleteMatch::ClassificationsFromString("0,1"),
-              AutocompleteMatch::ACMatchClassifications())));
-  EXPECT_EQ("0,1",
-      AutocompleteMatch::ClassificationsToString(
-          AutocompleteMatch::MergeClassifications(
-              AutocompleteMatch::ACMatchClassifications(),
-              AutocompleteMatch::ClassificationsFromString("0,1"))));
+            AutocompleteMatch::ClassificationsToString(
+                AutocompleteMatch::MergeClassifications(
+                    AutocompleteMatch::ACMatchClassifications(),
+                    AutocompleteMatch::ClassificationsFromString("0,1"))));
 
   // Merge an unstyled one-entry vector with a styled one-entry vector.
   EXPECT_EQ("0,1",
-      AutocompleteMatch::ClassificationsToString(
-          AutocompleteMatch::MergeClassifications(
-              AutocompleteMatch::ClassificationsFromString("0,0"),
-              AutocompleteMatch::ClassificationsFromString("0,1"))));
+            AutocompleteMatch::ClassificationsToString(
+                AutocompleteMatch::MergeClassifications(
+                    AutocompleteMatch::ClassificationsFromString("0,0"),
+                    AutocompleteMatch::ClassificationsFromString("0,1"))));
 
   // Test simple cases of overlap.
-  EXPECT_EQ("0,3," "1,2",
+  EXPECT_EQ(
+      "0,3,"
+      "1,2",
       AutocompleteMatch::ClassificationsToString(
           AutocompleteMatch::MergeClassifications(
-              AutocompleteMatch::ClassificationsFromString("0,1," "1,0"),
+              AutocompleteMatch::ClassificationsFromString("0,1,"
+                                                           "1,0"),
               AutocompleteMatch::ClassificationsFromString("0,2"))));
-  EXPECT_EQ("0,3," "1,2",
+  EXPECT_EQ(
+      "0,3,"
+      "1,2",
       AutocompleteMatch::ClassificationsToString(
           AutocompleteMatch::MergeClassifications(
               AutocompleteMatch::ClassificationsFromString("0,2"),
-              AutocompleteMatch::ClassificationsFromString("0,1," "1,0"))));
+              AutocompleteMatch::ClassificationsFromString("0,1,"
+                                                           "1,0"))));
 
   // Test the case where both vectors have classifications at the same
   // positions.
   EXPECT_EQ("0,3",
-      AutocompleteMatch::ClassificationsToString(
-          AutocompleteMatch::MergeClassifications(
-              AutocompleteMatch::ClassificationsFromString("0,1," "1,2"),
-              AutocompleteMatch::ClassificationsFromString("0,2," "1,1"))));
+            AutocompleteMatch::ClassificationsToString(
+                AutocompleteMatch::MergeClassifications(
+                    AutocompleteMatch::ClassificationsFromString("0,1,"
+                                                                 "1,2"),
+                    AutocompleteMatch::ClassificationsFromString("0,2,"
+                                                                 "1,1"))));
 
   // Test an arbitrary complicated case.
-  EXPECT_EQ("0,2," "1,0," "2,1," "4,3," "5,7," "6,3," "7,7," "15,1," "17,0",
+  EXPECT_EQ(
+      "0,2,"
+      "1,0,"
+      "2,1,"
+      "4,3,"
+      "5,7,"
+      "6,3,"
+      "7,7,"
+      "15,1,"
+      "17,0",
       AutocompleteMatch::ClassificationsToString(
           AutocompleteMatch::MergeClassifications(
-              AutocompleteMatch::ClassificationsFromString(
-                  "0,0," "2,1," "4,3," "7,7," "10,6," "15,0"),
-              AutocompleteMatch::ClassificationsFromString(
-                  "0,2," "1,0," "5,7," "6,1," "17,0"))));
+              AutocompleteMatch::ClassificationsFromString("0,0,"
+                                                           "2,1,"
+                                                           "4,3,"
+                                                           "7,7,"
+                                                           "10,6,"
+                                                           "15,0"),
+              AutocompleteMatch::ClassificationsFromString("0,2,"
+                                                           "1,0,"
+                                                           "5,7,"
+                                                           "6,1,"
+                                                           "17,0"))));
 }
 
 TEST_F(AutocompleteMatchTest, GetMatchComponents) {
@@ -412,50 +430,44 @@ void CheckDuplicateCase(const DuplicateCase& duplicate_case) {
 
 TEST_F(AutocompleteMatchTest, Duplicates) {
   DuplicateCase cases[] = {
-    { L"g", "http://www.google.com/",  "https://www.google.com/",    true },
-    { L"g", "http://www.google.com/",  "http://www.google.com",      true },
-    { L"g", "http://google.com/",      "http://www.google.com/",     true },
-    { L"g", "http://www.google.com/",  "HTTP://www.GOOGLE.com/",     true },
-    { L"g", "http://www.google.com/",  "http://www.google.com",      true },
-    { L"g", "https://www.google.com/", "http://google.com",          true },
-    { L"g", "http://www.google.com/",  "wss://www.google.com/",      false },
-    { L"g", "http://www.google.com/1", "http://www.google.com/1/",   false },
-    { L"g", "http://www.google.com/",  "http://www.google.com/1",    false },
-    { L"g", "http://www.google.com/",  "http://www.goo.com/",        false },
-    { L"g", "http://www.google.com/",  "http://w2.google.com/",      false },
-    { L"g", "http://www.google.com/",  "http://m.google.com/",       false },
-    { L"g", "http://www.google.com/",  "http://www.google.com/?foo", false },
+      {L"g", "http://www.google.com/", "https://www.google.com/", true},
+      {L"g", "http://www.google.com/", "http://www.google.com", true},
+      {L"g", "http://google.com/", "http://www.google.com/", true},
+      {L"g", "http://www.google.com/", "HTTP://www.GOOGLE.com/", true},
+      {L"g", "http://www.google.com/", "http://www.google.com", true},
+      {L"g", "https://www.google.com/", "http://google.com", true},
+      {L"g", "http://www.google.com/", "wss://www.google.com/", false},
+      {L"g", "http://www.google.com/1", "http://www.google.com/1/", false},
+      {L"g", "http://www.google.com/", "http://www.google.com/1", false},
+      {L"g", "http://www.google.com/", "http://www.goo.com/", false},
+      {L"g", "http://www.google.com/", "http://w2.google.com/", false},
+      {L"g", "http://www.google.com/", "http://m.google.com/", false},
+      {L"g", "http://www.google.com/", "http://www.google.com/?foo", false},
 
-    // Don't allow URLs with different schemes to be considered duplicates for
-    // certain inputs.
-    { L"http://g", "http://google.com/",
-                   "https://google.com/",  false },
-    { L"http://g", "http://blah.com/",
-                   "https://blah.com/",    true  },
-    { L"http://g", "http://google.com/1",
-                   "https://google.com/1", false },
-    { L"http://g hello",    "http://google.com/",
-                            "https://google.com/", false },
-    { L"hello http://g",    "http://google.com/",
-                            "https://google.com/", false },
-    { L"hello http://g",    "http://blah.com/",
-                            "https://blah.com/",   true  },
-    { L"http://b http://g", "http://google.com/",
-                            "https://google.com/", false },
-    { L"http://b http://g", "http://blah.com/",
-                            "https://blah.com/",   false },
+      // Don't allow URLs with different schemes to be considered duplicates for
+      // certain inputs.
+      {L"http://g", "http://google.com/", "https://google.com/", false},
+      {L"http://g", "http://blah.com/", "https://blah.com/", true},
+      {L"http://g", "http://google.com/1", "https://google.com/1", false},
+      {L"http://g hello", "http://google.com/", "https://google.com/", false},
+      {L"hello http://g", "http://google.com/", "https://google.com/", false},
+      {L"hello http://g", "http://blah.com/", "https://blah.com/", true},
+      {L"http://b http://g", "http://google.com/", "https://google.com/",
+       false},
+      {L"http://b http://g", "http://blah.com/", "https://blah.com/", false},
 
-    // If the user types unicode that matches the beginning of a
-    // punycode-encoded hostname then consider that a match.
-    { L"x",               "http://xn--1lq90ic7f1rc.cn/",
-                          "https://xn--1lq90ic7f1rc.cn/", true  },
-    { L"http://\x5317 x", "http://xn--1lq90ic7f1rc.cn/",
-                          "https://xn--1lq90ic7f1rc.cn/", false },
-    { L"http://\x89c6 x", "http://xn--1lq90ic7f1rc.cn/",
-                          "https://xn--1lq90ic7f1rc.cn/", true  },
+      // If the user types unicode that matches the beginning of a
+      // punycode-encoded hostname then consider that a match.
+      {L"x", "http://xn--1lq90ic7f1rc.cn/", "https://xn--1lq90ic7f1rc.cn/",
+       true},
+      {L"http://\x5317 x", "http://xn--1lq90ic7f1rc.cn/",
+       "https://xn--1lq90ic7f1rc.cn/", false},
+      {L"http://\x89c6 x", "http://xn--1lq90ic7f1rc.cn/",
+       "https://xn--1lq90ic7f1rc.cn/", true},
 
-    // URLs with hosts containing only `www.` should produce valid stripped urls
-    { L"http://www./", "http://www./", "http://google.com/", false },
+      // URLs with hosts containing only `www.` should produce valid stripped
+      // urls
+      {L"http://www./", "http://www./", "http://google.com/", false},
   };
 
   for (const auto& caseI : cases)
@@ -1332,6 +1344,7 @@ TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
             match.GetVectorIcon(/*is_bookmark=*/false, &turl).is_empty());
       }
     } else if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL ||
+               match.type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER ||
                (match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
                 !match.IsIPHSuggestion())) {
       // SEARCH_SUGGEST_TAIL and non-IPH NULL_RESULT_MESSAGE suggestions use an

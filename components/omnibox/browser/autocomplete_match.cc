@@ -603,6 +603,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       }
 
     case Type::SEARCH_SUGGEST_TAIL:
+    case Type::HISTORY_EMBEDDINGS_ANSWER:
       return GetEmptyIcon();
 
     case Type::DOCUMENT_SUGGESTION:
@@ -1451,6 +1452,8 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       return OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH;
     case AutocompleteMatchType::NULL_RESULT_MESSAGE:
       return OmniboxEventProto::Suggestion::NULL_RESULT_MESSAGE;
+    case AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER:
+      return OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS_ANSWER;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
@@ -1526,8 +1529,10 @@ int AutocompleteMatch::GetSortingOrder() const {
       shortcut_boosted) {
     return 2;
   }
-  if (IsIPHSuggestion())
+  if (type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER)
     return 5;
+  if (IsIPHSuggestion())
+    return 6;
   return 4;
 }
 

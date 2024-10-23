@@ -94,6 +94,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "star_active.icon",
     "star_active_chrome_refresh.icon",
     "star_chrome_refresh.icon",
+    "summarize_auto.icon",
     "switch.icon",
     "switch_cr2023.icon",
     "tab.icon",

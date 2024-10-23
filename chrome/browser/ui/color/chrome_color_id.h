@@ -354,6 +354,7 @@
   E_CPONLY(kColorOmniboxResultsIconGM3Background) \
   E_CPONLY(kColorOmniboxResultsIconSelected) \
   E_CPONLY(kColorOmniboxResultsStarterPackIcon) \
+  E_CPONLY(kColorOmniboxResultsTextAnswer) \
   E_CPONLY(kColorOmniboxResultsTextDimmed) \
   E_CPONLY(kColorOmniboxResultsTextDimmedSelected) \
   E_CPONLY(kColorOmniboxResultsTextNegative) \
