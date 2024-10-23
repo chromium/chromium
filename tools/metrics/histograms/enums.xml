@@ -33614,6 +33614,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="131" label="BackgroundClipText"/>
   <int value="132" label="ContainInlineSize"/>
   <int value="133" label="CheckVisibility"/>
+  <int value="134" label="Overlay"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

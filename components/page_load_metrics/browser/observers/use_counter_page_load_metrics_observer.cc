@@ -529,6 +529,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kBackgroundClip, WebDXFeature::kBackgroundClipText},
           {CSSSampleId::kContainIntrinsicInlineSize,
            WebDXFeature::kContainInlineSize},
+          {CSSSampleId::kOverlay, WebDXFeature::kOverlay},
       }};
 
   return *kMap;

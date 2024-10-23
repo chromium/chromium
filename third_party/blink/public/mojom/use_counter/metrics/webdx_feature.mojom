@@ -189,6 +189,7 @@ enum WebDXFeature {
   kBackgroundClipText = 131,
   kContainInlineSize = 132,
   kCheckVisibility = 133,
+  kOverlay = 134,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
