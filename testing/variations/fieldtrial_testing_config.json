@@ -17634,6 +17634,51 @@
             ]
         }
     ],
+    "PreloadingViewportHeuristics": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Moderate",
+                    "params": {
+                        "delay": "1000ms",
+                        "distance_from_ptr_down_high": "0",
+                        "distance_from_ptr_down_low": "-0.3",
+                        "largest_anchor_threshold": "0.5"
+                    },
+                    "enable_features": [
+                        "PreloadingViewportHeuristics"
+                    ]
+                },
+                {
+                    "name": "Aggressive",
+                    "params": {
+                        "delay": "1000ms",
+                        "distance_from_ptr_down_high": "0",
+                        "distance_from_ptr_down_low": "-0.3",
+                        "largest_anchor_threshold": "0.25"
+                    },
+                    "enable_features": [
+                        "PreloadingViewportHeuristics"
+                    ]
+                },
+                {
+                    "name": "Conservative",
+                    "params": {
+                        "delay": "1000ms",
+                        "distance_from_ptr_down_high": "0",
+                        "distance_from_ptr_down_low": "-0.3",
+                        "largest_anchor_threshold": "1"
+                    },
+                    "enable_features": [
+                        "PreloadingViewportHeuristics"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2BookmarkBarTriggerV2": [
         {
             "platforms": [
