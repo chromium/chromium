@@ -28,6 +28,7 @@ import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
 import("//components/services/on_device_translation/buildflags/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
+import("//content/public/common/features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -2387,6 +2388,7 @@ static_library("browser") {
     "//components/zoom",
     "//content/public/browser",
     "//content/public/common",
+    "//content/public/common:buildflags",
     "//crypto",
     "//device/base",
     "//device/base/synchronization",
@@ -3706,8 +3708,6 @@ static_library("browser") {
       "lifetime/application_lifetime_desktop.h",
       "lifetime/browser_close_manager.cc",
       "lifetime/browser_close_manager.h",
-      "media/capture_access_handler_base.cc",
-      "media/capture_access_handler_base.h",
       "media/cast_mirroring_service_host.cc",
       "media/cast_mirroring_service_host.h",
       "media/cast_mirroring_service_host_factory.cc",
@@ -4547,6 +4547,13 @@ static_library("browser") {
         "//chrome/browser/ui/promos:utils",
       ]
     }
+  }
+
+  if (enable_screen_capture) {
+    sources += [
+      "media/capture_access_handler_base.cc",
+      "media/capture_access_handler_base.h",
+    ]
   }
 
   if (is_chromeos_ash) {

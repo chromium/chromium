@@ -357,6 +357,7 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/browser/webui_config_map.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1593,12 +1594,14 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kAutoplayAllowed, false);
   registry->RegisterListPref(prefs::kAutoplayAllowlist);
   registry->RegisterListPref(
-      prefs::kScreenCaptureWithoutGestureAllowedForOrigins);
-  registry->RegisterListPref(
       prefs::kFileOrDirectoryPickerWithoutGestureAllowedForOrigins);
   registry->RegisterIntegerPref(prefs::kFetchKeepaliveDurationOnShutdown, 0);
   registry->RegisterBooleanPref(
       prefs::kSharedArrayBufferUnrestrictedAccessAllowed, false);
+#endif
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+  registry->RegisterListPref(
+      prefs::kScreenCaptureWithoutGestureAllowedForOrigins);
 #endif
   registry->RegisterBooleanPref(prefs::kSandboxExternalProtocolBlocked, true);
   registry->RegisterBooleanPref(prefs::kSSLErrorOverrideAllowed, true);

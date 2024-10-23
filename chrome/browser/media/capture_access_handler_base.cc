@@ -15,8 +15,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/common/extension.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension.h"
+#endif
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -319,6 +323,7 @@ void CaptureAccessHandlerBase::UpdateVideoScreenCaptureStatus(
   }
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
     const extensions::Extension* extension) {
   if (!extension)
@@ -337,6 +342,7 @@ bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 bool CaptureAccessHandlerBase::IsBuiltInFeedbackUI(const GURL& origin) {
   return origin.spec() == chrome::kChromeUIFeedbackURL;

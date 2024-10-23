@@ -345,7 +345,7 @@ void CheckGetAllScreensMediaAllowed(content::BrowserContext* context,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 bool IsTransientActivationRequiredForGetDisplayMedia(
     content::WebContents* contents) {
   if (!base::FeatureList::IsEnabled(
@@ -371,7 +371,7 @@ bool IsTransientActivationRequiredForGetDisplayMedia(
       contents->GetURL(), prefs,
       prefs::kScreenCaptureWithoutGestureAllowedForOrigins);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
     const GURL& request_origin,
