@@ -1942,6 +1942,33 @@ TEST_F(CookieSettingsTest, ManagedThirdPartyException) {
   EXPECT_EQ(info.source, SettingSource::kPolicy);
 }
 
+#if !BUILDFLAG(IS_IOS)
+TEST_F(CookieSettingsTest, Allows3pcsInIncognitoWithCookieControlsModeOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      privacy_sandbox::kAlwaysBlock3pcsIncognito);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kOff));
+  EXPECT_FALSE(cookie_settings_->ShouldBlockThirdPartyCookies());
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kOff));
+  EXPECT_FALSE(cookie_settings_incognito_->ShouldBlockThirdPartyCookies());
+}
+
+TEST_F(CookieSettingsTest, Blocks3pcsInIncognitoWithCookieControlsModeOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(privacy_sandbox::kAlwaysBlock3pcsIncognito);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kOff));
+  EXPECT_FALSE(cookie_settings_->ShouldBlockThirdPartyCookies());
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kOff));
+  EXPECT_TRUE(cookie_settings_incognito_->ShouldBlockThirdPartyCookies());
+}
+#endif
+
 TEST_F(CookieSettingsTest, ThirdPartySettingObserver) {
   CookieSettingsObserver observer(cookie_settings_.get());
   EXPECT_FALSE(observer.last_value());

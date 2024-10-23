@@ -10,9 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/api/preference/cookie_controls_mode_transformer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
@@ -29,6 +31,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
@@ -635,3 +638,37 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
           content_settings::CookieControlsMode::kIncognitoOnly)),
       /* expected_controlled */ false);
 }
+
+class AlwaysBlock3pcsIncognitoExtensionApiTest
+    : public extensions::ExtensionApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  AlwaysBlock3pcsIncognitoExtensionApiTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          privacy_sandbox::kAlwaysBlock3pcsIncognito);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          privacy_sandbox::kAlwaysBlock3pcsIncognito);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(AlwaysBlock3pcsIncognitoExtensionApiTest,
+                       Blocks3pcsWhenInIncognitoWithCookieControlsModeOff) {
+  bool feature_enabled = GetParam();
+  EXPECT_EQ(extensions::CookieControlsModeTransformer()
+                .BrowserToExtensionPref(
+                    base::Value(static_cast<int>(
+                        content_settings::CookieControlsMode::kOff)),
+                    /*is_incognito_profile=*/true)
+                ->GetBool(),
+            !feature_enabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(TestAlwaysBlock3pcsIncognito,
+                         AlwaysBlock3pcsIncognitoExtensionApiTest,
+                         testing::Bool());

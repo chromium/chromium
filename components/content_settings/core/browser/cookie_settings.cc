@@ -405,7 +405,9 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
     case CookieControlsMode::kIncognitoOnly:
       return is_incognito_;
     case CookieControlsMode::kOff:
-      return false;
+      return base::FeatureList::IsEnabled(
+                 privacy_sandbox::kAlwaysBlock3pcsIncognito) &&
+             is_incognito_;
   }
 #endif
 }
