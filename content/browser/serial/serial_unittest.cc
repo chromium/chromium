@@ -23,7 +23,7 @@
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/serial/serial.mojom-blink.h"
+#include "third_party/blink/public/mojom/serial/serial.mojom.h"
 #include "url/origin.h"
 
 namespace content {

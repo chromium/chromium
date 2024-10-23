@@ -64,7 +64,7 @@
 #include "content/test/test_render_frame.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/mojom/base/text_direction.mojom-blink.h"
+#include "mojo/public/mojom/base/text_direction.mojom.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/dns/public/resolve_error_info.h"
