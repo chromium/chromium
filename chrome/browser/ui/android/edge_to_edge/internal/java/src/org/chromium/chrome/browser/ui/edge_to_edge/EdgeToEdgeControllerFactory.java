@@ -148,7 +148,9 @@ public class EdgeToEdgeControllerFactory {
         if (!EdgeToEdgeFieldTrial.getInstance().isEnabledForManufacturerVersion()) return false;
 
         // The root view's window insets is needed to determine if we are in gesture nav mode.
-        if (activity.getWindow().getDecorView().getRootWindowInsets() == null) {
+        if (activity == null
+                || activity.getWindow() == null
+                || activity.getWindow().getDecorView().getRootWindowInsets() == null) {
             return false;
         }
 

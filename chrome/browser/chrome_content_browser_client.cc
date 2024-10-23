@@ -4525,6 +4525,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
           delegate->IsForceDarkWebContentEnabled();
 
       web_prefs->modal_context_menu = delegate->IsModalContextMenu();
+
+      web_prefs->dynamic_safe_area_insets_enabled =
+          delegate->IsDynamicSafeAreaInsetsEnabled();
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 

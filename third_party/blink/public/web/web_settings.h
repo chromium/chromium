@@ -128,6 +128,7 @@ class WebSettings {
   virtual void SetDontSendKeyEventsToJavascript(bool) = 0;
   virtual void SetDoubleTapToZoomEnabled(bool) = 0;
   virtual void SetDownloadableBinaryFontsEnabled(bool) = 0;
+  virtual void SetDynamicSafeAreaInsetsEnabled(bool) = 0;
   virtual void SetEditingBehavior(mojom::EditingBehavior) = 0;
   virtual void SetEnableScrollAnimator(bool) = 0;
   virtual void SetPrefersReducedMotion(bool) = 0;

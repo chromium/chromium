@@ -949,7 +949,7 @@ int Page::SubframeCount() const {
 void Page::UpdateSafeAreaInsetWithBrowserControls(
     const BrowserControls& browser_controls,
     bool force_update) {
-  DCHECK(RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled());
+  DCHECK(GetSettings().GetDynamicSafeAreaInsetsEnabled());
 
   if (!DeprecatedLocalMainFrame()) {
     return;
@@ -992,7 +992,7 @@ void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
 
   // When the SAI is changed when DynamicSafeAreaInsetsEnabled, the SAI for the
   // main frame needs to be set per browser controls state.
-  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled() &&
+  if (GetSettings().GetDynamicSafeAreaInsetsEnabled() &&
       setter->IsMainFrame()) {
     UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(), true);
   } else {

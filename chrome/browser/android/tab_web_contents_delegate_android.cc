@@ -570,6 +570,16 @@ bool TabWebContentsDelegateAndroid::IsModalContextMenu() const {
   return Java_TabWebContentsDelegateAndroidImpl_isModalContextMenu(env, obj);
 }
 
+bool TabWebContentsDelegateAndroid::IsDynamicSafeAreaInsetsEnabled() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return false;
+  }
+  return Java_TabWebContentsDelegateAndroidImpl_isDynamicSafeAreaInsetsEnabled(
+      env, obj);
+}
+
 }  // namespace android
 
 void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
