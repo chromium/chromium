@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/placeholder_metrics.h"
+#include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/validation.h"
@@ -166,13 +167,13 @@ void LogPredictionMetrics(
       observed_submission ? AutofillMetrics::TYPE_SUBMISSION
                           : AutofillMetrics::TYPE_NO_SUBMISSION;
   for (const std::unique_ptr<AutofillField>& field : form) {
-    AutofillMetrics::LogHeuristicPredictionQualityMetrics(
-        form_interactions_ukm_logger, form, *field, metric_type);
-    AutofillMetrics::LogServerPredictionQualityMetrics(
-        form_interactions_ukm_logger, form, *field, metric_type);
-    AutofillMetrics::LogOverallPredictionQualityMetrics(
-        form_interactions_ukm_logger, form, *field, metric_type);
-    AutofillMetrics::LogEmailFieldPredictionMetrics(*field);
+    LogHeuristicPredictionQualityMetrics(form_interactions_ukm_logger, form,
+                                         *field, metric_type);
+    LogServerPredictionQualityMetrics(form_interactions_ukm_logger, form,
+                                      *field, metric_type);
+    LogOverallPredictionQualityMetrics(form_interactions_ukm_logger, form,
+                                       *field, metric_type);
+    LogEmailFieldPredictionMetrics(*field);
     autofill_metrics::LogShadowPredictionComparison(*field,
                                                     GetActiveHeuristicSource());
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -181,8 +182,8 @@ void LogPredictionMetrics(
     // `LogHeuristicPredictionQualityMetrics()`.
     if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions) &&
         GetActiveHeuristicSource() != HeuristicSource::kMachineLearning) {
-      AutofillMetrics::LogMlPredictionQualityMetrics(
-          form_interactions_ukm_logger, form, *field, metric_type);
+      LogMlPredictionQualityMetrics(form_interactions_ukm_logger, form, *field,
+                                    metric_type);
     }
 #endif
   }
@@ -257,10 +258,10 @@ void LogQualityMetricsBasedOnAutocomplete(
   for (const auto& field : form_structure) {
     if (field->html_type() != HtmlFieldType::kUnspecified &&
         field->html_type() != HtmlFieldType::kUnrecognized) {
-      AutofillMetrics::LogHeuristicPredictionQualityMetrics(
-          form_interactions_ukm_logger, form_structure, *field, metric_type);
-      AutofillMetrics::LogServerPredictionQualityMetrics(
-          form_interactions_ukm_logger, form_structure, *field, metric_type);
+      LogHeuristicPredictionQualityMetrics(form_interactions_ukm_logger,
+                                           form_structure, *field, metric_type);
+      LogServerPredictionQualityMetrics(form_interactions_ukm_logger,
+                                        form_structure, *field, metric_type);
     }
   }
 }
