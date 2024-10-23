@@ -119,6 +119,13 @@ bool Printer::PpdReference::IsFilled() const {
          !effective_make_and_model.empty();
 }
 
+Printer::ManagedPrintOptions::ManagedPrintOptions() = default;
+Printer::ManagedPrintOptions::ManagedPrintOptions(
+    const Printer::ManagedPrintOptions& other) = default;
+Printer::ManagedPrintOptions& Printer::ManagedPrintOptions::operator=(
+    const Printer::ManagedPrintOptions& other) = default;
+Printer::ManagedPrintOptions::~ManagedPrintOptions() = default;
+
 Printer::Printer()
     : id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       source_(SRC_USER_PREFS) {}

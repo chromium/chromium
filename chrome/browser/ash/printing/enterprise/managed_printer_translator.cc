@@ -197,6 +197,21 @@ std::optional<Printer> PrinterFromManagedPrinterConfig(
   if (managed_printer.has_description()) {
     printer.set_description(managed_printer.description());
   }
+
+  if (managed_printer.has_print_job_options()) {
+    std::optional<Printer::ManagedPrintOptions> print_job_options =
+        ChromeOsPrintOptionsFromManagedPrintOptions(
+            managed_printer.print_job_options());
+    if (!print_job_options) {
+      LOG(WARNING) << base::StringPrintf(
+          "Managed printer '%s' has invalid %s value: %s",
+          managed_printer.display_name().c_str(), kPrintJobOptions,
+          managed_printer.print_job_options().SerializeAsString().c_str());
+      return std::nullopt;
+    }
+    printer.set_print_job_options(print_job_options.value());
+  }
+
   return printer;
 }
 

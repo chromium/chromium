@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/enterprise/print_job_options_translator.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -11,10 +12,12 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/enterprise/print_job_options.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 using ::base::test::EqualsProto;
 using google::protobuf::RepeatedField;
 using google::protobuf::RepeatedPtrField;
+using ::testing::ElementsAre;
 
 namespace chromeos {
 
@@ -190,6 +193,169 @@ TEST(ManagedPrintOptionsProtoFromDict, InvalidPrintJobOptions) {
 
   PrintJobOptions print_job_options =
       ManagedPrintOptionsProtoFromDict(print_job_options_dict);
+}
+
+TEST(ChromeOsPrintOptionsFromManagedPrintOptions, InvalidMediaSize) {
+  PrintJobOptions print_job_options;
+  // Default value of "media size" option doesn't have width.
+  print_job_options.mutable_media_size()->mutable_default_value()->set_height(
+      32);
+
+  ASSERT_EQ(ChromeOsPrintOptionsFromManagedPrintOptions(print_job_options),
+            std::nullopt);
+}
+
+TEST(ChromeOsPrintOptionsFromManagedPrintOptions, InvalidDpi) {
+  PrintJobOptions print_job_options;
+  // Default value of "Dpi" option doesn't have horizontal value.
+  print_job_options.mutable_dpi()->mutable_default_value()->set_vertical(1000);
+
+  ASSERT_EQ(ChromeOsPrintOptionsFromManagedPrintOptions(print_job_options),
+            std::nullopt);
+}
+
+TEST(ChromeOsPrintOptionsFromManagedPrintOptions, MediaSize) {
+  SizeOption media_size;
+  media_size.mutable_default_value()->set_width(60);
+  media_size.mutable_default_value()->set_height(60);
+  std::vector<Size> media_size_available_values(2);
+  media_size_available_values[0].set_width(60);
+  media_size_available_values[0].set_height(60);
+  media_size_available_values[1].set_width(90);
+  media_size_available_values[1].set_height(90);
+  *media_size.mutable_allowed_values() = RepeatedPtrField<Size>(
+      media_size_available_values.begin(), media_size_available_values.end());
+  PrintJobOptions print_job_options_proto;
+  *print_job_options_proto.mutable_media_size() = media_size;
+
+  std::optional<Printer::ManagedPrintOptions> print_job_options =
+      ChromeOsPrintOptionsFromManagedPrintOptions(print_job_options_proto);
+
+  ASSERT_TRUE(print_job_options.has_value());
+  ASSERT_TRUE(print_job_options->media_size.default_value.has_value());
+  EXPECT_EQ(print_job_options->media_size.default_value.value(),
+            (Printer::Size{60, 60}));
+  EXPECT_THAT(print_job_options->media_size.allowed_values,
+              ElementsAre(Printer::Size{60, 60}, Printer::Size{90, 90}));
+}
+
+TEST(ChromeOsPrintOptionsFromManagedPrintOptions, MediaType) {
+  StringOption media_type;
+  media_type.set_default_value("paper");
+  media_type.add_allowed_values("paper");
+  media_type.add_allowed_values("metal");
+  media_type.add_allowed_values("wood");
+  PrintJobOptions print_job_options_proto;
+  *print_job_options_proto.mutable_media_type() = media_type;
+
+  std::optional<Printer::ManagedPrintOptions> print_job_options =
+      ChromeOsPrintOptionsFromManagedPrintOptions(print_job_options_proto);
+
+  ASSERT_TRUE(print_job_options.has_value());
+  ASSERT_TRUE(print_job_options->media_type.default_value.has_value());
+  EXPECT_EQ(print_job_options->media_type.default_value.value(), "paper");
+  EXPECT_THAT(print_job_options->media_type.allowed_values,
+              ElementsAre("paper", "metal", "wood"));
+}
+
+TEST(ChromeOsPrintOptionsFromManagedPrintOptions, Duplex) {
+  DuplexOption duplex;
+  duplex.set_default_value(DuplexType::DUPLEX_LONG_EDGE);
+  duplex.add_allowed_values(DuplexType::DUPLEX_LONG_EDGE);
+  duplex.add_allowed_values(DuplexType::DUPLEX_SHORT_EDGE);
+  PrintJobOptions print_job_options_proto;
+  *print_job_options_proto.mutable_duplex() = duplex;
+
+  std::optional<Printer::ManagedPrintOptions> print_job_options =
+      ChromeOsPrintOptionsFromManagedPrintOptions(print_job_options_proto);
+
+  ASSERT_TRUE(print_job_options.has_value());
+  ASSERT_TRUE(print_job_options->duplex.default_value.has_value());
+  EXPECT_EQ(print_job_options->duplex.default_value.value(),
+            Printer::DuplexType::kLongEdge);
+  EXPECT_THAT(print_job_options->duplex.allowed_values,
+              ElementsAre(Printer::DuplexType::kLongEdge,
+                          Printer::DuplexType::kShortEdge));
+}
+
+TEST(ChromeOsPrintOptionsFromManagedPrintOptions, Color) {
+  BoolOption color;
+  color.set_default_value(true);
+  color.add_allowed_values(true);
+  color.add_allowed_values(false);
+  PrintJobOptions print_job_options_proto;
+  *print_job_options_proto.mutable_color() = color;
+
+  std::optional<Printer::ManagedPrintOptions> print_job_options =
+      ChromeOsPrintOptionsFromManagedPrintOptions(print_job_options_proto);
+
+  ASSERT_TRUE(print_job_options.has_value());
+  ASSERT_TRUE(print_job_options->color.default_value.has_value());
+  EXPECT_EQ(print_job_options->color.default_value.value(), true);
+  EXPECT_THAT(print_job_options->color.allowed_values,
+              ElementsAre(true, false));
+}
+
+TEST(ChromeOsPrintOptionsFromManagedPrintOptions, Dpi) {
+  DPIOption dpi;
+  dpi.mutable_default_value()->set_horizontal(1000);
+  dpi.mutable_default_value()->set_vertical(1500);
+  std::vector<DPI> dpi_available_values(2);
+  dpi_available_values[0].set_horizontal(1000);
+  dpi_available_values[0].set_vertical(1500);
+  dpi_available_values[1].set_horizontal(2000);
+  dpi_available_values[1].set_vertical(2500);
+  *dpi.mutable_allowed_values() = RepeatedPtrField<DPI>(
+      dpi_available_values.begin(), dpi_available_values.end());
+  PrintJobOptions print_job_options_proto;
+  *print_job_options_proto.mutable_dpi() = dpi;
+
+  std::optional<Printer::ManagedPrintOptions> print_job_options =
+      ChromeOsPrintOptionsFromManagedPrintOptions(print_job_options_proto);
+
+  ASSERT_TRUE(print_job_options.has_value());
+  ASSERT_TRUE(print_job_options->dpi.default_value.has_value());
+  EXPECT_EQ(print_job_options->dpi.default_value.value(),
+            (Printer::Dpi{1000, 1500}));
+  EXPECT_THAT(print_job_options->dpi.allowed_values,
+              ElementsAre(Printer::Dpi{1000, 1500}, Printer::Dpi{2000, 2500}));
+}
+
+TEST(ChromeOsPrintOptionsFromManagedPrintOptions, Quality) {
+  QualityOption quality;
+  quality.set_default_value(QualityType::QUALITY_DRAFT);
+  quality.add_allowed_values(QualityType::QUALITY_DRAFT);
+  quality.add_allowed_values(QualityType::QUALITY_NORMAL);
+  PrintJobOptions print_job_options_proto;
+  *print_job_options_proto.mutable_quality() = quality;
+
+  std::optional<Printer::ManagedPrintOptions> print_job_options =
+      ChromeOsPrintOptionsFromManagedPrintOptions(print_job_options_proto);
+
+  ASSERT_TRUE(print_job_options.has_value());
+  ASSERT_TRUE(print_job_options->quality.default_value.has_value());
+  EXPECT_EQ(print_job_options->quality.default_value.value(),
+            Printer::QualityType::kDraft);
+  EXPECT_THAT(
+      print_job_options->quality.allowed_values,
+      ElementsAre(Printer::QualityType::kDraft, Printer::QualityType::kNormal));
+}
+
+TEST(ChromeOsPrintOptionsFromManagedPrintOptions, PrintAsImage) {
+  BoolOption print_as_image;
+  print_as_image.set_default_value(false);
+  print_as_image.add_allowed_values(false);
+  PrintJobOptions print_job_options_proto;
+  *print_job_options_proto.mutable_print_as_image() = print_as_image;
+
+  std::optional<Printer::ManagedPrintOptions> print_job_options =
+      ChromeOsPrintOptionsFromManagedPrintOptions(print_job_options_proto);
+
+  ASSERT_TRUE(print_job_options.has_value());
+  ASSERT_TRUE(print_job_options->print_as_image.default_value.has_value());
+  EXPECT_EQ(print_job_options->print_as_image.default_value.value(), false);
+  EXPECT_THAT(print_job_options->print_as_image.allowed_values,
+              ElementsAre(false));
 }
 
 }  // namespace
