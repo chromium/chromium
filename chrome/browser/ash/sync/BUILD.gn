@@ -24,8 +24,6 @@ static_library("sync") {
     "sync_mojo_service_factory_ash.h",
     "sync_user_settings_client_ash.cc",
     "sync_user_settings_client_ash.h",
-    "synced_session_client_ash.cc",
-    "synced_session_client_ash.h",
   ]
 
   public_deps = [
@@ -76,7 +74,6 @@ source_set("unit_tests") {
     "sync_appsync_optin_client_unittest.cc",
     "sync_appsync_service_unittest.cc",
     "sync_error_notifier_unittest.cc",
-    "synced_session_client_ash_unittest.cc",
   ]
 
   deps = [

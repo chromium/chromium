@@ -20,7 +20,6 @@ class SyncService;
 namespace ash {
 
 class SyncUserSettingsClientAsh;
-class SyncedSessionClientAsh;
 
 // Implements Crosapi SyncService interface, that allows interaction of Lacros
 // and Ash SyncServices.
@@ -57,21 +56,12 @@ class SyncMojoServiceAsh : public KeyedService,
   void CreateSyncedSessionClient(
       CreateSyncedSessionClientCallback callback) override;
 
-  // Returns null if kChromeOSSyncedSessionClient is disabled.
-  SyncedSessionClientAsh* GetSyncedSessionClientAsh() {
-    return synced_session_client_.get();
-  }
-
  private:
   // Members below destroyed after Shutdown().
 
   // |user_settings_client_| is null if kSyncChromeOSAppsToggleSharing is
   // disabled.
   std::unique_ptr<SyncUserSettingsClientAsh> user_settings_client_;
-
-  // |synced_session_client_| is null if kChromeOSSyncedSessionClient is
-  // disabled.
-  std::unique_ptr<SyncedSessionClientAsh> synced_session_client_;
 
   mojo::ReceiverSet<crosapi::mojom::SyncService> receivers_;
 };
