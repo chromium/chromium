@@ -56,6 +56,11 @@
     Manage your info
   </message>
 
+ <!-- Loading suggestions suggestion -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_LOADING_SUGGESTIONS_A11Y_HINT" desc="The a11y announcement for the loading prediction improvements suggestions popup.">
+    Loading suggestions
+  </message>
+
   <!-- Prediction improvements details -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS" desc="Text displayed on the feedback suggestion giving users details about Autofill with AI.">
     Info you have saved and this page get sent to Google to see if autofill can help fill this form. Data may be seen by human reviewers to improve this feature.
@@ -79,9 +84,6 @@
   </message>
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Autofill prediction improvements feedback form.">
     Send feedback for Autofill with AI.
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_LOADING_SUGGESTIONS_A11Y_HINT" desc="The a11y announcement for the loading prediction improvements suggestions popup.">
-    Loading suggestions
   </message>
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT" desc="The a11y announcement after the prediction improvements suggestions successfull loading.">
     Suggestions loaded
