@@ -112,7 +112,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_Accepted) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveIbanPromptResult.Local.FirstShow",
-      autofill_metrics::SaveIbanBubbleResult::kAccepted, 1);
+      autofill_metrics::SaveIbanPromptResult::kAccepted, 1);
 }
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_Cancelled) {
@@ -122,7 +122,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_Cancelled) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveIbanPromptResult.Local.FirstShow",
-      autofill_metrics::SaveIbanBubbleResult::kCancelled, 1);
+      autofill_metrics::SaveIbanPromptResult::kCancelled, 1);
 }
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_NotInteracted) {
@@ -132,7 +132,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_NotInteracted) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveIbanPromptResult.Local.FirstShow",
-      autofill_metrics::SaveIbanBubbleResult::kNotInteracted, 1);
+      autofill_metrics::SaveIbanPromptResult::kNotInteracted, 1);
 }
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_LostFocus) {
@@ -142,7 +142,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_LostFocus) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveIbanPromptResult.Local.FirstShow",
-      autofill_metrics::SaveIbanBubbleResult::kLostFocus, 1);
+      autofill_metrics::SaveIbanPromptResult::kLostFocus, 1);
 }
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanSaved_WithNickname) {

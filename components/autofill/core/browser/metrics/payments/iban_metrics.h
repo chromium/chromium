@@ -17,8 +17,7 @@ namespace autofill::autofill_metrics {
 // numeric values should never be reused.
 // A java IntDef@ is generated from this.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
-// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SaveIbanPromptResult
-enum class SaveIbanBubbleResult {
+enum class SaveIbanPromptResult {
   // The user explicitly accepted the prompt by clicking the ok button.
   kAccepted = 0,
   // The user explicitly cancelled the prompt by clicking the cancel button.
@@ -150,19 +149,19 @@ void LogIbanSaveNotOfferedDueToMaxStrikesMetric(
 void LogUploadIbanMetric(UploadIbanOriginMetric origin_metric,
                          UploadIbanActionMetric action_metric);
 
-// Logs when IBAN save bubble is offered to users.
-void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,
+// Logs when IBAN save prompt is offered to users.
+void LogSaveIbanPromptOfferMetric(SaveIbanPromptOffer metric,
                                   bool is_reshow,
                                   bool is_upload_save);
 
-// Logs when the user makes a decision on the IBAN save bubble.
-void LogSaveIbanBubbleResultMetric(SaveIbanBubbleResult metric,
+// Logs when the user makes a decision on the IBAN save prompt.
+void LogSaveIbanPromptResultMetric(SaveIbanPromptResult metric,
                                    bool is_reshow,
                                    bool is_upload_save);
 
-// Logs when the user accepts the bubble to save an IBAN.
+// Logs when the user accepts the prompt to save an IBAN.
 // `save_with_nickname` donates the user has input a nickname.
-void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname,
+void LogSaveIbanPromptResultSavedWithNicknameMetric(bool save_with_nickname,
                                                     bool is_upload_save);
 
 // Logs metrics related to IBAN individual suggestions being shown or selected.

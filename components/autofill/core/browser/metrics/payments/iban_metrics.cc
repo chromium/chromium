@@ -108,7 +108,7 @@ void LogUploadIbanMetric(UploadIbanOriginMetric origin_metric,
   base::UmaHistogramEnumeration(histogram_name, origin_metric);
 }
 
-void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,
+void LogSaveIbanPromptOfferMetric(SaveIbanPromptOffer metric,
                                   bool is_reshow,
                                   bool is_upload_save) {
   std::string base_histogram_name = base::StrCat(
@@ -117,7 +117,7 @@ void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,
   base::UmaHistogramEnumeration(base_histogram_name, metric);
 }
 
-void LogSaveIbanBubbleResultMetric(SaveIbanBubbleResult metric,
+void LogSaveIbanPromptResultMetric(SaveIbanPromptResult metric,
                                    bool is_reshow,
                                    bool is_upload_save) {
   std::string base_histogram_name = base::StrCat(
@@ -126,7 +126,7 @@ void LogSaveIbanBubbleResultMetric(SaveIbanBubbleResult metric,
   base::UmaHistogramEnumeration(base_histogram_name, metric);
 }
 
-void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname,
+void LogSaveIbanPromptResultSavedWithNicknameMetric(bool save_with_nickname,
                                                     bool is_upload_save) {
   base::UmaHistogramBoolean(
       base::StrCat({"Autofill.SaveIbanPromptResult.",

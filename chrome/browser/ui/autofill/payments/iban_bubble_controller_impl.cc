@@ -234,7 +234,7 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
       // Show an animated IBAN saved confirmation message next time
       // UpdatePageActionIcon() is called.
       should_show_iban_saved_label_animation_ = true;
-      autofill_metrics::LogSaveIbanBubbleResultSavedWithNicknameMetric(
+      autofill_metrics::LogSaveIbanPromptResultSavedWithNicknameMetric(
           !nickname.empty(), /*is_upload_save=*/false);
       iban_.set_nickname(nickname);
       std::move(save_iban_prompt_callback_)
@@ -244,7 +244,7 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
       return;
     case IbanBubbleType::kUploadSave:
       CHECK(!save_iban_prompt_callback_.is_null());
-      autofill_metrics::LogSaveIbanBubbleResultSavedWithNicknameMetric(
+      autofill_metrics::LogSaveIbanPromptResultSavedWithNicknameMetric(
           !nickname.empty(), /*is_upload_save=*/true);
       iban_.set_nickname(nickname);
       std::move(save_iban_prompt_callback_)
@@ -297,29 +297,29 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
   // Log save IBAN prompt result according to the closed reason.
   if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
       current_bubble_type_ == IbanBubbleType::kUploadSave) {
-    autofill_metrics::SaveIbanBubbleResult metric;
+    autofill_metrics::SaveIbanPromptResult metric;
     switch (closed_reason) {
       case PaymentsUiClosedReason::kAccepted:
-        metric = autofill_metrics::SaveIbanBubbleResult::kAccepted;
+        metric = autofill_metrics::SaveIbanPromptResult::kAccepted;
         break;
       case PaymentsUiClosedReason::kCancelled:
-        metric = autofill_metrics::SaveIbanBubbleResult::kCancelled;
+        metric = autofill_metrics::SaveIbanPromptResult::kCancelled;
         break;
       case PaymentsUiClosedReason::kClosed:
-        metric = autofill_metrics::SaveIbanBubbleResult::kClosed;
+        metric = autofill_metrics::SaveIbanPromptResult::kClosed;
         break;
       case PaymentsUiClosedReason::kNotInteracted:
-        metric = autofill_metrics::SaveIbanBubbleResult::kNotInteracted;
+        metric = autofill_metrics::SaveIbanPromptResult::kNotInteracted;
         break;
       case PaymentsUiClosedReason::kLostFocus:
-        metric = autofill_metrics::SaveIbanBubbleResult::kLostFocus;
+        metric = autofill_metrics::SaveIbanPromptResult::kLostFocus;
         break;
       case PaymentsUiClosedReason::kUnknown:
-        metric = autofill_metrics::SaveIbanBubbleResult::kUnknown;
+        metric = autofill_metrics::SaveIbanPromptResult::kUnknown;
         NOTREACHED_IN_MIGRATION();
         break;
     }
-    autofill_metrics::LogSaveIbanBubbleResultMetric(
+    autofill_metrics::LogSaveIbanPromptResultMetric(
         metric, is_reshow_,
         /*is_upload_save=*/current_bubble_type_ == IbanBubbleType::kUploadSave);
   }
@@ -420,12 +420,12 @@ void IbanBubbleControllerImpl::DoShowBubble() {
 
   switch (current_bubble_type_) {
     case IbanBubbleType::kLocalSave:
-      autofill_metrics::LogSaveIbanBubbleOfferMetric(
+      autofill_metrics::LogSaveIbanPromptOfferMetric(
           autofill_metrics::SaveIbanPromptOffer::kShown, is_reshow_,
           /*is_upload_save=*/false);
       break;
     case IbanBubbleType::kUploadSave:
-      autofill_metrics::LogSaveIbanBubbleOfferMetric(
+      autofill_metrics::LogSaveIbanPromptOfferMetric(
           autofill_metrics::SaveIbanPromptOffer::kShown, is_reshow_,
           /*is_upload_save=*/true);
       break;
@@ -465,12 +465,12 @@ void IbanBubbleControllerImpl::ShowIconOnly() {
 
   switch (current_bubble_type_) {
     case IbanBubbleType::kLocalSave:
-      autofill_metrics::LogSaveIbanBubbleOfferMetric(
+      autofill_metrics::LogSaveIbanPromptOfferMetric(
           autofill_metrics::SaveIbanPromptOffer::kNotShownMaxStrikesReached,
           is_reshow_, /*is_upload_save=*/false);
       break;
     case IbanBubbleType::kUploadSave:
-      autofill_metrics::LogSaveIbanBubbleOfferMetric(
+      autofill_metrics::LogSaveIbanPromptOfferMetric(
           autofill_metrics::SaveIbanPromptOffer::kNotShownMaxStrikesReached,
           is_reshow_, /*is_upload_save=*/true);
       break;
