@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/permissions/permission_decision_auto_blocker.h"
 
 #include <algorithm>
@@ -43,9 +38,10 @@ constexpr int kFederatedIdentityApiDismissalsBeforeBlock = 1;
 // The durations that an origin will stay under embargo for the
 // FEDERATED_IDENTITY_API permission due to the user explicitly dismissing the
 // permission prompt.
-constexpr base::TimeDelta kFederatedIdentityApiEmbargoDurationDismiss[] = {
-    base::Hours(2) /* 1st dismissal */, base::Days(1) /* 2nd dismissal */,
-    base::Days(7), base::Days(28)};
+constexpr auto kFederatedIdentityApiEmbargoDurationDismiss =
+    std::to_array<base::TimeDelta>({base::Hours(2) /* 1st dismissal */,
+                                    base::Days(1) /* 2nd dismissal */,
+                                    base::Days(7), base::Days(28)});
 
 // The duration that an origin will stay under embargo for the
 // FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION permission due to an auto re-authn
@@ -171,10 +167,10 @@ base::TimeDelta GetEmbargoDurationForContentSettingsType(
     ContentSettingsType permission,
     int dismiss_count) {
   if (permission == ContentSettingsType::FEDERATED_IDENTITY_API) {
-    int duration_index = std::clamp(
-        dismiss_count - 1, 0,
-        static_cast<int>(
-            std::size(kFederatedIdentityApiEmbargoDurationDismiss) - 1));
+    int duration_index =
+        std::clamp(dismiss_count - 1, 0,
+                   static_cast<int>(
+                       kFederatedIdentityApiEmbargoDurationDismiss.size() - 1));
     return kFederatedIdentityApiEmbargoDurationDismiss[duration_index];
   }
 
