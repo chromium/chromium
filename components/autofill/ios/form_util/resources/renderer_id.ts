@@ -44,10 +44,7 @@ gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
       element.setAttribute(
           fillConstants.UNIQUE_ID_ATTRIBUTE, elementID.toString());
 
-      // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14
-      // is deprecated.
-      elementMap.set(
-          elementID, window.WeakRef ? new WeakRef(element) : element);
+      elementMap.set(elementID, new WeakRef(element));
     }
   } catch (e) {
   }
@@ -59,9 +56,7 @@ gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
  */
 gCrWeb.fill.getElementByUniqueID = function(id: number): Element|null {
   try {
-    // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14
-    // is deprecated.
-    return window.WeakRef ? elementMap.get(id).deref() : elementMap.get(id);
+    return elementMap.get(id).deref();
   } catch (e) {
     return null;
   }
