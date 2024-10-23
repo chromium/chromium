@@ -341,9 +341,9 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
   const bool is_creation_enabled =
       IsPlusAddressCreationEnabled(origin, is_off_the_record);
   std::vector<Suggestion> suggestions =
-      PlusAddressSuggestionGenerator(
-          &setting_service_.get(), plus_address_allocator_.get(),
-          std::move(origin), GetPrimaryEmail().value_or(""))
+      PlusAddressSuggestionGenerator(&setting_service_.get(),
+                                     plus_address_allocator_.get(),
+                                     std::move(origin))
           .GetSuggestions(plus_addresses, is_creation_enabled, focused_form,
                           form_field_type_groups, focused_form_classification,
                           focused_field_id, trigger_source);
@@ -613,9 +613,9 @@ void PlusAddressServiceImpl::OnClickedRefreshInlineSuggestion(
       SuggestionEvent::kRefreshPlusAddressInlineClicked);
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
-  PlusAddressSuggestionGenerator(
-      &setting_service_.get(), plus_address_allocator_.get(),
-      last_committed_primary_main_frame_origin, GetPrimaryEmail().value_or(""))
+  PlusAddressSuggestionGenerator(&setting_service_.get(),
+                                 plus_address_allocator_.get(),
+                                 last_committed_primary_main_frame_origin)
       .RefreshPlusAddressForSuggestion(
           updated_suggestions[current_suggestion_index]);
   std::move(update_suggestions_callback)

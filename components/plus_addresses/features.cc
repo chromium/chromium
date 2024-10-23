@@ -19,7 +19,6 @@ constexpr char kPlusAddressExcludedSitesName[] = "excluded-sites";
 constexpr char kPlusAddressErrorReportUrlName[] = "error-report-url";
 constexpr char kPlusAddressRequestTimeoutName[] = "request-timeout";
 constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
-constexpr char kShowForwardingEmailInSuggestionName[] = "show-forwarding-email";
 
 }  // namespace
 
@@ -151,18 +150,6 @@ extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize(
 BASE_FEATURE(kPlusAddressRefinedPasswordFormClassification,
              "PlusAddressRefinedPasswordFormClassification",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, creation suggestions do not contain a label prior to the user
-// acknowledging the notice.
-BASE_FEATURE(kPlusAddressSuggestionRedesign,
-             "PlusAddressSuggestionRedesign",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If set to `true`, then labels, when shown, contain information about the
-// forwarding address.
-const base::FeatureParam<bool> kShowForwardingEmailInSuggestion{
-    &kPlusAddressSuggestionRedesign, kShowForwardingEmailInSuggestionName,
-    false};
 
 // When enabled, the plus address creation dialogs or bottom sheets include
 // extended feature description and usage notice.
