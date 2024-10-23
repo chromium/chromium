@@ -20,6 +20,7 @@
 #include "chrome/browser/autofill_prediction_improvements/autofill_prediction_improvements_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -45,6 +46,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -1160,13 +1162,23 @@ AutofillPrivateTriggerAnnotationsBootstrappingFunction::Run() {
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
+void AutofillPrivateTriggerAnnotationsBootstrappingFunction::MaybeShowIPH() {
+  if (auto* const interface =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              GetSenderWebContents())) {
+    interface->MaybeShowFeaturePromo(
+        feature_engagement::
+            kIPHAutofillPredictionImprovementsBootstrappingFeature);
+  }
+}
+
 void AutofillPrivateTriggerAnnotationsBootstrappingFunction::
     OnBootstrappingComplete(
         user_annotations::UserAnnotationsExecutionResult result) {
   if (result == user_annotations::UserAnnotationsExecutionResult::kSuccess) {
+    // When the new data was added to memories, notify user with the IPH.
+    MaybeShowIPH();
     Respond(WithArguments(true));
-    // TODO(crbug.com/372167437): Trigger IPH on success if there are entries in
-    // the UserAnnotationsService.
     return;
   }
   Respond(WithArguments(false));

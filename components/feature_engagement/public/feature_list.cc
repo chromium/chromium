@@ -236,6 +236,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAutofillExternalAccountProfileSuggestionFeature,
     &kIPHAutofillManualFallbackFeature,
     &kIPHAutofillPredictionImprovementsFeature,
+    &kIPHAutofillPredictionImprovementsBootstrappingFeature,
     &kIPHAutofillVirtualCardCVCSuggestionFeature,
     &kIPHAutofillVirtualCardSuggestionFeature,
     &kIPHCookieControlsFeature,

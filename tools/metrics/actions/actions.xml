@@ -46148,6 +46148,8 @@ should be able to be added at any place in this file.
       label="For AutofillManualFallback feature."/>
   <suffix name="AutofillPredictionImprovements"
       label="For AutofillPredictionImprovements feature."/>
+  <suffix name="AutofillPredictionImprovementsBootstrapping"
+      label="For giving users information that data was imported to memories."/>
   <suffix name="AutofillVirtualCardCVCSuggestion"
       label="For autofill suggestion of virtual cards."/>
   <suffix name="AutofillVirtualCardSuggestion"

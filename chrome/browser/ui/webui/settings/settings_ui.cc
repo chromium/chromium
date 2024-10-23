@@ -653,6 +653,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   TryShowHatsSurveyWithTimeout();
 }
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    SettingsUI,
+    kAutofillPredictionImprovementsHeaderElementId);
+
 SettingsUI::~SettingsUI() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -759,6 +763,7 @@ void SettingsUI::CreateHelpBubbleHandler(
           kEnhancedProtectionSettingElementId,
           kAnonymizedUrlCollectionPersonalizationSettingId,
           kInactiveTabSettingElementId,
+          kAutofillPredictionImprovementsHeaderElementId,
       });
 }
 

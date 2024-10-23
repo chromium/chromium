@@ -72,6 +72,9 @@ class SettingsUI
 
   ~SettingsUI() override;
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kAutofillPredictionImprovementsHeaderElementId);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Initializes the WebUI message handlers for CrOS-specific settings that are
   // still shown in the browser settings UI.

@@ -447,6 +447,7 @@ class AutofillPrivateTriggerAnnotationsBootstrappingFunction
  private:
   void OnBootstrappingComplete(
       user_annotations::UserAnnotationsExecutionResult result);
+  void MaybeShowIPH();
 };
 
 class AutofillPrivateIsUserEligibleForAutofillImprovementsFunction

@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
+#include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -628,6 +629,21 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetInAnyContext(true)
                     .SetBubbleIcon(kLightbulbOutlineIcon)
                     .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
+
+  // kIPHAutofillPredictionImprovementsBootstrappingFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::
+              kIPHAutofillPredictionImprovementsBootstrappingFeature,
+          settings::SettingsUI::kAutofillPredictionImprovementsHeaderElementId,
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_BOOTSTRAPPING_IPH,
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_BOOTSTRAPPING_IPH_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetInAnyContext(true)
+          .SetBubbleArrow(HelpBubbleArrow::kBottomCenter)
+          .SetMetadata(131, "brunobraga@google.com",
+                       "Triggered after autofill predections are bootstrapped "
+                       "from current autofill data.")));
 
   // kIPHPowerBookmarksSidePanelFeature:
   registry.RegisterFeature(
