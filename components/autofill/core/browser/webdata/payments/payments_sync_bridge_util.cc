@@ -982,6 +982,9 @@ void PopulateWalletTypesFromSyncData(
               autofill_specifics.payment_instrument());
         }
         break;
+      // TODO(crbug.com/374767814): Implement PopulateWalletTypesFromSyncData
+      // for Payment Instrument Creation Option.
+      case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT_CREATION_OPTION:
       // This entry is deprecated and not supported anymore.
       case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
       case sync_pb::AutofillWalletSpecifics::UNKNOWN:

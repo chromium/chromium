@@ -31,6 +31,10 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
           {"payment_instrument:",
            base::NumberToString(
                specifics.payment_instrument().instrument_id())});
+    // TODO(crbug.com/374767814): Implement
+    // GetUnhashedClientTagFromAutofillWalletSpecifics for Payment Instrument
+    // Creation Option.
+    case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT_CREATION_OPTION:
     case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
       return std::string();
     case sync_pb::AutofillWalletSpecifics::UNKNOWN:

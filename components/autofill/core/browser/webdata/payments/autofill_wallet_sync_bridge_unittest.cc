@@ -235,6 +235,10 @@ std::string AutofillWalletSpecificsAsDebugString(
     case sync_pb::AutofillWalletSpecifics_WalletInfoType::
         AutofillWalletSpecifics_WalletInfoType_MASKED_IBAN:
       return WalletMaskedIbanSpecificsAsDebugString(specifics);
+    // TODO(crbug.com/374767814): Implement AutofillWalletSpecificsAsDebugString
+    // for Payment Instrument Creation Option.
+    case sync_pb::AutofillWalletSpecifics_WalletInfoType::
+        AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT_CREATION_OPTION:
     case sync_pb::AutofillWalletSpecifics_WalletInfoType::
         AutofillWalletSpecifics_WalletInfoType_UNKNOWN:
       return "Unknown";

@@ -569,9 +569,40 @@ message PaymentInstrument {
     BankAccountDetails bank_account = 5;
     WalletMaskedIban iban = 6;
     EwalletDetails ewallet_details = 7;
+    BnplIssuerDetails bnpl_issuer_details = 9;
   }
 
   optional DeviceDetails device_details = 8;
+}
+
+// Details for user's linked and unlinked Buy Now Pay Later issuers.
+message BnplIssuerDetails {
+  // Unique identifier for the BNPL partner. Example: 'affirm'.
+  optional string issuer_id = 1;
+  // Eligible price range that the BNPL issuer supports.
+  repeated EligiblePriceRange eligible_price_range = 2;
+}
+
+// Details for payment instruments that the user is eligible to create an
+// instrument with.
+message PaymentInstrumentCreationOption {
+  oneof creation_option {
+    BnplIssuerDetails buy_now_pay_later_option = 1;
+  }
+}
+
+// Details the eligible price range that a BNPL issuer supports. Server
+// should set min and max price and ensure that they are both for the same
+// currency.
+message EligiblePriceRange {
+  // Currency of the price range. This field contains a three-letter currency
+  // code.
+  optional string currency = 1;
+  // Min and max eligible price in micros of currency, i.e. one millionths of
+  // the base unit (dollars, not cents for example). e.g. $1.05 == 1050000
+  // micros.
+  optional int64 min_price_in_micros = 2;
+  optional int64 max_price_in_micros = 3;
 }
 
 // Contains information of server IBAN (International Bank Account Number).
@@ -654,6 +685,7 @@ message AutofillWalletSpecifics {
     CREDIT_CARD_CLOUD_TOKEN_DATA = 4;
     PAYMENT_INSTRUMENT = 5;
     MASKED_IBAN = 6 [deprecated = true];
+    PAYMENT_INSTRUMENT_CREATION_OPTION = 7;
   }
 
   optional WalletInfoType type = 1;
@@ -682,6 +714,11 @@ message AutofillWalletSpecifics {
   // This field exists if and only if the `type` field equals to
   // MASKED_IBAN.
   optional WalletMaskedIban masked_iban = 7 [deprecated = true];
+
+  // This field exists if and only if the "type" field equals to
+  // PAYMENT_INSTRUMENT_CREATION_OPTION.
+  optional PaymentInstrumentCreationOption payment_instrument_creation_option =
+      8;
 }
 
 // Wallet card usage information that can be synced.

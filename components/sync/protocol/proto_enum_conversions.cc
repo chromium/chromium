@@ -66,7 +66,7 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::AutofillWalletSpecifics::WalletInfoType wallet_info_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::AutofillWalletSpecifics, WalletInfoType, UNKNOWN,
-                     MASKED_IBAN);
+                     PAYMENT_INSTRUMENT_CREATION_OPTION);
   switch (wallet_info_type) {
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, UNKNOWN);
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, MASKED_CREDIT_CARD);
@@ -75,6 +75,8 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, CREDIT_CARD_CLOUD_TOKEN_DATA);
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, PAYMENT_INSTRUMENT);
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, MASKED_IBAN);
+    ENUM_CASE(sync_pb::AutofillWalletSpecifics,
+              PAYMENT_INSTRUMENT_CREATION_OPTION);
   }
   NOTREACHED_IN_MIGRATION();
   return "";
