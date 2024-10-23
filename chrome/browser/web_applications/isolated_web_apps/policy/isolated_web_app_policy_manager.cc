@@ -335,24 +335,15 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
         break;
 
       case WebAppManagement::kIwaUserInstalled:
-        if (!installed_app.isolation_data().has_value() ||
-            installed_app.isolation_data()->location().dev_mode()) {
-          // Always fully uninstall and then reinstall dev mode apps.
-          app_actions.emplace(install_options.web_bundle_id(),
-                              AppActionRemoveInstallSource(
-                                  WebAppManagement::kIwaUserInstalled));
+        // Always fully uninstall user installed apps (dev mode and regular)
+        // if they're to be replaced by a policy installation.
+        app_actions.emplace(
+            install_options.web_bundle_id(),
+            AppActionRemoveInstallSource(WebAppManagement::kIwaUserInstalled));
 
-          // We need to reprocess the policy immediately after, so that the then
-          // uninstalled app is re-installed.
-          reprocess_policy_needed_ = true;
-        } else {
-          // For non-dev-mode apps, just add the IWA policy install source. In
-          // the future, we might force-downgrade the app here if the version in
-          // the policy is lower than the version of the app that is already
-          // installed.
-          app_actions.emplace(install_options.web_bundle_id(),
-                              AppActionAddPolicyInstallSource());
-        }
+        // We need to reprocess the policy immediately after, so that the then
+        // uninstalled app is re-installed.
+        reprocess_policy_needed_ = true;
         break;
     }
   }

@@ -156,6 +156,7 @@ void InstallIsolatedWebAppCommand::StartWithLock(
 
   RunChainedWeakCallbacks(
       weak_factory_.GetWeakPtr(),
+      &InstallIsolatedWebAppCommand::CheckNotInstalledAlready,
       &InstallIsolatedWebAppCommand::CopyToProfileDirectory,
       &InstallIsolatedWebAppCommand::CheckTrustAndSignatures,
       &InstallIsolatedWebAppCommand::CreateStoragePartition,
@@ -164,6 +165,17 @@ void InstallIsolatedWebAppCommand::StartWithLock(
       &InstallIsolatedWebAppCommand::ValidateManifestAndCreateInstallInfo,
       &InstallIsolatedWebAppCommand::RetrieveIconsAndPopulateInstallInfo,
       &InstallIsolatedWebAppCommand::FinalizeInstall);
+}
+
+void InstallIsolatedWebAppCommand::CheckNotInstalledAlready(
+    base::OnceClosure next_step_callback) {
+  if (GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id())
+          .has_value()) {
+    ReportFailure(InstallIwaError::kAppIsNotInstallable,
+                  "App is already installed");
+  } else {
+    std::move(next_step_callback).Run();
+  }
 }
 
 void InstallIsolatedWebAppCommand::CopyToProfileDirectory(

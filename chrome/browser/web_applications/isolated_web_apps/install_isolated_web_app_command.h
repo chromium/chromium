@@ -173,6 +173,8 @@ class InstallIsolatedWebAppCommand
 
   Profile& profile();
 
+  void CheckNotInstalledAlready(base::OnceClosure next_step_callback);
+
   void CopyToProfileDirectory(base::OnceClosure next_step_callback);
 
   void OnCopiedToProfileDirectory(

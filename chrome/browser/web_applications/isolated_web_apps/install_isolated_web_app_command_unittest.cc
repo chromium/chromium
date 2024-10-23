@@ -221,6 +221,7 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(InstallIsolatedWebAppCommandTest, PropagateErrorWhenURLLoaderFails) {
@@ -725,6 +726,26 @@ TEST_F(InstallIsolatedWebAppCommandTest,
                   /*IWAInstallError::kCantValidateManifest*/ 5, 1)));
 }
 
+TEST_F(InstallIsolatedWebAppCommandTest, FailsWhenAppInstalledAlready) {
+  auto app = IsolatedWebAppBuilder(ManifestBuilder())
+                 .BuildBundle(test::GetDefaultEd25519KeyPair());
+  auto install_source = IsolatedWebAppInstallSource::FromDevUi(
+      IwaSourceBundleDevModeWithFileOp(app->path(), kDefaultBundleDevFileOp));
+  app->FakeInstallPageState(profile());
+  app->TrustSigningKey();
+  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
+
+  // Installation 1
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
+                                        .install_source = install_source}),
+              HasValue());
+  // Installation 2
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
+                                        .install_source = install_source}),
+              ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
+                            HasSubstr("already installed"))));
+}
+
 struct BundleTestInfo {
   bool has_error;
   bool not_trusted;
@@ -942,6 +963,15 @@ INSTANTIATE_TEST_SUITE_P(
             .install_source =
                 [](const base::FilePath& path) {
                   return IsolatedWebAppInstallSource::FromDevCommandLine(
+                      IwaSourceBundleDevModeWithFileOp(
+                          path, IwaSourceBundleDevFileOp::kCopy));
+                },
+            .expected_management_type =
+                WebAppManagement::Type::kIwaUserInstalled},
+        BundleInstallSourceParam{
+            .install_source =
+                [](const base::FilePath& path) {
+                  return IsolatedWebAppInstallSource::FromDevUi(
                       IwaSourceBundleDevModeWithFileOp(
                           path, IwaSourceBundleDevFileOp::kCopy));
                 },

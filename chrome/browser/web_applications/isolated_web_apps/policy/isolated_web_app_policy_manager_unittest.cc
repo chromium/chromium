@@ -609,7 +609,7 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppInstalled) {
 }
 
 TEST_F(IsolatedWebAppPolicyManagerTest,
-       AppSourceAddedWhenPreviouslyUserInstalled) {
+       AppInstalledWhenPreviouslyUserInstalled) {
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(get_app1_id());
   AddDummyIsolatedAppToRegistry(
@@ -628,36 +628,27 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
         Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaUserInstalled})));
   }
 
+  WebAppTestUninstallObserver uninstall_observer(profile());
+  uninstall_observer.BeginListening({url_info.app_id()});
+  WebAppTestInstallObserver install_observer(profile());
+  install_observer.BeginListening({url_info.app_id()});
+
   PolicyGenerator policy_generator;
   policy_generator.AddForceInstalledIwa(url_info.web_bundle_id(),
                                         GURL(kUpdateManifestUrlApp1));
   profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
                              policy_generator.Generate());
 
+  // Apps should be fully uninstalled before they can be force-installed.
+  EXPECT_EQ(uninstall_observer.Wait(), url_info.app_id());
+  EXPECT_EQ(install_observer.Wait(), url_info.app_id());
   task_environment()->RunUntilIdle();
-  {
-    const WebApp* web_app =
-        fake_provider().registrar_unsafe().GetAppById(url_info.app_id());
-    ASSERT_THAT(web_app, NotNull());
-    EXPECT_THAT(
-        web_app->GetSources(),
-        Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaUserInstalled,
-                                  WebAppManagement::Type::kIwaPolicy})));
-  }
 
-  auto debug_log = provider().iwa_update_manager().AsDebugValue();
-  EXPECT_THAT(
-      debug_log.GetDict()
-          .FindDict("task_queue")
-          ->FindList("update_discovery_log"),
-      Pointee(UnorderedElementsAre(Property(
-          "GetDict", &base::Value::GetDict,
-          AllOf(DictionaryHasValue("app_id", base::Value(url_info.app_id())),
-                DictionaryHasValue(
-                    "result", base::Value(base::ToString(
-                                  IsolatedWebAppUpdateDiscoveryTask::Success::
-                                      kNoUpdateFound))))))))
-      << debug_log;
+  const WebApp* web_app =
+      fake_provider().registrar_unsafe().GetAppById(url_info.app_id());
+  ASSERT_THAT(web_app, NotNull());
+  EXPECT_THAT(web_app->GetSources(),
+              Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
 }
 
 TEST_F(IsolatedWebAppPolicyManagerTest,
@@ -683,8 +674,7 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
   profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
                              policy_generator.Generate());
 
-  // Dev-mode apps should be fully uninstalled before they can be
-  // force-installed.
+  // Apps should be fully uninstalled before they can be force-installed.
   EXPECT_EQ(uninstall_observer.Wait(), url_info.app_id());
   EXPECT_EQ(install_observer.Wait(), url_info.app_id());
   task_environment()->RunUntilIdle();
@@ -883,7 +873,8 @@ class UninstallWebAppCommandScheduler : public WebAppCommandScheduler {
       const base::Location& location) override {
     tried_to_uninstall_ = true;
     EXPECT_TRUE(base::Contains(expected_apps_to_remove_, app_id));
-    EXPECT_EQ(management_type, WebAppManagement::Type::kIwaPolicy);
+    EXPECT_EQ(management_type, expected_management_type_to_remove_.value_or(
+                                   WebAppManagement::Type::kIwaPolicy));
     EXPECT_EQ(uninstall_source,
               webapps::WebappUninstallSource::kIwaEnterprisePolicy);
     auto app = expected_apps_to_remove_.find(app_id);
@@ -904,8 +895,14 @@ class UninstallWebAppCommandScheduler : public WebAppCommandScheduler {
 
   bool TriedToUninstall() { return tried_to_uninstall_; }
 
+  void SetMaybeExpectedManagementTypeToUninstall(
+      std::optional<WebAppManagement::Type> management_type) {
+    expected_management_type_to_remove_ = management_type;
+  }
+
  private:
   base::flat_set<webapps::AppId> expected_apps_to_remove_;
+  std::optional<WebAppManagement::Type> expected_management_type_to_remove_;
   bool tried_to_uninstall_ = false;
 };
 
@@ -1011,7 +1008,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
 }
 
 TEST_F(IsolatedWebAppPolicyManagerUninstallTest,
-       UserInstalledAppNotUninstalled) {
+       UserInstalledAppUninstalledAsWell) {
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(get_app1_id());
 
@@ -1038,9 +1035,22 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest,
     PolicyGenerator policy_generator;
     policy_generator.AddForceInstalledIwa(url_info.web_bundle_id(),
                                           GURL(kUpdateManifestUrlApp1));
+    get_command_scheduler()->AddExpectedToUninstallApp(url_info.app_id());
+    get_command_scheduler()->SetMaybeExpectedManagementTypeToUninstall(
+        WebAppManagement::Type::kIwaUserInstalled);
+
+    WebAppTestUninstallObserver uninstall_observer(profile());
+    uninstall_observer.BeginListening({url_info.app_id()});
+
     profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
                                policy_generator.Generate());
 
+    uninstall_observer.Wait();
+
+    // WebAppTestUninstallObserver already triggers when the app is not fully
+    // uninstalled. This causes issues with references to destroyed profiles
+    // (see https://crbug.com/41484323#comment7). Wait until the app is actually
+    // uninstalled here.
     task_environment()->RunUntilIdle();
 
     const WebApp* web_app =
@@ -1048,8 +1058,10 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest,
     ASSERT_THAT(web_app, NotNull());
     EXPECT_THAT(
         web_app->GetSources(),
-        Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaUserInstalled,
-                                  WebAppManagement::Type::kIwaPolicy})));
+        Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
+
+    get_command_scheduler()->SetMaybeExpectedManagementTypeToUninstall(
+        std::nullopt);
   }
 
   // Set the policy without any app and expect an attempt to remove the policy
@@ -1058,26 +1070,28 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest,
     get_command_scheduler()->AddExpectedToUninstallApp(url_info.app_id());
     EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
               1U);
-    WebAppInstallManagerObserverAdapter observer(profile());
-    base::test::RepeatingTestFuture<const webapps::AppId&>
-        source_removed_future;
-    observer.SetWebAppSourceRemovedDelegate(
-        source_removed_future.GetCallback());
+
+    WebAppTestUninstallObserver uninstall_observer(profile());
+    uninstall_observer.BeginListening({url_info.app_id()});
 
     PolicyGenerator empty_policy;
     profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
                                empty_policy.Generate());
 
-    EXPECT_EQ(source_removed_future.Take(), url_info.app_id());
+    uninstall_observer.Wait();
+
+    // WebAppTestUninstallObserver already triggers when the app is not fully
+    // uninstalled. This causes issues with references to destroyed profiles
+    // (see https://crbug.com/41484323#comment7). Wait until the app is actually
+    // uninstalled here.
+    task_environment()->RunUntilIdle();
+
     EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
               0U);
 
     const WebApp* web_app =
         fake_provider().registrar_unsafe().GetAppById(url_info.app_id());
-    ASSERT_THAT(web_app, NotNull());
-    EXPECT_THAT(
-        web_app->GetSources(),
-        Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaUserInstalled})));
+    EXPECT_THAT(web_app, IsNull());
   }
 }
 
