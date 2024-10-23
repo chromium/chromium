@@ -53,11 +53,6 @@ extern const base::FeatureParam<std::string> kPlusAddressErrorReportUrl;
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kPlusAddressRequestTimeout;
 
-// Used to disable this feature when requests to the server repeatedly fail with
-// a 403.
-COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
-extern const base::FeatureParam<bool> kDisableForForbiddenUsers;
-
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressFallbackFromContextMenu);
 

@@ -61,11 +61,6 @@ using autofill::Suggestion;
 using autofill::SuggestionType;
 using PasswordFormClassification = autofill::PasswordFormClassification;
 
-// The number of `HTTP_FORBIDDEN` responses that the user may receive before
-// `this` is disabled for this session. If a user makes a single successful
-// call, this limit no longer applies.
-constexpr int kMaxHttpForbiddenResponses = 1;
-
 // Get the ETLD+1 of `origin`, which means any subdomain is treated
 // equivalently. See `GetDomainAndRegistry` for concrete examples.
 std::string GetEtldPlusOne(const url::Origin origin) {
@@ -377,7 +372,8 @@ void PlusAddressServiceImpl::ReservePlusAddress(
   plus_address_allocator_->AllocatePlusAddress(
       origin, PlusAddressAllocator::AllocationMode::kAny,
       base::BindOnce(&PlusAddressServiceImpl::HandleCreateOrConfirmResponse,
-                     base::Unretained(this), origin, std::move(on_completed)));
+                     base::Unretained(this))
+          .Then(std::move(on_completed)));
 }
 
 void PlusAddressServiceImpl::RefreshPlusAddress(
@@ -392,7 +388,8 @@ void PlusAddressServiceImpl::RefreshPlusAddress(
   plus_address_allocator_->AllocatePlusAddress(
       origin, PlusAddressAllocator::AllocationMode::kNewPlusAddress,
       base::BindOnce(&PlusAddressServiceImpl::HandleCreateOrConfirmResponse,
-                     base::Unretained(this), origin, std::move(on_completed)));
+                     base::Unretained(this))
+          .Then(std::move(on_completed)));
 }
 
 bool PlusAddressServiceImpl::IsRefreshingSupported(const url::Origin& origin) {
@@ -424,24 +421,16 @@ void PlusAddressServiceImpl::ConfirmPlusAddress(
   plus_address_http_client_->ConfirmPlusAddress(
       origin, plus_address,
       base::BindOnce(&PlusAddressServiceImpl::HandleCreateOrConfirmResponse,
-                     base::Unretained(this), origin, std::move(on_completed)));
+                     base::Unretained(this))
+          .Then(std::move(on_completed)));
 }
 
-void PlusAddressServiceImpl::HandleCreateOrConfirmResponse(
-    const url::Origin& origin,
-    PlusAddressRequestCallback callback,
+const PlusProfileOrError& PlusAddressServiceImpl::HandleCreateOrConfirmResponse(
     const PlusProfileOrError& maybe_profile) {
-  if (maybe_profile.has_value()) {
-    account_is_forbidden_ = false;
-    if (maybe_profile->is_confirmed) {
-      SavePlusProfile(*maybe_profile);
-    }
-  } else {
-    HandlePlusAddressRequestError(maybe_profile.error());
+  if (maybe_profile.has_value() && maybe_profile->is_confirmed) {
+    SavePlusProfile(*maybe_profile);
   }
-
-  // Run callback last in case it's dependent on above changes.
-  std::move(callback).Run(maybe_profile);
+  return maybe_profile;
 }
 
 std::optional<std::string> PlusAddressServiceImpl::GetPrimaryEmail() {
@@ -456,10 +445,6 @@ std::optional<std::string> PlusAddressServiceImpl::GetPrimaryEmail() {
 }
 
 bool PlusAddressServiceImpl::IsEnabled() const {
-  if (features::kDisableForForbiddenUsers.Get() &&
-      account_is_forbidden_.has_value() && account_is_forbidden_.value()) {
-    return false;
-  }
   if (!feature_enabled_for_profile_check_.Run(
           features::kPlusAddressesEnabled) ||
       features::kEnterprisePlusAddressServerUrl.Get().empty()) {
@@ -527,21 +512,6 @@ void PlusAddressServiceImpl::OnWebDataServiceRequestDone(
 
   for (PlusAddressService::Observer& o : observers_) {
     o.OnPlusAddressesChanged(applied_changes);
-  }
-}
-
-void PlusAddressServiceImpl::HandlePlusAddressRequestError(
-    const PlusAddressRequestError& error) {
-  if (!features::kDisableForForbiddenUsers.Get() ||
-      error.type() != PlusAddressRequestErrorType::kNetworkError) {
-    return;
-  }
-  if (account_is_forbidden_ || !error.http_response_code() ||
-      *error.http_response_code() != net::HTTP_FORBIDDEN) {
-    return;
-  }
-  if (++http_forbidden_responses_ > kMaxHttpForbiddenResponses) {
-    account_is_forbidden_ = true;
   }
 }
 

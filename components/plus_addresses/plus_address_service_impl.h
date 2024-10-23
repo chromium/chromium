@@ -152,11 +152,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
   bool IsEnabled() const override;
 
  private:
-  // Checks whether `error` is a `HTTP_FORBIDDEN` network error and, if there
-  // have been more than `kMaxAllowedForbiddenResponses` such calls without a
-  // successful one, disables plus addresses for the session.
-  void HandlePlusAddressRequestError(const PlusAddressRequestError& error);
-
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
@@ -168,12 +163,10 @@ class PlusAddressServiceImpl : public PlusAddressService,
 
   void HandleSignout();
 
-  // Analyzes `maybe_profile` and, if is an error, it reacts to it (e.g.
-  // by disabling the service for this user). If it is a confirmed plus profile,
-  // it saves it.
-  void HandleCreateOrConfirmResponse(const url::Origin& origin,
-                                     PlusAddressRequestCallback callback,
-                                     const PlusProfileOrError& maybe_profile);
+  // Analyzes `maybe_profile` and saves it if it is a confirmed plus profile.
+  // Returns `maybe_profile` to make for easier chaining of callbacks.
+  const PlusProfileOrError& HandleCreateOrConfirmResponse(
+      const PlusProfileOrError& maybe_profile);
 
   // Checks whether the `origin` supports plus address.
   // Returns `true` when origin is not opaque, ETLD+1 of `origin` is not
@@ -232,14 +225,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
   // TODO(crbug.com/324556906): Remove once `kPlusAddressBlocklistEnabled` is
   // launched.
   base::flat_set<std::string> excluded_sites_;
-
-  // Counts the number of HTTP_FORBIDDEN that the client has received.
-  int http_forbidden_responses_ = 0;
-
-  // Stores whether the account for this ProfileKeyedService is forbidden from
-  // using the remote server. This is populated once on the initial poll request
-  // and not updated afterwards.
-  std::optional<bool> account_is_forbidden_ = std::nullopt;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
