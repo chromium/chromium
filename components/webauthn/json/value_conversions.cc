@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/webauthn/json/value_conversions.h"
 
 #include <iterator>
@@ -14,6 +9,8 @@
 #include <string_view>
 
 #include "base/base64url.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/ranges/ranges.h"
 #include "base/values.h"
@@ -38,10 +35,8 @@ std::string Base64UrlEncode(base::span<const uint8_t> input) {
   // Byte strings, which appear in the WebAuthn IDL as ArrayBuffer or
   // ByteSource, are base64url-encoded without trailing '=' padding.
   std::string output;
-  base::Base64UrlEncode(
-      std::string_view(reinterpret_cast<const char*>(input.data()),
-                       input.size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &output);
+  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &output);
   return output;
 }
 
@@ -94,8 +89,7 @@ std::tuple<bool, std::optional<std::string>> Base64UrlDecodeOptionalStringKey(
 }
 
 std::vector<uint8_t> ToByteVector(const std::string& in) {
-  const uint8_t* in_ptr = reinterpret_cast<const uint8_t*>(in.data());
-  return std::vector<uint8_t>(in_ptr, in_ptr + in.size());
+  return base::ToVector(base::as_byte_span(in));
 }
 
 base::Value ToValue(const device::PublicKeyCredentialRpEntity& relying_party) {
