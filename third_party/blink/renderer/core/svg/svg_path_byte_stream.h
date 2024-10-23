@@ -69,9 +69,7 @@ class SVGPathByteStream {
   bool operator==(const SVGPathByteStream& other) const {
     return data_ == other.data_;
   }
-  unsigned Hash() const {
-    return StringHasher::HashMemory(data_.data(), data_.size());
-  }
+  unsigned Hash() const { return StringHasher::HashMemory(data_); }
 
  private:
   explicit SVGPathByteStream(const Data& data) : data_(data) {}

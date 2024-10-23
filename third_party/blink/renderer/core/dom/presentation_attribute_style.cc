@@ -85,9 +85,8 @@ static unsigned ComputePresentationAttributeCacheHash(
     const PresentationAttributeCacheKey& key) {
   DCHECK(key.tag_name);
   DCHECK(key.attributes_and_values.size());
-  unsigned attribute_hash = StringHasher::HashMemory(
-      key.attributes_and_values.data(),
-      key.attributes_and_values.size() * sizeof(key.attributes_and_values[0]));
+  unsigned attribute_hash =
+      StringHasher::HashMemory(base::as_byte_span(key.attributes_and_values));
   return WTF::HashInts(key.tag_name->ExistingHash(), attribute_hash);
 }
 
