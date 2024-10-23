@@ -35,7 +35,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"
@@ -113,13 +112,9 @@ const char* GetPlatformName() {
   return "windows";
 #elif BUILDFLAG(IS_APPLE)
   return "macOS";
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
 #elif BUILDFLAG(IS_LINUX)
   return "linux";
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return "lacros";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return "ash";
 #endif
 }

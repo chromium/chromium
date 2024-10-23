@@ -283,17 +283,6 @@ bool SendTouchEventsNotifyWhenDone(int action,
 
   return true;
 }
-
-// static
-void UpdateDisplaySync(const std::string& display_specs) {
-  DCHECK(g_ozone_ui_controls_test_helper);
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-
-  g_ozone_ui_controls_test_helper->UpdateDisplay(display_specs,
-                                                 run_loop.QuitClosure());
-
-  run_loop.Run();
-}
 #endif
 
 #if BUILDFLAG(IS_LINUX)

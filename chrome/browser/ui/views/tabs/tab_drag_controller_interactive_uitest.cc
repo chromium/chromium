@@ -4302,12 +4302,8 @@ class DetachToBrowserInSeparateDisplayTabDragControllerTest
     // We stick to it, as opposed to a smaller one, to avoid the browser
     // window being shrunk and maximized when calling UpdateDisplay.
     const std::string display_specs = "1280x800,1280x800";
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    ui_controls::UpdateDisplaySync(display_specs);
-#else
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
         .UpdateDisplay(display_specs);
-#endif
   }
 };
 
