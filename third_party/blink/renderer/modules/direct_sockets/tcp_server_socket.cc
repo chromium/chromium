@@ -119,7 +119,7 @@ ScriptPromise<IDLUndefined> TCPServerSocket::close(
 
   auto readable_cancel = readable_stream_wrapper_->Readable()->cancel(
       script_state, ScriptValue::From(script_state, reason), exception_state);
-  DCHECK(!exception_state.HadException()) << exception_state.Message();
+  DCHECK(!exception_state.HadException());
   readable_cancel.MarkAsHandled();
 
   return closed(script_state);

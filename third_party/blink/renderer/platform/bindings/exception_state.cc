@@ -81,9 +81,16 @@ NOINLINE void ExceptionState::ThrowDOMException(DOMExceptionCode exception_code,
 
 void ExceptionState::SetExceptionInfo(ExceptionCode exception_code,
                                       const String& message) {
+  had_exception_ = true;
+  if (!swallow_all_exceptions_) {
+    return;
+  }
   CHECK(exception_code);
-  code_ = exception_code;
-  message_ = message;
+  // `swallow_all_exceptions_` is only set to true in the delegated constructor
+  // for `DummyExceptionStateForTesting`, so this static_cast is safe.
+  auto* dummy_this = static_cast<DummyExceptionStateForTesting*>(this);
+  dummy_this->code_ = exception_code;
+  dummy_this->message_ = message;
 }
 
 void ExceptionState::ThrowDOMException(DOMExceptionCode exception_code,
@@ -164,6 +171,14 @@ void ExceptionState::RethrowV8Exception(v8::TryCatch& try_catch) {
   if (isolate_) {
     try_catch.ReThrow();
   }
+}
+
+ExceptionState::ExceptionState(DummyExceptionStateForTesting& dummy_derived)
+    : context_(
+          ExceptionContext(v8::ExceptionContext::kUnknown, nullptr, nullptr)),
+      isolate_(nullptr),
+      swallow_all_exceptions_(true) {
+  DCHECK(this == &dummy_derived);
 }
 
 }  // namespace blink

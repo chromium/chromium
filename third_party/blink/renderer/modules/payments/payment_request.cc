@@ -1414,16 +1414,12 @@ void PaymentRequest::OnPaymentMethodChange(const String& method_name,
   init->setMethodName(method_name);
 
   if (!stringified_details.empty()) {
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kConstructor,
-                                   "PaymentMethodChangeEvent");
-    v8::Local<v8::Value> parsed_value =
-        FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
-                       stringified_details, exception_state);
-    if (exception_state.HadException()) {
-      GetPendingAcceptPromiseResolver()->Reject(
-          MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
-                                             exception_state.Message()));
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    v8::Local<v8::Value> parsed_value = FromJSONString(
+        script_state->GetIsolate(), script_state->GetContext(),
+        stringified_details, PassThroughException(script_state->GetIsolate()));
+    if (try_catch.HasCaught()) {
+      GetPendingAcceptPromiseResolver()->Reject(try_catch.Exception());
       ClearResolversAndCloseMojoConnection();
       return;
     }

@@ -56,8 +56,8 @@ class CharacterData;
 class DOMEditor;
 class Document;
 class DocumentLoader;
+class DummyExceptionStateForTesting;
 class Element;
-class ExceptionState;
 class HTMLFrameOwnerElement;
 class HTMLSlotElement;
 class InspectedFrames;
@@ -93,7 +93,7 @@ class CORE_EXPORT InspectorDOMAgent final
     std::unique_ptr<SourceLocation> source_location_;
   };
 
-  static protocol::Response ToResponse(ExceptionState&);
+  static protocol::Response ToResponse(DummyExceptionStateForTesting&);
   static protocol::DOM::PseudoType ProtocolPseudoElementType(PseudoId);
   static protocol::DOM::ShadowRootType GetShadowRootType(ShadowRoot*);
   static protocol::DOM::CompatibilityMode GetDocumentCompatibilityMode(

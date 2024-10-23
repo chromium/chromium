@@ -570,9 +570,6 @@ ScriptPromise<IDLResolvedType> MediaDevices::SendUserMediaRequest(
   if (!request) {
     DCHECK(exception_state.HadException());
     resolver->RecordAndDetach(UserMediaRequestResult::kInvalidConstraints);
-    RecordIdentifiabilityMetric(
-        surface, GetExecutionContext(),
-        IdentifiabilityBenignStringToken(exception_state.Message()));
     return promise;
   }
 

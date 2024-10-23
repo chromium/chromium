@@ -969,10 +969,6 @@ void XMLHttpRequest::SendForInspectorXHRReplay(
     scoped_refptr<EncodedFormData> form_data,
     ExceptionState& exception_state) {
   CreateRequest(form_data ? form_data->DeepCopy() : nullptr, exception_state);
-  if (exception_state.HadException()) {
-    CHECK(IsDOMExceptionCode(exception_state.Code()));
-    exception_code_ = exception_state.CodeAs<DOMExceptionCode>();
-  }
 }
 
 void XMLHttpRequest::ThrowForLoadFailureIfNeeded(

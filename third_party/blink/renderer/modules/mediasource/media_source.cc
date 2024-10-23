@@ -388,10 +388,6 @@ void MediaSource::AddSourceBuffer_Locked(
       std::move(video_config), *exception_state);
 
   if (!web_source_buffer) {
-    DCHECK(exception_state->CodeAs<DOMExceptionCode>() ==
-               DOMExceptionCode::kNotSupportedError ||
-           exception_state->CodeAs<DOMExceptionCode>() ==
-               DOMExceptionCode::kQuotaExceededError);
     // 2. If type contains a MIME type that is not supported ..., then throw a
     //    NotSupportedError exception and abort these steps.
     // 3. If the user agent can't handle any more SourceBuffer objects then

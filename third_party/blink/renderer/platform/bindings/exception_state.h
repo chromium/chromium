@@ -46,6 +46,8 @@
 
 namespace blink {
 
+class DummyExceptionStateForTesting;
+
 // ExceptionState is a scope-like class and provides a way to throw an exception
 // with an option to cancel it.  An exception message may be auto-generated.
 class PLATFORM_EXPORT ExceptionState {
@@ -121,19 +123,7 @@ class PLATFORM_EXPORT ExceptionState {
   NOINLINE void RethrowV8Exception(v8::TryCatch&);
 
   // Returns true if there is a pending exception.
-  //
-  // Note that this function returns true even when |exception_| is empty, and
-  // that V8ThrowDOMException::CreateOrEmpty may return an empty handle.
-  bool HadException() const { return code_; }
-
-  ExceptionCode Code() const { return code_; }
-
-  template <typename T>
-  T CodeAs() const {
-    return static_cast<T>(Code());
-  }
-
-  const String& Message() const { return message_; }
+  bool HadException() const { return had_exception_; }
 
   // Returns the context of what Web API is currently being executed.
   const ExceptionContext& GetContext() const {
@@ -157,6 +147,9 @@ class PLATFORM_EXPORT ExceptionState {
 #endif
   }
 
+  // Delegated constructor for DummyExceptionStateForTesting
+  explicit ExceptionState(DummyExceptionStateForTesting& dummy_derived);
+
  private:
   void SetExceptionInfo(ExceptionCode, const String&);
   // Since DOMException is defined in core/, we need a dependency injection in
@@ -167,8 +160,9 @@ class PLATFORM_EXPORT ExceptionState {
   std::optional<ExceptionContext> context_;
 
   v8::Isolate* isolate_;
-  ExceptionCode code_ = 0;
-  String message_;
+
+  bool had_exception_ = false;
+  bool swallow_all_exceptions_ = false;
 
 #if DCHECK_IS_ON()
   const char* file_ = "";
@@ -207,11 +201,19 @@ class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
 class PLATFORM_EXPORT DummyExceptionStateForTesting final
     : public ExceptionState {
  public:
-  DummyExceptionStateForTesting()
-      : ExceptionState(nullptr,
-                       v8::ExceptionContext::kUnknown,
-                       nullptr,
-                       nullptr) {}
+  DummyExceptionStateForTesting() : ExceptionState(*this) {}
+
+  ExceptionCode Code() const { return code_; }
+  template <typename T>
+  T CodeAs() const {
+    return static_cast<T>(Code());
+  }
+  const String& Message() const { return message_; }
+
+ private:
+  friend class ExceptionState;
+  ExceptionCode code_ = 0;
+  String message_;
 };
 
 class PLATFORM_EXPORT TryRethrowScope {
@@ -239,7 +241,10 @@ class PLATFORM_EXPORT TryRethrowScope {
 // This can be used as a default value of an ExceptionState parameter like this:
 //
 //     Node* removeChild(Node*, ExceptionState& = IGNORE_EXCEPTION);
-#define IGNORE_EXCEPTION (::blink::DummyExceptionStateForTesting().ReturnThis())
+#define IGNORE_EXCEPTION                                                     \
+  (::blink::ExceptionState(nullptr, v8::ExceptionContext::kUnknown, nullptr, \
+                           nullptr)                                          \
+       .ReturnThis())
 #define IGNORE_EXCEPTION_FOR_TESTING IGNORE_EXCEPTION
 
 // Syntax sugar for NonThrowableExceptionState.

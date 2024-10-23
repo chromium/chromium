@@ -175,7 +175,7 @@ void InspectorRevalidateDOMTask::Trace(Visitor* visitor) const {
 }
 
 protocol::Response InspectorDOMAgent::ToResponse(
-    ExceptionState& exception_state) {
+    DummyExceptionStateForTesting& exception_state) {
   if (exception_state.HadException()) {
     String name_prefix = IsDOMExceptionCode(exception_state.Code())
                              ? DOMException::GetErrorName(

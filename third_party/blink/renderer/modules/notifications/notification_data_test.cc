@@ -99,7 +99,7 @@ TEST(NotificationDataTest, ReflectProperties) {
 
   // TODO(peter): Test |options.data| and |notificationData.data|.
 
-  ExceptionState& exception_state = scope.GetExceptionState();
+  auto& exception_state = scope.GetExceptionState();
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
@@ -158,7 +158,7 @@ TEST(NotificationDataTest, SilentNotificationWithVibration) {
   options->setVibrate(vibration_sequence);
   options->setSilent(true);
 
-  ExceptionState& exception_state = scope.GetExceptionState();
+  auto& exception_state = scope.GetExceptionState();
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
@@ -182,7 +182,7 @@ TEST(NotificationDataTest, ActionTypeButtonWithPlaceholder) {
       NotificationOptions::Create(scope.GetIsolate());
   options->setActions(actions);
 
-  ExceptionState& exception_state = scope.GetExceptionState();
+  auto& exception_state = scope.GetExceptionState();
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
@@ -202,7 +202,7 @@ TEST(NotificationDataTest, RenotifyWithEmptyTag) {
   options->setTag(kNotificationEmptyTag);
   options->setRenotify(true);
 
-  ExceptionState& exception_state = scope.GetExceptionState();
+  auto& exception_state = scope.GetExceptionState();
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
@@ -232,7 +232,7 @@ TEST(NotificationDataTest, InvalidIconUrls) {
   options->setBadge(kNotificationIconInvalid);
   options->setActions(actions);
 
-  ExceptionState& exception_state = scope.GetExceptionState();
+  auto& exception_state = scope.GetExceptionState();
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
@@ -259,7 +259,7 @@ TEST(NotificationDataTest, VibrationNormalization) {
       NotificationOptions::Create(scope.GetIsolate());
   options->setVibrate(vibration_sequence);
 
-  ExceptionState& exception_state = scope.GetExceptionState();
+  auto& exception_state = scope.GetExceptionState();
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
@@ -282,7 +282,7 @@ TEST(NotificationDataTest, DefaultTimestampValue) {
   NotificationOptions* options =
       NotificationOptions::Create(scope.GetIsolate());
 
-  ExceptionState& exception_state = scope.GetExceptionState();
+  auto& exception_state = scope.GetExceptionState();
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
@@ -309,7 +309,7 @@ TEST(NotificationDataTest, DirectionValues) {
         NotificationOptions::Create(scope.GetIsolate());
     options->setDir(direction);
 
-    ExceptionState& exception_state = scope.GetExceptionState();
+    auto& exception_state = scope.GetExceptionState();
     mojom::blink::NotificationDataPtr notification_data =
         CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                                options, exception_state);
@@ -336,7 +336,7 @@ TEST(NotificationDataTest, MaximumActionCount) {
       NotificationOptions::Create(scope.GetIsolate());
   options->setActions(actions);
 
-  ExceptionState& exception_state = scope.GetExceptionState();
+  auto& exception_state = scope.GetExceptionState();
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
@@ -364,7 +364,7 @@ TEST(NotificationDataTest, RejectsTriggerTimestampOverAYear) {
       NotificationOptions::Create(scope.GetIsolate());
   options->setShowTrigger(show_trigger);
 
-  ExceptionState& exception_state = scope.GetExceptionState();
+  auto& exception_state = scope.GetExceptionState();
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);

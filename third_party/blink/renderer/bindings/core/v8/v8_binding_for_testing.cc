@@ -45,7 +45,7 @@ v8::Local<v8::Context> V8TestingScope::GetContext() const {
   return context_;
 }
 
-ExceptionState& V8TestingScope::GetExceptionState() {
+DummyExceptionStateForTesting& V8TestingScope::GetExceptionState() {
   return exception_state_;
 }
 

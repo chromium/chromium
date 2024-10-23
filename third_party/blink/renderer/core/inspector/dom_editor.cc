@@ -411,7 +411,8 @@ bool DOMEditor::SetNodeValue(Node* node,
       MakeGarbageCollected<SetNodeValueAction>(node, value), exception_state);
 }
 
-static protocol::Response ToResponse(ExceptionState& exception_state) {
+static protocol::Response ToResponse(
+    DummyExceptionStateForTesting& exception_state) {
   if (exception_state.HadException()) {
     String name_prefix = IsDOMExceptionCode(exception_state.Code())
                              ? DOMException::GetErrorName(

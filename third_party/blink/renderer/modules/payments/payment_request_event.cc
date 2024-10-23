@@ -385,13 +385,14 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
       }
 
       if (!response_modifier->method_data->stringified_data.empty()) {
+        v8::TryCatch try_catch(script_state->GetIsolate());
         v8::Local<v8::Value> parsed_value = FromJSONString(
             script_state->GetIsolate(), script_state->GetContext(),
-            response_modifier->method_data->stringified_data, exception_state);
-        if (exception_state.HadException()) {
+            response_modifier->method_data->stringified_data,
+            PassThroughException(script_state->GetIsolate()));
+        if (try_catch.HasCaught()) {
           change_payment_request_details_resolver_->Reject(
-              MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
-                                                 exception_state.Message()));
+              try_catch.Exception());
           change_payment_request_details_resolver_.Clear();
           return;
         }
@@ -423,13 +424,13 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
 
   if (response->stringified_payment_method_errors &&
       !response->stringified_payment_method_errors.empty()) {
-    v8::Local<v8::Value> parsed_value = FromJSONString(
-        script_state->GetIsolate(), script_state->GetContext(),
-        response->stringified_payment_method_errors, exception_state);
-    if (exception_state.HadException()) {
-      change_payment_request_details_resolver_->Reject(
-          MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
-                                             exception_state.Message()));
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    v8::Local<v8::Value> parsed_value =
+        FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
+                       response->stringified_payment_method_errors,
+                       PassThroughException(script_state->GetIsolate()));
+    if (try_catch.HasCaught()) {
+      change_payment_request_details_resolver_->Reject(try_catch.Exception());
       change_payment_request_details_resolver_.Clear();
       return;
     }
