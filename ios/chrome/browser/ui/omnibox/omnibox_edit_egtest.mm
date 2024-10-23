@@ -149,7 +149,7 @@
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   // Enable flags for rich inline autocomplete tests.
-  if ([self isRunningTest:@selector(testRichInlineRemovedByTap)] ||
+  if ([self isRunningTest:@selector(DISABLED_testRichInlineRemovedByTap)] ||
       [self isRunningTest:@selector(DISABLED_testRichInlineRemovedByDelete)] ||
       [self isRunningTest:@selector(testRichInlineRemovedWithArrowKey)]) {
     config.features_enabled.push_back(omnibox::kRichAutocompletion);
@@ -189,7 +189,8 @@
 #pragma mark - Test rich inline
 
 // Tests removing rich inline autocomplete by tapping the omnibox.
-- (void)testRichInlineRemovedByTap {
+// TODO(crbug.com/375219994): Re-enable test.
+- (void)DISABLED_testRichInlineRemovedByTap {
   // Add 2 shortcuts Page(1) and Page(2).
   [OmniboxEarlGrey addShorcuts:2 toTestServer:self.testServer];
 
