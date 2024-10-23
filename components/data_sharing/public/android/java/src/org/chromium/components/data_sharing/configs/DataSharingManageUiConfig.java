@@ -23,6 +23,8 @@ public class DataSharingManageUiConfig {
     public interface ManageCallback {
         default void onLinkSharingToggled(boolean isLinkSharingEnabled, GroupData groupData) {}
 
+        default void onShareInviteLinkClicked(GroupToken groupToken) {}
+
         default void onStopSharingInitiated(GroupData groupData, Callback<Boolean> readyToStop) {}
 
         default void onStopSharingSuccess(GroupData groupData) {}
