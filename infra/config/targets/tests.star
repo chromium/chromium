@@ -34,6 +34,14 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "accessibility_unittests_no_field_trial",
+    args = [
+        "--disable-field-trial-config",
+    ],
+    binary = "accessibility_unittests",
+)
+
+targets.tests.gtest_test(
     name = "android_browsertests_no_fieldtrial",
     args = [
         "--disable-field-trial-config",
@@ -698,6 +706,14 @@ targets.tests.gtest_test(
         "--gtest_filter=WebRtc*:-UsingRealWebcam*",
         "--ui-test-action-max-timeout=110000",
         "--test-launcher-timeout=120000",
+    ],
+    binary = "content_browsertests",
+)
+
+targets.tests.gtest_test(
+    name = "content_browsertests_no_field_trial",
+    args = [
+        "--disable-field-trial-config",
     ],
     binary = "content_browsertests",
 )

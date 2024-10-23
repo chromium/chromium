@@ -1795,6 +1795,44 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "fieldtrial_browser_tests_mac",
+    targets = [
+        "accessibility_unittests_no_field_trial",
+        "browser_tests_no_field_trial",
+        "components_browsertests_no_field_trial",
+        "content_browsertests_no_field_trial",
+        "interactive_ui_tests_no_field_trial",
+        "sync_integration_tests_no_field_trial",
+    ],
+    per_test_modifications = {
+        "accessibility_unittests_no_field_trial": targets.mixin(
+            ci_only = True,
+        ),
+        "browser_tests_no_field_trial": targets.mixin(
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 10,
+            ),
+        ),
+        "components_browsertests_no_field_trial": targets.mixin(
+            ci_only = True,
+        ),
+        "content_browsertests_no_field_trial": targets.mixin(
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+        ),
+        "interactive_ui_tests_no_field_trial": targets.mixin(
+            ci_only = True,
+        ),
+        "sync_integration_tests_no_field_trial": targets.mixin(
+            ci_only = True,
+        ),
+    },
+)
+
 # Runs only the accessibility tests in CI/CQ to reduce accessibility
 # failures that land.
 targets.bundle(

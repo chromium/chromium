@@ -491,7 +491,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "fieldtrial_browser_tests",
+            # TODO(crbug.com/372265654): Revert to use fieldtrial_browser_tests
+            # after project work is complete.
+            "fieldtrial_browser_tests_mac",
         ],
         mixins = [
             "finch-chromium-swarming-pool",
