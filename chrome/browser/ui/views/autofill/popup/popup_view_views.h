@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -246,9 +247,6 @@ class PopupViewViews : public PopupBaseView,
   // level up. Returns whether this was successful.
   bool SelectParentPopupContentCell();
 
-  // Announces a string without assertively alerting a user.
-  void AnnouncePolitely(const std::u16string& text);
-
   // The popup can be used for informing the user without providing suggestions
   // to select, e.g. when the suggestions are loading. It has only one
   // suggestion with a special type in this case. This method makes sure
@@ -264,6 +262,11 @@ class PopupViewViews : public PopupBaseView,
   std::optional<base::WeakPtr<ExpandablePopupParentView>> parent_;
 
   std::unique_ptr<PasswordFaviconLoaderImpl> password_favicon_loader_;
+
+  // The implementation of the a11y announcer. When testing the announcements,
+  // it's replaced with a mock function.
+  base::RepeatingCallback<void(const std::u16string& message, bool polite)>
+      a11y_announcer_;
 
   // The index of the row with a selected cell.
   std::optional<size_t> row_with_selected_cell_;

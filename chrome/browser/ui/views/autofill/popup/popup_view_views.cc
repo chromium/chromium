@@ -146,11 +146,6 @@ bool ContentCellShouldOpenSubPopupSuggestion(const Suggestion& suggestion) {
          !suggestion.children.empty();
 }
 
-BrowserView* GetLastActiveBrowserView() {
-  Browser* browser = chrome::FindLastActive();
-  return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
-}
-
 // If `is_root_popup` is `true`, the result list corresponds to sides defined in
 // `PopupBaseView::kDefaultPreferredPopupSides`, when `prefer_prev_arrow_side`
 // is also `true` the side of the `prev_arrow` is added at the beginning of
@@ -183,6 +178,23 @@ std::vector<views::BubbleArrowSide> GetPreferredPopupSides(
   }
   return base::ToVector(base::i18n::IsRTL() ? kDefaultSubPopupSidesRTL
                                             : kDefaultSubPopupSides);
+}
+
+void DefaultA11yAnnouncer(const std::u16string& message, bool polite) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view) {
+    return;
+  }
+
+  if (polite) {
+    browser_view->GetViewAccessibility().AnnouncePolitely(message);
+  } else {
+    browser_view->GetViewAccessibility().AnnounceText(message);
+  }
 }
 
 }  // namespace
@@ -284,21 +296,13 @@ bool PopupViewViews::Show(
       case SuggestionType::kComposeSavedStateNotification: {
         const std::u16string saved_state_message = l10n_util::GetStringUTF16(
             IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_RESUME);
-        if (announce_politely) {
-          AnnouncePolitely(saved_state_message);
-        } else {
-          AxAnnounce(saved_state_message);
-        }
+        a11y_announcer_.Run(saved_state_message, announce_politely);
         break;
       }
       case SuggestionType::kComposeProactiveNudge: {
         const std::u16string proactive_message = l10n_util::GetStringUTF16(
             IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_PROACTIVE);
-        if (announce_politely) {
-          AnnouncePolitely(proactive_message);
-        } else {
-          AxAnnounce(proactive_message);
-        }
+        a11y_announcer_.Run(proactive_message, announce_politely);
         break;
       }
       case SuggestionType::kComposeDisable:
@@ -682,6 +686,23 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
   CreateSuggestionViews();
   DoUpdateBoundsAndRedrawPopup(prefer_prev_arrow_side);
 
+  // TODO(crbug.com/374715256): Prediction improvements suggestions are
+  // generated asynchronously, after showing the "loading" popup. Testing on
+  // the `kPredictionImprovementsFeedback` suggestion is a way to understand
+  // that the suggestions are generated successfully and announce it. This
+  // approach should be reconsidered in favor of something more reliable.
+  const auto& suggestions = this->controller()->GetSuggestions();
+  if (std::any_of(suggestions.begin(), suggestions.end(),
+                  [](const Suggestion& suggestion) {
+                    return suggestion.type ==
+                           SuggestionType::kPredictionImprovementsFeedback;
+                  })) {
+    a11y_announcer_.Run(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),
+        /*polite=*/true);
+  }
+
   MaybeA11yFocusInformationalSuggestion();
 }
 
@@ -695,19 +716,7 @@ std::optional<int32_t> PopupViewViews::GetAxUniqueId() {
 }
 
 void PopupViewViews::AxAnnounce(const std::u16string& text) {
-  BrowserView* browser_view = GetLastActiveBrowserView();
-  if (!browser_view) {
-    return;
-  }
-  browser_view->GetViewAccessibility().AnnounceText(text);
-}
-
-void PopupViewViews::AnnouncePolitely(const std::u16string& text) {
-  BrowserView* browser_view = GetLastActiveBrowserView();
-  if (!browser_view) {
-    return;
-  }
-  browser_view->GetViewAccessibility().AnnouncePolitely(text);
+  a11y_announcer_.Run(text, /*polite=*/false);
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::CreateSubPopupView(
@@ -910,6 +919,8 @@ bool PopupViewViews::HasSelectablePopupRowViewAt(size_t index) const {
 }
 
 void PopupViewViews::InitViews() {
+  a11y_announcer_ = base::BindRepeating(&DefaultA11yAnnouncer);
+
   SetNotifyEnterExitOnChild(true);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
