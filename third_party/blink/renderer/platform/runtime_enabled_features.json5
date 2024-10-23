@@ -2969,8 +2969,7 @@
     },
     {
       name: "OnDeviceChange",
-      // Android does not yet support SystemMonitor.
-      status: {"Android": "", "default": "stable"},
+      status: "stable"
     },
     {
       name: "OnDeviceWebSpeechAvailable",

@@ -107,9 +107,6 @@ interface DataTransferItem
     method getAsFileSystemHandle
 
 interface MediaDevices : EventTarget
-    # MediaDevices devicechange disabled on Android, crbug.com/671461
-    getter ondevicechange
-    setter ondevicechange
     method getDisplayMedia
     method setCaptureHandleConfig
 
