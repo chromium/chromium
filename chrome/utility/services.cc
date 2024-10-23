@@ -15,8 +15,6 @@
 #include "components/password_manager/services/csv_password/csv_password_parser_impl.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/services/language_detection/language_detection_service_impl.h"
-#include "components/services/language_detection/public/mojom/language_detection.mojom.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
@@ -156,13 +154,6 @@ auto RunFilePatcher(mojo::PendingReceiver<patch::mojom::FilePatcher> receiver) {
 
 auto RunUnzipper(mojo::PendingReceiver<unzip::mojom::Unzipper> receiver) {
   return std::make_unique<unzip::UnzipperImpl>(std::move(receiver));
-}
-
-auto RunLanguageDetectionService(
-    mojo::PendingReceiver<language_detection::mojom::LanguageDetectionService>
-        receiver) {
-  return std::make_unique<language_detection::LanguageDetectionServiceImpl>(
-      std::move(receiver));
 }
 
 auto RunWebAppOriginAssociationParser(
@@ -469,7 +460,6 @@ void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
 void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunFilePatcher);
   services.Add(RunUnzipper);
-  services.Add(RunLanguageDetectionService);
   services.Add(RunWebAppOriginAssociationParser);
   services.Add(RunCSVPasswordParser);
 

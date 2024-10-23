@@ -2294,8 +2294,6 @@ static_library("browser") {
     "//components/send_tab_to_self",
     "//components/services/app_service",
     "//components/services/heap_profiling",
-    "//components/services/language_detection/public/cpp",
-    "//components/services/language_detection/public/mojom",
     "//components/services/paint_preview_compositor/public/mojom:mojom",
     "//components/services/patch/content",
     "//components/services/quarantine",

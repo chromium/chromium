@@ -138,7 +138,6 @@ browser_exposed_mojom_targets = [
   "//components/services/filesystem/public/mojom:mojom",
   "//components/services/font/public/mojom:mojom",
   "//components/services/heap_profiling/public/mojom:mojom",
-  "//components/services/language_detection/public/mojom:mojom",
   "//components/services/paint_preview_compositor/public/mojom:mojom",
   "//components/services/patch/public/mojom:mojom",
   "//components/services/print_compositor/public/mojom:mojom",

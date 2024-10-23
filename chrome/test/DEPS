@@ -92,7 +92,6 @@ include_rules = [
   "+components/search_engines",
   "+components/security_interstitials/content",
   "+components/services/app_service",
-  "+components/services/language_detection/public/cpp",
   "+components/services/quarantine",
   "+components/services/storage/shared_storage",
   "+components/sessions",
