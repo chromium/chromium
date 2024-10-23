@@ -404,9 +404,9 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   // so that is_parent_query can be accurately set if the user issues multiple
   // interactions in quick succession.
   if (lens::features::SendVisualSearchInteractionParamForLensTextQueries() &&
-      lens_selection_type == lens::SELECT_TEXT_HIGHLIGHT) {
+      IsLensTextSelectionType(lens_selection_type)) {
     std::string encoded_vsint =
-        GetEncodedVisualSearchInteractionLogData(lens::SELECT_TEXT_HIGHLIGHT);
+        GetEncodedVisualSearchInteractionLogData(lens_selection_type);
     suggest_inputs_.set_encoded_visual_search_interaction_log_data(
         encoded_vsint);
     additional_search_query_params.insert(

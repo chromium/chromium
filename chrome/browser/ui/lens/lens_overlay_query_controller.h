@@ -128,7 +128,7 @@ class LensOverlayQueryController {
       std::optional<SkBitmap> region_bytes);
 
   // Sends a text-only interaction. Expected to be called multiple times.
-  void SendTextOnlyQuery(
+  virtual void SendTextOnlyQuery(
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params);
