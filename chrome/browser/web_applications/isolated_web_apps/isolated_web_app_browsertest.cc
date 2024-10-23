@@ -533,12 +533,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
 
 class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {
  protected:
-  IsolatedWebAppApiAccessBrowserTest() {
-    feature_list_.InitWithFeatures({blink::features::kIsolateSandboxedIframes,
-                                    blink::features::kDirectSockets},
-                                   {});
-  }
-
   IsolatedWebAppUrlInfo InstallAppWithSocketPermission() {
     std::unique_ptr<ScopedBundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(
@@ -558,7 +552,8 @@ class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kIsolateSandboxedIframes};
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,

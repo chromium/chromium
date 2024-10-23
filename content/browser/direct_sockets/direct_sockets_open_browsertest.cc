@@ -167,8 +167,6 @@ MockOpenNetworkContext::CreateMockUDPSocket(
 
 class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
  public:
-  ~DirectSocketsOpenBrowserTest() override = default;
-
   GURL GetTestOpenPageURL() {
     return embedded_test_server()->GetURL("/direct_sockets/open.html");
   }
@@ -191,8 +189,6 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{blink::features::kDirectSockets};
-
   std::unique_ptr<test::IsolatedWebAppContentBrowserClient> client_;
 };
 
