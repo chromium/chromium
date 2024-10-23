@@ -171,11 +171,10 @@ source_set("sync_error_browser_agent") {
   sources = [
     "sync_error_browser_agent.h",
     "sync_error_browser_agent.mm",
-    "sync_error_browser_agent_app_state_observer.h",
-    "sync_error_browser_agent_app_state_observer.mm",
+    "sync_error_browser_agent_profile_state_observer.h",
+    "sync_error_browser_agent_profile_state_observer.mm",
   ]
   deps = [
-    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/settings/model/sync/utils",
