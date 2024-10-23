@@ -2331,8 +2331,8 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
       animating_element == &element ||
       (animating_element->IsSVGElement() &&
        To<SVGElement>(animating_element)->CorrespondingElement() == &element) ||
-      DynamicTo<PseudoElement>(animating_element)->OriginatingElement() ==
-          &element);
+      DynamicTo<PseudoElement>(animating_element)
+              ->UltimateOriginatingElement() == &element);
 
   if (!IsAnimationStyleChange(*animating_element) ||
       !state.StyleBuilder().BaseData()) {

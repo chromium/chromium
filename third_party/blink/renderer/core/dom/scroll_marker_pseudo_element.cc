@@ -56,7 +56,8 @@ void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
         scroll_marker_group_->SetSelected(*scroll_marker);
         mojom::blink::ScrollIntoViewParamsPtr params =
             scroll_into_view_util::CreateScrollIntoViewParams(
-                *scroll_marker->OriginatingElement()->GetComputedStyle());
+                *scroll_marker->UltimateOriginatingElement()
+                     ->GetComputedStyle());
         scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params));
         scroll_marker_group_->SetSelected(*this);
       }

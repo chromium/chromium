@@ -79,7 +79,7 @@ LayoutObject* LayoutTreeBuilderTraversal::ParentLayoutObject(const Node& node) {
   // Parent of ::scroll-marker-group should be layout parent of its
   // originating element.
   if (node.IsScrollMarkerGroupPseudoElement()) {
-    search_start_node = To<PseudoElement>(node).OriginatingElement();
+    search_start_node = To<PseudoElement>(node).UltimateOriginatingElement();
   }
   ContainerNode* parent =
       LayoutTreeBuilderTraversal::LayoutParent(*search_start_node);
@@ -441,12 +441,12 @@ static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
   }
   // From SMGB, return OE.
   if (element->IsScrollMarkerGroupBeforePseudoElement()) {
-    return To<PseudoElement>(element)->OriginatingElement();
+    return To<PseudoElement>(element)->UltimateOriginatingElement();
   }
   // From SMGA, return NS, but check if NS has SMGB, then return NS's SMGB.
   if (element->IsScrollMarkerGroupAfterPseudoElement()) {
     Node* originating_next = LayoutTreeBuilderTraversal::NextSibling(
-        *To<PseudoElement>(element)->OriginatingElement());
+        *To<PseudoElement>(element)->UltimateOriginatingElement());
     Element* originating_next_element = DynamicTo<Element>(originating_next);
     if (originating_next_element &&
         originating_next_element->GetComputedStyle() &&
@@ -529,11 +529,11 @@ static Node* PreviousLayoutSiblingInBoxTreeOrder(const Node& node) {
     }
   }
   if (element->IsScrollMarkerGroupAfterPseudoElement()) {
-    return To<PseudoElement>(element)->OriginatingElement();
+    return To<PseudoElement>(element)->UltimateOriginatingElement();
   }
   if (element->IsScrollMarkerGroupBeforePseudoElement()) {
     Node* originating_prev = LayoutTreeBuilderTraversal::PreviousSibling(
-        *To<PseudoElement>(element)->OriginatingElement());
+        *To<PseudoElement>(element)->UltimateOriginatingElement());
     Element* originating_prev_element = DynamicTo<Element>(originating_prev);
     if (originating_prev_element &&
         originating_prev_element->GetComputedStyle() &&

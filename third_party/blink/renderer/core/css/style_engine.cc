@@ -3735,8 +3735,8 @@ void StyleEngine::RecalcPositionTryStyleForPseudoElement(
   SkipStyleRecalcScope skip_scope(*this);
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
       &GetDocument(), /*within-selector_checking=*/false);
-  SelectorFilterRootScope filter_scope(
-      FlatTreeTraversal::ParentElement(*pseudo_element.OriginatingElement()));
+  SelectorFilterRootScope filter_scope(FlatTreeTraversal::ParentElement(
+      *pseudo_element.UltimateOriginatingElement()));
   pseudo_element.RecalcStyle(style_recalc_change, style_recalc_context);
 }
 

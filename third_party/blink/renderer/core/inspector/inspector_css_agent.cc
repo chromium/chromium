@@ -151,7 +151,7 @@ Element* GetPseudoIdAndTag(Element* element,
   auto* resolved_element = element;
   if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
     resolved_element = IsTransitionPseudoElement(pseudo_element->GetPseudoId())
-                           ? pseudo_element->OriginatingElement()
+                           ? pseudo_element->UltimateOriginatingElement()
                            : pseudo_element->ParentOrShadowHostElement();
     // TODO(khushalsagar) : This should never be null.
     if (!resolved_element)

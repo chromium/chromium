@@ -1978,7 +1978,8 @@ PhysicalRect LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView() const {
           DynamicTo<ScrollMarkerPseudoElement>(GetNode())) {
     // Scroll markers are reparented into a scroll marker group. We want the
     // rectangle of the originating element (or column).
-    const Element* originating_element = scroll_marker->OriginatingElement();
+    const Element* originating_element =
+        scroll_marker->UltimateOriginatingElement();
     const auto* originating_object = originating_element->GetLayoutObject();
     const auto* column_pseudo =
         DynamicTo<ColumnPseudoElement>(scroll_marker->parentNode());

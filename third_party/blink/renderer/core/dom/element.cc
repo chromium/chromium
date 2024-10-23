@@ -1505,7 +1505,7 @@ void Element::ScrollIntoViewNoVisualUpdate(
   LayoutObject* target = nullptr;
   auto* pseudo_element = DynamicTo<PseudoElement>(this);
   if (pseudo_element) {
-    originating_element = pseudo_element->OriginatingElement();
+    originating_element = pseudo_element->UltimateOriginatingElement();
     if (pseudo_element->parentNode()->IsColumnPseudoElement()) {
       // The originating element of a ::column is a multicol container. See if
       // it also is the scrollable container that is to be scrolled, or if it's
@@ -10586,7 +10586,8 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdScrollMarker:
       case kPseudoIdScrollNextButton:
       case kPseudoIdScrollPrevButton:
-        return pseudo_element->OriginatingElement()->ImplicitAnchorElement();
+        return pseudo_element->UltimateOriginatingElement()
+            ->ImplicitAnchorElement();
       default:
         return nullptr;
     }

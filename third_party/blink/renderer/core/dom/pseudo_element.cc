@@ -482,11 +482,11 @@ void PseudoElement::AccessKeyAction(
   // tech can still attempt to interact with pseudo elements if they are in
   // the AX tree (usually due to their text/image content).
   // Just pass this request to the originating element.
-  DCHECK(OriginatingElement());
-  OriginatingElement()->AccessKeyAction(creation_scope);
+  DCHECK(UltimateOriginatingElement());
+  UltimateOriginatingElement()->AccessKeyAction(creation_scope);
 }
 
-Element* PseudoElement::OriginatingElement() const {
+Element* PseudoElement::UltimateOriginatingElement() const {
   auto* parent = parentElement();
 
   while (parent && parent->IsPseudoElement())

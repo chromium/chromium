@@ -1618,13 +1618,13 @@ void BlockNode::HandleScrollMarkerGroup() const {
       To<ScrollMarkerGroupPseudoElement>(group_node.GetLayoutBox()->GetNode());
   scroll_marker_group->ClearFocusGroup();
   if (PseudoElement* scroll_next_button =
-          scroll_marker_group->OriginatingElement()->GetPseudoElement(
+          scroll_marker_group->UltimateOriginatingElement()->GetPseudoElement(
               kPseudoIdScrollNextButton)) {
     To<ScrollButtonPseudoElement>(scroll_next_button)
         ->SetScrollMarkerGroup(scroll_marker_group);
   }
   if (PseudoElement* scroll_prev_button =
-          scroll_marker_group->OriginatingElement()->GetPseudoElement(
+          scroll_marker_group->UltimateOriginatingElement()->GetPseudoElement(
               kPseudoIdScrollPrevButton)) {
     To<ScrollButtonPseudoElement>(scroll_prev_button)
         ->SetScrollMarkerGroup(scroll_marker_group);
