@@ -31,20 +31,13 @@ export function getHtml(this: DataSectionElement) {
             <cr-checkbox class="item-checkbox"
                 data-id="${item.id}"
                 ?checked="${this.isCheckboxChecked_(item.id)}"
-                @change="${this.onCheckedChanged_}">
-            </cr-checkbox>
+                @change="${this.onCheckedChanged_}"/>
             <div class="data-item-content">
               <img class="item-icon"
                   ?hidden="${this.isStrEmpty_(item.iconUrl)}"
                   alt="Item icon" src="${this.getFaviconUrl_(item.iconUrl)}">
-              <div class="item-info">
-                <div class="item-title text-elide">
-                  ${item.title}
-                </div>
-                <div class="item-subtitle text-elide">
-                  ${item.subtitle}
-                </div>
-              </div>
+              <div class="item-title">${item.title}</div>
+              <div class="item-subtitle">${item.subtitle}</div>
             </div>
           </div>
           `)}
