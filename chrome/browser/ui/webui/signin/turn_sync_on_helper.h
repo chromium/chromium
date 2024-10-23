@@ -110,6 +110,12 @@ class TurnSyncOnHelper {
     // Defaults to false.
     virtual bool ShouldAbortBeforeShowSyncDisabledConfirmation();
 
+    // Returns whether the account for which sync is being turned on requires a
+    // profile.
+    // TODO(b/375053564): Revisit this function to find a better way  to convey
+    // that profile creation is required by policy.
+    virtual bool IsProfileCreationRequiredByPolicy() const;
+
     // Shows a screen informing that sync is disabled for the user.
     // |is_managed_account| is true if the account (where sync is being set up)
     // is managed (which may influence the UI or strings). |callback| must be

@@ -158,6 +158,7 @@ class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
  public:
   explicit TestTurnSyncOnHelperDelegate(TurnSyncOnHelperTest* test_fixture);
   ~TestTurnSyncOnHelperDelegate() override;
+  bool IsProfileCreationRequiredByPolicy() const override;
 
  private:
   // TurnSyncOnHelper::Delegate:
@@ -859,6 +860,14 @@ class TurnSyncOnHelperTest : public testing::Test {
 
   void OnDelegateDestroyed() { ++delegate_destroyed_; }
 
+  bool IsProfileCreationRequiredByPolicy() const {
+    return profile_creation_required_by_policy_;
+  }
+
+  void SetIsProfileCreationRequiredByPolicy(bool required) {
+    profile_creation_required_by_policy_ = required;
+  }
+
  protected:
   // Type of sync disabled confirmation shown.
   enum SyncDisabledConfirmation {
@@ -875,6 +884,7 @@ class TurnSyncOnHelperTest : public testing::Test {
       LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
   bool abort_before_show_sync_disabled_confirmation_ = false;
   bool run_delegate_callbacks_ = true;
+  bool profile_creation_required_by_policy_ = false;
 
   // Expected delegate calls.
   std::optional<SigninUIError> expected_login_error_;
@@ -964,6 +974,10 @@ TestTurnSyncOnHelperDelegate::TestTurnSyncOnHelperDelegate(
 
 TestTurnSyncOnHelperDelegate::~TestTurnSyncOnHelperDelegate() {
   test_fixture_->OnDelegateDestroyed();
+}
+
+bool TestTurnSyncOnHelperDelegate::IsProfileCreationRequiredByPolicy() const {
+  return test_fixture_->IsProfileCreationRequiredByPolicy();
 }
 
 void TestTurnSyncOnHelperDelegate::ShowLoginError(const SigninUIError& error) {
@@ -1644,6 +1658,81 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
               ? std::optional<signin_metrics::ProfileSignout>(
                     signin_metrics::ProfileSignout::kMovePrimaryAccount)
               : std::nullopt});
+}
+
+// Test that the unconsented primary account is removed is not forced to have a
+// profile and refuses the enterprise consent.
+TEST_F(TurnSyncOnHelperTest,
+       SignedInAccountEnterpriseCancelStaysKeepsWebAccount) {
+  // Set expectations.
+  expected_enterprise_confirmation_email_ = kEnterpriseEmail;
+  expected_switched_to_new_profile_ = true;
+  expected_sync_confirmation_shown_ = true;
+  sync_confirmation_result_ =
+      LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
+  SetExpectationsForSyncStartupCompletedForNextProfileCreated();
+  // Configure the test.
+  user_policy_signin_service()->set_dm_token("foo");
+  user_policy_signin_service()->set_client_id("bar");
+  enterprise_choice_ = signin::SIGNIN_CHOICE_CANCEL;
+  UseEnterpriseAccount();
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_id(), signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+
+  CheckSigninMetrics(
+      {.sign_in_access_point =
+           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN});
+
+  // Signin flow.
+  ProfileWaiter profile_waiter;
+  CreateTurnOnSyncHelper(
+      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY);
+  WaitUntilFlowCompletion();
+
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+}
+
+// Test that the unconsented primary account is removed if profile separation is
+// forced and the enterprise consent is declined.
+TEST_F(TurnSyncOnHelperTest,
+       SignedInAccountEnterpriseCancelRemovesKeepsWebAccount) {
+  // Set expectations.
+  expected_enterprise_confirmation_email_ = kEnterpriseEmail;
+  expected_switched_to_new_profile_ = true;
+  expected_sync_confirmation_shown_ = true;
+  sync_confirmation_result_ =
+      LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
+  SetExpectationsForSyncStartupCompletedForNextProfileCreated();
+  // Configure the test.
+  user_policy_signin_service()->set_dm_token("foo");
+  user_policy_signin_service()->set_client_id("bar");
+  enterprise_choice_ = signin::SIGNIN_CHOICE_CANCEL;
+  UseEnterpriseAccount();
+  SetIsProfileCreationRequiredByPolicy(true);
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_id(), signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+
+  CheckSigninMetrics(
+      {.sign_in_access_point =
+           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN});
+
+  // Signin flow.
+  ProfileWaiter profile_waiter;
+  CreateTurnOnSyncHelper(
+      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY);
+  WaitUntilFlowCompletion();
+
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
 }
 
 TEST_F(TurnSyncOnHelperTest, SearchEngineImportedToNewProfile) {
