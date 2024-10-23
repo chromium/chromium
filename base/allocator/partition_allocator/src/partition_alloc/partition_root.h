@@ -1486,7 +1486,11 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   PA_PREFETCH(slot_span);
 
   if constexpr (ContainsFlags(flags, FreeFlags::kZap)) {
-    if (settings.zapping_by_free_flags) {
+    // No need to zap direct mapped allocations, as they are unmapped right
+    // away. This also ensures that we don't needlessly memset() very large
+    // allocations.
+    if (settings.zapping_by_free_flags &&
+        !IsDirectMappedBucket(slot_span->bucket)) {
       internal::SecureMemset(object, internal::kFreedByte,
                              GetSlotUsableSize(slot_span));
     }
