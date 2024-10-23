@@ -147,6 +147,20 @@ class TestAuctionProcessManager
     return -1;
   }
 
+  // Simulate readiness of the creation_index'th launched process.
+  // This function will return fail if there is no ith process.
+  // Do not call this function after any process in the test has been
+  // destroyed.
+  void SimulateReadyProcess(size_t creation_index) {
+    if (launched_processes_.size() <= creation_index) {
+      ADD_FAILURE() << "Process unexpectedly doesn't exist: " << creation_index;
+      return;
+    }
+    launched_processes_[creation_index]->OnLaunchedWithProcess(
+        base::Process::Current());
+    return;
+  }
+
  private:
   AuctionProcessManager::WorkletProcess::ProcessContext CreateProcessInternal(
       AuctionProcessManager::WorkletProcess& worklet_process) override {
@@ -1185,6 +1199,108 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
       features::kFledgeStartAnticipatoryProcessExpirationTime.Get());
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
   EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+}
+
+TEST_P(DedicatedStyleAuctionProcessManagerTest, PrioritizesReadyIdleProcess) {
+  MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
+  MaybeStartAnticipatoryProcess(kOriginB, GetOtherWorkletType());
+  MaybeStartAnticipatoryProcess(kOriginC, GetWorkletType());
+  CheckOnlyIdleProcessesWithCount(3);
+
+  const size_t kLastCreatedProcessIndex = 2;
+  auction_process_manager_.SimulateReadyProcess(kLastCreatedProcessIndex);
+  AuctionProcessManager::ProcessHandle handle1, handle2;
+  RequestWorkletService(&handle1, kOriginA, GetWorkletType(),
+                        /*expect_success=*/true,
+                        RequestWorkletServiceOutcome::kUsedIdleProcess);
+  EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+            kLastCreatedProcessIndex);
+  EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle1),
+            kLastCreatedProcessIndex);
+
+  // The next best process is the first created one.
+  RequestWorkletService(&handle2, kOriginB, GetWorkletType(),
+                        /*expect_success=*/true,
+                        RequestWorkletServiceOutcome::kUsedIdleProcess);
+  EXPECT_EQ(GetActiveProcessesOfWorkletType(), 2u);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+  EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle2), 0u);
+}
+
+TEST_P(DedicatedStyleAuctionProcessManagerTest,
+       PrioritizesEarliestReadyIdleProcess) {
+  std::vector<url::Origin> origins = {kOriginA, kOriginB, kOriginC};
+  for (const auto& origin : origins) {
+    MaybeStartAnticipatoryProcess(origin, GetWorkletType());
+  }
+  CheckOnlyIdleProcessesWithCount(3);
+
+  for (size_t i = 0; i < origins.size(); ++i) {
+    auction_process_manager_.SimulateReadyProcess(i);
+  }
+
+  // Because the processes are all ready, they should be allocated in order.
+  std::vector<std::unique_ptr<AuctionProcessManager::ProcessHandle>> handles;
+  for (size_t i = 0; i < origins.size(); ++i) {
+    handles.emplace_back(
+        std::make_unique<AuctionProcessManager::ProcessHandle>());
+    RequestWorkletService(handles.back().get(), origins[i], GetWorkletType(),
+                          /*expect_success=*/true,
+                          RequestWorkletServiceOutcome::kUsedIdleProcess);
+    EXPECT_EQ(GetActiveProcessesOfWorkletType(), i + 1);
+    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 2 - i);
+    EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(*handles.back()),
+              i);
+  }
+}
+
+TEST_P(DedicatedStyleAuctionProcessManagerTest,
+       PrioritizesReadyIdleProcessOfSameTypeIfOverLimit) {
+  MaybeStartAnticipatoryProcess(kOriginA, GetOtherWorkletType());
+  CheckOnlyIdleProcessesWithCount(1);
+  for (size_t i = 0; i < GetMaxProcesses(); ++i) {
+    url::Origin origin =
+        url::Origin::Create(GURL(base::StringPrintf("https://%i.test", i)));
+    MaybeStartAnticipatoryProcess(origin, GetWorkletType());
+    CheckOnlyIdleProcessesWithCount(2 + i);
+  }
+  // Both the process of the other type and the last process
+  // of the same type are ready.
+  auction_process_manager_.SimulateReadyProcess(GetMaxProcesses());
+  auction_process_manager_.SimulateReadyProcess(0);
+
+  // We are at the limit so we should use that last process.
+  AuctionProcessManager::ProcessHandle handle1, handle2, handle3;
+  RequestWorkletService(&handle1, kOriginA, GetWorkletType(),
+                        /*expect_success=*/true,
+                        RequestWorkletServiceOutcome::kUsedIdleProcess);
+  EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+            GetMaxProcesses());
+  EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle1),
+            GetMaxProcesses());
+
+  // Even though the first process is ready we have to use the same type because
+  // we're at the limit.
+  RequestWorkletService(&handle2, kOriginB, GetWorkletType(),
+                        /*expect_success=*/true,
+                        RequestWorkletServiceOutcome::kUsedIdleProcess);
+  EXPECT_EQ(GetActiveProcessesOfWorkletType(), 2u);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+            GetMaxProcesses() - 1);
+  EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle2), 1u);
+
+  // We can use the first process when we request a process for
+  // GetOtherWorkletType().
+  RequestWorkletService(&handle3, kOriginC, GetOtherWorkletType(),
+                        /*expect_success=*/true,
+                        RequestWorkletServiceOutcome::kUsedIdleProcess);
+  EXPECT_EQ(GetActiveProcessesOfWorkletType(), 2u);
+  EXPECT_EQ(GetActiveProcessesOfWorkletType(GetOtherWorkletType()), 1u);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+            GetMaxProcesses() - 2);
+  EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle3), 0u);
 }
 
 class PartialSiteIsolationContentBrowserClient

@@ -115,6 +115,10 @@ std::optional<base::ProcessId> AuctionProcessManager::WorkletProcess::GetPid(
   }
 }
 
+bool AuctionProcessManager::WorkletProcess::HasPid() const {
+  return pid_.has_value();
+}
+
 void AuctionProcessManager::WorkletProcess::OnLaunchedWithProcess(
     const base::Process& process) {
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ProcessLaunchTime",
@@ -458,12 +462,13 @@ bool AuctionProcessManager::TryToUseIdleProcessForHandle(
   }
 
   // Keep track of processes we may want to use for the handle. Prefer to use a
-  // process that was created the earliest possible. idle_processes_  is
-  // sorted by process creation time.
+  // process that has already launched, and if there is none,  a process that
+  // was created the earliest possible. idle_processes_  is sorted by process
+  // creation time.
   auto process_matching_origin_and_type = idle_processes_.end();
   auto first_process_matching_type = idle_processes_.end();
-  auto first_unbound_process_matching_type = idle_processes_.end();
-  auto first_unbound_process = idle_processes_.end();
+  auto best_unbound_process_matching_type = idle_processes_.end();
+  auto best_unbound_process = idle_processes_.end();
   size_t num_idle_processes_of_type = 0;
   for (auto it = idle_processes_.begin(); it != idle_processes_.end(); ++it) {
     if (it->get()->worklet_type() == process_handle->worklet_type()) {
@@ -474,14 +479,17 @@ bool AuctionProcessManager::TryToUseIdleProcessForHandle(
       if (first_process_matching_type == idle_processes_.end()) {
         first_process_matching_type = it;
       }
-      if (first_unbound_process_matching_type == idle_processes_.end() &&
-          !it->get()->is_bound_to_origin()) {
-        first_unbound_process_matching_type = it;
+      if (!it->get()->is_bound_to_origin() &&
+          (best_unbound_process_matching_type == idle_processes_.end() ||
+           (!best_unbound_process_matching_type->get()->HasPid() &&
+            it->get()->HasPid()))) {
+        best_unbound_process_matching_type = it;
       }
     }
-    if (first_unbound_process == idle_processes_.end() &&
-        !it->get()->is_bound_to_origin()) {
-      first_unbound_process = it;
+    if (!it->get()->is_bound_to_origin() &&
+        (best_unbound_process == idle_processes_.end() ||
+         (!best_unbound_process->get()->HasPid() && it->get()->HasPid()))) {
+      best_unbound_process = it;
     }
   }
 
@@ -491,7 +499,7 @@ bool AuctionProcessManager::TryToUseIdleProcessForHandle(
     // to its origin, prefer to use it. If it's unbound, prefer to
     // use the first unbound process (because it was created earlier).
     if (process_matching_origin_and_type->get()->is_bound_to_origin() ||
-        process_matching_origin_and_type == first_unbound_process) {
+        process_matching_origin_and_type == best_unbound_process) {
       idle_process_to_use = process_matching_origin_and_type;
     } else {
       // There's at least 1 unbound process because
@@ -499,31 +507,31 @@ bool AuctionProcessManager::TryToUseIdleProcessForHandle(
       // unbound process no matter its type because we can't go over the process
       // limit if the `process_handle`'s origin and type are already in
       // `idle_processes_`.
-      CHECK(first_unbound_process != idle_processes_.end());
-      idle_process_to_use = first_unbound_process;
-      // We want the `first_unbound_process` origin and type to remain in
+      CHECK(best_unbound_process != idle_processes_.end());
+      idle_process_to_use = best_unbound_process;
+      // We want the `best_unbound_process` origin and type to remain in
       // `idle_processes_` so we can confirm we've already started
       // a process for that origin and type.
       process_matching_origin_and_type->get()->ReassignWorkletTypeAndOrigin(
-          first_unbound_process->get()->worklet_type(),
-          first_unbound_process->get()->origin());
+          best_unbound_process->get()->worklet_type(),
+          best_unbound_process->get()->origin());
     }
   } else {
     if (HasAvailableProcessSlotForIdleProcess(process_handle->worklet_type(),
                                               num_idle_processes_of_type)) {
       // We can use the first unbound process regardless of its `worklet_type`
       // since we have an available spot of `worklet_type.`
-      if (first_unbound_process == idle_processes_.end()) {
+      if (best_unbound_process == idle_processes_.end()) {
         return false;
       }
-      idle_process_to_use = first_unbound_process;
+      idle_process_to_use = best_unbound_process;
     } else {
       // There must be a `first_process_matching_type` because
       // HasAvailableProcessSlotForActiveProcess() is true but
       // HasAvailableProcessSlotForIdleProcess() is false.
       CHECK(first_process_matching_type != idle_processes_.end());
-      if (first_unbound_process_matching_type != idle_processes_.end()) {
-        idle_process_to_use = first_unbound_process_matching_type;
+      if (best_unbound_process_matching_type != idle_processes_.end()) {
+        idle_process_to_use = best_unbound_process_matching_type;
       } else {
         // There's no process we can use without going over the limit.
         // Remove a process so we can create a new one.

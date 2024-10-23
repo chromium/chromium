@@ -150,6 +150,8 @@ class CONTENT_EXPORT AuctionProcessManager {
     std::optional<base::ProcessId> GetPid(
         base::OnceCallback<void(base::ProcessId)> callback);
 
+    bool HasPid() const;
+
     void OnLaunchedWithProcess(const base::Process& process);
 
     // Sets the worklet type and origin to these values, without
