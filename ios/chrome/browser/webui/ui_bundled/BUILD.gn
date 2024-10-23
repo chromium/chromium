@@ -160,6 +160,7 @@ source_set("webui_internal") {
       "//components/optimization_guide/core",
       "//components/optimization_guide/core:features",
       "//ios/chrome/browser/optimization_guide/model",
+      "//ios/chrome/browser/optimization_guide/resources:on_device_llm_bundle_data",
     ]
   }
 

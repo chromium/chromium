@@ -178,6 +178,11 @@ OptimizationGuideService::OptimizationGuideService(
             std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
     on_device_model_state_manager_->OnStartup();
 
+    // TODO(crbug.com/370768381): Always set a high perfomance class for
+    // prototyping.
+    on_device_model_state_manager_->DevicePerformanceClassChanged(
+        optimization_guide::OnDeviceModelPerformanceClass::kHigh);
+
     // Create the manager for on-device model execution.
     scoped_refptr<optimization_guide::OnDeviceModelServiceController>
         on_device_model_service_controller =

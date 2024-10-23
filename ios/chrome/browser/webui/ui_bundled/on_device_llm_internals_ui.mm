@@ -148,7 +148,9 @@ void OnDeviceLlmInternalsHandler::InitAndGenerateResponse(
   if (!on_device_session_) {
     VLOG(1) << "Starting on-device session";
     optimization_guide::SessionConfigParams config_params =
-        optimization_guide::SessionConfigParams{};
+        optimization_guide::SessionConfigParams{
+            .execution_mode = optimization_guide::SessionConfigParams::
+                ExecutionMode::kOnDeviceOnly};
     on_device_session_ = service->StartSession(
         optimization_guide::ModelBasedCapabilityKey::kPromptApi, config_params);
 
