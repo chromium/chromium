@@ -375,7 +375,7 @@ BASE_FEATURE(kOmniboxDeleteOldShortcuts, "OmniboxDeleteOldShortcuts", DISABLED);
 // Enable the Elegant Text Height attribute on the UrlBar.
 // This attribute increases line height by up to 60% to accommodate certain
 // scripts (e.g. Burmese).
-BASE_FEATURE(kOmniboxElegantTextHeight, "OmniboxElegantTextHeight", DISABLED);
+BASE_FEATURE(kOmniboxElegantTextHeight, "OmniboxElegantTextHeight", ENABLED);
 
 // Whether the contents of the omnibox should be retained on focus as opposed to
 // being cleared. When this feature flag is enabled and the omnibox contents are
