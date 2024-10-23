@@ -50,10 +50,10 @@ void BluetoothRemoteGATTCharacteristic::SetValue(DOMDataView* dom_data_view) {
 }
 
 void BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged(
-    const Vector<uint8_t>& value) {
+    base::span<const uint8_t> value) {
   if (!GetGatt()->connected())
     return;
-  SetValue(BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value));
+  SetValue(BluetoothRemoteGATTUtils::ConvertSpanToDataView(value));
   if (notification_registration_in_progress()) {
     // Save event and value to be dispatched after notification is registered.
     deferred_value_change_data_.push_back(
@@ -92,7 +92,7 @@ void BluetoothRemoteGATTCharacteristic::AddedEventListener(
 void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
     ScriptPromiseResolver<NotShared<DOMDataView>>* resolver,
     mojom::blink::WebBluetoothResult result,
-    const std::optional<Vector<uint8_t>>& value) {
+    base::span<const uint8_t> value) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
@@ -105,9 +105,8 @@ void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    DCHECK(value);
     DOMDataView* dom_data_view =
-        BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value.value());
+        BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
     SetValue(dom_data_view);
     if (notification_registration_in_progress()) {
       // Save event to be dispatched after notification is registered.
@@ -161,7 +160,7 @@ BluetoothRemoteGATTCharacteristic::readValue(ScriptState* script_state,
 
 void BluetoothRemoteGATTCharacteristic::WriteValueCallback(
     ScriptPromiseResolver<IDLUndefined>* resolver,
-    const Vector<uint8_t>& value,
+    DOMDataView* new_value,
     mojom::blink::WebBluetoothResult result) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
@@ -175,7 +174,7 @@ void BluetoothRemoteGATTCharacteristic::WriteValueCallback(
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    SetValue(BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value));
+    SetValue(new_value);
     resolver->Resolve();
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
@@ -217,9 +216,9 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
     return EmptyPromise();
   }
 
-  // Let valueVector be a copy of the bytes held by value.
-  Vector<uint8_t> value_vector;
-  value_vector.AppendSpan(value);
+  // Let newValue be a copy of the bytes held by value.
+  DOMDataView* new_value =
+      BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
@@ -228,10 +227,10 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
 
   mojom::blink::WebBluetoothService* service = GetBluetooth()->Service();
   service->RemoteCharacteristicWriteValue(
-      characteristic_->instance_id, value_vector, write_type,
+      characteristic_->instance_id, value, write_type,
       WTF::BindOnce(&BluetoothRemoteGATTCharacteristic::WriteValueCallback,
                     WrapPersistent(this), WrapPersistent(resolver),
-                    value_vector));
+                    WrapPersistent(new_value)));
 
   return promise;
 }

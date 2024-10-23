@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "device/bluetooth/public/mojom/uuid.mojom";
+import "mojo/public/mojom/base/read_only_buffer.mojom";
 
 // Bluetooth Terminology:
 //
@@ -286,11 +287,11 @@ interface WebBluetoothService {
   // |characteristic_instance_id|. If the value is successfully read the
   // callback will be run with WebBluetoothResult::SUCCESS and the
   // characteristic's value. If the value is not successfully read the
-  // callback with be run with the corresponding error and nullptr for value.
+  // callback with be run with the corresponding error and an empty value.
   RemoteCharacteristicReadValue(
     string characteristic_instance_id) => (
     WebBluetoothResult result,
-    array<uint8>? value);
+    mojo_base.mojom.ReadOnlyBuffer value);
 
   // Writes a value to the characteristic identified by
   // |characteristic_instance_id|. The callback is run with
@@ -298,7 +299,7 @@ interface WebBluetoothService {
   // written.
   RemoteCharacteristicWriteValue(
     string characteristic_instance_id,
-    array<uint8> value,
+    mojo_base.mojom.ReadOnlyBuffer value,
     WebBluetoothWriteType write_type) => (WebBluetoothResult result);
 
   // Starts notifications for the characteristic identified by
@@ -331,11 +332,11 @@ interface WebBluetoothService {
   // |descriptor_instance_id|. If the value is successfully read the callback
   // will be run with WebBluetoothResult::SUCCESS and the descriptor's value. If
   // the value is not successfully read the callback with be run with the
-  // corresponding error and nullptr for value
+  // corresponding error and an empty value.
   RemoteDescriptorReadValue(
     string descriptor_instance_id) => (
     WebBluetoothResult result,
-    array<uint8>? value);
+    mojo_base.mojom.ReadOnlyBuffer value);
 
   // Writes a value to the descriptor identified by
   // |descriptor_instance_id|. The callback is run with
@@ -343,7 +344,7 @@ interface WebBluetoothService {
   // written.
   RemoteDescriptorWriteValue(
     string descriptor_instance_id,
-    array<uint8> value) => (WebBluetoothResult result);
+    mojo_base.mojom.ReadOnlyBuffer value) => (WebBluetoothResult result);
 
   // Starts scanning for low energy devices.
   RequestScanningStart(
@@ -371,7 +372,7 @@ interface WebBluetoothServerClient {
 // events.
 interface WebBluetoothCharacteristicClient {
   // Called when we receive a notification for the characteristic.
-  RemoteCharacteristicValueChanged(array<uint8> value);
+  RemoteCharacteristicValueChanged(mojo_base.mojom.ReadOnlyBuffer value);
 };
 
 // Classes that implement this interface will be notified of device

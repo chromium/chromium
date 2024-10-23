@@ -26,7 +26,7 @@ BluetoothRemoteGATTDescriptor::BluetoothRemoteGATTDescriptor(
 void BluetoothRemoteGATTDescriptor::ReadValueCallback(
     ScriptPromiseResolver<NotShared<DOMDataView>>* resolver,
     mojom::blink::WebBluetoothResult result,
-    const std::optional<Vector<uint8_t>>& value) {
+    base::span<const uint8_t> value) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
@@ -39,9 +39,8 @@ void BluetoothRemoteGATTDescriptor::ReadValueCallback(
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    DCHECK(value);
     DOMDataView* dom_data_view =
-        BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value.value());
+        BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
     value_ = dom_data_view;
     resolver->Resolve(NotShared(dom_data_view));
   } else {
@@ -81,7 +80,7 @@ ScriptPromise<NotShared<DOMDataView>> BluetoothRemoteGATTDescriptor::readValue(
 
 void BluetoothRemoteGATTDescriptor::WriteValueCallback(
     ScriptPromiseResolver<IDLUndefined>* resolver,
-    const Vector<uint8_t>& value,
+    DOMDataView* new_value,
     mojom::blink::WebBluetoothResult result) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
@@ -96,7 +95,7 @@ void BluetoothRemoteGATTDescriptor::WriteValueCallback(
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    value_ = BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value);
+    value_ = new_value;
     resolver->Resolve();
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
@@ -134,19 +133,19 @@ ScriptPromise<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
     return EmptyPromise();
   }
 
-  // Let valueVector be a copy of the bytes held by value.
-  Vector<uint8_t> value_vector;
-  value_vector.AppendSpan(value);
+  // Let newValue be a copy of the bytes held by value.
+  DOMDataView* new_value =
+      BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
   GetBluetooth()->Service()->RemoteDescriptorWriteValue(
-      descriptor_->instance_id, value_vector,
+      descriptor_->instance_id, value,
       WTF::BindOnce(&BluetoothRemoteGATTDescriptor::WriteValueCallback,
                     WrapPersistent(this), WrapPersistent(resolver),
-                    value_vector));
+                    WrapPersistent(new_value)));
 
   return promise;
 }

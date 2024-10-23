@@ -1808,7 +1808,10 @@ mojom("web_bluetooth_mojo_bindings") {
 
   sources = [ "bluetooth/web_bluetooth.mojom" ]
 
-  public_deps = [ "//device/bluetooth/public/mojom" ]
+  public_deps = [
+    "//device/bluetooth/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
 
   shared_cpp_typemaps = [
     {

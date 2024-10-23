@@ -56,7 +56,7 @@ class BluetoothRemoteGATTCharacteristic final
 
   // mojom::blink::WebBluetoothCharacteristicClient:
   void RemoteCharacteristicValueChanged(
-      const WTF::Vector<uint8_t>& value) override;
+      base::span<const uint8_t> value) override;
 
   // ExecutionContextLifecycleObserver interface.
   void ContextDestroyed() override {}
@@ -141,9 +141,9 @@ class BluetoothRemoteGATTCharacteristic final
 
   void ReadValueCallback(ScriptPromiseResolver<NotShared<DOMDataView>>*,
                          mojom::blink::WebBluetoothResult,
-                         const std::optional<Vector<uint8_t>>& value);
+                         base::span<const uint8_t> value);
   void WriteValueCallback(ScriptPromiseResolver<IDLUndefined>*,
-                          const Vector<uint8_t>& value,
+                          DOMDataView* new_value,
                           mojom::blink::WebBluetoothResult);
 
   // Callback for startNotifictions/stopNotifications.
