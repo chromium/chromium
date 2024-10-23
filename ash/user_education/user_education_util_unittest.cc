@@ -18,7 +18,7 @@
 #include "ash/test/test_widget_builder.h"
 #include "ash/user_education/user_education_types.h"
 #include "components/account_id/account_id.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_tracker.h"

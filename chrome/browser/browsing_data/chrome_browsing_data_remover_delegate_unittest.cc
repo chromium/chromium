@@ -220,7 +220,7 @@
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #else
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -1479,9 +1479,9 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        ClearUserEducationSessionHistory) {
-  auto& storage_service = static_cast<BrowserFeaturePromoStorageService&>(
+  auto& storage_service = static_cast<BrowserUserEducationStorageService&>(
       UserEducationServiceFactory::GetForBrowserContext(GetProfile())
-          ->feature_promo_storage_service());
+          ->user_education_storage_service());
   RecentSessionData data;
   data.enabled_time = base::Time::Now() - base::Days(90);
   data.recent_session_start_times = {base::Time::Now(),

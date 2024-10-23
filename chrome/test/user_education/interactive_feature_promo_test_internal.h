@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -20,8 +21,8 @@
 #include "chrome/test/user_education/interactive_feature_promo_test_common.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/test/feature_promo_session_test_util.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/test/user_education_session_test_util.h"
 #include "content/public/browser/browser_context.h"
 
 namespace internal {
@@ -59,7 +60,7 @@ class InteractiveFeaturePromoTestPrivate
     ~ProfileData();
 
     raw_ptr<MockTracker> mock_tracker = nullptr;
-    std::unique_ptr<user_education::test::FeaturePromoSessionTestUtil>
+    std::unique_ptr<user_education::test::UserEducationSessionTestUtil>
         test_util;
   };
 

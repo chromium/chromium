@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/help_bubble_factory.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"

@@ -64,14 +64,14 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/user_education/common/feature_promo_handle.h"
-#include "components/user_education/common/feature_promo_registry.h"
-#include "components/user_education/common/feature_promo_specification.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
-#include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/common/new_badge_specification.h"
-#include "components/user_education/common/tutorial_description.h"
-#include "components/user_education/common/tutorial_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_handle.h"
+#include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/new_badge/new_badge_specification.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_metadata.h"
 #include "components/user_education/views/help_bubble_delegate.h"
@@ -1650,8 +1650,8 @@ std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile),
       &user_education_service->feature_promo_registry(),
       &user_education_service->help_bubble_factory_registry(),
-      &user_education_service->feature_promo_storage_service(),
-      &user_education_service->feature_promo_session_policy(),
+      &user_education_service->user_education_storage_service(),
+      &user_education_service->user_education_session_policy(),
       &user_education_service->tutorial_service(),
       &user_education_service->product_messaging_controller());
 }

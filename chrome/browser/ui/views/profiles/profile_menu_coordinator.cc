@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/profiles/incognito_menu_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"

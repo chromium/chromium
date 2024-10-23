@@ -13,9 +13,9 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/user_education/common/feature_promo_data.h"
-#include "components/user_education/common/feature_promo_session_manager.h"
-#include "components/user_education/common/feature_promo_storage_service.h"
+#include "components/user_education/common/session/user_education_session_manager.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_storage_service.h"
 
 namespace user_education {
 
@@ -98,8 +98,8 @@ ProductMessagingController::ProductMessagingController() = default;
 ProductMessagingController::~ProductMessagingController() = default;
 
 void ProductMessagingController::Init(
-    FeaturePromoSessionProvider& session_provider,
-    FeaturePromoStorageService& storage_service) {
+    UserEducationSessionProvider& session_provider,
+    UserEducationStorageService& storage_service) {
   storage_service_ = &storage_service;
   if (session_provider.GetNewSessionSinceStartup()) {
     storage_service_->ResetProductMessagingData();

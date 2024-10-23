@@ -9,10 +9,10 @@
 
 #include "base/feature_list.h"
 #include "base/types/pass_key.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_handle.h"
-#include "components/user_education/common/feature_promo_result.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_handle.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 
 class AppMenuButton;
 class BrowserFeaturePromoController;

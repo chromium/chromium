@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_USER_EDUCATION_BROWSER_TUTORIAL_SERVICE_H_
 #define CHROME_BROWSER_USER_EDUCATION_BROWSER_TUTORIAL_SERVICE_H_
 
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 
 namespace user_education {
 class TutorialRegistry;

@@ -12,8 +12,8 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_common.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_internal.h"
-#include "components/user_education/common/feature_promo_result.h"
-#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 
 // API class that provides both base browser Kombucha functionality and
 // additional logic for testing User Education experiences.

@@ -31,9 +31,9 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
-#include "components/user_education/common/feature_promo_registry.h"
-#include "components/user_education/common/feature_promo_specification.h"
-#include "components/user_education/common/tutorial_identifier.h"
+#include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -634,7 +634,7 @@ class BrowserUserEducationServiceNewBadgeBrowserTest
     // grace period.
     auto& storage_service =
         UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
-            ->feature_promo_storage_service();
+            ->user_education_storage_service();
     storage_service.set_profile_creation_time_for_testing(
         storage_service.GetCurrentTime() - base::Days(365));
   }

@@ -11,8 +11,8 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "components/user_education/common/feature_promo_session_manager.h"
-#include "components/user_education/common/feature_promo_storage_service.h"
+#include "components/user_education/common/session/user_education_session_manager.h"
+#include "components/user_education/common/user_education_storage_service.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace user_education {
@@ -100,8 +100,8 @@ class ProductMessagingController final {
 
   // Register the session provider which is used to clear the set of shown
   // notices and the storage service used to retrieve shown promos.
-  void Init(FeaturePromoSessionProvider& session_provider,
-            FeaturePromoStorageService& storage_service);
+  void Init(UserEducationSessionProvider& session_provider,
+            UserEducationStorageService& storage_service);
 
   // Returns whether there are any notices queued or showing. This can be used
   // to prevent other, lower-priority User Education experiences from showing.
@@ -182,7 +182,7 @@ class ProductMessagingController final {
   std::string DumpData() const;
 
   RequiredNoticeId current_notice_;
-  raw_ptr<FeaturePromoStorageService> storage_service_ = nullptr;
+  raw_ptr<UserEducationStorageService> storage_service_ = nullptr;
   std::map<RequiredNoticeId, RequiredNoticeData> pending_notices_;
   base::CallbackListSubscription session_subscription_;
   base::WeakPtrFactory<ProductMessagingController> weak_ptr_factory_{this};

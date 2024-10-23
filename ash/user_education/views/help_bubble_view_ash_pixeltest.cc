@@ -13,7 +13,7 @@
 #include "ash/user_education/views/help_bubble_view_ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"

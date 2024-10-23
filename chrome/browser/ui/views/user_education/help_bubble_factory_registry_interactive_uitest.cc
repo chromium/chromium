@@ -20,7 +20,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_tracker.h"

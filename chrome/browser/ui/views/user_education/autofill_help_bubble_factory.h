@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_AUTOFILL_HELP_BUBBLE_FACTORY_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_AUTOFILL_HELP_BUBBLE_FACTORY_H_
 
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "ui/base/interaction/element_tracker.h"

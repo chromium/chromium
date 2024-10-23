@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

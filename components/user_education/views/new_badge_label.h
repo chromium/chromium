@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/menus/simple_menu_model.h"

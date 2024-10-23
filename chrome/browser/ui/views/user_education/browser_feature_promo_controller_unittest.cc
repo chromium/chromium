@@ -42,22 +42,22 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_data.h"
-#include "components/user_education/common/feature_promo_handle.h"
-#include "components/user_education/common/feature_promo_registry.h"
-#include "components/user_education/common/feature_promo_result.h"
-#include "components/user_education/common/feature_promo_specification.h"
-#include "components/user_education/common/feature_promo_storage_service.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_handle.h"
+#include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/product_messaging_controller.h"
-#include "components/user_education/common/tutorial.h"
-#include "components/user_education/common/tutorial_description.h"
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/tutorial/tutorial.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/common/user_education_class_properties.h"
+#include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_features.h"
-#include "components/user_education/test/feature_promo_session_test_util.h"
+#include "components/user_education/common/user_education_storage_service.h"
+#include "components/user_education/test/user_education_session_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -121,10 +121,8 @@ using user_education::FeaturePromoHandle;
 using user_education::FeaturePromoPolicyData;
 using user_education::FeaturePromoRegistry;
 using user_education::FeaturePromoResult;
-using user_education::FeaturePromoSessionData;
 using user_education::FeaturePromoSpecification;
 using user_education::FeaturePromoStatus;
-using user_education::FeaturePromoStorageService;
 using user_education::HelpBubble;
 using user_education::HelpBubbleArrow;
 using user_education::HelpBubbleFactoryRegistry;
@@ -132,6 +130,8 @@ using user_education::HelpBubbleParams;
 using user_education::HelpBubbleView;
 using user_education::HelpBubbleViews;
 using user_education::TutorialDescription;
+using user_education::UserEducationSessionData;
+using user_education::UserEducationStorageService;
 
 using BubbleCloseCallback = BrowserFeaturePromoController::BubbleCloseCallback;
 using ShowPromoCallback =
@@ -182,7 +182,7 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
 
     // Ensure that the new profile grace period has ended by default.
     auto& storage_service =
-        user_education_service->feature_promo_storage_service();
+        user_education_service->user_education_storage_service();
     storage_service.set_profile_creation_time_for_testing(
         storage_service.GetCurrentTime() - base::Days(365));
 
@@ -403,7 +403,7 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
     return params;
   }
 
-  FeaturePromoStorageService* storage_service() {
+  UserEducationStorageService* storage_service() {
     return controller_->storage_service();
   }
 
@@ -2086,17 +2086,17 @@ class BrowserFeaturePromoControllerPriorityTest
     return std::move(
         WithView(kBrowserViewElementId, [this, since_session_start,
                                          idle_time](BrowserView* browser_view) {
-          FeaturePromoSessionData session_data;
+          UserEducationSessionData session_data;
           session_data.start_time = kSessionStartTime;
           session_data.most_recent_active_time =
               kSessionStartTime + since_session_start;
           now_ = session_data.most_recent_active_time + idle_time;
           FeaturePromoPolicyData policy_data;
           test_util_ = std::make_unique<
-              user_education::test::FeaturePromoSessionTestUtil>(
+              user_education::test::UserEducationSessionTestUtil>(
               UserEducationServiceFactory::GetForBrowserContext(
                   browser_view->GetProfile())
-                  ->feature_promo_session_manager(),
+                  ->user_education_session_manager(),
               session_data, policy_data, session_data.most_recent_active_time,
               now_);
         }).SetDescription("ResetSessionData"));
@@ -2159,7 +2159,8 @@ class BrowserFeaturePromoControllerPriorityTest
              user_education::features::GetSnoozeDuration());
   }
 
-  std::unique_ptr<user_education::test::FeaturePromoSessionTestUtil> test_util_;
+  std::unique_ptr<user_education::test::UserEducationSessionTestUtil>
+      test_util_;
   base::Time now_;
 };
 

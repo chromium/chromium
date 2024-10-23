@@ -17,7 +17,7 @@
 #include "chrome/test/interaction/feature_engagement_initialized_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"

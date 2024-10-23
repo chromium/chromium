@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_LOW_USAGE_PROMO_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_LOW_USAGE_PROMO_H_
 
-#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 
 class Profile;
 

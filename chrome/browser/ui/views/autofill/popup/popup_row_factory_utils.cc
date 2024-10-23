@@ -48,7 +48,7 @@
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/views/new_badge_label.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"

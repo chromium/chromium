@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
-#include "components/user_education/common/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace autofill {

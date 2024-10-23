@@ -12,7 +12,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/views/help_bubble_view_ash_test_base.h"
 #include "ash/wm/window_util.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

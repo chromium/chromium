@@ -186,7 +186,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -611,7 +611,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // Clear any stored User Education session data. Note that we can't clear a
     // specific date range, as this is used for longitudinal metrics reporting,
     // so selectively deleting entries would make the telemetry invalid.
-    BrowserFeaturePromoStorageService::ClearUsageHistory(profile_);
+    BrowserUserEducationStorageService::ClearUsageHistory(profile_);
 #endif
 
     // Cleared for DATA_TYPE_HISTORY, DATA_TYPE_COOKIES and DATA_TYPE_PASSWORDS.

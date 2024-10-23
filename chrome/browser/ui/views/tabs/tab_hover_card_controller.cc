@@ -30,7 +30,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "ui/events/event.h"

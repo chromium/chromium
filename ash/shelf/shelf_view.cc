@@ -65,7 +65,7 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/user_education/common/events.h"
+#include "components/user_education/common/user_education_events.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"

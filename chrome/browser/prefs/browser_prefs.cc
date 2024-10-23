@@ -100,7 +100,7 @@
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
@@ -2142,7 +2142,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #else  // BUILDFLAG(IS_ANDROID)
   bookmarks_webui::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
-  BrowserFeaturePromoStorageService::RegisterProfilePrefs(registry);
+  BrowserUserEducationStorageService::RegisterProfilePrefs(registry);
   captions::LiveTranslateController::RegisterProfilePrefs(registry);
   CartService::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);

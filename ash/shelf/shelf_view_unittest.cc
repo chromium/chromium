@@ -71,7 +71,7 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_education/common/events.h"
+#include "components/user_education/common/user_education_events.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"

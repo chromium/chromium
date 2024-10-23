@@ -46,7 +46,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
-#include "components/user_education/common/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"

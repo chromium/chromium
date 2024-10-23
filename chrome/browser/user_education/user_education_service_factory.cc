@@ -12,12 +12,12 @@
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/user_education/common/feature_promo_idle_observer.h"
-#include "components/user_education/common/feature_promo_idle_policy.h"
-#include "components/user_education/common/feature_promo_session_manager.h"
+#include "components/user_education/common/session/user_education_idle_observer.h"
+#include "components/user_education/common/session/user_education_idle_policy.h"
+#include "components/user_education/common/session/user_education_session_manager.h"
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -27,12 +27,12 @@
 namespace {
 
 // Idle observer that doesn't do anything.
-class StubIdleObserver : public user_education::FeaturePromoIdleObserver {
+class StubIdleObserver : public user_education::UserEducationIdleObserver {
  public:
   StubIdleObserver() = default;
   ~StubIdleObserver() override = default;
 
-  // FeaturePromoIdleObserver:
+  // UserEducationIdleObserver:
   std::optional<base::Time> MaybeGetNewLastActiveTime() const override {
     return std::nullopt;
   }
@@ -42,7 +42,7 @@ class StubIdleObserver : public user_education::FeaturePromoIdleObserver {
 
 // These are found in chrome/browser/ui/user_education, so extern the factory
 // methods to create the necessary objects.
-extern std::unique_ptr<user_education::FeaturePromoIdleObserver>
+extern std::unique_ptr<user_education::UserEducationIdleObserver>
 CreatePollingIdleObserver();
 extern std::unique_ptr<RecentSessionObserver> CreateRecentSessionObserver(
     Profile& profile);
@@ -87,15 +87,15 @@ UserEducationServiceFactory::BuildServiceInstanceForBrowserContextImpl(
 
   // Create the user education service.
   auto result = std::make_unique<UserEducationService>(
-      std::make_unique<BrowserFeaturePromoStorageService>(profile),
+      std::make_unique<BrowserUserEducationStorageService>(profile),
       ProfileAllowsUserEducation(profile));
 
   // Set up the session manager.
-  result->feature_promo_session_manager().Init(
-      &result->feature_promo_storage_service(),
+  result->user_education_session_manager().Init(
+      &result->user_education_storage_service(),
       disable_idle_polling ? std::make_unique<StubIdleObserver>()
                            : CreatePollingIdleObserver(),
-      std::make_unique<user_education::FeaturePromoIdlePolicy>());
+      std::make_unique<user_education::UserEducationIdlePolicy>());
 
   // Possibly install a session observer. This isn't public, since it's
   // self-contained and mostly for tracking state.

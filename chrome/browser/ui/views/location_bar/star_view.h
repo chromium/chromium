@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_member.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;

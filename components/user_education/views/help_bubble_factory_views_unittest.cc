@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
 #include "ui/base/interaction/element_identifier.h"

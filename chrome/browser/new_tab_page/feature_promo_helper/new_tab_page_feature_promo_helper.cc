@@ -13,7 +13,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/base/ui_base_features.h"
 
 void NewTabPageFeaturePromoHelper::RecordPromoFeatureUsageAndClosePromo(

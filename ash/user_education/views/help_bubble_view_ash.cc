@@ -27,7 +27,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/window.h"

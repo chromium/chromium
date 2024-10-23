@@ -63,7 +63,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_input_event.h"

@@ -23,10 +23,10 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_data.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_features.h"
-#include "components/user_education/test/feature_promo_session_test_util.h"
+#include "components/user_education/test/user_education_session_test_util.h"
 #include "content/public/browser/browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -199,7 +199,7 @@ InteractiveFeaturePromoTestPrivate::CreateUserEducationService(
     auto* profile_data = base::FindOrNull(ptr->profile_data_, profile);
     CHECK(profile_data);
 
-    user_education::FeaturePromoSessionData session_data;
+    user_education::UserEducationSessionData session_data;
     base::Time now = ptr->test_time_.value_or(base::Time::Now());
     switch (ptr->initial_session_state_) {
       case InitialSessionState::kInsideGracePeriod:
@@ -216,8 +216,8 @@ InteractiveFeaturePromoTestPrivate::CreateUserEducationService(
     }
 
     profile_data->test_util =
-        std::make_unique<user_education::test::FeaturePromoSessionTestUtil>(
-            service->feature_promo_session_manager(), session_data,
+        std::make_unique<user_education::test::UserEducationSessionTestUtil>(
+            service->user_education_session_manager(), session_data,
             user_education::FeaturePromoPolicyData(), now, ptr->test_time_);
   }
 

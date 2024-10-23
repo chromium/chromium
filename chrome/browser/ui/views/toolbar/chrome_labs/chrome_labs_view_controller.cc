@@ -33,7 +33,7 @@
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

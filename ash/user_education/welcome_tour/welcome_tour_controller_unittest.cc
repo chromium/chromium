@@ -50,7 +50,7 @@
 #include "chromeos/constants/devicetype.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/user_education/common/tutorial_description.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

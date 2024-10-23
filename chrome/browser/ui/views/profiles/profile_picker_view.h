@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"

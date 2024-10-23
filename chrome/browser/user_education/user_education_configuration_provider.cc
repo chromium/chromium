@@ -8,8 +8,8 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "components/feature_engagement/public/configuration.h"
-#include "components/user_education/common/feature_promo_registry.h"
-#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/user_education_features.h"
 
 namespace {

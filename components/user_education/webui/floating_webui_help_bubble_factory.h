@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_USER_EDUCATION_WEBUI_FLOATING_WEBUI_HELP_BUBBLE_FACTORY_H_
 #define COMPONENTS_USER_EDUCATION_WEBUI_FLOATING_WEBUI_HELP_BUBBLE_FACTORY_H_
 
-#include "components/user_education/common/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/webui/help_bubble_webui.h"

@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/flags_ui/feature_entry.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/views/new_badge_label.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "ui/base/l10n/l10n_util.h"

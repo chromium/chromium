@@ -10,9 +10,9 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "components/user_education/common/feature_promo_data.h"
-#include "components/user_education/test/feature_promo_session_mocks.h"
-#include "components/user_education/test/test_feature_promo_storage_service.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/test/test_user_education_storage_service.h"
+#include "components/user_education/test/user_education_session_mocks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_education {
@@ -71,10 +71,10 @@ class ProductMessagingControllerTest : public testing::Test {
   }
 
   ProductMessagingController& controller() { return controller_; }
-  test::TestFeaturePromoSessionProvider& session_provider() {
+  test::TestUserEducationSessionProvider& session_provider() {
     return session_provider_;
   }
-  test::TestFeaturePromoStorageService& storage_service() {
+  test::TestUserEducationStorageService& storage_service() {
     return storage_service_;
   }
 
@@ -87,8 +87,8 @@ class ProductMessagingControllerTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  test::TestFeaturePromoSessionProvider session_provider_{false};
-  test::TestFeaturePromoStorageService storage_service_;
+  test::TestUserEducationSessionProvider session_provider_{false};
+  test::TestUserEducationStorageService storage_service_;
   ProductMessagingController controller_;
 };
 
@@ -158,7 +158,7 @@ TEST_F(ProductMessagingControllerTest, ClearsOnNewSession) {
 
 TEST_F(ProductMessagingControllerTest, ClearsOnNewSessionAtProgramStart) {
   ProductMessagingController controller;
-  test::TestFeaturePromoStorageService storage_service;
+  test::TestUserEducationStorageService storage_service;
   ProductMessagingData data;
   data.shown_notices.insert(kNoticeId1.GetName());
   data.shown_notices.insert(kNoticeId2.GetName());
@@ -166,7 +166,7 @@ TEST_F(ProductMessagingControllerTest, ClearsOnNewSessionAtProgramStart) {
   EXPECT_FALSE(
       storage_service.ReadProductMessagingData().shown_notices.empty());
 
-  test::TestFeaturePromoSessionProvider session_provider(true);
+  test::TestUserEducationSessionProvider session_provider(true);
   controller.Init(session_provider, storage_service);
 
   EXPECT_TRUE(storage_service.ReadProductMessagingData().shown_notices.empty());
@@ -175,7 +175,7 @@ TEST_F(ProductMessagingControllerTest, ClearsOnNewSessionAtProgramStart) {
 TEST_F(ProductMessagingControllerTest,
        DoesNotClearIfNoNewSessionAtProgramStart) {
   ProductMessagingController controller;
-  test::TestFeaturePromoStorageService storage_service;
+  test::TestUserEducationStorageService storage_service;
   ProductMessagingData data;
   data.shown_notices.insert(kNoticeId1.GetName());
   data.shown_notices.insert(kNoticeId2.GetName());
@@ -183,7 +183,7 @@ TEST_F(ProductMessagingControllerTest,
   EXPECT_FALSE(
       storage_service.ReadProductMessagingData().shown_notices.empty());
 
-  test::TestFeaturePromoSessionProvider session_provider(false);
+  test::TestUserEducationSessionProvider session_provider(false);
   controller.Init(session_provider, storage_service);
 
   EXPECT_FALSE(
