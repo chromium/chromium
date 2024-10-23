@@ -17,6 +17,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 class PasswordSettingsViewControllerTest : public PlatformTest {
@@ -151,6 +153,23 @@ TEST_F(PasswordSettingsViewControllerTest,
       GetTableViewItem(/*section=*/2, /*item=*/1));
   EXPECT_NSEQ(changeGPMPinButton.text,
               l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN));
+}
+
+TEST_F(PasswordSettingsViewControllerTest,
+       CallsPresentationDelegateOnGPMPinButtonTap) {
+  id<PasswordSettingsConsumer> consumer =
+      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
+  [consumer setupChangeGPMPinButton];
+
+  id mockPresentationDelegate =
+      OCMProtocolMock(@protocol(PasswordSettingsPresentationDelegate));
+  controller().presentationDelegate = mockPresentationDelegate;
+
+  OCMStub([mockPresentationDelegate showChangeGPMPinDialog]);
+  NSIndexPath* pinButtonIndexPath = [NSIndexPath indexPathForRow:1 inSection:2];
+  [controller() tableView:controller().tableView
+      didSelectRowAtIndexPath:pinButtonIndexPath];
+  EXPECT_OCMOCK_VERIFY(mockPresentationDelegate);
 }
 
 TEST_F(PasswordSettingsViewControllerTest,

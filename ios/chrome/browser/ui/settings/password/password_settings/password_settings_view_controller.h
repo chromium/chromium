@@ -34,6 +34,9 @@
 // encryption.
 - (void)showOnDeviceEncryptionHelp;
 
+// Method invoked when the user has tapped "Change PIN" button.
+- (void)showChangeGPMPinDialog;
+
 @end
 
 // ViewController used to present settings and infrequently-used actions

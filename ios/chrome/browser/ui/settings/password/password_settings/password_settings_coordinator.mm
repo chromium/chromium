@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_bulk_move_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_export_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
@@ -159,6 +161,9 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 
   // For recording visits after successful authentication.
   IOSPasswordManagerVisitsRecorder* _visitsRecorder;
+
+  // Identity of the user. Can be nil if there is no primary account.
+  id<SystemIdentity> _identity;
 }
 
 #pragma mark - ChromeCoordinator
@@ -177,7 +182,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           IOSPasskeyModelFactory::GetForProfile(profile));
 
-  id<SystemIdentity> identity =
+  _identity =
       AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin);
   _mediator = [[PasswordSettingsMediator alloc]
@@ -192,7 +197,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
                                             profile)
               trustedVaultClientBackend:TrustedVaultClientBackendFactory::
                                             GetForProfile(profile)
-                               identity:identity];
+                               identity:_identity];
 
   _dispatcher = static_cast<id<ApplicationCommands>>(
       self.browser->GetCommandDispatcher());
@@ -343,6 +348,19 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   GURL URL = GURL(kOnDeviceEncryptionLearnMoreURL);
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [_dispatcher closePresentedViewsAndOpenURL:command];
+}
+
+- (void)showChangeGPMPinDialog {
+  __weak __typeof(self) weakSelf = self;
+  TrustedVaultClientBackendFactory::GetForProfile(self.browser->GetProfile())
+      ->UpdateGPMPinForAccount(
+          _identity, trusted_vault::SecurityDomainId::kPasskeys,
+          _settingsNavigationController,
+          password_manager::CreatePasswordManagerTitleView(
+              l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER)),
+          base::BindOnce(^(NSError* error) {
+            [weakSelf updateGPMPinFinishedWithError:error];
+          }));
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate
@@ -685,6 +703,17 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 // Cancels the password export flow.
 - (void)onExportFlowCancelled {
   [_mediator exportFlowCanceled];
+}
+
+// Dismisses the UI presented by `settingsNavigationController` for the GPM Pin
+// update and handles `error` if it is not nil.
+- (void)updateGPMPinFinishedWithError:(NSError*)error {
+  [_settingsNavigationController.topViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+
+  // TODO(crbug.com/358342483): Check with UX how to handle displaying success /
+  // errors.
 }
 
 @end

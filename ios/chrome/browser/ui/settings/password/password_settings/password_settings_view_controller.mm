@@ -344,6 +344,10 @@ bool SyncingWebauthnCredentialsEnabled() {
       [self.presentationDelegate showOnDeviceEncryptionHelp];
       break;
     }
+    case ItemTypeChangeGooglePasswordManagerPinButton: {
+      [self.presentationDelegate showChangeGPMPinDialog];
+      break;
+    }
     case ItemTypeOnDeviceEncryptionOptedInDescription:
     case ItemTypeOnDeviceEncryptionOptInDescription:
     case ItemTypeSavePasswordsSwitch:
