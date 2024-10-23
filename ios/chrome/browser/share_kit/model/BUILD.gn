@@ -39,7 +39,6 @@ source_set("factory") {
     "//ios/chrome/browser/saved_tab_groups/favicon/coordinator",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile:forward",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/share_kit",

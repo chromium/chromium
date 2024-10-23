@@ -18,7 +18,6 @@ source_set("factory") {
   ]
   public_deps = [
     "//base",
-    "//ios/chrome/browser/shared/model/profile:forward",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
   deps = [

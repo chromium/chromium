@@ -9,12 +9,12 @@
 
 #import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 @protocol ApplicationCommands;
-@protocol SettingsCommands;
 class Browser;
+class ProfileIOS;
 @class SceneState;
+@protocol SettingsCommands;
 @class WrangledBrowser;
 
 // Wrangler (a class in need of further refactoring) for handling the creation
