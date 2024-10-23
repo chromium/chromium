@@ -17,24 +17,12 @@
 #import "components/sync/base/features.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/model/data_type_store_service.h"
-#import "components/sync/service/sync_engine_factory.h"
 #import "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/trusted_vault/trusted_vault_service.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
-#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
-#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
-#import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_service_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -46,30 +34,35 @@ bool trusted_vault_synthetic_field_trial_registered = false;
 
 }  // namespace
 
-IOSChromeSyncClient::IOSChromeSyncClient(ProfileIOS* profile)
-    : profile_(profile) {
-  profile_password_store_ = IOSChromeProfilePasswordStoreFactory::GetForProfile(
-      profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  account_password_store_ = IOSChromeAccountPasswordStoreFactory::GetForProfile(
-      profile_, ServiceAccessType::IMPLICIT_ACCESS);
-
-  engine_factory_ = std::make_unique<browser_sync::SyncEngineFactoryImpl>(
-      this,
-      DeviceInfoSyncServiceFactory::GetForProfile(profile_)
-          ->GetDeviceInfoTracker(),
-      DataTypeStoreServiceFactory::GetForProfile(profile_)->GetSyncDataPath());
-}
+IOSChromeSyncClient::IOSChromeSyncClient(
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
+    trusted_vault::TrustedVaultService* trusted_vault_service,
+    syncer::SyncInvalidationsService* sync_invalidations_service,
+    syncer::DeviceInfoSyncService* device_info_sync_service,
+    syncer::DataTypeStoreService* data_type_store_service,
+    supervised_user::SupervisedUserSettingsService*
+        supervised_user_settings_service)
+    : pref_service_(pref_service),
+      identity_manager_(identity_manager),
+      trusted_vault_service_(trusted_vault_service),
+      sync_invalidations_service_(sync_invalidations_service),
+      supervised_user_settings_service_(supervised_user_settings_service),
+      engine_factory_(std::make_unique<browser_sync::SyncEngineFactoryImpl>(
+          this,
+          device_info_sync_service->GetDeviceInfoTracker(),
+          data_type_store_service->GetSyncDataPath())) {}
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}
 
 PrefService* IOSChromeSyncClient::GetPrefService() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return profile_->GetPrefs();
+  return pref_service_;
 }
 
 signin::IdentityManager* IOSChromeSyncClient::GetIdentityManager() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return IdentityManagerFactory::GetForProfile(profile_);
+  return identity_manager_;
 }
 
 base::FilePath IOSChromeSyncClient::GetLocalSyncBackendFolder() {
@@ -78,13 +71,13 @@ base::FilePath IOSChromeSyncClient::GetLocalSyncBackendFolder() {
 
 syncer::SyncInvalidationsService*
 IOSChromeSyncClient::GetSyncInvalidationsService() {
-  return SyncInvalidationsServiceFactory::GetForProfile(profile_);
+  return sync_invalidations_service_;
 }
 
 trusted_vault::TrustedVaultClient*
 IOSChromeSyncClient::GetTrustedVaultClient() {
-  return IOSTrustedVaultServiceFactory::GetForProfile(profile_)
-      ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync);
+  return trusted_vault_service_->GetTrustedVaultClient(
+      trusted_vault::SecurityDomainId::kChromeSync);
 }
 
 scoped_refptr<syncer::ExtensionsActivity>
@@ -97,11 +90,8 @@ syncer::SyncEngineFactory* IOSChromeSyncClient::GetSyncEngineFactory() {
 }
 
 bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForProfile(profile_);
-  if (supervised_user_settings_service) {
-    return supervised_user_settings_service->IsCustomPassphraseAllowed();
+  if (supervised_user_settings_service_) {
+    return supervised_user_settings_service_->IsCustomPassphraseAllowed();
   }
   return true;
 }

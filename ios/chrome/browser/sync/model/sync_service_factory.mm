@@ -164,10 +164,23 @@ syncer::DataTypeController::TypeVector CreateControllers(
 // data.
 constexpr int kMaxSyncedNewTabPageDisplays = 5;
 
+std::unique_ptr<syncer::SyncClient> BuildSyncClient(ProfileIOS* profile) {
+  CHECK(profile);
+
+  return std::make_unique<IOSChromeSyncClient>(
+      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+      IOSTrustedVaultServiceFactory::GetForProfile(profile),
+      SyncInvalidationsServiceFactory::GetForProfile(profile),
+      DeviceInfoSyncServiceFactory::GetForProfile(profile),
+      DataTypeStoreServiceFactory::GetForProfile(profile),
+      SupervisedUserSettingsServiceFactory::GetForProfile(profile));
+}
+
 std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(profile);
+  CHECK(!profile->IsOffTheRecord());
 
   // Always create the GCMProfileService instance such that we can listen to
   // the profile notifications and purge the GCM store when the profile is
@@ -179,7 +192,7 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   ios::AboutSigninInternalsFactory::GetForProfile(profile);
 
   syncer::SyncServiceImpl::InitParams init_params;
-  init_params.sync_client = std::make_unique<IOSChromeSyncClient>(profile);
+  init_params.sync_client = BuildSyncClient(profile);
   init_params.url_loader_factory = profile->GetSharedURLLoaderFactory();
   init_params.network_connection_tracker =
       GetApplicationContext()->GetNetworkConnectionTracker();

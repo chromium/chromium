@@ -9,23 +9,36 @@
 
 #import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
-#import "base/memory/weak_ptr.h"
 #import "components/sync/service/sync_client.h"
-#import "components/trusted_vault/trusted_vault_client.h"
-
-class ProfileIOS;
 
 namespace browser_sync {
 class SyncEngineFactoryImpl;
 }  // namespace browser_sync
 
-namespace password_manager {
-class PasswordStoreInterface;
-}  // namespace password_manager
+namespace supervised_user {
+class SupervisedUserSettingsService;
+}  // namespace supervised_user
+
+namespace syncer {
+class DataTypeStoreService;
+class DeviceInfoSyncService;
+}  // namespace syncer
+
+namespace trusted_vault {
+class TrustedVaultService;
+}  // namespace trusted_vault
 
 class IOSChromeSyncClient : public syncer::SyncClient {
  public:
-  explicit IOSChromeSyncClient(ProfileIOS* profile);
+  IOSChromeSyncClient(
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
+      trusted_vault::TrustedVaultService* trusted_vault_service,
+      syncer::SyncInvalidationsService* sync_invalidations_service,
+      syncer::DeviceInfoSyncService* device_info_sync_service,
+      syncer::DataTypeStoreService* data_type_store_service,
+      supervised_user::SupervisedUserSettingsService*
+          supervised_user_settings_service);
 
   IOSChromeSyncClient(const IOSChromeSyncClient&) = delete;
   IOSChromeSyncClient& operator=(const IOSChromeSyncClient&) = delete;
@@ -49,15 +62,13 @@ class IOSChromeSyncClient : public syncer::SyncClient {
       override;
 
  private:
-  const raw_ptr<ProfileIOS> profile_;
-
-  // The sync engine factory in use by this client.
-  std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
-
-  scoped_refptr<password_manager::PasswordStoreInterface>
-      profile_password_store_;
-  scoped_refptr<password_manager::PasswordStoreInterface>
-      account_password_store_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<trusted_vault::TrustedVaultService> trusted_vault_service_;
+  const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
+  const raw_ptr<supervised_user::SupervisedUserSettingsService>
+      supervised_user_settings_service_;
+  const std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_IOS_CHROME_SYNC_CLIENT_H__
