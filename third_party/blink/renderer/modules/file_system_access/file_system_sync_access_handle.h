@@ -47,7 +47,7 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
                 FileSystemReadWriteOptions* options,
                 ExceptionState&);
 
-  uint64_t write(const AllowSharedBufferSource* buffer,
+  uint64_t write(base::span<const uint8_t> buffer,
                  FileSystemReadWriteOptions* options,
                  ExceptionState&);
 

@@ -37,7 +37,7 @@ class FileSystemAccessIncognitoFileDelegate final
   base::FileErrorOr<int> Read(int64_t offset,
                               base::span<uint8_t> data) override;
   base::FileErrorOr<int> Write(int64_t offset,
-                               const base::span<uint8_t> data) override;
+                               base::span<const uint8_t> data) override;
   base::FileErrorOr<int64_t> GetLength() override;
   base::FileErrorOr<bool> SetLength(int64_t new_length) override;
   bool Flush() override;
