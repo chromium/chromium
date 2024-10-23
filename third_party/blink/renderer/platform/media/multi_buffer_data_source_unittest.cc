@@ -1056,6 +1056,66 @@ TEST_F(MultiBufferDataSourceTest, Http_ShareData) {
   Stop();
 }
 
+TEST_F(MultiBufferDataSourceTest, Http_ShareData_AtLeastOneProgress) {
+  // Initialize the first provider.
+  Initialize(kHttpUrl, true, kFileSize);
+  ASSERT_EQ(test_data_providers.size(), 1u);
+  auto* provider1 = *test_data_providers.begin();
+
+  // Initialize the second provider before the first receives any response.
+  StrictMock<MockBufferedDataSourceHost> host2;
+  media_log_ = std::make_unique<NiceMock<media::MockMediaLog>>();
+  MockMultiBufferDataSource source2(
+      task_runner_,
+      url_index_.GetByUrl(GURL(kHttpUrl), UrlData::CORS_UNSPECIFIED,
+                          UrlData::kNormal),
+      media_log_.get(), &host2);
+  source2.SetPreload(preload_);
+  source2.Initialize(base::DoNothing());
+
+  ASSERT_EQ(test_data_providers.size(), 2u);
+  TestMultiBufferDataProvider* provider2 = nullptr;
+  for (auto* provider : test_data_providers) {
+    if (provider != provider1) {
+      provider2 = provider;
+      break;
+    }
+  }
+  ASSERT_TRUE(provider2);
+
+  // Respond to the first provider w/ a response and data.
+  const auto total_bytes = response_generator_->content_length();
+  EXPECT_CALL(host_, SetTotalBytes(total_bytes));
+  provider1->DidReceiveResponse(response_generator_->Generate206(0));
+  EXPECT_CALL(host_, AddBufferedByteRange(0, testing::Ge(total_bytes)))
+      .Times(testing::AtLeast(1));
+
+  auto data = base::HeapArray<char>::Uninit(total_bytes);
+  base::ranges::fill(data, 0xA5);  // Arbitrary non-zero value.
+  provider1->DidReceiveData(data);
+  provider1->DidFinishLoading();
+  task_environment_.RunUntilIdle();
+
+  // Now respond to the second provider, it should merge with the first since
+  // it can share the previous data. Note: MultiBuffer provides byte ranges in
+  // terms of block units, so the buffered range may exceed total bytes.
+  EXPECT_CALL(host2, AddBufferedByteRange(0, testing::Ge(total_bytes)));
+  EXPECT_CALL(host2, SetTotalBytes(total_bytes));
+  provider2->DidReceiveResponse(response_generator_->Generate206(0));
+  provider1 = provider2 = nullptr;  // May have been released at this point.
+
+  EXPECT_CALL(*this, ReadCallback(kDataSize));
+  ReadAt(0, kDataSize);
+  task_environment_.RunUntilIdle();
+
+  // Expectations should be met before Stop() is called.
+  testing::Mock::VerifyAndClear(&host_);
+  testing::Mock::VerifyAndClear(&host2);
+
+  data_source_->Stop();
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(MultiBufferDataSourceTest, Http_Read_Seek) {
   InitializeWith206Response();
 
@@ -1625,7 +1685,7 @@ TEST_F(MultiBufferDataSourceTest, PreserveCachingModeAfterRedirect) {
     EXPECT_EQ(data_source->downloading(), false);
     EXPECT_CALL(url_index_, NotifyNewUrlData(redir, _, _)).Times(0);
     data_provider()->WillFollowRedirect(url, redirect_response);
-    EXPECT_CALL(host_, AddBufferedByteRange(0, _));
+    EXPECT_CALL(host_, AddBufferedByteRange(0, _)).Times(testing::AtLeast(1));
     EXPECT_CALL(host_, SetTotalBytes(kDataSize));
     Respond(data_response);
     ReceiveData(kDataSize);

@@ -268,6 +268,11 @@ void MultiBufferDataSource::OnRedirected(
     }
   }
 
+  // The "redirect" may just be `reader_` being merged into an existing UrlData,
+  // in this case we need to ensure we report the buffered byte ranges from the
+  // existing UrlData instance.
+  UpdateProgress();
+
   if (redirect_cb_)
     redirect_cb_.Run();
 }
