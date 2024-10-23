@@ -410475,6 +410475,10 @@
      "cbf27e2812216b03267171463ee15736feab4565",
      []
     ],
+    "TrustedTypePolicyFactory-getPropertyType.tentative-expected.txt": [
+     "55f9e1acc0e5959eedcd9366105048d233a23cc8",
+     []
+    ],
     "WEB_FEATURES.yml": [
      "6ea31f1ef8d3838b3b9d84f6dac839b22083ee20",
      []
@@ -410556,6 +410560,10 @@
      ],
      "helper.sub.js": [
       "1775cd985c24df970f00903a3c8d7f4705d77851",
+      []
+     ],
+     "namespaces.js": [
+      "72271293baea3f57deeec54a540235005b3912cc",
       []
      ],
      "navigation-report-only-support.html": [
@@ -525538,6 +525546,13 @@
       {
        "timeout": "long"
       }
+     ]
+    ],
+    "media-element-event-handler-attributes.html": [
+     "4ba79f5f55560a9e2f890cda0ce9725ca8951774",
+     [
+      null,
+      {}
      ]
     ]
    },
@@ -682759,6 +682774,15 @@
       {}
      ]
     ],
+    "TrustedTypePolicyFactory-getAttributeType-event-handler-content-attributes.tentative.html": [
+     "efdcf265622fb536871aa94cd253d9b2bc3aa035",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "TrustedTypePolicyFactory-getAttributeType-namespace.html": [
      "0f0d820e289fd12d2c3c7200a1ebb944f4b4b58a",
      [
@@ -682774,7 +682798,7 @@
      ]
     ],
     "TrustedTypePolicyFactory-getPropertyType.tentative.html": [
-     "e7218e9333a213df8643b628fc8dae294ef47ee0",
+     "50b1fb55ddbcf81f677ffcc38d496d958a11b0de",
      [
       null,
       {}

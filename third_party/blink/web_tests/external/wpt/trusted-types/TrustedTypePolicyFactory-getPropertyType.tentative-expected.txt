@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] getAttributeType with explicit elementNs and attrNs parameters
+  assert_equals: expected (string) "TrustedScriptURL" but got (object) null
+[FAIL] getAttributeType with qualified attribute name
+  assert_equals: local name 'href' expected (string) "TrustedScriptURL" but got (object) null
+Harness: the test ran to completion.
+

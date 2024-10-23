@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] scrollbar-width thin overrides ::-webkit-scrollbar
+  assert_less_than: thin scrollWidth expected a number less than 200 but got 200
+Harness: the test ran to completion.
