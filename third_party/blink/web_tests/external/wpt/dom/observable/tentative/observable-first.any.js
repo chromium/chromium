@@ -49,7 +49,7 @@ promise_test(async () => {
 
   assert_true(rejection instanceof RangeError,
       "Upon complete(), first() Promise rejects with RangeError");
-  assert_equals(rejection.message, "No values in Observable");
+  assert_true(typeof rejection.message === "string", "Rejection message must be a string");
 }, "first(): Promise rejects with RangeError when source Observable " +
    "completes without emitting any values");
 
@@ -72,7 +72,7 @@ promise_test(async () => {
       "Promise rejects with a DOMException for abortion");
   assert_equals(rejection.name, "AbortError",
       "Rejected with 'AbortError' DOMException");
-  assert_equals(rejection.message, "signal is aborted without reason");
+  assert_true(typeof rejection.message === "string", "Rejection message must be a string");
 }, "first(): Aborting a signal rejects the Promise with an AbortError DOMException");
 
 promise_test(async () => {

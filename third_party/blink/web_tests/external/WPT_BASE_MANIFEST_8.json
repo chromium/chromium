@@ -338026,10 +338026,6 @@
        []
       ],
       "parsing": {
-       "inheritance-expected.txt": [
-        "158478f864ee26ecd60574c78529da18480c608b",
-        []
-       ],
        "text-box-computed-expected.txt": [
         "ae11a3bb58a9174445adeac64a58b59e97a9800b",
         []
@@ -507463,7 +507459,7 @@
        ]
       ],
       "observable-first.any.js": [
-       "d4738d7478b1eac573dd8a604bd5c033e0193030",
+       "826f11a8d2b796e1a4797fcb75ab764da2a4939e",
        [
         "dom/observable/tentative/observable-first.any.html",
         {}
@@ -507525,7 +507521,7 @@
        ]
       ],
       "observable-last.any.js": [
-       "064a781cada985de1e2f5eeae41898cbff1aad5b",
+       "994cc8e8f6782d08239a1b64edf8a6fbf680fbc8",
        [
         "dom/observable/tentative/observable-last.any.html",
         {}
@@ -702725,7 +702721,7 @@
      ]
     ],
     "video-encoder-config.https.any.js": [
-     "d61958919d78b9e246a7021fa9c19242cb6d7538",
+     "5ee90c74c407a6c25f23062f9d58cc3d60022aa0",
      [
       "webcodecs/video-encoder-config.https.any.html",
       {
