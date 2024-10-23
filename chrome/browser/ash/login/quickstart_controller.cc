@@ -645,7 +645,8 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     StartAdvertising();
   } else if (controller_state_ ==
              ControllerState::WAITING_TO_RESUME_AFTER_UPDATE) {
-    exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
+    exit_point_ = EntryPoint::GAIA_INFO_SCREEN;
+    QuickStartMetrics::RecordEntryPoint(EntryPoint::AUTO_RESUME_AFTER_UPDATE);
 
     // It's possible the local state still needs to be cleared if an update was
     // initiated but cancelled. We can't check/clear the state immediately upon

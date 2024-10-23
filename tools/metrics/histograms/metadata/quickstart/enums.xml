@@ -52,6 +52,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Network Screen"/>
   <int value="2" label="Gaia Info Screen"/>
   <int value="3" label="Gaia Screen"/>
+  <int value="4" label="Automatically Resume After Update (added m132)"/>
 </enum>
 
 <enum name="QuickStartFastPairAdvertisingErrorCode">

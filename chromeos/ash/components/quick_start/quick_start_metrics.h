@@ -255,7 +255,8 @@ class QuickStartMetrics {
     NETWORK_SCREEN = 1,
     GAIA_INFO_SCREEN = 2,
     GAIA_SCREEN = 3,
-    kMaxValue = GAIA_SCREEN,
+    AUTO_RESUME_AFTER_UPDATE = 4,
+    kMaxValue = AUTO_RESUME_AFTER_UPDATE,
   };
 
   // Helper function that returns the MessageType equivalent of
