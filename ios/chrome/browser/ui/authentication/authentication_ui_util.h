@@ -14,6 +14,11 @@
 @class ActionSheetCoordinator;
 @class AlertCoordinator;
 class Browser;
+class PrefService;
+
+namespace signin_metrics {
+enum class AccessPoint;
+}  // namespace signin_metrics
 
 // Sign-out result, related to SignoutActionSheetCoordinator().
 typedef NS_ENUM(NSUInteger, SignoutActionSheetCoordinatorResult) {
@@ -68,5 +73,13 @@ AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
     UIViewController* view_controller,
     ProceduralBlock accept_block,
     ProceduralBlock cancel_block);
+
+// Returns YES if the managed confirmation dialog should be shown for the
+// hosted domain.
+BOOL ShouldShowManagedConfirmationForHostedDomain(
+    NSString* hosted_domain,
+    signin_metrics::AccessPoint access_point,
+    NSString* gaia_ID,
+    PrefService* prefs);
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_UI_UTIL_H_
