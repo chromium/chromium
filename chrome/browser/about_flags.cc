@@ -9698,14 +9698,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseIDNA2008NonTransitionalDescription, kOsAll,
      FEATURE_VALUE_TYPE(url::kUseIDNA2008NonTransitional)},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"sync-chromeos-explicit-passphrase-sharing",
-     flag_descriptions::kSyncChromeOSExplicitPassphraseSharingName,
-     flag_descriptions::kSyncChromeOSExplicitPassphraseSharingDescription,
-     kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(syncer::kSyncChromeOSExplicitPassphraseSharing)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"always-enable-hdcp", flag_descriptions::kAlwaysEnableHdcpName,
      flag_descriptions::kAlwaysEnableHdcpDescription, kOsCrOS,

@@ -4536,9 +4536,6 @@ extern const char kQuickAnswersRichCardDescription[];
 extern const char kQuickAnswersMaterialNextUIName[];
 extern const char kQuickAnswersMaterialNextUIDescription[];
 
-extern const char kSyncChromeOSExplicitPassphraseSharingName[];
-extern const char kSyncChromeOSExplicitPassphraseSharingDescription[];
-
 extern const char kQuickOfficeForceFileDownloadName[];
 extern const char kQuickOfficeForceFileDownloadDescription[];
 

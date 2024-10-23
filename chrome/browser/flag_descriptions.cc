@@ -7888,11 +7888,6 @@ const char kQuickAnswersMaterialNextUIDescription[] =
     "is effective only if a device is eligible to Magic Boost when the Magic "
     "Boost flag gets flipped.";
 
-const char kSyncChromeOSExplicitPassphraseSharingName[] =
-    "Sync passphrase sharing";
-const char kSyncChromeOSExplicitPassphraseSharingDescription[] =
-    "Allows sharing custom sync passphrase between OS and Browser on ChromeOS";
-
 const char kQuickOfficeForceFileDownloadName[] =
     "Basic Office Editor File Download";
 const char kQuickOfficeForceFileDownloadDescription[] =

@@ -46,9 +46,6 @@ BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
 BASE_DECLARE_FEATURE(kSyncPlusAddressSetting);
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Whether explicit passphrase sharing between Ash and Lacros is enabled.
-BASE_DECLARE_FEATURE(kSyncChromeOSExplicitPassphraseSharing);
-
 // Whether Apps toggle value is exposed by Ash to Lacros.
 BASE_DECLARE_FEATURE(kSyncChromeOSAppsToggleSharing);
 
