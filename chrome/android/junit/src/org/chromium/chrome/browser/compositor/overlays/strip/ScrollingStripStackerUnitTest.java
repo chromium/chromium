@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -57,13 +55,13 @@ public final class ScrollingStripStackerUnitTest {
         for (StripLayoutTab tab : mInput) {
             verify(tab).getIdealX();
             verify(tab).getOffsetX();
-            verify(tab).setDrawX(expected_x);
             verify(tab).setDrawY(TAB_OFFSET_Y);
             verify(tab).getOffsetY();
             if (LocalizationUtils.isLayoutRtl() && !tabClosing) {
-                verify(tab, times(2)).setDrawX(anyFloat());
-                verify(tab).getDrawX();
+                verify(tab).setDrawX(expected_x + CACHED_TAB_WIDTH - TAB_WIDTH);
                 verify(tab).getWidth();
+            } else {
+                verify(tab).setDrawX(expected_x);
             }
             verifyNoMoreInteractions(tab);
             expected_x += TAB_WIDTH;
@@ -73,16 +71,14 @@ public final class ScrollingStripStackerUnitTest {
     @Test
     public void testSetTabOffsets() {
         boolean tabClosing = false;
-        mTarget.setViewOffsets(
-                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, tabClosing, CACHED_TAB_WIDTH);
         verifySetTabOffsets(tabClosing);
     }
 
     @Test
     public void testSetTabOffsets_TabClosing() {
         boolean tabClosing = true;
-        mTarget.setViewOffsets(
-                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, tabClosing, CACHED_TAB_WIDTH);
         verifySetTabOffsets(tabClosing);
     }
 
@@ -91,8 +87,7 @@ public final class ScrollingStripStackerUnitTest {
         LocalizationUtils.setRtlForTesting(true);
 
         boolean tabClosing = false;
-        mTarget.setViewOffsets(
-                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, tabClosing, CACHED_TAB_WIDTH);
         verifySetTabOffsets(tabClosing);
     }
 
@@ -101,8 +96,7 @@ public final class ScrollingStripStackerUnitTest {
         LocalizationUtils.setRtlForTesting(true);
 
         boolean tabClosing = true;
-        mTarget.setViewOffsets(
-                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, tabClosing, CACHED_TAB_WIDTH);
         verifySetTabOffsets(tabClosing);
     }
 

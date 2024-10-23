@@ -10,11 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+
+import java.util.List;
 
 public class StripLayoutUtils {
     // The bottom indicator should align with the contents of the last tab in group. This value is
@@ -43,6 +46,20 @@ public class StripLayoutUtils {
 
     /**
      * @param modelFilter The {@link TabGroupModelFilter} that holds the given group.
+     * @param tabId The ID of the given tab.
+     * @return {@code true} if the tab is grouped and is the last tab in the group. False otherwise.
+     */
+    static boolean isLastTabInGroup(TabGroupModelFilter modelFilter, int tabId) {
+        Tab tab = modelFilter.getTabModel().getTabById(tabId);
+        if (tab == null) {
+            return false;
+        }
+        return modelFilter.isTabInTabGroup(tab)
+                && modelFilter.getRelatedTabCountForRootId(tab.getRootId()) == 1;
+    }
+
+    /**
+     * @param modelFilter The {@link TabGroupModelFilter} that holds the given group.
      * @param stripLayoutGroupTitle The {@link StripLayoutGroupTitle}
      * @return The number of tabs in the group associated with the group title.
      */
@@ -55,42 +72,62 @@ public class StripLayoutUtils {
     }
 
     /**
+     * @param stripViews A list of {@link StripLayoutView}.
+     * @param rootId The root ID for the tab group title we're searching for.
+     * @return The {@link StripLayoutGroupTitle} with the given root ID. {@code null} otherwise.
+     */
+    static StripLayoutGroupTitle findGroupTitle(StripLayoutView[] stripViews, int rootId) {
+        for (int i = 0; i < stripViews.length; i++) {
+            final StripLayoutView stripView = stripViews[i];
+            if (stripView instanceof StripLayoutGroupTitle groupTitle
+                    && groupTitle.getRootId() == rootId) {
+                return groupTitle;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Set the new bottom indicator width after a tab has been merged to or moved out of a tab
+     * group. Animate iff a list of animators is provided.
+     *
      * @param animationHandler The {@link CompositorAnimationHandler}.
+     * @param modelFilter The {@link TabGroupModelFilter}.
      * @param groupTitle The {@link StripLayoutGroupTitle} of the interacting group.
-     * @param numTabsInGroup The number of tabs in the given tab group.
      * @param effectiveTabWidth The width of a tab, account for overlap.
      * @param isMovingOutOfGroup Whether the action is merging/removing a tab to/from a group.
      * @param throughGroupTitle True if the tab is passing the {@link StripLayoutGroupTitle}.
-     * @return An {@link Animator} for the bottom indicator's width change.
+     * @param animators The list of animators to add to. If {@code null}, then immediately set the
+     *     new width instead of animating to it.
      */
-    static Animator getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(
+    static void updateBottomIndicatorWidthForTabReorder(
             CompositorAnimationHandler animationHandler,
+            TabGroupModelFilter modelFilter,
             StripLayoutGroupTitle groupTitle,
-            int numTabsInGroup,
             float effectiveTabWidth,
             boolean isMovingOutOfGroup,
-            boolean throughGroupTitle) {
-        // TODO(crbug.com/356448558): Move to ReorderDelegate.
-        // Calculate the initial width and the target width for the bottom indicator.
-        float startWidth =
-                calculateBottomIndicatorWidth(groupTitle, numTabsInGroup, effectiveTabWidth);
+            boolean throughGroupTitle,
+            List<Animator> animators) {
+        // TODO(crbug.com/372546700): Move to ReorderDelegate.
         float endWidth =
-                isMovingOutOfGroup
-                        ? startWidth - effectiveTabWidth
-                        : startWidth + effectiveTabWidth;
-
-        // Bottom indicator animation.
-        int animDuration = throughGroupTitle ? ANIM_TAB_MOVE_MS : ANIM_TAB_SLIDE_OUT_MS;
-        Animator animator =
-                CompositorAnimator.ofFloatProperty(
-                        animationHandler,
+                calculateBottomIndicatorWidth(
                         groupTitle,
-                        StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
-                        startWidth,
-                        endWidth,
-                        animDuration);
+                        getNumOfTabsInGroup(modelFilter, groupTitle),
+                        effectiveTabWidth);
+        float startWidth = endWidth + MathUtils.flipSignIf(effectiveTabWidth, !isMovingOutOfGroup);
 
-        return animator;
+        if (animators != null) {
+            animators.add(
+                    CompositorAnimator.ofFloatProperty(
+                            animationHandler,
+                            groupTitle,
+                            StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
+                            startWidth,
+                            endWidth,
+                            throughGroupTitle ? ANIM_TAB_MOVE_MS : ANIM_TAB_SLIDE_OUT_MS));
+        } else {
+            groupTitle.setBottomIndicatorWidth(endWidth);
+        }
     }
 
     /**

@@ -174,7 +174,7 @@ public abstract class StripLayoutView implements VirtualView {
     }
 
     /**
-     * This is used to help calculate the view's position and is not used for rendering.
+     * Sets the signed distance the drawX will be away from the view's idealX.
      *
      * @param offsetX The offset of the view (used for drag and drop, slide animating, etc).
      */
@@ -183,7 +183,7 @@ public abstract class StripLayoutView implements VirtualView {
     }
 
     /**
-     * This is used to help calculate the view's position and is not used for rendering.
+     * Gets the signed distance the drawX will be away from the view's idealX.
      *
      * @return The offset of the view (used for drag and drop, slide animating, etc).
      */

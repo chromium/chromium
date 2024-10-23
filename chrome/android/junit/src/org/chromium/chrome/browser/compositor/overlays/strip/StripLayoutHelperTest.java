@@ -2250,8 +2250,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group.
-        verify(mTabGroupModelFilter)
-                .mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId), eq(true));
+        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId));
     }
 
     @Test
@@ -2303,8 +2302,6 @@ public class StripLayoutHelperTest {
         // Calculate tab and bottom indicator width.
         float tabWidth = views[1].getWidth();
         float expectedStartWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 2, groupTitle);
-        float expectedEndWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 3, groupTitle);
-        float expectedThreshold = mStripLayoutHelper.calculateTabGroupThreshold(2, false, false);
 
         // Assert: bottom indicator start width.
         assertEquals(
@@ -2321,15 +2318,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group.
-        verify(mTabGroupModelFilter)
-                .mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId), eq(true));
-        mStripLayoutHelper.maybeMergeToGroup(
-                -expectedThreshold - 1, 2, false, expectedThreshold, groupTitle);
-        assertEquals(
-                "Bottom indicator end width is incorrect",
-                expectedEndWidth,
-                groupTitle.getBottomIndicatorWidth(),
-                EPSILON);
+        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId));
     }
 
     @Test
@@ -2350,7 +2339,6 @@ public class StripLayoutHelperTest {
         // Calculate tab and bottom indicator width.
         float tabWidth = views[1].getWidth();
         float expectedStartWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 3, groupTitle);
-        float expectedEndWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 2, groupTitle);
 
         // Assert: bottom indicator start width.
         assertEquals(
@@ -2368,16 +2356,6 @@ public class StripLayoutHelperTest {
 
         // Verify third tab was dragged out of group.
         verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(thirdTab.getTabId(), true);
-
-        // Act: End the animations to apply final values.
-        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
-        runningAnimator.end();
-
-        assertEquals(
-                "Bottom indicator end width is incorrect",
-                expectedEndWidth,
-                groupTitle.getBottomIndicatorWidth(),
-                EPSILON);
     }
 
     @Test
@@ -2668,7 +2646,6 @@ public class StripLayoutHelperTest {
         // Assert: first view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(EXPECTED_TITLE, views[1] instanceof StripLayoutGroupTitle);
-        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[1]);
 
         // Start reorder mode on first tab. Drag between tabs in group.
         // 70 = (80(halfTabWidth) - 28(tabOverlapWidth)) * 0.53(ReorderOverlapSwitchPercentage).
@@ -2678,20 +2655,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group.
-        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(firstTabId), eq(secondTabId), eq(true));
-
-        // assert: verify group title sliding animation is running immediately when tab merge into
-        // group through group title.
-        assertTrue(mStripLayoutHelper.getGroupTitleSlidingForTesting());
-
-        // Assert: verify bottom indicator width correctly updated.
-        float expectedEndWidth =
-                calculateExpectedBottomIndicatorWidth(tabs[0].getWidth(), 2, groupTitle);
-        assertEquals(
-                "Bottom indicator end width is incorrect",
-                expectedEndWidth,
-                groupTitle.getBottomIndicatorWidth(),
-                EPSILON);
+        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(firstTabId), eq(secondTabId));
     }
 
     @Test
@@ -2719,10 +2683,6 @@ public class StripLayoutHelperTest {
 
         // Verify interacting tab was moved out of group.
         verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(secondTabId, false);
-
-        // assert: verify group title sliding animation is running immediately when tab move out of
-        // group through group title.
-        assertTrue(mStripLayoutHelper.getGroupTitleSlidingForTesting());
 
         // Assert: verify bottom indicator width correctly updated.
         float expectedEndWidth =

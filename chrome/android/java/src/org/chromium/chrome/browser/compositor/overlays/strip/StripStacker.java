@@ -19,14 +19,10 @@ public abstract class StripStacker {
      *
      * @param indexOrderedViews A list of tabs ordered by index.
      * @param tabClosing Whether a tab is being closed.
-     * @param groupTitleSlidingAnimRunning Whether a group title is sliding for reorder.
      * @param cachedTabWidth Whether The ideal tab width.
      */
     public abstract void setViewOffsets(
-            StripLayoutView[] indexOrderedViews,
-            boolean tabClosing,
-            boolean groupTitleSlidingAnimRunning,
-            float cachedTabWidth);
+            StripLayoutView[] indexOrderedViews, boolean tabClosing, float cachedTabWidth);
 
     /**
      * Computes the X offset for the new tab button.

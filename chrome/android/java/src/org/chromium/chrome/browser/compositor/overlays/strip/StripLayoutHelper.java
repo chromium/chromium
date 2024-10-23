@@ -202,16 +202,10 @@ public class StripLayoutHelper
 
                 @Override
                 public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
+                    // TODO(crbug.com/375047646): Investigate kicking off animations here.
                     int rootId = movedTab.getRootId();
                     updateGroupTitleText(rootId);
-                    // Removing the tab at the end of a group through the GTS will result in the
-                    // width of a group changing without a tab moving. This means a rebuild won't
-                    // occur, and we'll need to manually update the bottom indicator here.
-                    if (!mReorderDelegate.getInReorderMode()) {
-                        finishAnimations();
-                        computeAndUpdateTabOrders(false, false);
-                        mRenderHost.requestRender();
-                    }
+                    onTabMergeToOrMoveOutOfGroup();
 
                     // Tab merging should not automatically expand a collapsed tab group. If the
                     // target group is collapsed, the tab being merged should also be collapsed.
@@ -232,23 +226,13 @@ public class StripLayoutHelper
                 @Override
                 public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
                     updateGroupTitleText(mSourceRootId);
-                    // Removing the tab at the end of a group through the GTS will result in the
-                    // width of a group changing without a tab moving. This means a rebuild won't
-                    // occur, and we'll need to manually update the bottom indicator here. Skip this
-                    // step if the rebuild will be handled elsewhere after reaching a "proper" tab
-                    // state, such in reorder mode or confirming the group deletion.
                     int groupIdToHide = mGroupIdToHideSupplier.get();
                     boolean removedLastTabInGroup =
                             (groupIdToHide != Tab.INVALID_TAB_ID)
                                     && (movedTab.getRootId() == groupIdToHide);
-                    boolean groupCountChanged =
-                            mTabGroupModelFilter.getTabGroupCount() != mStripGroupTitles.length;
-                    if (!removedLastTabInGroup
-                            && (!mReorderDelegate.getInReorderMode() || groupCountChanged)) {
-                        finishAnimations();
-                        computeAndUpdateTabOrders(false, false);
-                        mRenderHost.requestRender();
-                    }
+                    // Skip if the rebuild will be handled elsewhere after reaching a "proper" tab
+                    // state, such as confirming the group deletion.
+                    if (!removedLastTabInGroup) onTabMergeToOrMoveOutOfGroup();
 
                     // Expand the tab if necessary.
                     StripLayoutTab tab = findTabById(movedTab.getId());
@@ -494,6 +478,9 @@ public class StripLayoutHelper
      * @param toolbarContainerView The @{link View} passed to @{link TabDragSource} for drag and
      *     drop.
      * @param windowAndroid The @{@link WindowAndroid} instance to access Activity.
+     * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
+     * @param modalDialogManager The {@link ModalDialogManager} for the context menu.
+     * @param dataSharingTabManager The {@link DataSharingTabManager} for shared groups.
      * @param tabStripHeight The height of current tab strip.
      * @param tabStripVisibleSupplier Supplier of the boolean indicating whether the tab strip is
      *     visible. The tab strip can be hidden due to the tab switcher being displayed or the
@@ -2422,7 +2409,7 @@ public class StripLayoutHelper
         RecordUserAction.record("MobileToolbarCloseTab");
         int tabId = tab.getTabId();
         int rootId = getTabById(tabId).getRootId();
-        if (isLastTabInGroup(tabId) && !mIncognito) {
+        if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId) && !mIncognito) {
             mActionConfirmationDelegate.handleDeleteGroupAction(
                     rootId,
                     /* draggingLastTabOffStrip= */ false,
@@ -2826,6 +2813,20 @@ public class StripLayoutHelper
     }
 
     /**
+     * Called when a tab has been merged into or removed from a group. Rebuilds the views and
+     * re-computes ideal positions, since the order may have changed.
+     */
+    private void onTabMergeToOrMoveOutOfGroup() {
+        finishAnimations();
+        // Moving a tab into/out-of a group may cause the orders of views (i.e. the
+        // group indicator) to change. The bottom indicator width may also change.
+        // Rebuild views to address this.
+        computeAndUpdateTabOrders(/* delayResize= */ false, /* deferAnimations= */ false);
+        // Since views may have swapped, re-calculate ideal positions here.
+        computeTabInitialPositions();
+    }
+
+    /**
      * Called to refresh the group title bitmap when it may have changed (text, color, etc.).
      *
      * @param groupTitle The group title to refresh the bitmap for.
@@ -2913,11 +2914,7 @@ public class StripLayoutHelper
     }
 
     private StripLayoutGroupTitle findGroupTitle(int rootId) {
-        for (int i = 0; i < mStripGroupTitles.length; i++) {
-            final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
-            if (groupTitle.getRootId() == rootId) return groupTitle;
-        }
-        return null;
+        return StripLayoutUtils.findGroupTitle(mStripGroupTitles, rootId);
     }
 
     private StripLayoutGroupTitle findOrCreateGroupTitle(int rootId) {
@@ -2993,15 +2990,6 @@ public class StripLayoutHelper
                 groupTitle.setBottomIndicatorWidth(bottomIndicatorWidth);
             }
         }
-    }
-
-    protected boolean isLastTabInGroup(int tabId) {
-        Tab tab = getTabById(tabId);
-        if (tab == null) {
-            return false;
-        }
-        return mTabGroupModelFilter.isTabInTabGroup(tab)
-                && mTabGroupModelFilter.getRelatedTabCountForRootId(tab.getRootId()) == 1;
     }
 
     private void copyTabsWithGroupTitles() {
@@ -3337,11 +3325,7 @@ public class StripLayoutHelper
         computeTabInitialPositions();
 
         // 3. Calculate the tab stacking and ensure that tabs are sized correctly.
-        mStripStacker.setViewOffsets(
-                mStripViews,
-                mMultiStepTabCloseAnimRunning,
-                mReorderDelegate.getGroupTitleSliding(),
-                mCachedTabWidth);
+        mStripStacker.setViewOffsets(mStripViews, mMultiStepTabCloseAnimRunning, mCachedTabWidth);
 
         // 4. Calculate which tabs are visible.
         float stripWidth = getVisibleRightBound() - getVisibleLeftBound();
@@ -3409,9 +3393,7 @@ public class StripLayoutHelper
                     drawXOffset = mCachedTabWidth - view.getWidth() - drawXOffset;
                 }
 
-                if (!mReorderDelegate.getGroupTitleSliding()) {
-                    view.setIdealX(tabPosition + drawXOffset);
-                }
+                view.setIdealX(tabPosition + drawXOffset);
                 delta = view.getWidth() - mGroupTitleOverlapWidth;
             }
 
@@ -3603,22 +3585,24 @@ public class StripLayoutHelper
         Tab destTab = getTabById(destTabId);
         StripLayoutGroupTitle groupTitle = findGroupTitle(destTab.getRootId());
 
-        // Animate bottom indicator when merging a new tab into group.
-        if (groupTitle != null) {
-            List<Animator> animators = new ArrayList<>();
-            animators.add(
-                    StripLayoutUtils.getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(
-                            mUpdateHost.getAnimationHandler(),
-                            groupTitle,
-                            StripLayoutUtils.getNumOfTabsInGroup(mTabGroupModelFilter, groupTitle),
-                            /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
-                            /* isMovingOutOfGroup= */ false,
-                            /* throughGroupTitle= */ false));
-            startAnimations(animators, null);
-        }
-
         mTabGroupModelFilter.mergeTabsToGroup(draggedTabId, destTabId, true);
         mModel.moveTab(draggedTabId, index);
+
+        // Animate bottom indicator. Done after merging the dropped tab into a group, so that the
+        // calculated bottom indicator width will be correct.
+        if (groupTitle != null) {
+            List<Animator> animators = null;
+            if (!mAnimationsDisabledForTesting) animators = new ArrayList<>();
+            StripLayoutUtils.updateBottomIndicatorWidthForTabReorder(
+                    mUpdateHost.getAnimationHandler(),
+                    mTabGroupModelFilter,
+                    groupTitle,
+                    /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
+                    /* isMovingOutOfGroup= */ false,
+                    /* throughGroupTitle= */ false,
+                    animators);
+            startAnimations(animators, null);
+        }
     }
 
     StripLayoutTab getTabAtPosition(float x) {
@@ -3886,7 +3870,12 @@ public class StripLayoutHelper
             StripLayoutTab tab, float trailingMargin, @Nullable List<Animator> animationList) {
         StripLayoutGroupTitle groupTitle = findGroupTitle(getStripTabRootId(tab));
         return mReorderDelegate.setTrailingMarginForTab(
-                mUpdateHost.getAnimationHandler(), tab, groupTitle, trailingMargin, animationList);
+                mUpdateHost.getAnimationHandler(),
+                tab,
+                groupTitle,
+                /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
+                trailingMargin,
+                animationList);
     }
 
     private void resetTabGroupMargins(@Nullable ArrayList<Animator> animationList) {
@@ -3927,70 +3916,43 @@ public class StripLayoutHelper
      * its tab group. If so, it moves tab out of group and returns the new index for the interacting
      * tab.
      *
-     * @param offset The distance the interacting tab has been dragged from its ideal x-position.
-     * @param curIndex The index of the interacting tab.
+     * @param animationHost The {@link AnimationHost} to handle animations.
+     * @param rootId The interacting tab's group's root ID.
+     * @param effectiveTabWidth The width of a tab, accounting for overlap.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
-     * @param threshold the drag distance threshold to determine whether a tab is moving out of the
-     *     tab group.
-     * @param interactingGroupTitle The title of the tab group the tab is dragging past, which
-     *     occurs when a tab is being dragged to merge into or move out of the tab group through
-     *     group title.
-     * @return The new index for the interacting tab if it has been removed from its tab group and
-     *     the INVALID_TAB_INDEX otherwise.
      */
-    private int maybeMoveOutOfGroup(
-            float offset,
-            int curIndex,
-            boolean towardEnd,
-            float threshold,
-            StripLayoutGroupTitle interactingGroupTitle) {
-        // If past threshold, trigger reorder.
-        if (Math.abs(offset) > threshold) {
-            final int tabId = mReorderDelegate.getInteractingTab().getTabId();
-            int rootId = getTabById(tabId).getRootId();
-
-            // Get the target group title.
-            Tab destinationTab = getTabById(mStripTabs[curIndex].getTabId());
-            StripLayoutGroupTitle targetGroupTitle = findGroupTitle(destinationTab.getRootId());
-            // Run indicator animations.
-            if (targetGroupTitle != null) {
-                mReorderDelegate.animateGroupIndicatorForTabReorder(
-                        /* animationHost= */ this,
-                        mStripViews,
-                        mStripTabs,
-                        targetGroupTitle,
-                        interactingGroupTitle,
-                        curIndex,
-                        /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
-                        /* isMovingOutOfGroup= */ true,
-                        towardEnd);
-            }
-
-            if (isLastTabInGroup(tabId)
-                    && mGroupIdToHideSupplier.get() == Tab.INVALID_TAB_ID
-                    && !mIncognito) {
-                // When dragging the last tab out of group on strip, the tab group delete dialog
-                // will show and we will hide the indicators for the interacting tab group until the
-                // user confirms the next action. e.g delete tab group when user confirms the
-                // delete, or restore indicators back on strip when user cancel the delete.
-                mActionConfirmationDelegate.handleDeleteGroupAction(
-                        rootId,
-                        /* draggingLastTabOffStrip= */ false,
-                        /* tabClosing= */ false,
-                        () -> {
-                            mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
-                            RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
-                        });
-            } else if (StripLayoutUtils.getNumOfTabsInGroup(mTabGroupModelFilter, targetGroupTitle)
-                            > 1
-                    || mIncognito) {
-                mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
-                RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
-            }
-            return curIndex;
+    void moveInteractingTabOutOfGroup(
+            AnimationHost animationHost, int rootId, float effectiveTabWidth, boolean towardEnd) {
+        final int tabId = mReorderDelegate.getInteractingTab().getTabId();
+        if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId)
+                && mGroupIdToHideSupplier.get() == Tab.INVALID_TAB_ID
+                && !mIncognito) {
+            // When dragging the last tab out of group, the tab group delete dialog will show and we
+            // will hide the indicators for the interacting tab group until the user confirms the
+            // next action. e.g delete tab group when user confirms the delete, or restore
+            // indicators back on strip when user cancel the delete.
+            mActionConfirmationDelegate.handleDeleteGroupAction(
+                    rootId,
+                    /* draggingLastTabOffStrip= */ false,
+                    /* tabClosing= */ false,
+                    () -> mReorderDelegate.moveTabOutOfGroupInDirection(tabId, towardEnd));
+            // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
+            if (!mActionConfirmationDelegate.isTabRemoveDialogSkipped()) stopReorderMode();
+        } else {
+            mReorderDelegate.moveTabOutOfGroupInDirection(tabId, towardEnd);
         }
 
-        return TabModel.INVALID_TAB_INDEX;
+        // The group title may have been removed if the group was deleted above. Check if it still
+        // exists and if so, run the indicator animations.
+        StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+        if (groupTitle != null) {
+            mReorderDelegate.animateGroupIndicatorForTabReorder(
+                    animationHost,
+                    groupTitle,
+                    effectiveTabWidth,
+                    /* isMovingOutOfGroup= */ true,
+                    towardEnd);
+        }
     }
 
     /**
@@ -3998,55 +3960,24 @@ public class StripLayoutHelper
      * adjacent tab group. If so, it merges the tab to the group and returns the new index for
      * interacting tab.
      *
-     * @param offset The distance the interacting tab has been dragged from its ideal x-position.
-     * @param curIndex The index of the interacting tab.
+     * @param destinationTabId The tab ID to merge the interacting tab to.
+     * @param groupTitle The title of the group the interacting tab is attempting to merge to.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
-     * @param threshold the drag distance threshold to determine whether a tab is merging into the
-     *     tab group.
-     * @param interactingGroupTitle The title of the tab group the tab is dragging past, which
-     *     occurs when a tab is being dragged to merge into or move out of the tab group through
-     *     group title.
-     * @return The new index for the interacting tab if it has been moved into a neighboring tab
-     *     group and the INVALID_TAB_INDEX otherwise.
      */
     @VisibleForTesting
-    protected int maybeMergeToGroup(
-            float offset,
-            int curIndex,
-            boolean towardEnd,
-            float threshold,
-            StripLayoutGroupTitle interactingGroupTitle) {
-        if (Math.abs(offset) < threshold) {
-            return TabModel.INVALID_TAB_INDEX;
-        }
-
-        // Trigger a reorder
-        int direction = towardEnd ? 1 : -1;
-        StripLayoutTab destTab = mStripTabs[curIndex + direction];
-
-        // Get the target group title.
-        Tab destinationTab = getTabById(destTab.getTabId());
-        StripLayoutGroupTitle targetGroupTitle = findGroupTitle(destinationTab.getRootId());
-
-        // Run indicator animations.
-        if (targetGroupTitle != null) {
-            mReorderDelegate.animateGroupIndicatorForTabReorder(
-                    /* animationHost= */ this,
-                    mStripViews,
-                    mStripTabs,
-                    targetGroupTitle,
-                    interactingGroupTitle,
-                    curIndex,
-                    /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
-                    /* isMovingOutOfGroup= */ false,
-                    towardEnd);
-        }
+    protected void mergeInteractingTabToGroup(
+            int destinationTabId, StripLayoutGroupTitle groupTitle, boolean towardEnd) {
         mTabGroupModelFilter.mergeTabsToGroup(
-                mReorderDelegate.getInteractingTab().getTabId(), destTab.getTabId(), true);
-
+                mReorderDelegate.getInteractingTab().getTabId(), destinationTabId);
         RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");
 
-        return curIndex;
+        // Animate the group indicator after updating the tab model.
+        mReorderDelegate.animateGroupIndicatorForTabReorder(
+                /* animationHost= */ this,
+                groupTitle,
+                /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
+                /* isMovingOutOfGroup= */ false,
+                towardEnd);
     }
 
     /**
@@ -4125,6 +4056,7 @@ public class StripLayoutHelper
     }
 
     private void updateReorderPosition(float deltaX) {
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
         StripLayoutTab interactingTab = mReorderDelegate.getInteractingTab();
         if (!mReorderDelegate.getInReorderMode()
                 || interactingTab == null
@@ -4138,7 +4070,7 @@ public class StripLayoutHelper
         // 1. Compute drag position.
         final float tabWidth = mCachedTabWidth - mTabOverlapWidth;
         float offset = interactingTab.getOffsetX() + deltaX;
-        boolean towardEnd = (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
+        boolean towardEnd = (offset >= 0) ^ isRtl;
 
         // 2. Determine grouped state.
         Tab curTab = mModel.getTabAt(curIndex);
@@ -4152,47 +4084,57 @@ public class StripLayoutHelper
 
         // 3. Check if we should swap tabs. Track the move threshold, destination index, and
         // interacting group title.
-        final float moveThreshold;
         int destIndex = TabModel.INVALID_TAB_INDEX;
         StripLayoutGroupTitle interactingGroupTitle = null;
+        boolean throughGroupTitle = false;
 
         if (mayDragInOrOutOfGroup) {
-            moveThreshold = calculateTabGroupThreshold(curIndex, isInGroup, towardEnd);
             if (isInGroup) {
                 // 3.a. Tab is in a group. Maybe drag out of group.
-                interactingGroupTitle = getInteractingGroupTitle(curIndex, towardEnd);
-                destIndex =
-                        maybeMoveOutOfGroup(
-                                offset, curIndex, towardEnd, moveThreshold, interactingGroupTitle);
+                interactingGroupTitle = findGroupTitle(curTab.getRootId());
+                throughGroupTitle = !towardEnd;
+
+                if (Math.abs(offset) > getDragOutThreshold(interactingGroupTitle, towardEnd)) {
+                    moveInteractingTabOutOfGroup(
+                            /* animationHost= */ this,
+                            interactingGroupTitle.getRootId(),
+                            /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
+                            towardEnd);
+                    // TODO(crbug.com/372546700): Currently, we return a destIndex equal to the
+                    //  starting index to mark that a tab move out or merge was successful. This is
+                    //  not immediately clear, so track this state more directly.
+                    destIndex = curIndex;
+                }
             } else {
-                StripLayoutGroupTitle adjTitle = findGroupTitle(adjTab.getRootId());
-                if (adjTitle != null && adjTitle.isCollapsed()) {
+                interactingGroupTitle = findGroupTitle(adjTab.getRootId());
+                if (interactingGroupTitle.isCollapsed()) {
+                    throughGroupTitle = true;
                     // 3.b. Tab is not in a group. Adjacent group is collapsed. Maybe reorder
                     // past the collapsed group.
-                    interactingGroupTitle = adjTitle;
-                    destIndex = maybeMovePastCollapsedGroup(adjTitle, offset, curIndex, towardEnd);
+                    destIndex =
+                            maybeMovePastCollapsedGroup(
+                                    interactingGroupTitle, offset, curIndex, towardEnd);
                 } else {
                     // 3.c. Tab is not in a group. Adjacent group is not collapsed. Maybe merge
                     // to group.
-                    interactingGroupTitle = getInteractingGroupTitle(curIndex, towardEnd);
-                    destIndex =
-                            maybeMergeToGroup(
-                                    offset,
-                                    curIndex,
-                                    towardEnd,
-                                    moveThreshold,
-                                    interactingGroupTitle);
+                    throughGroupTitle = towardEnd;
+
+                    if (Math.abs(offset) > getDragInThreshold()) {
+                        mergeInteractingTabToGroup(
+                                adjTab.getId(), interactingGroupTitle, towardEnd);
+                        destIndex = curIndex;
+                    }
                 }
             }
         } else {
             // 3.d. Tab is not interacting with tab groups. Reorder as normal.
-            moveThreshold = REORDER_OVERLAP_SWITCH_PERCENTAGE * tabWidth;
+            final float moveThreshold = REORDER_OVERLAP_SWITCH_PERCENTAGE * tabWidth;
             boolean pastLeftThreshold = offset < -moveThreshold;
             boolean pastRightThreshold = offset > moveThreshold;
             boolean isNotRightMost = curIndex < mStripTabs.length - 1;
             boolean isNotLeftMost = curIndex > 0;
 
-            if (LocalizationUtils.isLayoutRtl()) {
+            if (isRtl) {
                 boolean oldLeft = pastLeftThreshold;
                 pastLeftThreshold = pastRightThreshold;
                 pastRightThreshold = oldLeft;
@@ -4211,11 +4153,10 @@ public class StripLayoutHelper
             reorderTab(interactingTab.getTabId(), curIndex, destIndex, true);
             mModel.moveTab(interactingTab.getTabId(), destIndex);
 
-            // 4.b. Re-compute tab group margins. Skip if group indicators are enabled instead.
+            // 4.b. Update strip start and end margins to create more space for first tab or last
+            // tab to drag out of group.
             float oldIdealX = interactingTab.getIdealX();
             float oldOffset = mScrollDelegate.getScrollOffset();
-            // Update strip start and end margins to create more space for first tab or last tab
-            // to drag out of group.
             if ((curIndex == 0 || curIndex >= mStripTabs.length - 2)
                     && mTabGroupModelFilter.isTabInTabGroup(
                             getTabById(interactingTab.getTabId()))) {
@@ -4232,26 +4173,25 @@ public class StripLayoutHelper
 
             // 4.d. Since we just moved the tab we're dragging, adjust its offset so it stays in
             // the same apparent position.
-            boolean shouldFlip = LocalizationUtils.isLayoutRtl() ^ towardEnd;
+            boolean shouldFlip = isRtl ^ towardEnd;
             if (mayDragInOrOutOfGroup) {
                 // Account for group title offset.
-                if (interactingGroupTitle != null) {
-                    float groupTitleWidth = interactingGroupTitle.getWidth();
-                    offset += MathUtils.flipSignIf(groupTitleWidth, shouldFlip);
+                if (throughGroupTitle) {
+                    float effectiveIndicatorWidth =
+                            interactingGroupTitle.getWidth() - mGroupTitleOverlapWidth;
+                    offset += MathUtils.flipSignIf(effectiveIndicatorWidth, shouldFlip);
                 } else {
                     offset -= (interactingTab.getIdealX() - oldIdealX);
                     // When the strip is scrolling, deltaX is already accounted for by idealX. This
                     // is because idealX uses the scroll offset which has already been adjusted by
                     // deltaX.
                     if (mLastReorderScrollTime != 0) offset -= deltaX;
-
                     // Tab group margins can affect minScrollOffset. When a dragged tab is near the
                     // strip's edge, the scrollOffset being clamped can affect the apparent
                     // position.
                     offset -=
                             MathUtils.flipSignIf(
-                                    (mScrollDelegate.getScrollOffset() - oldOffset),
-                                    LocalizationUtils.isLayoutRtl());
+                                    (mScrollDelegate.getScrollOffset() - oldOffset), isRtl);
                 }
             } else {
                 offset += MathUtils.flipSignIf(tabWidth, shouldFlip);
@@ -4266,82 +4206,35 @@ public class StripLayoutHelper
         // of a group toward the edge of the strip.
         // TODO(crbug.com/331854162): Refactor to set mStripStartMarginForReorder and the final
         //  tab's trailing margin.
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
-        float limit;
         if (curIndex == 0) {
-            limit =
-                    (mStripViews[0] instanceof StripLayoutGroupTitle)
-                            ? calculateTabGroupThreshold(0, true, false)
+            float limit =
+                    (mStripViews[0] instanceof StripLayoutGroupTitle groupTitle)
+                            ? getDragOutThreshold(groupTitle, false)
                             : mScrollDelegate.getReorderStartMargin();
             offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
         }
         if (curIndex == mStripTabs.length - 1) {
-            offset =
-                    LocalizationUtils.isLayoutRtl()
-                            ? Math.max(-mStripTabs[curIndex].getTrailingMargin(), offset)
-                            : Math.min(mStripTabs[curIndex].getTrailingMargin(), offset);
+            float limit = mStripTabs[curIndex].getTrailingMargin();
+            offset = isRtl ? Math.max(-limit, offset) : Math.min(limit, offset);
         }
         interactingTab.setOffsetX(offset);
     }
 
     /**
-     * This method determines whether this tab drag is interacting with tab group title indicator.
-     *
-     * @param curIndexInStripTab The index of the interacting tab in mStripTabs.
-     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
-     * @return Whether this tab drag is interacting with tab group title indicator.
+     * @param groupTitle The group title for the desired group. Must not be null.
+     * @param towardEnd True if dragging towards the end of the strip.
+     * @return The threshold to drag out of a group.
      */
-    private StripLayoutGroupTitle getInteractingGroupTitle(
-            int curIndexInStripTab, boolean towardEnd) {
-        int curIndexInStripView = findStripViewIndexForStripTab(curIndexInStripTab);
-        if (curIndexInStripView == TabModel.INVALID_TAB_INDEX) {
-            return null;
-        }
-        if (towardEnd) {
-            if (curIndexInStripView == mStripViews.length - 1) {
-                return null;
-            }
-            // The drag is interacting with group title when 1. curTab is not is group and 2. the
-            // next view is a group title.
-            return !isStripTabInTabGroup(mStripTabs[curIndexInStripTab])
-                            && mStripViews[curIndexInStripView + 1]
-                                    instanceof StripLayoutGroupTitle groupTitle
-                    ? groupTitle
-                    : null;
-        } else {
-            if (curIndexInStripView == 0) {
-                return null;
-            }
-            // The drag is interacting with group title when the previous view is a group title.
-            return mStripViews[curIndexInStripView - 1] instanceof StripLayoutGroupTitle groupTitle
-                    ? groupTitle
-                    : null;
-        }
+    private float getDragOutThreshold(StripLayoutGroupTitle groupTitle, boolean towardEnd) {
+        float dragOutThreshold = mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+        return dragOutThreshold + (towardEnd ? 0 : groupTitle.getWidth());
     }
 
     /**
-     * @param curIndexInStripTab The index of the interacting tab in mStripTabs.
-     * @param isInGroup Whether the current tab is in a tab group.
-     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
-     * @return The drag threshold for either merging into or moving out of a tab group.
+     * @return The threshold to drag into a group.
      */
-    @VisibleForTesting
-    protected float calculateTabGroupThreshold(
-            int curIndexInStripTab, boolean isInGroup, boolean towardEnd) {
-        int curIndexInStripView = findStripViewIndexForStripTab(curIndexInStripTab);
-        float dragOutThreshold = mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
-        float dragInThreshold = mHalfTabWidth;
-
-        assert curIndexInStripView != TabModel.INVALID_TAB_INDEX;
-        if (isInGroup) {
-            if (curIndexInStripView > 0 && !towardEnd) {
-                return dragOutThreshold + mStripViews[curIndexInStripView - 1].getWidth();
-            } else {
-                return dragOutThreshold;
-            }
-        } else {
-            return dragInThreshold;
-        }
+    private float getDragInThreshold() {
+        return mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
     }
 
     private float adjustXForTabDrop(float x) {
@@ -4792,13 +4685,6 @@ public class StripLayoutHelper
         return mRunningAnimator;
     }
 
-    /**
-     * @return Whether group title sliding animation is running.
-     */
-    boolean getGroupTitleSlidingForTesting() {
-        return mReorderDelegate.getGroupTitleSliding();
-    }
-
     void setRunningAnimatorForTesting(Animator animator) {
         mRunningAnimator = animator;
     }
@@ -4881,7 +4767,7 @@ public class StripLayoutHelper
 
             // Rebuild tab groups to unhide the interacting tab group as tab is restored back on tab
             // strip.
-            if (isLastTabInGroup(selectedTab.getTabId())
+            if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, selectedTab.getTabId())
                     && mActionConfirmationDelegate.isTabRemoveDialogSkipped()) {
                 mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
             }
@@ -4978,7 +4864,8 @@ public class StripLayoutHelper
         Tab tab = getTabById(tabId);
 
         // Show group delete dialog when the last tab in group is being dragged off tab strip.
-        boolean draggingLastTabInGroup = isLastTabInGroup(tabId);
+        boolean draggingLastTabInGroup =
+                StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId);
         if (draggingLastTabInGroup && !mIncognito) {
             if (!mIncognito) {
                 mActionConfirmationDelegate.handleDeleteGroupAction(
