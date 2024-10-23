@@ -42,6 +42,7 @@ external/wpt/js*
 external/wpt/longtask-timing/*
 external/wpt/picture-in-picture/*
 external/wpt/preload/*
+external/wpt/referrer-policy/*
 external/wpt/resource-timing/*
 external/wpt/scheduler/*
 external/wpt/selection/*
