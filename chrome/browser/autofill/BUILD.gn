@@ -58,7 +58,7 @@ static_library("autofill") {
     "//chrome/browser:browser_process",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
-    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
     "//chrome/common:constants",
     "//components/autofill/content/browser",
     "//components/image_fetcher/core",

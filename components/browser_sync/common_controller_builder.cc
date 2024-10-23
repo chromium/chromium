@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/core/browser/payments/autofill_wallet_data_type_controller.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_data_type_controller.h"
+#include "components/autofill/core/browser/webdata/addresses/contact_info_local_data_batch_uploader.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -167,6 +169,12 @@ base::WeakPtr<syncer::SyncableService> SyncableServiceForPrefs(
 CommonControllerBuilder::CommonControllerBuilder() = default;
 
 CommonControllerBuilder::~CommonControllerBuilder() = default;
+
+void CommonControllerBuilder::SetAddressDataManagerGetter(
+    base::RepeatingCallback<autofill::AddressDataManager*()>
+        address_data_manager_getter) {
+  address_data_manager_getter_ = std::move(address_data_manager_getter);
+}
 
 void CommonControllerBuilder::SetAutofillWebDataService(
     const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
@@ -395,7 +403,9 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
                       &ContactInfoDelegateFromDataService,
                       base::RetainedRef(
                           autofill_web_data_service_on_disk_.value()))),
-              sync_service, identity_manager_.value()));
+              sync_service, identity_manager_.value(),
+              std::make_unique<autofill::ContactInfoLocalDataBatchUploader>(
+                  std::move(address_data_manager_getter_))));
     }
 
     if (!disabled_types.Has(syncer::AUTOFILL_WALLET_DATA)) {

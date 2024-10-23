@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
@@ -62,6 +63,8 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/common_controller_builder.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
@@ -178,6 +181,12 @@ tab_groups::TabGroupSyncService* GetTabGroupSyncService(Profile* profile) {
         // BUILDFLAG(IS_WIN)
 }
 
+autofill::AddressDataManager* GetAddressDataManager(Profile* profile) {
+  auto* pdm =
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(profile);
+  return pdm ? &pdm->address_data_manager() : nullptr;
+}
+
 syncer::DataTypeController::TypeVector CreateCommonControllers(
     Profile* profile,
     syncer::SyncService* sync_service) {
@@ -203,6 +212,10 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
 #endif  // DCHECK_IS_ON()
 
   browser_sync::CommonControllerBuilder builder;
+  // A callback is needed here because `autofill::PersonalDataManagerFactory`
+  // already depends on `SyncServiceFactory`.
+  builder.SetAddressDataManagerGetter(
+      base::BindRepeating(&GetAddressDataManager, profile));
   builder.SetAutofillWebDataService(content::GetUIThreadTaskRunner({}),
                                     profile_web_data_service,
                                     account_web_data_service);
