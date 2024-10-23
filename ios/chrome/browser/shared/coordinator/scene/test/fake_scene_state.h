@@ -16,22 +16,12 @@
 @interface FakeSceneState : SceneState
 
 // Creates an array of `count` instances, without any associated AppState.
-// TODO(crbug.com/358299863): Remove when fully migrated.
-+ (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
-                                    browserState:(ProfileIOS*)profile;
-
-// Creates an array of `count` instances, without any associated AppState.
 + (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
                                          profile:(ProfileIOS*)profile;
 
 // Initializer.
 - (instancetype)initWithAppState:(AppState*)appState
                          profile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
-
-// Initializer.
-// TODO(crbug.com/358299863): Remove when fully migrated.
-- (instancetype)initWithAppState:(AppState*)appState
-                    browserState:(ProfileIOS*)profile;
 
 - (instancetype)initWithAppState:(AppState*)appState NS_UNAVAILABLE;
 

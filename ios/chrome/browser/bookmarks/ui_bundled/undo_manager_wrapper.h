@@ -23,7 +23,7 @@ class ProfileIOS;
 @interface UndoManagerWrapper : NSObject
 
 // Designated initializer.
-- (instancetype)initWithBrowserState:(ProfileIOS*)profile;
+- (instancetype)initWithProfile:(ProfileIOS*)profile;
 
 // Subsequent changes to the BookmarkModel are grouped together so that a single
 // undo will revert all changes.

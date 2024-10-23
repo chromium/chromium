@@ -41,10 +41,10 @@ class CreditCard;
   __weak id<FullCardRequestResultDelegateObserving> _delegate;
 }
 
-- (instancetype)initWithBrowserState:(ProfileIOS*)profile
-                        webStateList:(WebStateList*)webStateList
-                      resultDelegate:
-                          (id<FullCardRequestResultDelegateObserving>)delegate {
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+                   webStateList:(WebStateList*)webStateList
+                 resultDelegate:
+                     (id<FullCardRequestResultDelegateObserving>)delegate {
   self = [super init];
   if (self) {
     _profile = profile;

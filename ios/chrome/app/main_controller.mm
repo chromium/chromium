@@ -440,7 +440,7 @@ void MainControllerAuthenticationServiceDelegate::
 // Crashes the application if requested.
 - (void)crashIfRequested;
 // Performs synchronous profile initialization steps.
-- (void)initializeBrowserState:(ProfileIOS*)profile;
+- (void)initializeProfile:(ProfileIOS*)profile;
 // Initializes the application to the minimum initialization needed in all
 // cases.
 - (void)startUpBrowserBasicInitialization;
@@ -529,7 +529,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
   for (ProfileIOS* profile : manager->GetLoadedProfiles()) {
-    [self initializeBrowserState:profile];
+    [self initializeProfile:profile];
   }
   DCHECK(!_profileControllers.empty());
 
@@ -700,7 +700,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
                                 self.appState.postCrashAction);
 }
 
-- (void)initializeBrowserState:(ProfileIOS*)profile {
+- (void)initializeProfile:(ProfileIOS*)profile {
   DCHECK(!profile->IsOffTheRecord());
 
   ProfileController* controller =
@@ -1671,7 +1671,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 // AppInitStage are fully decoupled.
 - (void)profileLoaded:(ProfileIOS*)profile
         forSceneState:(SceneState*)sceneState {
-  [self initializeBrowserState:profile];
+  [self initializeProfile:profile];
   [self attachProfileToSceneState:sceneState];
 }
 

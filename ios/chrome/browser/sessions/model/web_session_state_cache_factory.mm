@@ -68,7 +68,7 @@ std::unique_ptr<KeyedService> BuildWebSessionStateCacheWrapper(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<WebSessionStateCacheWrapper>(
       BrowserListFactory::GetForProfile(profile),
-      [[WebSessionStateCache alloc] initWithBrowserState:profile]);
+      [[WebSessionStateCache alloc] initWithProfile:profile]);
 }
 }  // namespace
 

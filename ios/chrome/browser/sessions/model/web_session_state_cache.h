@@ -25,8 +25,7 @@ class WebStateID;
 @interface WebSessionStateCache : NSObject
 
 // Designated initializer.
-- (instancetype)initWithBrowserState:(ProfileIOS*)profile
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

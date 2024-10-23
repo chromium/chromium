@@ -294,7 +294,7 @@ MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
 
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
+      [[UndoManagerWrapper alloc] initWithProfile:profile];
 
   // Create or update the bookmark.
   [wrapper startGroupingActions];
@@ -330,7 +330,7 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
   std::u16string titleString = base::SysNSStringToUTF16(title);
 
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
+      [[UndoManagerWrapper alloc] initWithProfile:profile];
   [wrapper startGroupingActions];
 
   RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
@@ -366,7 +366,7 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
 
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
+      [[UndoManagerWrapper alloc] initWithProfile:profile];
 
   // Update the bookmark.
   [wrapper startGroupingActions];
@@ -401,7 +401,7 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
   DCHECK_GT(node_count, 0u);
 
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
+      [[UndoManagerWrapper alloc] initWithProfile:profile];
 
   // Delete the selected bookmarks.
   [wrapper startGroupingActions];
@@ -458,7 +458,7 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
   bool multiple_bookmarks_to_move = node_count > 1 || contains_a_folder;
 
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
+      [[UndoManagerWrapper alloc] initWithProfile:profile];
 
   // Move the selected bookmarks.
   [wrapper startGroupingActions];

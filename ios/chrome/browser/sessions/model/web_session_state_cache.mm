@@ -125,7 +125,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
-- (instancetype)initWithBrowserState:(ProfileIOS*)profile {
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ((self = [super init])) {
     _profile = profile;

@@ -34,7 +34,7 @@ class WebSessionStateCacheTest : public PlatformTest {
     TestProfileIOS::Builder test_cbs_builder;
     profile_ = std::move(test_cbs_builder).Build();
     sessionCache_ =
-        [[WebSessionStateCache alloc] initWithBrowserState:profile_.get()];
+        [[WebSessionStateCache alloc] initWithProfile:profile_.get()];
 
     web::WebState::CreateParams createParams(profile_.get());
     web_state_ = web::WebState::Create(createParams);

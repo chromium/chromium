@@ -92,9 +92,9 @@
     _cardMediator.consumer = _cardViewController;
 
     _cardRequester = [[ManualFillFullCardRequester alloc]
-        initWithBrowserState:super.browser->GetProfile()->GetOriginalProfile()
-                webStateList:super.browser->GetWebStateList()
-              resultDelegate:_cardMediator];
+        initWithProfile:super.browser->GetProfile()->GetOriginalProfile()
+           webStateList:super.browser->GetWebStateList()
+         resultDelegate:_cardMediator];
     _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                      ApplicationCommands);
   }
