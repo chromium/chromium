@@ -193,4 +193,11 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, Screenshot) {
   EXPECT_NE(ai_data()->page_context().tab_screenshot(), "");
 }
 
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SiteEngagementScores) {
+  LoadSimplePageAndData();
+  EXPECT_EQ(ai_data()->site_engagement().entries().size(), 1);
+  EXPECT_NE(ai_data()->site_engagement().entries()[0].url(), "");
+  EXPECT_GE(ai_data()->site_engagement().entries()[0].score(), 0);
+}
+
 }  // namespace

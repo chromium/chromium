@@ -49,6 +49,7 @@ source_set("impl") {
   deps = [
     ":ai",
     "//chrome/browser/optimization_guide",
+    "//components/site_engagement/content:content",
     "//skia",
   ]
   if (!is_android) {

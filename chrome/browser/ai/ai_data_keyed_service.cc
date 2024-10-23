@@ -22,6 +22,8 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+#include "components/site_engagement/content/site_engagement_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -255,6 +257,31 @@ void GetTabScreenshotForModelPrototyping(
           base::OwnedRef(empty)));
 }
 
+void GetSiteEngagementScoresForModelPrototyping(
+    content::BrowserContext* browser_context,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(browser_context);
+  AiDataKeyedService::AiData data =
+      std::make_optional<AiDataKeyedService::BrowserData>();
+  if (!service) {
+    return std::move(continue_callback).Run(std::move(data));
+  }
+  // Exclude webUI.
+  std::vector<site_engagement::mojom::SiteEngagementDetails> scores =
+      service->GetAllDetails(
+          site_engagement::SiteEngagementService::URLSets::HTTP);
+
+  auto* engagement_info = data->mutable_site_engagement();
+  for (const auto& info : scores) {
+    auto* entry = engagement_info->add_entries();
+    entry->set_url(info.origin.spec());
+    entry->set_score(info.total_score);
+  }
+
+  return std::move(continue_callback).Run(std::move(data));
+}
+
 // Fills synchronous information and kicks off concurrent tasks to fill an
 // AiData.
 void GetModelPrototypingAiData(int dom_node_id,
@@ -280,6 +307,8 @@ void GetModelPrototypingAiData(int dom_node_id,
 #if !BUILDFLAG(IS_ANDROID)
   GetTabDataForModelPrototyping(web_contents, concurrent);
 #endif
+  GetSiteEngagementScoresForModelPrototyping(web_contents->GetBrowserContext(),
+                                             concurrent.CreateCallback());
   std::move(concurrent)
       .Done(base::BindOnce(&OnDataCollectionsComplete, std::move(callback),
                            std::move(data)));
