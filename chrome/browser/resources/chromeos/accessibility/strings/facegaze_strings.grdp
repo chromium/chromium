@@ -123,4 +123,7 @@
   <message name="IDS_FACEGAZE_STATE_LONG_CLICK_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that a drag and drop action is currently in progress.">
     Drag and drop in progress
   </message>
+  <message name="IDS_FACEGAZE_STATE_DICTATION_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that dictation is currently active.">
+    Dictation active
+  </message>
 </grit-part>

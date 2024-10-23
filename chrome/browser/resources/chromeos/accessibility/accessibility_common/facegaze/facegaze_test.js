@@ -1818,6 +1818,59 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLongClickStateMessage', async function() {
   assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
 
+AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_DICTATION);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(0);
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Toggle dictation.
+  const result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result, false);
+
+  assertEquals(
+      'Start or stop dictation (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Make bubble controller think that Dictation is active.
+  this.getFaceGaze().bubbleController_.getState_ = () => {
+    return {
+      paused: false,
+      scrollModeActive: false,
+      longClickActive: false,
+      dictationActive: true,
+    };
+  };
+
+  // FaceGaze should display important messages about the state after the
+  // timeout has elapsed.
+  this.triggerBubbleControllerTimeout();
+  assertEquals(
+      'Dictation active',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Toggle dictation off.
+  this.processFaceLandmarkerResult(result);
+  this.getFaceGaze().bubbleController_.getState_ = () => {
+    return {
+      paused: false,
+      scrollModeActive: false,
+      longClickActive: false,
+      dictationActive: false,
+    };
+  };
+  this.triggerBubbleControllerTimeout();
+  assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+});
+
 AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
   const gestureToMacroName =
       new Map()

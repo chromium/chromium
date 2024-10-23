@@ -38,6 +38,7 @@ export class FaceGaze {
         paused: this.gestureHandler_.isPaused(),
         scrollModeActive: this.mouseController_.isScrollModeActive(),
         longClickActive: this.mouseController_.isLongClickActive(),
+        dictationActive: isDictationActive(),
       };
     });
 
