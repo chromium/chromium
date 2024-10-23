@@ -10,6 +10,7 @@ import("//extensions/buildflags/buildflags.gni")
 # TODO(https://crbug.com/356905053): Continue moving more here.
 extensions_api_schema_files_ = [
   "alarms.idl",
+  "i18n.json",
   "runtime.json",
   "storage.json",
   "test.json",
@@ -57,7 +58,6 @@ if (enable_extensions) {
     "guest_view_internal.json",
     "management.json",
     "hid.idl",
-    "i18n.json",
     "icon_variants.idl",
     "idle.json",
     "metrics_private.json",
