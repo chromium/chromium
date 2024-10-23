@@ -297,6 +297,13 @@
         </cr-button>
       </div>
     </div>
+
+    <template is="dom-if"
+        if="[[getConflictingGestureDisplayText_(selectedGesture_)]]" restamp>
+      <div id="conflictingGestureText" tabindex="-1" slot="footer">
+        [[getConflictingGestureDisplayText_(selectedGesture_)]]
+      </div>
+    </template>
   </template>
 
   <template is="dom-if" if="[[showGestureThreshold_]]"

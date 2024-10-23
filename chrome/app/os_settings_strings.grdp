@@ -1580,6 +1580,15 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_MAX_LABEL" desc="Label for the 'Stable' side of the FaceGaze velocity threshold slider.'">
     Stable
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CONFLICTING_GESTURES_SINGLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with another gesture.">
+    "<ph name="MAIN_GESTURE">$1<ex>Smile</ex></ph>" may overlap with "<ph name="CONFLICTING_GESTURE">$2<ex>Squint left eye</ex></ph>". If possible, try picking a different gesture.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CONFLICTING_GESTURES_DOUBLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with two other gestures.">
+    "<ph name="MAIN_GESTURE">$1<ex>Smile</ex></ph>" may overlap with "<ph name="CONFLICTING_GESTURE_ONE">$2<ex>Squint left eye</ex></ph>" and "<ph name="CONFLICTING_GESTURE_TWO">$3<ex>Squint right eye</ex></ph>". If possible, try picking a different gesture.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CONFLICTING_GESTURES_TRIPLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with three other gestures.">
+    "<ph name="MAIN_GESTURE">$1<ex>Smile</ex></ph>" may overlap with "<ph name="CONFLICTING_GESTURE_ONE">$2<ex>Squint left eye</ex></ph>", "<ph name="CONFLICTING_GESTURE_TWO">$3<ex>Squint right eye</ex></ph>", and "<ph name="CONFLICTING_GESTURE_THREE">$4<ex>Blink eyes</ex></ph>". If possible, try picking a different gesture.
+  </message>
   <message name="IDS_SETTINGS_FLASH_NOTIFICATIONS_LABEL" desc="The label of a setting that flashes the screen in a color when a notification is received.">
     Flash notifications
   </message>

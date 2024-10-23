@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AddDialogPage, AssignedKeyCombo, FaceGazeAddActionDialogElement, FaceGazeCommandPair, setShortcutInputProviderForTesting} from 'chrome://os-settings/lazy_load.js';
+import {AddDialogPage, AssignedKeyCombo, ConflictingGestures, FaceGazeAddActionDialogElement, FaceGazeCommandPair, setShortcutInputProviderForTesting} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, CrSettingsPrefs, CrSliderElement, FaceGazeSubpageBrowserProxyImpl, IronListElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
@@ -155,11 +155,11 @@ suite('<facegaze-actions-add-dialog>', () => {
     assertNull(gestureList);
   }
 
-  function setGesturesListSelection() {
+  function setGesturesListSelection(gesture: FacialGesture) {
     const gestureList = assertGesturesList();
 
     // Cast to Object to satisfy typing for IronListElement.selectedItem.
-    gestureList.selectedItem = FacialGesture.BROW_INNER_UP as Object;
+    gestureList.selectedItem = gesture as Object;
   }
 
   function assertVideoElement(): HTMLVideoElement {
@@ -253,6 +253,13 @@ suite('<facegaze-actions-add-dialog>', () => {
     return previousButton;
   }
 
+  function getConflictingGestureText(): HTMLElement|null {
+    const text: HTMLElement|null =
+        faceGazeAddActionDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#conflictingGestureText');
+    return text;
+  }
+
   function getThresholdPreviousButton(): CrButtonElement {
     const previousButton = getButton('#faceGazeThresholdPreviousButton');
     assertFalse(previousButton.disabled);
@@ -275,7 +282,7 @@ suite('<facegaze-actions-add-dialog>', () => {
     flush();
 
     assertGesturesListNoSelection();
-    setGesturesListSelection();
+    setGesturesListSelection(FacialGesture.BROW_INNER_UP);
 
     const gestureNextButton = getGestureNextButton();
     assertFalse(gestureNextButton.disabled);
@@ -740,7 +747,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         flush();
 
         assertGesturesListNoSelection();
-        setGesturesListSelection();
+        setGesturesListSelection(FacialGesture.BROW_INNER_UP);
 
         const gestureNextButton = getGestureNextButton();
         assertFalse(gestureNextButton.disabled);
@@ -826,7 +833,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         actionNextButton.click();
         flush();
         assertGesturesListNoSelection();
-        setGesturesListSelection();
+        setGesturesListSelection(FacialGesture.BROW_INNER_UP);
         assertEquals(
             0, browserProxy.getCallCount('toggleGestureInfoForSettings'));
 
@@ -937,6 +944,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         const gestureCountDiv = getGestureCountDiv();
         assertEquals(`Not detected`, gestureCountDiv.innerText);
       });
+
   test(
       'gesture threshold dynamic bar updates when gesture info received with selected gesture info at any confidence',
       async () => {
@@ -955,4 +963,49 @@ suite('<facegaze-actions-add-dialog>', () => {
         ]);
         assertEquals('30%', sliderBar.style.width);
       });
+
+  test('conflicting gesture text visible', async () => {
+    await initPage();
+    setActionsListSelectionToMouseClick();
+    const actionNextButton = getActionNextButton();
+    assertFalse(actionNextButton.disabled);
+    actionNextButton.click();
+    await flushTasks();
+
+    assertGesturesListNoSelection();
+
+    for (const gesture of Object.keys(ConflictingGestures)) {
+      // Ensure a valid string is displayed for all gestures that have
+      // conflicts.
+      setGesturesListSelection(gesture as FacialGesture);
+      await flushTasks();
+
+      const text = getConflictingGestureText();
+      assertTrue(!!text);
+      assertFalse(text.hidden);
+      assertTrue(Boolean(text.innerText));
+    }
+  });
+
+  test('conflicting gesture text hidden', async () => {
+    await initPage();
+    setActionsListSelectionToMouseClick();
+    const actionNextButton = getActionNextButton();
+    assertFalse(actionNextButton.disabled);
+    actionNextButton.click();
+    await flushTasks();
+
+    assertGesturesListNoSelection();
+
+    for (const gesture of Object.values(FacialGesture)) {
+      if (gesture in ConflictingGestures) {
+        continue;
+      }
+
+      // Ensure text is hidden for gestures that don't have conflicts.
+      setGesturesListSelection(gesture as FacialGesture);
+      await flushTasks();
+      assertFalse(!!getConflictingGestureText());
+    }
+  });
 });

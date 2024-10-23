@@ -36,7 +36,7 @@ import {getShortcutInputProvider} from '../device_page/shortcut_input_mojo_inter
 
 import {getTemplate} from './facegaze_actions_add_dialog.html.js';
 import type {KeyCombination} from './facegaze_constants.js';
-import {AssignedKeyCombo, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeLocationDependentActions, FaceGazeLookGestures, FaceGazeUtils} from './facegaze_constants.js';
+import {AssignedKeyCombo, ConflictingGestures, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeLocationDependentActions, FaceGazeLookGestures, FaceGazeUtils} from './facegaze_constants.js';
 import type {FaceGazeSubpageBrowserProxy} from './facegaze_subpage_browser_proxy.js';
 import {FaceGazeSubpageBrowserProxyImpl} from './facegaze_subpage_browser_proxy.js';
 
@@ -393,6 +393,36 @@ export class FaceGazeAddActionDialogElement extends
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {
     return this.i18n(FaceGazeUtils.getGestureDisplayTextName(gesture));
+  }
+
+  private getConflictingGestureDisplayText_(gesture: FacialGesture|null): string
+      |null {
+    if (!gesture || !ConflictingGestures[gesture]) {
+      return null;
+    }
+
+    const conflicts = ConflictingGestures[gesture];
+    const substitutions = [];
+    for (const conflict of conflicts) {
+      substitutions.push(this.getGestureDisplayText_(conflict));
+    }
+
+    substitutions.unshift(this.getGestureDisplayText_(gesture));
+
+    // Decide which localized string to use based on the number of conflicting
+    // gestures.
+    let label;
+    if (conflicts.length === 1) {
+      label = 'faceGazeConflictingGesturesSingleLabel';
+    } else if (conflicts.length === 2) {
+      label = 'faceGazeConflictingGesturesDoubleLabel';
+    } else if (conflicts.length === 3) {
+      label = 'faceGazeConflictingGesturesTripleLabel';
+    } else {
+      throw new Error('Got an unexpected number of conflicting gestures');
+    }
+
+    return this.i18n(label, ...substitutions);
   }
 
   private getGestureIconName_(gesture: FacialGesture|null): string {

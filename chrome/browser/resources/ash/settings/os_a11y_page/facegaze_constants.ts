@@ -60,6 +60,30 @@ export const FaceGazeLookGestures: FacialGesture[] = [
   FacialGesture.EYES_LOOK_UP,
 ];
 
+export const ConflictingGestures: Partial<
+    Record<FacialGesture, FacialGesture[]>> = {
+  // Conflicts because some users may squint their eyes in order to lower their
+  // eyebrows.
+  [FacialGesture.BROWS_DOWN]:
+      [FacialGesture.EYE_SQUINT_LEFT, FacialGesture.EYE_SQUINT_RIGHT],
+  // Conflicts because the user's mouth needs to be open in order to perform
+  // the JAW_LEFT and JAW_RIGHT gestures.
+  [FacialGesture.JAW_LEFT]: [FacialGesture.JAW_OPEN],
+  [FacialGesture.JAW_RIGHT]: [FacialGesture.JAW_OPEN],
+  // Conflicts because MOUTH_FUNNEL is essentially a MOUTH_PUCKER with an open
+  // mouth.
+  [FacialGesture.MOUTH_FUNNEL]: [FacialGesture.MOUTH_PUCKER],
+  // Conflicts because lips may be pursed when performing MOUTH_LEFT and
+  // MOUTH_RIGHT.
+  [FacialGesture.MOUTH_LEFT]: [FacialGesture.MOUTH_PUCKER],
+  [FacialGesture.MOUTH_RIGHT]: [FacialGesture.MOUTH_PUCKER],
+  [FacialGesture.MOUTH_SMILE]: [
+    FacialGesture.MOUTH_UPPER_UP,
+    FacialGesture.EYE_SQUINT_LEFT,
+    FacialGesture.EYE_SQUINT_RIGHT,
+  ],
+};
+
 export interface KeyCombination {
   key: number;
   keyDisplay: string;
