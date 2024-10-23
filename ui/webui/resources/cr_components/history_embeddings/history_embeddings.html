@@ -12,6 +12,7 @@
       var(--cr-card-background-color));
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
+  padding-block: var(--cr-history-embeddings-card-padding-block, 0);
 }
 
 :host([enable-answers_]) .card {
@@ -19,7 +20,8 @@
       var(--cr-fallback-color-surface1));
   border-radius: 16px;
   box-shadow: none;
-  padding-block: var(--cr-history-embeddings-card-padding-block, 16px);
+  padding-block: var(
+      --cr-history-embeddings-card-padding-block-with-answers, 16px);
 }
 
 h2 {
@@ -201,10 +203,17 @@ cr-url-list-item:hover + hr {
 .footer {
   display: flex;
   align-items: center;
+  font-size: var(--cr-history-embeddings-footer-font-size, inherit);
+  line-height: var(--cr-history-embeddings-footer-line-height, inherit);
   gap: 8px;
-  padding: 16px 24px 24px;
+  padding: var(--cr-history-embeddings-footer-padding, 16px 24px 24px);
   color: var(--color-history-embeddings-foreground-subtle,
       var(--cr-secondary-text-color));
+}
+
+:host([enable-answers_]) .footer {
+  padding: var(--cr-history-embeddings-footer-padding-with-answers,
+      16px 24px 24px);
 }
 
 .source-passage {

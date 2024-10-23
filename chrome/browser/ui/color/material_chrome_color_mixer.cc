@@ -310,7 +310,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysGradientTertiary};
   mixer[kColorHistoryEmbeddingsImageBackgroundGradientStart] = {
       ui::kColorSysGradientPrimary};
-  mixer[kColorHistoryEmbeddingsWithAnswersBackground] = {ui::kColorSysSurface1};
+  mixer[kColorHistoryEmbeddingsWithAnswersBackground] = {
+      ui::kColorSysBaseContainerElevated};
 
   mixer[kColorTabHoverCardSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorInfoBarBackground] = {ui::kColorSysBase};
