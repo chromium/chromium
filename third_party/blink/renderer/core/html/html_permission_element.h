@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/frame/cached_permission_status.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
@@ -37,7 +38,8 @@ class CORE_EXPORT HTMLPermissionElement final
       public mojom::blink::PermissionObserver,
       public mojom::blink::EmbeddedPermissionControlClient,
       public ScrollSnapshotClient,
-      public LocalFrameView::LifecycleNotificationObserver {
+      public LocalFrameView::LifecycleNotificationObserver,
+      public CachedPermissionStatus::Client {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -57,6 +59,11 @@ class CORE_EXPORT HTMLPermissionElement final
                                   kValidationstatuschange)
 
   void Trace(Visitor*) const override;
+
+  // CachedPermissionStatus::Client overrides.
+  void OnPermissionStatusInitialized(
+      mojom::blink::PermissionName permission,
+      mojom::blink::PermissionStatus status) override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
@@ -351,7 +358,7 @@ class CORE_EXPORT HTMLPermissionElement final
   // populated only *after* the permission element has been registered in
   // browser process.
   bool IsRegisteredInBrowserProcess() const {
-    return !permission_status_map_.empty();
+    return !permission_observer_receivers_.empty();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
@@ -410,7 +417,11 @@ class CORE_EXPORT HTMLPermissionElement final
   //   alive temporary disabling reason".
   void RefreshDisableReasonsAndUpdateTimer();
 
-  void UpdateAppearance();
+  // Called when the |permission_status_map_| is updated to
+  // - Ensure that |aggregated_permission_status_| and
+  //   |initial_aggregated_permission_status_| are updated.
+  // - Update appearance based on the current statuses.
+  void UpdatePermissionStatusAndAppearance();
 
   void UpdateText();
 
@@ -456,11 +467,6 @@ class CORE_EXPORT HTMLPermissionElement final
     return it != clicking_disabled_reasons_.end() &&
            it->value == base::TimeTicks::Max();
   }
-
-  // Called when the |permission_status_map_| is updated to ensure that
-  // |aggregated_permission_status_| and |initial_aggregated_permission_status_|
-  // are updated.
-  void PermissionStatusUpdated();
 
   bool PermissionsGranted() const {
     return aggregated_permission_status_.has_value() &&

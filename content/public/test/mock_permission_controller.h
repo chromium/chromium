@@ -43,6 +43,10 @@ class MockPermissionController : public PermissionController {
               GetPermissionResultForCurrentDocument,
               (blink::PermissionType permission,
                RenderFrameHost* render_frame_host));
+  MOCK_METHOD(blink::mojom::PermissionStatus,
+              GetCombinedPermissionAndDeviceStatus,
+              (blink::PermissionType permission,
+               RenderFrameHost* render_frame_host));
   MOCK_METHOD(content::PermissionResult,
               GetPermissionResultForOriginWithoutContext,
               (blink::PermissionType permission,
