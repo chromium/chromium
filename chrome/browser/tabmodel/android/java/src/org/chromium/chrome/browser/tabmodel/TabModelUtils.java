@@ -304,8 +304,8 @@ public class TabModelUtils {
         return selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(tab.isIncognito());
     }
 
-    /** Converts a {@link TabList} to a {@link List<Tab>}. A null input returns an empty list. */
-    public static @Nullable List<Tab> convertTabListToListOfTabs(@Nullable TabList tabList) {
+    /** Converts a {@link TabList} to a {@link List<Tab>}. */
+    public static @NonNull List<Tab> convertTabListToListOfTabs(@Nullable TabList tabList) {
         ArrayList<Tab> list = new ArrayList<>();
         if (tabList == null) return list;
 
@@ -315,11 +315,8 @@ public class TabModelUtils {
         return list;
     }
 
-    /**
-     * Converts a {@link TabList} to a {@link List<Integer>} tab ids. A null input returns an empty
-     * list.
-     */
-    public static @Nullable List<Integer> convertTabListToListOfTabIds(@Nullable TabList tabList) {
+    /** Converts a {@link TabList} to a {@link List<Integer>} tab ids. */
+    public static @NonNull List<Integer> convertTabListToListOfTabIds(@Nullable TabList tabList) {
         ArrayList<Integer> list = new ArrayList<>();
         if (tabList == null) return list;
 
