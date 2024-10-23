@@ -906,7 +906,7 @@ void AXObjectCacheImpl::RemoveInspectorAgent(
 
 void AXObjectCacheImpl::EnsureRelationCacheAndInitialTree() {
   if (!relation_cache_) {
-    relation_cache_ = MakeGarbageCollected<AXRelationCache>(this);
+    relation_cache_ = std::make_unique<AXRelationCache>(this);
     relation_cache_->Init();
 
     // Build out initial tree so that AXObjects exist for
@@ -6005,7 +6005,6 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(popup_document_);
   visitor->Trace(last_selected_from_active_descendant_);
-  visitor->Trace(relation_cache_);
   visitor->Trace(layout_object_mapping_);
   visitor->Trace(inline_text_box_object_mapping_);
   visitor->Trace(active_aria_modal_dialog_);
