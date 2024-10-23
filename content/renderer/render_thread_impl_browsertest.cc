@@ -441,7 +441,16 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionForegrounded) {
   testing::Mock::AllowLeak(main_thread_scheduler_);
 }
 
-TEST_F(RenderThreadImplBrowserDeathTest, TransferSharedLastForegroundTime) {
+// TODO(crbug.com/375065072): Re-enable once not flaky.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TransferSharedLastForegroundTime \
+  DISABLED_TransferSharedLastForegroundTime
+#else
+#define MAYBE_TransferSharedLastForegroundTime TransferSharedLastForegroundTime
+#endif
+TEST_F(RenderThreadImplBrowserDeathTest,
+       MAYBE_TransferSharedLastForegroundTime) {
   auto time_memory = base::AtomicSharedMemory<base::TimeTicks>::Create();
   ASSERT_TRUE(time_memory.has_value());
 
