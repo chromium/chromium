@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -618,11 +619,11 @@ void LogPredictionQualityMetrics(
   const char* source = GetQualityMetricPredictionSource(prediction_source);
   const char* suffix = GetQualityMetricTypeSuffix(metric_type);
   std::string raw_data_histogram =
-      base::JoinString({"Autofill.FieldPrediction.", source, suffix}, "");
-  std::string aggregate_histogram = base::JoinString(
-      {"Autofill.FieldPredictionQuality.Aggregate.", source, suffix}, "");
-  std::string type_specific_histogram = base::JoinString(
-      {"Autofill.FieldPredictionQuality.ByFieldType.", source, suffix}, "");
+      base::StrCat({"Autofill.FieldPrediction.", source, suffix});
+  std::string aggregate_histogram = base::StrCat(
+      {"Autofill.FieldPredictionQuality.Aggregate.", source, suffix});
+  std::string type_specific_histogram = base::StrCat(
+      {"Autofill.FieldPredictionQuality.ByFieldType.", source, suffix});
 
   const FieldTypeSet& possible_types =
       metric_type == AutofillMetrics::TYPE_AUTOCOMPLETE_BASED
