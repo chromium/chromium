@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/task/common/task_annotator.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -48,6 +49,7 @@ void LatencyInfoSwapPromise::OnCommit() {
   int64_t trace_id = GetTraceId();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
                 ui::LatencyInfo::FillTraceEvent(
                     ctx, trace_id,
                     perfetto::protos::pbzero::ChromeLatencyInfo2::Step::

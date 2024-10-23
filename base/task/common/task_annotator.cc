@@ -251,6 +251,24 @@ void TaskAnnotator::MaybeEmitIncomingTaskFlow(perfetto::EventContext& ctx,
 }
 
 // static
+void TaskAnnotator::EmitTaskTimingDetails(perfetto::EventContext& ctx) {
+  auto* const tracker = GetCurrentLongTaskTracker();
+  if (tracker) {
+    base::TimeTicks event_start_time = base::TimeTicks::Now();
+    base::TimeTicks task_start_time = tracker->GetTaskStartTime();
+
+    perfetto::protos::pbzero::CurrentTask* current_task =
+        ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+            ->set_current_task();
+    current_task->set_event_offset_from_task_start_time_us(
+        static_cast<uint64_t>(
+            (event_start_time - task_start_time).InMicroseconds()));
+    current_task->set_task_start_time_us(
+        static_cast<uint64_t>(task_start_time.since_origin().InMicroseconds()));
+  }
+}
+
+// static
 void TaskAnnotator::MaybeEmitDelayAndPolicy(perfetto::EventContext& ctx,
                                             const PendingTask& task) {
   if (task.delayed_run_time.is_null()) {
@@ -303,22 +321,25 @@ TaskAnnotator::ScopedSetIpcHash::~ScopedSetIpcHash() {
 
 TaskAnnotator::LongTaskTracker::LongTaskTracker(const TickClock* tick_clock,
                                                 PendingTask& pending_task,
-                                                TaskAnnotator* task_annotator)
+                                                TaskAnnotator* task_annotator,
+                                                TimeTicks task_start_time)
     : resetter_(&current_long_task_tracker, this),
       tick_clock_(tick_clock),
+      task_start_time_(task_start_time),
       pending_task_(pending_task),
-      task_annotator_(task_annotator) {
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("scheduler.long_tasks", &is_tracing_);
-  if (is_tracing_) {
-    task_start_time_ = tick_clock_->NowTicks();
-  }
-}
+      task_annotator_(task_annotator) {}
 
 TaskAnnotator::LongTaskTracker::~LongTaskTracker() {
   DCHECK_EQ(this, GetCurrentLongTaskTracker());
 
-  if (!is_tracing_)
+  // Use this to ensure that NowTicks() are not called
+  // unnecessarily.
+  bool is_tracing = false;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("scheduler.long_tasks", &is_tracing);
+
+  if (!is_tracing) {
     return;
+  }
 
   task_end_time_ = tick_clock_->NowTicks();
   MaybeTraceInterestingTaskDetails();

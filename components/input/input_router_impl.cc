@@ -688,6 +688,7 @@ void InputRouterImpl::TouchEventHandled(
   int64_t trace_id = latency.trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
                 ui::LatencyInfo::FillTraceEvent(
                     ctx, trace_id,
                     ChromeLatencyInfo2::Step::STEP_TOUCH_EVENT_HANDLED,
@@ -726,6 +727,7 @@ void InputRouterImpl::GestureEventHandled(
   int64_t trace_id = latency.trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
                 ui::LatencyInfo::FillTraceEvent(
                     ctx, trace_id,
                     ChromeLatencyInfo2::Step::STEP_GESTURE_EVENT_HANDLED,

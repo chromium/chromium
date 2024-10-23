@@ -2239,7 +2239,8 @@ AggregatedFrame SurfaceAggregator::Aggregate(
           // add all values that need to be added, before moving on to updating
           // a different field.
           for (int64_t id : flow_ids_for_resolved_frames_) {
-            chrome_graphics_pipeline->add_aggregated_frames_ids(id);
+            chrome_graphics_pipeline->add_aggregated_surface_frame_trace_ids(
+                id);
           }
           for (int64_t id : flow_ids_for_resolved_frames_) {
             ctx.event()->add_terminating_flow_ids(id);

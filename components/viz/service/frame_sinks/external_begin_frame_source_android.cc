@@ -183,7 +183,8 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
 
   (*self)->OnVSync(frame_time_nanos, possible_deadlines, self);
 
-  TRACE_EVENT_END("toplevel", [&](perfetto::EventContext ctx) {
+  TRACE_EVENT_END("toplevel,graphics.pipeline", [&](perfetto::EventContext
+                                                        ctx) {
     auto* data = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                      ->set_android_choreographer_frame_callback_data();
     auto frame_time_us = base::TimeTicks::FromJavaNanoTime(frame_time_nanos)

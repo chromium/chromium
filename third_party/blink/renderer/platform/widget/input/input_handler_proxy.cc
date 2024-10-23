@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/profiler/sample_metadata.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -272,6 +273,7 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
   int64_t trace_id = event->latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
                 ui::LatencyInfo::FillTraceEvent(
                     ctx, trace_id,
                     ChromeLatencyInfo2::Step::STEP_HANDLE_INPUT_EVENT_IMPL);
@@ -567,6 +569,7 @@ void InputHandlerProxy::GenerateAndDispatchSytheticScrollPrediction(
   int64_t trace_id = event_with_callback->latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
                 ui::LatencyInfo::FillTraceEvent(
                     ctx, trace_id,
                     ChromeLatencyInfo2::Step::STEP_HANDLE_INPUT_EVENT_IMPL);

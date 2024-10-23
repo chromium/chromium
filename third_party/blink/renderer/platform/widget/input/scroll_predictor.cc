@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/common/task_annotator.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -74,6 +75,7 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
   TRACE_EVENT(
       "input,benchmark,latencyInfo", "LatencyInfo.Flow",
       [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         ChromeLatencyInfo2* latency_info = ui::LatencyInfo::FillTraceEvent(
             ctx, trace_id,
             ChromeLatencyInfo2::Step::STEP_RESAMPLE_SCROLL_EVENTS);
@@ -170,6 +172,7 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
         TRACE_EVENT(
             "input,benchmark,latencyInfo", "LatencyInfo.Flow",
             [&](perfetto::EventContext ctx) {
+              base::TaskAnnotator::EmitTaskTimingDetails(ctx);
               ui::LatencyInfo::FillTraceEvent(
                   ctx, trace_id,
                   ChromeLatencyInfo2::Step::
