@@ -16,6 +16,7 @@ const QuotaClientTypes& AllQuotaClientTypes() {
       QuotaClientType::kServiceWorkerCache,
       QuotaClientType::kServiceWorker,
       QuotaClientType::kBackgroundFetch,
+      QuotaClientType::kMediaLicense,
   }};
   return *all;
 }

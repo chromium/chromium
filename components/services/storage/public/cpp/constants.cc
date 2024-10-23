@@ -26,8 +26,6 @@ const base::FilePath::CharType kServiceWorkerDirectory[] =
 
 // The path where media license data is persisted on disk, relative to the path
 // for the respective storage bucket.
-// TODO(crbug.com/40272342): Remove this and the file name below after the
-// deletion logic for the actual MediaLicense.db lands and completes.
 const base::FilePath::CharType kMediaLicenseDirectory[] =
     FILE_PATH_LITERAL("Media Licenses");
 
