@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DATA_SHARING_TEST_SUPPORT_MOCK_DATA_SHARING_SERVICE_H_
 #define COMPONENTS_DATA_SHARING_TEST_SUPPORT_MOCK_DATA_SHARING_SERVICE_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "components/data_sharing/public/data_sharing_service.h"
@@ -70,6 +72,7 @@ class MockDataSharingService : public DataSharingService {
       GetSharedEntitiesPreview,
       void(const GroupToken&,
            base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>));
+  MOCK_METHOD1(SetUIDelegate, void(std::unique_ptr<DataSharingUIDelegate>));
   MOCK_METHOD0(GetUIDelegate, DataSharingUIDelegate*());
   MOCK_METHOD0(GetServiceStatus, ServiceStatus());
 };

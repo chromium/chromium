@@ -10,8 +10,6 @@ source_set("model") {
     "data_sharing_service_factory.mm",
     "data_sharing_tab_helper.h",
     "data_sharing_tab_helper.mm",
-    "data_sharing_ui_delegate_ios.h",
-    "data_sharing_ui_delegate_ios.mm",
   ]
   public_deps = [
     "//base",
@@ -30,6 +28,20 @@ source_set("model") {
     "//ios/chrome/common",
     "//ios/web/public",
     "//services/network/public/cpp",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("ui_delegate") {
+  sources = [
+    "data_sharing_ui_delegate_ios.h",
+    "data_sharing_ui_delegate_ios.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//components/data_sharing/public",
+    "//ios/chrome/browser/share_kit/model",
+    "//url",
   ]
   frameworks = [ "Foundation.framework" ]
 }

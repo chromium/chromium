@@ -213,6 +213,10 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
           callback) = 0;
 
   // Get the current DataSharingUIDelegate instance.
+  virtual void SetUIDelegate(
+      std::unique_ptr<DataSharingUIDelegate> ui_delegate) = 0;
+
+  // Get the current DataSharingUIDelegate instance.
   virtual DataSharingUIDelegate* GetUIDelegate() = 0;
 
   // Get the current ServiceStatus.

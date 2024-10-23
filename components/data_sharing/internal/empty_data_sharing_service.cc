@@ -100,6 +100,9 @@ void EmptyDataSharingService::GetSharedEntitiesPreview(
     base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
         callback) {}
 
+void EmptyDataSharingService::SetUIDelegate(
+    std::unique_ptr<DataSharingUIDelegate> ui_delegate) {}
+
 DataSharingUIDelegate* EmptyDataSharingService::GetUIDelegate() {
   return nullptr;
 }

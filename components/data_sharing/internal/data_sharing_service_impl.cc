@@ -559,6 +559,11 @@ void DataSharingServiceImpl::GetSharedEntitiesPreview(
   preview_server_proxy_->GetSharedDataPreview(group_token, std::move(callback));
 }
 
+void DataSharingServiceImpl::SetUIDelegate(
+    std::unique_ptr<DataSharingUIDelegate> ui_delegate) {
+  ui_delegate_ = std::move(ui_delegate);
+}
+
 DataSharingUIDelegate* DataSharingServiceImpl::GetUIDelegate() {
   return ui_delegate_.get();
 }

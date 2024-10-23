@@ -5,14 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_DATA_SHARING_MODEL_DATA_SHARING_UI_DELEGATE_IOS_H_
 #define IOS_CHROME_BROWSER_DATA_SHARING_MODEL_DATA_SHARING_UI_DELEGATE_IOS_H_
 
-#include "components/data_sharing/public/data_sharing_ui_delegate.h"
+#import "base/memory/raw_ptr.h"
+#import "components/data_sharing/public/data_sharing_ui_delegate.h"
+
+class ShareKitService;
 
 namespace data_sharing {
 
 // IOS implementation of DataSharingUIDelegate.
 class DataSharingUIDelegateIOS : public DataSharingUIDelegate {
  public:
-  explicit DataSharingUIDelegateIOS();
+  explicit DataSharingUIDelegateIOS(ShareKitService* share_kit_service);
   ~DataSharingUIDelegateIOS() override;
 
   DataSharingUIDelegateIOS(const DataSharingUIDelegateIOS&) = delete;
@@ -22,6 +25,9 @@ class DataSharingUIDelegateIOS : public DataSharingUIDelegate {
 
   // DataSharingUIDelegate implementation.
   void HandleShareURLIntercepted(const GURL& url) override;
+
+ private:
+  raw_ptr<ShareKitService> share_kit_service_;
 };
 
 }  // namespace data_sharing
