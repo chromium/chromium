@@ -111,6 +111,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [self setUpTopButtons];
   [self setUpTableContent];
   [self updatePrimaryAccount];
+  self.tableView.tableFooterView = [[UIView alloc]
+      initWithFrame:CGRectMake(0, 0, CGFLOAT_EPSILON, CGFLOAT_EPSILON)];
   [self resize];
 }
 
