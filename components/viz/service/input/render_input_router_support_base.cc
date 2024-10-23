@@ -88,14 +88,29 @@ RenderInputRouterSupportBase* RenderInputRouterSupportBase::GetRootView() {
   return this;
 }
 
+const LocalSurfaceId& RenderInputRouterSupportBase::GetLocalSurfaceId() const {
+  // Not needed for input handling on Viz with InputVizard.
+  NOTREACHED();
+}
+
 const FrameSinkId& RenderInputRouterSupportBase::GetFrameSinkId() const {
   return frame_sink_id_;
+}
+
+gfx::Size RenderInputRouterSupportBase::GetVisibleViewportSize() {
+  // TODO(374119530): Implement GetVisibleViewportSize in Viz.
+  NOTREACHED();
 }
 
 void RenderInputRouterSupportBase::OnAutoscrollStart() {
   // Related to mouse events handling which on VizCompositor which is out of
   // scope currently for InputVizard.
   NOTREACHED();
+}
+
+const DisplayHitTestQueryMap&
+RenderInputRouterSupportBase::GetDisplayHitTestQuery() const {
+  return delegate_->GetDisplayHitTestQuery();
 }
 
 float RenderInputRouterSupportBase::GetDeviceScaleFactor() const {

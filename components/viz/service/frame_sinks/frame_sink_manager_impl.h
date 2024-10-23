@@ -358,6 +358,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
           destination_token,
       std::unique_ptr<CopyOutputResult> copy_output_result);
 
+  bool IsFrameSinkIdInRootSinkMap(const FrameSinkId& frame_sink_id);
+
   base::WeakPtr<FrameSinkManagerImpl> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

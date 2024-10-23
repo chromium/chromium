@@ -1082,6 +1082,11 @@ void FrameSinkManagerImpl::OnScreenshotCaptured(
                                 std::move(copy_output_result));
 }
 
+bool FrameSinkManagerImpl::IsFrameSinkIdInRootSinkMap(
+    const FrameSinkId& frame_sink_id) {
+  return root_sink_map_.find(frame_sink_id) != root_sink_map_.end();
+}
+
 gpu::SharedImageInterface* FrameSinkManagerImpl::GetSharedImageInterface() {
   DCHECK(shared_image_interface_provider_);
   return shared_image_interface_provider_->GetSharedImageInterface();

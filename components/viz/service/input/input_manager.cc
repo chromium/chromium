@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/viz/service/input/render_input_router_delegate_impl.h"
+#include "components/viz/service/input/render_input_router_support_child_frame.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_input_receiver_compat.h"
@@ -20,6 +21,7 @@
 #include "components/input/android/scoped_input_receiver.h"
 #include "components/input/android/scoped_input_receiver_callbacks.h"
 #include "components/input/android/scoped_input_transfer_token.h"
+#include "components/viz/service/input/render_input_router_support_android.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/android/scoped_a_native_window.h"
@@ -29,8 +31,12 @@ namespace viz {
 
 FrameSinkMetadata::FrameSinkMetadata(
     uint32_t grouping_id,
+    std::unique_ptr<RenderInputRouterSupportBase> support,
     std::unique_ptr<RenderInputRouterDelegateImpl> delegate)
-    : grouping_id(grouping_id), rir_delegate(std::move(delegate)) {}
+    : grouping_id(grouping_id),
+      rir_support(std::move(support)),
+      rir_delegate(std::move(delegate)) {}
+
 FrameSinkMetadata::~FrameSinkMetadata() = default;
 
 FrameSinkMetadata::FrameSinkMetadata(FrameSinkMetadata&& other) = default;
@@ -124,7 +130,11 @@ void InputManager::OnCreateCompositorFrameSink(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   frame_sink_metadata_map_.emplace(std::make_pair(
-      frame_sink_id, FrameSinkMetadata{grouping_id, std::move(rir_delegate)}));
+      frame_sink_id,
+      FrameSinkMetadata{grouping_id,
+                        MakeRenderInputRouterSupport(render_input_router.get(),
+                                                     frame_sink_id),
+                        std::move(rir_delegate)}));
 
   rir_map_.emplace(
       std::make_pair(frame_sink_id, std::move(render_input_router)));
@@ -164,6 +174,10 @@ input::TouchEmulator* InputManager::GetTouchEmulator(bool create_if_necessary) {
   return nullptr;
 }
 
+const DisplayHitTestQueryMap& InputManager::GetDisplayHitTestQuery() const {
+  return frame_sink_manager_->GetDisplayHitTestQuery();
+}
+
 float InputManager::GetDeviceScaleFactorForId(
     const FrameSinkId& frame_sink_id) {
   auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
@@ -176,6 +190,62 @@ FrameSinkId InputManager::GetRootCompositorFrameSinkId(
     const FrameSinkId& child_frame_sink_id) {
   return frame_sink_manager_->GetOldestRootCompositorFrameSinkId(
       child_frame_sink_id);
+}
+
+RenderInputRouterSupportBase* InputManager::GetParentRenderInputRouterSupport(
+    const FrameSinkId& frame_sink_id) {
+  auto parent_id =
+      frame_sink_manager_->GetOldestParentByChildFrameId(frame_sink_id);
+
+  CHECK(!frame_sink_manager_->IsFrameSinkIdInRootSinkMap(parent_id));
+
+  auto it = frame_sink_metadata_map_.find(parent_id);
+  if (it != frame_sink_metadata_map_.end()) {
+    return it->second.rir_support.get();
+  }
+  DUMP_WILL_BE_NOTREACHED();
+  return nullptr;
+}
+
+RenderInputRouterSupportBase* InputManager::GetRootRenderInputRouterSupport(
+    const FrameSinkId& frame_sink_id) {
+  auto parent_frame_sink_id =
+      frame_sink_manager_->GetOldestParentByChildFrameId(frame_sink_id);
+  FrameSinkId current_id = frame_sink_id;
+
+  while (
+      !frame_sink_manager_->IsFrameSinkIdInRootSinkMap(parent_frame_sink_id)) {
+    current_id = parent_frame_sink_id;
+    parent_frame_sink_id = frame_sink_manager_->GetOldestParentByChildFrameId(
+        parent_frame_sink_id);
+  }
+
+  auto it = frame_sink_metadata_map_.find(current_id);
+  if (it != frame_sink_metadata_map_.end()) {
+    return it->second.rir_support.get();
+  }
+
+  DUMP_WILL_BE_NOTREACHED();
+  return nullptr;
+}
+
+std::unique_ptr<RenderInputRouterSupportBase>
+InputManager::MakeRenderInputRouterSupport(input::RenderInputRouter* rir,
+                                           const FrameSinkId& frame_sink_id) {
+  TRACE_EVENT_INSTANT("input", "InputManager::MakeRenderInputRouterSupport");
+  auto parent_id =
+      frame_sink_manager_->GetOldestParentByChildFrameId(frame_sink_id);
+  if (frame_sink_manager_->IsFrameSinkIdInRootSinkMap(parent_id)) {
+#if BUILDFLAG(IS_ANDROID)
+    return std::make_unique<RenderInputRouterSupportAndroid>(rir, this,
+                                                             frame_sink_id);
+#else
+    // InputVizard only supports Android currently.
+    NOTREACHED_NORETURN();
+#endif
+  }
+  return std::make_unique<RenderInputRouterSupportChildFrame>(rir, this,
+                                                              frame_sink_id);
 }
 
 #if BUILDFLAG(IS_ANDROID)

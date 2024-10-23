@@ -31,9 +31,7 @@ const LocalSurfaceId& RenderInputRouterSupportChildFrame::GetLocalSurfaceId()
 
 RenderInputRouterSupportBase*
 RenderInputRouterSupportChildFrame::GetRootView() {
-  // TODO(373888054): Implement GetRootView and GetParentView for
-  // RenderInputRouterSupportChildFrame.
-  NOTREACHED();
+  return delegate()->GetRootRenderInputRouterSupport(GetFrameSinkId());
 }
 
 FrameSinkId RenderInputRouterSupportChildFrame::GetRootFrameSinkId() {
@@ -97,9 +95,7 @@ void RenderInputRouterSupportChildFrame::TransformPointToRootSurface(
 
 RenderInputRouterSupportBase*
 RenderInputRouterSupportChildFrame::GetParentViewInput() {
-  // TODO(373888054): Implement GetRootView and GetParentView for
-  // RenderInputRouterSupportChildFrame.
-  NOTREACHED();
+  return delegate()->GetParentRenderInputRouterSupport(GetFrameSinkId());
 }
 
 RenderInputRouterSupportBase*

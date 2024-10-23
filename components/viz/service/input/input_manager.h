@@ -28,6 +28,7 @@ namespace viz {
 struct FrameSinkMetadata {
   explicit FrameSinkMetadata(
       uint32_t grouping_id,
+      std::unique_ptr<RenderInputRouterSupportBase> support,
       std::unique_ptr<RenderInputRouterDelegateImpl> delegate);
 
   FrameSinkMetadata(const FrameSinkMetadata&) = delete;
@@ -39,6 +40,7 @@ struct FrameSinkMetadata {
   ~FrameSinkMetadata();
 
   uint32_t grouping_id;
+  std::unique_ptr<RenderInputRouterSupportBase> rir_support;
   std::unique_ptr<RenderInputRouterDelegateImpl> rir_delegate;
 };
 
@@ -69,11 +71,20 @@ class VIZ_SERVICE_EXPORT InputManager
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
 
   // RenderInputRouterSupportBase::Delegate implementation.
+  const DisplayHitTestQueryMap& GetDisplayHitTestQuery() const override;
   float GetDeviceScaleFactorForId(const FrameSinkId& frame_sink_id) override;
   FrameSinkId GetRootCompositorFrameSinkId(
       const FrameSinkId& child_frame_sink_id) override;
+  RenderInputRouterSupportBase* GetParentRenderInputRouterSupport(
+      const FrameSinkId& frame_sink_id) override;
+  RenderInputRouterSupportBase* GetRootRenderInputRouterSupport(
+      const FrameSinkId& frame_sink_id) override;
 
  private:
+  std::unique_ptr<RenderInputRouterSupportBase> MakeRenderInputRouterSupport(
+      input::RenderInputRouter* rir,
+      const FrameSinkId& frame_sink_id);
+
 #if BUILDFLAG(IS_ANDROID)
   void CreateAndroidInputReceiver(const FrameSinkId& frame_sink_id,
                                   const gpu::SurfaceHandle& surface_handle);

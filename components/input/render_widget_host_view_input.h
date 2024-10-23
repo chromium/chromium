@@ -123,8 +123,7 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
   // the top-level frame's renderer this is a no-op as they are already
   // properly transformed; however, coordinates received from an out-of-process
   // iframe renderer process require transformation.
-  virtual gfx::PointF TransformPointToRootCoordSpaceF(
-      const gfx::PointF& point) = 0;
+  virtual gfx::PointF TransformPointToRootCoordSpaceF(const gfx::PointF& point);
 
   // Converts a point in the root view's coordinate space to the coordinate
   // space of whichever view is used to call this method.

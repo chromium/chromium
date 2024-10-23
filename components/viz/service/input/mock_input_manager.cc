@@ -16,4 +16,9 @@ bool MockInputManager::RIRExistsForFrameSinkId(
   return base::Contains(rir_map_, frame_sink_id);
 }
 
+RenderInputRouterSupportBase* MockInputManager::GetSupportForFrameSink(
+    const FrameSinkId& id) {
+  return frame_sink_metadata_map_.find(id)->second.rir_support.get();
+}
+
 }  // namespace viz

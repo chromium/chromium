@@ -702,7 +702,7 @@ void RenderWidgetHostViewBase::ProcessGestureEvent(
 
 gfx::PointF RenderWidgetHostViewBase::TransformPointToRootCoordSpaceF(
     const gfx::PointF& point) {
-  return point;
+  return RenderWidgetHostViewInput::TransformPointToRootCoordSpaceF(point);
 }
 
 bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() {

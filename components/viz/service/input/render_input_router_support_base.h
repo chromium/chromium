@@ -23,10 +23,17 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportBase
 
   class Delegate {
    public:
+    virtual const DisplayHitTestQueryMap& GetDisplayHitTestQuery() const = 0;
     virtual float GetDeviceScaleFactorForId(
         const FrameSinkId& frame_sink_id) = 0;
     virtual FrameSinkId GetRootCompositorFrameSinkId(
         const FrameSinkId& child_frame_sink_id) = 0;
+    // The following Get(Parent/Root)RenderInputRouterSupport methods should be
+    // called only from RenderInputRouterSupportChildFrame.
+    virtual RenderInputRouterSupportBase* GetParentRenderInputRouterSupport(
+        const FrameSinkId& frame_sink_id) = 0;
+    virtual RenderInputRouterSupportBase* GetRootRenderInputRouterSupport(
+        const FrameSinkId& frame_sink_id) = 0;
   };
 
   // StylusInterface implementation.
@@ -45,8 +52,12 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportBase
   void ProcessGestureEvent(const blink::WebGestureEvent& event,
                            const ui::LatencyInfo& latency) override;
   RenderInputRouterSupportBase* GetRootView() override;
+  const LocalSurfaceId& GetLocalSurfaceId() const override;
   const FrameSinkId& GetFrameSinkId() const override;
+  gfx::Size GetVisibleViewportSize() override;
   void OnAutoscrollStart() override;
+  void UpdateCursor(const ui::Cursor& cursor) override {}
+  const DisplayHitTestQueryMap& GetDisplayHitTestQuery() const override;
   float GetDeviceScaleFactor() const final;
   bool IsPointerLocked() override;
 
