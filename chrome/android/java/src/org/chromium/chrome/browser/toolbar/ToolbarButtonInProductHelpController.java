@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -110,22 +110,22 @@ public class ToolbarButtonInProductHelpController
                                         TraceEvent.scoped(
                                                 "ToolbarButtonInProductHelpController::onPageLoadFinished")) {
                                     if (tab.isShowingErrorPage()) {
-                                        handleIPHForErrorPageShown(tab);
+                                        handleIphForErrorPageShown(tab);
                                         return;
                                     }
 
-                                    handleIPHForSuccessfulPageLoad(tab);
+                                    handleIphForSuccessfulPageLoad(tab);
                                 }
                             }
 
-                            private void handleIPHForSuccessfulPageLoad(final Tab tab) {
+                            private void handleIphForSuccessfulPageLoad(final Tab tab) {
                                 showDownloadPageTextBubble(
                                         tab, FeatureConstants.DOWNLOAD_PAGE_FEATURE);
                                 showTranslateMenuButtonTextBubble(tab);
-                                showPriceTrackingIPH(tab);
+                                showPriceTrackingIph(tab);
                             }
 
-                            private void handleIPHForErrorPageShown(Tab tab) {
+                            private void handleIphForErrorPageShown(Tab tab) {
                                 if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) {
                                     return;
                                 }
@@ -154,9 +154,10 @@ public class ToolbarButtonInProductHelpController
 
     /**
      * Attempt to show the IPH for price tracking.
+     *
      * @param tab The tab currently being displayed to the user.
      */
-    private void showPriceTrackingIPH(Tab tab) {
+    private void showPriceTrackingIph(Tab tab) {
         if (tab == null || tab.getWebContents() == null) return;
 
         if (!CommerceFeatureUtils.isShoppingListEligible(
@@ -165,8 +166,8 @@ public class ToolbarButtonInProductHelpController
             return;
         }
 
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mActivity.getResources(),
                                 FeatureConstants.SHOPPING_LIST_MENU_ITEM_FEATURE,
                                 R.string.iph_price_tracking_menu_item,
@@ -181,9 +182,9 @@ public class ToolbarButtonInProductHelpController
     }
 
     /** Attempts to show an IPH text bubble for download continuing. */
-    public void showDownloadContinuingIPH() {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+    public void showDownloadContinuingIph() {
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mActivity.getResources(),
                                 FeatureConstants.DOWNLOAD_INFOBAR_DOWNLOAD_CONTINUING_FEATURE,
                                 R.string.iph_download_infobar_download_continuing_text,
@@ -195,8 +196,8 @@ public class ToolbarButtonInProductHelpController
     }
 
     /** Attempts to show an IPH text bubble for those that trigger on a cold start. */
-    public void showColdStartIPH() {
-        showDownloadHomeIPH();
+    public void showColdStartIph() {
+        showDownloadHomeIph();
     }
 
     // Overridden public methods.
@@ -241,9 +242,9 @@ public class ToolbarButtonInProductHelpController
         return R.id.app_menu_footer;
     }
 
-    private void showDownloadHomeIPH() {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+    private void showDownloadHomeIph() {
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mActivity.getResources(),
                                 FeatureConstants.DOWNLOAD_HOME_FEATURE,
                                 R.string.iph_download_home_text,
@@ -266,8 +267,8 @@ public class ToolbarButtonInProductHelpController
             return;
         }
 
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mActivity.getResources(),
                                 featureName,
                                 R.string.iph_download_page_for_offline_usage_text,
@@ -291,12 +292,12 @@ public class ToolbarButtonInProductHelpController
     private void showTranslateMenuButtonTextBubble(final Tab tab) {
         if (tab == null) return;
         if (!TranslateUtils.canTranslateCurrentTab(tab)
-                || !TranslateBridge.shouldShowManualTranslateIPH(tab)) {
+                || !TranslateBridge.shouldShowManualTranslateIph(tab)) {
             return;
         }
 
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mActivity.getResources(),
                                 FeatureConstants.TRANSLATE_MENU_BUTTON_FEATURE,
                                 R.string.iph_translate_menu_button_text,

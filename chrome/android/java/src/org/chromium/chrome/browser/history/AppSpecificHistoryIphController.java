@@ -13,7 +13,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -21,7 +21,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Controls showing IPH for App Specific history. */
-public class AppSpecificHistoryIPHController {
+public class AppSpecificHistoryIphController {
     private final Activity mActivity;
     private final Supplier<Profile> mProfileSupplier;
     private UserEducationHelper mUserEducationHelper;
@@ -32,7 +32,7 @@ public class AppSpecificHistoryIPHController {
      * @param activity The {@link Activity}.
      * @param profileSupplier The {@link Supplier} for the current {@link Profile}.
      */
-    public AppSpecificHistoryIPHController(Activity activity, Supplier<Profile> profileSupplier) {
+    public AppSpecificHistoryIphController(Activity activity, Supplier<Profile> profileSupplier) {
         mActivity = activity;
         mProfileSupplier = profileSupplier;
     }
@@ -47,8 +47,8 @@ public class AppSpecificHistoryIPHController {
                                 EventConstants.HISTORY_TOOLBAR_SEARCH_MENU_ITEM_CLICKED));
     }
 
-    void maybeShowIPH() {
-        if (!shouldShowIPH()) {
+    void maybeShowIph() {
+        if (!shouldShowIph()) {
             return;
         }
         View historyToolbarSearchMenuItem = mActivity.findViewById(R.id.search_menu_id);
@@ -57,8 +57,8 @@ public class AppSpecificHistoryIPHController {
                     new UserEducationHelper(
                             mActivity, mProfileSupplier, new Handler(Looper.getMainLooper()));
         }
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mActivity.getResources(),
                                 FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE,
                                 R.string.history_iph_bubble_text,
@@ -68,7 +68,7 @@ public class AppSpecificHistoryIPHController {
                         .build());
     }
 
-    private boolean shouldShowIPH() {
+    private boolean shouldShowIph() {
         if (!HistoryManager.isAppSpecificHistoryEnabled()) return false;
 
         var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());

@@ -50,8 +50,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.user_education.IPHCommand;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommand;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -328,15 +328,15 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
 
         if (getIsAnimatingSupplier().get()) return;
 
-        IPHCommand command =
-                new IPHCommandBuilder(
+        IphCommand command =
+                new IphCommandBuilder(
                                 getRootView().getResources(),
                                 FeatureConstants.TAB_GROUPS_SURFACE,
                                 R.string.tab_group_surface_iph_with_sync,
                                 R.string.tab_group_surface_iph_with_sync)
                         .setAnchorView(anchorView)
                         .build();
-        mUserEducationHelper.requestShowIPH(command);
+        mUserEducationHelper.requestShowIph(command);
     }
 
     private void onScrollingChanged(boolean isScrolling) {
@@ -377,15 +377,15 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             @Nullable View anchorView = coordinator.getViewByIndex(viewIndex);
             if (anchorView == null) continue;
 
-            IPHCommand command =
-                    new IPHCommandBuilder(
+            IphCommand command =
+                    new IphCommandBuilder(
                                     getRootView().getResources(),
                                     FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
                                     R.string.newly_synced_tab_group_iph,
                                     R.string.newly_synced_tab_group_iph)
                             .setAnchorView(anchorView)
                             .build();
-            mUserEducationHelper.requestShowIPH(command);
+            mUserEducationHelper.requestShowIph(command);
             return;
         }
     }
@@ -426,15 +426,15 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
         @Nullable View anchorView = paneHubController.getPaneButton(PaneId.TAB_GROUPS);
         if (anchorView == null) return;
 
-        IPHCommand command =
-                new IPHCommandBuilder(
+        IphCommand command =
+                new IphCommandBuilder(
                                 getRootView().getResources(),
                                 FeatureConstants.TAB_GROUPS_SURFACE_ON_HIDE,
                                 R.string.find_hidden_tab_group_iph,
                                 R.string.find_hidden_tab_group_iph)
                         .setAnchorView(anchorView)
                         .build();
-        mUserEducationHelper.requestShowIPH(command);
+        mUserEducationHelper.requestShowIph(command);
     }
 
     // TabSwitcherDrawable.Observer implementation.

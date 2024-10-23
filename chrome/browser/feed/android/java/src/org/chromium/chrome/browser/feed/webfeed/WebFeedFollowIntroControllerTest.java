@@ -216,7 +216,7 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Test
     @SmallTest
-    public void meetsShowingRequirements_showsIntro_IPH() {
+    public void meetsShowingRequirements_showsIntro_Iph() {
         resetWebFeedFollowIntroController();
 
         setWebFeedIntroLastShownTimeMsPref(0);

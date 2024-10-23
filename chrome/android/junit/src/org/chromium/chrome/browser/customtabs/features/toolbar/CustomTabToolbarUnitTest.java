@@ -69,7 +69,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.omnibox.status.PageInfoIPHController;
+import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -127,7 +127,7 @@ public class CustomTabToolbarUnitTest {
     @Mock Callback<Integer> mContainerVisibilityChangeObserver;
     @Mock View mParentView;
     @Mock WindowAndroid mWindowAndroid;
-    private @Mock PageInfoIPHController mPageInfoIPHController;
+    private @Mock PageInfoIphController mPageInfoIphController;
     @Mock private CustomTabFeatureOverridesManager mFeatureOverridesManager;
 
     private Activity mActivity;
@@ -187,7 +187,7 @@ public class CustomTabToolbarUnitTest {
         mUrlBar = mToolbar.findViewById(R.id.url_bar);
         mTitleBar = mToolbar.findViewById(R.id.title_bar);
         mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
-        mLocationBar.setIPHControllerForTesting(mPageInfoIPHController);
+        mLocationBar.setIphControllerForTesting(mPageInfoIphController);
         mSecurityButton = mToolbar.findViewById(R.id.security_button);
         mSecurityIcon = mToolbar.findViewById(R.id.security_icon);
     }
@@ -512,21 +512,21 @@ public class CustomTabToolbarUnitTest {
         mLocationBar.onHighlightCookieControl(true);
 
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
-        verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIphController, never()).showCookieControlsIph(anyInt(), anyInt());
 
         mLocationBar.onPageLoadStopped();
         verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed);
-        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
 
         mLocationBar.onHighlightCookieControl(false);
         mLocationBar.onPageLoadStopped();
         verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed);
-        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
     }
 
     @Test
     public void
-            testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingDisabled_doesNotDisplayIPH() {
+            testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingDisabled_doesNotDisplayIph() {
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
         mLocationBar.onHighlightCookieControl(true);
@@ -539,12 +539,12 @@ public class CustomTabToolbarUnitTest {
 
         // None of the IPHs should be shown.
         mLocationBar.onPageLoadStopped();
-        verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIphController, never()).showCookieControlsIph(anyInt(), anyInt());
     }
 
     @Test
     public void
-            testCookieControlsIcon_trackingProtectionDisabled_cookieBlockingEnabled_displaysCookieControlsIPH() {
+            testCookieControlsIcon_trackingProtectionDisabled_cookieBlockingEnabled_displaysCookieControlsIph() {
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
         mLocationBar.onHighlightCookieControl(true);
@@ -557,7 +557,7 @@ public class CustomTabToolbarUnitTest {
 
         // Should show only the Cookie controls IPH.
         mLocationBar.onPageLoadStopped();
-        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
     }
 
     @Test

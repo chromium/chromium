@@ -26,17 +26,17 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.infobar.IPHInfoBarSupport.IPHBubbleDelegate;
-import org.chromium.chrome.browser.infobar.IPHInfoBarSupport.PopupState;
+import org.chromium.chrome.browser.infobar.IphInfoBarSupport.IphBubbleDelegate;
+import org.chromium.chrome.browser.infobar.IphInfoBarSupport.PopupState;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarUiItem;
 
-/** Tests {@link IPHInfoBarSupport}. */
+/** Tests {@link IphInfoBarSupport}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class IPHInfoBarSupportTest {
-    @Mock private IPHBubbleDelegate mDelegate;
+public class IphInfoBarSupportTest {
+    @Mock private IphBubbleDelegate mDelegate;
     @Mock private InfoBarUiItem mItem;
     @Mock private View mView;
 
@@ -45,7 +45,7 @@ public class IPHInfoBarSupportTest {
     @Test
     @Feature({"Browser"})
     public void testUnattachedInfoBarView() {
-        IPHInfoBarSupport support = new IPHInfoBarSupport(mDelegate);
+        IphInfoBarSupport support = new IphInfoBarSupport(mDelegate);
 
         when(mView.getWindowToken()).thenReturn(null);
         when(mView.isAttachedToWindow()).thenReturn(false);
@@ -63,7 +63,7 @@ public class IPHInfoBarSupportTest {
     @Test
     @Feature({"Browser"})
     public void testBasicCallPath() {
-        IPHInfoBarSupport support = new IPHInfoBarSupport(mDelegate);
+        IphInfoBarSupport support = new IphInfoBarSupport(mDelegate);
 
         IBinder windowToken = mock(IBinder.class);
         TextBubble bubble = mock(TextBubble.class);
@@ -91,14 +91,14 @@ public class IPHInfoBarSupportTest {
 
         support.notifyAllAnimationsFinished(mItem);
 
-        // Verify that the IPHInfoBarSupport tries to create and show a bubble.
+        // Verify that the IphInfoBarSupport tries to create and show a bubble.
         verify(mDelegate, times(1)).createStateForInfoBar(mView, 1);
         verify(bubble, times(1)).addOnDismissListener(support);
         verify(bubble, times(1)).show();
 
         support.onRemoveInfoBar(null, infoBar, false);
 
-        // Verify the IPHInfoBarSupport properly triggers the delegate dismiss call when the infobar
+        // Verify the IphInfoBarSupport properly triggers the delegate dismiss call when the infobar
         // is gone and dismissed.
         verify(mDelegate, times(1)).onPopupDismissed(state);
     }

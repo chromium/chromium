@@ -12,14 +12,14 @@ import androidx.annotation.StringRes;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
 /** Controller to manage when an IPH bubble for PageInfo is shown. */
-public class PageInfoIPHController {
+public class PageInfoIphController {
     private final UserEducationHelper mUserEducationHelper;
     private final View mStatusView;
 
@@ -29,7 +29,7 @@ public class PageInfoIPHController {
      * @param educationHelper The helper controlling user education.
      * @param statusView The status view in the omnibox. Used as anchor for IPH bubble.
      */
-    public PageInfoIPHController(UserEducationHelper educationHelper, View statusView) {
+    public PageInfoIphController(UserEducationHelper educationHelper, View statusView) {
         mUserEducationHelper = educationHelper;
         mStatusView = statusView;
     }
@@ -44,8 +44,8 @@ public class PageInfoIPHController {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.notifyEvent(EventConstants.PERMISSION_REQUEST_SHOWN);
 
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mStatusView.getContext().getResources(),
                                 FeatureConstants.PAGE_INFO_FEATURE,
                                 R.string.page_info_iph,
@@ -63,9 +63,9 @@ public class PageInfoIPHController {
      * @param stringId Resource id of the string displayed. The string will also be used for
      *     accessibility.
      */
-    public void showStoreIconIPH(int iphTimeout, @StringRes int stringId) {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+    public void showStoreIconIph(int iphTimeout, @StringRes int stringId) {
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mStatusView.getContext().getResources(),
                                 FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE,
                                 stringId,
@@ -84,9 +84,9 @@ public class PageInfoIPHController {
      * @param stringId Resource id of the string displayed. The string will also be used for
      *     accessibility.
      */
-    public void showCookieControlsIPH(int iphTimeout, @StringRes int stringId) {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+    public void showCookieControlsIph(int iphTimeout, @StringRes int stringId) {
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mStatusView.getContext().getResources(),
                                 FeatureConstants.COOKIE_CONTROLS_FEATURE,
                                 stringId,

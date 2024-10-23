@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -127,13 +127,13 @@ public class MiniPlayerCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnShown_requestingIPH() {
+    public void testOnShown_requestingIph() {
         // if there's no container to anchor IPH against, don't request it.
         mCoordinator.onShown(/*container*/ null);
-        verify(mUserEducationHelper, never()).requestShowIPH(any(IPHCommand.class));
+        verify(mUserEducationHelper, never()).requestShowIph(any(IphCommand.class));
 
         mCoordinator.onShown(mView);
-        verify(mUserEducationHelper).requestShowIPH(any(IPHCommand.class));
+        verify(mUserEducationHelper).requestShowIph(any(IphCommand.class));
     }
 
     @Test

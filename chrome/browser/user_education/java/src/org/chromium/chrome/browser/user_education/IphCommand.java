@@ -15,7 +15,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /** Class encapsulating the data needed to show in-product help (IPH). */
-public class IPHCommand {
+public class IphCommand {
     private Resources mResources;
     public final String featureName;
     public final int stringId;
@@ -65,7 +65,7 @@ public class IPHCommand {
         }
     }
 
-    IPHCommand(
+    IphCommand(
             Resources resources,
             String featureName,
             int stringId,

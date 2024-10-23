@@ -86,7 +86,7 @@ public final class StatusMediatorUnitTest {
     private @Mock Profile mProfile;
     private @Mock TemplateUrlService mTemplateUrlService;
     private @Mock PermissionDialogController mPermissionDialogController;
-    private @Mock PageInfoIPHController mPageInfoIPHController;
+    private @Mock PageInfoIphController mPageInfoIphController;
     private @Mock MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
     private @Mock Drawable mStoreIconDrawable;
 
@@ -157,7 +157,7 @@ public final class StatusMediatorUnitTest {
                         mPermissionDialogController,
                         mTemplateUrlServiceSupplier,
                         () -> mProfile,
-                        mPageInfoIPHController,
+                        mPageInfoIphController,
                         mWindowAndroid,
                         merchantTrustSignalsCoordinatorObservableSupplier);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
@@ -540,7 +540,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertNotNull(
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback());
         mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
-        verify(mPageInfoIPHController, times(1)).showStoreIconIPH(anyInt(), eq(0));
+        verify(mPageInfoIphController, times(1)).showStoreIconIph(anyInt(), eq(0));
 
         // Simulate that the store icon is blown away by other customized icon.
         mMediator.resetCustomIconsStatus();
@@ -575,7 +575,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertNotNull(
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback());
         mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
-        verify(mPageInfoIPHController, times(0)).showStoreIconIPH(anyInt(), eq(0));
+        verify(mPageInfoIphController, times(0)).showStoreIconIph(anyInt(), eq(0));
     }
 
     @Test
@@ -590,7 +590,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
         mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
-        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
         verify(mCookieControlsBridge, times(1)).onEntryPointAnimated();
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -603,7 +603,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void iphCookieControls_showIPHOnlyWhenNotIn3pcd() {
+    public void iphCookieControls_showIphOnlyWhenNotIn3pcd() {
         setupCookieControlsTest();
         mMediator.onStatusChanged(
                 /* controls_visible= */ true,
@@ -616,7 +616,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
         mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
         // Not in 3PCD, IPH is shown.
-        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
 
         mMediator.onStatusChanged(
                 /* controls_visible= */ true,
@@ -628,7 +628,7 @@ public final class StatusMediatorUnitTest {
         mMediator.onHighlightCookieControl(true);
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
         // Limited 3PCD, IPH is NOT shown.
-        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
     }
 
     @Test
@@ -644,7 +644,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
         mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
-        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
         verify(mCookieControlsBridge, times(1)).onEntryPointAnimated();
     }
 
@@ -678,7 +678,7 @@ public final class StatusMediatorUnitTest {
         // Cookie controls icon should NOT be shown.
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
         // IPH should NOT be shown.
-        verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIphController, never()).showCookieControlsIph(anyInt(), anyInt());
     }
 
     @Test

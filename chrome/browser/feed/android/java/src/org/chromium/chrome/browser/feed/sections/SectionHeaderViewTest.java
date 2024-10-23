@@ -70,7 +70,7 @@ public final class SectionHeaderViewTest {
         mSectionHeaderView.addTab();
     }
 
-    private void setFeatureOverridesForIPH() {
+    private void setFeatureOverridesForIph() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.WEB_FEED_ONBOARDING, true);
         testValues.addFieldTrialParamOverride(
@@ -80,10 +80,10 @@ public final class SectionHeaderViewTest {
 
     @Test
     @SmallTest
-    public void showWebFeedIPHTest() {
-        setFeatureOverridesForIPH();
+    public void showWebFeedIphTest() {
+        setFeatureOverridesForIph();
         mSectionHeaderView.showWebFeedAwarenessIph(mHelper, StreamTabId.FOLLOWING, mScroller);
-        verify(mHelper, times(1)).requestShowIPH(any());
+        verify(mHelper, times(1)).requestShowIph(any());
     }
 
     @Test

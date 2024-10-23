@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -23,7 +23,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.url.GURL;
 
 /** Controls showing IPH for Minimized Custom Tabs. */
-public class MinimizedCustomTabIPHController
+public class MinimizedCustomTabIphController
         implements MinimizedCustomTabFeatureEngagementDelegate {
     private final Activity mActivity;
     private final ActivityTabProvider mTabProvider;
@@ -39,7 +39,7 @@ public class MinimizedCustomTabIPHController
      * @param userEducationHelper The {@link UserEducationHelper} to show the IPH.
      * @param profileSupplier The {@link Supplier} for the current {@link Profile}.
      */
-    public MinimizedCustomTabIPHController(
+    public MinimizedCustomTabIphController(
             Activity activity,
             ActivityTabProvider activityTabProvider,
             UserEducationHelper userEducationHelper,
@@ -79,17 +79,17 @@ public class MinimizedCustomTabIPHController
                                 || minimizeButton.getVisibility() != View.VISIBLE) {
                             return;
                         }
-                        showIPH(minimizeButton);
+                        showIph(minimizeButton);
                     }
                 };
     }
 
-    private void showIPH(View button) {
+    private void showIph(View button) {
         var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         if (!tracker.isInitialized()) return;
         if (!tracker.wouldTriggerHelpUI(FeatureConstants.CCT_MINIMIZED_FEATURE)) return;
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mActivity.getResources(),
                                 FeatureConstants.CCT_MINIMIZED_FEATURE,
                                 R.string.custom_tab_minimize_button_iph_bubble_text,

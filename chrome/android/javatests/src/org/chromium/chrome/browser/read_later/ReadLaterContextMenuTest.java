@@ -85,7 +85,7 @@ public class ReadLaterContextMenuTest {
     @Before
     public void setUp() {
         // Pretend the feature engagement feature is already initialized. Otherwise
-        // UserEducationHelper#requestShowIPH() calls get dropped during test.
+        // UserEducationHelper#requestShowIph() calls get dropped during test.
         doAnswer(
                         invocation -> {
                             invocation.<Callback<Boolean>>getArgument(0).onResult(true);
@@ -104,7 +104,7 @@ public class ReadLaterContextMenuTest {
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest(message = "https://crbug.com/358177365")
-    public void testShowIPHOnContextMenuLinkCopied() throws Throwable {
+    public void testShowIphOnContextMenuLinkCopied() throws Throwable {
         when(mTracker.shouldTriggerHelpUI(
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
                 .thenReturn(true);

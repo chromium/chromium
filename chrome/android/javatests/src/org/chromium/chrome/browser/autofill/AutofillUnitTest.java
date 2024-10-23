@@ -111,14 +111,14 @@ public class AutofillUnitTest {
                     .setSubLabel("221B Baker Street")
                     .setItemTag("")
                     .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
-                    .setFeatureForIPH("")
+                    .setFeatureForIph("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Arthur Dent")
                     .setSubLabel("West Country")
                     .setItemTag("")
                     .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
-                    .setFeatureForIPH("")
+                    .setFeatureForIph("")
                     .build()
         };
     }
@@ -130,35 +130,35 @@ public class AutofillUnitTest {
                     .setSubLabel("221B Baker Street")
                     .setItemTag("")
                     .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
-                    .setFeatureForIPH("")
+                    .setFeatureForIph("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Arthur Dent")
                     .setSubLabel("West Country")
                     .setItemTag("")
                     .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
-                    .setFeatureForIPH("")
+                    .setFeatureForIph("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Arthos")
                     .setSubLabel("France")
                     .setItemTag("")
                     .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
-                    .setFeatureForIPH("")
+                    .setFeatureForIph("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Porthos")
                     .setSubLabel("France")
                     .setItemTag("")
                     .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
-                    .setFeatureForIPH("")
+                    .setFeatureForIph("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Aramis")
                     .setSubLabel("France")
                     .setItemTag("")
                     .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
-                    .setFeatureForIPH("")
+                    .setFeatureForIph("")
                     .build()
         };
     }

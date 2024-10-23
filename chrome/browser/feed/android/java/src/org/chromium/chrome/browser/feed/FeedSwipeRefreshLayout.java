@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -102,14 +102,14 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
     }
 
     /** Shows an IPH. */
-    public void showIPH(UserEducationHelper helper) {
+    public void showIph(UserEducationHelper helper) {
         ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
         if (contentContainer == null) return;
         // Only toolbar_container view appears in both NTP and start surface.
         View toolbarView = contentContainer.findViewById(mAnchorViewId);
         if (toolbarView == null) return;
-        helper.requestShowIPH(
-                new IPHCommandBuilder(
+        helper.requestShowIph(
+                new IphCommandBuilder(
                                 getContext().getResources(),
                                 FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
                                 R.string.feed_swipe_refresh_iph,

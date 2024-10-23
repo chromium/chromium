@@ -141,7 +141,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1464323")
-    public void testReengagementNotificationNotSentDueToIPH() {
+    public void testReengagementNotificationNotSentDueToIph() {
         DefaultBrowserInfo2.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition= */ true));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(

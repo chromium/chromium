@@ -21,7 +21,7 @@ public interface FeedBubbleDelegate {
      * Determines whether the position of the feed header in the NTP container is suitable for
      * showing the IPH.
      */
-    boolean isFeedHeaderPositionInContainerSuitableForIPH(float headerMaxPosFraction);
+    boolean isFeedHeaderPositionInContainerSuitableForIph(float headerMaxPosFraction);
 
     /** Returns the current time in milliseconds. */
     long getCurrentTimeMs();

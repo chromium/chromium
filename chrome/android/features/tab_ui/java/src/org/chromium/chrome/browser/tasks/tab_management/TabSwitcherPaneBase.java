@@ -59,8 +59,8 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.chrome.browser.user_education.IPHCommand;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommand;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -680,15 +680,15 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
 
         if (getIsAnimatingSupplier().get()) return;
 
-        IPHCommand command =
-                new IPHCommandBuilder(
+        IphCommand command =
+                new IphCommandBuilder(
                                 getRootView().getResources(),
                                 FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON,
                                 R.string.iph_tab_switcher_floating_action_button,
                                 R.string.iph_tab_switcher_floating_action_button)
                         .setAnchorView(anchorView)
                         .build();
-        mUserEducationHelper.requestShowIPH(command);
+        mUserEducationHelper.requestShowIph(command);
     }
 
     void softCleanupForTesting() {

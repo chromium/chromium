@@ -61,7 +61,7 @@ public final class FeedFeatures {
         return getPrefService(profile).getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE);
     }
 
-    public static boolean shouldUseWebFeedAwarenessIPH() {
+    public static boolean shouldUseWebFeedAwarenessIph() {
         String awarenessStyleParam =
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style");

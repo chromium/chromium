@@ -27,7 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** This class is responsible for rendering an IPH, when receiving a link-to-text. */
-public class LinkToTextIPHController {
+public class LinkToTextIphController {
     private static final String FEATURE_NAME =
             FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE;
 
@@ -35,13 +35,13 @@ public class LinkToTextIPHController {
     private Tracker mTracker;
 
     /**
-     * Creates an {@link LinkToTextIPHController}.
+     * Creates an {@link LinkToTextIphController}.
      *
      * @param tabSupplier An {@link ObservableSupplier} for {@link Tab} where the IPH will be
      *     rendered.
      * @param tabModelSelector The {@link TabModelSelector} to open a new tab.
      */
-    public LinkToTextIPHController(
+    public LinkToTextIphController(
             ObservableSupplier<Tab> tabSupplier,
             TabModelSelector tabModelSelector,
             ObservableSupplier<Profile> profileSupplier) {
@@ -67,7 +67,7 @@ public class LinkToTextIPHController {
                                 tab,
                                 (hasSelectors) -> {
                                     if (mTracker.shouldTriggerHelpUI(FEATURE_NAME)) {
-                                        showMessageIPH(tab);
+                                        showMessageIph(tab);
                                     }
                                 });
                     }
@@ -75,7 +75,7 @@ public class LinkToTextIPHController {
                 null);
     }
 
-    private void showMessageIPH(Tab tab) {
+    private void showMessageIph(Tab tab) {
         MessageDispatcher mMessageDispatcher =
                 MessageDispatcherProvider.from(tab.getWindowAndroid());
         PropertyModel model =

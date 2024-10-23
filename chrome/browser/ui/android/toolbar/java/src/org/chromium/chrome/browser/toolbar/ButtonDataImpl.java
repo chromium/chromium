@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 
 import java.util.Objects;
 
@@ -32,7 +32,7 @@ public class ButtonDataImpl implements ButtonData {
             @NonNull OnClickListener onClickListener,
             String contentDescription,
             boolean supportsTinting,
-            @Nullable IPHCommandBuilder iphCommandBuilder,
+            @Nullable IphCommandBuilder iphCommandBuilder,
             boolean isEnabled,
             @AdaptiveToolbarButtonVariant int buttonVariant,
             int tooltipTextResId,
@@ -58,7 +58,7 @@ public class ButtonDataImpl implements ButtonData {
             String contentDescription,
             @StringRes int actionChipLabelResId,
             boolean supportsTinting,
-            @Nullable IPHCommandBuilder iphCommandBuilder,
+            @Nullable IphCommandBuilder iphCommandBuilder,
             boolean isEnabled,
             @AdaptiveToolbarButtonVariant int buttonVariant,
             @StringRes int tooltipTextResId,
@@ -107,7 +107,7 @@ public class ButtonDataImpl implements ButtonData {
     }
 
     /** Convenience method to update the IPH command builder. */
-    public void updateIPHCommandBuilder(@Nullable IPHCommandBuilder iphCommandBuilder) {
+    public void updateIphCommandBuilder(@Nullable IphCommandBuilder iphCommandBuilder) {
         ButtonSpec currentSpec = getButtonSpec();
         ButtonSpec newSpec =
                 new ButtonSpec(
@@ -134,7 +134,7 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getOnLongClickListener(),
                         currentSpec.getContentDescription(),
                         currentSpec.getSupportsTinting(),
-                        currentSpec.getIPHCommandBuilder(),
+                        currentSpec.getIphCommandBuilder(),
                         currentSpec.getButtonVariant(),
                         newActionChipResourceId,
                         currentSpec.getHoverTooltipTextId(),
@@ -152,7 +152,7 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getOnLongClickListener(),
                         currentSpec.getContentDescription(),
                         currentSpec.getSupportsTinting(),
-                        currentSpec.getIPHCommandBuilder(),
+                        currentSpec.getIphCommandBuilder(),
                         currentSpec.getButtonVariant(),
                         currentSpec.getActionChipLabelResId(),
                         currentSpec.getHoverTooltipTextId(),

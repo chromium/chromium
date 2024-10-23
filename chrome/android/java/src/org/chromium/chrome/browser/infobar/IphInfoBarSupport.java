@@ -19,11 +19,11 @@ import org.chromium.components.infobars.InfoBarUiItem;
 
 /**
  * A helper class to managing showing and dismissing in-product help dialogs based on which infobar
- * is frontmost and showing.  This will show an in-product help window when a new relevant infobar
- * becomes front-most.  If that infobar is closed or another infobar comes to the front the window
+ * is frontmost and showing. This will show an in-product help window when a new relevant infobar
+ * becomes front-most. If that infobar is closed or another infobar comes to the front the window
  * will be dismissed.
  */
-public class IPHInfoBarSupport
+public class IphInfoBarSupport
         implements OnDismissListener, InfoBarAnimationListener, InfoBarContainerObserver {
     /** Helper class to hold all relevant display parameters for an in-product help window. */
     public static class TrackerParameters {
@@ -34,7 +34,9 @@ public class IPHInfoBarSupport
             this.accessibilityTextId = accessibilityTextId;
         }
 
-        /** @see FeatureConstants */
+        /**
+         * @see FeatureConstants
+         */
         public String feature;
 
         @StringRes public int textId;
@@ -55,27 +57,28 @@ public class IPHInfoBarSupport
     }
 
     /**
-     * Delegate responsible for interacting with the in-product help backend and creating any
-     * {@link TextBubble}s if necessary.
+     * Delegate responsible for interacting with the in-product help backend and creating any {@link
+     * TextBubble}s if necessary.
      */
-    public static interface IPHBubbleDelegate {
+    public static interface IphBubbleDelegate {
         /**
          * Will be called when a valid infobar of type {@code infoBarId} is showing and is attached
          * to the view hierarchy.
+         *
          * @param anchorView The {@link View} the {@link TextBubble} should be attached to.
-         * @param infoBarId  The id representing the type of infobar to potentially show an
-         *                   in-product help for.
-         * @return           {@code null} if no bubble should be shown.  Otherwise a valid
-         *                   {@link PopupState} representing the current state of the shown
-         *                   {@link TextBubble}.
+         * @param infoBarId The id representing the type of infobar to potentially show an
+         *     in-product help for.
+         * @return {@code null} if no bubble should be shown. Otherwise a valid {@link PopupState}
+         *     representing the current state of the shown {@link TextBubble}.
          */
         PopupState createStateForInfoBar(View anchorView, @InfoBarIdentifier int infoBarId);
 
         /**
          * Will be called when the {@link TextBubble} related to the currently showing infobar has
          * been dismissed.
+         *
          * @param state The {@link PopupState} that represents the {@link TextBubble} and state
-         *              created from an earlier call to {@link #createStateForInfoBar(View, int)}.
+         *     created from an earlier call to {@link #createStateForInfoBar(View, int)}.
          */
         void onPopupDismissed(PopupState state);
     }
@@ -84,13 +87,13 @@ public class IPHInfoBarSupport
      * The delegate responsible for interacting with external components (Creating a TextBubble and
      * interacting with the IPH backend.
      */
-    private final IPHBubbleDelegate mDelegate;
+    private final IphBubbleDelegate mDelegate;
 
     /** The state of the currently showing in-product window or {@code null} if none is showing. */
     private PopupState mCurrentState;
 
-    /** Creates a new instance of an IPHInfoBarSupport class. */
-    IPHInfoBarSupport(IPHBubbleDelegate delegate) {
+    /** Creates a new instance of an IphInfoBarSupport class. */
+    IphInfoBarSupport(IphBubbleDelegate delegate) {
         mDelegate = delegate;
     }
 

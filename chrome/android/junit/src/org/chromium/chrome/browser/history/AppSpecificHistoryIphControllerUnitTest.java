@@ -34,18 +34,18 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
-/** Unit tests for {@link AppSpecificHistoryIPHController}. */
+/** Unit tests for {@link AppSpecificHistoryIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
-public class AppSpecificHistoryIPHControllerUnitTest {
+public class AppSpecificHistoryIphControllerUnitTest {
     @Rule
     public ActivityScenarioRule<ChromeTabbedActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(ChromeTabbedActivity.class);
@@ -57,7 +57,7 @@ public class AppSpecificHistoryIPHControllerUnitTest {
     @Mock private Tracker mTracker;
 
     @Mock private Activity mActivity;
-    private AppSpecificHistoryIPHController mController;
+    private AppSpecificHistoryIphController mController;
 
     @Before
     public void setUp() {
@@ -66,7 +66,7 @@ public class AppSpecificHistoryIPHControllerUnitTest {
                 .thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
         when(mProfileSupplier.hasValue()).thenReturn(true);
-        mController = new AppSpecificHistoryIPHController(mActivity, mProfileSupplier);
+        mController = new AppSpecificHistoryIphController(mActivity, mProfileSupplier);
         mController.setUserEducationHelperForTesting(mUserEducationHelper);
     }
 
@@ -77,10 +77,10 @@ public class AppSpecificHistoryIPHControllerUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public void testShowsIPHOnPageLoad() {
-        mController.maybeShowIPH();
-        var captor = ArgumentCaptor.forClass(IPHCommand.class);
-        verify(mUserEducationHelper).requestShowIPH(captor.capture());
+    public void testShowsIphOnPageLoad() {
+        mController.maybeShowIph();
+        var captor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper).requestShowIph(captor.capture());
         var cmd = captor.getValue();
         assertEquals(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE, cmd.featureName);
         assertEquals(R.string.history_iph_bubble_text, cmd.stringId);

@@ -12,12 +12,12 @@ import android.view.View;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Controller to manage when and how we show read later in-product-help messages to users. */
-public class ReadLaterIPHController {
+public class ReadLaterIphController {
     private final UserEducationHelper mUserEducationHelper;
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
@@ -30,7 +30,7 @@ public class ReadLaterIPHController {
      * @param toolbarMenuButton The toolbar menu button to which IPH will be anchored.
      * @param appMenuHandler The app menu handler
      */
-    public ReadLaterIPHController(
+    public ReadLaterIphController(
             Activity activity,
             Profile profile,
             View toolbarMenuButton,
@@ -42,7 +42,7 @@ public class ReadLaterIPHController {
                 new UserEducationHelper(activity, profile, new Handler(Looper.getMainLooper())));
     }
 
-    ReadLaterIPHController(
+    ReadLaterIphController(
             Activity activity,
             View toolbarMenuButton,
             AppMenuHandler appMenuHandler,
@@ -54,8 +54,8 @@ public class ReadLaterIPHController {
 
     /** Attempts to show an IPH text bubble about the read later option in app menu. */
     public void onCopyContextMenuItemClicked() {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mToolbarMenuButton.getContext().getResources(),
                                 FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE,
                                 R.string.reading_list_save_pages_for_later,
@@ -68,13 +68,13 @@ public class ReadLaterIPHController {
     }
 
     /** Attempts to show an IPH text bubble after a cold start. */
-    public void showColdStartIPH() {
-        showReadLaterAppMenuBookmarksIPH();
+    public void showColdStartIph() {
+        showReadLaterAppMenuBookmarksIph();
     }
 
-    private void showReadLaterAppMenuBookmarksIPH() {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+    private void showReadLaterAppMenuBookmarksIph() {
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mToolbarMenuButton.getContext().getResources(),
                                 FeatureConstants.READ_LATER_APP_MENU_BOOKMARKS_FEATURE,
                                 R.string.reading_list_find_in_bookmarks,

@@ -110,7 +110,7 @@ static jboolean JNI_TranslateBridge_CanManuallyTranslate(
   return manager->CanManuallyTranslate(menuLogging);
 }
 
-static jboolean JNI_TranslateBridge_ShouldShowManualTranslateIPH(
+static jboolean JNI_TranslateBridge_ShouldShowManualTranslateIph(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents) {
   ChromeTranslateClient* client = GetTranslateClient(j_web_contents);

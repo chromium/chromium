@@ -110,7 +110,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
                 mManager.shouldShowInfoButton(), mManager.shouldShowInfoHeaderIfAvailable());
         // shouldShowInfoButton is checked to ensure all the menu items are ready.
         if (searchEnabled && mManager.shouldShowInfoButton()) {
-            mManager.showIPH();
+            mManager.showIph();
         }
     }
 

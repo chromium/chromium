@@ -17,7 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
@@ -25,14 +25,14 @@ import org.chromium.components.feature_engagement.FeatureConstants;
  * Controller to manage when and how we show ReadAloud in-product-help messages to users in the app
  * menu and the CCT app menu.
  */
-public class ReadAloudIPHController {
+public class ReadAloudIphController {
     private final UserEducationHelper mUserEducationHelper;
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
     private final ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
     private final Supplier<Tab> mCurrentTabSupplier;
     private boolean mShowAppMenuTextBubble;
-    private final Runnable mReadabilityUpdateListener = this::maybeShowReadAloudAppMenuIPH;
+    private final Runnable mReadabilityUpdateListener = this::maybeShowReadAloudAppMenuIph;
 
     /**
      * Constructor.
@@ -46,7 +46,7 @@ public class ReadAloudIPHController {
      * @param showAppMenuTextBubble If the app menu text bubble should be shown. Should not be shown
      *     for custom tabs
      */
-    public ReadAloudIPHController(
+    public ReadAloudIphController(
             Activity activity,
             Profile profile,
             View toolbarMenuButton,
@@ -64,7 +64,7 @@ public class ReadAloudIPHController {
                 showAppMenuTextBubble);
     }
 
-    ReadAloudIPHController(
+    ReadAloudIphController(
             Activity activity,
             View toolbarMenuButton,
             AppMenuHandler appMenuHandler,
@@ -89,14 +89,14 @@ public class ReadAloudIPHController {
      *
      * @param url URL the readability check returns
      */
-    public void maybeShowReadAloudAppMenuIPH() {
-        if (shouldShowIPH()) {
+    public void maybeShowReadAloudAppMenuIph() {
+        if (shouldShowIph()) {
             boolean isHighlightEnabled =
                     mShowAppMenuTextBubble
                             ? true
                             : ReadAloudFeatures.isIPHMenuButtonHighlightCctEnabled();
-            mUserEducationHelper.requestShowIPH(
-                    new IPHCommandBuilder(
+            mUserEducationHelper.requestShowIph(
+                    new IphCommandBuilder(
                                     mToolbarMenuButton.getContext().getResources(),
                                     FeatureConstants.READ_ALOUD_APP_MENU_FEATURE,
                                     R.string.menu_listen_to_this_page_iph,
@@ -120,7 +120,7 @@ public class ReadAloudIPHController {
         mAppMenuHandler.clearMenuHighlight();
     }
 
-    private boolean shouldShowIPH() {
+    private boolean shouldShowIph() {
         if (mCurrentTabSupplier.get() == null
                 || !mCurrentTabSupplier.get().getUrl().isValid()
                 || mReadAloudControllerSupplier.get() == null) {

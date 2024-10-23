@@ -20,9 +20,9 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/** Unit tests for the IPHCommand. */
+/** Unit tests for the IphCommand. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class IPHCommandUnitTest {
+public class IphCommandUnitTest {
     private static final String FEATURE_NAME = "Builder Unit Test";
     private static final int CONTENT_STRING_RES = 1234;
     private static final int ACCESSIBILITY_STRING_RES = 4321;
@@ -30,7 +30,7 @@ public class IPHCommandUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock Resources mResources;
-    private IPHCommandBuilder mBuilder;
+    private IphCommandBuilder mBuilder;
 
     @Before
     public void setUp() {
@@ -38,9 +38,9 @@ public class IPHCommandUnitTest {
                 .when(mResources)
                 .getDimensionPixelOffset(R.dimen.iph_text_bubble_menu_anchor_y_inset);
 
-        // Facilitates creation of IPHCommand objects used for testing.
+        // Facilitates creation of IphCommand objects used for testing.
         mBuilder =
-                new IPHCommandBuilder(
+                new IphCommandBuilder(
                         mResources, FEATURE_NAME, CONTENT_STRING_RES, ACCESSIBILITY_STRING_RES);
     }
 

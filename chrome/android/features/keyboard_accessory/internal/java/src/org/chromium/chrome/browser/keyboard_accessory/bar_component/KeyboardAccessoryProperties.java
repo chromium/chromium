@@ -183,16 +183,16 @@ class KeyboardAccessoryProperties {
             return mSuggestion;
         }
 
-        void setFeatureForIPH(String feature) {
+        void setFeatureForIph(String feature) {
             mFeature = feature;
         }
 
-        void maybeEmitEventForIPH(Tracker tracker) {
-            if (mFeature != null) KeyboardAccessoryIPHUtils.emitFillingEvent(tracker, mFeature);
+        void maybeEmitEventForIph(Tracker tracker) {
+            if (mFeature != null) KeyboardAccessoryIphUtils.emitFillingEvent(tracker, mFeature);
         }
 
         @Nullable
-        String getFeatureForIPH() {
+        String getFeatureForIph() {
             return mFeature;
         }
 

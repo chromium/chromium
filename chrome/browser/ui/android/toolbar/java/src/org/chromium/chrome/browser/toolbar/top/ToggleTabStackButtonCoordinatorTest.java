@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
@@ -61,7 +61,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
 
-    @Captor private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
+    @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
     private boolean mIsIncognito;
     private boolean mOverviewOpen;
@@ -151,14 +151,14 @@ public class ToggleTabStackButtonCoordinatorTest {
         }
     }
 
-    private IPHCommand verifyIphShown() {
-        verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
+    private IphCommand verifyIphShown() {
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
         reset(mUserEducationHelper);
-        return mIPHCommandCaptor.getValue();
+        return mIphCommandCaptor.getValue();
     }
 
     private void verifyIphNotShown() {
-        verify(mUserEducationHelper, never()).requestShowIPH(any());
+        verify(mUserEducationHelper, never()).requestShowIph(any());
         reset(mUserEducationHelper);
     }
 
@@ -185,7 +185,7 @@ public class ToggleTabStackButtonCoordinatorTest {
         mPromoShownOneshotSupplier.set(false);
 
         mCoordinator.handlePageLoadFinished();
-        IPHCommand iphCommand = verifyIphShown();
+        IphCommand iphCommand = verifyIphShown();
 
         iphCommand.onShowCallback.run();
         Assert.assertEquals("Should have 1 overview observer", 1, mLayoutStateObserverSet.size());
@@ -200,7 +200,7 @@ public class ToggleTabStackButtonCoordinatorTest {
         mPromoShownOneshotSupplier.set(false);
 
         mCoordinator.handlePageLoadFinished();
-        IPHCommand iphCommand = verifyIphShown();
+        IphCommand iphCommand = verifyIphShown();
 
         iphCommand.onShowCallback.run();
         assertEquals(true, mCoordinator.mIphBeingShown);
@@ -220,7 +220,7 @@ public class ToggleTabStackButtonCoordinatorTest {
         mPromoShownOneshotSupplier.set(false);
 
         mCoordinator.handlePageLoadFinished();
-        IPHCommand iphCommand = verifyIphShown();
+        IphCommand iphCommand = verifyIphShown();
 
         iphCommand.onShowCallback.run();
         assertEquals(true, mCoordinator.mIphBeingShown);
@@ -260,7 +260,7 @@ public class ToggleTabStackButtonCoordinatorTest {
         mPromoShownOneshotSupplier.set(false);
 
         mCoordinator.handlePageLoadFinished();
-        IPHCommand iphCommand = verifyIphShown();
+        IphCommand iphCommand = verifyIphShown();
 
         iphCommand.onShowCallback.run();
         assertEquals(true, mCoordinator.mIphBeingShown);
@@ -286,7 +286,7 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         mIsIncognito = false;
         mCoordinator.handlePageLoadFinished();
-        IPHCommand iphCommand = verifyIphShown();
+        IphCommand iphCommand = verifyIphShown();
         assertEquals(
                 "IPH feature is not as expected.",
                 FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
@@ -317,7 +317,7 @@ public class ToggleTabStackButtonCoordinatorTest {
         // Standard model with incognito tabs - show switch into incognito IPH.
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
-        IPHCommand iphCommand = verifyIphShown();
+        IphCommand iphCommand = verifyIphShown();
         assertEquals(
                 "IPH feature is not as expected.",
                 FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,

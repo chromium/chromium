@@ -393,7 +393,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Consistent failures despite revival effort in b/341267765")
-    public void testSwipeToDismiss_IPH() {
+    public void testSwipeToDismiss_Iph() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
@@ -417,7 +417,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Still flaky on arm builds despite revival effort in b/341267765")
-    public void testNotShowIPHInMultiWindowMode() {
+    public void testNotShowIphInMultiWindowMode() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));

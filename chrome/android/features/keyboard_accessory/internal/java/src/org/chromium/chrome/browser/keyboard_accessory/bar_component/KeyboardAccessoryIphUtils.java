@@ -25,7 +25,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  * keyboard accessory bar. It sets up and triggers relevant IPH libraries and is not supposed to
  * keep any state or perform any logic.
  */
-class KeyboardAccessoryIPHUtils {
+class KeyboardAccessoryIphUtils {
     /**
      * Emits a filling event that matches the given feature. Noop if no tracker is available yet.
      *
@@ -245,5 +245,5 @@ class KeyboardAccessoryIPHUtils {
         return 0;
     }
 
-    private KeyboardAccessoryIPHUtils() {}
+    private KeyboardAccessoryIphUtils() {}
 }

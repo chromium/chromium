@@ -11,8 +11,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.infobar.IPHInfoBarSupport.PopupState;
-import org.chromium.chrome.browser.infobar.IPHInfoBarSupport.TrackerParameters;
+import org.chromium.chrome.browser.infobar.IphInfoBarSupport.PopupState;
+import org.chromium.chrome.browser.infobar.IphInfoBarSupport.TrackerParameters;
 import org.chromium.chrome.browser.permissions.PermissionSettingsBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -21,22 +21,21 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
 /**
- * Default implementation of {@link IPHInfoBarSupport.IPHBubbleDelegate} that handles interacting
- * with {@link Tracker} and creating a {@link TextBubble} based on the type of infobar
- * shown.
+ * Default implementation of {@link IphInfoBarSupport.IphBubbleDelegate} that handles interacting
+ * with {@link Tracker} and creating a {@link TextBubble} based on the type of infobar shown.
  */
-class IPHBubbleDelegateImpl implements IPHInfoBarSupport.IPHBubbleDelegate {
+class IphBubbleDelegateImpl implements IphInfoBarSupport.IphBubbleDelegate {
     private final Context mContext;
     private final Tracker mTracker;
     private final Tab mTab;
 
-    IPHBubbleDelegateImpl(Context context, Tab tab) {
+    IphBubbleDelegateImpl(Context context, Tab tab) {
         mContext = context;
         mTracker = TrackerFactory.getTrackerForProfile(tab.getProfile());
         mTab = tab;
     }
 
-    // IPHInfoBarSupport.IPHBubbleDelegate implementation.
+    // IphInfoBarSupport.IphBubbleDelegate implementation.
     @Override
     public PopupState createStateForInfoBar(View anchorView, @InfoBarIdentifier int infoBarId) {
         TrackerParameters params = getTrackerParameters(infoBarId);
@@ -70,7 +69,7 @@ class IPHBubbleDelegateImpl implements IPHInfoBarSupport.IPHBubbleDelegate {
             case InfoBarIdentifier.PERMISSION_INFOBAR_DELEGATE_ANDROID:
                 if (PermissionSettingsBridge.shouldShowNotificationsPromo(mTab.getWebContents())) {
                     PermissionSettingsBridge.didShowNotificationsPromo(mTab.getProfile());
-                    return new IPHInfoBarSupport.TrackerParameters(
+                    return new IphInfoBarSupport.TrackerParameters(
                             FeatureConstants.QUIET_NOTIFICATION_PROMPTS_FEATURE,
                             R.string.notifications_iph,
                             R.string.notifications_iph);

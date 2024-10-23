@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -45,11 +45,11 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.url.JUnitTestGURLs;
 
-/** Unit tests for {@link CustomTabHistoryIPHController}. */
+/** Unit tests for {@link CustomTabHistoryIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
-public class CustomTabHistoryIPHControllerUnitTest {
+public class CustomTabHistoryIphControllerUnitTest {
     @Rule
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
@@ -64,7 +64,7 @@ public class CustomTabHistoryIPHControllerUnitTest {
     @Mock private Tab mTab;
 
     @Mock private Activity mActivity;
-    private CustomTabHistoryIPHController mController;
+    private CustomTabHistoryIphController mController;
 
     @Before
     public void setUp() {
@@ -74,7 +74,7 @@ public class CustomTabHistoryIPHControllerUnitTest {
         when(mMockProfile.isOffTheRecord()).thenReturn(false);
         var profileSupplier = new ObservableSupplierImpl<>(mMockProfile);
         mController =
-                new CustomTabHistoryIPHController(
+                new CustomTabHistoryIphController(
                         mActivity, mTabProvider, profileSupplier, mAppMenuHandler);
         mController.setUserEducationHelperForTesting(mUserEducationHelper);
     }
@@ -85,11 +85,11 @@ public class CustomTabHistoryIPHControllerUnitTest {
     }
 
     @Test
-    public void testShowsIPHOnPageLoad() {
+    public void testShowsIphOnPageLoad() {
         var tabObserver = mController.getTabObserverForTesting();
         tabObserver.onPageLoadStarted(mTab, JUnitTestGURLs.EXAMPLE_URL);
-        var captor = ArgumentCaptor.forClass(IPHCommand.class);
-        verify(mUserEducationHelper).requestShowIPH(captor.capture());
+        var captor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper).requestShowIph(captor.capture());
         var cmd = captor.getValue();
         assertEquals(FeatureConstants.CCT_HISTORY_FEATURE, cmd.featureName);
         assertEquals(R.string.custom_tab_history_iph_bubble_text, cmd.stringId);

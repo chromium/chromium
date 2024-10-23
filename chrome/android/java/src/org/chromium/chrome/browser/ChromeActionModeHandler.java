@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -202,8 +202,8 @@ public class ChromeActionModeHandler {
             UserEducationHelper mUserEducationHelper =
                     new UserEducationHelper(
                             TabUtils.getActivity(mTab), mTab.getProfile(), new Handler());
-            mUserEducationHelper.requestShowIPH(
-                    new IPHCommandBuilder(
+            mUserEducationHelper.requestShowIph(
+                    new IphCommandBuilder(
                                     view.getResources(),
                                     FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,
                                     R.string.iph_shared_highlighting_builder,

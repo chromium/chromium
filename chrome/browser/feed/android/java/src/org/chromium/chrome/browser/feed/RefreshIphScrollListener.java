@@ -32,10 +32,10 @@ public class RefreshIphScrollListener implements ScrollListener {
     RefreshIphScrollListener(
             FeedBubbleDelegate delegate,
             ScrollableContainerDelegate scrollableContainerDelegate,
-            Runnable showIPHRunnable) {
+            Runnable showIphRunnable) {
         mDelegate = delegate;
         mScrollableContainerDelegate = scrollableContainerDelegate;
-        mShowIPHRunnable = showIPHRunnable;
+        mShowIPHRunnable = showIphRunnable;
     }
 
     @Override
@@ -44,16 +44,16 @@ public class RefreshIphScrollListener implements ScrollListener {
     @Override
     public void onScrolled(int dx, int dy) {
         if (dy == 0) return;
-        maybeTriggerIPH();
+        maybeTriggerIph();
     }
 
     @Override
     public void onHeaderOffsetChanged(int verticalOffset) {
-        maybeTriggerIPH();
+        maybeTriggerIph();
     }
 
-    private void maybeTriggerIPH() {
-        try (TraceEvent e = TraceEvent.scoped("RefreshIphScrollListener.maybeTriggerIPH")) {
+    private void maybeTriggerIph() {
+        try (TraceEvent e = TraceEvent.scoped("RefreshIphScrollListener.maybeTriggerIph")) {
             final String featureForIph = FeatureConstants.FEED_SWIPE_REFRESH_FEATURE;
             final Tracker tracker = mDelegate.getFeatureEngagementTracker();
 

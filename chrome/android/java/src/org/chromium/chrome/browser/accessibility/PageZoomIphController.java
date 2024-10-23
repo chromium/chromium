@@ -12,17 +12,17 @@ import android.view.View;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Controller for In-Product Help for the Page Zoom feature. */
-public class PageZoomIPHController {
+public class PageZoomIphController {
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
     private final UserEducationHelper mUserEducationHelper;
 
-    public PageZoomIPHController(
+    public PageZoomIphController(
             Activity mActivity,
             Profile profile,
             AppMenuHandler mAppMenuHandler,
@@ -33,7 +33,7 @@ public class PageZoomIPHController {
                 new UserEducationHelper(mActivity, profile, new Handler(Looper.getMainLooper())));
     }
 
-    protected PageZoomIPHController(
+    protected PageZoomIphController(
             AppMenuHandler mAppMenuHandler,
             View mToolbarMenuButton,
             UserEducationHelper mUserEducationHelper) {
@@ -43,13 +43,13 @@ public class PageZoomIPHController {
     }
 
     /**
-     * Make a request to the |UserEducationHelper| to show the In-Product Help text bubble for
-     * the Page Zoom feature. When shown, the Zoom option in the main menu will be highlighted,
-     * and the Tracker for the current Profile will be notified.
+     * Make a request to the |UserEducationHelper| to show the In-Product Help text bubble for the
+     * Page Zoom feature. When shown, the Zoom option in the main menu will be highlighted, and the
+     * Tracker for the current Profile will be notified.
      */
-    public void showColdStartIPH() {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+    public void showColdStartIph() {
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mToolbarMenuButton.getContext().getResources(),
                                 FeatureConstants.PAGE_ZOOM_FEATURE,
                                 R.string.page_zoom_iph_message,

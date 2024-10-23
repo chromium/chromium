@@ -19,7 +19,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable.Bounds;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -44,7 +44,7 @@ public class OptionalButtonCoordinator {
     private final UserEducationHelper mUserEducationHelper;
     private final Supplier<Tracker> mFeatureEngagementTrackerSupplier;
     private Callback<Integer> mTransitionFinishedCallback;
-    private IPHCommandBuilder mIphCommandBuilder;
+    private IphCommandBuilder mIphCommandBuilder;
 
     @IntDef({
         TransitionType.SWAPPING,
@@ -135,8 +135,8 @@ public class OptionalButtonCoordinator {
     public void updateButton(ButtonData buttonData) {
         if (buttonData != null
                 && buttonData.getButtonSpec() != null
-                && buttonData.getButtonSpec().getIPHCommandBuilder() != null) {
-            mIphCommandBuilder = buttonData.getButtonSpec().getIPHCommandBuilder();
+                && buttonData.getButtonSpec().getIphCommandBuilder() != null) {
+            mIphCommandBuilder = buttonData.getButtonSpec().getIphCommandBuilder();
             setViewSpecificIphProperties(mIphCommandBuilder);
         } else {
             mIphCommandBuilder = null;
@@ -254,12 +254,12 @@ public class OptionalButtonCoordinator {
         }
 
         if (mIphCommandBuilder != null) {
-            mUserEducationHelper.requestShowIPH(mIphCommandBuilder.build());
+            mUserEducationHelper.requestShowIph(mIphCommandBuilder.build());
             mIphCommandBuilder = null;
         }
     }
 
-    private void setViewSpecificIphProperties(IPHCommandBuilder iphCommandBuilder) {
+    private void setViewSpecificIphProperties(IphCommandBuilder iphCommandBuilder) {
         HighlightParams highlightParams = new HighlightParams(HighlightShape.CIRCLE);
         highlightParams.setCircleRadius(
                 new Bounds() {

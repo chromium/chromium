@@ -11,7 +11,7 @@ import android.view.View;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
@@ -34,8 +34,8 @@ public class MultiInstanceIphController {
             int menuId) {
         UserEducationHelper userEducationHelper =
                 new UserEducationHelper(activity, profile, new Handler(Looper.getMainLooper()));
-        userEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        userEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 toolbarMenuButton.getContext().getResources(),
                                 FeatureConstants.INSTANCE_SWITCHER,
                                 R.string.iph_instance_switcher_text,

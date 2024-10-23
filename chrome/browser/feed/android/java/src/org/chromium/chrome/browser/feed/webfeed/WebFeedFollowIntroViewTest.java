@@ -78,12 +78,12 @@ public final class WebFeedFollowIntroViewTest {
 
     @Test
     @SmallTest
-    public void showIPHTest() {
+    public void showIphTest() {
         FeatureList.TestValues baseTestValues = new FeatureList.TestValues();
         FeatureList.setTestValues(baseTestValues);
 
-        mWebFeedFollowIntroView.showIPH(
+        mWebFeedFollowIntroView.showIph(
                 mHelper, CallbackUtils.emptyRunnable(), CallbackUtils.emptyRunnable());
-        verify(mHelper, times(1)).requestShowIPH(any());
+        verify(mHelper, times(1)).requestShowIph(any());
     }
 }

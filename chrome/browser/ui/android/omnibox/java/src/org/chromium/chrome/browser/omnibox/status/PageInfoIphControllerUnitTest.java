@@ -27,14 +27,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
-/** Unit tests for the PageInfoIPHController. */
+/** Unit tests for the PageInfoIphController. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class PageInfoIPHControllerUnitTest {
+public class PageInfoIphControllerUnitTest {
     private static final Rect STATUS_INSETS = new Rect(0, 0, 0, 0);
     private static final int IPH_RES_ID = R.string.accessibility_omnibox_btn_refine;
     private static final int TIMEOUT = 12345;
@@ -44,15 +44,15 @@ public class PageInfoIPHControllerUnitTest {
     private @Mock Profile mProfile;
     private @Mock Tracker mTracker;
     private View mView;
-    private PageInfoIPHController mController;
-    private ArgumentCaptor<IPHCommand> mIPHCmdCaptor = ArgumentCaptor.forClass(IPHCommand.class);
+    private PageInfoIphController mController;
+    private ArgumentCaptor<IphCommand> mIphCmdCaptor = ArgumentCaptor.forClass(IphCommand.class);
 
     @Before
     public void setUp() {
         TrackerFactory.setTrackerForTests(mTracker);
 
         mView = new View(ContextUtils.getApplicationContext());
-        mController = new PageInfoIPHController(mHelper, mView);
+        mController = new PageInfoIphController(mHelper, mView);
     }
 
     @After
@@ -63,8 +63,8 @@ public class PageInfoIPHControllerUnitTest {
     @Test
     public void onPermissionDialogShown() {
         mController.onPermissionDialogShown(mProfile, TIMEOUT);
-        verify(mHelper).requestShowIPH(mIPHCmdCaptor.capture());
-        var cmd = mIPHCmdCaptor.getValue();
+        verify(mHelper).requestShowIph(mIphCmdCaptor.capture());
+        var cmd = mIphCmdCaptor.getValue();
         cmd.fetchFromResources();
 
         assertEquals(FeatureConstants.PAGE_INFO_FEATURE, cmd.featureName);
@@ -77,10 +77,10 @@ public class PageInfoIPHControllerUnitTest {
     }
 
     @Test
-    public void showStoreIconIPH() {
-        mController.showStoreIconIPH(TIMEOUT, IPH_RES_ID);
-        verify(mHelper).requestShowIPH(mIPHCmdCaptor.capture());
-        var cmd = mIPHCmdCaptor.getValue();
+    public void showStoreIconIph() {
+        mController.showStoreIconIph(TIMEOUT, IPH_RES_ID);
+        verify(mHelper).requestShowIph(mIphCmdCaptor.capture());
+        var cmd = mIphCmdCaptor.getValue();
         cmd.fetchFromResources();
 
         assertEquals(TIMEOUT, cmd.autoDismissTimeout);
@@ -93,10 +93,10 @@ public class PageInfoIPHControllerUnitTest {
     }
 
     @Test
-    public void showCookieControlsIPH() {
-        mController.showCookieControlsIPH(TIMEOUT, IPH_RES_ID);
-        verify(mHelper).requestShowIPH(mIPHCmdCaptor.capture());
-        var cmd = mIPHCmdCaptor.getValue();
+    public void showCookieControlsIph() {
+        mController.showCookieControlsIph(TIMEOUT, IPH_RES_ID);
+        verify(mHelper).requestShowIph(mIphCmdCaptor.capture());
+        var cmd = mIphCmdCaptor.getValue();
         cmd.fetchFromResources();
 
         assertEquals(TIMEOUT, cmd.autoDismissTimeout);

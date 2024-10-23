@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -27,7 +27,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.url.GURL;
 
 /** Controls showing IPH for Custom Tabs history. */
-public class CustomTabHistoryIPHController {
+public class CustomTabHistoryIphController {
     private final Activity mActivity;
     private final ActivityTabProvider mTabProvider;
     private final Supplier<Profile> mProfileSupplier;
@@ -43,7 +43,7 @@ public class CustomTabHistoryIPHController {
      * @param profileSupplier The {@link Supplier} for the current {@link Profile}.
      * @param appMenuHandler The {@link AppMenuHandler} for the tab.
      */
-    public CustomTabHistoryIPHController(
+    public CustomTabHistoryIphController(
             Activity activity,
             ActivityTabProvider activityTabProvider,
             Supplier<Profile> profileSupplier,
@@ -56,7 +56,7 @@ public class CustomTabHistoryIPHController {
                 new ActivityTabTabObserver(mTabProvider) {
                     @Override
                     public void onPageLoadStarted(Tab tab, GURL url) {
-                        maybeShowIPH();
+                        maybeShowIph();
                     }
                 };
     }
@@ -76,8 +76,8 @@ public class CustomTabHistoryIPHController {
                 success -> tracker.notifyEvent(EventConstants.CCT_HISTORY_MENU_ITEM_CLICKED));
     }
 
-    private void maybeShowIPH() {
-        if (!shouldShowIPH()) return;
+    private void maybeShowIph() {
+        if (!shouldShowIph()) return;
         if (mUserEducationHelper == null) {
             mUserEducationHelper =
                     new UserEducationHelper(
@@ -85,8 +85,8 @@ public class CustomTabHistoryIPHController {
         }
 
         View ctOverflowMenu = mActivity.findViewById(R.id.menu_button_wrapper);
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mActivity.getResources(),
                                 FeatureConstants.CCT_HISTORY_FEATURE,
                                 R.string.custom_tab_history_iph_bubble_text,
@@ -98,7 +98,7 @@ public class CustomTabHistoryIPHController {
                         .build());
     }
 
-    private boolean shouldShowIPH() {
+    private boolean shouldShowIph() {
         if (!ChromeFeatureList.sAppSpecificHistory.isEnabled()) return false;
 
         if (mProfileSupplier.get().isOffTheRecord()) return false;

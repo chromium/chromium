@@ -27,13 +27,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
-/** Unit test for {@link ReadLaterIPHController}. */
+/** Unit test for {@link ReadLaterIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ReadLaterIPHControllerUnitTest {
+public class ReadLaterIphControllerUnitTest {
 
     @Mock Activity mActivity;
     @Mock View mToolbarMenuButton;
@@ -41,9 +41,9 @@ public class ReadLaterIPHControllerUnitTest {
     @Mock UserEducationHelper mUserEducationHelper;
     @Mock Context mContext;
     @Mock Resources mResources;
-    @Captor ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
+    @Captor ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
-    ReadLaterIPHController mController;
+    ReadLaterIphController mController;
 
     @Before
     public void setUp() {
@@ -52,7 +52,7 @@ public class ReadLaterIPHControllerUnitTest {
         doReturn(mContext).when(mToolbarMenuButton).getContext();
 
         mController =
-                new ReadLaterIPHController(
+                new ReadLaterIphController(
                         mActivity, mToolbarMenuButton, mAppMenuHandler, mUserEducationHelper);
     }
 
@@ -60,16 +60,16 @@ public class ReadLaterIPHControllerUnitTest {
     @SmallTest
     public void onCopyContextMenuItemClicked() {
         mController.onCopyContextMenuItemClicked();
-        verify(mUserEducationHelper).requestShowIPH(any());
+        verify(mUserEducationHelper).requestShowIph(any());
     }
 
     @Test
     @SmallTest
-    public void showColdStartIPH() {
-        mController.showColdStartIPH();
-        verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
+    public void showColdStartIph() {
+        mController.showColdStartIph();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
 
-        IPHCommand command = mIPHCommandCaptor.getValue();
+        IphCommand command = mIphCommandCaptor.getValue();
         command.onShowCallback.run();
         verify(mAppMenuHandler).setMenuHighlight(R.id.all_bookmarks_menu_id);
 

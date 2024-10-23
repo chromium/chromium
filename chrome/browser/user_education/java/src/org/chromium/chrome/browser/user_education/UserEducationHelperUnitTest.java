@@ -29,7 +29,7 @@ import org.chromium.components.feature_engagement.Tracker;
 public class UserEducationHelperUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private IPHCommand mTestIPHCommand1;
+    private IphCommand mTestIphCommand1;
 
     @Mock private Tracker mTracker;
     @Mock private Profile mProfile;
@@ -37,8 +37,8 @@ public class UserEducationHelperUnitTest {
     @Before
     public void setUp() {
         Mockito.when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        mTestIPHCommand1 =
-                new IPHCommandBuilder(
+        mTestIphCommand1 =
+                new IphCommandBuilder(
                                 ContextUtils.getApplicationContext().getResources(), "TEST", 1, 1)
                         .build();
     }
@@ -49,7 +49,7 @@ public class UserEducationHelperUnitTest {
         ObservableSupplierImpl<Profile> profileSupplier = new ObservableSupplierImpl<>();
         UserEducationHelper educationHelper =
                 new UserEducationHelper(new Activity(), profileSupplier, new Handler());
-        educationHelper.requestShowIPH(mTestIPHCommand1);
+        educationHelper.requestShowIph(mTestIphCommand1);
 
         Mockito.verifyNoInteractions(mTracker);
         profileSupplier.set(mProfile);
@@ -64,7 +64,7 @@ public class UserEducationHelperUnitTest {
         profileSupplier.set(mProfile);
         UserEducationHelper educationHelper =
                 new UserEducationHelper(new Activity(), profileSupplier, new Handler());
-        educationHelper.requestShowIPH(mTestIPHCommand1);
+        educationHelper.requestShowIph(mTestIphCommand1);
         Mockito.verify(mTracker).addOnInitializedCallback(Mockito.any());
     }
 
@@ -73,7 +73,7 @@ public class UserEducationHelperUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         UserEducationHelper educationHelper =
                 new UserEducationHelper(new Activity(), mProfile, new Handler());
-        educationHelper.requestShowIPH(mTestIPHCommand1);
+        educationHelper.requestShowIph(mTestIphCommand1);
         Mockito.verify(mTracker).addOnInitializedCallback(Mockito.any());
     }
 }

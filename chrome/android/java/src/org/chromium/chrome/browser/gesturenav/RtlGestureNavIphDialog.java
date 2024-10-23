@@ -65,7 +65,7 @@ public class RtlGestureNavIphDialog {
                     @Override
                     public void onDismiss(PropertyModel model, int dismissalCause) {
                         dismissed.run();
-                        mIphDialogView.stopIPHAnimation();
+                        mIphDialogView.stopIphAnimation();
                         detachParentGlobalLayoutListener();
                     }
                 };
@@ -103,7 +103,7 @@ public class RtlGestureNavIphDialog {
                 new OnAttachStateChangeListener() {
                     @Override
                     public void onViewAttachedToWindow(@NonNull View v) {
-                        mIphDialogView.startIPHAnimation();
+                        mIphDialogView.startIphAnimation();
                         mIphDialogView.removeOnAttachStateChangeListener(this);
                     }
 

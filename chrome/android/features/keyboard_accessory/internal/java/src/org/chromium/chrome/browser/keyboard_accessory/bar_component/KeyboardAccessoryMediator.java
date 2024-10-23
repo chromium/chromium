@@ -196,7 +196,7 @@ class KeyboardAccessoryMediator
                 skippedFirstPasswordItem = true;
                 continue;
             }
-            barItem.setFeatureForIPH(getFeatureBySuggestionId(barItem.getSuggestion()));
+            barItem.setFeatureForIph(getFeatureBySuggestionId(barItem.getSuggestion()));
             break; // Only set IPH for one suggestions in the bar.
         }
 
@@ -347,8 +347,8 @@ class KeyboardAccessoryMediator
     private static String getFeatureBySuggestionId(AutofillSuggestion suggestion) {
         // If the suggestion has an explicit IPH feature defined, prefer that over the default IPH
         // features.
-        if (suggestion.getFeatureForIPH() != null && !suggestion.getFeatureForIPH().isEmpty()) {
-            return suggestion.getFeatureForIPH();
+        if (suggestion.getFeatureForIph() != null && !suggestion.getFeatureForIph().isEmpty()) {
+            return suggestion.getFeatureForIph();
         }
         if (containsPasswordInfo(suggestion)) {
             return FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE;

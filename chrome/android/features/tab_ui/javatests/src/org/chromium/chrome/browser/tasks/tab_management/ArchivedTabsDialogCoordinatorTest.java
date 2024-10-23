@@ -172,7 +172,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testDialogIPH() throws Exception {
+    public void testDialogIph() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
 
@@ -185,7 +185,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testDialogIPH_Clicked() throws Exception {
+    public void testDialogIph_Clicked() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
 
@@ -210,7 +210,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testDialogIPH_CloseDialog() throws Exception {
+    public void testDialogIph_CloseDialog() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
 

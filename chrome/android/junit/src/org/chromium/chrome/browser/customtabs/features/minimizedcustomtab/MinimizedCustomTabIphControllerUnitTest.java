@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -45,14 +45,14 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.url.JUnitTestGURLs;
 
-/** Unit tests for {@link MinimizedCustomTabIPHController}. */
+/** Unit tests for {@link MinimizedCustomTabIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-public class MinimizedCustomTabIPHControllerUnitTest {
+public class MinimizedCustomTabIphControllerUnitTest {
     @Rule
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
@@ -66,7 +66,7 @@ public class MinimizedCustomTabIPHControllerUnitTest {
     @Mock private Tab mTab;
 
     private Activity mActivity;
-    private MinimizedCustomTabIPHController mController;
+    private MinimizedCustomTabIphController mController;
 
     @Before
     public void setUp() {
@@ -76,7 +76,7 @@ public class MinimizedCustomTabIPHControllerUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         when(mProfileSupplier.hasValue()).thenReturn(true);
         mController =
-                new MinimizedCustomTabIPHController(
+                new MinimizedCustomTabIphController(
                         mActivity, mTabProvider, mUserEducationHelper, mProfileSupplier);
         ViewStub minimizeStub = mActivity.findViewById(R.id.minimize_button_stub);
         View minimizeView = minimizeStub.inflate();
@@ -89,11 +89,11 @@ public class MinimizedCustomTabIPHControllerUnitTest {
     }
 
     @Test
-    public void testShowsIPHOnPageLoad() {
+    public void testShowsIphOnPageLoad() {
         var tabObserver = mController.getTabObserverForTesting();
         tabObserver.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
-        var captor = ArgumentCaptor.forClass(IPHCommand.class);
-        verify(mUserEducationHelper).requestShowIPH(captor.capture());
+        var captor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper).requestShowIph(captor.capture());
         var cmd = captor.getValue();
         assertEquals(FeatureConstants.CCT_MINIMIZED_FEATURE, cmd.featureName);
         assertEquals(R.string.custom_tab_minimize_button_iph_bubble_text, cmd.stringId);

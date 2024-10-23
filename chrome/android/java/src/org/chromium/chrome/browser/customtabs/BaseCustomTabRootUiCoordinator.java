@@ -45,10 +45,10 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Minimi
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabHeightStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTabObserver;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIPHController;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
-import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
+import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIphController;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -67,7 +67,7 @@ import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogControlle
 import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
+import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -112,9 +112,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     private @Nullable BrandingController mBrandingController;
 
-    private @Nullable DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;
-    private @Nullable CustomTabHistoryIPHController mCustomTabHistoryIPHController;
-    private @Nullable ReadAloudIPHController mReadAloudIPHController;
+    private @Nullable DesktopSiteSettingsIphController mDesktopSiteSettingsIphController;
+    private @Nullable CustomTabHistoryIphController mCustomTabHistoryIphController;
+    private @Nullable ReadAloudIphController mReadAloudIphController;
     private @Nullable GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
     private @Nullable TrackingProtectionSnackbarController mTrackingProtectionSnackbarController;
 
@@ -367,8 +367,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                 controller.tryToReengageTheUser();
                             }
                             if (mAppMenuCoordinator != null) {
-                                mReadAloudIPHController =
-                                        new ReadAloudIPHController(
+                                mReadAloudIphController =
+                                        new ReadAloudIphController(
                                                 mActivity,
                                                 profile,
                                                 getToolbarManager().getMenuButtonView(),
@@ -412,8 +412,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    public CustomTabHistoryIPHController getHistoryIPHController() {
-        return mCustomTabHistoryIPHController;
+    public CustomTabHistoryIphController getHistoryIphController() {
+        return mCustomTabHistoryIphController;
     }
 
     @Override
@@ -523,8 +523,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     public void onPostInflationStartup() {
         super.onPostInflationStartup();
         mCustomTabHeightStrategy.onPostInflationStartup();
-        mCustomTabHistoryIPHController =
-                CustomTabAppMenuHelper.maybeCreateHistoryIPHController(
+        mCustomTabHistoryIphController =
+                CustomTabAppMenuHelper.maybeCreateHistoryIphController(
                         mAppMenuCoordinator,
                         mActivity,
                         mActivityTabProvider,
@@ -619,21 +619,21 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mBrandingController = null;
         }
 
-        if (mDesktopSiteSettingsIPHController != null) {
-            mDesktopSiteSettingsIPHController.destroy();
-            mDesktopSiteSettingsIPHController = null;
+        if (mDesktopSiteSettingsIphController != null) {
+            mDesktopSiteSettingsIphController.destroy();
+            mDesktopSiteSettingsIphController = null;
         }
 
-        if (mReadAloudIPHController != null) {
-            mReadAloudIPHController.destroy();
-            mReadAloudIPHController = null;
+        if (mReadAloudIphController != null) {
+            mReadAloudIphController.destroy();
+            mReadAloudIphController = null;
         }
 
         mCustomTabHeightStrategy.destroy();
 
-        if (mCustomTabHistoryIPHController != null) {
-            mCustomTabHistoryIPHController.destroy();
-            mCustomTabHistoryIPHController = null;
+        if (mCustomTabHistoryIphController != null) {
+            mCustomTabHistoryIphController.destroy();
+            mCustomTabHistoryIphController = null;
         }
     }
 
@@ -724,8 +724,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                         mActivity);
                             }
                             if (!didShowPrompt && mAppMenuCoordinator != null) {
-                                mDesktopSiteSettingsIPHController =
-                                        DesktopSiteSettingsIPHController.create(
+                                mDesktopSiteSettingsIphController =
+                                        DesktopSiteSettingsIphController.create(
                                                 mActivity,
                                                 mWindowAndroid,
                                                 mActivityTabProvider,

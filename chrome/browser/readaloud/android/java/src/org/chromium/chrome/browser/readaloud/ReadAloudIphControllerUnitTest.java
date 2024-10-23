@@ -37,16 +37,16 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/** Unit test for {@link ReadAloudIPHController}. */
+/** Unit test for {@link ReadAloudIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures({ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT})
-public class ReadAloudIPHControllerUnitTest {
+public class ReadAloudIphControllerUnitTest {
 
     @Mock Activity mActivity;
     @Mock View mToolbarMenuButton;
@@ -54,7 +54,7 @@ public class ReadAloudIPHControllerUnitTest {
     @Mock UserEducationHelper mUserEducationHelper;
     @Mock Context mContext;
     @Mock Resources mResources;
-    @Captor ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
+    @Captor ArgumentCaptor<IphCommand> mIphCommandCaptor;
     @Mock private ObservableSupplier<Tab> mMockTabProvider;
     @Mock ReadAloudController mReadAloudController;
     ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier;
@@ -62,7 +62,7 @@ public class ReadAloudIPHControllerUnitTest {
     @Mock private Profile mProfile;
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
 
-    ReadAloudIPHController mController;
+    ReadAloudIphController mController;
 
     @Before
     public void setUp() {
@@ -80,7 +80,7 @@ public class ReadAloudIPHControllerUnitTest {
         doReturn(true).when(mReadAloudController).isReadable(mTab);
 
         mController =
-                new ReadAloudIPHController(
+                new ReadAloudIphController(
                         mActivity,
                         mToolbarMenuButton,
                         mAppMenuHandler,
@@ -92,11 +92,11 @@ public class ReadAloudIPHControllerUnitTest {
 
     @Test
     @SmallTest
-    public void maybeShowReadAloudAppMenuIPH() {
-        mController.maybeShowReadAloudAppMenuIPH();
-        verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
+    public void maybeShowReadAloudAppMenuIph() {
+        mController.maybeShowReadAloudAppMenuIph();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
 
-        IPHCommand command = mIPHCommandCaptor.getValue();
+        IphCommand command = mIphCommandCaptor.getValue();
         command.onShowCallback.run();
         verify(mAppMenuHandler).setMenuHighlight(R.id.readaloud_menu_id, true);
 
@@ -106,35 +106,35 @@ public class ReadAloudIPHControllerUnitTest {
 
     @Test
     @SmallTest
-    public void maybeShowReadAloudAppMenuIPH_false() {
+    public void maybeShowReadAloudAppMenuIph_false() {
         doReturn(false).when(mReadAloudController).isReadable(mTab);
 
-        mController.maybeShowReadAloudAppMenuIPH();
-        verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
+        mController.maybeShowReadAloudAppMenuIph();
+        verify(mUserEducationHelper, never()).requestShowIph(mIphCommandCaptor.capture());
     }
 
     @Test
     @SmallTest
-    public void maybeShowReadAloudAppMenuIPH_invalid() {
+    public void maybeShowReadAloudAppMenuIph_invalid() {
         // invalid tab URL
         mTab.setGurlOverrideForTesting(new GURL("http://0x100.0/"));
-        mController.maybeShowReadAloudAppMenuIPH();
-        verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
+        mController.maybeShowReadAloudAppMenuIph();
+        verify(mUserEducationHelper, never()).requestShowIph(mIphCommandCaptor.capture());
 
         // null tab
         doReturn(null).when(mMockTabProvider).get();
-        mController.maybeShowReadAloudAppMenuIPH();
-        verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
+        mController.maybeShowReadAloudAppMenuIph();
+        verify(mUserEducationHelper, never()).requestShowIph(mIphCommandCaptor.capture());
     }
 
     @Test
     @SmallTest
-    public void maybeShowReadAloudAppMenuIPH_noTextBubble_disabledHighlight() {
+    public void maybeShowReadAloudAppMenuIph_noTextBubble_disabledHighlight() {
         mController.setShowAppMenuTextBubble(false);
-        mController.maybeShowReadAloudAppMenuIPH();
+        mController.maybeShowReadAloudAppMenuIph();
         // we shouldn't show the text bubble
-        verify(mUserEducationHelper, times(1)).requestShowIPH(mIPHCommandCaptor.capture());
-        IPHCommand command = mIPHCommandCaptor.getValue();
+        verify(mUserEducationHelper, times(1)).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand command = mIphCommandCaptor.getValue();
         assertFalse(command.showTextBubble);
         // but there will still be a highlight WITHOUT the menu highlight
         command.onShowCallback.run();
@@ -144,12 +144,12 @@ public class ReadAloudIPHControllerUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT})
-    public void maybeShowReadAloudAppMenuIPH_noTextBubble_enabledHighlight() {
+    public void maybeShowReadAloudAppMenuIph_noTextBubble_enabledHighlight() {
         mController.setShowAppMenuTextBubble(false);
-        mController.maybeShowReadAloudAppMenuIPH();
+        mController.maybeShowReadAloudAppMenuIph();
         // we shouldn't show the text bubble
-        verify(mUserEducationHelper, times(1)).requestShowIPH(mIPHCommandCaptor.capture());
-        IPHCommand command = mIPHCommandCaptor.getValue();
+        verify(mUserEducationHelper, times(1)).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand command = mIphCommandCaptor.getValue();
         assertFalse(command.showTextBubble);
         // but there will still be a highlight WITH the menu highlight
         command.onShowCallback.run();

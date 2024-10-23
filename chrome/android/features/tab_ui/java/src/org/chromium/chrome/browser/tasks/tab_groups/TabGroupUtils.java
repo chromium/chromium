@@ -37,7 +37,7 @@ import java.util.List;
 public class TabGroupUtils {
     private static TabModelSelectorTabObserver sTabModelSelectorTabObserver;
 
-    public static void maybeShowIPH(
+    public static void maybeShowIph(
             Profile profile,
             @FeatureConstants String featureName,
             View view,
@@ -110,7 +110,7 @@ public class TabGroupUtils {
     }
 
     /** Start a TabModelSelectorTabObserver to show IPH for TabGroups. */
-    public static void startObservingForCreationIPH() {
+    public static void startObservingForCreationIph() {
         if (sTabModelSelectorTabObserver != null) return;
 
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
@@ -129,7 +129,7 @@ public class TabGroupUtils {
                         if (navigationHandle.isValidSearchFormUrl()
                                 || (navigationHandle.pageTransition() & PageTransition.CORE_MASK)
                                         == PageTransition.GENERATED) {
-                            maybeShowIPH(
+                            maybeShowIph(
                                     tab.getProfile(),
                                     FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE,
                                     tab.getView(),

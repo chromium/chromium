@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -44,7 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Controller to manage desktop site settings in-product-help messages to users. */
-public class DesktopSiteSettingsIPHController {
+public class DesktopSiteSettingsIphController {
     private final UserEducationHelper mUserEducationHelper;
     private final WindowAndroid mWindowAndroid;
     private final AppMenuHandler mAppMenuHandler;
@@ -57,9 +57,9 @@ public class DesktopSiteSettingsIPHController {
 
     /**
      * Creates and initializes the controller. Registers an {@link ActivityTabTabObserver} that
-     * attempts to show the following IPHs:
-     * 1. The desktop site per-site settings IPH on an eligible tab on any site on a tablet device.
-     * 2. The desktop site window setting IPH on a mobile site with an active window setting.
+     * attempts to show the following IPHs: 1. The desktop site per-site settings IPH on an eligible
+     * tab on any site on a tablet device. 2. The desktop site window setting IPH on a mobile site
+     * with an active window setting.
      *
      * @param activity The current activity.
      * @param windowAndroid The window associated with the activity.
@@ -68,14 +68,14 @@ public class DesktopSiteSettingsIPHController {
      * @param toolbarMenuButton The toolbar menu button to which the IPH will be anchored.
      * @param appMenuHandler The app menu handler.
      */
-    public static DesktopSiteSettingsIPHController create(
+    public static DesktopSiteSettingsIphController create(
             Activity activity,
             WindowAndroid windowAndroid,
             ActivityTabProvider activityTabProvider,
             Profile profile,
             View toolbarMenuButton,
             AppMenuHandler appMenuHandler) {
-        return new DesktopSiteSettingsIPHController(
+        return new DesktopSiteSettingsIphController(
                 windowAndroid,
                 activityTabProvider,
                 profile,
@@ -86,7 +86,7 @@ public class DesktopSiteSettingsIPHController {
                 MessageDispatcherProvider.from(windowAndroid));
     }
 
-    DesktopSiteSettingsIPHController(
+    DesktopSiteSettingsIphController(
             WindowAndroid windowAndroid,
             ActivityTabProvider activityTabProvider,
             Profile profile,
@@ -114,11 +114,11 @@ public class DesktopSiteSettingsIPHController {
     }
 
     @VisibleForTesting
-    void showGenericIPH(@NonNull Tab tab, Profile profile) {
+    void showGenericIph(@NonNull Tab tab, Profile profile) {
         if (tab.isNativePage()) return;
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         String featureName = FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE;
-        if (perSiteIPHPreChecksFailed(tab, tracker, featureName)) return;
+        if (perSiteIphPreChecksFailed(tab, tracker, featureName)) return;
 
         var siteExceptions =
                 mWebsitePreferenceBridge.getContentSettingsExceptions(
@@ -137,7 +137,7 @@ public class DesktopSiteSettingsIPHController {
                         ? R.string.rds_site_settings_generic_iph_text_mobile
                         : R.string.rds_site_settings_generic_iph_text_desktop;
 
-        requestShowPerSiteIPH(featureName, textId, new Object[] {tab.getUrl().getHost()});
+        requestShowPerSiteIph(featureName, textId, new Object[] {tab.getUrl().getHost()});
     }
 
     ActivityTabTabObserver getActiveTabObserverForTesting() {
@@ -145,7 +145,7 @@ public class DesktopSiteSettingsIPHController {
     }
 
     @VisibleForTesting
-    boolean perSiteIPHPreChecksFailed(@NonNull Tab tab, Tracker tracker, String featureName) {
+    boolean perSiteIphPreChecksFailed(@NonNull Tab tab, Tracker tracker, String featureName) {
         if (!DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) return true;
 
         // Return early when the IPH triggering criteria is not satisfied.
@@ -164,7 +164,7 @@ public class DesktopSiteSettingsIPHController {
     }
 
     @VisibleForTesting
-    boolean showWindowSettingIPH(@NonNull Tab tab, Profile profile) {
+    boolean showWindowSettingIph(@NonNull Tab tab, Profile profile) {
         if (mMessageDispatcher == null) return false;
         if (tab.isNativePage()) return false;
 
@@ -222,9 +222,9 @@ public class DesktopSiteSettingsIPHController {
         return true;
     }
 
-    private void requestShowPerSiteIPH(String featureName, int textId, Object[] textArgs) {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+    private void requestShowPerSiteIph(String featureName, int textId, Object[] textArgs) {
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mContext.getResources(),
                                 featureName,
                                 textId,
@@ -247,15 +247,15 @@ public class DesktopSiteSettingsIPHController {
                     @Override
                     protected void onObservingDifferentTab(Tab tab, boolean hint) {
                         if (tab == null) return;
-                        showGenericIPH(tab, profile);
+                        showGenericIph(tab, profile);
                     }
 
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
                         if (tab == null) return;
-                        boolean windowSettingIphShown = showWindowSettingIPH(tab, profile);
+                        boolean windowSettingIphShown = showWindowSettingIph(tab, profile);
                         if (!windowSettingIphShown) {
-                            showGenericIPH(tab, profile);
+                            showGenericIph(tab, profile);
                         }
                     }
                 };

@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -136,8 +136,8 @@ public class MiniPlayerCoordinator {
     void onShown(@Nullable View iphAnchorView) {
         if (iphAnchorView != null) {
 
-            mUserEducationHelper.requestShowIPH(
-                    new IPHCommandBuilder(
+            mUserEducationHelper.requestShowIph(
+                    new IphCommandBuilder(
                                     mContext.getResources(),
                                     FeatureConstants.READ_ALOUD_EXPANDED_PLAYER_FEATURE,
                                     /* stringId= */ R.string.readaloud_expanded_player_iph,

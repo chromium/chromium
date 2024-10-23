@@ -165,7 +165,7 @@ public class TileRenderer {
     }
 
     /** Record that a tile was clicked for IPH reasons. */
-    private void recordTileClickedForIPH(String eventName) {
+    private void recordTileClickedForIph(String eventName) {
         assert mProfile != null;
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
         tracker.notifyEvent(eventName);
@@ -202,7 +202,7 @@ public class TileRenderer {
         if (tile.getSource() == TileSource.HOMEPAGE) {
             delegate.setOnClickRunnable(
                     () -> {
-                        recordTileClickedForIPH(EventConstants.HOMEPAGE_TILE_CLICKED);
+                        recordTileClickedForIph(EventConstants.HOMEPAGE_TILE_CLICKED);
                         RecordHistogram.recordEnumeratedHistogram(
                                 "NewTabPage.SuggestTiles.SelectedTileType",
                                 SuggestTileType.OTHER,

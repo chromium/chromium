@@ -225,7 +225,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
      * Helper class to manage showing in-product help bubbles over specific info bars. It will be
      * null when the {@link Tab} is detached from a {@link Activity}.
      */
-    private @Nullable IPHInfoBarSupport mIPHSupport;
+    private @Nullable IphInfoBarSupport mIphSupport;
 
     /** A {@link BottomSheetObserver} so this view knows when to show/hide. */
     private @Nullable BottomSheetObserver mBottomSheetObserver;
@@ -525,9 +525,9 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         mInfoBarContainerView.setHidden(mIsHidden);
         setParentView(activity.findViewById(R.id.bottom_container));
 
-        mIPHSupport = new IPHInfoBarSupport(new IPHBubbleDelegateImpl(activity, mTab));
-        addAnimationListener(mIPHSupport);
-        addObserver(mIPHSupport);
+        mIphSupport = new IphInfoBarSupport(new IphBubbleDelegateImpl(activity, mTab));
+        addAnimationListener(mIphSupport);
+        addObserver(mIphSupport);
 
         mTab.getWindowAndroid().getKeyboardDelegate().addKeyboardVisibilityListener(this);
     }
@@ -552,10 +552,10 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     }
 
     private void destroyContainerView() {
-        if (mIPHSupport != null) {
-            removeAnimationListener(mIPHSupport);
-            removeObserver(mIPHSupport);
-            mIPHSupport = null;
+        if (mIphSupport != null) {
+            removeAnimationListener(mIphSupport);
+            removeObserver(mIphSupport);
+            mIphSupport = null;
         }
 
         BrowserControlsManager browserControlsManager =

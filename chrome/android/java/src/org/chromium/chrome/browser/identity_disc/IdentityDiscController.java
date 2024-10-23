@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -99,7 +99,7 @@ public class IdentityDiscController
                         /* onClickListener= */ view -> onClick(),
                         mContext.getString(R.string.accessibility_toolbar_btn_identity_disc),
                         /* supportsTinting= */ false,
-                        new IPHCommandBuilder(
+                        new IphCommandBuilder(
                                 mContext.getResources(),
                                 FeatureConstants.IDENTITY_DISC_FEATURE,
                                 R.string.iph_identity_disc_text,
@@ -173,7 +173,7 @@ public class IdentityDiscController
                 /* onLongClickListener= */ null,
                 contentDescription,
                 shouldSupportTinting,
-                buttonSpec.getIPHCommandBuilder(),
+                buttonSpec.getIphCommandBuilder(),
                 AdaptiveToolbarButtonVariant.UNKNOWN,
                 buttonSpec.getActionChipLabelResId(),
                 buttonSpec.getHoverTooltipTextId(),

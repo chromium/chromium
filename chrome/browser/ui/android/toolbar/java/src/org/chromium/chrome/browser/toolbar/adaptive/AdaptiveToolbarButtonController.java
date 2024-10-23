@@ -236,7 +236,7 @@ public class AdaptiveToolbarButtonController
                             receivedButtonSpec.isDynamicAction() ? null : mMenuHandler,
                             receivedButtonSpec.getContentDescription(),
                             receivedButtonSpec.getSupportsTinting(),
-                            receivedButtonSpec.getIPHCommandBuilder(),
+                            receivedButtonSpec.getIphCommandBuilder(),
                             receivedButtonSpec.getButtonVariant(),
                             receivedButtonSpec.getActionChipLabelResId(),
                             receivedButtonSpec.getHoverTooltipTextId(),

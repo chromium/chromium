@@ -28,25 +28,25 @@ import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
-/** Unit tests for {@link PageZoomIPHController}. */
+/** Unit tests for {@link PageZoomIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class PageZoomIPHControllerTest {
+public class PageZoomIphControllerTest {
 
     @Mock private Context mContext;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private View mToolbarMenuButton;
     @Mock private UserEducationHelper mUserEducationHelper;
 
-    @Captor private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
+    @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
     private final TestValues mTestValues = new TestValues();
 
-    private PageZoomIPHController mPageZoomIPHController;
+    private PageZoomIphController mPageZoomIphController;
 
     @Before
     public void setUp() {
@@ -58,23 +58,23 @@ public class PageZoomIPHControllerTest {
         doReturn(resources).when(mContext).getResources();
         doReturn(mContext).when(mToolbarMenuButton).getContext();
 
-        mPageZoomIPHController =
-                new PageZoomIPHController(
+        mPageZoomIphController =
+                new PageZoomIphController(
                         mAppMenuHandler, mToolbarMenuButton, mUserEducationHelper);
     }
 
     @Test
-    public void testPageZoomIPHShown() {
-        mPageZoomIPHController.showColdStartIPH();
-        verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
+    public void testPageZoomIphShown() {
+        mPageZoomIphController.showColdStartIph();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
 
-        IPHCommand command = mIPHCommandCaptor.getValue();
+        IphCommand command = mIphCommandCaptor.getValue();
         Assert.assertEquals(
-                "IPHCommand feature should match.",
+                "IphCommand feature should match.",
                 command.featureName,
                 FeatureConstants.PAGE_ZOOM_FEATURE);
         Assert.assertEquals(
-                "IPHCommand stringId should match.",
+                "IphCommand stringId should match.",
                 R.string.page_zoom_iph_message,
                 command.stringId);
 

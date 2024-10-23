@@ -577,7 +577,7 @@ public class AutofillProvider {
                             .setSubLabel(datalistLabels[i])
                             .setItemTag("")
                             .setSuggestionType(SuggestionType.DATALIST_ENTRY)
-                            .setFeatureForIPH("")
+                            .setFeatureForIph("")
                             .build();
         }
         if (mWebContentsAccessibility == null) {

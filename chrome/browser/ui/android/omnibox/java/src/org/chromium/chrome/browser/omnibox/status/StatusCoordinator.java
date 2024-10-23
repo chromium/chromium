@@ -98,8 +98,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
         PropertyModelChangeProcessor.create(mModel, mStatusView, new StatusViewBinder());
 
-        PageInfoIPHController pageInfoIPHController =
-                new PageInfoIPHController(
+        PageInfoIphController pageInfoIphController =
+                new PageInfoIphController(
                         new UserEducationHelper(
                                 ContextUtils.activityFromContext(mStatusView.getContext()),
                                 profileSupplier,
@@ -116,7 +116,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
                         PermissionDialogController.getInstance(),
                         templateUrlServiceSupplier,
                         profileSupplier,
-                        pageInfoIPHController,
+                        pageInfoIphController,
                         windowAndroid,
                         merchantTrustSignalsCoordinatorSupplier);
 

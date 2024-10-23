@@ -61,7 +61,7 @@ public class ToolbarButtonIphTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         // Pretend the feature engagement feature is already initialized. Otherwise
-        // UserEducationHelper#requestShowIPH() calls get dropped during test.
+        // UserEducationHelper#requestShowIph() calls get dropped during test.
         doAnswer(
                         invocation -> {
                             invocation.<Callback<Boolean>>getArgument(0).onResult(true);
@@ -95,7 +95,7 @@ public class ToolbarButtonIphTest {
                 () -> {
                     ChromeActivity activity = mActivityTestRule.getActivity();
                     ToolbarManager toolbarManager = activity.getToolbarManager();
-                    toolbarManager.showPriceDropIPH();
+                    toolbarManager.showPriceDropIph();
                 });
 
         ViewInteraction toolbarTabButtonInteraction = onView(withId(R.id.tab_switcher_button));

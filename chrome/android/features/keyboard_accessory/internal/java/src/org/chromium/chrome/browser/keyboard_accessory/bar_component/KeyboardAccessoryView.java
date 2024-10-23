@@ -72,7 +72,7 @@ class KeyboardAccessoryView extends LinearLayout {
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     if (newState != RecyclerView.SCROLL_STATE_IDLE) {
                         mBarItemsView.removeOnScrollListener(mScrollingIphCallback);
-                        KeyboardAccessoryIPHUtils.emitScrollingEvent(mFeatureEngagementTracker);
+                        KeyboardAccessoryIphUtils.emitScrollingEvent(mFeatureEngagementTracker);
                     }
                 }
             };

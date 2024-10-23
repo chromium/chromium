@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -112,24 +112,24 @@ public final class ShareButtonControllerUnitTest {
 
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     @Test
-    public void testIPHCommandHelper() {
+    public void testIphCommandHelper() {
         assertNull(
-                mShareButtonController.get(/* tab= */ null).getButtonSpec().getIPHCommandBuilder());
+                mShareButtonController.get(/* tab= */ null).getButtonSpec().getIphCommandBuilder());
 
-        // Verify that IPHCommandBuilder is set just once;
-        IPHCommandBuilder builder =
-                mShareButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder();
+        // Verify that IphCommandBuilder is set just once;
+        IphCommandBuilder builder =
+                mShareButtonController.get(mTab).getButtonSpec().getIphCommandBuilder();
 
-        assertNotNull(mShareButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
+        assertNotNull(mShareButtonController.get(mTab).getButtonSpec().getIphCommandBuilder());
 
-        // Verify that IPHCommandBuilder is same as before, get(Tab) did not create a new one.
+        // Verify that IphCommandBuilder is same as before, get(Tab) did not create a new one.
         assertEquals(
-                builder, mShareButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
+                builder, mShareButtonController.get(mTab).getButtonSpec().getIphCommandBuilder());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    public void testIPHEvent() {
+    public void testIphEvent() {
         doReturn(true)
                 .when(mTracker)
                 .shouldTriggerHelpUI(

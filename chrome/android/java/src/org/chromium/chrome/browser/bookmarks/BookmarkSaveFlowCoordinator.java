@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -180,7 +180,7 @@ public class BookmarkSaveFlowCoordinator {
                         if (isTracked) return;
 
                         if (shown) {
-                            showShoppingSaveFlowIPH();
+                            showShoppingSaveFlowIph();
                         } else {
                             mBottomSheetController.addObserver(
                                     new EmptyBottomSheetObserver() {
@@ -188,7 +188,7 @@ public class BookmarkSaveFlowCoordinator {
                                         public void onSheetContentChanged(
                                                 BottomSheetContent newContent) {
                                             if (newContent == mBottomSheetContent) {
-                                                showShoppingSaveFlowIPH();
+                                                showShoppingSaveFlowIph();
                                             }
 
                                             mBottomSheetController.removeObserver(this);
@@ -203,9 +203,9 @@ public class BookmarkSaveFlowCoordinator {
      * Show the IPH for the save flow that tells a user that they can organize their products from
      * the bookmarks surface.
      */
-    private void showShoppingSaveFlowIPH() {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+    private void showShoppingSaveFlowIph() {
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mBookmarkSaveFlowView.getResources(),
                                 FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
                                 R.string.iph_shopping_list_save_flow,

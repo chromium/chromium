@@ -157,7 +157,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -2388,7 +2388,7 @@ public class ToolbarManager
     }
 
     @VisibleForTesting
-    public void showPriceDropIPH() {
+    public void showPriceDropIph() {
         ToggleTabStackButton toggleTabStackButton =
                 mControlContainer.findViewById(R.id.tab_switcher_button);
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
@@ -2398,8 +2398,8 @@ public class ToolbarManager
                         .getResources()
                         .getDimensionPixelOffset(
                                 R.dimen.price_drop_spotted_iph_ntp_tabswitcher_y_inset);
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mControlContainer.getResources(),
                                 FeatureConstants.PRICE_DROP_NTP_FEATURE,
                                 R.string.price_drop_spotted_iph,
@@ -2416,7 +2416,7 @@ public class ToolbarManager
      * drop IPH. An unseen price drop occurs when there is a tab with a price drop that has not been
      * viewed in the tab switcher grid.
      */
-    private void maybeShowPriceDropIPH() {
+    private void maybeShowPriceDropIph() {
         if (mTabModelSelector == null) return;
         Profile profile = mTabModelSelector.getCurrentModel().getProfile();
         if (profile.isOffTheRecord()) return;
@@ -2433,7 +2433,7 @@ public class ToolbarManager
                         if (shoppingPersistedTabData != null
                                 && shoppingPersistedTabData.getPriceDrop() != null
                                 && !shoppingPersistedTabData.getIsCurrentPriceDropSeen()) {
-                            showPriceDropIPH();
+                            showPriceDropIph();
                         }
                     });
         }
@@ -2444,7 +2444,7 @@ public class ToolbarManager
         if (ntp != null) {
             ntp.setOmniboxStub(mLocationBar.getOmniboxStub());
             mLocationBarModel.notifyNtpStartedLoading();
-            maybeShowPriceDropIPH();
+            maybeShowPriceDropIph();
             mIsNtpShowingSupplier.set(true);
         } else {
             mIsNtpShowingSupplier.set(false);

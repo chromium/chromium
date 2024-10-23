@@ -23,7 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIPHController;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -49,8 +49,8 @@ public class CustomTabAppMenuHelperUnitTest {
         CustomTabAppMenuHelper.setAppHistoryEnabledForTesting(true);
     }
 
-    private CustomTabHistoryIPHController maybeCreateHistoryIPHController() {
-        return CustomTabAppMenuHelper.maybeCreateHistoryIPHController(
+    private CustomTabHistoryIphController maybeCreateHistoryIphController() {
+        return CustomTabAppMenuHelper.maybeCreateHistoryIphController(
                 mAppMenuCoordinator,
                 mActivity,
                 mActivityTabProvider,
@@ -59,14 +59,14 @@ public class CustomTabAppMenuHelperUnitTest {
     }
 
     @Test
-    public void createIPH() {
+    public void createIph() {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, true);
         when(mAppMenuCoordinator.getAppMenuHandler()).thenReturn(mAppMenuHandler);
-        assertNull(maybeCreateHistoryIPHController());
+        assertNull(maybeCreateHistoryIphController());
 
         when(mIntentDataProvider.getClientPackageNameIdentitySharing()).thenReturn(PACKAGE_NAME);
-        assertNotNull(maybeCreateHistoryIPHController());
+        assertNotNull(maybeCreateHistoryIphController());
     }
 
     @Test

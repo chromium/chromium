@@ -16,18 +16,18 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/** Unit tests for the IPHCommandBuilder. */
+/** Unit tests for the IphCommandBuilder. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class IPHCommandBuilderUnitTest {
+public class IphCommandBuilderUnitTest {
     private static final String FEATURE_NAME = "Builder Unit Test";
     private static final int CONTENT_STRING_RES = 1234;
     private static final int ACCESSIBILITY_STRING_RES = 4321;
-    private IPHCommandBuilder mBuilder;
+    private IphCommandBuilder mBuilder;
 
     @Before
     public void setUp() {
         mBuilder =
-                new IPHCommandBuilder(
+                new IphCommandBuilder(
                         ContextUtils.getApplicationContext().getResources(),
                         FEATURE_NAME,
                         CONTENT_STRING_RES,

@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
@@ -503,8 +503,8 @@ public class SectionHeaderView extends LinearLayout {
                         return Math.min(bounds.width(), bounds.height()) / 1.5f;
                     }
                 });
-        helper.requestShowIPH(
-                new IPHCommandBuilder(
+        helper.requestShowIph(
+                new IphCommandBuilder(
                                 mMenuView.getContext().getResources(),
                                 FeatureConstants.FEED_HEADER_MENU_FEATURE,
                                 R.string.ntp_feed_menu_iph,
@@ -537,8 +537,8 @@ public class SectionHeaderView extends LinearLayout {
         // TODO(crbug.com/40914294): Request IPH after parent set or something.
         if (getParent() == null) return;
 
-        helper.requestShowIPH(
-                new IPHCommandBuilder(
+        helper.requestShowIph(
+                new IphCommandBuilder(
                                 getContext().getResources(),
                                 FeatureConstants.WEB_FEED_AWARENESS_FEATURE,
                                 R.string.web_feed_awareness,

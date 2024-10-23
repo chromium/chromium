@@ -57,7 +57,7 @@ public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
 
                         @Override
                         public void onDismiss(PropertyModel model, int dismissalCause) {
-                            mIphDialogView.stopIPHAnimation();
+                            mIphDialogView.stopIphAnimation();
                             detachParentGlobalLayoutListener();
                         }
                     };
@@ -92,7 +92,7 @@ public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
 
         attachParentGlobalLayoutListener();
         mModalDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
-        mIphDialogView.startIPHAnimation();
+        mIphDialogView.startIphAnimation();
     }
 
     /** Destroy the IPH component. */

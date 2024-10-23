@@ -509,10 +509,10 @@ public class HistoryManager
                 && !mSelectionDelegate.isSelectionEnabled();
     }
 
-    void showIPH() {
-        AppSpecificHistoryIPHController iphController =
-                new AppSpecificHistoryIPHController(mActivity, () -> mProfile);
-        iphController.maybeShowIPH();
+    void showIph() {
+        AppSpecificHistoryIphController iphController =
+                new AppSpecificHistoryIphController(mActivity, () -> mProfile);
+        iphController.maybeShowIph();
     }
 
     /**

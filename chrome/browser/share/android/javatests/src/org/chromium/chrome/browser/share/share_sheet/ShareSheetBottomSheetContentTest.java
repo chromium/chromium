@@ -101,7 +101,7 @@ public final class ShareSheetBottomSheetContentTest {
                         .setLinkToTextSuccessful(true)
                         .build();
         // Pretend the feature engagement feature is already initialized. Otherwise
-        // UserEducationHelper#requestShowIPH() calls get dropped during test.
+        // UserEducationHelper#requestShowIph() calls get dropped during test.
         doAnswer(
                         invocation -> {
                             invocation.<Callback<Boolean>>getArgument(0).onResult(true);

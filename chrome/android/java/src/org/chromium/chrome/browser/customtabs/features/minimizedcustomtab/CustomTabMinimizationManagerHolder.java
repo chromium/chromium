@@ -41,7 +41,7 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final CustomTabFeatureOverridesManager mFeatureOverridesManager;
 
-    private @Nullable MinimizedCustomTabIPHController mIPHController;
+    private @Nullable MinimizedCustomTabIphController mIphController;
     private @Nullable CustomTabMinimizationManager mMinimizationManager;
 
     @Inject
@@ -72,8 +72,8 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     public void maybeCreateMinimizationManager(ObservableSupplier<Profile> profileSupplier) {
         if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity, mFeatureOverridesManager)
                 && MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider)) {
-            mIPHController =
-                    new MinimizedCustomTabIPHController(
+            mIphController =
+                    new MinimizedCustomTabIphController(
                             mActivity,
                             mActivityTabProvider,
                             new UserEducationHelper(
@@ -86,7 +86,7 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
                     new CustomTabMinimizationManager(
                             mActivity,
                             mActivityTabProvider,
-                            mIPHController,
+                            mIphController,
                             closeTabRunnable,
                             mIntentDataProvider,
                             mLifecycleDispatcher,
@@ -104,9 +104,9 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
             mMinimizationManager = null;
         }
 
-        if (mIPHController != null) {
-            mIPHController.destroy();
-            mIPHController = null;
+        if (mIphController != null) {
+            mIphController.destroy();
+            mIphController = null;
         }
     }
 }

@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIPHController;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -328,10 +328,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                     getTabModelSelector().isIncognitoSelected(),
                     mIntentDataProvider.getClientPackageNameIdentitySharing());
 
-            CustomTabHistoryIPHController historyIPH =
-                    mBaseCustomTabRootUiCoordinator.getHistoryIPHController();
-            if (historyIPH != null) {
-                historyIPH.notifyUserEngaged();
+            CustomTabHistoryIphController historyIph =
+                    mBaseCustomTabRootUiCoordinator.getHistoryIphController();
+            if (historyIph != null) {
+                historyIph.notifyUserEngaged();
             }
             return true;
         }

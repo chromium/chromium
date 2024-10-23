@@ -236,7 +236,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public boolean shouldShowManualTranslateIPH(WebContents webContents) {
+    public boolean shouldShowManualTranslateIph(WebContents webContents) {
         throw new UnsupportedOperationException();
     }
 

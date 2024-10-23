@@ -259,12 +259,12 @@ public class WebFeedFollowIntroController {
         // FeatureEngagementTrackerbased based on the configuration used for this IPH. See the
         // kIPHWebFeedFollowFeature entry in
         // components/feature_engagement/public/feature_configurations.cc.
-        maybeShowIPH(recommendedInfo);
+        maybeShowIph(recommendedInfo);
     }
 
-    private void maybeShowIPH(RecommendedWebFeedInfo recommendedInfo) {
+    private void maybeShowIph(RecommendedWebFeedInfo recommendedInfo) {
         UserEducationHelper helper = new UserEducationHelper(mActivity, mProfile, new Handler());
-        mWebFeedFollowIntroView.showIPH(
+        mWebFeedFollowIntroView.showIph(
                 helper, () -> introWasShown(recommendedInfo), this::introWasNotShown);
     }
 
