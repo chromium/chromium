@@ -32,7 +32,6 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
 

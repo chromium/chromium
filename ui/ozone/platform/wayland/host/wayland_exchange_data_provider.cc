@@ -29,10 +29,6 @@
 #include "url/url_canon.h"
 #include "url/url_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace ui {
 
 namespace {

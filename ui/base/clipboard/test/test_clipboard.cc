@@ -28,7 +28,6 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/gfx/codec/png_codec.h"
 
