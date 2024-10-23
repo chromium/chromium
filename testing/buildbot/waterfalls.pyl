@@ -791,6 +791,8 @@
     # The following builders in this group have been migrated to set their
     # targets in the builders' declarations in
     # //infra/config/subprojects/ci/chromium.fyi.star
+    #   android-fieldtrial-rel
+    #   android-perfetto-rel
     #   ios-blink-dbg-fyi
     #   ios-fieldtrial-rel
     #   ios-m1-simulator
@@ -821,6 +823,7 @@
     #   mac-osxbeta-rel
     #   mac-perfetto-rel
     #   mac13-wpt-chromium-rel
+    #   Site Isolation Android
     'name': 'chromium.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -882,24 +885,6 @@
           'out_dir_arg',
           'xcode_16_main',
           'xctest',
-        ],
-      },
-      'Site Isolation Android': {
-        'additional_compile_targets': [
-          'content_browsertests',
-          'content_unittests',
-        ],
-        'swarming': {
-          'dimensions': {
-            'os': 'Android',
-          },
-        },
-        'test_suites': {
-          'gtest_tests': 'site_isolation_android_fyi_gtests',
-        },
-        'mixins': [
-          'chromium_pixel_2_pie',
-          'has_native_resultdb_integration',
         ],
       },
       'Win 10 Fast Ring': {
@@ -966,33 +951,6 @@
         ],
         'test_suites': {
           'scripts': 'chromium_win_scripts',
-        },
-      },
-      'android-fieldtrial-rel': {
-        'mixins': [
-          '12-x64-emulator',
-          'has_native_resultdb_integration',
-          'finch-chromium-swarming-pool',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_fieldtrial_rel_webview_tests',
-        },
-      },
-
-      'android-perfetto-rel': {
-        'additional_compile_targets': [ 'chrome_public_apk' ],
-        'mixins': [
-          '12-x64-emulator',
-          'emulator-8-cores',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'perfetto_gtests_android',
         },
       },
       'win-annotator-rel': {

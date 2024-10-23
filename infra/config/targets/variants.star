@@ -15,6 +15,7 @@ targets.variant(
 targets.variant(
     name = "DISABLE_FIELD_TRIAL_CONFIG",
     identifier = "Disable Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--disable-field-trial-config",
         "--webview-verbose-logging",
@@ -24,6 +25,7 @@ targets.variant(
 targets.variant(
     name = "DISABLE_FIELD_TRIAL_CONFIG_WEBVIEW_COMMANDLINE",
     identifier = "Disable Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--webview-command-line-arg=--disable-field-trial-config",
         "--webview-command-line-arg=--webview-verbose-logging",
@@ -33,6 +35,7 @@ targets.variant(
 targets.variant(
     name = "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR",
     identifier = "Single Group Per Study Prefer Existing Behavior Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
         "--accept-empty-variations-seed-signature",
@@ -45,6 +48,7 @@ targets.variant(
 targets.variant(
     name = "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR",
     identifier = "Single Group Per Study Prefer New Behavior Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
         "--accept-empty-variations-seed-signature",
@@ -57,6 +61,7 @@ targets.variant(
 targets.variant(
     name = "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR_WEBVIEW_COMMANDLINE",
     identifier = "Single Group Per Study Prefer Existing Behavior Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
         "--webview-command-line-arg=--accept-empty-variations-seed-signature",
@@ -69,6 +74,7 @@ targets.variant(
 targets.variant(
     name = "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR_WEBVIEW_COMMANDLINE",
     identifier = "Single Group Per Study Prefer New Behavior Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
         "--webview-command-line-arg=--accept-empty-variations-seed-signature",

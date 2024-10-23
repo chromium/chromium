@@ -44,7 +44,8 @@
           "builder": "android-fieldtrial-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-fieldtrial-rel/targets"
     }
   },
   "$build/reclient": {

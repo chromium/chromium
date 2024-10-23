@@ -473,6 +473,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "chrome_public_test_apk",
     label = "//chrome/android:chrome_public_test_apk",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(
@@ -485,6 +487,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "chrome_public_unit_test_apk",
     label = "//chrome/android:chrome_public_unit_test_apk",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
@@ -686,6 +690,8 @@ targets.binaries.script(
 targets.binaries.console_test_launcher(
     name = "content_shell_test_apk",
     label = "//content/shell/android:content_shell_test_apk",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
@@ -1777,6 +1783,8 @@ targets.binaries.script(
 targets.binaries.console_test_launcher(
     name = "system_webview_shell_layout_test_apk",
     label = "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
@@ -2285,6 +2293,8 @@ targets.binaries.script(
     name = "webview_trichrome_64_cts_tests",
     label = "//android_webview/test:webview_trichrome_64_cts_tests",
     script = "//android_webview/tools/run_cts.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "--skip-expected-failures",
         "--additional-apk",
@@ -2348,6 +2358,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "webview_ui_test_app_test_apk",
     label = "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(

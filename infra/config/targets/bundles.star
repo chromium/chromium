@@ -401,6 +401,45 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "android_fieldtrial_rel_webview_tests",
+    targets = [
+        "fieldtrial_android_tests",
+        targets.bundle(
+            targets = "system_webview_shell_instrumentation_tests",
+            variants = [
+                "DISABLE_FIELD_TRIAL_CONFIG_WEBVIEW_COMMANDLINE",
+                "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR_WEBVIEW_COMMANDLINE",
+                "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR_WEBVIEW_COMMANDLINE",
+            ],
+        ),
+        targets.bundle(
+            targets = "webview_bot_instrumentation_test_apk_gtest",
+            variants = [
+                "DISABLE_FIELD_TRIAL_CONFIG",
+                "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR",
+                "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR",
+            ],
+        ),
+        targets.bundle(
+            targets = "webview_trichrome_64_cts_field_trial_tests",
+            variants = [
+                "DISABLE_FIELD_TRIAL_CONFIG",
+                "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR",
+                "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR",
+            ],
+        ),
+        targets.bundle(
+            targets = "webview_ui_instrumentation_tests",
+            variants = [
+                "DISABLE_FIELD_TRIAL_CONFIG",
+                "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR",
+                "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR",
+            ],
+        ),
+    ],
+)
+
 # Test suites that need to run on hardware that is close to real Android device.
 # See https://crbug.com/40204012#comment5 for details.
 targets.bundle(
@@ -1764,6 +1803,21 @@ targets.bundle(
             "integrity_high",
             "updater-default-pool",
         ],
+    },
+)
+
+targets.bundle(
+    name = "fieldtrial_android_tests",
+    targets = [
+        "android_browsertests_no_fieldtrial",
+    ],
+    per_test_modifications = {
+        "android_browsertests_no_fieldtrial": targets.mixin(
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
     },
 )
 
@@ -4103,6 +4157,32 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "perfetto_gtests_android",
+    targets = [
+        "android_browsertests",
+        "base_unittests",
+        "content_browsertests",
+        "perfetto_unittests",
+        "services_unittests",
+    ],
+    per_test_modifications = {
+        "android_browsertests": targets.mixin(
+            args = [
+                "--gtest_filter=StartupMetricsTest.*",
+            ],
+        ),
+        "content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+            android_swarming = targets.swarming(
+                shards = 15,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "performance_smoke_test_isolated_scripts",
     targets = [
         "performance_test_suite",
@@ -4173,6 +4253,60 @@ targets.bundle(
     name = "rust_native_tests",
     targets = [
         "build_rust_tests",
+    ],
+)
+
+targets.bundle(
+    name = "site_isolation_android_fyi_gtests",
+    targets = [
+        "site_per_process_android_browsertests",
+        "site_per_process_chrome_public_test_apk",
+        "site_per_process_chrome_public_unit_test_apk",
+        "site_per_process_components_browsertests",
+        "site_per_process_components_unittests",
+        "site_per_process_content_browsertests",
+        "site_per_process_content_shell_test_apk",
+        "site_per_process_content_unittests",
+        "site_per_process_unit_tests",
+    ],
+    per_test_modifications = {
+        "site_per_process_android_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+        "site_per_process_chrome_public_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+        "site_per_process_components_unittests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+            ),
+        ),
+        "site_per_process_content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 10,
+            ),
+        ),
+        "site_per_process_content_shell_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
+        "site_per_process_unit_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 10,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "system_webview_shell_instrumentation_tests",
+    targets = [
+        "system_webview_shell_layout_test_apk",
     ],
 )
 
@@ -4274,6 +4408,23 @@ targets.bundle(
         "webview_ui_instrumentation_tests",
         "webview_ui_instrumentation_tests_no_field_trial",
     ],
+)
+
+targets.bundle(
+    name = "webview_bot_instrumentation_test_apk_gtest",
+    targets = [
+        "webview_instrumentation_test_apk",
+    ],
+    per_test_modifications = {
+        "webview_instrumentation_test_apk": targets.mixin(
+            args = [
+                "--use-apk-under-test-flags-file",
+            ],
+            swarming = targets.swarming(
+                shards = 12,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
@@ -4400,6 +4551,24 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "webview_trichrome_64_cts_field_trial_tests",
+    targets = [
+        "webview_trichrome_64_cts_tests",
+    ],
+    per_test_modifications = {
+        "webview_trichrome_64_cts_tests": targets.mixin(
+            args = [
+                "--store-data-dependencies-in-temp",
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "webview_trichrome_64_cts_gtests",
     targets = [
         "webview_trichrome_64_cts_tests_suite",
@@ -4460,6 +4629,13 @@ targets.bundle(
             ],
         ),
     },
+)
+
+targets.bundle(
+    name = "webview_ui_instrumentation_tests",
+    targets = [
+        "webview_ui_test_app_test_apk",
+    ],
 )
 
 targets.bundle(

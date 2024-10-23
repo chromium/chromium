@@ -1013,18 +1013,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "fieldtrial_android_tests",
-    tests = {
-        "android_browsertests_no_fieldtrial": targets.legacy_test_config(
-            ci_only = True,
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "fieldtrial_browser_tests",
     tests = {
         "browser_tests_no_field_trial": targets.legacy_test_config(
@@ -2638,28 +2626,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "perfetto_gtests_android",
-    tests = {
-        "android_browsertests": targets.legacy_test_config(
-            args = [
-                "--gtest_filter=StartupMetricsTest.*",
-            ],
-        ),
-        "base_unittests": targets.legacy_test_config(),
-        "content_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 8,
-            ),
-            android_swarming = targets.swarming(
-                shards = 15,
-            ),
-        ),
-        "perfetto_unittests": targets.legacy_test_config(),
-        "services_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "pixel_browser_tests_gtests",
     tests = {
         "pixel_browser_tests": targets.legacy_test_config(
@@ -2676,45 +2642,6 @@ targets.legacy_basic_suite(
     tests = {
         "pixel_experimental_browser_tests": targets.legacy_test_config(
             experiment_percentage = 100,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "site_isolation_android_fyi_gtests",
-    tests = {
-        "site_per_process_android_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
-        "site_per_process_chrome_public_test_apk": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 20,
-            ),
-        ),
-        "site_per_process_chrome_public_unit_test_apk": targets.legacy_test_config(),
-        "site_per_process_components_browsertests": targets.legacy_test_config(),
-        "site_per_process_components_unittests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 5,
-            ),
-        ),
-        "site_per_process_content_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 10,
-            ),
-        ),
-        "site_per_process_content_shell_test_apk": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-        ),
-        "site_per_process_content_unittests": targets.legacy_test_config(),
-        "site_per_process_unit_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 10,
-            ),
         ),
     },
 )
@@ -2815,13 +2742,6 @@ targets.legacy_basic_suite(
             ),
             use_isolated_scripts_api = True,
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "system_webview_shell_instrumentation_tests",
-    tests = {
-        "system_webview_shell_layout_test_apk": targets.legacy_test_config(),
     },
 )
 
@@ -3056,20 +2976,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "webview_bot_instrumentation_test_apk_gtest",
-    tests = {
-        "webview_instrumentation_test_apk": targets.legacy_test_config(
-            args = [
-                "--use-apk-under-test-flags-file",
-            ],
-            swarming = targets.swarming(
-                shards = 12,
-            ),
-        ),
-    },
-)
-
 # This target is only to run on Android versions <= Android Q (10).
 targets.legacy_basic_suite(
     name = "webview_instrumentation_test_apk_single_process_mode_gtests",
@@ -3079,28 +2985,6 @@ targets.legacy_basic_suite(
                 shards = 3,
             ),
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "webview_trichrome_64_cts_field_trial_tests",
-    tests = {
-        "webview_trichrome_64_cts_tests": targets.legacy_test_config(
-            args = [
-                "--store-data-dependencies-in-temp",
-                "--store-tombstones",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "webview_ui_instrumentation_tests",
-    tests = {
-        "webview_ui_test_app_test_apk": targets.legacy_test_config(),
     },
 )
 

@@ -68,20 +68,6 @@
       'public_builder_bucket': 'testplatform-public',
     },
   },
-  'DISABLE_FIELD_TRIAL_CONFIG': {
-    'identifier': 'Disable Field Trial Config',
-    'args': [
-      '--disable-field-trial-config',
-      '--webview-verbose-logging',
-    ],
-  },
-  'DISABLE_FIELD_TRIAL_CONFIG_WEBVIEW_COMMANDLINE': {
-    'identifier': 'Disable Field Trial Config',
-    'args': [
-      '--webview-command-line-arg=--disable-field-trial-config',
-      '--webview-command-line-arg=--webview-verbose-logging',
-    ],
-  },
   'INTEL_UHD_630_OR_770': {
     'identifier': 'Intel UHD 630 or 770',
     'mixins': [
@@ -146,46 +132,6 @@
     ],
     'mixins': [
       'ios_runtime_cache_18_0',
-    ],
-  },
-  'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR': {
-    'identifier': 'Single Group Per Study Prefer Existing Behavior Field Trial Config',
-    'args': [
-      '--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json',
-      '--accept-empty-variations-seed-signature',
-      '--webview-verbose-logging',
-      '--disable-field-trial-config',
-      '--fake-variations-channel=stable',
-    ],
-  },
-  'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR_WEBVIEW_COMMANDLINE': {
-    'identifier': 'Single Group Per Study Prefer Existing Behavior Field Trial Config',
-    'args': [
-      '--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json',
-      '--webview-command-line-arg=--accept-empty-variations-seed-signature',
-      '--webview-command-line-arg=--webview-verbose-logging',
-      '--webview-command-line-arg=--disable-field-trial-config',
-      '--webview-command-line-arg=--fake-variations-channel=stable',
-    ],
-  },
-  'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR': {
-    'identifier': 'Single Group Per Study Prefer New Behavior Field Trial Config',
-    'args': [
-      '--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json',
-      '--accept-empty-variations-seed-signature',
-      '--webview-verbose-logging',
-      '--disable-field-trial-config',
-      '--fake-variations-channel=stable',
-    ],
-  },
-  'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR_WEBVIEW_COMMANDLINE': {
-    'identifier': 'Single Group Per Study Prefer New Behavior Field Trial Config',
-    'args': [
-      '--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json',
-      '--webview-command-line-arg=--accept-empty-variations-seed-signature',
-      '--webview-command-line-arg=--webview-verbose-logging',
-      '--webview-command-line-arg=--disable-field-trial-config',
-      '--webview-command-line-arg=--fake-variations-channel=stable',
     ],
   },
   'WIN10_INTEL_UHD_630_STABLE': {

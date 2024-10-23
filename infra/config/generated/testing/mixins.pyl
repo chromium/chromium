@@ -725,17 +725,6 @@
       '--use-webgpu-power-preference=default-high-performance',
     ],
   },
-  'webview_cts_archive': {
-    'swarming': {
-      'cipd_packages': [
-        {
-          'cipd_package': 'chromium/android_webview/tools/cts_archive',
-          'location': 'android_webview/tools/cts_archive/cipd',
-          'revision': 'UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC',
-        },
-      ],
-    },
-  },
   'win-arm64': {
     'swarming': {
       'dimensions': {

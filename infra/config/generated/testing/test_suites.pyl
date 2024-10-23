@@ -1330,21 +1330,6 @@
       },
     },
 
-    'fieldtrial_android_tests': {
-      'android_browsertests_no_fieldtrial': {
-        'test_common': {
-          'args': [
-            '--disable-field-trial-config',
-          ],
-        },
-        'test': 'android_browsertests',
-        'ci_only': True,
-        'swarming': {
-          'shards': 3,
-        },
-      },
-    },
-
     'fieldtrial_browser_tests': {
       'browser_tests_no_field_trial': {
         'test_common': {
@@ -3333,25 +3318,6 @@
       'services_unittests': {},
     },
 
-    'perfetto_gtests_android': {
-      'android_browsertests': {
-        'args': [
-          '--gtest_filter=StartupMetricsTest.*',
-        ],
-      },
-      'base_unittests': {},
-      'content_browsertests': {
-        'swarming': {
-          'shards': 8,
-        },
-        'android_swarming': {
-          'shards': 15,
-        },
-      },
-      'perfetto_unittests': {},
-      'services_unittests': {},
-    },
-
     'pixel_browser_tests_gtests': {
       'pixel_browser_tests': {
         'test_common': {
@@ -3399,107 +3365,6 @@
         },
         'test': 'browser_tests',
         'experiment_percentage': 100,
-      },
-    },
-
-    'site_isolation_android_fyi_gtests': {
-      'site_per_process_android_browsertests': {
-        'test_common': {
-          'args': [
-            '--site-per-process',
-          ],
-        },
-        'test': 'android_browsertests',
-        'swarming': {
-          'shards': 1,
-        },
-      },
-      'site_per_process_chrome_public_test_apk': {
-        'test_common': {
-          'mixins': [
-            'skia_gold_test',
-            'has_native_resultdb_integration',
-          ],
-          'args': [
-            '--site-per-process',
-          ],
-        },
-        'test': 'chrome_public_test_apk',
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'site_per_process_chrome_public_unit_test_apk': {
-        'test_common': {
-          'mixins': [
-            'skia_gold_test',
-          ],
-          'args': [
-            '--site-per-process',
-          ],
-        },
-        'test': 'chrome_public_unit_test_apk',
-      },
-      'site_per_process_components_browsertests': {
-        'test_common': {
-          'args': [
-            '--site-per-process',
-          ],
-        },
-        'test': 'components_browsertests',
-      },
-      'site_per_process_components_unittests': {
-        'test_common': {
-          'args': [
-            '--site-per-process',
-          ],
-        },
-        'test': 'components_unittests',
-        'swarming': {
-          'shards': 5,
-        },
-      },
-      'site_per_process_content_browsertests': {
-        'test_common': {
-          'args': [
-            '--site-per-process',
-            '--test-launcher-filter-file=../../testing/buildbot/filters/site_isolation_android.content_browsertests.filter',
-          ],
-        },
-        'test': 'content_browsertests',
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'site_per_process_content_shell_test_apk': {
-        'test_common': {
-          'args': [
-            '--site-per-process',
-          ],
-        },
-        'test': 'content_shell_test_apk',
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'site_per_process_content_unittests': {
-        'test_common': {
-          'args': [
-            '--site-per-process',
-          ],
-        },
-        'test': 'content_unittests',
-      },
-      'site_per_process_unit_tests': {
-        'test_common': {
-          'args': [
-            '--site-per-process',
-          ],
-        },
-        'test': 'unit_tests',
-        'swarming': {
-          'shards': 10,
-        },
       },
     },
 
@@ -3597,10 +3462,6 @@
         },
         'use_isolated_scripts_api': True,
       },
-    },
-
-    'system_webview_shell_instrumentation_tests': {
-      'system_webview_shell_layout_test_apk': {},
     },
 
     'telemetry_desktop_minidump_unittests_isolated_scripts': {
@@ -3879,17 +3740,6 @@
       },
     },
 
-    'webview_bot_instrumentation_test_apk_gtest': {
-      'webview_instrumentation_test_apk': {
-        'args': [
-          '--use-apk-under-test-flags-file',
-        ],
-        'swarming': {
-          'shards': 12,
-        },
-      },
-    },
-
     'webview_instrumentation_test_apk_single_process_mode_gtests': {
       'webview_instrumentation_test_apk_single_process_mode': {
         'test_common': {
@@ -3902,27 +3752,6 @@
           'shards': 3,
         },
       },
-    },
-
-    'webview_trichrome_64_cts_field_trial_tests': {
-      'webview_trichrome_64_cts_tests': {
-        'test_common': {
-          'mixins': [
-            'webview_cts_archive',
-          ],
-        },
-        'args': [
-          '--store-data-dependencies-in-temp',
-          '--store-tombstones',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
-    'webview_ui_instrumentation_tests': {
-      'webview_ui_test_app_test_apk': {},
     },
 
     'win_specific_chromium_gtests': {
@@ -4238,38 +4067,6 @@
   },
 
   'matrix_compound_suites': {
-
-    'android_fieldtrial_rel_webview_tests': {
-      'fieldtrial_android_tests': {},
-      'system_webview_shell_instrumentation_tests': {
-        'variants': [
-          'DISABLE_FIELD_TRIAL_CONFIG_WEBVIEW_COMMANDLINE',
-          'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR_WEBVIEW_COMMANDLINE',
-          'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR_WEBVIEW_COMMANDLINE',
-        ],
-      },
-      'webview_bot_instrumentation_test_apk_gtest': {
-        'variants': [
-          'DISABLE_FIELD_TRIAL_CONFIG',
-          'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR',
-          'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR',
-        ],
-      },
-      'webview_trichrome_64_cts_field_trial_tests': {
-        'variants': [
-          'DISABLE_FIELD_TRIAL_CONFIG',
-          'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR',
-          'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR',
-        ],
-      },
-      'webview_ui_instrumentation_tests': {
-        'variants': [
-          'DISABLE_FIELD_TRIAL_CONFIG',
-          'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR',
-          'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR',
-        ],
-      },
-    },
 
     'chromeos_brya_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {

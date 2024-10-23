@@ -12,41 +12,6 @@
 load("//lib/targets.star", "targets")
 
 targets.legacy_matrix_compound_suite(
-    name = "android_fieldtrial_rel_webview_tests",
-    basic_suites = {
-        "fieldtrial_android_tests": None,
-        "webview_bot_instrumentation_test_apk_gtest": targets.legacy_matrix_config(
-            variants = [
-                "DISABLE_FIELD_TRIAL_CONFIG",
-                "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR",
-                "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR",
-            ],
-        ),
-        "webview_trichrome_64_cts_field_trial_tests": targets.legacy_matrix_config(
-            variants = [
-                "DISABLE_FIELD_TRIAL_CONFIG",
-                "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR",
-                "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR",
-            ],
-        ),
-        "webview_ui_instrumentation_tests": targets.legacy_matrix_config(
-            variants = [
-                "DISABLE_FIELD_TRIAL_CONFIG",
-                "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR",
-                "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR",
-            ],
-        ),
-        "system_webview_shell_instrumentation_tests": targets.legacy_matrix_config(
-            variants = [
-                "DISABLE_FIELD_TRIAL_CONFIG_WEBVIEW_COMMANDLINE",
-                "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR_WEBVIEW_COMMANDLINE",
-                "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR_WEBVIEW_COMMANDLINE",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "chromeos_vmlab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(

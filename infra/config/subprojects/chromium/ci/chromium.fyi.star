@@ -63,11 +63,28 @@ consoles.console_view(
             "buildperf",
         ],
         "code_coverage": consoles.ordering(
-            short_names = ["and", "ann", "lnx", "lcr", "jcr", "mac"],
+            short_names = [
+                "and",
+                "ann",
+                "lnx",
+                "lcr",
+                "jcr",
+                "mac",
+            ],
         ),
-        "mac": consoles.ordering(short_names = ["bld", "15", "herm"]),
-        "deterministic|mac": consoles.ordering(short_names = ["rel", "dbg"]),
-        "iOS|iOS13": consoles.ordering(short_names = ["dev", "sim"]),
+        "mac": consoles.ordering(short_names = [
+            "bld",
+            "15",
+            "herm",
+        ]),
+        "deterministic|mac": consoles.ordering(short_names = [
+            "rel",
+            "dbg",
+        ]),
+        "iOS|iOS13": consoles.ordering(short_names = [
+            "dev",
+            "sim",
+        ]),
         "linux|blink": consoles.ordering(short_names = ["TD"]),
     },
 )
@@ -165,6 +182,26 @@ ci.builder(
             "minimal_symbols",
             "arm64",
             "strip_debug_info",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "site_isolation_android_fyi_gtests",
+        ],
+        additional_compile_targets = [
+            "content_browsertests",
+            "content_unittests",
+        ],
+        mixins = [
+            targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "os": "Android",
+                    },
+                ),
+            ),
+            "chromium_pixel_2_pie",
+            "has_native_resultdb_integration",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -589,6 +626,21 @@ ci.builder(
             "webview_shell",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "android_fieldtrial_rel_webview_tests",
+        ],
+        mixins = [
+            "12-x64-emulator",
+            "has_native_resultdb_integration",
+            "finch-chromium-swarming-pool",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     builderless = False,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -677,6 +729,23 @@ ci.builder(
             "android_builder",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "perfetto_gtests_android",
+        ],
+        additional_compile_targets = [
+            "chrome_public_apk",
+        ],
+        mixins = [
+            "12-x64-emulator",
+            "emulator-8-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     builderless = True,
     os = os.LINUX_DEFAULT,

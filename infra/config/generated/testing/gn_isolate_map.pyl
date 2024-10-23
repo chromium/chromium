@@ -490,6 +490,7 @@
   "chrome_public_test_apk": {
     "label": "//chrome/android:chrome_public_test_apk",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "chrome_public_test_vr_apk": {
     "label": "//chrome/android:chrome_public_test_vr_apk",
@@ -499,6 +500,7 @@
   "chrome_public_unit_test_apk": {
     "label": "//chrome/android:chrome_public_unit_test_apk",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "chrome_public_wpt": {
     "label": "//chrome/android:chrome_public_wpt",
@@ -685,6 +687,7 @@
   "content_shell_test_apk": {
     "label": "//content/shell/android:content_shell_test_apk",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "content_unittests": {
     "label": "//content/test:content_unittests",
@@ -1635,6 +1638,7 @@
   "system_webview_shell_layout_test_apk": {
     "label": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "system_webview_wpt": {
     "label": "//android_webview/test:system_webview_wpt",
@@ -2078,6 +2082,7 @@
     "label": "//android_webview/test:webview_trichrome_64_cts_tests",
     "type": "script",
     "script": "//android_webview/tools/run_cts.py",
+    "skip_usage_check": True,
     "args": [
       "--skip-expected-failures",
       "--additional-apk",
@@ -2114,6 +2119,7 @@
   "webview_ui_test_app_test_apk": {
     "label": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "wm_unittests": {
     "label": "//ui/wm:wm_unittests",

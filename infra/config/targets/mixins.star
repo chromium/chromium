@@ -1904,6 +1904,7 @@ targets.mixin(
 
 targets.mixin(
     name = "webview_cts_archive",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         cipd_packages = [
             targets.cipd_package(

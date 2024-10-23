@@ -43,7 +43,8 @@
           "builder": "android-perfetto-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-perfetto-rel/targets"
     }
   },
   "$build/reclient": {
