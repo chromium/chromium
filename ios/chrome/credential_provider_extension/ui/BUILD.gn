@@ -36,6 +36,8 @@ source_set("ui") {
     "new_password_ui_handler.h",
     "new_password_view_controller.h",
     "new_password_view_controller.mm",
+    "passkey_welcome_screen_view_controller.h",
+    "passkey_welcome_screen_view_controller.mm",
     "password_note_cell.h",
     "password_note_cell.mm",
     "password_note_footer_view.h",

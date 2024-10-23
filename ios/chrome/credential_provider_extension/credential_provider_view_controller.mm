@@ -31,6 +31,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/saving_enterprise_disabled_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 
@@ -433,23 +434,15 @@ UIColor* BackgroundColor() {
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
 
 - (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock {
-  // TODO(crbug.com/355042392): Start the relevant coordinator and present the
-  // enrollment welcome screen. `enrollBlock` is the block that should be
-  // executed if the user do decide to proceed with the enrollment from the
-  // welcome screen.
-  [self.presentingView presentViewController:self.passkeyNavigationController
-                                    animated:YES
-                                  completion:enrollBlock];
+  [self createAndPresentPasskeyWelcomeScreenForPurpose:
+            PasskeyWelcomeScreenPurpose::kEnroll
+                                   primaryButtonAction:enrollBlock];
 }
 
 - (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock {
-  // TODO(crbug.com/355042392): Start the relevant coordinator and present the
-  // reauthentication welcome screen. `reauthenticateBlock` is the block that
-  // should be executed if the user do decide to proceed with the
-  // reauthentication from the welcome screen.
-  [self.presentingView presentViewController:self.passkeyNavigationController
-                                    animated:YES
-                                  completion:reauthenticateBlock];
+  [self createAndPresentPasskeyWelcomeScreenForPurpose:
+            PasskeyWelcomeScreenPurpose::kReauthenticate
+                                   primaryButtonAction:reauthenticateBlock];
 }
 
 #pragma mark - SuccessfulReauthTimeAccessor
@@ -802,6 +795,22 @@ UIColor* BackgroundColor() {
 // view to present the next one.
 - (UIViewController*)presentingView {
   return self.presentedViewController ? self.presentedViewController : self;
+}
+
+// Creates and presents a PasskeyWelcomeScreenViewController.
+- (void)createAndPresentPasskeyWelcomeScreenForPurpose:
+            (PasskeyWelcomeScreenPurpose)purpose
+                                   primaryButtonAction:
+                                       (ProceduralBlock)primaryButtonAction {
+  PasskeyWelcomeScreenViewController* welcomeScreen =
+      [[PasskeyWelcomeScreenViewController alloc]
+               initForPurpose:purpose
+          primaryButtonAction:primaryButtonAction];
+  [self.passkeyNavigationController pushViewController:welcomeScreen
+                                              animated:NO];
+  [self.presentingView presentViewController:self.passkeyNavigationController
+                                    animated:YES
+                                  completion:nil];
 }
 
 @end
