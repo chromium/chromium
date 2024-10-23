@@ -114,7 +114,7 @@ void GroupDataModel::OnGroupsUpdated(
   }
 }
 
-void GroupDataModel::OnDataLoaded() {
+void GroupDataModel::OnCollaborationGroupSyncDataLoaded() {
   is_collaboration_group_bridge_loaded_ = true;
   if (IsModelLoaded()) {
     // Don't notify observers about data being loaded yet - let's process
