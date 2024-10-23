@@ -6472,21 +6472,6 @@
             ]
         }
     ],
-    "CrOSBluetoothHfpSuperWideband": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootAudioHFPSwb"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSEnforceSystemAec": [
         {
             "platforms": [

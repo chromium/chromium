@@ -548,11 +548,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "audio-hfp-swb",
-    "owners": [ "jrwu@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "audio-offload-cras-dsp-to-sof",
     "owners": [ "johnylin@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 140

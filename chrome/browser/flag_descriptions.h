@@ -3472,9 +3472,6 @@ extern const char kAudioAPNoiseCancellationDescription[];
 extern const char kAudioHFPMicSRToggleName[];
 extern const char kAudioHFPMicSRToggleDescription[];
 
-extern const char kAudioHFPSwbName[];
-extern const char kAudioHFPSwbDescription[];
-
 extern const char kAudioHFPOffloadName[];
 extern const char kAudioHFPOffloadDescription[];
 

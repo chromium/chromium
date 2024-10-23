@@ -6041,10 +6041,6 @@ const char kAudioHFPOffloadDescription[] =
     "While enabled, HFP Audio data is transmitted via the offloaded path "
     "in DSP if supported by device.";
 
-const char kAudioHFPSwbName[] = "Audio Bluetooth HFP Super-wide-band support";
-const char kAudioHFPSwbDescription[] =
-    "Enable Bluetooth HFP Super-wide-band codec if supported.";
-
 const char kAudioOffloadCrasDSPToSOFName[] =
     "Offload CRAS DSP modules to Audio FW if supported";
 const char kAudioOffloadCrasDSPToSOFDescription[] =
