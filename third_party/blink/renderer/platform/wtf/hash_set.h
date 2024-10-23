@@ -81,6 +81,11 @@ class HashSet {
   HashSet(std::initializer_list<ValueType> elements);
   HashSet& operator=(std::initializer_list<ValueType> elements);
 
+  // Useful for constructing from, for example, STL and base sets.
+  template <typename It>
+    requires(std::forward_iterator<It>)
+  HashSet(It begin, It end);
+
   void swap(HashSet& ref) { impl_.swap(ref.impl_); }
 
   unsigned size() const;
@@ -227,6 +232,18 @@ auto HashSet<Value, Traits, Allocator>::operator=(
     std::initializer_list<ValueType> elements) -> HashSet& {
   *this = HashSet(std::move(elements));
   return *this;
+}
+
+template <typename Value, typename Traits, typename Allocator>
+template <typename It>
+  requires(std::forward_iterator<It>)
+HashSet<Value, Traits, Allocator>::HashSet(It begin, It end) {
+  if constexpr (std::random_access_iterator<It>) {
+    ReserveCapacityForSize(base::checked_cast<wtf_size_t>(end - begin));
+  }
+  for (; begin != end; ++begin) {
+    insert(*begin);
+  }
 }
 
 template <typename T, typename U, typename V>

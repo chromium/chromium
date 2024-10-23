@@ -22,6 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_MAP_H_
 
 #include <initializer_list>
+#include <iterator>
 
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -127,6 +128,11 @@ class HashMap {
   // a HashMap containing a mapping {1 -> 11, 2 -> 22, 3 -> 33}.
   HashMap(std::initializer_list<ValueType> elements);
   HashMap& operator=(std::initializer_list<ValueType> elements);
+
+  // Useful for constructing from, for example, STL and base maps.
+  template <typename It>
+    requires(std::forward_iterator<It>)
+  HashMap(It begin, It end);
 
   typedef HashTableIteratorAdapter<HashTableType, ValueType> iterator;
   typedef HashTableConstIteratorAdapter<HashTableType, ValueType>
@@ -373,6 +379,24 @@ auto HashMap<T, U, V, W, X>::operator=(
     std::initializer_list<ValueType> elements) -> HashMap& {
   *this = HashMap(std::move(elements));
   return *this;
+}
+
+template <typename KeyArg,
+          typename MappedArg,
+          typename KeyTraitsArg,
+          typename MappedTraitsArg,
+          typename Allocator>
+template <typename It>
+  requires(std::forward_iterator<It>)
+HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::HashMap(
+    It begin,
+    It end) {
+  if constexpr (std::random_access_iterator<It>) {
+    ReserveCapacityForSize(base::checked_cast<wtf_size_t>(end - begin));
+  }
+  for (; begin != end; ++begin) {
+    insert(begin->first, begin->second);
+  }
 }
 
 template <typename T, typename U, typename V, typename W, typename X>

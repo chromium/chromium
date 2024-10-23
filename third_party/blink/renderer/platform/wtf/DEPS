@@ -21,3 +21,10 @@ include_rules = [
     # Allow pulling in cppgc for Oilpan use.
     "+v8/include/cppgc",
 ]
+
+specific_include_rules = {
+  "hash_(map|set)_test.cc": [
+    # Refers to base containers to test compatibility.
+    "+base/containers",
+  ]
+}
