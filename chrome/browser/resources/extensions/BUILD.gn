@@ -52,6 +52,7 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
+    "async_map_directive.ts",
     "drag_and_drop_handler.ts",
     "extensions.ts",
     "item_mixin.ts",

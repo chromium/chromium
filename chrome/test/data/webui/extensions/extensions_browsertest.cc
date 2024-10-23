@@ -38,6 +38,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ActivityLogStreamItem) {
   RunTest("extensions/activity_log_stream_item_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, AsyncMapDirective) {
+  RunTest("extensions/async_map_directive_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ToggleRow) {
   RunTest("extensions/toggle_row_test.js", "mocha.run()");
 }

@@ -155,6 +155,11 @@ ts_library("build_ts") {
   path_mappings = [
     "lit/index.js|" +
         rebase_path("${node_modules}/lit/index.d.ts", target_gen_dir),
+    "lit-html/async-directive.js|" +
+        rebase_path("${node_modules}/lit-html/async-directive.d.ts",
+                    target_gen_dir),
+    "lit-html/directive.js|" +
+        rebase_path("${node_modules}/lit-html/directive.d.ts", target_gen_dir),
     "lit-html|" +
         rebase_path("${node_modules}/lit-html/lit-html.d.ts", target_gen_dir),
     "@lit/reactive-element|" + rebase_path(
