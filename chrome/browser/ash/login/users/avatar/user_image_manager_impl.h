@@ -68,6 +68,11 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
   // Loads user image data from Local State.
   void LoadUserImage();
 
+  // Starts downloading the profile image for the user.  If user's image
+  // index is `USER_IMAGE_PROFILE`, newly downloaded image is immediately
+  // set as user's current picture.
+  void DownloadProfileImage();
+
   // Indicates that a user has just logged in.
   void UserLoggedIn(bool user_is_new, bool user_is_local);
 
@@ -256,6 +261,11 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
   // URL from which `downloaded_profile_image_` was downloaded. Empty if no
   // `downloaded_profile_image_` is currently available.
   GURL profile_image_url_;
+
+  // Whether a download of the currently logged-in user's profile image has been
+  // explicitly requested by a call to DownloadProfileImage() and has not been
+  // satisfied by a successful download yet.
+  bool profile_image_requested_;
 
   // Timer used to start a profile data download shortly after login and to
   // restart the download after network errors.

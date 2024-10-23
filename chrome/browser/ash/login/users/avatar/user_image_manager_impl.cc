@@ -555,6 +555,7 @@ UserImageManagerImpl::UserImageManagerImpl(
       user_manager_(user_manager),
       user_image_loader_delegate_(user_image_loader_delegate),
       downloading_profile_image_(false),
+      profile_image_requested_(false),
       has_managed_image_(false) {
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -615,6 +616,7 @@ void UserImageManagerImpl::UserLoggedIn(bool user_is_new, bool user_is_local) {
   // Reset the downloaded profile image as a new user logged in.
   downloaded_profile_image_ = gfx::ImageSkia();
   profile_image_url_ = GURL();
+  profile_image_requested_ = false;
 
   is_random_image_set_ = false;
   const user_manager::User* user = GetUser();
@@ -720,6 +722,14 @@ void UserImageManagerImpl::SaveUserImageFromProfileImage() {
 void UserImageManagerImpl::DeleteUserImage() {
   job_.reset();
   DeleteUserImageAndLocalStateEntry(kUserImageProperties);
+}
+
+void UserImageManagerImpl::DownloadProfileImage() {
+  if (g_skip_profile_download) {
+    return;
+  }
+  profile_image_requested_ = true;
+  DownloadProfileData();
 }
 
 const gfx::ImageSkia& UserImageManagerImpl::DownloadedProfileImage() const {
@@ -865,6 +875,8 @@ void UserImageManagerImpl::OnProfileDownloadSuccess(
   if (downloader->GetProfilePictureStatus() ==
       ProfileDownloader::PICTURE_DEFAULT) {
     user_manager_->NotifyUserProfileImageUpdateFailed(*user);
+  } else {
+    profile_image_requested_ = false;
   }
 
   // Nothing to do if the picture is cached or is the default avatar.
@@ -928,7 +940,8 @@ bool UserImageManagerImpl::NeedProfileImage() const {
   const user_manager::User* user = GetUser();
   return IsUserLoggedInAndHasGaiaAccount() &&
          IsCustomizationSelectorsPrefEnabled() &&
-         user->image_index() == user_manager::UserImage::Type::kProfile;
+         (user->image_index() == user_manager::UserImage::Type::kProfile ||
+          profile_image_requested_);
 }
 
 void UserImageManagerImpl::DownloadProfileData() {
