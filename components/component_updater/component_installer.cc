@@ -42,6 +42,10 @@
 #include "base/apple/backup_util.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace component_updater {
 
 const char kNullVersion[] = "0.0.0.0";
@@ -49,6 +53,23 @@ const char kNullVersion[] = "0.0.0.0";
 namespace {
 using Result = update_client::CrxInstaller::Result;
 using InstallError = update_client::InstallError;
+
+#if BUILDFLAG(IS_MAC)
+// Recursively remove quarantine attributes on the path.
+bool RemoveQuarantineAttributes(const base::FilePath& path) {
+  bool success = base::mac::RemoveQuarantineAttribute(path);
+  base::FileEnumerator file_enumerator(
+      base::FilePath(path), true,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
+          base::FileEnumerator::SHOW_SYM_LINKS);
+  for (base::FilePath name = file_enumerator.Next(); !name.empty();
+       name = file_enumerator.Next()) {
+    success = base::mac::RemoveQuarantineAttribute(name) && success;
+  }
+  return success;
+}
+#endif
+
 }  // namespace
 
 ComponentInstallerPolicy::~ComponentInstallerPolicy() = default;
@@ -187,6 +208,13 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
   // Since components can be large and can be re-downloaded when needed, they
   // are excluded from backups.
   base::apple::SetBackupExclusion(local_install_path);
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  // Component downloads are trusted and shouldn't be quarantined. Ignore the
+  // return value: the install is still successful and non-executable components
+  // are usable even when quarantined.
+  RemoveQuarantineAttributes(local_install_path);
 #endif
 
   const Result result =
