@@ -105,8 +105,7 @@ clang_plugin("find_bad_constructs") {
 # not serialized to precompiled header files, and thus we get warnings that we
 # should not.
 clang_plugin("unsafe_buffers") {
-  if (clang_use_chrome_plugins && clang_unsafe_buffers_paths != "" &&
-      !enable_precompiled_headers) {
+  if (clang_use_chrome_plugins && clang_unsafe_buffers_paths != "") {
     cflags = [ "-DUNSAFE_BUFFERS_BUILD" ]
     plugin = "unsafe-buffers"
     plugin_arguments =
