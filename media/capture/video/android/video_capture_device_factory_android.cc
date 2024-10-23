@@ -31,6 +31,7 @@ VideoCaptureDeviceFactoryAndroid::createVideoCaptureAndroid(
 }
 
 VideoCaptureDeviceFactoryAndroid::VideoCaptureDeviceFactoryAndroid() = default;
+
 VideoCaptureDeviceFactoryAndroid::~VideoCaptureDeviceFactoryAndroid() = default;
 
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryAndroid::CreateDevice(

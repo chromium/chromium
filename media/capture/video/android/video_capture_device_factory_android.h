@@ -5,13 +5,13 @@
 #ifndef MEDIA_CAPTURE_VIDEO_ANDROID_VIDEO_CAPTURE_DEVICE_FACTORY_ANDROID_H_
 #define MEDIA_CAPTURE_VIDEO_ANDROID_VIDEO_CAPTURE_DEVICE_FACTORY_ANDROID_H_
 
-#include "media/capture/video/video_capture_device_factory.h"
-
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
+#include "media/capture/video/android/camera_availability_observer.h"
 #include "media/capture/video/video_capture_device.h"
+#include "media/capture/video/video_capture_device_factory.h"
 
 namespace media {
 
@@ -56,6 +56,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
   // an actively used camera is opened again (see https://crbug.com/1138608).
   base::flat_map<std::string, VideoCaptureFormats> supported_formats_cache_;
   base::flat_map<std::string, bool> zooms_cache_;
+
+  CameraAvailabilityObserver camera_availability_observer_;
 };
 
 }  // namespace media
