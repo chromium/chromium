@@ -415,6 +415,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     last_queried_region_ = region->Clone();
     last_queried_region_bytes_ = region_bytes;
     last_lens_selection_type_ = selection_type;
+    num_interaction_requests_sent_++;
     LensOverlayQueryController::SendRegionSearch(
         std::move(region), selection_type, additional_search_query_params,
         region_bytes);
@@ -441,6 +442,19 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     last_queried_region_bytes_ = region_bitmap;
     last_queried_text_ = query_text;
     last_lens_selection_type_ = multimodal_selection_type;
+    num_interaction_requests_sent_++;
+  }
+
+  void SendContextualTextQuery(
+      const std::string& query_text,
+      lens::LensOverlaySelectionType lens_selection_type,
+      std::map<std::string, std::string> additional_search_query_params)
+      override {
+    last_queried_text_ = query_text;
+    last_lens_selection_type_ = lens_selection_type;
+    num_interaction_requests_sent_++;
+    LensOverlayQueryController::SendContextualTextQuery(
+        query_text, lens_selection_type, additional_search_query_params);
   }
 
   void SendFullPageTranslateQuery(const std::string& source_language,
@@ -488,6 +502,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     last_sent_underlying_content_bytes_ = base::span<const uint8_t>();
     last_sent_underlying_content_type_ = lens::PageContentMimeType::kNone;
     last_sent_page_url_ = GURL();
+    num_interaction_requests_sent_ = 0;
   }
 
   bool full_image_request_should_return_error_ = false;
@@ -499,6 +514,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
   lens::PageContentMimeType last_sent_underlying_content_type_;
   GURL last_sent_page_url_;
   std::optional<lens::mojom::UserAction> last_user_action_;
+  int num_interaction_requests_sent_ = 0;
 };
 
 // Stubs out network requests and mojo calls.
@@ -4586,6 +4602,59 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   }));
   ASSERT_EQ(lens::PageContentMimeType::kPlainText,
             fake_query_controller->last_sent_underlying_content_type_);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       ContextualQueryInBackStackRequest) {
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Make a searchbox query.
+  controller->IssueSearchBoxRequestForTesting(
+      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Wait for the side panel to load.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetSidePanelWebContentsForTesting(); }));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Verify we entered the contextual searchbox flow.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Make another query to build the history stack.
+  content::TestNavigationObserver observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueSearchBoxRequestForTesting(
+      "apples", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Wait for the side panel to load.
+  observer.WaitForNavigationFinished();
+
+  // Reset mock query controller so we can verify the new request.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  fake_query_controller->Reset();
+
+  // Issue a new searchbox query.
+  controller->PopAndLoadQueryFromHistory();
+
+  ASSERT_EQ(fake_query_controller->num_interaction_requests_sent_, 1);
+  ASSERT_EQ(fake_query_controller->last_queried_text_, "oranges");
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
