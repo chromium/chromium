@@ -10,7 +10,6 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 
 namespace enterprise_connectors {
 
