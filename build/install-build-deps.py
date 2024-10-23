@@ -298,6 +298,10 @@ def dev_list():
   if package_exists("libinput-dev"):
     packages.append("libinput-dev")
 
+  # So accessibility APIs work, needed for AX fuzzer
+  if package_exists("at-spi2-core"):
+    packages.append("at-spi2-core")
+
   # Cross-toolchain strip is needed for building the sysroots.
   if package_exists("binutils-arm-linux-gnueabihf"):
     packages.append("binutils-arm-linux-gnueabihf")
