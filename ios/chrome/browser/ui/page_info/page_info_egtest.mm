@@ -57,6 +57,9 @@ const char kURLExternalWebsiteString[] = "https://www.example.com";
 // URL of the external website.
 const GURL kURLExternalWebsite = GURL(kURLExternalWebsiteString);
 
+// Constant for timeout while waiting for asynchronous sync operations.
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
+
 // Matcher infobar modal camera permissions switch.
 id<GREYMatcher> CameraPermissionsSwitch(BOOL isOn) {
   return chrome_test_util::TableViewSwitchCell(
@@ -151,6 +154,14 @@ void OpenLastVisitedPage() {
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_PAGE_INFO_HISTORY))]
       performAction:grey_tap()];
+}
+
+// Adds entry to the history service with `url` and visit `timestamp`.
+void AddEntryToHistoryService(GURL url, base::Time timestamp) {
+  [ChromeEarlGrey addHistoryServiceTypedURL:url visitTimestamp:timestamp];
+  [ChromeEarlGrey waitForHistoryURL:url.GetWithEmptyPath()
+                      expectPresent:YES
+                            timeout:kSyncOperationTimeout];
 }
 
 }  // namespace
@@ -555,7 +566,6 @@ void OpenLastVisitedPage() {
 - (void)testLastVisitedSectionWithNoPreviousVisit {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
   [ChromeEarlGreyUI openPageInfo];
 
@@ -573,11 +583,9 @@ void OpenLastVisitedPage() {
 
   // Create an entry in History which took place one day ago on `URL`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
-                             visitTimestamp:oneDayAgo];
+  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
   // Visit `url` and open Page Info.
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
   [ChromeEarlGreyUI openPageInfo];
 
@@ -600,11 +608,9 @@ void OpenLastVisitedPage() {
   // Create an entry in History which took place one day ago on
   // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
-                             visitTimestamp:oneDayAgo];
+  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
   // Visit `URL` and open Page Info.
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
   // Open Last Visited page.
@@ -634,11 +640,9 @@ void OpenLastVisitedPage() {
   // Create an entry in History which took place one day ago on
   // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
-                             visitTimestamp:oneDayAgo];
+  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
   // Visit `URL` and open Page Info.
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
   // Open Last Visited page.
@@ -684,11 +688,9 @@ void OpenLastVisitedPage() {
   // Create an entry in History which took place one day ago on
   // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
-                             visitTimestamp:oneDayAgo];
+  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
   // Visit `URL` and open Page Info.
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
   // Open Last Visited page.
@@ -721,11 +723,9 @@ void OpenLastVisitedPage() {
   // Create an entry in History which took place one day ago on
   // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
-                             visitTimestamp:oneDayAgo];
+  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
   // Visit `URL` and open Page Info.
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
   // Open Last Visited page.
@@ -766,11 +766,9 @@ void OpenLastVisitedPage() {
   // Create an entry in History which took place one day ago on
   // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
-                             visitTimestamp:oneDayAgo];
+  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
   // Visit `kURLExternalWebsite`.
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
   // Open Last Visited page.
@@ -812,11 +810,9 @@ void OpenLastVisitedPage() {
   // Create an entry in History which took place one day ago on
   // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
-                             visitTimestamp:oneDayAgo];
+  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
   // Visit `kURLExternalWebsite`.
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
   // Open Last Visited page.
@@ -857,11 +853,9 @@ void OpenLastVisitedPage() {
   // Create an entry in History which took place one day ago on
   // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
-                             visitTimestamp:oneDayAgo];
+  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
   // Visit `kURLExternalWebsite`.
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
   // Open Last Visited page.
@@ -900,11 +894,9 @@ void OpenLastVisitedPage() {
   // Create an entry in History which took place one day ago on
   // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
-                             visitTimestamp:oneDayAgo];
+  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
   // Visit `kURLExternalWebsite`.
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
   // Open Last Visited page.
@@ -945,11 +937,9 @@ void OpenLastVisitedPage() {
   // Create an entry in History which took place one day ago on
   // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
-                             visitTimestamp:oneDayAgo];
+  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
   // Visit `kURLExternalWebsite`.
-  AddAboutThisSiteHint(kURLExternalWebsite);
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
   // Open Last Visited page.
@@ -994,11 +984,10 @@ void OpenLastVisitedPage() {
   // ago, respectively.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
   const base::Time twoDaysAgo = base::Time::Now() - base::Hours(48);
-  [ChromeEarlGrey addHistoryServiceTypedURL:URL1 visitTimestamp:oneDayAgo];
-  [ChromeEarlGrey addHistoryServiceTypedURL:URL2 visitTimestamp:twoDaysAgo];
+  AddEntryToHistoryService(URL1, oneDayAgo);
+  AddEntryToHistoryService(URL2, twoDaysAgo);
 
   // Visit `URL1`.
-  AddAboutThisSiteHint(URL1);
   [ChromeEarlGrey loadURL:URL1];
 
   // Open Last Visited page.
