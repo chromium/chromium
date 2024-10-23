@@ -81,12 +81,8 @@
 
   self.viewController.pageInfoPresentationHandler = self;
 
-  self.navigationController =
-      IsRevampPageInfoIosEnabled()
-          ? [[UINavigationController alloc]
-                initWithRootViewController:self.viewController]
-          : [[TableViewNavigationController alloc]
-                initWithTable:self.viewController];
+  self.navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.viewController];
   self.navigationController.modalPresentationStyle =
       UIModalPresentationFormSheet;
   self.navigationController.presentationController.delegate =

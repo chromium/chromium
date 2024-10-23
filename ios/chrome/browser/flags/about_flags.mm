@@ -131,14 +131,6 @@ const FeatureEntry::Choice
         {"5000", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "5000"},
 };
 
-const FeatureEntry::Choice kRevampPageInfoiOSChoices[] = {
-    {"Default", "", ""},
-    {"Enabled", switches::kEnableFeatures,
-     "RevampPageInfoIos, PageInfoAboutThisSite"},
-    {"Disabled", switches::kDisableFeatures,
-     "RevampPageInfoIos, PageInfoAboutThisSite"},
-};
-
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -1623,9 +1615,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillDynamicallyLoadsFieldsForAddressInput)},
-    {"revamp-page-info-ios", flag_descriptions::kRevampPageInfoIosName,
-     flag_descriptions::kRevampPageInfoIosDescription, flags_ui::kOsIos,
-     MULTI_VALUE_TYPE(kRevampPageInfoiOSChoices)},
     {"share-in-web-context-menu-ios",
      flag_descriptions::kShareInWebContextMenuIOSName,
      flag_descriptions::kShareInWebContextMenuIOSDescription, flags_ui::kOsIos,

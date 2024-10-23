@@ -827,10 +827,6 @@ extern const char kNotificationSettingsMenuItemDescription[];
 extern const char kRemoveExcessNTPsExperimentName[];
 extern const char kRemoveExcessNTPsExperimentDescription[];
 
-// Title and description for the flag to revamp Page Info in iOS.
-extern const char kRevampPageInfoIosName[];
-extern const char kRevampPageInfoIosDescription[];
-
 // Title and description for the flag to remove the image from rich IPH bubble.
 extern const char kRichBubbleWithoutImageName[];
 extern const char kRichBubbleWithoutImageDescription[];

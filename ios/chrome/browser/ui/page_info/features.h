@@ -7,14 +7,8 @@
 
 #include "base/feature_list.h"
 
-// Feature for the revamp of Page Info in iOS.
-BASE_DECLARE_FEATURE(kRevampPageInfoIos);
-
 // Feature for the implementation of Last Visited in Page Info for iOS.
 BASE_DECLARE_FEATURE(kPageInfoLastVisitedIOS);
-
-// Whether the Revamp Page Info feature is enabled.
-bool IsRevampPageInfoIosEnabled();
 
 // Whether the AboutThisSite feature is enabled. Only users with languages that
 // are supported should fetch the AboutThisSite information and see the UI.

@@ -7665,11 +7665,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "revamp-page-info-ios",
-    "owners": [ "fsenra@google.com", "bling-flags@google.com", "chrome-contextual-privacy@google.com"],
-    "expiry_milestone": 129
-  },
-  {
     "name": "rewriter-api-for-gemini-nano",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org"],
     "expiry_milestone": 140

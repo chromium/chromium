@@ -28,13 +28,6 @@
 
 @implementation PageInfoSecurityTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.relaunch_policy = NoForceRelaunchAndResetState;
-  config.features_enabled.push_back(kRevampPageInfoIos);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   if (![ChromeTestCase forceRestartAndWipe]) {

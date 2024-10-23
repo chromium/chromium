@@ -77,19 +77,6 @@ id<GREYMatcher> SearchIconButton() {
   return grey_accessibilityID(kHistorySearchControllerSearchBarIdentifier);
 }
 
-// Matcher for Security help center link in footer.
-id<GREYMatcher> SecurityHelpCenterLink() {
-  return grey_allOf(
-      // The link is within the security footer with ID
-      // `kPageInfoSecurityFooterAccessibilityIdentifier`.
-      grey_ancestor(
-          grey_accessibilityID(kPageInfoSecurityFooterAccessibilityIdentifier)),
-      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
-      // element in the label with attributed string.
-      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
-      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
-}
-
 void AddAboutThisSiteHint(GURL url) {
   [PageInfoAppInterface
       addAboutThisSiteHintForURL:
@@ -177,11 +164,6 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   config.features_enabled.push_back(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
-  if ([self isRunningTest:@selector(testLegacySecuritySection)]) {
-    config.features_disabled.push_back(kRevampPageInfoIos);
-  } else {
-    config.features_enabled.push_back(kRevampPageInfoIos);
-  }
   config.features_enabled.push_back(kPageInfoLastVisitedIOS);
   config.additional_args.push_back(
       std::string("-") +
@@ -448,39 +430,6 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests the legacy security section by checking that the correct site security
-// label and that the security footer are displayed.
-- (void)testLegacySecuritySection {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGreyUI openPageInfo];
-
-  // Check that "Site Security | Not secure” is displayed.
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_PAGE_INFO_SITE_SECURITY))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that the security footer is displayed.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kPageInfoSecurityFooterAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap on the Learn more link.
-  [[EarlGrey selectElementWithMatcher:SecurityHelpCenterLink()]
-      performAction:grey_tap()];
-
-  // Check that the help center article was opened.
-  GREYAssertEqual(std::string("support.google.com"),
-                  [ChromeEarlGrey webStateVisibleURL].host(),
-                  @"Did not navigate to the help center article.");
-  ExpectPageInfoActionHistograms(page_info::PAGE_INFO_CONNECTION_HELP_OPENED);
-}
-
 // Tests the security section by checking that the correct connection label is
 // displayed, that no security footer is displayed and that clicking on the
 // security row leads to the security subpage.
@@ -497,12 +446,6 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
                  grey_text(l10n_util::GetNSString(
                      IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that the security footer is not displayed.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kPageInfoSecurityFooterAccessibilityIdentifier)]
-      assertWithMatcher:grey_notVisible()];
 
   // Check that tapping on the security row leads to the security subpage.
   [[EarlGrey selectElementWithMatcher:

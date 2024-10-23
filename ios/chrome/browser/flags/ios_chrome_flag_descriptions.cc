@@ -925,11 +925,6 @@ const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
 
-const char kRevampPageInfoIosName[] = "Revamp Page Info";
-const char kRevampPageInfoIosDescription[] =
-    "Revamps Page Info to add two new sections, AboutThisPage and Last "
-    "Visited.";
-
 const char kRichBubbleWithoutImageName[] = "Remove image from rich IPH bubble";
 const char kRichBubbleWithoutImageDescription[] =
     "When enabled, the rich bubble IPH type will not feature an image, instead "

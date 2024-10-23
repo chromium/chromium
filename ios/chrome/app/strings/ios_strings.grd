@@ -3302,9 +3302,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAGE_INFO_OFFLINE_TITLE" desc="Title of the message to display in the page info bubble when the page you are on is an offline page.">
         Viewing offline version
       </message>
-      <message name="IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER" desc="Header of the permissions section (in page info)">
-        Permissions
-      </message>
       <message name="IDS_IOS_PAGE_INFO_RELOAD" desc="Button title in the page info bubble that allows to reload the current page.">
         Reload
       </message>
@@ -3328,9 +3325,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PAGE_INFO_SITE_INFORMATION" desc="Title of the navigation controller to display when the page info is presented.">
         Site information
-      </message>
-      <message name="IDS_IOS_PAGE_INFO_SITE_SECURITY" desc="Title of the button opening the site security information (in page info)">
-        Site security
       </message>
       <message name="IDS_IOS_PAGE_LOADED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement when a page has loaded. [Length: unlimited] [iOS only]">
         Webpage loaded
