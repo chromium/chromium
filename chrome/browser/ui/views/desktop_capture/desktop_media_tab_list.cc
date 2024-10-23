@@ -326,9 +326,7 @@ DesktopMediaTabList::~DesktopMediaTabList() {
 gfx::Size DesktopMediaTabList::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // If the DisplayMediaPickerRedesign flag is active, height should be 9 rows
-  // to allow space for the audio-toggle controller, otherwise default to 10
-  // rows.
+  // Allow space for the audio-toggle controller.
   const int preferred_item_count = 9;
   return gfx::Size(0, table_->GetRowHeight() * preferred_item_count);
 }

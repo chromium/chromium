@@ -474,8 +474,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         screen_scroll_view->SetContents(list_controller->CreateView(
             kGenericScreenStyle, kSingleScreenStyle, screen_title_text,
             DesktopMediaList::Type::kScreen));
-        // If the DisplayMediaPickerRedesign flag is active, clip max height to
-        // 1.5 item heights to allow space for the audio-toggle controller.
+        // Allow space for the audio-toggle controller.
         screen_scroll_view->ClipHeightTo(
             kGenericScreenStyle.item_size.height(),
             kGenericScreenStyle.item_size.height() * 3 / 2);
