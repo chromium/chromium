@@ -7988,9 +7988,6 @@ crbug.com/353746882 external/wpt/fs/FileSystemFileHandle-cross-primitive-locking
 crbug.com/40186254 fast/events/touch/gesture/gesture-tap-reset-selection-range.html [ Failure Pass Timeout ]
 crbug.com/40186254 fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Failure Pass Timeout ]
 
-# Temporary disable. This test will be replaced by a DevTools front-end test.
-crbug.com/368238837 http/tests/devtools/a11y-axe-core/settings/emulated-device-a11y-test.js [ Failure Pass Timeout ]
-
 # Gardener 2024-07-29
 # Flaky Linux MSAN failures
 crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-css-grid-huge.js [ Crash Pass ]
