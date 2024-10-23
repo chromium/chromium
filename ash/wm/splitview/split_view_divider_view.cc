@@ -110,12 +110,7 @@ void SplitViewDividerView::SetHandlerBarVisible(bool visible) {
 }
 
 void SplitViewDividerView::Layout(PassKey) {
-  // There is no divider in clamshell split view unless the feature flag
-  // `kSnapGroup` is enabled. If we are in clamshell mode without the feature
-  // flag and params, then we must be transitioning from tablet mode, and the
-  // divider will be destroyed and there is no need to update it.
-  if (!divider_ || (!display::Screen::GetScreen()->InTabletMode() &&
-                    !IsSnapGroupEnabledInClamshellMode())) {
+  if (!divider_) {
     return;
   }
 

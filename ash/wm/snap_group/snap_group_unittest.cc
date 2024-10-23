@@ -672,12 +672,10 @@ TEST_F(FasterSplitScreenTest, ResizeAndAutoSnap) {
   std::unique_ptr<aura::Window> w3(CreateAppWindow());
   EXPECT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w3.get())->GetStateType());
-  const int divider_delta = IsSnapGroupEnabledInClamshellMode()
-                                ? kSplitviewDividerShortSideLength / 2
-                                : 0;
   expected_autosnap_bounds.Subtract(
       gfx::Rect(expected_window_bounds.top_right(),
-                gfx::Size(divider_delta, GetWorkAreaBounds().height())));
+                gfx::Size(kSplitviewDividerShortSideLength / 2,
+                          GetWorkAreaBounds().height())));
   EXPECT_EQ(expected_autosnap_bounds, w3->GetBoundsInScreen());
 }
 
@@ -1492,20 +1490,11 @@ TEST_F(FasterSplitScreenTest,
   EXPECT_EQ(window1_state->GetStateType(), WindowStateType::kPrimarySnapped);
   EXPECT_LT(window1_state->snap_ratio().value(), chromeos::kTwoThirdSnapRatio);
 
-  const int divider_delta = IsSnapGroupEnabledInClamshellMode()
-                                ? kSplitviewDividerShortSideLength
-                                : 0;
-  // Both windows will fit within the work are with no overlap
-  if (auto* snap_group_controller = SnapGroupController::Get()) {
-    EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(window1.get(),
-                                                             window2.get()));
-    UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
-                                     GetTopmostSnapGroupDivider());
-  } else {
-    EXPECT_EQ(window1->GetBoundsInScreen().width() +
-                  window2->GetBoundsInScreen().width() + divider_delta,
-              GetWorkAreaBounds().width());
-  }
+  // Both windows will fit within the work area with no overlap
+  EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window1.get(),
+                                                                window2.get()));
+  UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
+                                   GetTopmostSnapGroupDivider());
 }
 
 // Tests that double tap to swap windows doesn't crash after transition to
