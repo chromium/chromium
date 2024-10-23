@@ -47,10 +47,6 @@ namespace privacy_sandbox {
 class PrivacySandboxTabObserver;
 }  // namespace privacy_sandbox
 
-namespace user_annotations {
-class UserAnnotationsWebContentsObserver;
-}  // namespace user_annotations
-
 namespace tabs {
 
 class TabInterface;
@@ -162,9 +158,6 @@ class TabFeatures {
   // Responsible for the customize chrome tab-scoped side panel.
   std::unique_ptr<customize_chrome::SidePanelController>
       customize_chrome_side_panel_controller_;
-
-  std::unique_ptr<user_annotations::UserAnnotationsWebContentsObserver>
-      user_annotations_web_contents_observer_;
 
   std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
       chrome_autofill_prediction_improvements_client_;

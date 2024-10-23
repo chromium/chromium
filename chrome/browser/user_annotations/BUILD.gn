@@ -15,8 +15,6 @@ static_library("user_annotations") {
   sources = [
     "user_annotations_service_factory.cc",
     "user_annotations_service_factory.h",
-    "user_annotations_web_contents_observer.cc",
-    "user_annotations_web_contents_observer.h",
   ]
   public_deps = [
     "//base",
@@ -53,8 +51,12 @@ if (!is_android) {
       ":user_annotations",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/ui",
+      "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//components/autofill/core/common",
       "//components/autofill_prediction_improvements/core/browser",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
       "//components/user_annotations",
       "//content/test:test_support",
     ]

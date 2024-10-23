@@ -318,7 +318,6 @@ if (!is_android) {
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/user_annotations",
       "//chrome/browser/web_applications",
       "//components/browsing_topics",
       "//components/content_settings/core/browser",
