@@ -8139,7 +8139,7 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     return compiler->SetParameter(sandbox::policy::kParamScreenAiComponentPath,
                                   screen_ai_binary_path.value());
   } else if (sandbox_type == sandbox::mojom::Sandbox::kOnDeviceTranslation) {
-    auto translatekit_binary_path =
+    auto translatekit_binary_path = on_device_translation::
         OnDeviceTranslationServiceController::GetTranslateKitComponentPath();
     if (translatekit_binary_path.empty()) {
       VLOG(1) << "TranslationKit component not found.";

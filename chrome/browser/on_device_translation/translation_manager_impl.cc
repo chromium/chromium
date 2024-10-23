@@ -20,9 +20,9 @@
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace {
+namespace on_device_translation {
 
-using on_device_translation::SupportedLanguage;
+namespace {
 
 bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
                         const std::string& lang) {
@@ -35,11 +35,11 @@ bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
 
 bool IsSupportedPopularLanguage(const std::string& lang) {
   const std::optional<SupportedLanguage> supported_lang =
-      on_device_translation::ToSupportedLanguage(lang);
+      ToSupportedLanguage(lang);
   if (!supported_lang) {
     return false;
   }
-  return on_device_translation::IsPopularLanguage(*supported_lang);
+  return IsPopularLanguage(*supported_lang);
 }
 
 }  // namespace
@@ -105,7 +105,7 @@ bool TranslationManagerImpl::PassAcceptLanguagesCheck(
     const std::string& accept_languages_str,
     const std::string& source_lang,
     const std::string& target_lang) {
-  if (!on_device_translation::kTranslationAPIAcceptLanguagesCheck.Get()) {
+  if (!kTranslationAPIAcceptLanguagesCheck.Get()) {
     return true;
   }
   // When the TranslationAPIAcceptLanguagesCheck feature is enabled, the
@@ -137,3 +137,5 @@ bool TranslationManagerImpl::PassAcceptLanguagesCheck(
   }
   return true;
 }
+
+}  // namespace on_device_translation

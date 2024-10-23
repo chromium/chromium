@@ -15,6 +15,8 @@
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
+namespace on_device_translation {
+
 // The browser-side implementation of `blink::mojom::TranslationManager`, it
 // should be destroyed together with the associated RFH or when the RFH is used
 // for a cross-document navigation.
@@ -56,5 +58,7 @@ class TranslationManagerImpl
   base::WeakPtr<content::BrowserContext> browser_context_;
   mojo::Receiver<blink::mojom::TranslationManager> receiver_{this};
 };
+
+}  // namespace on_device_translation
 
 #endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_

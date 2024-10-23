@@ -972,8 +972,8 @@ void PopulateChromeFrameBinders(
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
   if (base::FeatureList::IsEnabled(blink::features::kEnableTranslationAPI)) {
-    map->Add<blink::mojom::TranslationManager>(
-        base::BindRepeating(&TranslationManagerImpl::Create));
+    map->Add<blink::mojom::TranslationManager>(base::BindRepeating(
+        &on_device_translation::TranslationManagerImpl::Create));
   }
 #endif
 

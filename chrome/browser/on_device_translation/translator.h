@@ -9,6 +9,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
+namespace on_device_translation {
+
 // The browser-side implementation of `blink::mojom::Translator`, which
 // exposes the `Translate()` method to do translation.
 class Translator : public blink::mojom::Translator {
@@ -28,5 +30,7 @@ class Translator : public blink::mojom::Translator {
  private:
   mojo::Remote<on_device_translation::mojom::Translator> translator_remote_;
 };
+
+}  // namespace on_device_translation
 
 #endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATOR_H_

@@ -41,16 +41,14 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 using blink::mojom::CanCreateTranslatorResult;
-using on_device_translation::GetComponentPathPrefName;
-using on_device_translation::GetRegisteredFlagPrefName;
-using on_device_translation::kLanguagePackComponentConfigMap;
-using on_device_translation::LanguagePackKey;
-using on_device_translation::ToLanguageCode;
-using on_device_translation::mojom::FileOperationProxy;
-using on_device_translation::mojom::OnDeviceTranslationLanguagePackage;
-using on_device_translation::mojom::OnDeviceTranslationLanguagePackagePtr;
-using on_device_translation::mojom::OnDeviceTranslationServiceConfig;
-using on_device_translation::mojom::OnDeviceTranslationServiceConfigPtr;
+
+namespace on_device_translation {
+
+using mojom::FileOperationProxy;
+using mojom::OnDeviceTranslationLanguagePackage;
+using mojom::OnDeviceTranslationLanguagePackagePtr;
+using mojom::OnDeviceTranslationServiceConfig;
+using mojom::OnDeviceTranslationServiceConfigPtr;
 
 namespace {
 
@@ -80,9 +78,8 @@ bool GetBooleanFromGlobalPrefs(std::string_view pref_name) {
 
 base::FilePath GetTranslateKitLibraryPath() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(on_device_translation::kTranslateKitBinaryPath)) {
-    return command_line->GetSwitchValuePath(
-        on_device_translation::kTranslateKitBinaryPath);
+  if (command_line->HasSwitch(kTranslateKitBinaryPath)) {
+    return command_line->GetSwitchValuePath(kTranslateKitBinaryPath);
   }
   return GetFilePathFromGlobalPrefs(prefs::kTranslateKitBinaryPath);
 }
@@ -99,7 +96,7 @@ std::string ToString(base::FilePath path) {
 }  // namespace
 
 OnDeviceTranslationServiceController::PendingTask::PendingTask(
-    std::set<on_device_translation::LanguagePackKey> required_packs,
+    std::set<LanguagePackKey> required_packs,
     base::OnceClosure once_closure)
     : required_packs(std::move(required_packs)),
       once_closure(std::move(once_closure)) {}
@@ -176,9 +173,8 @@ class OnDeviceTranslationServiceController::FileOperationProxyImpl
 base::FilePath
 OnDeviceTranslationServiceController::GetTranslateKitComponentPath() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(on_device_translation::kTranslateKitBinaryPath)) {
-    return command_line->GetSwitchValuePath(
-        on_device_translation::kTranslateKitBinaryPath);
+  if (command_line->HasSwitch(kTranslateKitBinaryPath)) {
+    return command_line->GetSwitchValuePath(kTranslateKitBinaryPath);
   }
   base::FilePath components_dir;
   base::PathService::Get(component_updater::DIR_COMPONENT_USER,
@@ -186,8 +182,8 @@ OnDeviceTranslationServiceController::GetTranslateKitComponentPath() {
   return components_dir.empty()
              ? base::FilePath()
              : components_dir.Append(
-                   on_device_translation::
-                       kTranslateKitBinaryInstallationRelativeDir);
+
+                   kTranslateKitBinaryInstallationRelativeDir);
 }
 
 std::optional<
@@ -239,7 +235,7 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
   // Initialize the pref change registrar.
   pref_change_registrar_.Init(g_browser_process->local_state());
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          on_device_translation::kTranslateKitBinaryPath)) {
+          kTranslateKitBinaryPath)) {
     // Start listening to pref changes for TranslateKit binary path.
     pref_change_registrar_.Add(
         prefs::kTranslateKitBinaryPath,
@@ -274,7 +270,7 @@ OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() =
 void OnDeviceTranslationServiceController::CreateTranslator(
     const std::string& source_lang,
     const std::string& target_lang,
-    mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
+    mojo::PendingReceiver<mojom::Translator> receiver,
     base::OnceCallback<void(bool)> callback) {
   std::set<LanguagePackKey> required_packs;
   std::vector<LanguagePackKey> required_not_installed_packs;
@@ -286,7 +282,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
                                       required_not_installed_packs,
                                       to_be_registered_packs);
     if (!to_be_registered_packs.empty()) {
-      if (on_device_translation::kTranslationAPILimitLanguagePackCount.Get()) {
+      if (kTranslationAPILimitLanguagePackCount.Get()) {
         if (to_be_registered_packs.size() +
                 GetRegisteredLanguagePacks().size() >
             kTranslationAPILimitLanguagePackCountMax) {
@@ -330,7 +326,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
 void OnDeviceTranslationServiceController::CreateTranslatorImpl(
     const std::string& source_lang,
     const std::string& target_lang,
-    mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
+    mojo::PendingReceiver<mojom::Translator> receiver,
     base::OnceCallback<void(bool)> callback) {
   GetRemote()->CreateTranslator(source_lang, target_lang, std::move(receiver),
                                 std::move(callback));
@@ -385,7 +381,7 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
   }
 
   if (!to_be_registered_packs.empty() &&
-      on_device_translation::kTranslationAPILimitLanguagePackCount.Get() &&
+      kTranslationAPILimitLanguagePackCount.Get() &&
       to_be_registered_packs.size() + GetRegisteredLanguagePacks().size() >
           kTranslationAPILimitLanguagePackCountMax) {
     // The number of installed language packs will exceed the limitation if the
@@ -518,7 +514,7 @@ void OnDeviceTranslationServiceController::MaybeRunPendingTasks() {
   }
 }
 
-mojo::Remote<on_device_translation::mojom::OnDeviceTranslationService>&
+mojo::Remote<mojom::OnDeviceTranslationService>&
 OnDeviceTranslationServiceController::GetRemote() {
   if (service_remote_) {
     return service_remote_;
@@ -533,11 +529,9 @@ OnDeviceTranslationServiceController::GetRemote() {
 
   std::vector<std::string> extra_switches;
   extra_switches.push_back(
-      base::StrCat({on_device_translation::kTranslateKitBinaryPath, "=",
-                    ToString(binary_path)}));
+      base::StrCat({kTranslateKitBinaryPath, "=", ToString(binary_path)}));
 
-  content::ServiceProcessHost::Launch<
-      on_device_translation::mojom::OnDeviceTranslationService>(
+  content::ServiceProcessHost::Launch<mojom::OnDeviceTranslationService>(
       std::move(receiver),
       content::ServiceProcessHost::Options()
           .WithDisplayName(kOnDeviceTranslationServiceDisplayName)
@@ -586,8 +580,7 @@ void OnDeviceTranslationServiceController::CalculateLanguagePackRequirements(
   CHECK(required_packs.empty());
   CHECK(required_not_installed_packs.empty());
   CHECK(to_be_registered_packs.empty());
-  required_packs = on_device_translation::CalculateRequiredLanguagePacks(
-      source_lang, target_lang);
+  required_packs = CalculateRequiredLanguagePacks(source_lang, target_lang);
   const auto installed_packs = GetInstalledLanguagePacks();
   base::ranges::set_difference(
       required_packs, installed_packs,
@@ -603,3 +596,5 @@ OnDeviceTranslationServiceController::GetInstance() {
   static base::NoDestructor<OnDeviceTranslationServiceController> instance;
   return instance.get();
 }
+
+}  // namespace on_device_translation

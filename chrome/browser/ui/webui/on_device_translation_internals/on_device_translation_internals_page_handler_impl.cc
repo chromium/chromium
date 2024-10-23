@@ -15,6 +15,7 @@ using on_device_translation_internals::mojom::LanguagePackStatus;
 
 using on_device_translation::kLanguagePackComponentConfigMap;
 using on_device_translation::LanguagePackKey;
+using on_device_translation::OnDeviceTranslationServiceController;
 using on_device_translation::ToLanguageCode;
 
 OnDeviceTranslationInternalsPageHandlerImpl::

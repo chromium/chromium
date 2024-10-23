@@ -11,6 +11,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace on_device_translation {
+
 class TranslationManagerImplTest : public testing::Test {
  public:
   TranslationManagerImplTest() = default;
@@ -162,3 +164,5 @@ TEST_F(TranslationManagerImplTest, PassAcceptLanguagesCheck) {
   // None of source and target lang is in accept-languages.
   EXPECT_FALSE(PassAcceptLanguagesCheck("en,es", "de", "fr"));
 }
+
+}  // namespace on_device_translation

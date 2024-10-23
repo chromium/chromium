@@ -8,6 +8,8 @@
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
+namespace on_device_translation {
+
 Translator::Translator(const std::string& source_lang,
                        const std::string& target_lang,
                        base::OnceCallback<void(bool)> callback) {
@@ -31,3 +33,5 @@ void Translator::Translate(const std::string& input,
     std::move(callback).Run(nullptr);
   }
 }
+
+}  // namespace on_device_translation
