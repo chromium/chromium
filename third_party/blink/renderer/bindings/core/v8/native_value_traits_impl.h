@@ -1804,13 +1804,12 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
     if (value->IsArrayBufferView()) {
       v8::Local<v8::ArrayBufferView> view = value.As<v8::ArrayBufferView>();
       if (!T::allow_shared && view->HasBuffer() &&
-          view->Buffer()->GetBackingStore()->IsShared()) {
+          view->Buffer()->GetBackingStore()->IsShared()) [[unlikely]] {
         exception_state.ThrowTypeError(
             "The provided ArrayBufferView value must not be shared.");
         return result;
       }
-      result.Assign(
-          bindings::internal::GetViewData(view, result.GetInlineStorage()));
+      result.Assign(view->GetContents(result.GetInlineStorage()));
       return result;
     }
     exception_state.ThrowTypeError(
@@ -1834,16 +1833,15 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
                                               ExceptionState& exception_state) {
     typename T::ReturnType result;
     using Traits = bindings::internal::TypedArrayElementTraits<ElementType>;
-    if (Traits::IsViewOfType(value)) {
+    if (Traits::IsViewOfType(value)) [[likely]] {
       v8::Local<v8::ArrayBufferView> view = value.As<v8::ArrayBufferView>();
       if (!T::allow_shared && view->HasBuffer() &&
-          view->Buffer()->GetBackingStore()->IsShared()) {
+          view->Buffer()->GetBackingStore()->IsShared()) [[unlikely]] {
         exception_state.ThrowTypeError(
             "The provided ArrayBufferView value must not be shared.");
         return result;
       }
-      result.Assign(
-          bindings::internal::GetViewData(view, result.GetInlineStorage()));
+      result.Assign(view->GetContents(result.GetInlineStorage()));
       return result;
     }
     if constexpr (T::allow_sequence) {
