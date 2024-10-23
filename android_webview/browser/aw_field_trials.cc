@@ -275,9 +275,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       safe_browsing::kHashPrefixRealTimeLookups);
 
-  // WebView does not currently support the Permissions API (crbug.com/490120)
-  aw_feature_overrides.DisableFeature(::features::kWebPermissionsApi);
-
   // TODO(crbug.com/41492947): See crrev.com/c/5744034 for details, but I was
   // unable to add this feature to fieldtrial_testing_config and pass all tests.
   aw_feature_overrides.EnableFeature(blink::features::kElementGetInnerHTML);

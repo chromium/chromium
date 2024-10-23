@@ -26142,21 +26142,6 @@
             ]
         }
     ],
-    "WebPermissionsApi": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebPermissionsApi"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebRTC-Aec3BufferingMaxAllowedExcessRenderBlocksOverride": [
         {
             "platforms": [
