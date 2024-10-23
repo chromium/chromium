@@ -17,18 +17,14 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
-#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/constants.h"
-#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_data_source.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mutator.h"
 #import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -61,15 +57,16 @@ constexpr CGFloat kLastSecondaryAccountLeftSeparatorInset = 60.;
 // Per Apple guidelines, touch targets should be at least 44x44.
 constexpr CGFloat kMinimumTouchTargetSize = 44.0;
 
+// The corner radius of the half sheet.
 constexpr CGFloat kHalfSheetCornerRadius = 10.0;
 
 // Sections used in the account menu.
 typedef NS_ENUM(NSUInteger, SectionIdentifier) {
   // Sync errors.
   SyncErrorsSectionIdentifier = kSectionIdentifierEnumZero,
-  // List of accounts
+  // List of accounts.
   AccountsSectionIdentifier,
-  // manage accounts, sign-out
+  // Manage accounts ans sign-out.
   SignOutSectionIdentifier,
 };
 
@@ -83,6 +80,7 @@ typedef NS_ENUM(NSUInteger, RowIdentifier) {
   RowIdentifierAddAccount,
   // The secondary account entries use the gaia ID as item identifier.
 };
+
 // Custom detent identifier for when the bottom sheet is minimized.
 NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
@@ -158,6 +156,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 #pragma mark - Private
 
+// Sets the activity indicator.
 - (void)setActivityIndicator:(TableViewAccountCell*)cell {
   UIActivityIndicatorView* activityIndicatorView =
       [[UIActivityIndicatorView alloc] init];
@@ -299,6 +298,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   _ellipsisButton.showsMenuAsPrimaryAction = true;
 }
 
+// Configures and returns a cell.
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(id)itemIdentifier {
@@ -383,6 +383,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   return cell;
 }
 
+// Sets up bottom sheet presentation controller.
 - (void)setUpBottomSheetPresentationController {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
@@ -403,11 +404,13 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       kCustomMinimizedDetentIdentifier;
 }
 
+// Handles tapping on Close button.
 - (void)userTappedOnClose {
   base::RecordAction(base::UserMetricsAction("Signin_AccountMenu_Close"));
   [self.mutator viewControllerWantsToBeClosed:self];
 }
 
+// Sets up table content.
 - (void)setUpTableContent {
   // Configure the table items.
   __weak __typeof(self) weakSelf = self;
