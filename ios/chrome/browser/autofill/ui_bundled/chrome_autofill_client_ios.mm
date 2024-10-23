@@ -104,6 +104,10 @@ void ChromeAutofillClientIOS::SetBaseViewController(
   base_view_controller_ = base_view_controller;
 }
 
+base::WeakPtr<autofill::AutofillClient> ChromeAutofillClientIOS::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 version_info::Channel ChromeAutofillClientIOS::GetChannel() const {
   return ::GetChannel();
 }

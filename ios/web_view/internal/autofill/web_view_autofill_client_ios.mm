@@ -84,6 +84,10 @@ WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
 }
 
+base::WeakPtr<AutofillClient> WebViewAutofillClientIOS::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool WebViewAutofillClientIOS::IsOffTheRecord() const {
   return web_state_->GetBrowserState()->IsOffTheRecord();
 }

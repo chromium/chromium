@@ -66,6 +66,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   id<AutofillCommands> commands_handler() const { return commands_handler_; }
 
   // AutofillClient:
+  base::WeakPtr<AutofillClient> GetWeakPtr() override;
   version_info::Channel GetChannel() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
@@ -173,6 +174,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
   __weak UIViewController* base_view_controller_;
 
   __weak id<AutofillCommands> commands_handler_;
+
+  base::WeakPtrFactory<ChromeAutofillClientIOS> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

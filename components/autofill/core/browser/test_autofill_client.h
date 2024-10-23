@@ -100,6 +100,10 @@ class TestAutofillClientTemplate : public T {
     test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
   }
 
+  base::WeakPtr<AutofillClient> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   version_info::Channel GetChannel() const override {
     return channel_for_testing_;
   }
@@ -581,6 +585,8 @@ class TestAutofillClientTemplate : public T {
   } log_to_terminal_{log_router_};
   std::unique_ptr<LogManager> log_manager_ =
       LogManager::Create(&log_router_, base::NullCallback());
+
+  base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };
 
 // A simple `AutofillClient` for tests. Consider `TestContentAutofillClient` as

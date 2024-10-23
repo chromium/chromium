@@ -221,6 +221,10 @@ ChromeAutofillClient::~ChromeAutofillClient() {
   }
 }
 
+base::WeakPtr<AutofillClient> ChromeAutofillClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 version_info::Channel ChromeAutofillClient::GetChannel() const {
   return chrome::GetChannel();
 }
@@ -602,7 +606,8 @@ ChromeAutofillClient::ShowAutofillSuggestions(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ChromeAutofillClient::ShowAutofillSuggestionsImpl,
-                     GetWeakPtr(), session_id, open_args, delegate));
+                     weak_ptr_factory_.GetWeakPtr(), session_id, open_args,
+                     delegate));
   return session_id;
 }
 
@@ -865,7 +870,8 @@ void ChromeAutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
               }
               delegate->UserClickedLearnMore();
             },
-            GetWeakPtr(), GetAutofillPredictionImprovementsDelegate());
+            weak_ptr_factory_.GetWeakPtr(),
+            GetAutofillPredictionImprovementsDelegate());
 
     SaveAutofillPredictionImprovementsController::UserFeedbackCallback
         user_feedback_callback = base::BindRepeating(
@@ -880,7 +886,8 @@ void ChromeAutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
               // prompt case. Otherwise the feedback will not show up.
               delegate->UserFeedbackReceived(user_feedback);
             },
-            GetWeakPtr(), GetAutofillPredictionImprovementsDelegate());
+            weak_ptr_factory_.GetWeakPtr(),
+            GetAutofillPredictionImprovementsDelegate());
 
     controller->OfferSave(std::move(to_be_upserted_entries),
                           std::move(prompt_acceptance_callback),
@@ -950,10 +957,6 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
     suggestion_controller_->SetKeepPopupOpenForTesting(
         keep_popup_open_for_testing_);
   }
-}
-
-base::WeakPtr<ChromeAutofillClient> ChromeAutofillClient::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 std::unique_ptr<AutofillManager> ChromeAutofillClient::CreateManager(

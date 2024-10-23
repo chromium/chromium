@@ -63,10 +63,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace optimization_guide::proto {
-class UserAnnotationsEntry;
-}
-
 namespace autofill {
 
 class AutofillField;
@@ -473,18 +469,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormStructure* const form_structure,
       bool attempt_to_import_into_form_data_importer);
-
-  // Event handler for
-  // `AutofillPredictionImprovementsDelegate::MaybeImportForm()` which is bound
-  // on form submission if the delegate exists.
-  void OnUserAnnotationsMaybeImportableFormFound(
-      const FormData& form,
-      mojom::SubmissionSource source,
-      base::TimeTicks form_submitted_timestamp,
-      std::unique_ptr<FormStructure> submitted_form,
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>
-          to_be_upserted_entries,
-      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback);
 
   // Method containing logic to be run in `OnFormSubmittedImpl()` after any
   // import attempts of the submitted form occurred.
