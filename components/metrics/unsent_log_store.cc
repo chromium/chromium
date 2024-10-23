@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/metrics/unsent_log_store.h"
 
 #include <cmath>
@@ -312,8 +307,7 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
           writer.unsent_logs_count() >= log_store_limits_.min_log_count) {
         // The rest of the logs (including the current one) are trimmed.
         if (overwrite_in_memory_store) {
-          NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>>(
-                              list_.begin(), list_.begin() + i + 1),
+          NotifyLogsEvent(base::span(list_).first(static_cast<size_t>(i + 1)),
                           MetricsLogsEventManager::LogEvent::kLogTrimmed);
         }
         break;
