@@ -39,10 +39,6 @@ class ExpsRegistrationSuccessObserver
       const ExpsRegistrationSuccessObserver&) = delete;
 
  protected:
-  // Called on every page load. Determines and shows IPH if the conditions are
-  // met.
-  void MaybeShowIPH();
-  virtual void ShowIPH();
   virtual bool IsSearchInCompanionSidePanelSupported();
   virtual PrefService* pref_service();
 

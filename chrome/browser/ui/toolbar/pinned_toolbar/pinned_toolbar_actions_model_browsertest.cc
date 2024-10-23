@@ -7,9 +7,7 @@
 #include <memory>
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/common/pref_names.h"
@@ -88,11 +86,7 @@ class PinnedToolbarActionsModelTestObserver
 
 class PinnedToolbarActionsModelBrowserTest : public InProcessBrowserTest {
  public:
-  PinnedToolbarActionsModelBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {companion::features::internal::kSidePanelCompanion}, {});
-  }
-
+  PinnedToolbarActionsModelBrowserTest() = default;
   PinnedToolbarActionsModelBrowserTest(
       const PinnedToolbarActionsModelBrowserTest&) = delete;
   PinnedToolbarActionsModelBrowserTest& operator=(
@@ -361,72 +355,6 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
   EXPECT_FALSE(model()->Contains(kActionSidePanelShowBookmarks));
   EXPECT_TRUE(model()->Contains(kActionShowChromeLabs));
 }
-
-// Verify that the search companion updates the model and prefs object
-// appropriately.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
-                       MigratingSearchCompanionUpdatesModel) {
-  // Verify nothing happens if the migration already happened.
-  {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kPinnedSearchCompanionMigrationComplete, true);
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar, true);
-    EXPECT_EQ(0, observer()->removed_count());
-    EXPECT_EQ(0, observer()->inserted_count());
-    EXPECT_EQ(-1, observer()->moved_to_index());
-
-    companion::UpdateCompanionDefaultPinnedToToolbarState(browser()->profile());
-
-    const base::Value::List& list_1 =
-        browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
-    EXPECT_EQ(1u, list_1.size());
-  }
-
-  // Verify nothing happens if the search companion is not pinned.
-  {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kPinnedSearchCompanionMigrationComplete, false);
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar, false);
-    EXPECT_EQ(0, observer()->removed_count());
-    EXPECT_EQ(0, observer()->inserted_count());
-    EXPECT_EQ(-1, observer()->moved_to_index());
-
-    companion::UpdateCompanionDefaultPinnedToToolbarState(browser()->profile());
-
-    const base::Value::List& list_1 =
-        browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
-    EXPECT_EQ(1u, list_1.size());
-  }
-
-  // Verify the migration updates the model if search companion is pinned.
-  {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kPinnedSearchCompanionMigrationComplete, false);
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar, true);
-    EXPECT_EQ(0, observer()->removed_count());
-    EXPECT_EQ(0, observer()->inserted_count());
-    EXPECT_EQ(-1, observer()->moved_to_index());
-
-    companion::UpdateCompanionDefaultPinnedToToolbarState(browser()->profile());
-
-    const base::Value::List& list_1 =
-        browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
-
-    ASSERT_EQ(2u, list_1.size());
-    EXPECT_EQ(1, observer()->inserted_count());
-
-    const std::optional<std::string>& search_companion_string =
-        actions::ActionIdMap::ActionIdToString(
-            kActionSidePanelShowSearchCompanion);
-    ASSERT_EQ("kActionShowChromeLabs", list_1[0].GetString());
-    EXPECT_EQ(search_companion_string, list_1[1].GetString());
-  }
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 // TODO(dljames): Write tests for guest and incognito mode profile that check
 // that we cannot modify the model at all.

@@ -331,13 +331,7 @@ void CompanionSidePanelController::DidOpenRequestedURL(
   auto* companion_helper =
       companion::CompanionTabHelper::FromWebContents(tab_web_contents);
   if (companion_helper) {
-    auto* pref_service = browser->profile()->GetPrefs();
-    bool is_entry_point_default_pinned =
-        pref_service ? pref_service
-                           ->GetDefaultPrefValue(
-                               prefs::kSidePanelCompanionEntryPinnedToToolbar)
-                           ->GetBool()
-                     : false;
+    bool is_entry_point_default_pinned = false;
     auto link_open_action =
         open_in_current_tab
             ? side_panel::mojom::LinkOpenMetadata::LinkOpenAction::kClobbered

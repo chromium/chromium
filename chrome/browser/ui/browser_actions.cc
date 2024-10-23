@@ -216,29 +216,6 @@ void BrowserActions::InitializeBrowserActions() {
                 icon, ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
             .SetProperty(actions::kActionItemPinnableKey, true)
             .Build());
-  } else if (companion::IsCompanionFeatureEnabled()) {
-    if (companion::IsSearchInCompanionSidePanelSupportedForProfile(
-            profile,
-            /*include_runtime_checks=*/false)) {
-      actions::ActionItem* companion_action_item = root_action_item_->AddChild(
-          SidePanelAction(
-              SidePanelEntryId::kSearchCompanion,
-              IDS_SIDE_PANEL_COMPANION_TITLE,
-              IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP,
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-              vector_icons::
-                  kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon,
-#else
-              vector_icons::kSearchChromeRefreshIcon,
-#endif
-              kActionSidePanelShowSearchCompanion, browser, true)
-              .Build());
-
-      companion_action_item->SetVisible(
-          companion::IsSearchInCompanionSidePanelSupportedForProfile(
-              profile,
-              /*include_runtime_checks=*/true));
-    }
   }
 
   // Create the lens action item. The icon and text are set appropriately in the

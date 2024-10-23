@@ -70,15 +70,11 @@ class ExpsRegistrationSuccessObserverTest
         .WillRepeatedly(testing::Return(true));
   }
 
-  void SetPrefValues(bool exps_granted,
-                     bool has_seen_success_page,
-                     bool pinned_entry) {
+  void SetPrefValues(bool exps_granted, bool has_seen_success_page) {
     pref_service_.registry()->RegisterBooleanPref(
         companion::kExpsOptInStatusGrantedPref, exps_granted);
     pref_service_.registry()->RegisterBooleanPref(
         companion::kHasNavigatedToExpsSuccessPage, has_seen_success_page);
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar, pinned_entry);
   }
 
   void SetUpFeatureList() {
@@ -105,54 +101,13 @@ class ExpsRegistrationSuccessObserverTest
 
 }  // namespace
 
-TEST_F(ExpsRegistrationSuccessObserverTest, ShowIPHIfAllCriteriaMeets) {
-  SetUpFeatureList();
-  SetPrefValues(/*exps_granted=*/true,
-                /*has_seen_success_page=*/true, /*pinned_entry=*/true);
-  SetupExpsObserver();
-
-  EXPECT_CALL(*exps_observer_, ShowIPH()).Times(1);
-  NavigateAndCommit(GURL(kDefaultUrl));
-}
-
-TEST_F(ExpsRegistrationSuccessObserverTest, IPHNotShownForChromeUrls) {
-  SetUpFeatureList();
-  SetPrefValues(/*exps_granted=*/true,
-                /*has_seen_success_page=*/true, /*pinned_entry=*/true);
-  SetupExpsObserver();
-
-  EXPECT_CALL(*exps_observer_, ShowIPH()).Times(0);
-  NavigateAndCommit(GURL("chrome://newtab"));
-}
-
-TEST_F(ExpsRegistrationSuccessObserverTest, IPHNotShownIfCscNotPinned) {
-  SetUpFeatureList();
-  SetPrefValues(/*exps_granted=*/true,
-                /*has_seen_success_page=*/true, /*pinned_entry=*/false);
-  SetupExpsObserver();
-
-  EXPECT_CALL(*exps_observer_, ShowIPH()).Times(0);
-  NavigateAndCommit(GURL(kDefaultUrl));
-}
-
-TEST_F(ExpsRegistrationSuccessObserverTest, IPHNotShownForBlockListedUrls) {
-  SetUpFeatureList();
-  SetPrefValues(/*exps_granted=*/true,
-                /*has_seen_success_page=*/true, /*pinned_entry=*/true);
-  SetupExpsObserver();
-
-  EXPECT_CALL(*exps_observer_, ShowIPH()).Times(0);
-  NavigateAndCommit(GURL(kBlocklistedUrl));
-}
-
 TEST_F(ExpsRegistrationSuccessObserverTest,
        ExpsRegistrationSuccessUpdatesThePref) {
   SetUpFeatureList();
   SetPrefValues(/*exps_granted=*/false,
-                /*has_seen_success_page=*/false, /*pinned_entry=*/false);
+                /*has_seen_success_page=*/false);
   SetupExpsObserver();
 
-  EXPECT_CALL(*exps_observer_, ShowIPH()).Times(0);
   NavigateAndCommit(GURL(kExpsRegistationSuccessUrl));
 
   EXPECT_TRUE(
@@ -163,10 +118,9 @@ TEST_F(ExpsRegistrationSuccessObserverTest,
        RandomUrlDoesntUpdateExpsRegistrationPref) {
   SetUpFeatureList();
   SetPrefValues(/*exps_granted=*/false,
-                /*has_seen_success_page=*/false, /*pinned_entry=*/false);
+                /*has_seen_success_page=*/false);
   SetupExpsObserver();
 
-  EXPECT_CALL(*exps_observer_, ShowIPH()).Times(0);
   NavigateAndCommit(GURL(kDefaultUrl));
 
   EXPECT_FALSE(

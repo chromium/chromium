@@ -142,39 +142,8 @@ bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser) {
 
 void UpdateCompanionDefaultPinnedToToolbarState(Profile* profile) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  CHECK(profile);
-
-  PrefService* const pref_service = profile->GetPrefs();
-  CHECK(pref_service);
-
-  std::optional<bool> should_force_pin =
-      switches::ShouldForceOverrideCompanionPinState();
-  if (should_force_pin) {
-    pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
-                             *should_force_pin);
-    return;
-  }
-
-  bool observed_exps_nav =
-      base::FeatureList::IsEnabled(
-          features::internal::kCompanionEnabledByObservingExpsNavigations) &&
-      pref_service->GetBoolean(companion::kHasNavigatedToExpsSuccessPage);
-
-  bool companion_should_be_default_pinned =
-      base::FeatureList::IsEnabled(
-          ::features::kSidePanelCompanionDefaultPinned) ||
-      pref_service->GetBoolean(companion::kExpsOptInStatusGrantedPref) ||
-      observed_exps_nav;
-
-  pref_service->SetDefaultPrefValue(
-      prefs::kSidePanelCompanionEntryPinnedToToolbar,
-      base::Value(companion_should_be_default_pinned));
-
-  PinnedToolbarActionsModel* const model =
-      PinnedToolbarActionsModelFactory::GetForProfile(profile);
-  CHECK(model);
-  model->MaybeUpdateSearchCompanionPinnedState(
-      companion_should_be_default_pinned);
+  // TODO(crbug.com/348678854): Remove this function and its callers as part
+  // of removing companion from client code.
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

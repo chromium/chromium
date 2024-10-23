@@ -46,10 +46,6 @@ class CompanionUrlBuilderTest : public testing::Test {
         false);
 
     pref_service_.registry()->RegisterBooleanPref(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar,
-        EntryPointDefaultPinned());
-
-    pref_service_.registry()->RegisterBooleanPref(
         unified_consent::prefs::kPageContentCollectionEnabled, false);
 
     PromoHandler::RegisterProfilePrefs(pref_service_.registry());
@@ -239,7 +235,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbAndPcOn) {
   EXPECT_TRUE(proto.is_page_content_sharing_enabled());
   EXPECT_TRUE(proto.is_page_content_enabled());
   EXPECT_TRUE(proto.is_signed_in());
-  EXPECT_TRUE(proto.is_entrypoint_pinned_by_default());
+  EXPECT_FALSE(proto.is_entrypoint_pinned_by_default());
   EXPECT_TRUE(proto.links_open_in_new_tab());
   EXPECT_FALSE(proto.is_vqs_enabled_on_chrome());
   EXPECT_TRUE(proto.is_upload_dialog_supported());

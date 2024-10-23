@@ -48,8 +48,6 @@ void ExpsRegistrationSuccessObserver::PrimaryPageChanged(content::Page& page) {
     return;
   }
 
-  MaybeShowIPH();
-
   if (pref_service()->GetBoolean(kHasNavigatedToExpsSuccessPage)) {
     return;
   }
@@ -62,42 +60,6 @@ void ExpsRegistrationSuccessObserver::PrimaryPageChanged(content::Page& page) {
 
   // Save the status to a pref.
   pref_service()->SetBoolean(kHasNavigatedToExpsSuccessPage, true);
-}
-
-void ExpsRegistrationSuccessObserver::MaybeShowIPH() {
-  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
-    return;
-  }
-
-  const auto& url = web_contents()->GetVisibleURL();
-  if (!IsValidPageURLForCompanion(url)) {
-    return;
-  }
-
-  if (!IsSearchInCompanionSidePanelSupported()) {
-    return;
-  }
-
-  if (DoesUrlMatchPatternsInList(url, blocklisted_iph_url_patterns_)) {
-    return;
-  }
-
-  bool has_pinned_entry = pref_service()->GetBoolean(
-      prefs::kSidePanelCompanionEntryPinnedToToolbar);
-  if (!has_pinned_entry) {
-    return;
-  }
-
-  ShowIPH();
-}
-
-void ExpsRegistrationSuccessObserver::ShowIPH() {
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents());
-  if (!browser || !browser->window()) {
-    return;
-  }
-  browser->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHCompanionSidePanelFeature);
 }
 
 PrefService* ExpsRegistrationSuccessObserver::pref_service() {
