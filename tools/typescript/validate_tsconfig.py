@@ -45,6 +45,7 @@ _allowed_compiler_options = [
     'lib',
     'noPropertyAccessFromIndexSignature',
     'noUncheckedIndexedAccess',
+    'noUncheckedSideEffectImports',
     'noUnusedLocals',
     'skipLibCheck',
     'strictPropertyInitialization',
