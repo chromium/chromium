@@ -10,9 +10,6 @@ module ui.mojom;
 // changed or removed.
 //
 // Window "show" state.
-// TODO: Add snapped window state to immersive fullscreen state to
-// WindowShowState. Those are ChromeOS specific window states but we should make
-// it available here as well as Lacros also needs to know those states.
 // TODO(crbug.com/361008605): Move back to ui_base_types.mojom and delete
 // this file.
 [Stable, Extensible]
