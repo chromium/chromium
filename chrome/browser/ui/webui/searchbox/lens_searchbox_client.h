@@ -53,6 +53,9 @@ class LensSearchboxClient {
 
   // Called when the handler binds to the remote page, aka when SetPage is set.
   virtual void OnPageBound() = 0;
+
+  // Called when autocomplete stop timer is triggered.
+  virtual void OnAutocompleteStopTimerTriggered() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_LENS_SEARCHBOX_CLIENT_H_

@@ -588,6 +588,12 @@ void LensOverlayController::BindOverlay(
   InitializeOverlay(/*initialization_data=*/nullptr);
 }
 
+void LensOverlayController::BindOverlayGhostLoader(
+    mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
+  overlay_ghost_loader_page_.reset();
+  overlay_ghost_loader_page_.Bind(std::move(page));
+}
+
 void LensOverlayController::BindSidePanel(
     mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
@@ -605,6 +611,12 @@ void LensOverlayController::BindSidePanel(
   }
   side_panel_page_->SetShowErrorPage(
       pending_side_panel_should_show_error_page_);
+}
+
+void LensOverlayController::BindSidePanelGhostLoader(
+    mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
+  side_panel_ghost_loader_page_.reset();
+  side_panel_ghost_loader_page_.Bind(std::move(page));
 }
 
 void LensOverlayController::SetSidePanelSearchboxHandler(
@@ -2076,6 +2088,15 @@ void LensOverlayController::OnPageBound() {
   if (pending_thumbnail_uri_.has_value()) {
     side_panel_searchbox_handler_->SetThumbnail(*pending_thumbnail_uri_);
     pending_thumbnail_uri_.reset();
+  }
+}
+
+void LensOverlayController::OnAutocompleteStopTimerTriggered() {
+  if (overlay_ghost_loader_page_) {
+    overlay_ghost_loader_page_->NotifyAutocompleteStopTimerTriggered();
+  }
+  if (side_panel_ghost_loader_page_) {
+    side_panel_ghost_loader_page_->NotifyAutocompleteStopTimerTriggered();
   }
 }
 

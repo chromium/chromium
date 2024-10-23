@@ -66,6 +66,12 @@ interface LensSidePanelPageHandlerFactory {
       pending_remote<LensSidePanelPage> page);
 };
 
+// Factory method for creating a new WebUI page handler for lens ghost loader.
+interface LensGhostLoaderPageHandlerFactory {
+  // The ghost loader WebUI calls this method when the page is first initialized.
+  CreateGhostLoaderPage(pending_remote<LensGhostLoaderPage> page);
+};
+
 // Dynamic theme colors.
 struct OverlayTheme {
   skia.mojom.SkColor primary;
@@ -285,4 +291,12 @@ interface LensSidePanelPage {
   // used when the user opens the side panel in an offline state or the full
   // image request times out.
   SetShowErrorPage(bool should_show_error_page);
+};
+
+// WebUI page handler for request from Browser side.
+// (C++ -> TypeScript)
+interface LensGhostLoaderPage {
+  // Notify the ghost loader that the autocomplete stop timer has triggered.
+  // This will hide the ghost loader and show the error state.
+  NotifyAutocompleteStopTimerTriggered();
 };

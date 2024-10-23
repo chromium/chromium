@@ -116,6 +116,13 @@ void LensSidePanelUntrustedUI::BindInterface(
 }
 
 void LensSidePanelUntrustedUI::BindInterface(
+    mojo::PendingReceiver<lens::mojom::LensGhostLoaderPageHandlerFactory>
+        receiver) {
+  lens_ghost_loader_page_factory_receiver_.reset();
+  lens_ghost_loader_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void LensSidePanelUntrustedUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
   LensOverlayController* controller =
       LensOverlayController::GetController(web_ui());
@@ -164,6 +171,19 @@ void LensSidePanelUntrustedUI::BindInterface(
     help_bubble_handler_factory_receiver_.reset();
   }
   help_bubble_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
+void LensSidePanelUntrustedUI::CreateGhostLoaderPage(
+    mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
+  LensOverlayController* controller =
+      LensOverlayController::GetController(web_ui());
+  // TODO(crbug.com/360724768): See above.
+  if (!controller) {
+    return;
+  }
+  // Once the interface is bound, we want to connect this instance with the
+  // appropriate instance of LensOverlayController.
+  controller->BindSidePanelGhostLoader(std::move(page));
 }
 
 void LensSidePanelUntrustedUI::CreateHelpBubbleHandler(

@@ -36,6 +36,7 @@ class LensOverlayUntrustedUIConfig
 class LensOverlayUntrustedUI
     : public UntrustedTopChromeWebUIController,
       public lens::mojom::LensPageHandlerFactory,
+      public lens::mojom::LensGhostLoaderPageHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory {
  public:
   explicit LensOverlayUntrustedUI(content::WebUI* web_ui);
@@ -48,6 +49,13 @@ class LensOverlayUntrustedUI
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<lens::mojom::LensPageHandlerFactory> receiver);
+
+  // Instantiates the implementor of the
+  // lens::mojom::LensGhostLoaderPageHandlerFactory mojo interface passing the
+  // pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<lens::mojom::LensGhostLoaderPageHandlerFactory>
+          pending_receiver);
 
   // Instantiates the implementor of the searchbox::mojom::PageHandler mojo
   // interface passing the pending receiver that will be internally bound.
@@ -74,6 +82,9 @@ class LensOverlayUntrustedUI
   void CreatePageHandler(
       mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
       mojo::PendingRemote<lens::mojom::LensPage> page) override;
+  // lens::mojom::LensGhostLoaderPageHandlerFactory:
+  void CreateGhostLoaderPage(
+      mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) override;
   // help_bubble::mojom::HelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
@@ -84,6 +95,8 @@ class LensOverlayUntrustedUI
 
   mojo::Receiver<lens::mojom::LensPageHandlerFactory>
       lens_page_factory_receiver_{this};
+  mojo::Receiver<lens::mojom::LensGhostLoaderPageHandlerFactory>
+      lens_ghost_loader_page_factory_receiver_{this};
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};

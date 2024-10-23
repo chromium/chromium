@@ -231,6 +231,18 @@ class LensOverlayController : public LensSearchboxClient,
       mojo::PendingRemote<lens::mojom::LensSidePanelPage> page);
 
   // This method is used to set up communication between this instance and the
+  // overlay ghost loader's WebUI. This is called by the WebUIController when
+  // the WebUI is executing javascript and ready to bind.
+  void BindOverlayGhostLoader(
+      mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page);
+
+  // This method is used to set up communication between this instance and the
+  // side panel's ghost loader WebUI. This is called by the WebUIController
+  // when the WebUI is executing javascript and ready to bind.
+  void BindSidePanelGhostLoader(
+      mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page);
+
+  // This method is used to set up communication between this instance and the
   // searchbox WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and has bound the handler. Takes ownership of
   // `handler`.
@@ -782,6 +794,7 @@ class LensOverlayController : public LensSearchboxClient,
                             bool is_zero_prefix_suggestion) override;
   void OnFocusChanged(bool focused) override;
   void OnPageBound() override;
+  void OnAutocompleteStopTimerTriggered() override;
 
   // SidePanelViewStateObserver:
   void OnSidePanelDidOpen() override;
@@ -1012,6 +1025,16 @@ class LensOverlayController : public LensSearchboxClient,
   mojo::Receiver<lens::mojom::LensSidePanelPageHandler> side_panel_receiver_{
       this};
   mojo::Remote<lens::mojom::LensSidePanelPage> side_panel_page_;
+
+  // Connections to the overlay ghost loader WebUI. Only valid while
+  // `overlay_view_` is showing, and after the WebUI has started executing JS
+  // and has bound the connection.
+  mojo::Remote<lens::mojom::LensGhostLoaderPage> overlay_ghost_loader_page_;
+
+  // Connections to the side panel ghost loader WebUI. Only valid when the side
+  // panel is currently open and after the WebUI has started executing JS and
+  // has bound the connection.
+  mojo::Remote<lens::mojom::LensGhostLoaderPage> side_panel_ghost_loader_page_;
 
   // Observer for the WebContents of the associated tab. Only valid while the
   // overlay view is showing.

@@ -109,6 +109,7 @@ class MockLensSearchboxClient : public LensSearchboxClient {
               (override));
   MOCK_METHOD(void, OnFocusChanged, (bool focused), (override));
   MOCK_METHOD(void, OnPageBound, (), (override));
+  MOCK_METHOD(void, OnAutocompleteStopTimerTriggered, (), (override));
 };
 
 class TestObserver : public OmniboxWebUIPopupChangeObserver {
