@@ -9,8 +9,6 @@ found in the LICENSE file.
 
     <!-- Toolbar dimensions -->
     <dimen name="toolbar_height_no_shadow">@dimen/default_action_bar_height</dimen>
-    <!-- toolbar_height_no_shadow_focused = toolbar_height_no_shadow + toolbar_url_focus_height_increase -->
-    <dimen name="toolbar_height_no_shadow_focused">64dp</dimen>
     <dimen name="toolbar_url_focus_height_increase">8dp</dimen>
     <dimen name="toolbar_progress_bar_height">2dp</dimen>
     <dimen name="toolbar_button_width">48dp</dimen>

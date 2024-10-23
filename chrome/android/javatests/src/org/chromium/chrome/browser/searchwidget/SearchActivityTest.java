@@ -18,7 +18,6 @@ import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.app.PendingIntent;
 import android.view.KeyEvent;
-import android.view.View;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -540,32 +539,6 @@ public class SearchActivityTest {
                     locationBarCoordinator.onUrlChangedForTesting();
                     Assert.assertTrue(urlBar.getText().toString().isEmpty());
                 });
-    }
-
-    @Test
-    @SmallTest
-    @DisabledTest(message = "crbug.com/346528506")
-    public void testupdateAnchorViewLayout() {
-        SearchActivity searchActivity = startSearchActivity();
-        View anchorView = searchActivity.findViewById(R.id.toolbar);
-        var layoutParams = anchorView.getLayoutParams();
-
-        int focusedHeight =
-                searchActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow_focused);
-        int expectedHeight =
-                searchActivity
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                        + searchActivity
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase);
-        int expectedBottomPadding = 0;
-
-        Assert.assertEquals(expectedHeight, focusedHeight);
-        Assert.assertEquals(expectedHeight, layoutParams.height);
-        Assert.assertEquals(expectedBottomPadding, anchorView.getPaddingBottom());
     }
 
     private SearchActivity startSearchActivity() {
