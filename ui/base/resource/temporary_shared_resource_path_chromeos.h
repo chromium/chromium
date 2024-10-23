@@ -17,6 +17,8 @@ namespace ui {
 // back after it's verified in DataPackWithResourceSharing.
 // Note that the temporary shared resource file path might differ between ash
 // and lacros if the version is not up to date.
+// TODO(crbug.com/373972275): remove this once ash is cleaned up from
+// functionality that supported lacros. This was added in crrev.com/c/3607579.
 COMPONENT_EXPORT(UI_DATA_PACK)
 base::FilePath GetPathForTemporarySharedResourceFile(
     const base::FilePath& shared_resource_path);

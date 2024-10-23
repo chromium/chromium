@@ -90,7 +90,7 @@ const unsigned char kPngDataChunkType[4] = { 'I', 'D', 'A', 'T' };
 const char kPakFileExtension[] = ".pak";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Pointers to the functions |lottie::ParseLottieAsStillImage| and
 // |lottie::ParseLottieAsThemedStillImage|, so that dependencies used by those
 // functions do not need to be included directly in ui/base.
@@ -102,7 +102,6 @@ ResourceBundle::LottieThemedImageParseFunction
 
 ResourceBundle* g_shared_instance_ = nullptr;
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
   base::FilePath path;
   if (base::PathService::Get(base::DIR_ASSETS, &path))
@@ -115,7 +114,6 @@ base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
   return base::FilePath(pak_name.c_str());
 #endif  // BUILDFLAG(IS_WIN)
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 SkBitmap CreateEmptyBitmap() {
   SkBitmap bitmap;
@@ -362,7 +360,7 @@ ResourceBundle& ResourceBundle::GetSharedInstance() {
   return *g_shared_instance_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 void ResourceBundle::SetLottieParsingFunctions(
     LottieImageParseFunction parse_lottie_as_still_image,
@@ -621,7 +619,7 @@ std::optional<ResourceBundle::LottieData> ResourceBundle::GetLottieData(
   return result;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
     int resource_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -986,12 +984,11 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
 
 void ResourceBundle::FreeImages() {
   images_.clear();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   image_models_.clear();
 #endif
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void ResourceBundle::LoadChromeResources() {
   // Always load the 1x data pack first as the 2x data pack contains both 1x and
   // 2x images. The 1x data pack only has 1x images, thus passes in an accurate
@@ -1006,7 +1003,6 @@ void ResourceBundle::LoadChromeResources() {
         GetResourcesPakFilePath("chrome_200_percent.pak"), k200Percent);
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ResourceBundle::AddDataPackFromPathInternal(
     const base::FilePath& path,
@@ -1069,7 +1065,7 @@ void ResourceBundle::InitDefaultFontList() {
 
 gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
   DCHECK(!resource_handles_.empty()) << "Missing call to SetResourcesDataDLL?";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<LottieData> data = GetLottieData(resource_id);
   if (data) {
     return (*g_parse_lottie_as_still_image_)(std::move(*data));
@@ -1164,7 +1160,7 @@ gfx::Image& ResourceBundle::GetEmptyImage() {
   return empty_image_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const ui::ImageModel& ResourceBundle::GetEmptyImageModel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

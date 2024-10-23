@@ -21,7 +21,6 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_handle.h"
 
 namespace base {
@@ -136,12 +135,6 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
   // The static part of the implementation in LoadFromPath().
   static std::unique_ptr<DataSource> LoadFromPathInternal(
       const base::FilePath& path);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Load a pack file for shared resource from |path|, returning false on error.
-  // Similar to LoadFromPath(), but the file format is different.
-  bool LoadSharedResourceFromPath(const base::FilePath& path);
-#endif
 
   // Invokes LoadFromFileRegion with the entire contents of |file|. Compressed
   // files are not supported.

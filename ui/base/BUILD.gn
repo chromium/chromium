@@ -82,14 +82,6 @@ component("ui_data_pack") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "resource/data_pack_with_resource_sharing_lacros.cc",
-      "resource/data_pack_with_resource_sharing_lacros.h",
-    ]
-    deps += [ "//components/version_info" ]
-  }
-
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
@@ -371,10 +363,6 @@ component("base") {
       "l10n/l10n_util_mac.h",
       "l10n/l10n_util_mac.mm",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [ "resource/resource_bundle_lacros.cc" ]
   }
 
   if (is_ios) {
@@ -1109,10 +1097,6 @@ test("ui_base_unittests") {
       "l10n/l10n_util_mac_unittest.mm",
       "test/view_tree_validator_unittest.mm",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [ "resource/data_pack_with_resource_sharing_lacros_unittest.cc" ]
   }
 
   if (is_ios) {
