@@ -239,6 +239,7 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     // exactly matching origin and username. In order to avoid showing a save
     // bubble to the user Save() is called directly. Save prompt is still
     // offered for grouped credentials.
+    // TODO: crbug.com/372635361 - Handle grouped credentials.
     GetLoginMatchType match_type = GetMatchType(form);
     if (match_type == GetLoginMatchType::kPSL ||
         (match_type == GetLoginMatchType::kAffiliated &&

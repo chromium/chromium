@@ -208,6 +208,12 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
   NOTREACHED();
 }
 
+bool IsCredentialWeakMatch(const password_manager::PasswordForm& form) {
+  GetLoginMatchType match_type = GetMatchType(form);
+  return match_type == GetLoginMatchType::kPSL ||
+         match_type == GetLoginMatchType::kGrouped;
+}
+
 std::vector<PasswordForm> FindBestMatches(base::span<PasswordForm> matches) {
   CHECK(base::ranges::none_of(matches, &PasswordForm::blocked_by_user));
 
@@ -287,7 +293,7 @@ const PasswordForm* GetMatchForUpdating(
   const PasswordForm* username_match =
       FindFormByUsername(credentials, submitted_form.username_value);
   if (username_match) {
-    if (GetMatchType(*username_match) != GetLoginMatchType::kPSL) {
+    if (!IsCredentialWeakMatch(*username_match)) {
       return username_match;
     }
 

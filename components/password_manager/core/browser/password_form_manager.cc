@@ -1764,10 +1764,12 @@ std::unique_ptr<FormFetcher> PasswordFormManager::CreateFormFetcher() {
       observed_digest() ? *observed_digest()
                         : PasswordFormDigest(*observed_form()),
       client_, true /* should_migrate_http_passwords */);
+#if !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordFormGroupedAffiliations)) {
     form_fetcher->set_filter_grouped_credentials(false);
   }
+#endif  // !BUILDFLAG(IS_IOS)
   return form_fetcher;
 }
 

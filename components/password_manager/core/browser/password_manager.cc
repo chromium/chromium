@@ -140,13 +140,11 @@ bool ShouldPromptUserToSavePassword(const PasswordFormManager& manager) {
         }
         break;
       case password_manager_util::GetLoginMatchType::kPSL:
-        // User successfully signed-in with PSL match credentials. These
-        // credentials should be automatically saved in order to be autofilled
-        // on next login.
-        return false;
       case password_manager_util::GetLoginMatchType::kGrouped:
-        // User successfully signed-in with grouped match credentials.
-        break;
+        // User successfully signed-in with PSL match or grouped match
+        // credentials. These credentials should be automatically saved in order
+        // to be autofilled on next login.
+        return false;
     }
   }
 
