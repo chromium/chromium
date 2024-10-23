@@ -196,6 +196,22 @@ std::optional<AutofillProfile> GetProfileFromPayload(
   return profile;
 }
 
+// Used to determine autofill availability for a11y. Presence of a suggestion
+// for which this method returns `true` makes screen readers change
+// the field announcement to notify users about available autofill options,
+// e.g. VoiceOver adds "with autofill menu.".
+bool HasAutofillSugestionsForA11y(SuggestionType item_id) {
+  switch (item_id) {
+    // TODO(crbug.com/374918460): Consider adding other types that can be
+    // classified as "providing autofill capabilities".
+    case SuggestionType::kRetrievePredictionImprovements:
+      return true;
+    default:
+      return AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
+          item_id);
+  }
+}
+
 }  // namespace
 
 int AutofillExternalDelegate::shortcut_test_suggestion_index_ = -1;
@@ -518,8 +534,6 @@ void AutofillExternalDelegate::OnSuggestionsShown(
 
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);
-  const bool has_autofill_suggestions = std::ranges::any_of(
-      shown_suggestion_types, IsAutofillAndFirstLayerSuggestionId);
 
   if (shown_suggestion_types.contains(
           SuggestionType::kCreateNewPlusAddressInline)) {
@@ -559,13 +573,10 @@ void AutofillExternalDelegate::OnSuggestionsShown(
   if (likely_has_no_regular_autofilling_options) {
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
-  } else if (has_autofill_suggestions) {
+  } else if (std::ranges::any_of(shown_suggestion_types,
+                                 HasAutofillSugestionsForA11y)) {
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kAutofillAvailable);
-    if (shown_suggestion_types.contains(
-            SuggestionType::kDevtoolsTestAddresses)) {
-      autofill_metrics::OnDevtoolsTestAddressesShown();
-    }
   } else {
     // We send autocomplete availability event even though there might be no
     // autocomplete suggestions shown.
@@ -576,6 +587,11 @@ void AutofillExternalDelegate::OnSuggestionsShown(
     if (shown_suggestion_types.contains(SuggestionType::kAutocompleteEntry)) {
       AutofillMetrics::OnAutocompleteSuggestionsShown();
     }
+  }
+  if (std::ranges::any_of(shown_suggestion_types,
+                          IsAutofillAndFirstLayerSuggestionId) &&
+      shown_suggestion_types.contains(SuggestionType::kDevtoolsTestAddresses)) {
+    autofill_metrics::OnDevtoolsTestAddressesShown();
   }
 
   manager_->DidShowSuggestions(shown_suggestion_types, query_form_,

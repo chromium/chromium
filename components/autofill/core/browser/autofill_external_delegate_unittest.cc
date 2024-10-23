@@ -1396,6 +1396,24 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnSuggestionsShown(suggestions);
 }
 
+// Test that a11y autofill availability is set to `kAutofillAvailable` when
+// the popup is open with the `kRetrievePredictionImprovements` suggestion.
+TEST_F(AutofillExternalDelegateUnitTest,
+       AutofillSuggestionAvailability_RetrievePredictionImprovements) {
+  IssueOnQuery();
+
+  std::vector<Suggestion> suggestions = {Suggestion(
+      u"Autofill with AI", SuggestionType::kRetrievePredictionImprovements)};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  EXPECT_CALL(driver(),
+              RendererShouldSetSuggestionAvailability(
+                  queried_field().global_id(),
+                  mojom::AutofillSuggestionAvailability::kAutofillAvailable));
+
+  external_delegate().OnSuggestionsShown(suggestions);
+}
+
 // Test that a11y autofill availability is set to `kAutocompleteAvailable` when
 // the popup is open with autocomplete suggestions.
 TEST_F(AutofillExternalDelegateUnitTest,
