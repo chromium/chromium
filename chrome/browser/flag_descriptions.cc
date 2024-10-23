@@ -6027,10 +6027,6 @@ const char kAudioA2DPAdvancedCodecsName[] = "BT A2DP advanced codecs support";
 const char kAudioA2DPAdvancedCodecsDescription[] =
     "Enable BT A2DP advanced codecs support";
 
-const char kAudioAPNoiseCancellationName[] = "Audio noise cancellation on AP";
-const char kAudioAPNoiseCancellationDescription[] =
-    "Enable noise cancellation on AP";
-
 const char kAudioHFPMicSRToggleName[] = "Audio toggle for hfp-mic-sr";
 const char kAudioHFPMicSRToggleDescription[] =
     "Enable the ui to show the toggle for controlling hfp-mic-sr.";
