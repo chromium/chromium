@@ -52,7 +52,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
   private isPrintPreviewLoadingFinished_: boolean = false;
   private inPrintPreviewMode_: boolean = false;
   private dark_: boolean = false;
-  private pluginController_: PluginController|undefined = undefined;
+  private pluginController_: PluginController = PluginController.getInstance();
   private toolbarManager_: ToolbarManager|null = null;
 
   override isNewUiEnabled() {
@@ -100,8 +100,6 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
     this.initInternal(
         browserApi, document.documentElement, this.$.sizer, this.$.content);
 
-    this.pluginController_ = PluginController.getInstance();
-
     this.$.pageIndicator.setViewport(this.viewport);
     this.toolbarManager_ = new ToolbarManager(window, this.$.zoomToolbar);
   }
@@ -125,7 +123,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
         break;  // Ensure escape falls through to the print-preview handler.
       case 'a':
         if (hasCtrlModifierOnly(e)) {
-          this.pluginController_!.selectAll();
+          this.pluginController_.selectAll();
           // Since we do selection ourselves.
           e.preventDefault();
         }
@@ -150,7 +148,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
   }
 
   private setBackgroundColorForPrintPreview_() {
-    this.pluginController_!.setBackgroundColor(
+    this.pluginController_.setBackgroundColor(
         this.dark_ ? PRINT_PREVIEW_DARK_BACKGROUND_COLOR :
                      PRINT_PREVIEW_BACKGROUND_COLOR);
   }
@@ -193,7 +191,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
       pageIndicator.style.visibility = 'hidden';
     }
 
-    this.pluginController_!.viewportChanged();
+    this.pluginController_.viewportChanged();
   }
 
   override handleScriptingMessage(message: MessageEvent) {
@@ -211,11 +209,11 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
 
     switch (message.data.type.toString()) {
       case 'getSelectedText':
-        this.pluginController_!.getSelectedText().then(
+        this.pluginController_.getSelectedText().then(
             this.sendScriptingMessage.bind(this));
         break;
       case 'selectAll':
-        this.pluginController_!.selectAll();
+        this.pluginController_.selectAll();
         break;
       default:
         return false;
@@ -234,7 +232,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
       case 'loadPreviewPage':
         const loadData =
             messageData as MessageData & {url: string, index: number};
-        this.pluginController_!.loadPreviewPage(loadData.url, loadData.index);
+        this.pluginController_.loadPreviewPage(loadData.url, loadData.index);
         return true;
       case 'resetPrintPreviewMode':
         const printPreviewData =
@@ -253,7 +251,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
         this.lastViewportPosition = this.viewport.position;
         this.$.pageIndicator.pageLabels = printPreviewData.pageNumbers;
 
-        this.pluginController_!.resetPrintPreviewMode(printPreviewData);
+        this.pluginController_.resetPrintPreviewMode(printPreviewData);
         return true;
       case 'sendKeyEvent':
         const keyEvent =

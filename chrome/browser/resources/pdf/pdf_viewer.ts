@@ -264,7 +264,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_pdf_ink2">
   protected pdfInk2Enabled_: boolean = false;
   // </if>
-  private pluginController_: PluginController|null = null;
+  private pluginController_: PluginController = PluginController.getInstance();
   protected printingEnabled_: boolean = false;
   // <if expr="enable_pdf_ink2">
   private restoreAnnotationMode_: boolean = false;
@@ -291,7 +291,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected zoomBounds_: ZoomBounds = {min: 0, max: 0};
 
   // <if expr="enable_ink">
-  private inkController_: InkController|null = null;
+  private inkController_: InkController = InkController.getInstance();
   // </if>
 
   constructor() {
@@ -324,10 +324,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.initInternal(
         browserApi, this.$.scroller, this.$.sizer, this.$.content);
 
-    this.pluginController_ = PluginController.getInstance();
-
     // <if expr="enable_ink">
-    this.inkController_ = InkController.getInstance();
     this.inkController_.init(this.viewport);
     this.tracker.add(
         this.inkController_.getEventTarget(),
@@ -397,7 +394,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         // Take over Ctrl+A (but not other combinations like Ctrl-Shift-A).
         // Note that on macOS, "Ctrl" is Command.
         if (hasCtrlModifierOnly(e)) {
-          this.pluginController_!.selectAll();
+          this.pluginController_.selectAll();
           // Since we do selection ourselves.
           e.preventDefault();
         }
@@ -506,9 +503,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             annotationMode ? UserAction.ENTER_ANNOTATION_MODE :
                              UserAction.EXIT_ANNOTATION_MODE);
       }
-      this.pluginController_!.setAnnotationMode(annotationMode);
+      this.pluginController_.setAnnotationMode(annotationMode);
       if (!this.hasInitializedBrush_) {
-        assert(this.pluginController_);
         this.hasInitializedBrush_ = true;
         const defaultBrushMessage =
             await this.pluginController_.getAnnotationBrush();
@@ -522,8 +518,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // <if expr="enable_ink">
     if (annotationMode) {
       // Enter annotation mode.
-      assert(this.pluginController_!.isActive);
-      assert(!this.inkController_!.isActive);
+      assert(this.pluginController_.isActive);
+      assert(!this.inkController_.isActive);
       // TODO(dstockwell): set plugin read-only, begin transition
       this.updateProgress(0);
 
@@ -536,7 +532,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
       // TODO(dstockwell): handle save failure
       const result =
-          await this.pluginController_!.save(SaveRequestType.ANNOTATION);
+          await this.pluginController_.save(SaveRequestType.ANNOTATION);
       // Data always exists when save is called with requestType = ANNOTATION.
       assert(result);
 
@@ -545,31 +541,30 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.hasEnteredAnnotationMode_ = true;
       // TODO(dstockwell): feed real progress data from the Ink component
       this.updateProgress(50);
-      await this.inkController_!.load(result.fileName, result.dataToSave);
-      this.currentController = this.inkController_!;
-      this.pluginController_!.unload();
+      await this.inkController_.load(result.fileName, result.dataToSave);
+      this.currentController = this.inkController_;
+      this.pluginController_.unload();
       this.updateProgress(100);
     } else {
       // Exit annotation mode.
       record(UserAction.EXIT_ANNOTATION_MODE);
-      assert(!this.pluginController_!.isActive);
-      assert(this.inkController_!.isActive);
-      assert(this.currentController === this.inkController_!);
+      assert(!this.pluginController_.isActive);
+      assert(this.inkController_.isActive);
+      assert(this.currentController === this.inkController_);
       // TODO(dstockwell): set ink read-only, begin transition
       this.updateProgress(0);
       this.annotationMode_ = false;
       // This runs separately to allow other consumers of `loaded` to queue
       // up after this task.
       this.loaded!.then(() => {
-        this.inkController_!.unload();
+        this.inkController_.unload();
       });
       // TODO(dstockwell): handle save failure
-      const result =
-          await this.inkController_!.save(SaveRequestType.ANNOTATION);
+      const result = await this.inkController_.save(SaveRequestType.ANNOTATION);
       // Data always exists when save is called with requestType = ANNOTATION.
       await this.restoreSidenav_();
-      this.currentController = this.pluginController_!;
-      await this.pluginController_!.load(result.fileName, result.dataToSave);
+      this.currentController = this.pluginController_;
+      await this.pluginController_.load(result.fileName, result.dataToSave);
     }
     // </if> enable_ink
   }
@@ -619,7 +614,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     // Set presentation mode, which restricts the content to read only
     // (e.g. disable forms and links).
-    this.pluginController_!.setPresentationMode(true);
+    this.pluginController_.setPresentationMode(true);
 
     // Nothing else to do here. The viewport will be updated as a result
     // of a 'resize' event callback.
@@ -629,7 +624,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // Revert back to the normal state when exiting Presentation mode.
     assert(document.fullscreenElement === null);
     this.viewport.setPresentationMode(false);
-    this.pluginController_!.setPresentationMode(false);
+    this.pluginController_.setPresentationMode(false);
 
     // Ensure that directional keys still work after exiting.
     this.shadowRoot!.querySelector('embed')!.focus();
@@ -755,7 +750,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * @param event A password-submitted event.
    */
   protected onPasswordSubmitted_(event: CustomEvent<{password: string}>) {
-    this.pluginController_!.getPasswordComplete(event.detail.password);
+    this.pluginController_.getPasswordComplete(event.detail.password);
   }
 
   updateUiForViewportChange() {
@@ -797,16 +792,16 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     switch (message.data.type.toString()) {
       case 'getSelectedText':
         messageType = PostMessageDataType.GET_SELECTED_TEXT;
-        this.pluginController_!.getSelectedText().then(
+        this.pluginController_.getSelectedText().then(
             this.handleSelectedTextReply.bind(this));
         break;
       case 'print':
         messageType = PostMessageDataType.PRINT;
-        this.pluginController_!.print();
+        this.pluginController_.print();
         break;
       case 'selectAll':
         messageType = PostMessageDataType.SELECT_ALL;
-        this.pluginController_!.selectAll();
+        this.pluginController_.selectAll();
         break;
       default:
         return false;
@@ -910,7 +905,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         // <if expr="enable_pdf_ink2">
       case 'updateInk2Thumbnail':
         const thumbnailData = data as unknown as Ink2ThumbnailData;
-        this.pluginController_!.getEventTarget().dispatchEvent(
+        this.pluginController_.getEventTarget().dispatchEvent(
             new CustomEvent<Ink2ThumbnailData>(
                 PluginControllerEventType.UPDATE_INK_THUMBNAIL,
                 {detail: thumbnailData}));
@@ -973,7 +968,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   /** Handles a new ink stroke in annotation mode. */
   private handleFinishInkStroke_() {
     this.hasInk2Edits_ = true;
-    this.pluginController_!.getEventTarget().dispatchEvent(
+    this.pluginController_.getEventTarget().dispatchEvent(
         new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
     this.setShowBeforeUnloadDialog_(true);
   }
