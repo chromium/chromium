@@ -29,30 +29,29 @@ const OmahaWnd::ControlAttributes OmahaWnd::kDisabledNonButtonAttributes = {
     false, false, false, false, false};
 
 void EnableFlatButtons(HWND hwnd_parent) {
-  struct Local {
-    static BOOL CALLBACK EnumProc(HWND hwnd, LPARAM) {
-      CHECK(hwnd);
-      CWindow wnd(hwnd);
-      const DWORD style = wnd.GetStyle();
-      if (style & BS_FLAT) {
-        ::SetWindowTheme(wnd, _T(""), _T(""));
-      }
-      return true;
-    }
-  };
-
-  ::EnumChildWindows(hwnd_parent, &Local::EnumProc, 0);
+  ::EnumChildWindows(
+      hwnd_parent,
+      [](HWND hwnd, LPARAM) {
+        CHECK(hwnd);
+        CWindow wnd(hwnd);
+        const DWORD style = wnd.GetStyle();
+        if (style & BS_FLAT) {
+          ::SetWindowTheme(wnd, _T(""), _T(""));
+        }
+        return TRUE;
+      },
+      0);
 }
 
 void HideWindowChildren(HWND hwnd_parent) {
-  struct Local {
-    static BOOL CALLBACK EnumProc(HWND hwnd, LPARAM) {
-      CHECK(hwnd);
-      ShowWindow(hwnd, SW_HIDE);
-      return true;
-    }
-  };
-  ::EnumChildWindows(hwnd_parent, &Local::EnumProc, 0);
+  ::EnumChildWindows(
+      hwnd_parent,
+      [](HWND hwnd, LPARAM) {
+        CHECK(hwnd);
+        ShowWindow(hwnd, SW_HIDE);
+        return TRUE;
+      },
+      0);
 }
 
 OmahaWnd::OmahaWnd(int dialog_id, WTL::CMessageLoop* message_loop, HWND parent)
