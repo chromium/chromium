@@ -609,9 +609,6 @@ double AudioContext::outputLatency() const {
 
 AudioPlayoutStats* AudioContext::playoutStats() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
-  if (!RuntimeEnabledFeatures::AudioContextPlayoutStatsEnabled()) {
-    return nullptr;
-  }
   if (!audio_playout_stats_) {
     audio_playout_stats_ = MakeGarbageCollected<AudioPlayoutStats>(this);
   }
