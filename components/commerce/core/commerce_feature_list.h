@@ -20,10 +20,6 @@ class PrefService;
 
 namespace commerce {
 
-namespace switches {
-extern const char kEnableChromeCart[];
-}
-
 BASE_DECLARE_FEATURE(kCommercePriceTracking);
 BASE_DECLARE_FEATURE(kCommercePriceTrackingRegionLaunched);
 

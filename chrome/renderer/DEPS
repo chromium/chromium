@@ -132,10 +132,6 @@ specific_include_rules = {
     "+chrome/browser/ui/tabs",
     "+content/public/browser/browser_thread.h",
   ],
-  "commerce_hint_agent_browsertest\.cc": [
-    "+chrome/browser/cart",
-    "+chrome/browser/persisted_state_db/session_proto_db.h",
-  ],
   "ash_merge_session_loader_throttle\.cc": [
     "+components/google/core/common/google_util.h",
   ],
