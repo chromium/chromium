@@ -127,6 +127,10 @@ class WizardContext {
     AuthFactorsSet modified_factors;
 
     std::optional<PinSetupMode> pin_setup_mode = std::nullopt;
+
+    // The PasswordSelectionScreeen only has a 'Back' button when the PinSetup
+    // screen was shown before it.
+    bool password_selection_can_go_back_to_pin_setup = false;
   };
 
   enum class OSAuthErrorKind {

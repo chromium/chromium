@@ -78,6 +78,8 @@ const test::UIPath kGaiaPasswordButton = {"password-selection",
                                           "gaiaPasswordButton"};
 const test::UIPath kNextButtonPasswordSelection = {"password-selection",
                                                    "nextButton"};
+const test::UIPath kBackButtonPasswordSelection = {"password-selection",
+                                                   "backButton"};
 
 enum class PinPolicy {
   kUnlock,
@@ -722,6 +724,36 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
       LoginDisplayHost::default_host()
           ->GetWizardContext()
           ->extra_factors_token.value()));
+}
+
+// Tests that the 'Back' button logic on the PasswordSelectionScreen can bring
+// the user back to PIN as a main factor setup.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, BackButtonLogicWorks) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  // Skip the screen manually.
+  TapSkipButton();
+  ExpectExitResult(PinSetupScreen::Result::kUserChosePassword);
+
+  // PasswordSelectionScreen should show a back button. Click on it.
+  OobeScreenWaiter(PasswordSelectionScreenView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kBackButtonPasswordSelection)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kBackButtonPasswordSelection);
+
+  // Wait for the PinSetupScreen to be shown again for main factor setup. Check
+  // that this is indeed the main factor setup step by verifying the strings and
+  // the screen exit result. Wait for PasswordSelection to be shown again.
+  WaitForScreenShown();
+  WaitForSetupTitleAndSubtitle(
+      IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_TITLE,
+      IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SUBTITLE,
+      /*subtitle_has_device_name=*/true);
+  TapSkipButton();
+  ExpectExitResult(PinSetupScreen::Result::kUserChosePassword);
+  OobeScreenWaiter(PasswordSelectionScreenView::kScreenId).Wait();
 }
 
 class PinSetupScreenTestAsMainFactorWithoutLoginSupport

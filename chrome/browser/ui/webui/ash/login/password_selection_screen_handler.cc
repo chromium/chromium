@@ -43,6 +43,10 @@ void PasswordSelectionScreenHandler::ShowPasswordChoice() {
   CallExternalAPI("showPasswordChoice");
 }
 
+void PasswordSelectionScreenHandler::ShowBackButton() {
+  CallExternalAPI("showBackButton");
+}
+
 base::WeakPtr<PasswordSelectionScreenView>
 PasswordSelectionScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
