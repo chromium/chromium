@@ -650,11 +650,6 @@ bool RendererBlinkPlatformImpl::IsWebRtcHWDecodingEnabled() {
   return base::FeatureList::IsEnabled(::features::kWebRtcHWDecoding);
 }
 
-bool RendererBlinkPlatformImpl::IsWebRtcSrtpEncryptedHeadersEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableWebRtcSrtpEncryptedHeaders);
-}
-
 bool RendererBlinkPlatformImpl::AllowsLoopbackInPeerConnection() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAllowLoopbackInPeerConnection);
