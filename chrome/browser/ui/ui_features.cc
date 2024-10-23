@@ -164,6 +164,7 @@ BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
 BASE_FEATURE(kPreloadTopChromeWebUI,
              "PreloadTopChromeWebUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kPreloadTopChromeWebUIModeName[] = "preload-mode";
 const char kPreloadTopChromeWebUIModePreloadOnWarmupName[] =
     "preload-on-warmup";
@@ -180,12 +181,18 @@ const base::FeatureParam<PreloadTopChromeWebUIMode> kPreloadTopChromeWebUIMode{
     &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIModeName,
     PreloadTopChromeWebUIMode::kPreloadOnMakeContents,
     &kPreloadTopChromeWebUIModeOptions};
+
 const char kPreloadTopChromeWebUISmartPreloadName[] = "smart-preload";
 const base::FeatureParam<bool> kPreloadTopChromeWebUISmartPreload{
     &kPreloadTopChromeWebUI, kPreloadTopChromeWebUISmartPreloadName, false};
+
 const char kPreloadTopChromeWebUIDelayPreloadName[] = "delay-preload";
 const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload{
     &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIDelayPreloadName, false};
+
+const char kPreloadTopChromeWebUIExcludeOriginsName[] = "exclude-origins";
+const base::FeatureParam<std::string> kPreloadTopChromeWebUIExcludeOrigins{
+    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIExcludeOriginsName, ""};
 
 // Enables exiting browser fullscreen (users putting the browser itself into the
 // fullscreen mode via the browser UI or shortcuts) with press-and-hold Esc.
