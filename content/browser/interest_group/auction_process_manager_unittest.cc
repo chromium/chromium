@@ -171,9 +171,52 @@ class TestAuctionProcessManager
       receiver_set_;
 };
 
+// The three ways the base test fixture can be configured.
+enum class ProcessMode {
+  // Use DedicatedAuctionProcessManager.
+  kDedicated,
+  // Use InRendererProcessManager and kSitePerProcess.
+  kInRendererSitePerProcess,
+  // Use InRendererProcessManager and disabled kSitePerProcess.
+  kInRendererSharedProcess,
+};
+
 class AuctionProcessManagerTestBase
     : public testing::TestWithParam<AuctionProcessManager::WorkletType> {
  protected:
+  explicit AuctionProcessManagerTestBase(ProcessMode process_mode) {
+    SiteIsolationPolicy::DisableFlagCachingForTesting();
+    switch (process_mode) {
+      case ProcessMode::kDedicated:
+        break;
+      case ProcessMode::kInRendererSitePerProcess:
+        scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+            switches::kSitePerProcess);
+        break;
+      case ProcessMode::kInRendererSharedProcess:
+        // Note: if we're going to disable kOriginKeyedProcessesByDefault, it's
+        // important to do it here before we create any SiteInstances, since
+        // that will create BrowsingInstances, and each BrowsingInstance will
+        // create a default isolation state based on
+        // kOriginKeyedProcessesByDefault.
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{features::
+                                      kProcessSharingWithDefaultSiteInstances},
+            /*disabled_features=*/{
+                features::kProcessSharingWithStrictSiteInstances,
+                features::kOriginKeyedProcessesByDefault});
+        scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+            switches::kSitePerProcess);
+        break;
+    }
+    RenderProcessHostImpl::set_render_process_host_factory_for_testing(
+        &rph_factory_);
+  }
+
+  virtual ~AuctionProcessManagerTestBase() {
+    RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
+  }
+
   void MaybeStartAnticipatoryProcess(
       const url::Origin& origin,
       std::optional<AuctionProcessManager::WorkletType> worklet_type =
@@ -270,22 +313,20 @@ class AuctionProcessManagerTestBase
 
   BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
+
+  // `scoped_command_line_` must be destroyeded after any WorkletProcessManager.
+  // Otherwise idle worklet processes may try to read it after destruction.
+  base::test::ScopedCommandLine scoped_command_line_;
+
+  MockRenderProcessHostFactory rph_factory_;
 };
 
 class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
  protected:
   AuctionProcessManagerTest()
-      : site_instance_(SiteInstance::Create(&test_browser_context_)) {}
-
-  void SetUp() override {
-    RenderProcessHostImpl::set_render_process_host_factory_for_testing(
-        &rph_factory_);
-    SiteIsolationPolicy::DisableFlagCachingForTesting();
-  }
-
-  void TearDown() override {
-    RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
-  }
+      : AuctionProcessManagerTestBase(ProcessMode::kDedicated),
+        site_instance_(SiteInstance::Create(&test_browser_context_)) {}
 
   AuctionProcessManager& GetAuctionProcessManager() override {
     return auction_process_manager_;
@@ -319,7 +360,6 @@ class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
   }
 
   TestBrowserContext test_browser_context_;
-  MockRenderProcessHostFactory rph_factory_;
   scoped_refptr<SiteInstance> site_instance_;
   TestAuctionProcessManager<DedicatedAuctionProcessManager>
       auction_process_manager_;
@@ -328,7 +368,8 @@ class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
 class DedicatedStyleAuctionProcessManagerTest
     : public AuctionProcessManagerTestBase {
  protected:
-  DedicatedStyleAuctionProcessManagerTest() {
+  DedicatedStyleAuctionProcessManagerTest()
+      : AuctionProcessManagerTestBase(ProcessMode::kDedicated) {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kFledgeStartAnticipatoryProcesses,
         {{"AnticipatoryProcessHoldTime", "10s"}});
@@ -834,20 +875,6 @@ TEST_P(AuctionProcessManagerTest, DisconnectBeforeDelete) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_P(AuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
-  // Exercise the codepath where a RenderProcessHostDestroyed is received, to
-  // make sure it doesn't crash.
-  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
-      GetServiceExpectSuccess(kOriginA);
-  for (std::unique_ptr<MockRenderProcessHost>& proc :
-       *rph_factory_.GetProcesses()) {
-    proc.reset();
-  }
-  task_environment_.RunUntilIdle();
-  handle_a1.reset();
-  task_environment_.RunUntilIdle();
-}
-
 TEST_P(DedicatedStyleAuctionProcessManagerTest,
        DoesNotStartAnticipatoryProcessIfFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
@@ -1183,22 +1210,11 @@ class PartialSiteIsolationContentBrowserClient
 class InRendererAuctionProcessManagerTestBase
     : public AuctionProcessManagerTestBase {
  public:
-  explicit InRendererAuctionProcessManagerTestBase(
-      bool disable_origin_keyed_processes_by_default) {
-    // Note: if we're going to disable kOriginKeyedProcessesByDefault, it's
-    // important to do it here before we create any SiteInstances, since that
-    // will create BrowsingInstances, and each BrowsingInstance will create
-    // a default isolation state based on kOriginKeyedProcessesByDefault.
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (disable_origin_keyed_processes_by_default) {
-      disabled_features.push_back(features::kOriginKeyedProcessesByDefault);
-    }
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{features::kFledgeStartAnticipatoryProcesses,
-          {{"AnticipatoryProcessHoldTime", "3s"}}}},
-        /*disabled_features=*/
-        disabled_features);
+  explicit InRendererAuctionProcessManagerTestBase(ProcessMode process_mode)
+      : AuctionProcessManagerTestBase(process_mode) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kFledgeStartAnticipatoryProcesses,
+        {{"AnticipatoryProcessHoldTime", "3s"}});
 
     SiteInstance::StartIsolatingSite(
         &test_browser_context_, kIsolatedOrigin.GetURL(),
@@ -1206,16 +1222,6 @@ class InRendererAuctionProcessManagerTestBase
     // Created these after StartIsolatingSite so they are affected by it.
     site_instance1_ = SiteInstance::Create(&test_browser_context_);
     site_instance2_ = SiteInstance::Create(&test_browser_context_);
-  }
-
-  void SetUp() override {
-    RenderProcessHostImpl::set_render_process_host_factory_for_testing(
-        &rph_factory_);
-    SiteIsolationPolicy::DisableFlagCachingForTesting();
-  }
-
-  void TearDown() override {
-    RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
   }
 
   AuctionProcessManager& GetAuctionProcessManager() override {
@@ -1242,12 +1248,6 @@ class InRendererAuctionProcessManagerTestBase
   }
 
   TestBrowserContext test_browser_context_;
-  MockRenderProcessHostFactory rph_factory_;
-
-  // Make sure `scoped_command_line_` gets destructed after the
-  // `auction_process_manager_`. Otherwise idle worklet processes
-  // may try to read it after destruction.
-  base::test::ScopedCommandLine scoped_command_line_;
 
   // `site_instance1_` and `site_instance2_` are in different browsing
   // instances.
@@ -1271,12 +1271,7 @@ class InRendererAuctionProcessManagerTest
  public:
   InRendererAuctionProcessManagerTest()
       : InRendererAuctionProcessManagerTestBase(
-            /*disable_origin_keyed_processes_by_default=*/false) {}
-  void SetUp() override {
-    InRendererAuctionProcessManagerTestBase::SetUp();
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        switches::kSitePerProcess);
-  }
+            ProcessMode::kInRendererSitePerProcess) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1293,20 +1288,12 @@ class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
  public:
   InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault()
       : InRendererAuctionProcessManagerTestBase(
-            /*disable_origin_keyed_processes_by_default=*/true) {
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/{features::
-                                  kProcessSharingWithDefaultSiteInstances},
-        /*disabled_features=*/{
-            features::kProcessSharingWithStrictSiteInstances});
-  }
+            ProcessMode::kInRendererSharedProcess) {}
 
   void SetUp() override {
     InRendererAuctionProcessManagerTestBase::SetUp();
     original_browser_client_ =
         content::SetBrowserClientForTesting(&browser_client_);
-    scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
-        switches::kSitePerProcess);
   }
 
   void TearDown() override {
@@ -1315,7 +1302,6 @@ class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
   }
 
  private:
-  base::test::ScopedFeatureList feature_list;
   PartialSiteIsolationContentBrowserClient browser_client_;
   raw_ptr<ContentBrowserClient> original_browser_client_;
 };
@@ -1325,6 +1311,22 @@ INSTANTIATE_TEST_SUITE_P(
     InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
     testing::Values(AuctionProcessManager::WorkletType::kSeller,
                     AuctionProcessManager::WorkletType::kBidder));
+
+TEST_P(InRendererAuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
+  // Exercise the codepath where a RenderProcessHostDestroyed is received, to
+  // make sure it doesn't crash.
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
+                                    kOriginA);
+  ASSERT_FALSE(rph_factory_.GetProcesses()->empty());
+  for (std::unique_ptr<MockRenderProcessHost>& proc :
+       *rph_factory_.GetProcesses()) {
+    proc.reset();
+  }
+  task_environment_.RunUntilIdle();
+  handle_a1.reset();
+  task_environment_.RunUntilIdle();
+}
 
 TEST_P(InRendererAuctionProcessManagerTest, PidLookup) {
   auto handle = GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
