@@ -256,7 +256,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             // Use shared preference to check for package downgrade.
             int lastVersion = mWebViewPrefs.getInt(VERSION_CODE_PREF, 0);
             int currentVersion = packageInfo.versionCode;
-            if (!versionCodeGE(currentVersion, lastVersion)) {
+            if (isBranchDowngrade(currentVersion, lastVersion)) {
                 // The WebView package has been downgraded since we last ran in this
                 // application. Delete the WebView data directory's contents.
                 String dataDir = PathUtils.getDataDirectory();
@@ -565,26 +565,21 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     /**
-     * Both versionCodes should be from a WebView provider package implemented by Chromium.
-     * VersionCodes from other kinds of packages won't make any sense in this method.
+     * Compare two WebView provider versionCodes to see if the current version is an older Chromium
+     * branch than the last-used version.
      *
-     * An introduction to Chromium versionCode scheme:
-     * "BBBBPPPAX"
-     * BBBB: 4 digit branch number. It monotonically increases over time.
-     * PPP: patch number in the branch. It is padded with zeroes to the left. These three digits may
-     * change their meaning in the future.
-     * A: architecture digit.
-     * X: A digit to differentiate APKs for other reasons.
-     *
-     * This method takes the "BBBB" of versionCodes and compare them.
-     *
-     * @return true if versionCode1 is higher than or equal to versionCode2.
+     * @return true if the branch portion of currentVersion is lower than the branch portion of
+     *     lastVersion.
      */
-    private static boolean versionCodeGE(int versionCode1, int versionCode2) {
-        int v1 = versionCode1 / 100000;
-        int v2 = versionCode2 / 100000;
+    private static boolean isBranchDowngrade(int currentVersion, int lastVersion) {
+        // The WebView versionCode is 9 decimal digits "BBBBPPPXX":
+        // BBBB: 4 digit branch number. It monotonically increases over time.
+        // PPP: patch number in the branch. It is padded with zeroes to the left.
+        // XX: differentiates different architectures/build types/etc.
+        int currentBranch = currentVersion / 100000;
+        int lastBranch = lastVersion / 100000;
 
-        return v1 >= v2;
+        return currentBranch < lastBranch;
     }
 
     private static void deleteContents(File dir) {
