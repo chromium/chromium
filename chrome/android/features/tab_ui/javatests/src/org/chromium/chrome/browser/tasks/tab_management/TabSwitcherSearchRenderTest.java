@@ -89,13 +89,7 @@ public class TabSwitcherSearchRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderZeroPrefixSuggestions() throws IOException {
-        List<String> urlsToOpen =
-                Arrays.asList(
-                        "/chrome/test/data/android/test.html",
-                        "/chrome/test/data/android/navigate/one.html",
-                        "/chrome/test/data/android/navigate/two.html",
-                        "/chrome/test/data/android/navigate/three.html",
-                        "/chrome/test/data/android/about.html");
+        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/test.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

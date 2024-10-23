@@ -61,4 +61,18 @@ public class TabSwitcherSearchTestUtils {
                     activityTestRule.getTestServer().getURL(url), incognito);
         }
     }
+
+    /** Opens the search activity. */
+    public static SearchActivity openSearchActivity() {
+        SearchActivity searchActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SearchActivity.class,
+                        () -> onView(withId(R.id.search_box_text)).perform(click()));
+        ViewUtils.waitForView(
+                searchActivity.findViewById(R.id.control_container), withText("Last open tabs"));
+        closeSoftKeyboard();
+
+        return searchActivity;
+    }
 }
