@@ -400,7 +400,7 @@ class NewTabPageHandlerTest : public testing::Test {
 
  private:
   const std::vector<std::pair<const std::string, int>> module_id_names = {
-      {"drive", IDS_NTP_MODULES_DRIVE_SENTENCE}};
+      {"drive", IDS_NTP_MODULES_DRIVE_NAME}};
   raw_ptr<MockHatsService> mock_hats_service_;
 };
 

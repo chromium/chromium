@@ -94,7 +94,7 @@ export class DriveModuleElement extends DriveModuleElementBase {
       detail: {
         message: loadTimeData.getStringF(
             'disableModuleToastMessage',
-            loadTimeData.getString('modulesDriveSentence2')),
+            loadTimeData.getString('modulesDriveSentence')),
       },
     });
     this.dispatchEvent(disableEvent);

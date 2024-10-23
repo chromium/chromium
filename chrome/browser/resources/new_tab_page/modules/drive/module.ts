@@ -73,7 +73,7 @@ export class DriveModuleElement extends I18nMixin
       detail: {
         message: loadTimeData.getStringF(
             'disableModuleToastMessage',
-            loadTimeData.getString('modulesDriveSentence2')),
+            loadTimeData.getString('modulesDriveSentence')),
       },
     }));
   }

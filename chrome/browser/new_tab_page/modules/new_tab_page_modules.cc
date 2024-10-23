@@ -40,7 +40,7 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
   }
 
   if (IsDriveModuleEnabledForProfile(is_managed_profile, profile)) {
-    details.emplace_back("drive", IDS_NTP_MODULES_DRIVE_SENTENCE);
+    details.emplace_back("drive", IDS_NTP_MODULES_DRIVE_NAME);
   }
 
   // TODO(crbug.com/372722777): Implement something similar to

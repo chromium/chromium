@@ -155,7 +155,7 @@ suite('DriveModuleV2', () => {
         // Assert.
         const event: DisableModuleEvent = await whenFired;
         assertEquals(
-            'You won\'t see Drive files on this page again',
+            'You won\'t see Google Drive on this page again',
             event.detail.message);
       });
 
