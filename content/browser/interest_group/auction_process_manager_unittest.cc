@@ -176,18 +176,21 @@ class AuctionProcessManagerTestBase
  protected:
   void MaybeStartAnticipatoryProcess(
       const url::Origin& origin,
-      AuctionProcessManager::WorkletType worklet_type) {
+      std::optional<AuctionProcessManager::WorkletType> worklet_type =
+          std::nullopt) {
     GetAuctionProcessManager().MaybeStartAnticipatoryProcess(
-        origin, GetSiteInstance(), worklet_type);
+        origin, GetSiteInstance(), worklet_type.value_or(GetParam()));
   }
 
   std::string RequestWorkletServiceOutcomeUmaName(
-      AuctionProcessManager::WorkletType worklet_type) {
-    return base::StrCat(
-        {"Ads.InterestGroup.Auction.",
-         worklet_type == AuctionProcessManager::WorkletType::kSeller ? "Seller."
-                                                                     : "Buyer.",
-         "RequestWorkletServiceOutcome"});
+      std::optional<AuctionProcessManager::WorkletType> worklet_type =
+          std::nullopt) {
+    return base::StrCat({"Ads.InterestGroup.Auction.",
+                         worklet_type.value_or(GetParam()) ==
+                                 AuctionProcessManager::WorkletType::kSeller
+                             ? "Seller."
+                             : "Buyer.",
+                         "RequestWorkletServiceOutcome"});
   }
 
   void RequestWorkletService(
@@ -363,10 +366,6 @@ TEST_P(AuctionProcessManagerTest, Basic) {
 
 // Make sure requests for different origins don't share processes, nor do
 // sellers and bidders.
-//
-// This test doesn't use the parameterization, but using TEST_F() for a single
-// test would require another test fixture, and so would add more complexity
-// than it's worth, for only a single unit test.
 TEST_P(AuctionProcessManagerTest, MultipleRequestsForDifferentProcesses) {
   auto worlket_a = GetServiceOfTypeExpectSuccess(GetParam(), kOriginA);
   auto worklet_b = GetServiceOfTypeExpectSuccess(GetParam(), kOriginB);
@@ -1334,6 +1333,12 @@ class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
   raw_ptr<ContentBrowserClient> original_browser_client_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+    testing::Values(AuctionProcessManager::WorkletType::kSeller,
+                    AuctionProcessManager::WorkletType::kBidder));
+
 TEST_P(InRendererAuctionProcessManagerTest, PidLookup) {
   auto handle =
       GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginA);
@@ -1410,29 +1415,25 @@ TEST_P(InRendererAuctionProcessManagerTest, PidLookupAlreadyRunning) {
   EXPECT_EQ(expected_pid, pid1.value());
 }
 
-TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
        AndroidLike) {
   base::HistogramTester histogram_tester;
 
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance1_, kOriginA);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginA);
   int id_a1 = handle_a1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance2_, kOriginA);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance2_, kOriginA);
   int id_a2 = handle_a2->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b1 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance1_, kOriginB);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginB);
   int id_b1 = handle_b1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b2 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance2_, kOriginB);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance2_, kOriginB);
   int id_b2 = handle_b2->GetRenderProcessHostForTesting()->GetID();
 
   // Non-site-isolation requiring origins can share processes, but not across
@@ -1444,19 +1445,19 @@ TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
   EXPECT_EQ(id_a2, id_b2);
   EXPECT_NE(id_b1, id_b2);
   histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcomeUmaName(),
       RequestWorkletServiceOutcome::kUsedSharedProcess, 4);
 
   // Site-isolation requiring origins are distinct from non-isolated ones, but
   // can share across browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i1 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance1_, kIsolatedOrigin);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_,
+                                    kIsolatedOrigin);
   int id_i1 = handle_i1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i2 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance2_, kIsolatedOrigin);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance2_,
+                                    kIsolatedOrigin);
   int id_i2 = handle_i2->GetRenderProcessHostForTesting()->GetID();
 
   EXPECT_EQ(id_i1, id_i2);
@@ -1465,68 +1466,60 @@ TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
   EXPECT_NE(id_i1, id_b1);
   EXPECT_NE(id_i1, id_b2);
   histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcomeUmaName(),
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 1);
   histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcomeUmaName(),
       RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 1);
 }
 
 // Test that anticipatory processes are not created for origins that can use the
 // shared renderer process.
-TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
        MaybeStartAnticipatoryProcess_DoesNotStartIfSharedProcessPossible) {
-  MaybeStartAnticipatoryProcess(kOriginA,
-                                AuctionProcessManager::WorkletType::kBidder);
+  MaybeStartAnticipatoryProcess(kOriginA);
   CheckOnlyIdleProcessesWithCount(0);
 }
 
 // Test that anticipatory processes can be created for isolated origins.
-TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
        MaybeStartAnticipatoryProcess_StartsProcessForIsolatedOrigin) {
-  MaybeStartAnticipatoryProcess(kIsolatedOrigin,
-                                AuctionProcessManager::WorkletType::kBidder);
+  MaybeStartAnticipatoryProcess(kIsolatedOrigin);
   CheckOnlyIdleProcessesWithCount(1);
 
   // Don't use this process for an origin that can use a shared process.
   AuctionProcessManager::ProcessHandle handle1, handle2;
-  RequestWorkletService(&handle1, kOriginA,
-                        AuctionProcessManager::WorkletType::kBidder,
+  RequestWorkletService(&handle1, kOriginA, GetParam(),
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedSharedProcess);
   CheckOnlyIdleProcessesWithCount(1);
 
   // Can use this process for the same isolated origin.
-  RequestWorkletService(
-      &handle2, kIsolatedOrigin, AuctionProcessManager::WorkletType::kBidder,
-      /*expect_success=*/true, RequestWorkletServiceOutcome::kUsedIdleProcess);
+  RequestWorkletService(&handle2, kIsolatedOrigin, GetParam(),
+                        /*expect_success=*/true,
+                        RequestWorkletServiceOutcome::kUsedIdleProcess);
   EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
-  EXPECT_EQ(GetActiveProcesses(AuctionProcessManager::WorkletType::kBidder),
-            1u);
+  EXPECT_EQ(GetActiveProcesses(GetParam()), 1u);
 }
 
-TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
+TEST_P(InRendererAuctionProcessManagerTest, DesktopLike) {
   base::HistogramTester histogram_tester;
 
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance1_, kOriginA);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginA);
   int id_a1 = handle_a1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance2_, kOriginA);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance2_, kOriginA);
   int id_a2 = handle_a2->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b1 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance1_, kOriginB);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginB);
   int id_b1 = handle_b1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b2 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance2_, kOriginB);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance2_, kOriginB);
   int id_b2 = handle_b2->GetRenderProcessHostForTesting()->GetID();
 
   // Since we are site-per-process, things should be grouped by origin.
@@ -1537,21 +1530,21 @@ TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
   EXPECT_NE(id_a2, id_b2);
   EXPECT_EQ(id_b1, id_b2);
   histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcomeUmaName(),
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 2);
   histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcomeUmaName(),
       RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 2);
 
   // Stuff that's also isolated by explicit requests gets the same treatment.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i1 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance1_, kIsolatedOrigin);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_,
+                                    kIsolatedOrigin);
   int id_i1 = handle_i1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i2 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance2_, kIsolatedOrigin);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance2_,
+                                    kIsolatedOrigin);
   int id_i2 = handle_i2->GetRenderProcessHostForTesting()->GetID();
 
   EXPECT_EQ(id_i1, id_i2);
@@ -1560,10 +1553,10 @@ TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
   EXPECT_NE(id_i1, id_b1);
   EXPECT_NE(id_i1, id_b2);
   histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcomeUmaName(),
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 3);
   histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcomeUmaName(),
       RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 3);
 }
 
@@ -1797,12 +1790,11 @@ TEST_P(
   }
 }
 
-TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
        PolicyChange) {
   // Launch site in default instance.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance1_, kOriginA);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginA);
   EXPECT_FALSE(
       handle_a1->site_instance_for_testing()->RequiresDedicatedProcess());
   RenderProcessHost* shared_process =
@@ -1816,8 +1808,7 @@ TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
 
   // Launch another A-origin worklet, this should get a different process.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance1_, kOriginA);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginA);
   EXPECT_TRUE(
       handle_a2->site_instance_for_testing()->RequiresDedicatedProcess());
   EXPECT_NE(handle_a2->GetRenderProcessHostForTesting(), shared_process);
@@ -1826,8 +1817,7 @@ TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
   // same non-shared process.
   handle_a1.reset();
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a3 =
-      GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
-                                    site_instance1_, kOriginA);
+      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginA);
   EXPECT_TRUE(
       handle_a3->site_instance_for_testing()->RequiresDedicatedProcess());
   EXPECT_EQ(handle_a2->GetRenderProcessHostForTesting(),
