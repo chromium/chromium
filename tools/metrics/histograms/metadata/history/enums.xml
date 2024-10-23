@@ -26,8 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<!-- NOTE: Please also keep in line with components/visitedlink/browser/visitedlink_writer.cc:AddFingerprint. -->
-
 <!-- LINT.IfChange(AddFingerprint) -->
 
 <enum name="AddFingerprint">
@@ -37,6 +35,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/visitedlink/browser/partitioned_visitedlink_writer.cc:AddFingerprint) -->
+
+<!-- NOTE: Please also keep in line with components/visitedlink/browser/visitedlink_writer.cc:AddFingerprint. -->
 
 <enum name="BooleanQueried">
   <int value="0" label="Not Queried"/>

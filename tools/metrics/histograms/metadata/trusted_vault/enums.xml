@@ -33,8 +33,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Irrecoverable"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->
-
 <!-- LINT.IfChange(TrustedVaultDeviceRegistrationOutcome) -->
 
 <enum name="TrustedVaultDeviceRegistrationOutcome">
