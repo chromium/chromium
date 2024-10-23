@@ -21,6 +21,9 @@ namespace media {
 // When a VideoFrame is backed by native textures, VideoPixelFormat describes
 // how those textures should be sampled and combined to produce the final
 // pixels.
+//
+// WARNING: Do not add pixel formats with more than 8 bytes per pixel or the
+// total size of the frame can overflow on 32-bit platforms.
 enum VideoPixelFormat {
   PIXEL_FORMAT_UNKNOWN = 0,  // Unknown or unspecified format value.
   PIXEL_FORMAT_I420 =

@@ -1077,10 +1077,14 @@ size_t VideoFrame::NumPlanes(VideoPixelFormat format) {
 // static
 size_t VideoFrame::AllocationSize(VideoPixelFormat format,
                                   const gfx::Size& coded_size) {
-  size_t total = 0;
-  for (size_t i = 0; i < NumPlanes(format); ++i)
-    total += PlaneSize(format, i, coded_size).GetArea();
-  return total;
+  base::CheckedNumeric<size_t> total = 0;
+  for (size_t i = 0; i < NumPlanes(format); ++i) {
+    total += PlaneSize(format, i, coded_size).Area64();
+  }
+
+  // If the line below is crashing, someone has likely added a pixel format with
+  // more than 8 bytes per pixel.
+  return total.ValueOrDie();
 }
 
 // static

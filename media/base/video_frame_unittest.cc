@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/color_plane_layout.h"
+#include "media/base/limits.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -850,6 +851,35 @@ TEST(VideoFrame, AllocationSize_OddSize) {
       case PIXEL_FORMAT_UNKNOWN:
         continue;
     }
+  }
+}
+
+// Test ensures we don't overflow on 32-bit platforms.
+TEST(VideoFrame, NoFrameSizeExceedsUint32) {
+  const int max_dimension = std::sqrt(limits::kMaxCanvas);
+  const auto max_size = gfx::Size(max_dimension, max_dimension);
+  for (unsigned int i = 1u; i <= PIXEL_FORMAT_MAX; ++i) {
+    // Deprecated pixel formats.
+    if (i == 13 || i == 15 || i == 25) {
+      continue;
+    }
+
+    const auto format = static_cast<VideoPixelFormat>(i);
+
+    ASSERT_TRUE(
+        VideoFrame::IsValidConfig(format, VideoFrame::STORAGE_UNOWNED_MEMORY,
+                                  max_size, gfx::Rect(max_size), max_size));
+
+    base::CheckedNumeric<uint32_t> allocation_size =
+        VideoFrame::AllocationSize(format, max_size);
+    ASSERT_TRUE(allocation_size.IsValid());
+
+    // Allocations above 2gb on 32-bit platforms should fail gracefully.
+#ifdef ARCH_CPU_32_BITS
+    if (allocation_size.ValueOrDie() >= std::numeric_limits<int32_t>::max()) {
+      ASSERT_FALSE(VideoFrame::CreateBlackFrame(max_size));
+    }
+#endif
   }
 }
 
