@@ -24,6 +24,7 @@
 #include "chromeos/ui/frame/frame_utils.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
@@ -236,8 +237,8 @@ void DefinitelyExitPictureInPicture(
 
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
-    ChildDialogObserverHelper(views::Widget* pip_widget)
-    : pip_widget_(pip_widget) {
+    ChildDialogObserverHelper(PictureInPictureBrowserFrameView* pip_frame)
+    : pip_frame_(pip_frame), pip_widget_(pip_frame->GetWidget()) {
   pip_widget_observation_.Observe(pip_widget_);
   aura_window_observation_.Observe(pip_widget_->GetNativeWindow());
   transient_window_observation_.Observe(
@@ -337,6 +338,25 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     MaybeResizeForChildDialog(views::Widget* child_dialog) {
   gfx::Rect original_bounds = pip_widget_->GetWindowBoundsInScreen();
   gfx::Rect dialog_bounds = child_dialog->GetWindowBoundsInScreen();
+
+  // Figure out how big the dialog should be.  If it's larger than its minimum
+  // size, then keep it.  Note that the root view's minimum size is usually the
+  // preferred size, while the contents view's min size tends to be too small.
+  gfx::Size dialog_target_size = dialog_bounds.size();
+  dialog_target_size.SetToMax(child_dialog->GetRootView()->GetMinimumSize());
+
+  // Compute the minimum size the pip window needs to be so that it reports its
+  // maximum dialog size as the dialog's minimum size.  We do this because the
+  // dialog probably isn't designed to be as small as a pip window typically is;
+  // we just resize the pip window temporarily.  Otherwise, the dialog will try
+  // to shrink to fit, and it doesn't typically succeed.
+  const gfx::Size required_size =
+      dialog_target_size + pip_frame_->ComputeDialogPadding();
+
+  // Pretend that the dialog is this big, so we can compute our size to be no
+  // smaller than it.  We do not change the origin of the dialog, however,
+  // because we need to account for the dialog's origin.
+  dialog_bounds.set_size(required_size);
 
   gfx::Rect adjusted_bounds = original_bounds;
   adjusted_bounds.Union(dialog_bounds);
@@ -842,7 +862,7 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
   window_event_observer_ = std::make_unique<WindowEventObserver>(this);
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   child_dialog_observer_helper_ =
-      std::make_unique<ChildDialogObserverHelper>(GetWidget());
+      std::make_unique<ChildDialogObserverHelper>(this);
 #endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
   // Creates an animation container to ensure all the animations update at the
@@ -1473,6 +1493,18 @@ void PictureInPictureBrowserFrameView::OnMouseEnteredOrExitedWindow(
 
 bool PictureInPictureBrowserFrameView::IsOverlayViewVisible() const {
   return auto_pip_setting_overlay_ && auto_pip_setting_overlay_->GetVisible();
+}
+
+gfx::Size PictureInPictureBrowserFrameView::ComputeDialogPadding() const {
+  auto* host = browser_view()->GetWebContentsModalDialogHost();
+  if (!host) {
+    return gfx::Size();
+  }
+
+  // This is not guaranteed, but should be fairly robust if the maximum dialog
+  // size computation changes.  It also prevents us from memorizing how all of
+  // it works.
+  return GetWidget()->GetSize() - host->GetMaximumDialogSize();
 }
 
 BEGIN_METADATA(PictureInPictureBrowserFrameView)

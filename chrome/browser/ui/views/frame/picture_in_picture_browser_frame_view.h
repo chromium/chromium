@@ -235,6 +235,13 @@ class PictureInPictureBrowserFrameView
     return auto_pip_setting_overlay_;
   }
 
+  // `BrowserViewLayout` provides a maximum dialog size which is used to scale
+  // dialogs to fit their parent widgets.  We don't directly know (or want to
+  // know) how it does this.  Instead, assume that it's a constant difference
+  // from our widget size.  In other words, our dialog size will be our widget
+  // size minus whatever padding this function returns.
+  gfx::Size ComputeDialogPadding() const;
+
  protected:
   views::View* top_bar_container_view() { return top_bar_container_view_; }
 
@@ -253,7 +260,7 @@ class PictureInPictureBrowserFrameView
         public aura::WindowObserver,
         public aura::client::TransientWindowClientObserver {
    public:
-    explicit ChildDialogObserverHelper(views::Widget* pip_widget);
+    explicit ChildDialogObserverHelper(PictureInPictureBrowserFrameView*);
     ChildDialogObserverHelper(const ChildDialogObserverHelper&) = delete;
     ChildDialogObserverHelper& operator=(const ChildDialogObserverHelper&) =
         delete;
@@ -294,6 +301,8 @@ class PictureInPictureBrowserFrameView
     void MaybeResizeForChildDialog(views::Widget* child_dialog);
     void MaybeRevertSizeAfterChildDialogCloses();
 
+    const raw_ptr<PictureInPictureBrowserFrameView> pip_frame_;
+    // TODO: replace this with pip_frame->GetWidget()
     const raw_ptr<views::Widget> pip_widget_;
 
     ResizingState resizing_state_ = ResizingState::kNormal;

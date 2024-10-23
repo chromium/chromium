@@ -227,7 +227,9 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
   }
 
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
-  std::unique_ptr<views::Widget> OpenChildDialog(const gfx::Size& size) {
+  std::unique_ptr<views::Widget> OpenChildDialog(
+      const gfx::Size& size,
+      std::optional<gfx::Size> initial_size = std::nullopt) {
     views::Widget::InitParams init_params(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW);
@@ -236,7 +238,7 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
 
     auto child_dialog = std::make_unique<views::Widget>(std::move(init_params));
     child_dialog->GetContentsView()->SetPreferredSize(size);
-    child_dialog->SetSize(size);
+    child_dialog->SetSize(initial_size ? *initial_size : size);
     child_dialog->Show();
     return child_dialog;
   }
@@ -305,10 +307,15 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   gfx::Rect initial_pip_bounds =
       pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
 
-  // Open a child dialog that is larger than the pip window.
+  // Open a child dialog that is smaller than the pip window, but has a
+  // preferred size that is larger.  Since some dialogs try to match the pip
+  // window's size, the pip window tries to resize to their minimum size.  For
+  // our particular child view, the default implementation uses the preferred
+  // size as the minimum size.
   const gfx::Size child_dialog_size(initial_pip_bounds.width() + 20,
                                     initial_pip_bounds.height() + 10);
-  auto child_dialog = OpenChildDialog(child_dialog_size);
+  auto child_dialog = OpenChildDialog(
+      child_dialog_size, gfx::ScaleToFlooredSize(child_dialog_size, 0.5f));
 
   // The pip window should increase its size to contain the child dialog.
   gfx::Rect new_pip_bounds =
@@ -393,9 +400,11 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   child_dialog->CloseNow();
 
   // Since the user both moved and resized the window, it should not change back
-  // when the child dialog closes.
-  EXPECT_EQ(moved_bounds,
-            pip_frame_view()->GetWidget()->GetWindowBoundsInScreen());
+  // when the child dialog closes.  We allow a pixel either way because this
+  // sometimes rounds from DIP to pixels (wayland).
+  const auto actual_final_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  EXPECT_TRUE(actual_final_bounds.ApproximatelyEqual(moved_bounds, 1));
 }
 
 #endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
