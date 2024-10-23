@@ -19,11 +19,15 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "base/sequence_checker.h"
 #include "components/metrics/dwa/mojom/dwa_interface.mojom.h"
 #include "third_party/metrics_proto/dwa/deidentified_web_analytics.pb.h"
 
 namespace metrics::dwa {
+
+// Enables DWA recording.
+COMPONENT_EXPORT(DWA) BASE_DECLARE_FEATURE(kDwaFeature);
 
 class COMPONENT_EXPORT(DWA) DwaRecorder {
  public:

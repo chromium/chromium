@@ -4,11 +4,14 @@
 
 #include "components/metrics/dwa/dwa_recorder.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 
 namespace metrics::dwa {
+
+BASE_FEATURE(kDwaFeature, "DwaFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
 DwaRecorder::DwaRecorder() = default;
 
@@ -16,9 +19,7 @@ DwaRecorder::~DwaRecorder() = default;
 
 void DwaRecorder::EnableRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/369573207): Check to see if DWA is enabled using feature flags
-  // before enabling recorder.
-  recorder_enabled_ = true;
+  recorder_enabled_ = base::FeatureList::IsEnabled(kDwaFeature);
 }
 
 void DwaRecorder::DisableRecording() {

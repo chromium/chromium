@@ -47,6 +47,7 @@ source_set("unit_tests") {
   deps = [
     ":dwa",
     "//base",
+    "//base/test:test_support",
     "//components/metrics",
     "//components/metrics:test_support",
     "//components/prefs:prefs",
