@@ -11,10 +11,8 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
 
 namespace autofill {
@@ -25,8 +23,6 @@ FieldClassificationModelExecutor::~FieldClassificationModelExecutor() = default;
 bool FieldClassificationModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const FieldClassificationModelEncoder::ModelInput& input) {
-  CHECK(base::FeatureList::IsEnabled(features::kAutofillModelPredictions));
-
   // `input_tensors[0]` has shape (batch_size, max_number_of_fields,
   // tokens_per_field) where the batch size is set to 1. The second and third
   // dimensions hold the values of the vectorized field labels.

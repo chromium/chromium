@@ -9,10 +9,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +57,6 @@ class FieldClassificationModelExecutorTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_environment_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
-  base::test::ScopedFeatureList features_{features::kAutofillModelPredictions};
   base::FilePath model_file_path_;
   std::unique_ptr<FieldClassificationModelExecutor> model_executor_;
 };
