@@ -5441,7 +5441,7 @@
     {
       name: "text-box-edge",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      inherited: false,
+      inherited: true,
       field_group: "*",
       field_template: "primitive",
       field_size: 6,  // Sync with `TextBoxEdge::kBits`.
