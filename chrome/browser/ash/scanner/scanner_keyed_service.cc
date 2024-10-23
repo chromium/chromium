@@ -67,21 +67,23 @@ ScannerKeyedService::ScannerKeyedService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<manta::ScannerProvider> scanner_provider)
     : scanner_provider_(std::move(scanner_provider)) {
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+  if (identity_manager != nullptr) {
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
-  const GURL& base_url = GaiaUrls::GetInstance()->google_apis_origin_url();
-  GURL base_thumbnail_url(
-      google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction);
+    const GURL& base_url = GaiaUrls::GetInstance()->google_apis_origin_url();
+    GURL base_thumbnail_url(
+        google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction);
 
-  drive_service_ = std::make_unique<drive::DriveAPIService>(
-      identity_manager, std::move(url_loader_factory),
-      blocking_task_runner.get(), base_url, base_thumbnail_url,
-      /*custom_user_agent=*/"", kTrafficAnnotation);
-  drive_service_->Initialize(
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+    drive_service_ = std::make_unique<drive::DriveAPIService>(
+        identity_manager, std::move(url_loader_factory),
+        blocking_task_runner.get(), base_url, base_thumbnail_url,
+        /*custom_user_agent=*/"", kTrafficAnnotation);
+    drive_service_->Initialize(
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+  }
 }
 
 ScannerKeyedService::~ScannerKeyedService() = default;
