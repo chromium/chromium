@@ -96,7 +96,10 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
       base::debug::DumpWithoutCrashing();
     }
 
-    OnBackCancelled(env);
+    if (is_in_progress_) {
+      OnBackCancelled(env);
+    }
+
     CHECK(!is_in_progress_);
     OnBackStarted(env, progress, edge, forward);
     return;
