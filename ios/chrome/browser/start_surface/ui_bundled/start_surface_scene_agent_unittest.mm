@@ -12,6 +12,7 @@
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -52,12 +53,17 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     app_state_ = OCMClassMock([AppState class]);
     OCMStub([app_state_ startupInformation]).andReturn(startup_information_);
 
+    profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
+    SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+
     scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
                                                     profile:profile_.get()];
-    agent_ = [[StartSurfaceSceneAgent alloc] init];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
-    InstallMockProfileState(ProfileInitStage::kStart);
+    scene_state_.activationLevel = SceneActivationLevelUnattached;
+    scene_state_.profileState = profile_state_;
+
+    agent_ = [[StartSurfaceSceneAgent alloc] init];
     agent_.sceneState = scene_state_;
     Browser* browser =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
@@ -85,16 +91,6 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
   FakeSystemIdentityManager* fake_system_identity_manager() {
     return FakeSystemIdentityManager::FromSystemIdentityManager(
         GetApplicationContext()->GetSystemIdentityManager());
-  }
-
-  // Install a mock ProfileState with a fixed `init_stage`.
-  void InstallMockProfileState(ProfileInitStage init_stage) {
-    profile_state_ = OCMClassMock([ProfileState class]);
-    OCMStub([profile_state_ initStage]).andReturn(init_stage);
-    OCMStub([profile_state_ appState]).andReturn(app_state_);
-    OCMStub([profile_state_ startupInformation])
-        .andReturn(startup_information_);
-    scene_state_.profileState = profile_state_;
   }
 
  protected:
@@ -155,13 +151,11 @@ TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTPs) {
   InsertNewWebState(2, GURL(kURL));
   InsertNewWebState(3, GURL(kChromeUINewTabURL));
 
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   histogram_tester_.ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
 
   // Transition to the background, triggering the NTP clean up.
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelBackground];
+  scene_state_.activationLevel = SceneActivationLevelBackground;
 
   // Expect 2 calls to IOS.NTP.ExcessRemovedTabCount. One for the regular
   // browser, one for the incognito browser.
@@ -194,13 +188,11 @@ TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPs) {
   InsertNewWebStateWithNavigationHistory(2, GURL(kChromeUINewTabURL));
   InsertNewWebState(3, GURL(kChromeUINewTabURL));
 
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   histogram_tester_.ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
 
   // Transition to the background, triggering the NTP clean up.
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelBackground];
+  scene_state_.activationLevel = SceneActivationLevelBackground;
 
   // Expect 2 calls to IOS.NTP.ExcessRemovedTabCount. One for the regular
   // browser, one for the incognito browser.
@@ -234,13 +226,11 @@ TEST_F(StartSurfaceSceneAgentTest, KeepAndActivateNonEmptyNTP) {
       scene_state_.browserProviderInterface.mainBrowserProvider.browser
           ->GetWebStateList();
   web_state_list->ActivateWebStateAt(2);
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   histogram_tester_.ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
 
   // Transition to the background, triggering the NTP clean up.
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelBackground];
+  scene_state_.activationLevel = SceneActivationLevelBackground;
 
   // Expect 2 calls to IOS.NTP.ExcessRemovedTabCount. One for the regular
   // browser, one for the incognito browser.
@@ -279,13 +269,11 @@ TEST_F(StartSurfaceSceneAgentTest, KeepAtMostOneEmptyNTPPerGroup) {
       web_state_list->CreateGroup({0, 1, 2, 3}, {}, TabGroupId::GenerateNew());
   const TabGroup* group_1 =
       web_state_list->CreateGroup({6}, {}, TabGroupId::GenerateNew());
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   histogram_tester_.ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
 
   // Transition to the background, triggering the NTP clean up.
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelBackground];
+  scene_state_.activationLevel = SceneActivationLevelBackground;
 
   // Expect 2 calls to IOS.NTP.ExcessRemovedTabCount. One for the regular
   // browser, one for the incognito browser.
@@ -329,13 +317,11 @@ TEST_F(StartSurfaceSceneAgentTest,
   web_state_list->ActivateWebStateAt(0);
   const TabGroup* group_0 =
       web_state_list->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   histogram_tester_.ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
 
   // Transition to the background, triggering the NTP clean up.
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelBackground];
+  scene_state_.activationLevel = SceneActivationLevelBackground;
 
   // Expect 2 calls to IOS.NTP.ExcessRemovedTabCount. One for the regular
   // browser, one for the incognito browser.
@@ -366,8 +352,6 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectWarmStartHistogram) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(kStartSurface,
                                                          parameters);
 
-  InstallMockProfileState(ProfileInitStage::kFinal);
-
   InsertNewWebState(0, GURL(kURL));
   InsertNewWebState(1, GURL(kChromeUINewTabURL));
   WebStateList* web_state_list =
@@ -380,8 +364,7 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectWarmStartHistogram) {
   SetStartSurfaceSessionObjectForSceneState(scene_state_);
 
   histogram_tester_.ExpectTotalCount("IOS.BackgroundTimeBeforeWarmStart", 0);
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   histogram_tester_.ExpectTotalCount("IOS.BackgroundTimeBeforeWarmStart", 1);
 }
 
@@ -394,7 +377,6 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(kStartSurface,
                                                          parameters);
 
-  InstallMockProfileState(ProfileInitStage::kFinal);
   [startup_information_ setIsColdStart:YES];
 
   InsertNewWebState(0, GURL(kURL));
@@ -408,8 +390,7 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
       /*favicon_service=*/nullptr);
 
   histogram_tester_.ExpectTotalCount("IOS.BackgroundTimeBeforeColdStart", 0);
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   histogram_tester_.ExpectTotalCount("IOS.BackgroundTimeBeforeColdStart", 1);
 }
 
@@ -423,7 +404,6 @@ TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
   mutator->SetAllSupportedCapabilities(true);
 
   // Set up expected app state that prefetches capabilities.
-  InstallMockProfileState(ProfileInitStage::kFinal);
   [startup_information_ setIsColdStart:YES];
 
   InsertNewWebState(0, GURL(kURL));
@@ -440,8 +420,7 @@ TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
                    ->GetVisibleCapabilities(identity)
                    .AreAllCapabilitiesKnown());
 
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(fake_system_identity_manager()

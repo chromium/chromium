@@ -10,7 +10,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -69,20 +68,14 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
 @implementation StartSurfaceSceneAgent
 
-- (id)init {
-  self = [super init];
-  if (self) {
-    self.previousActivationLevel = SceneActivationLevelUnattached;
-  }
-  return self;
-}
-
 #pragma mark - ObservingSceneAgent
 
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
 
-  [self.sceneState.profileState addObserver:self];
+  [sceneState.profileState addObserver:self];
+  [self sceneState:sceneState
+      transitionedToActivationLevel:sceneState.activationLevel];
 }
 
 #pragma mark - ProfileStateObserver
