@@ -370,6 +370,45 @@ public class ManageSyncSettingsTest {
     }
 
     @Test
+    @MediumTest
+    @Feature({"Sync"})
+    @Policies.Add({
+        @Policies.Item(key = "SyncTypesListDisabled", string = "[\"bookmarks\", \"passwords\"]")
+    })
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testSignInWithManagedDataTypes() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        Map<Integer, ChromeSwitchPreference> dataTypes = getAccountDataTypes(fragment);
+        // When one or more sync types are managed, the respective preference should be disabled and
+        // not checked, while all other preferences should be user selectable.
+        for (ChromeSwitchPreference dataType : dataTypes.values()) {
+            // Filter the history switch, since it's currently not enabled by default.
+            if (dataType.getKey().equals(ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE)) {
+                continue;
+            }
+            boolean shouldBeEnabled =
+                    !dataType.getKey()
+                                    .equals(
+                                            ManageSyncSettings
+                                                    .PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE)
+                            && !dataType.getKey()
+                                    .equals(
+                                            ManageSyncSettings
+                                                    .PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
+            Assert.assertEquals(dataType.isChecked(), shouldBeEnabled);
+            Assert.assertEquals(dataType.isEnabled(), shouldBeEnabled);
+        }
+
+        // Check that the preference shows the managed text.
+        onView(withText(R.string.account_section_bookmarks_toggle))
+                .check(matches(hasSibling(withText(R.string.managed_by_your_organization))));
+        onView(withText(R.string.account_section_passwords_toggle))
+                .check(matches(hasSibling(withText(R.string.managed_by_your_organization))));
+    }
+
+    @Test
     @SmallTest
     @Feature({"Sync"})
     public void testSettingDataTypes() {
