@@ -1651,10 +1651,6 @@
       depends_on: ["DynamicSafeAreaInsets"]
     },
     {
-      name: "DynamicScrollCullRectExpansion",
-      status: "stable",
-    },
-    {
       name: "ElementCapture",
       origin_trial_feature_name: "ElementCapture",
       status: {"Android": "", "default": "experimental"},

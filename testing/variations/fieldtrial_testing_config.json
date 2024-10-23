@@ -8914,28 +8914,6 @@
             ]
         }
     ],
-    "DynamicScrollCullRectExpansion": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DynamicScrollCullRectExpansion"
-                    ]
-                }
-            ]
-        }
-    ],
     "EagerPrefetchBlockUntilHeadDifferentTimeoutsRetrospective": [
         {
             "platforms": [
