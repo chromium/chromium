@@ -19,7 +19,6 @@ class SyncService;
 
 namespace ash {
 
-class SyncExplicitPassphraseClientAsh;
 class SyncUserSettingsClientAsh;
 class SyncedSessionClientAsh;
 
@@ -65,10 +64,6 @@ class SyncMojoServiceAsh : public KeyedService,
 
  private:
   // Members below destroyed after Shutdown().
-
-  // |explicit_passphrase_client_| is null if
-  // kSyncChromeOSExplicitPassphraseSharing is disabled.
-  std::unique_ptr<SyncExplicitPassphraseClientAsh> explicit_passphrase_client_;
 
   // |user_settings_client_| is null if kSyncChromeOSAppsToggleSharing is
   // disabled.
