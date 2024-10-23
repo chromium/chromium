@@ -313,12 +313,19 @@ bool operator==(const Av1Metadata& l, const Av1Metadata& r) {
   return l.temporal_idx == r.temporal_idx;
 }
 
+bool operator==(const SVCGenericMetadata& l, const SVCGenericMetadata& r) {
+  return l.follow_svc_spec == r.follow_svc_spec &&
+         l.temporal_idx == r.temporal_idx && l.spatial_idx == r.spatial_idx &&
+         l.reference_flags == r.reference_flags &&
+         l.refresh_flags == r.refresh_flags;
+}
+
 bool operator==(const BitstreamBufferMetadata& l,
                 const BitstreamBufferMetadata& r) {
   return l.payload_size_bytes == r.payload_size_bytes &&
          l.key_frame == r.key_frame && l.timestamp == r.timestamp &&
          l.vp8 == r.vp8 && l.vp9 == r.vp9 && l.h264 == r.h264 &&
-         l.av1 == r.av1 && l.h265 == r.h265;
+         l.av1 == r.av1 && l.h265 == r.h265 && l.svc_generic == r.svc_generic;
 }
 
 bool operator==(const VideoEncodeAccelerator::Config::SpatialLayer& l,

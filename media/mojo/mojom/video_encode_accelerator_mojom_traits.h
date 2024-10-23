@@ -237,6 +237,10 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
       const media::BitstreamBufferMetadata& bbm) {
     return bbm;
   }
+  static std::optional<media::SVCGenericMetadata> svc_generic(
+      const media::BitstreamBufferMetadata& bbm) {
+    return bbm.svc_generic;
+  }
   static std::optional<gfx::Size> encoded_size(
       const media::BitstreamBufferMetadata& bbm) {
     return bbm.encoded_size;
@@ -361,6 +365,31 @@ class StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata> {
 
   static bool Read(media::mojom::Av1MetadataDataView data,
                    media::Av1Metadata* out_metadata);
+};
+
+template <>
+class StructTraits<media::mojom::SVCGenericMetadataDataView,
+                   media::SVCGenericMetadata> {
+ public:
+  static bool follow_svc_spec(const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.follow_svc_spec;
+  }
+  static uint8_t temporal_idx(const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.temporal_idx;
+  }
+  static uint8_t spatial_idx(const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.spatial_idx;
+  }
+  static std::optional<uint16_t> reference_flags(
+      const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.reference_flags;
+  }
+  static std::optional<uint16_t> refresh_flags(
+      const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.refresh_flags;
+  }
+  static bool Read(media::mojom::SVCGenericMetadataDataView data,
+                   media::SVCGenericMetadata* out_metadata);
 };
 
 template <>

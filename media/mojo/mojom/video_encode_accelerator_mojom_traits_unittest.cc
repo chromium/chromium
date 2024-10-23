@@ -271,6 +271,20 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
   EXPECT_EQ(input_metadata, output_metadata);
   input_metadata.vp8.reset();
 
+  SVCGenericMetadata svc_generic;
+  svc_generic.follow_svc_spec = true;
+  svc_generic.temporal_idx = 2;
+  svc_generic.spatial_idx = 1;
+  svc_generic.refresh_flags = 0b11111111;
+  svc_generic.reference_flags = 0b00000001;
+  input_metadata.svc_generic = svc_generic;
+  output_metadata = ::media::BitstreamBufferMetadata();
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::BitstreamBufferMetadata>(
+          input_metadata, output_metadata));
+  EXPECT_EQ(input_metadata, output_metadata);
+  input_metadata.svc_generic.reset();
+
   Vp9Metadata vp9;
   vp9.inter_pic_predicted = true;
   vp9.temporal_up_switch = true;

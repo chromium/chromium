@@ -234,6 +234,9 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   if (!data.ReadEncodedColorSpace(&metadata->encoded_color_space)) {
     return false;
   }
+  if (!data.ReadSvcGeneric(&metadata->svc_generic)) {
+    return false;
+  }
 
   return data.ReadOptionalMetadata(metadata);
 }
@@ -302,6 +305,19 @@ bool StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata>::Read(
     media::mojom::Av1MetadataDataView data,
     media::Av1Metadata* out_metadata) {
   out_metadata->temporal_idx = data.temporal_idx();
+  return true;
+}
+
+// static
+bool StructTraits<media::mojom::SVCGenericMetadataDataView,
+                  media::SVCGenericMetadata>::
+    Read(media::mojom::SVCGenericMetadataDataView data,
+         media::SVCGenericMetadata* out_metadata) {
+  out_metadata->follow_svc_spec = data.follow_svc_spec();
+  out_metadata->temporal_idx = data.temporal_idx();
+  out_metadata->spatial_idx = data.spatial_idx();
+  out_metadata->reference_flags = data.reference_flags();
+  out_metadata->refresh_flags = data.refresh_flags();
   return true;
 }
 

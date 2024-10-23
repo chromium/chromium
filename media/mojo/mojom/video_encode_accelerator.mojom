@@ -316,6 +316,14 @@ struct Av1Metadata {
   uint8 temporal_idx;
 };
 
+struct SVCGenericMetadata {
+  bool follow_svc_spec;
+  uint8 temporal_idx;
+  uint8 spatial_idx;
+  uint16 ? reference_flags;
+  uint16 ? refresh_flags;
+};
+
 // DropFrame or Codec specific metadata.
 union OptionalMetadata {
   DropFrameMetadata drop;
@@ -332,6 +340,7 @@ struct BitstreamBufferMetadata {
   mojo_base.mojom.TimeDelta timestamp;
   int32 qp;
   OptionalMetadata? optional_metadata;
+  SVCGenericMetadata ? svc_generic;
   gfx.mojom.Size? encoded_size;
   gfx.mojom.ColorSpace? encoded_color_space;
 };
