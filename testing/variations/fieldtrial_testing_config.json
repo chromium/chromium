@@ -14652,7 +14652,7 @@
             ]
         }
     ],
-    "NoPreReadMainDll": [
+    "NoPreReadMainDllIfSsd": [
         {
             "platforms": [
                 "windows"
@@ -14661,7 +14661,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "NoPreReadMainDll"
+                        "NoPreReadMainDllIfSsd"
                     ]
                 }
             ]
