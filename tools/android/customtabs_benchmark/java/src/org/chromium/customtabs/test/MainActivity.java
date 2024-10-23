@@ -487,8 +487,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
 
         private boolean allSet() {
-            // Note that we may miss pageLoadStartedMs for pre-rendered or warmed up loads.
             return intentSentMs != NONE
+                    && pageLoadStartedMs != NONE
                     && firstContentfulPaintMs != NONE
                     && pageLoadFinishedMs != NONE
                     && largeContentfulPaintMs != NONE;

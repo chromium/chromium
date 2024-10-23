@@ -6,18 +6,14 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import android.text.TextUtils;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
-import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 
@@ -29,7 +25,6 @@ import javax.inject.Inject;
 public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHandlingStrategy {
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabActivityNavigationController mNavigationController;
-    private final CustomTabNavigationEventObserver mNavigationEventObserver;
     private final CustomTabObserver mCustomTabObserver;
 
     @Inject
@@ -38,7 +33,6 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
             BaseCustomTabActivity activity) {
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mNavigationController = navigationController;
-        mNavigationEventObserver = activity.getCustomTabNavigationEventObserver();
         mCustomTabObserver = activity.getCustomTabObserver();
     }
 
@@ -60,14 +54,6 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         CustomTabAuthUrlHeuristics.recordRedirectUriSchemeHistogram(intentDataProvider);
     }
 
-    // TODO(yfriedman): Remove & inline once CustomTabs junit tests can be created from a provided
-    // GURL. This depends on switching *IntentDataProvider over to GURL.
-    // https://crbug.com/783819
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public GURL getGurlForUrl(String url) {
-        return new GURL(url);
-    }
-
     // The hidden tab case needs a bit of special treatment.
     private void handleInitialLoadForHiddenTab(
             BrowserServicesIntentDataProvider intentDataProvider) {
@@ -76,15 +62,6 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
             throw new IllegalStateException("handleInitialIntent called before Tab created");
         }
         String url = intentDataProvider.getUrlToLoad();
-        GURL gurl = getGurlForUrl(url);
-
-        // Manually generating metrics in case the hidden tab has completely finished loading.
-        if (!tab.isLoading() && !tab.isShowingErrorPage()) {
-            mCustomTabObserver.onPageLoadStarted(tab, gurl);
-            mCustomTabObserver.onPageLoadFinished(tab, gurl);
-            mNavigationEventObserver.onPageLoadStarted(tab, gurl);
-            mNavigationEventObserver.onPageLoadFinished(tab, gurl);
-        }
 
         // No actual load to do if the hidden tab already has the exact correct url.
         String speculatedUrl = mTabProvider.getSpeculatedUrl();
@@ -93,17 +70,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         boolean hasCommitted = !tab.getWebContents().getLastCommittedUrl().isEmpty();
         mCustomTabObserver.trackNextPageLoadForHiddenTab(
                 useSpeculation, hasCommitted, intentDataProvider.getIntent());
-        if (useSpeculation) {
-            if (tab.isLoading()) {
-                // CustomTabObserver and CustomTabActivityNavigationObserver are attached
-                // as observers in CustomTabActivityTabController, not when the navigation is
-                // initiated in HiddenTabHolder.
-                mCustomTabObserver.onPageLoadStarted(tab, gurl);
-                mNavigationEventObserver.onPageLoadStarted(tab, gurl);
-            }
 
-            return;
-        }
+        if (useSpeculation) return;
 
         LoadUrlParams params = new LoadUrlParams(url);
 

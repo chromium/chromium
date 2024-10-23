@@ -254,7 +254,7 @@ public class CustomTabsConnectionTest {
                     Assert.assertNotNull(
                             "Null speculation, first one",
                             mCustomTabsConnection.getSpeculationParamsForTesting());
-                    Tab tab = mCustomTabsConnection.getSpeculationParamsForTesting().tab;
+                    Tab tab = mCustomTabsConnection.getSpeculationParamsForTesting().hiddenTab.tab;
                     Assert.assertNotNull("No first tab", tab);
                     tab.addObserver(
                             new EmptyTabObserver() {
@@ -277,9 +277,10 @@ public class CustomTabsConnectionTest {
                             mCustomTabsConnection.getSpeculationParamsForTesting());
                     Assert.assertNotNull(
                             "No second tab",
-                            mCustomTabsConnection.getSpeculationParamsForTesting().tab);
+                            mCustomTabsConnection.getSpeculationParamsForTesting().hiddenTab.tab);
                     Assert.assertEquals(
-                            URL2, mCustomTabsConnection.getSpeculationParamsForTesting().url);
+                            URL2,
+                            mCustomTabsConnection.getSpeculationParamsForTesting().hiddenTab.url);
                 });
         tabDestroyedHelper.waitForCallback("The first hidden tab should have been destroyed", 0);
 
@@ -309,7 +310,8 @@ public class CustomTabsConnectionTest {
                     Assert.assertNotNull(
                             "Null speculation",
                             mCustomTabsConnection.getSpeculationParamsForTesting());
-                    Tab speculationTab = mCustomTabsConnection.getSpeculationParamsForTesting().tab;
+                    Tab speculationTab =
+                            mCustomTabsConnection.getSpeculationParamsForTesting().hiddenTab.tab;
                     Assert.assertNotNull("Null speculation tab", speculationTab);
                     speculationTab.addObserver(
                             new EmptyTabObserver() {
@@ -473,7 +475,7 @@ public class CustomTabsConnectionTest {
                         Criteria.checkThat(
                                 mCustomTabsConnection.getSpeculationParamsForTesting(),
                                 Matchers.notNullValue()));
-        Tab hiddenTab = mCustomTabsConnection.getSpeculationParamsForTesting().tab;
+        Tab hiddenTab = mCustomTabsConnection.getSpeculationParamsForTesting().hiddenTab.tab;
         CriteriaHelper.pollUiThread(
                 () ->
                         Criteria.checkThat(
@@ -506,7 +508,7 @@ public class CustomTabsConnectionTest {
                         Criteria.checkThat(
                                 mCustomTabsConnection.getSpeculationParamsForTesting(),
                                 Matchers.notNullValue()));
-        Tab hiddenTab2 = mCustomTabsConnection.getSpeculationParamsForTesting().tab;
+        Tab hiddenTab2 = mCustomTabsConnection.getSpeculationParamsForTesting().hiddenTab.tab;
         CriteriaHelper.pollUiThread(
                 () ->
                         Criteria.checkThat(

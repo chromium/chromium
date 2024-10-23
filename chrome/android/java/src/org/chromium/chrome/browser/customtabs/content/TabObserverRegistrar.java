@@ -70,6 +70,8 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
                 }
             };
 
+    public TabObserverRegistrar() {}
+
     /** Registers a {@link PageLoadMetrics.Observer} to be managed by this Registrar. */
     public void registerPageLoadMetricsObserver(PageLoadMetrics.Observer observer) {
         mPageLoadMetricsObservers.add(observer);
@@ -115,7 +117,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
         }
     }
 
-    public TabObserverRegistrar(
+    public void associateWithActivity(
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CustomTabActivityTabProvider tabProvider) {
         mTabProvider = tabProvider;

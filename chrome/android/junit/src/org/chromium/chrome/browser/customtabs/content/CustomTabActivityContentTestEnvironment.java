@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /**
@@ -109,7 +108,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public AsyncTabParamsManager realAsyncTabParamsManager =
             AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
 
-    public final CustomTabActivityTabProvider tabProvider = new CustomTabActivityTabProvider();
+    public final CustomTabActivityTabProvider tabProvider =
+            new CustomTabActivityTabProvider(SPECULATED_URL);
 
     @Captor public ArgumentCaptor<Callback<Tab>> activityTabObserverCaptor;
 
@@ -141,7 +141,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(tabModelOrchestrator.getTabModelSelector()).thenReturn(tabModelSelector);
         when(tabModelSelector.getModel(anyBoolean())).thenReturn(tabModel);
         when(tabModelSelector.getCurrentModel()).thenReturn(tabModel);
-        when(connection.getSpeculatedUrl(any())).thenReturn(SPECULATED_URL);
         when(browserInitializer.isFullBrowserInitialized()).thenReturn(true);
         // Default setup is toolbarManager doesn't consume back press event.
         when(toolbarManager.back()).thenReturn(false);
@@ -204,16 +203,9 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public CustomTabIntentHandler createIntentHandler(
             CustomTabActivityNavigationController navigationController) {
-        CustomTabIntentHandlingStrategy strategy =
-                new DefaultCustomTabIntentHandlingStrategy(navigationController, activity) {
-                    @Override
-                    public GURL getGurlForUrl(String url) {
-                        return new GURL(url);
-                    }
-                };
         return new CustomTabIntentHandler(
                 intentDataProvider,
-                strategy,
+                new DefaultCustomTabIntentHandlingStrategy(navigationController, activity),
                 (intent) -> false,
                 mMinimizationManagerHolder,
                 activity);
@@ -236,13 +228,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(tabModelSelector.getCurrentTab()).thenReturn(tab);
     }
 
-    // Dispatches lifecycle events up to native init.
-    public void reachNativeInit(CustomTabActivityTabController tabController) {
-        tabController.onPreInflationStartup();
-        tabController.onPostInflationStartup();
-        tabController.finishNativeInitialization();
-    }
-
     public WebContents prepareTransferredWebcontents() {
         int tabId = 1;
         WebContents webContents = mock(WebContents.class);
@@ -263,7 +248,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public Tab prepareHiddenTab() {
         warmUp();
         Tab hiddenTab = prepareTab();
-        when(connection.takeHiddenTab(any(), any(), any())).thenReturn(hiddenTab);
         return hiddenTab;
     }
 

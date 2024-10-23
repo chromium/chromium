@@ -138,7 +138,8 @@ public class CustomTabPostMessageTest {
                 },
                 LONG_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        ChromeTabUtils.waitForTabPageLoaded(connection.getSpeculationParamsForTesting().tab, url);
+        ChromeTabUtils.waitForTabPageLoaded(
+                connection.getSpeculationParamsForTesting().hiddenTab.tab, url);
     }
 
     /**

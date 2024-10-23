@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.KeyEvent;
+import android.view.Window;
 
 import androidx.annotation.AnimRes;
 import androidx.annotation.Nullable;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
@@ -326,11 +328,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                                 new DefaultBrowserProviderImpl(),
                                 mCipherFactory,
                                 this);
-        mTabProvider = new CustomTabActivityTabProvider();
-        mTabObserverRegistrar = new TabObserverRegistrar(getLifecycleDispatcher(), mTabProvider);
-        mCustomTabObserver = new CustomTabObserver(mIntentDataProvider);
-        mCustomTabNavigationEventObserver =
-                new CustomTabNavigationEventObserver(mIntentDataProvider);
 
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent()
@@ -408,6 +405,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     public void performPreInflationStartup() {
+        // This must be requested before adding content.
+        supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
+
         // Parse the data from the Intent before calling super to allow the Intent to customize
         // the Activity parameters, including the background of the page.
         // Note that color scheme is fixed for the lifetime of Activity: if the system setting
@@ -421,7 +421,35 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             return;
         }
 
+        // Hidden tabs shouldn't be used in incognito/ephemeral CCT, since they are always
+        // created with regular profile.
+        HiddenTab hiddenTab =
+                mIntentDataProvider.isOffTheRecord()
+                        ? null
+                        : CustomTabActivityTabController.getHiddenTab(mIntentDataProvider);
+
+        if (hiddenTab != null) {
+            mTabProvider = new CustomTabActivityTabProvider(hiddenTab.url);
+            mTabObserverRegistrar = hiddenTab.tabObserverRegistrar;
+            mCustomTabObserver = hiddenTab.customTabObserver;
+            mCustomTabNavigationEventObserver = hiddenTab.customTabNavigationEventObserver;
+        } else {
+            mTabProvider = new CustomTabActivityTabProvider(null);
+            mTabObserverRegistrar = new TabObserverRegistrar();
+            mCustomTabObserver =
+                    new CustomTabObserver(
+                            mIntentDataProvider.isOpenedByChrome(),
+                            mIntentDataProvider.getSession(),
+                            /* isHidden= */ false);
+            mCustomTabNavigationEventObserver =
+                    new CustomTabNavigationEventObserver(
+                            mIntentDataProvider.getSession(), /* forPrerender= */ false);
+        }
+        mTabObserverRegistrar.associateWithActivity(getLifecycleDispatcher(), mTabProvider);
+
         super.performPreInflationStartup();
+
+        mTabController.setUpInitialTab(hiddenTab != null ? hiddenTab.tab : null);
 
         if (mIntentDataProvider.isPartialCustomTab()) {
             @AnimRes

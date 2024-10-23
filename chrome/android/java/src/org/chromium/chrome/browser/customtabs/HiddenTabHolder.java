@@ -16,6 +16,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
+import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
@@ -42,23 +44,54 @@ public class HiddenTabHolder {
     @VisibleForTesting
     static final class SpeculationParams {
         public final CustomTabsSessionToken session;
-        public final String url;
-        public final Tab tab;
+        public final HiddenTab hiddenTab;
         public final String referrer;
 
         private SpeculationParams(
-                CustomTabsSessionToken session, String url, Tab tab, String referrer) {
+                CustomTabsSessionToken session,
+                String url,
+                Tab tab,
+                String referrer,
+                TabObserverRegistrar tabObserverRegistrar,
+                CustomTabObserver customTabObserver,
+                CustomTabNavigationEventObserver customTabNavigationEventObserver) {
             this.session = session;
-            this.url = url;
-            this.tab = tab;
+            this.hiddenTab =
+                    new HiddenTab(
+                            tab,
+                            tabObserverRegistrar,
+                            customTabObserver,
+                            customTabNavigationEventObserver,
+                            url);
             this.referrer = referrer;
+        }
+    }
+
+    public static class HiddenTab {
+        public final Tab tab;
+        public final TabObserverRegistrar tabObserverRegistrar;
+        public final CustomTabObserver customTabObserver;
+        public final CustomTabNavigationEventObserver customTabNavigationEventObserver;
+        public final String url;
+
+        public HiddenTab(
+                Tab tab,
+                TabObserverRegistrar tabObserverRegistrar,
+                CustomTabObserver customTabObserver,
+                CustomTabNavigationEventObserver customTabNavigationEventObserver,
+                String url) {
+            this.tab = tab;
+            this.tabObserverRegistrar = tabObserverRegistrar;
+            this.customTabObserver = customTabObserver;
+            this.customTabNavigationEventObserver = customTabNavigationEventObserver;
+            this.url = url;
         }
     }
 
     private class HiddenTabObserver extends EmptyTabObserver {
         @Override
         public void onCrash(Tab tab) {
-            if (mSpeculation == null || mSpeculation.tab != tab) return;
+            if (mSpeculation == null || mSpeculation.hiddenTab.tab != tab) return;
             destroyHiddenTab(null);
         }
 
@@ -132,8 +165,25 @@ public class HiddenTabHolder {
 
         loadParams.setTransitionType(PageTransition.LINK | PageTransition.FROM_API);
         RedirectHandlerTabHelper.getOrCreateHandlerFor(tab).setIsPrefetchLoadForIntent(true);
-        mSpeculation = new SpeculationParams(session, url, tab, referrer);
-        mSpeculation.tab.loadUrl(loadParams);
+
+        TabObserverRegistrar registrar = new TabObserverRegistrar();
+        CustomTabObserver customTabObserver =
+                new CustomTabObserver(/* openedByChrome= */ false, session, /* isHidden= */ true);
+        CustomTabNavigationEventObserver customTabNavigationEventObserver =
+                new CustomTabNavigationEventObserver(session, /* forPrerender= */ true);
+        CustomTabActivityTabController.addTabNavigationObservers(
+                registrar, customTabObserver, customTabNavigationEventObserver, tab, session);
+
+        mSpeculation =
+                new SpeculationParams(
+                        session,
+                        url,
+                        tab,
+                        referrer,
+                        registrar,
+                        customTabObserver,
+                        customTabNavigationEventObserver);
+        tab.loadUrl(loadParams);
     }
 
     /**
@@ -147,7 +197,7 @@ public class HiddenTabHolder {
      * @return The hidden tab, or null.
      */
     @Nullable
-    Tab takeHiddenTab(
+    HiddenTab takeHiddenTab(
             @Nullable CustomTabsSessionToken session,
             boolean ignoreFragments,
             String url,
@@ -156,8 +206,8 @@ public class HiddenTabHolder {
             if (mSpeculation == null || session == null) return null;
             if (!session.equals(mSpeculation.session)) return null;
 
-            Tab tab = mSpeculation.tab;
-            String speculatedUrl = mSpeculation.url;
+            HiddenTab hiddenTab = mSpeculation.hiddenTab;
+            String speculatedUrl = hiddenTab.url;
             String speculationReferrer = mSpeculation.referrer;
 
             mSpeculation = null;
@@ -170,9 +220,9 @@ public class HiddenTabHolder {
             if (referrer == null) referrer = "";
 
             if (urlsMatch && TextUtils.equals(speculationReferrer, referrer)) {
-                return tab;
+                return hiddenTab;
             } else {
-                tab.destroy();
+                hiddenTab.tab.destroy();
                 return null;
             }
         }
@@ -183,17 +233,8 @@ public class HiddenTabHolder {
         if (mSpeculation == null) return;
         if (session != null && !session.equals(mSpeculation.session)) return;
 
-        mSpeculation.tab.destroy();
+        mSpeculation.hiddenTab.tab.destroy();
         mSpeculation = null;
-    }
-
-    /** Gets the url of the current hidden tab, if it exists. */
-    @Nullable
-    String getSpeculatedUrl(CustomTabsSessionToken session) {
-        if (mSpeculation == null || !mSpeculation.session.equals(session)) {
-            return null;
-        }
-        return mSpeculation.url;
     }
 
     /** Returns whether there currently is a hidden tab. */
@@ -202,7 +243,7 @@ public class HiddenTabHolder {
     }
 
     public Tab getHiddenTabForTesting() {
-        return mSpeculation != null ? mSpeculation.tab : null;
+        return mSpeculation != null ? mSpeculation.hiddenTab.tab : null;
     }
 
     @Nullable

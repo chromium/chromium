@@ -27,7 +27,9 @@ public class CustomTabActivityTabProvider implements Supplier<Tab> {
     private @TabCreationMode int mTabCreationMode = TabCreationMode.NONE;
     @Nullable private String mSpeculatedUrl;
 
-    public CustomTabActivityTabProvider() {}
+    public CustomTabActivityTabProvider(String speculatedUrl) {
+        mSpeculatedUrl = speculatedUrl;
+    }
 
     /** Adds an {@link Observer} */
     public void addObserver(Observer observer) {
@@ -82,10 +84,6 @@ public class CustomTabActivityTabProvider implements Supplier<Tab> {
         for (Observer observer : mObservers) {
             observer.onInitialTabCreated(tab, creationMode);
         }
-    }
-
-    void setSpeculatedUrl(@Nullable String url) {
-        mSpeculatedUrl = url;
     }
 
     void removeTab() {

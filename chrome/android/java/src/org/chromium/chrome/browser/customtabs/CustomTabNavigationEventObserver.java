@@ -8,7 +8,7 @@ import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -25,25 +25,48 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
 
     private final CustomTabsSessionToken mSessionToken;
     private final CustomTabsConnection mConnection;
+    private boolean mIsPrerender;
 
-    public CustomTabNavigationEventObserver(BrowserServicesIntentDataProvider intentDataProvider) {
-        mSessionToken = intentDataProvider.getSession();
+    // Cached values when prerendering, so that we don't send events for discarded prerenders.
+    private boolean mPageLoadStarted;
+    private boolean mPageLoadFinished;
+    private Integer mPageLoadFailed;
+
+    public CustomTabNavigationEventObserver(CustomTabsSessionToken session, boolean forPrerender) {
+        mSessionToken = session;
         mConnection = CustomTabsConnection.getInstance();
+        // Kill-switch for reporting events for prerendered navigations.
+        mIsPrerender =
+                forPrerender
+                        && !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.CCT_REPORT_PRERENDER_EVENTS);
     }
 
     @Override
     public void onPageLoadStarted(Tab tab, GURL url) {
+        if (mIsPrerender) {
+            mPageLoadStarted = true;
+            return;
+        }
         mConnection.notifyNavigationEvent(mSessionToken, CustomTabsCallback.NAVIGATION_STARTED);
     }
 
     @Override
     public void onPageLoadFinished(Tab tab, GURL url) {
+        if (mIsPrerender) {
+            mPageLoadFinished = true;
+            return;
+        }
         mConnection.notifyNavigationEvent(mSessionToken, CustomTabsCallback.NAVIGATION_FINISHED);
     }
 
     @Override
     @SuppressWarnings("TraditionalSwitchExpression")
     public void onPageLoadFailed(Tab tab, int errorCode) {
+        if (mIsPrerender) {
+            mPageLoadFailed = errorCode;
+            return;
+        }
         int navigationEvent =
                 errorCode == NET_ERROR_ABORTED
                         ? CustomTabsCallback.NAVIGATION_ABORTED
@@ -71,6 +94,12 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
 
     @Override
     public void onShown(Tab tab, @TabSelectionType int type) {
+        if (mIsPrerender) {
+            mIsPrerender = false;
+            if (mPageLoadStarted) onPageLoadStarted(null, null);
+            if (mPageLoadFinished) onPageLoadFinished(null, null);
+            if (mPageLoadFailed != null) onPageLoadFailed(null, mPageLoadFailed);
+        }
         mConnection.notifyNavigationEvent(mSessionToken, CustomTabsCallback.TAB_SHOWN);
     }
 

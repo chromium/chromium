@@ -530,7 +530,7 @@ public class CustomTabActivityIncognitoTest {
                 LONG_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         ChromeTabUtils.waitForTabPageLoaded(
-                connection.getSpeculationParamsForTesting().tab, mTestPage);
+                connection.getSpeculationParamsForTesting().hiddenTab.tab, mTestPage);
         mCustomTabActivityTestRule.setCustomSessionInitiatedForIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         connection.cleanUpSession(token);

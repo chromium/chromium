@@ -90,7 +90,8 @@ public class CustomTabActivityTabControllerUnitTest {
     @Test
     public void createsTabEarly_IfWarmUpIsFinished() {
         env.warmUp();
-        mTabController.onPreInflationStartup();
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         assertNotNull(env.tabProvider.getTab());
         assertEquals(TabCreationMode.EARLY, env.tabProvider.getInitialTabCreationMode());
     }
@@ -98,7 +99,8 @@ public class CustomTabActivityTabControllerUnitTest {
     // Some websites replace the tab with a new one.
     @Test
     public void returnsNewTab_IfTabChanges() {
-        mTabController.onPreInflationStartup();
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         mTabController.finishNativeInitialization();
         Tab newTab = env.prepareTab();
         env.changeTab(newTab);
@@ -109,7 +111,8 @@ public class CustomTabActivityTabControllerUnitTest {
     public void usesRestoredTab_IfAvailable() {
         Tab savedTab = env.prepareTab();
         env.saveTab(savedTab);
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         assertEquals(savedTab, env.tabProvider.getTab());
         assertEquals(TabCreationMode.RESTORED, env.tabProvider.getInitialTabCreationMode());
     }
@@ -120,7 +123,8 @@ public class CustomTabActivityTabControllerUnitTest {
         Tab savedTab = env.prepareTab();
         env.saveTab(savedTab);
         when(env.cipherFactory.restoreFromBundle(any())).thenReturn(true);
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         assertEquals(savedTab, env.tabProvider.getTab());
         assertEquals(TabCreationMode.RESTORED, env.tabProvider.getInitialTabCreationMode());
     }
@@ -131,7 +135,8 @@ public class CustomTabActivityTabControllerUnitTest {
         Tab savedTab = env.prepareTab();
         env.saveTab(savedTab);
         when(env.cipherFactory.restoreFromBundle(any())).thenReturn(false);
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         assertEquals(env.tabFromFactory, env.tabProvider.getTab());
         assertEquals(TabCreationMode.DEFAULT, env.tabProvider.getInitialTabCreationMode());
     }
@@ -140,13 +145,15 @@ public class CustomTabActivityTabControllerUnitTest {
     public void doesntCreateNewTab_IfRestored() {
         Tab savedTab = env.prepareTab();
         env.saveTab(savedTab);
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         verify(env.tabFactory, never()).createTab(any(), any(), any());
     }
 
     @Test
     public void createsANewTabOnNativeInit_IfNoTabExists() {
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         assertEquals(env.tabFromFactory, env.tabProvider.getTab());
         assertEquals(TabCreationMode.DEFAULT, env.tabProvider.getInitialTabCreationMode());
     }
@@ -154,7 +161,8 @@ public class CustomTabActivityTabControllerUnitTest {
     @Test
     public void doesntCreateNewTabOnNativeInit_IfCreatedTabEarly() {
         env.warmUp();
-        mTabController.onPreInflationStartup();
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
 
         clearInvocations(env.tabFactory);
         mTabController.finishNativeInitialization();
@@ -164,20 +172,23 @@ public class CustomTabActivityTabControllerUnitTest {
     @Test
     public void addsEarlyCreatedTab_ToTabModel() {
         env.warmUp();
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         verify(env.tabModel).addTab(eq(env.tabFromFactory), anyInt(), anyInt(), anyInt());
     }
 
     @Test
     public void addsTabCreatedOnNativeInit_ToTabModel() {
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         verify(env.tabModel).addTab(eq(env.tabFromFactory), anyInt(), anyInt(), anyInt());
     }
 
     @Test
     public void usesHiddenTab_IfAvailable() {
         Tab hiddenTab = env.prepareHiddenTab();
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(hiddenTab);
+        mTabController.finishNativeInitialization();
         assertEquals(hiddenTab, env.tabProvider.getTab());
         assertEquals(TabCreationMode.HIDDEN, env.tabProvider.getInitialTabCreationMode());
     }
@@ -185,7 +196,8 @@ public class CustomTabActivityTabControllerUnitTest {
     @Test
     public void finishesReparentingHiddenTab() {
         Tab hiddenTab = env.prepareHiddenTab();
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(hiddenTab);
+        mTabController.finishNativeInitialization();
         verify(env.reparentingTaskProvider.get(hiddenTab)).finish(any(), any());
     }
 
@@ -195,14 +207,16 @@ public class CustomTabActivityTabControllerUnitTest {
         when(env.webContentsFactory.createWebContentsWithWarmRenderer(
                         any(), anyBoolean(), anyLong()))
                 .thenReturn(webContents);
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         assertEquals(webContents, env.webContentsCaptor.getValue());
     }
 
     @Test
     public void propagatesTargetNetworkCorrectly_whenIntentDataProviderTargetsNetwork() {
         when(env.intentDataProvider.getTargetNetwork()).thenReturn(TEST_TARGET_NETWORK);
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         verify(env.webContentsFactory, never())
                 .createWebContentsWithWarmRenderer(
                         any(), anyBoolean(), not(eq(TEST_TARGET_NETWORK)));
@@ -213,14 +227,16 @@ public class CustomTabActivityTabControllerUnitTest {
     @Test
     public void usesTransferredWebContents_IfAvailable() {
         WebContents transferredWebcontents = env.prepareTransferredWebcontents();
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         assertEquals(transferredWebcontents, env.webContentsCaptor.getValue());
     }
 
     @Test
     public void usesSpareWebContents_IfAvailable() {
         WebContents spareWebcontents = env.prepareSpareWebcontents();
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         assertEquals(spareWebcontents, env.webContentsCaptor.getValue());
     }
 
@@ -228,7 +244,8 @@ public class CustomTabActivityTabControllerUnitTest {
     public void prefersTransferredWebContents_ToSpareWebContents() {
         WebContents transferredWebcontents = env.prepareTransferredWebcontents();
         WebContents spareWebcontents = env.prepareSpareWebcontents();
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         assertEquals(transferredWebcontents, env.webContentsCaptor.getValue());
         assertNotEquals(spareWebcontents, env.webContentsCaptor.getValue());
     }
@@ -236,7 +253,8 @@ public class CustomTabActivityTabControllerUnitTest {
     // This is important so that the tab doesn't get hidden, see ChromeActivity#onStopWithNative
     @Test
     public void clearsActiveTab_WhenStartsReparenting() {
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         mTabController.detachAndStartReparenting(new Intent(), new Bundle(), mock(Runnable.class));
         assertNull(env.tabProvider.getTab());
     }
@@ -254,7 +272,8 @@ public class CustomTabActivityTabControllerUnitTest {
                 .when(env.connection)
                 .setClientDataHeaderForNewTab(any(), any());
         env.isOffTheRecord = true;
-        mTabController.onPreInflationStartup();
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         mTabController.finishNativeInitialization();
         Tab tab = env.prepareTab();
         assertTrue(tab.isOffTheRecord());
@@ -266,7 +285,8 @@ public class CustomTabActivityTabControllerUnitTest {
         when(env.connection.getEngagementSignalsHandler(eq(env.session))).thenReturn(handler);
         when(env.connection.isDynamicFeatureEnabled(anyString())).thenReturn(true);
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
-        env.reachNativeInit(mTabController);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
         verify(handler).setTabObserverRegistrar(env.tabObserverRegistrar);
     }
 }
