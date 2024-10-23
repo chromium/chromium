@@ -80,7 +80,7 @@ void DriveSkyvaultUploader::Run() {
   // TODO(aidazolic): Handle different errors.
   if (!profile_) {
     LOG(ERROR) << "No profile";
-    OnEndCopy(MigrationUploadError::kOther);
+    OnEndCopy(MigrationUploadError::kUnexpectedError);
     return;
   }
 
@@ -88,13 +88,13 @@ void DriveSkyvaultUploader::Run() {
       file_manager::VolumeManager::Get(profile_);
   if (!volume_manager) {
     LOG(ERROR) << "No volume manager";
-    OnEndCopy(MigrationUploadError::kOther);
+    OnEndCopy(MigrationUploadError::kUnexpectedError);
     return;
   }
   io_task_controller_ = volume_manager->io_task_controller();
   if (!io_task_controller_) {
     LOG(ERROR) << "No task_controller";
-    OnEndCopy(MigrationUploadError::kOther);
+    OnEndCopy(MigrationUploadError::kUnexpectedError);
     return;
   }
 
@@ -163,7 +163,7 @@ void DriveSkyvaultUploader::CreateCopyIOTask(
   }
 
   if (!created) {
-    OnEndCopy(MigrationUploadError::kCopyFailed);
+    OnEndCopy(MigrationUploadError::kCreateFolderFailed);
     return;
   }
 
@@ -171,10 +171,9 @@ void DriveSkyvaultUploader::CreateCopyIOTask(
   FileSystemURL destination_folder_url =
       ash::cloud_upload::FilePathToFileSystemURL(profile_, file_system_context_,
                                                  destination_folder_path);
-  // TODO (b/243095484) Define error behavior.
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder Drive URL";
-    OnEndCopy(MigrationUploadError::kCopyFailed);
+    OnEndCopy(MigrationUploadError::kServiceUnavailable);
     return;
   }
 
@@ -302,9 +301,7 @@ void DriveSkyvaultUploader::OnCopyStatus(
       OnEndCopy(MigrationUploadError::kCancelled);
       return;
     case file_manager::io_task::State::kError:
-      // TODO(aidazolic): Potentially handle different IOTask errors as in
-      // DriveUploadHandler::ShowIOTaskError.
-      OnEndCopy(MigrationUploadError::kCopyFailed);
+      ProcessCopyError(status);
       return;
     case file_manager::io_task::State::kNeedPassword:
       NOTREACHED_IN_MIGRATION()
@@ -312,6 +309,31 @@ void DriveSkyvaultUploader::OnCopyStatus(
              "moved. Case should not be reached.";
       return;
   }
+}
+
+void DriveSkyvaultUploader::ProcessCopyError(
+    const file_manager::io_task::ProgressStatus& status) {
+  // It's always one file.
+  DCHECK_EQ(status.sources.size(), 1u);
+  DCHECK_EQ(status.outputs.size(), 1u);
+  DCHECK_EQ(status.state, file_manager::io_task::State::kError);
+
+  base::File::Error error =
+      status.outputs.front().error.value_or(base::File::FILE_ERROR_FAILED);
+  MigrationUploadError upload_error = MigrationUploadError::kCopyFailed;
+
+  switch (error) {
+    case base::File::FILE_ERROR_NOT_FOUND:
+      upload_error = MigrationUploadError::kFileNotFound;
+      break;
+    case base::File::FILE_ERROR_NO_SPACE:
+      upload_error = MigrationUploadError::kCloudQuotaFull;
+      break;
+    default:
+      break;
+  }
+
+  OnEndCopy(upload_error);
 }
 
 void DriveSkyvaultUploader::OnDeleteStatus(
@@ -376,14 +398,14 @@ void DriveSkyvaultUploader::OnSyncingStatusUpdate(
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
         LOG(ERROR) << "Drive sync error: failed";
-        OnEndCopy(MigrationUploadError::kCopyFailed);
+        OnEndCopy(MigrationUploadError::kSyncFailed);
         return;
       case drivefs::mojom::ItemEvent::State::kCancelledAndDeleted:
         NOTREACHED_IN_MIGRATION();
         return;
       case drivefs::mojom::ItemEvent::State::kCancelledAndTrashed:
         LOG(ERROR) << "Drive sync error: cancelled and trashed";
-        OnEndCopy(MigrationUploadError::kCopyFailed);
+        OnEndCopy(MigrationUploadError::kSyncFailed);
         return;
     }
   }
@@ -393,10 +415,7 @@ void DriveSkyvaultUploader::OnError(const drivefs::mojom::DriveError& error) {
   if (base::FilePath(error.path) != observed_relative_drive_path_) {
     return;
   }
-
-  // TODO(aidazolic): Potentially handle different errors, as in
-  // DriveUploadHandler::OnError.
-  OnEndCopy(MigrationUploadError::kCopyFailed);
+  OnEndCopy(MigrationUploadError::kCloudQuotaFull);
 }
 
 void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(

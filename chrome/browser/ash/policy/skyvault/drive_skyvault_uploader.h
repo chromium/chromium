@@ -98,6 +98,9 @@ class DriveSkyvaultUploader
   // the source file. Calls `OnEndUpload` once the delete is finished.
   void OnDeleteStatus(const file_manager::io_task::ProgressStatus& status);
 
+  // Translates the status error into a MigrationUploadError.
+  void ProcessCopyError(const file_manager::io_task::ProgressStatus& status);
+
   // DriveFsHost::Observer implementation.
   void OnUnmounted() override;
   void OnSyncingStatusUpdate(

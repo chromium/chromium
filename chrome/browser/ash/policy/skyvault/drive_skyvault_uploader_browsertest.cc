@@ -48,7 +48,7 @@ class DriveSkyvaultUploaderTest : public SkyvaultGoogleDriveTest {
   // `Wait` will not complete until this is called.
   void OnUploadDone(std::optional<MigrationUploadError> error) {
     if (fail_sync_) {
-      ASSERT_EQ(error, MigrationUploadError::kCopyFailed);
+      ASSERT_EQ(error, MigrationUploadError::kSyncFailed);
     } else {
       ASSERT_FALSE(error.has_value());
     }
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedUpload) {
   drive_upload_handler->Run();
 
   auto [error, upload_root_path] = future.Get();
-  ASSERT_EQ(MigrationUploadError::kCopyFailed, error);
+  ASSERT_EQ(MigrationUploadError::kSyncFailed, error);
   EXPECT_EQ(drive_root_dir().Append(kDestinationDirName), upload_root_path);
 
   // Check that the source file has not been moved to Drive.

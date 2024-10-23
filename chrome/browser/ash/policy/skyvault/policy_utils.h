@@ -32,11 +32,18 @@ enum class CloudProvider {
 
 // Categories of errors that can occur during the file upload process.
 enum class MigrationUploadError {
-  kServiceUnavailable,  // The cloud provider is not accessible.
-  kCopyFailed,          // Copying the file to the destination failed.
-  kDeleteFailed,        // Deleting the source file after upload failed.
-  kOther,               // An unspecified error occurred.
-  kCancelled,           // Upload explicitly cancelled.
+  kUnexpectedError = 0,     // An unexpected error occurred, e.g. no profile.
+  kServiceUnavailable = 1,  // The cloud provider is not accessible.
+  kCreateFolderFailed = 2,  // Creating a folder in Google Drive failed.
+  kSyncFailed = 3,          // Syncing the file to Google Drive failed.
+  kCloudQuotaFull = 4,      // No space on the cloud provider.
+  kFileNotFound = 5,        // File deleted before finishing the upload.
+  kInvalidURL = 6,          // OneDrive rejected the request.
+  kCopyFailed = 7,          // Generic catch-all copy error.
+  kDeleteFailed = 8,        // Deleting the file after upload failed.
+  kAuthRequired = 9,        // OneDrive reauthentication required.
+  kMoveFailed = 10,         // Generic catch-all move error.
+  kCancelled = 11,          // Upload explicitly cancelled.
 };
 
 // The event or action that triggers an upload to the cloud.

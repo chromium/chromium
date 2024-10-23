@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -175,7 +176,7 @@ void OdfsSkyvaultUploader::Run(UploadDoneCallback upload_callback) {
 
   if (!profile_) {
     LOG(ERROR) << "No profile";
-    OnEndUpload(/*url=*/{}, MigrationUploadError::kOther);
+    OnEndUpload(/*url=*/{}, MigrationUploadError::kUnexpectedError);
     return;
   }
 
@@ -183,13 +184,13 @@ void OdfsSkyvaultUploader::Run(UploadDoneCallback upload_callback) {
       (file_manager::VolumeManager::Get(profile_));
   if (!volume_manager) {
     LOG(ERROR) << "No volume manager";
-    OnEndUpload(/*url=*/{}, MigrationUploadError::kOther);
+    OnEndUpload(/*url=*/{}, MigrationUploadError::kUnexpectedError);
     return;
   }
   io_task_controller_ = volume_manager->io_task_controller();
   if (!io_task_controller_) {
     LOG(ERROR) << "No task_controller";
-    OnEndUpload(/*url=*/{}, MigrationUploadError::kOther);
+    OnEndUpload(/*url=*/{}, MigrationUploadError::kUnexpectedError);
     return;
   }
 
@@ -263,8 +264,10 @@ void OdfsSkyvaultUploader::OnIOTaskStatus(
       OnEndUpload(status.outputs[0].url);
       return;
     case file_manager::io_task::State::kCancelled:
+      OnEndUpload(/*url=*/{}, MigrationUploadError::kCancelled);
+      return;
     case file_manager::io_task::State::kError:
-      OnEndUpload(/*url=*/{}, MigrationUploadError::kCopyFailed);
+      ProcessError(status);
       return;
     case file_manager::io_task::State::kNeedPassword:
       NOTREACHED_IN_MIGRATION()
@@ -272,6 +275,38 @@ void OdfsSkyvaultUploader::OnIOTaskStatus(
              "moved. Case should not be reached.";
       return;
   }
+}
+
+void OdfsSkyvaultUploader::ProcessError(
+    const ::file_manager::io_task::ProgressStatus& status) {
+  // It's always one file.
+  DCHECK_EQ(status.sources.size(), 1u);
+  DCHECK_EQ(status.outputs.size(), 1u);
+  DCHECK_EQ(status.state, file_manager::io_task::State::kError);
+
+  base::File::Error error =
+      status.outputs.front().error.value_or(base::File::FILE_ERROR_FAILED);
+  MigrationUploadError upload_error = MigrationUploadError::kMoveFailed;
+
+  switch (error) {
+    case base::File::FILE_ERROR_NOT_FOUND:
+      upload_error = MigrationUploadError::kFileNotFound;
+      break;
+    case base::File::FILE_ERROR_ACCESS_DENIED:
+      // TODO(aidazolic): Maybe ask for reauth again.
+      upload_error = MigrationUploadError::kAuthRequired;
+      break;
+    case base::File::FILE_ERROR_NO_SPACE:
+      upload_error = MigrationUploadError::kCloudQuotaFull;
+      break;
+    case base::File::FILE_ERROR_INVALID_URL:
+      upload_error = MigrationUploadError::kInvalidURL;
+      break;
+    default:
+      break;
+  }
+
+  OnEndUpload(/*url=*/{}, upload_error);
 }
 
 void OdfsSkyvaultUploader::OnMountResponse(base::File::Error result) {
@@ -319,7 +354,7 @@ void OdfsSkyvaultUploader::StartIOTask() {
       profile_, file_system_context_, destination_folder_path);
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder ODFS URL";
-    OnEndUpload(/*url=*/{}, MigrationUploadError::kCopyFailed);
+    OnEndUpload(/*url=*/{}, MigrationUploadError::kServiceUnavailable);
     return;
   }
 

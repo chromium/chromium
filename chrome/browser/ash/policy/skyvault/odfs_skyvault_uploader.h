@@ -127,6 +127,9 @@ class OdfsSkyvaultUploader
   void OnIOTaskStatus(
       const ::file_manager::io_task::ProgressStatus& status) override;
 
+  // Translates the status error into a MigrationUploadError.
+  void ProcessError(const ::file_manager::io_task::ProgressStatus& status);
+
   // Called when the mount response is received.
   void OnMountResponse(base::File::Error result);
 

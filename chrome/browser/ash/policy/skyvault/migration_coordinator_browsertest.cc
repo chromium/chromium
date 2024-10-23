@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest,
   SetUpMyFiles();
   SetUpODFS();
   provided_file_system_->SetCreateFileError(
-      base::File::Error::FILE_ERROR_NO_MEMORY);
+      base::File::Error::FILE_ERROR_NO_SPACE);
   provided_file_system_->SetReauthenticationRequired(false);
 
   const std::string file = "video_long.ogv";
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest,
   ASSERT_TRUE(errors.size() == 1u);
   auto error = errors.find(file_path);
   ASSERT_NE(error, errors.end());
-  ASSERT_EQ(error->second, MigrationUploadError::kCopyFailed);
+  ASSERT_EQ(error->second, MigrationUploadError::kCloudQuotaFull);
 
   CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(file));
 }
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, FailedUpload) {
   ASSERT_EQ(1u, errors.size());
   auto error = errors.find(file_path);
   ASSERT_NE(errors.end(), error);
-  ASSERT_EQ(MigrationUploadError::kCopyFailed, error->second);
+  ASSERT_EQ(MigrationUploadError::kSyncFailed, error->second);
   // The path should be populated by the time sync starts.
   EXPECT_EQ(drive_root_dir().Append(kDestinationDirName), upload_root_path);
 
