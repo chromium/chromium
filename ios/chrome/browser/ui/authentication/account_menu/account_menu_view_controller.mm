@@ -91,17 +91,40 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 }  // namespace
 
+@interface AccountMenuViewController () <UITableViewDelegate>
+
+@property(nonatomic, strong) UITableView* tableView;
+
+@end
+
 @implementation AccountMenuViewController {
   UITableViewDiffableDataSource* _accountMenuDataSource;
   UIButton* _closeButton;
   UIButton* _ellipsisButton;
   CentralAccountView* _identityAccountView;
+  BOOL _resizeReady;
 }
 
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  _resizeReady = NO;
+  self.tableView =
+      [[UITableView alloc] initWithFrame:CGRectZero
+                                   style:UITableViewStyleInsetGrouped];
+  self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:self.tableView];
+  [NSLayoutConstraint activateConstraints:@[
+    [self.view.topAnchor constraintEqualToAnchor:self.tableView.topAnchor],
+    [self.view.bottomAnchor
+        constraintEqualToAnchor:self.tableView.bottomAnchor],
+    [self.view.trailingAnchor
+        constraintEqualToAnchor:self.tableView.trailingAnchor],
+    [self.view.leadingAnchor
+        constraintEqualToAnchor:self.tableView.leadingAnchor],
+  ]];
+  self.tableView.delegate = self;
   self.tableView.accessibilityIdentifier = kAccountMenuTableViewId;
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
@@ -113,13 +136,17 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [self updatePrimaryAccount];
   self.tableView.tableFooterView = [[UIView alloc]
       initWithFrame:CGRectMake(0, 0, CGFLOAT_EPSILON, CGFLOAT_EPSILON)];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  // Update the bottom sheet height.
   [self resize];
 }
 
-- (void)viewWillLayoutSubviews {
-  [super viewWillLayoutSubviews];
-  // Update the bottom sheet height.
-  [self resize];
+- (void)viewIsAppearing:(BOOL)animated {
+  [super viewIsAppearing:animated];
+  _resizeReady = YES;
 }
 
 #pragma mark - Private
@@ -131,16 +158,16 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 // Resizes the view for current content.
 - (void)resize {
+  if (!_resizeReady) {
+    return;
+  }
   // Update the bottom sheet height.
   [self.sheetPresentationController invalidateDetents];
   // Update the popover height.
   [_identityAccountView updateTopPadding:[self navigationBarHeight]];
-  CGFloat height =
-      [self.tableView
-          systemLayoutSizeFittingSize:self.navigationController
-                                          .popoverPresentationController
-                                          .containerView.bounds.size]
-          .height;
+  [self.tableView setNeedsLayout];
+  [self.tableView layoutIfNeeded];
+  CGFloat height = self.tableView.contentSize.height;
   self.preferredContentSize = CGSize(self.preferredContentSize.width, height);
 }
 
@@ -411,10 +438,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 // Returns preferred height according to the container view width.
 - (CGFloat)preferredHeightForSheetContent {
   // Get the size of the container view which is the maximum available size.
-  UIView* containerView = self.sheetPresentationController.containerView;
-  CGSize fittingSize = containerView.bounds.size;
-  CGFloat height =
-      [self.tableView systemLayoutSizeFittingSize:fittingSize].height;
+  CGFloat height = self.tableView.contentSize.height;
   // Add the navigation bar.
   height += [self navigationBarHeight];
   return height;
@@ -470,7 +494,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     heightForFooterInSection:(NSInteger)section {
   if (section == [self.tableView numberOfSections] - 1) {
     //  No footer space for last section.
-    return 0;
+    return kSideMargins;
   }
   return kFooterHeight;
 }
@@ -498,6 +522,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [_identityAccountView updateTopPadding:[self navigationBarHeight]];
   self.tableView.tableHeaderView = _identityAccountView;
   [self.tableView reloadData];
+  [self resize];
 }
 
 - (void)updateErrorSection:(AccountErrorUIInfo*)error {
@@ -522,6 +547,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     // The error changed. No need to change the sections, only their content.
   }
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
+  [self resize];
 }
 
 - (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)indicesToAdd
@@ -543,6 +569,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
 
   [self.tableView reloadData];
+  [self resize];
 }
 
 #pragma mark - UIResponder

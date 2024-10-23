@@ -126,8 +126,7 @@
   _browserCoordinatorCommands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
 
-  _viewController = [[AccountMenuViewController alloc]
-      initWithStyle:UITableViewStyleInsetGrouped];
+  _viewController = [[AccountMenuViewController alloc] init];
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
