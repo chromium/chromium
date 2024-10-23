@@ -106,13 +106,17 @@ def Gnrt(*args) -> str:
                                        check_exitcode=True)
 
 
-def GnrtUpdate(args: List[str]) -> str:
+def GnrtUpdate(args: List[str], check_stdout: bool,
+               check_exitcode: bool) -> str:
     """Runs `gnrt update` command."""
     args = ["update", "--"] + args + ["-Zunstable-options", "-Zbindeps"]
-    return Gnrt(*args)
+    return RunCommandAndCheckForErrors([RUN_GNRT] + list(args),
+                                       check_stdout=check_stdout,
+                                       check_exitcode=check_exitcode)
 
 
-def GnrtUpdateCrate(old_crate_id: str, new_crate_id: str):
+def GnrtUpdateCrate(old_crate_id: str, new_crate_id: str, check_stdout: bool,
+                    check_exitcode: bool):
     old_crate_version = ConvertCrateIdToCrateVersion(old_crate_id)
     new_crate_version = ConvertCrateIdToCrateVersion(new_crate_id)
     old_epoch = GetEpoch(old_crate_version)
@@ -123,7 +127,9 @@ def GnrtUpdateCrate(old_crate_id: str, new_crate_id: str):
     if is_major_update:
         cargo_update_args.append("--breaking")
 
-    return GnrtUpdate(cargo_update_args)
+    return GnrtUpdate(cargo_update_args,
+                      check_stdout=check_stdout,
+                      check_exitcode=check_exitcode)
 
 
 def GetCurrentCrateIds() -> Set[str]:
@@ -312,7 +318,7 @@ def FindUpdateableCrates(args) -> List[str]:
     print("Checking which crates can be updated...")
     assert not Git("status", "--porcelain")  # No local changes expected here.
     old_crate_ids = GetCurrentCrateIds()
-    GnrtUpdate(args.remaining_args)
+    GnrtUpdate(args.remaining_args, check_stdout=False, check_exitcode=False)
     new_crate_ids = GetCurrentCrateIds()
     Git("reset", "--hard")
     only_minor_updates = not DoArgsAskForBreakingChanges(args.remaining_args)
@@ -338,7 +344,10 @@ def FindSizeOfCrateUpdate(old_crate_id: str, new_crate_id: str,
         f"Measuring the delta of updating {old_crate_id} => {new_crate_id}...")
     assert not Git("status", "--porcelain")  # No local changes expected here.
     old_crate_ids = GetCurrentCrateIds()
-    GnrtUpdateCrate(old_crate_id, new_crate_id)
+    GnrtUpdateCrate(old_crate_id,
+                    new_crate_id,
+                    check_stdout=False,
+                    check_exitcode=False)
     new_crate_ids = GetCurrentCrateIds()
     Git("reset", "--hard")
     diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
@@ -473,7 +482,10 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
     # gnrt update
     old_crate_ids = GetCurrentCrateIds()
     print(f"  Running `gnrt update` for {old_crate_id} => {new_crate_id} ...")
-    GnrtUpdateCrate(old_crate_id, new_crate_id)
+    GnrtUpdateCrate(old_crate_id,
+                    new_crate_id,
+                    check_stdout=True,
+                    check_exitcode=True)
     new_crate_ids = GetCurrentCrateIds()
     if old_crate_ids == new_crate_ids:
         print("  `gnrt update` resulted in no changes - "\
@@ -721,9 +733,17 @@ def AutoUpdate(args):
         update_sizes[old_crate_id] = FindSizeOfCrateUpdate(
             old_crate_id, new_crate_id, only_minor_updates)
 
+    # Filter out crates that are not updateable on their own
+    # (they need to be updated together with another crate).
+    todo_crate_updates = [
+        update for update in todo_crate_updates if update_sizes[update[0]] != 0
+    ]
+
+    # Start with small updates in an attempt to keep CLs small.
     todo_crate_updates = sorted(
         todo_crate_updates,
         key=lambda crate_update: update_sizes[crate_update[0]])
+
     print(f"** Updating {len(todo_crate_updates)} crates! "
           f"Expect this to take about {len(todo_crate_updates) * 2} minutes.")
     while todo_crate_updates:
