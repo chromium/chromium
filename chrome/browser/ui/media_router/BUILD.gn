@@ -78,7 +78,6 @@ source_set("impl") {
     "//media/remoting:remoting_device_capability",
     "//net",
     "//third_party/icu:icui18n",
-    "//third_party/icu:icui18n_hidden_visibility",
     "//ui/base",
     "//ui/display",
     "//ui/views",
