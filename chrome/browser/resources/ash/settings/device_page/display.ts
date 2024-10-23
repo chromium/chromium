@@ -1099,11 +1099,11 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
       allowExcludeDisplayInMirrorModePref: boolean,
       displays: DisplayUnitInfo[],
       selectedDisplay: DisplayUnitInfo): boolean {
-    if (this.isMirrored(displays)) {
-      return selectedDisplay.id === this.mirroringExcludedId_;
-    }
     if (!selectedDisplay) {
       return false;
+    }
+    if (this.isMirrored(displays)) {
+      return selectedDisplay.id === this.mirroringExcludedId_;
     }
     if (!excludeDisplayInMirrorModeEnabled &&
         !allowExcludeDisplayInMirrorModePref) {
