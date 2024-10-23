@@ -25,7 +25,7 @@ class AddUsernameDialogBridge {
     JniDelegate& operator=(const JniDelegate&) = delete;
     virtual ~JniDelegate() = 0;
 
-    virtual void Create(const gfx::NativeWindow window_android,
+    virtual void Create(ui::WindowAndroid& window_android,
                         AddUsernameDialogBridge* bridge) = 0;
     virtual void ShowAddUsernameDialog(const std::u16string& password) = 0;
     // Dismisses the displayed dialog. The bridge calls it in the destructor to
