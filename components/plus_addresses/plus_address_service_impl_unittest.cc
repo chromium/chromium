@@ -1098,59 +1098,9 @@ TEST_F(PlusAddressServiceEnabledTest, CreationDisabledOnHttp) {
       /*is_off_the_record=*/false));
 }
 
-// `ShouldShowManualFallback` returns false when `origin` is included on
-// `kPlusAddressExcludedSites` and true otherwise.
-TEST_F(PlusAddressServiceEnabledTest, ExcludedSitesAreNotSupported) {
-  identity_env().MakeAccountAvailable("plus@plus.plus",
-                                      {signin::ConsentLevel::kSignin});
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kPlusAddressesEnabled,
-      {{features::kEnterprisePlusAddressServerUrl.name, "mattwashere"},
-       {features::kPlusAddressExcludedSites.name,
-        "exclude.co.th,forbidden.com"}});
-  InitService();
-
-  // Verify that url not on the excluded site continues to work.
-  const url::Origin allowed_origin =
-      url::Origin::Create(GURL("https://test.example"));
-  EXPECT_TRUE(service().IsPlusAddressFillingEnabled(allowed_origin));
-  EXPECT_TRUE(service().IsPlusAddressCreationEnabled(
-      allowed_origin, /*is_off_the_record=*/false));
-  EXPECT_TRUE(service().ShouldShowManualFallback(allowed_origin,
-                                                 /*is_off_the_record=*/false));
-
-  // Sites on excluded list are not supported.
-  const url::Origin blocked_origin_1 =
-      url::Origin::Create(GURL("https://www.forbidden.com"));
-  EXPECT_FALSE(service().IsPlusAddressFillingEnabled(blocked_origin_1));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      blocked_origin_1, /*is_off_the_record=*/false));
-  EXPECT_FALSE(service().ShouldShowManualFallback(blocked_origin_1,
-                                                  /*is_off_the_record=*/false));
-  const url::Origin blocked_origin_2 =
-      url::Origin::Create(GURL("https://www.exclude.co.th"));
-  EXPECT_FALSE(service().IsPlusAddressFillingEnabled(blocked_origin_2));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      blocked_origin_2, /*is_off_the_record=*/false));
-  EXPECT_FALSE(service().ShouldShowManualFallback(blocked_origin_2,
-                                                  /*is_off_the_record=*/false));
-
-  // Excluded site with different subdomain are also not supported.
-  const url::Origin different_subdomain =
-      url::Origin::Create(GURL("https://myaccount.forbidden.com"));
-  EXPECT_FALSE(service().IsPlusAddressFillingEnabled(different_subdomain));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      different_subdomain, /*is_off_the_record=*/false));
-  EXPECT_FALSE(service().ShouldShowManualFallback(different_subdomain,
-                                                  /*is_off_the_record=*/false));
-}
-
 // Tests that the blocklist data is available and used to check for domain
 // support in the plus address service.
 TEST_F(PlusAddressServiceEnabledTest, BlocklistMechanism) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressBlocklistEnabled};
   identity_env().MakeAccountAvailable("plus@plus.plus",
                                       {signin::ConsentLevel::kSignin});
   InitService();

@@ -169,8 +169,8 @@ class PlusAddressServiceImpl : public PlusAddressService,
       const PlusProfileOrError& maybe_profile);
 
   // Checks whether the `origin` supports plus address.
-  // Returns `true` when origin is not opaque, ETLD+1 of `origin` is not
-  // on `excluded_sites_` set, and scheme is http or https.
+  // Returns `true` when origin is not opaque, not excluded, and scheme is http
+  // or https.
   bool IsSupportedOrigin(const url::Origin& origin) const;
 
   // Reacts to the server response for confirming a plus address from an inline
@@ -219,12 +219,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
   // Allows checking whether a group-controlled feature is enabled for the
   // profile associated with this `KeyedService`.
   const FeatureEnabledForProfileCheck feature_enabled_for_profile_check_;
-
-  // Store set of excluded sites ETLD+1 where PlusAddressService is not
-  // supported.
-  // TODO(crbug.com/324556906): Remove once `kPlusAddressBlocklistEnabled` is
-  // launched.
-  base::flat_set<std::string> excluded_sites_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

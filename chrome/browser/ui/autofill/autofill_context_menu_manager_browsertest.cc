@@ -1764,8 +1764,7 @@ class PlusAddressContextMenuManagerTest
         {{plus_addresses::features::kPlusAddressesEnabled,
           {{plus_addresses::features::kEnterprisePlusAddressServerUrl.name,
             "https://foo.bar"}}},
-         {plus_addresses::features::kPlusAddressFallbackFromContextMenu, {}},
-         {plus_addresses::features::kPlusAddressBlocklistEnabled, {}}},
+         {plus_addresses::features::kPlusAddressFallbackFromContextMenu, {}}},
         /*disabled_features=*/{});
   }
 

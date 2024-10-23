@@ -10,14 +10,12 @@
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
@@ -46,7 +44,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/webdata/common/web_data_results.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/origin.h"
@@ -60,20 +57,6 @@ using autofill::FormFieldData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 using PasswordFormClassification = autofill::PasswordFormClassification;
-
-// Get the ETLD+1 of `origin`, which means any subdomain is treated
-// equivalently. See `GetDomainAndRegistry` for concrete examples.
-std::string GetEtldPlusOne(const url::Origin origin) {
-  return net::registry_controlled_domains::GetDomainAndRegistry(
-      origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
-// Get and parse the excluded sites.
-base::flat_set<std::string> GetAndParseExcludedSites() {
-  return base::MakeFlatSet<std::string>(
-      base::SplitString(features::kPlusAddressExcludedSites.Get(), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-}
 
 affiliations::FacetURI OriginToFacet(const url::Origin& origin) {
   // For a valid `origin`, `origin.GetURL().spec()` is always a valid spec.
@@ -100,27 +83,21 @@ std::unique_ptr<PlusAddressAllocator> CreateAllocator(
 }
 
 // Returns `true` if the origin is part of the set of blocklisted domains and
-// `false` otherwise. If `kPlusAddressBlocklistEnabled` is enabled, this means
-// that the domain's origin matches the `exclusion_pattern` regex and does not
-// match the `exception_pattern` regex.
-bool IsSiteExcluded(const base::flat_set<std::string>& excluded_sites,
-                    const url::Origin& origin) {
-  if (base::FeatureList::IsEnabled(features::kPlusAddressBlocklistEnabled)) {
-    const PlusAddressBlocklistData& blocklist_data =
-        PlusAddressBlocklistData::GetInstance();
+// `false` otherwise. This means that the domain's origin matches the
+// `exclusion_pattern` regex and does not match the `exception_pattern` regex.
+bool IsSiteExcluded(const url::Origin& origin) {
+  const PlusAddressBlocklistData& blocklist_data =
+      PlusAddressBlocklistData::GetInstance();
 
-    const re2::RE2* exception_pattern = blocklist_data.GetExceptionPattern();
-    if (exception_pattern &&
-        RE2::PartialMatch(origin.host(), *exception_pattern)) {
-      return false;
-    }
-
-    const re2::RE2* exclusion_pattern = blocklist_data.GetExclusionPattern();
-    return exclusion_pattern &&
-           RE2::PartialMatch(origin.host(), *exclusion_pattern);
+  const re2::RE2* exception_pattern = blocklist_data.GetExceptionPattern();
+  if (exception_pattern &&
+      RE2::PartialMatch(origin.host(), *exception_pattern)) {
+    return false;
   }
 
-  return excluded_sites.contains(GetEtldPlusOne(origin));
+  const re2::RE2* exclusion_pattern = blocklist_data.GetExclusionPattern();
+  return exclusion_pattern &&
+         RE2::PartialMatch(origin.host(), *exclusion_pattern);
 }
 
 std::string GetPlusAddressFromPlusProfile(
@@ -165,10 +142,6 @@ PlusAddressServiceImpl::PlusAddressServiceImpl(
     }
   }
   identity_manager_observation_.Observe(identity_manager);
-
-  if (!base::FeatureList::IsEnabled(features::kPlusAddressBlocklistEnabled)) {
-    excluded_sites_ = GetAndParseExcludedSites();
-  }
 }
 
 PlusAddressServiceImpl::~PlusAddressServiceImpl() {
@@ -294,7 +267,7 @@ bool PlusAddressServiceImpl::IsPlusAddress(
 bool PlusAddressServiceImpl::IsPlusAddressFillingEnabled(
     const url::Origin& origin) const {
   // Check that the feature is enabled and the origin is supported (not opaque,
-  // in the `excluded_sites_`, or is non http/https scheme)
+  // excluded, or is non http/https scheme)
   return IsEnabled() && IsSupportedOrigin(origin);
 }
 
@@ -546,7 +519,7 @@ void PlusAddressServiceImpl::HandleSignout() {
 
 bool PlusAddressServiceImpl::IsSupportedOrigin(
     const url::Origin& origin) const {
-  if (origin.opaque() || IsSiteExcluded(excluded_sites_, origin)) {
+  if (origin.opaque() || IsSiteExcluded(origin)) {
     return false;
   }
 

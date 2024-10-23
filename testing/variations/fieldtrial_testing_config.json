@@ -17241,7 +17241,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PlusAddressAndroidOpenGmsCoreManagementPage",
-                        "PlusAddressBlocklistEnabled",
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressGlobalToggle",
                         "PlusAddressIOSErrorAndLoadingStatesEnabled",

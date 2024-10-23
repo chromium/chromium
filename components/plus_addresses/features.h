@@ -18,9 +18,6 @@ BASE_DECLARE_FEATURE(kPlusAddressAndroidOpenGmsCoreManagementPage);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
-BASE_DECLARE_FEATURE(kPlusAddressBlocklistEnabled);
-
-COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressesEnabled);
 
 // Used to control the enterprise plus address feature's OAuth scope.
@@ -38,11 +35,6 @@ extern const base::FeatureParam<std::string> kPlusAddressManagementUrl;
 // Url used to redirect the user to the feature description page.
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kPlusAddressLearnMoreUrl;
-
-// Used to exclude certain sites from PlusAddressService. Must be a
-// comma-separated list of site names (eTLD+1).
-COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
-extern const base::FeatureParam<std::string> kPlusAddressExcludedSites;
 
 // Url for user to report issues with plus addresses.
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)

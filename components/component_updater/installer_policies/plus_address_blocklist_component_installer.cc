@@ -127,7 +127,7 @@ PlusAddressBlocklistInstallerPolicy::GetInstallerAttributes() const {
 
 void RegisterPlusAddressBlocklistComponent(ComponentUpdateService* cus) {
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressBlocklistEnabled)) {
+          plus_addresses::features::kPlusAddressesEnabled)) {
     DVLOG(1) << "Registering Plus Address Blocklist component.";
 
     auto installer = base::MakeRefCounted<ComponentInstaller>(

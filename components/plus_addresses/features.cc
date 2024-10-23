@@ -15,7 +15,6 @@ constexpr char kEnterprisePlusAddressOAuthScopeName[] = "oauth-scope";
 constexpr char kEnterprisePlusAddressServerUrlName[] = "server-url";
 constexpr char kPlusAddressManagementUrlName[] = "manage-url";
 constexpr char kPlusAddressLearnMoreUrlName[] = "learn-more";
-constexpr char kPlusAddressExcludedSitesName[] = "excluded-sites";
 constexpr char kPlusAddressErrorReportUrlName[] = "error-report-url";
 constexpr char kPlusAddressRequestTimeoutName[] = "request-timeout";
 
@@ -28,13 +27,6 @@ BASE_FEATURE(kPlusAddressAndroidOpenGmsCoreManagementPage,
              "PlusAddressAndroidOpenGmsCoreManagementPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// When enabled, Chrome will fetch the blocklist data using the Component
-// Updater and employ that for blocking Plus Addresses. Otherwise, the blocklist
-// information is sourced from a Finch parameter.
-BASE_FEATURE(kPlusAddressBlocklistEnabled,
-             "PlusAddressBlocklistEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the enabled/disabled state of the experimental feature.
 BASE_FEATURE(kPlusAddressesEnabled,
@@ -49,8 +41,6 @@ const base::FeatureParam<std::string> kPlusAddressManagementUrl{
     &kPlusAddressesEnabled, kPlusAddressManagementUrlName, ""};
 const base::FeatureParam<std::string> kPlusAddressLearnMoreUrl{
     &kPlusAddressesEnabled, kPlusAddressLearnMoreUrlName, ""};
-const base::FeatureParam<std::string> kPlusAddressExcludedSites{
-    &kPlusAddressesEnabled, kPlusAddressExcludedSitesName, ""};
 const base::FeatureParam<std::string> kPlusAddressErrorReportUrl{
     &kPlusAddressesEnabled, kPlusAddressErrorReportUrlName, ""};
 const base::FeatureParam<base::TimeDelta> kPlusAddressRequestTimeout{
