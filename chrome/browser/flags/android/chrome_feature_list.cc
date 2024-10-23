@@ -257,6 +257,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
     &kGtsCloseTabAnimationKillSwitch,
+    &kHideTabletToolbarDownloadButton,
     &kLockBackPressHandlerAtStart,
     &kIncognitoScreenshot,
     &kLensOnQuickActionSearchWidget,
@@ -843,6 +844,10 @@ BASE_FEATURE(kBackGestureRefactorAndroid,
 BASE_FEATURE(kBackToHomeAnimation,
              "BackToHomeAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHideTabletToolbarDownloadButton,
+             "HideTabletToolbarDownloadButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmahaMinSdkVersionAndroid,
              "OmahaMinSdkVersionAndroid",

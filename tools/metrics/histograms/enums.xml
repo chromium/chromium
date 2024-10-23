@@ -15675,6 +15675,7 @@ from previous Chrome versions.
   <int value="-1816215700" label="FocusModeYTM:disabled"/>
   <int value="-1816066138" label="CastAllowAllIPs:enabled"/>
   <int value="-1814266088" label="ContextualPageActionShareModel:enabled"/>
+  <int value="-1814109652" label="HideTabletToolbarDownloadButton:disabled"/>
   <int value="-1813120536" label="MlUrlPiecewiseMappedSearchBlending:disabled"/>
   <int value="-1813088913" label="CCTResizable90MaximumHeight:disabled"/>
   <int value="-1813070975" label="PageContentAnnotations:disabled"/>
@@ -17152,6 +17153,7 @@ from previous Chrome versions.
   <int value="-1215163628"
       label="AccessibilityUnserializeOptimizations:disabled"/>
   <int value="-1214870820" label="EnableNewStyleLauncher:enabled"/>
+  <int value="-1212959146" label="HideTabletToolbarDownloadButton:enabled"/>
   <int value="-1212855900" label="enable-all-bookmarks-view"/>
   <int value="-1212273428" label="enable-experimental-app-list"/>
   <int value="-1212167260" label="disable-app-window-cycling"/>

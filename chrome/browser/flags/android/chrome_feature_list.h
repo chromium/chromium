@@ -178,6 +178,7 @@ BASE_DECLARE_FEATURE(kTabWindowManagerIndexReassignmentActivityFinishing);
 BASE_DECLARE_FEATURE(kTabWindowManagerIndexReassignmentActivityInSameTask);
 BASE_DECLARE_FEATURE(kTabWindowManagerIndexReassignmentActivityNotInAppTasks);
 BASE_DECLARE_FEATURE(kTabWindowManagerReportIndicesMismatch);
+BASE_DECLARE_FEATURE(kHideTabletToolbarDownloadButton);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);
 BASE_DECLARE_FEATURE(kTraceBinderIpc);

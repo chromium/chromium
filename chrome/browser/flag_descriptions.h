@@ -2835,6 +2835,9 @@ extern const char kTabStripLayoutOptimizationDescription[];
 extern const char kTabStripTransitionInDesktopWindowName[];
 extern const char kTabStripTransitionInDesktopWindowDescription[];
 
+extern const char kHideTabletToolbarDownloadButtonName[];
+extern const char kHideTabletToolbarDownloadButtonDescription[];
+
 extern const char kTouchDragAndContextMenuName[];
 extern const char kTouchDragAndContextMenuDescription[];
 
