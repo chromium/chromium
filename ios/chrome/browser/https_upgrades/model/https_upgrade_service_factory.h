@@ -10,7 +10,8 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 // Singleton that owns all HttpsUpgradeService and associates them with
 // ProfileIOS.

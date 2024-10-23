@@ -7,7 +7,8 @@
 
 #include "base/memory/singleton.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace user_prefs {
 class PrefRegistrySyncable;

@@ -8,9 +8,9 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/app/profile/profile_init_stage.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 @class AppState;
+class ProfileIOS;
 @protocol ProfileStateAgent;
 @protocol ProfileStateObserver;
 @class SceneState;

@@ -13,12 +13,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/net/model/net_types.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #include "ios/web/public/browser_state.h"
 #include "net/url_request/url_request_job_factory.h"
 
 class PrefProxyConfigTracker;
 class PrefService;
+class ProfileIOS;
 class ProfileIOSIOData;
 class ProfilePolicyConnector;
 

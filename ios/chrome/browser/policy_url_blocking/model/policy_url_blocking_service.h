@@ -9,7 +9,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 // Associates a policy::URLBlocklistManager instance with a BrowserState.
 class PolicyBlocklistService : public KeyedService {

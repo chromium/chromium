@@ -7,9 +7,9 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class KeyedService;
+class ProfileIOS;
 
 namespace safe_browsing {
 class OhttpKeyService;
