@@ -780,6 +780,7 @@ void ArcPolicyBridge::OnReportComplianceParse(
 // static
 void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
     const policy::PolicyMap& policy_map) {
+  VLOG(1) << "ArcPolicyBridge::ActivateArcIfRequiredByPolicy";
   base::Value::Dict filtered_policies = ParseArcPoliciesToDict(policy_map);
   base::Value::List* apps =
       filtered_policies.FindList(policy_util::kArcPolicyKeyApplications);
@@ -792,6 +793,7 @@ void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
                kPolicyAppInstallTypeForceInstalled;
       });
   if (hasForceInstallApps) {
+    VLOG(1) << "Force install apps found, allowing ARC activation.";
     arc::ArcSessionManager::Get()->AllowActivation(
         arc::ArcSessionManager::AllowActivationReason::kForcedByPolicy);
   }
