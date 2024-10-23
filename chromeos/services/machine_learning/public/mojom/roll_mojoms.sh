@@ -62,9 +62,6 @@ rm shared_memory.mojom || exit 1
 echo "Removing time.mojom ..."
 rm time.mojom || exit 1
 
-echo "Removing web_platform_model.mojom ..."
-rm web_platform_model.mojom || exit 1
-
 echo "Changing import paths ..."
 sed --in-place --regexp-extended \
   -e 's~^import "ml/mojom/file_path.mojom~import "mojo/public/mojom/base/file_path.mojom~g' \
