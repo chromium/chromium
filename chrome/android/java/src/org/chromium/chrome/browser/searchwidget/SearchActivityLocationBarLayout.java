@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -23,6 +25,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
@@ -68,7 +71,14 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
                 getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_bg_round_corner_radius));
 
-        setBackground(backgroundDrawable);
+        // Replicate LocationBarBackground bounds from ToolbarPhone.
+        int verticalInsets =
+                getResources().getDimensionPixelSize(R.dimen.location_bar_vertical_margin)
+                        - OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(getContext()) / 2;
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[] {backgroundDrawable});
+        layerDrawable.setLayerInset(0, 0, verticalInsets, 0, verticalInsets); // Adjust padding
+
+        setBackground(layerDrawable);
 
         // Expand status view's left and right space, and expand the vertical padding of the
         // location bar to match the expanded interface on the regular omnibox.

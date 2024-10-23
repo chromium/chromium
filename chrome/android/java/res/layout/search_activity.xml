@@ -32,10 +32,8 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.searchwidget.SearchActivityLocationBarLayout
                 android:id="@+id/search_location_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/toolbar_height_no_shadow"
                 android:layout_gravity="center_vertical"
-                android:layout_marginTop="@dimen/location_bar_vertical_margin"
-                android:layout_marginBottom="@dimen/location_bar_vertical_margin"
                 android:paddingStart="@dimen/location_bar_start_padding"
                 android:paddingEnd="@dimen/location_bar_end_padding" />
 
