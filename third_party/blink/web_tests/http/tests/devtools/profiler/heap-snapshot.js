@@ -244,19 +244,26 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
         var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
             HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
         var expectedAggregates = {
-          'A': {count: 1, self: 2, maxRet: 2, type: 'object', name: 'A'},
-          'B': {count: 1, self: 3, maxRet: 8, type: 'object', name: 'B'},
-          'C': {count: 1, self: 4, maxRet: 10, type: 'object', name: 'C'},
-          'D': {count: 1, self: 5, maxRet: 5, type: 'object', name: 'D'},
-          'E': {count: 1, self: 6, maxRet: 6, type: 'object', name: 'E'}
+          'A': {count: 1, self: 2, maxRet: 2, name: 'A'},
+          'B': {count: 1, self: 3, maxRet: 8, name: 'B'},
+          'C': {count: 1, self: 4, maxRet: 10, name: 'C'},
+          'D': {count: 1, self: 5, maxRet: 5, name: 'D'},
+          'E': {count: 1, self: 6, maxRet: 6, name: 'E'}
         };
-        var aggregates = snapshot.getAggregatesByClassName(false);
-        for (var name in aggregates) {
-          var aggregate = aggregates[name];
-          var expectedAggregate = expectedAggregates[name];
+
+        // TODO (357902505): We're renaming a function in DevTools, so for now,
+        // this test accepts either name. After the DevTools change is complete,
+        // this code can be simplified.
+        const getAggregatesFunctionName = snapshot.getAggregatesByClassName ?
+            'getAggregatesByClassName' : 'getAggregatesByClassKey';
+
+        var aggregates = snapshot[getAggregatesFunctionName](false);
+        for (var key in aggregates) {
+          var aggregate = aggregates[key];
+          var expectedAggregate = expectedAggregates[aggregate.name];
           for (var parameter in expectedAggregate)
             TestRunner.assertEquals(
-                expectedAggregate[parameter], aggregate[parameter], 'parameter ' + parameter + ' of "' + name + '"');
+                expectedAggregate[parameter], aggregate[parameter], 'parameter ' + parameter + ' of "' + aggregate.name + '"');
         }
         var expectedIndexes = {
           // Index of corresponding node in the raw snapshot:
@@ -266,11 +273,11 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
           'D': [28],  // 50
           'E': [35]   // 57
         };
-        var indexes = snapshot.getAggregatesByClassName(true);
-        for (var name in aggregates) {
-          var aggregate = aggregates[name];
-          var expectedIndex = expectedIndexes[name];
-          TestRunner.assertEquals(expectedIndex.join(','), aggregate.idxs.join(','), 'indexes of "' + name + '"');
+        var indexes = snapshot[getAggregatesFunctionName](true);
+        for (var key in aggregates) {
+          var aggregate = aggregates[key];
+          var expectedIndex = expectedIndexes[aggregate.name];
+          TestRunner.assertEquals(expectedIndex.join(','), aggregate.idxs.join(','), 'indexes of "' + aggregate.name + '"');
         }
       },
 
