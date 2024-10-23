@@ -288,9 +288,9 @@ END_METADATA
 //   |  +-----------------------+  +----++-+--+  |
 //   |  |                       |  |    ||    |  |
 //   |  +-----------------------+  +----++----+  |
-//   +--^--------------------------^-------^-----+
-//   ^  |                          |       |
-//   |  `Label`                    |       'IconButton'(thumb down)
+//   +--^--------------------------^-----^-------+
+//   ^  |                          |     |
+//   |  `Label`                    |     'IconButton'(thumb down)
 //   |                             'IconButton'(thumb up)
 //   |
 //   `UserFeedbackView`
@@ -313,8 +313,8 @@ class UserFeedbackView : public views::BoxLayoutView {
         views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
     auto* feedback_label = AddChildView(std::make_unique<views::Label>());
-    feedback_label->SetText(
-        u"This is experimental AI feature and won't always get it right.");
+    feedback_label->SetText(l10n_util::GetStringUTF16(
+        IDS_ASH_BIRCH_CORAL_USER_FEEDBACK_DESCRIPTION));
     feedback_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
     feedback_label->SetMultiLine(true);
     feedback_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -329,12 +329,15 @@ class UserFeedbackView : public views::BoxLayoutView {
     thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
         base::BindOnce(&UserFeedbackView::OnThumbUpButtonPressed,
                        base::Unretained(this)),
-        IconButton::Type::kMediumFloating, &kThumbUpIcon, u"test",
+        IconButton::Type::kMediumFloating, &kThumbUpIcon,
+        l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_THUMB_UP_ACCESSIBLE_NAME),
         /*is_togglable=*/false, /*has_border=*/false));
     thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
         base::BindOnce(&UserFeedbackView::OnThumbDownButtonPressed,
                        base::Unretained(this)),
-        IconButton::Type::kMediumFloating, &kThumbDownIcon, u"test",
+        IconButton::Type::kMediumFloating, &kThumbDownIcon,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_BIRCH_CORAL_THUMB_DOWN_ACCESSIBLE_NAME),
         /*is_togglable=*/false, /*has_border=*/false));
   }
 

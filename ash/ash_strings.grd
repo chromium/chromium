@@ -8812,6 +8812,15 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_SEND_FEEDBACK" desc="Context menu item that sends feedback about suggestions in informed restore/overview UI">
         Send feedback
       </message>
+      <message name="IDS_ASH_BIRCH_CORAL_USER_FEEDBACK_DESCRIPTION" desc="The description for the user feedback UI">
+        This is experimental AI feature and won't always get it right.
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_THUMB_UP_ACCESSIBLE_NAME" desc="The accessible name for the thumb up button which is in the user feedback UI">
+        Thumbs up would submit the feedback that you like this suggestion
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_THUMB_DOWN_ACCESSIBLE_NAME" desc="The accessible name for the thumb down button which is in the user feedback UI">
+        Thumbs down would submit the feedback that you dislike this suggestion
+      </message>
       <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_TAB_SUBTITLE" translateable="false" desc="In the birch coral button selector UI, the subtitle for the tab section.">
         Tabs
       </message>
