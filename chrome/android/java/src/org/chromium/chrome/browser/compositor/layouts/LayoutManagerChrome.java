@@ -177,7 +177,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         browserControlsStateProvider,
                         this,
                         topUiColorProvider,
-                        bottomControlsOffsetSupplier);
+                        bottomControlsOffsetSupplier,
+                        getContentContainer());
 
         super.init(
                 selector,

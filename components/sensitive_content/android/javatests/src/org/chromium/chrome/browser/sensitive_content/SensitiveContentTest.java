@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 
 import android.os.Build;
+import android.os.SystemClock;
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -45,7 +46,9 @@ import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.List;
@@ -339,6 +342,49 @@ public class SensitiveContentTest {
                 View.CONTENT_SENSITIVITY_SENSITIVE);
     }
 
+    @Test
+    @LargeTest
+    @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
+    public void testSwipingBetweenTabsIsSensitive() throws Exception {
+        // Set up.
+        View contentContainer = sActivityTestRule.getActivity().findViewById(android.R.id.content);
+        // Open a second tab.
+        mPage.openGenericAppMenu().openNewTab();
+
+        // Swiping between 2 not sensitive tabs should not mark the content container as sensitive.
+        performSwipeAndCheckSensitivity(
+                ScrollDirection.RIGHT, /* contentContainerShouldBeSensitive= */ false);
+        // Even after the swipe ends, the content container should not be sensitive.
+        pollUiThread(
+                () ->
+                        contentContainer.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+
+        // Load sensitive content into the current tab.
+        sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
+        pollUiThread(
+                () -> sActivityTestRule.getActivity().getActivityTab().getTabHasSensitiveContent());
+
+        // Swiping from a sensitive tab to a not sensitive one should mark the content container as
+        // sensitive.
+        performSwipeAndCheckSensitivity(
+                ScrollDirection.LEFT, /* contentContainerShouldBeSensitive= */ true);
+        // After the swipe ends, the content container should return to not being sensitive.
+        pollUiThread(
+                () ->
+                        contentContainer.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        // Swiping from a not sensitive tab to a sensitive one should mark the content container as
+        // sensitive.
+        performSwipeAndCheckSensitivity(
+                ScrollDirection.RIGHT, /* contentContainerShouldBeSensitive= */ true);
+        // After the swipe ends, the content container should return to not being sensitive.
+        pollUiThread(
+                () ->
+                        contentContainer.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+    }
+
     private Pane getFocusedTabSwitcherPane() {
         return (Pane)
                 ThreadUtils.runOnUiThreadBlocking(
@@ -355,5 +401,39 @@ public class SensitiveContentTest {
 
     private View getContentViewOfCurrentTab() {
         return sActivityTestRule.getActivity().getActivityTab().getContentView();
+    }
+
+    private void performSwipeAndCheckSensitivity(
+            @ScrollDirection int direction, boolean contentContainerShouldBeSensitive) {
+        assertTrue(
+                "Unexpected direction for side swipe " + direction,
+                direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT);
+
+        final View contentContainer =
+                sActivityTestRule.getActivity().findViewById(android.R.id.content);
+        final View toolbar = sActivityTestRule.getActivity().findViewById(R.id.toolbar);
+
+        int[] toolbarPos = new int[2];
+        toolbar.getLocationOnScreen(toolbarPos);
+        final int width = toolbar.getWidth();
+        final int height = toolbar.getHeight();
+
+        final int fromX = toolbarPos[0] + width / 2;
+        final int toX = toolbarPos[0] + (direction == ScrollDirection.LEFT ? 0 : width);
+        final int y = toolbarPos[1] + height / 2;
+        final int stepCount = 25;
+        final long downTime = SystemClock.uptimeMillis();
+
+        TouchCommon.dragStart(sActivityTestRule.getActivity(), fromX, y, downTime);
+        TouchCommon.dragTo(sActivityTestRule.getActivity(), fromX, toX, y, y, stepCount, downTime);
+
+        if (contentContainerShouldBeSensitive) {
+            assertEquals(
+                    contentContainer.getContentSensitivity(), View.CONTENT_SENSITIVITY_SENSITIVE);
+        } else {
+            assertNotEquals(
+                    contentContainer.getContentSensitivity(), View.CONTENT_SENSITIVITY_SENSITIVE);
+        }
+        TouchCommon.dragEnd(sActivityTestRule.getActivity(), toX, y, downTime);
     }
 }
