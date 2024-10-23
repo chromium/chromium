@@ -230,16 +230,8 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallIsCancelledByClient) {
   task_environment_.RunUntilIdle();
 }
 
-// Flaky on Android and Linux, see https://crbug.com/374999320.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-#define MAYBE_ServerStreamingCallIsCancelledByClientInActiveReactor \
-  DISABLED_ServerStreamingCallIsCancelledByClientInActiveReactor
-#else
-#define MAYBE_ServerStreamingCallIsCancelledByClientInActiveReactor \
-  ServerStreamingCallIsCancelledByClientInActiveReactor
-#endif
 TEST_F(GrpcServerStreamingTest,
-       MAYBE_ServerStreamingCallIsCancelledByClientInActiveReactor) {
+       ServerStreamingCallIsCancelledByClientInActiveReactor) {
   GrpcServer server;
 
   base::WaitableEvent server_request_received;
@@ -275,7 +267,12 @@ TEST_F(GrpcServerStreamingTest,
   cancelled_reactor->SetWritesAvailableCallback(base::BindLambdaForTesting(
       [&](grpc::Status status,
           ServerStreamingServiceHandler::StreamingCall::Reactor* reactor) {
-        ASSERT_THAT(reactor, IsNull());
+        if (reactor) {
+          // Timing between threds may result in server reactor still receiving
+          // the empty TestResponse from below. Ignore it and continue waiting
+          // for the null reactor.
+          return;
+        }
         ASSERT_THAT(status, StatusIs(grpc::StatusCode::ABORTED));
         reactor_aborted.Signal();
       }));
