@@ -204,7 +204,7 @@ class SessionStoreImplTest : public testing::Test {
 };
 
 TEST_F(SessionStoreImplTest, FailDBLoadFromInvalidPath) {
-  base::FilePath invalid_path(FILE_PATH_LITERAL("o:\\inaccessible-path"));
+  base::FilePath invalid_path(FILE_PATH_LITERAL("o://inaccessible-path"));
   CreateStore(invalid_path);
   LoadSessions();
   EXPECT_FALSE(store().db_status() == SessionStoreImpl::DBStatus::kSuccess);
