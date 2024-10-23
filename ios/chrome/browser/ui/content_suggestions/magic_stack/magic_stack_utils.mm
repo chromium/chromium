@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_utils.h"
 
 #import "base/metrics/field_trial_params.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/shopping_service.h"
@@ -55,6 +56,6 @@ bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
                    kEphemeralCardRankerForceShowCardParam,
                "") == segmentation_platform::features::
                           kPriceTrackingPromoForceOverride &&
-           GetCurrentCountryCode(
-               GetApplicationContext()->GetVariationsService()) == "us"));
+           base::ToLowerASCII(GetCurrentCountryCode(
+               GetApplicationContext()->GetVariationsService())) == "us"));
 }
