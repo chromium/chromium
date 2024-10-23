@@ -153,6 +153,11 @@ void IbanAccessManager::OnUnmaskResponseReceived(
     }
     return;
   }
+
+  // Immediately close the progress dialog before showing the error dialog.
+  client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+      /*show_confirmation_before_closing=*/false,
+      /*no_interactive_authentication_callback=*/base::OnceClosure());
   AutofillErrorDialogContext error_context;
   error_context.type =
       AutofillErrorDialogType::kMaskedServerIbanUnmaskingTemporaryError;
