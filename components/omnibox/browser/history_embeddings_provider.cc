@@ -179,12 +179,15 @@ std::optional<AutocompleteMatch> HistoryEmbeddingsProvider::CreateAnswerMatch(
     case history_embeddings::ComputeAnswerStatus::kUnspecified:
       return std::nullopt;
 
-    case history_embeddings::ComputeAnswerStatus::kLoading:
-      return CreateAnswerMatchHelper(
+    case history_embeddings::ComputeAnswerStatus::kLoading: {
+      AutocompleteMatch answer_match = CreateAnswerMatchHelper(
           score,
           l10n_util::GetStringUTF16(
               IDS_HISTORY_EMBEDDINGS_ANSWER_LOADING_HEADING),
           u"");
+      answer_match.history_embeddings_answer_header_loading = true;
+      return answer_match;
+    }
 
     case history_embeddings::ComputeAnswerStatus::kSuccess: {
       AutocompleteMatch answer_match = CreateAnswerMatchHelper(

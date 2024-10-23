@@ -994,6 +994,8 @@ struct AutocompleteMatch {
   // The text to show above the match contents & description for
   // `HISTORY_EMBEDDINGS_ANSWER` matches.
   std::u16string history_embeddings_answer_header_text;
+  // Whether the answer is still loading and should therefore show a throbber.
+  bool history_embeddings_answer_header_loading = false;
 
   // The user feedback on the match.
   FeedbackType feedback_type = FeedbackType::kNone;

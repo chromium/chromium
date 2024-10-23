@@ -15,6 +15,7 @@
 
 namespace views {
 class ImageView;
+class Throbber;
 class Label;
 }  // namespace views
 
@@ -27,9 +28,13 @@ class OmniboxLocalAnswerHeaderView : public views::View {
   // views::View:
   void OnThemeChanged() override;
 
+  // Toggle visibility between `throbber_` and `icon_`.
+  void SetThrobberVisibility(bool visible);
+
   void SetText(const std::u16string& text);
 
  private:
+  raw_ptr<views::Throbber> throbber_;
   raw_ptr<views::ImageView> icon_;
   raw_ptr<views::Label> text_;
 };

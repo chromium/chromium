@@ -366,6 +366,8 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
     }
     local_answer_header_->SetText(match.history_embeddings_answer_header_text);
     local_answer_header_->SetVisible(true);
+    local_answer_header_->SetThrobberVisibility(
+        match.history_embeddings_answer_header_loading);
   } else if (local_answer_header_) {
     local_answer_header_->SetVisible(false);
   }
