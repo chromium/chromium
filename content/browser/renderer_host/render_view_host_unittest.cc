@@ -9,6 +9,8 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -30,6 +32,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -226,6 +229,27 @@ TEST_F(RenderViewHostTest, RoutingIdSane) {
   EXPECT_EQ(contents()->GetPrimaryMainFrame(), root_rfh);
   EXPECT_EQ(test_rvh()->GetProcess(), root_rfh->GetProcess());
   EXPECT_NE(test_rvh()->GetRoutingID(), root_rfh->GetRoutingID());
+}
+
+class RenderViewHostTestIgnoringKeyboardEvents
+    : public RenderViewHostTest,
+      public testing::WithParamInterface<blink::WebInputEvent::Type> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    RenderViewHostTest,
+    RenderViewHostTestIgnoringKeyboardEvents,
+    testing::Values(blink::WebInputEvent::Type::kKeyDown,
+                    blink::WebInputEvent::Type::kRawKeyDown));
+
+TEST_P(RenderViewHostTestIgnoringKeyboardEvents, EventTriggersCallback) {
+  const content::WebContents::ScopedIgnoreInputEvents scoped_ignore =
+      contents()->IgnoreInputEvents({});
+  const int no_modifiers = 0;
+  const base::TimeTicks dummy_timestamp = {};
+  const input::NativeWebKeyboardEvent event{GetParam(), no_modifiers,
+                                            dummy_timestamp};
+  test_rvh()->MayRenderWidgetForwardKeyboardEvent(event);
+  EXPECT_TRUE(contents()->GetIgnoredUIEventCalled());
 }
 
 }  // namespace content

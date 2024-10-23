@@ -327,7 +327,8 @@ bool IsUserInteractionInputType(blink::WebInputEvent::Type type) {
   return type == blink::WebInputEvent::Type::kMouseDown ||
          type == blink::WebInputEvent::Type::kGestureScrollBegin ||
          type == blink::WebInputEvent::Type::kTouchStart ||
-         type == blink::WebInputEvent::Type::kRawKeyDown;
+         type == blink::WebInputEvent::Type::kRawKeyDown ||
+         type == blink::WebInputEvent::Type::kKeyDown;
 }
 
 // Ensures that OnDialogClosed is only called once.

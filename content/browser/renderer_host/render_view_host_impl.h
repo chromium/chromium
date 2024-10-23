@@ -324,6 +324,9 @@ class CONTENT_EXPORT RenderViewHostImpl
     return &*site_instance_group_;
   }
 
+  bool MayRenderWidgetForwardKeyboardEvent(
+      const input::NativeWebKeyboardEvent& key_event) override;
+
   // NOTE: Do not add functions that just send an IPC message that are called in
   // one or two places. Have the caller send the IPC message directly (unless
   // the caller places are in different platforms, in which case it's better
@@ -338,8 +341,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   void RenderWidgetLostFocus() override;
   void RenderWidgetDidForwardMouseEvent(
       const blink::WebMouseEvent& mouse_event) override;
-  bool MayRenderWidgetForwardKeyboardEvent(
-      const input::NativeWebKeyboardEvent& key_event) override;
+
   bool ShouldContributePriorityToProcess() override;
   void SetBackgroundOpaque(bool opaque) override;
   bool IsMainFrameActive() override;

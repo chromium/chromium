@@ -599,4 +599,12 @@ void TestWebContents::SetMediaCaptureRawDeviceIdsOpened(
   media_capture_raw_device_ids_opened_[type] = std::move(ids);
 }
 
+void TestWebContents::OnIgnoredUIEvent() {
+  ignored_ui_event_called_ = true;
+}
+
+bool TestWebContents::GetIgnoredUIEventCalled() const {
+  return ignored_ui_event_called_;
+}
+
 }  // namespace content

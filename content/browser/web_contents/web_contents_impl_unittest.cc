@@ -20,9 +20,11 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/media_web_contents_observer.h"
@@ -78,6 +80,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
@@ -3511,6 +3514,28 @@ TEST_F(WebContentsImplTest, BadDownloadImageFromAXNodeId) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+class WebContentsImplTestKeyboardEvents
+    : public WebContentsImplTest,
+      public testing::WithParamInterface<blink::WebInputEvent::Type> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    WebContentsImplTest,
+    WebContentsImplTestKeyboardEvents,
+    testing::Values(blink::WebInputEvent::Type::kKeyDown,
+                    blink::WebInputEvent::Type::kRawKeyDown));
+
+TEST_P(WebContentsImplTestKeyboardEvents,
+       EventUpdatesRecentInteractionTracking) {
+  ASSERT_FALSE(contents()->HasRecentInteraction());
+  const int no_modifiers = 0;
+  const base::TimeTicks dummy_timestamp{};
+  input::NativeWebKeyboardEvent event{blink::WebInputEvent::Type::kKeyDown,
+                                      no_modifiers, dummy_timestamp};
+  contents()->DidReceiveInputEvent(
+      contents()->GetRenderWidgetHostWithPageFocus(), event);
+  EXPECT_TRUE(contents()->HasRecentInteraction());
 }
 
 }  // namespace content

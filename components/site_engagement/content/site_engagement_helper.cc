@@ -112,8 +112,6 @@ void SiteEngagementService::Helper::InputTracker::TrackingStopped() {
 // registered again.
 void SiteEngagementService::Helper::InputTracker::DidGetUserInteraction(
     const blink::WebInputEvent& event) {
-  // Only respond to raw key down to avoid multiple triggering on a single input
-  // (e.g. keypress is a key down then key up).
   if (!is_tracking_)
     return;
 
@@ -123,7 +121,10 @@ void SiteEngagementService::Helper::InputTracker::DidGetUserInteraction(
   // of the values of the WebInputEvent::Type enum (hence it won't require the
   // compiler verifying that all cases are covered).
   switch (type) {
+    // Only respond to key down events to avoid multiple triggering on a single
+    // input (e.g. keypress is a key down then key up).
     case blink::WebInputEvent::Type::kRawKeyDown:
+    case blink::WebInputEvent::Type::kKeyDown:
       helper()->RecordUserInput(EngagementType::kKeypress);
       break;
     case blink::WebInputEvent::Type::kMouseDown:

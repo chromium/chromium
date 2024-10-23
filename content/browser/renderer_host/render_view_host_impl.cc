@@ -891,8 +891,10 @@ void RenderViewHostImpl::RenderWidgetDidForwardMouseEvent(
 bool RenderViewHostImpl::MayRenderWidgetForwardKeyboardEvent(
     const input::NativeWebKeyboardEvent& key_event) {
   if (GetWidget()->IsIgnoringWebInputEvents(key_event)) {
-    if (key_event.GetType() == WebInputEvent::Type::kRawKeyDown)
+    if (key_event.GetType() == WebInputEvent::Type::kRawKeyDown ||
+        key_event.GetType() == WebInputEvent::Type::kKeyDown) {
       delegate_->OnIgnoredUIEvent();
+    }
     return false;
   }
   return true;
