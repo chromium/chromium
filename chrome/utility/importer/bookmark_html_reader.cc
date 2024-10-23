@@ -70,11 +70,14 @@ void DataURLToFaviconUsage(const GURL& link_url,
       data.empty())
     return;
 
-  favicon_base::FaviconUsageData usage;
-  if (!importer::ReencodeFavicon(
-          reinterpret_cast<const unsigned char*>(&data[0]),
-          data.size(), &usage.png_data))
+  std::optional<std::vector<uint8_t>> png_data =
+      importer::ReencodeFavicon(base::as_byte_span(data));
+  if (!png_data) {
     return;  // Unable to decode.
+  }
+
+  favicon_base::FaviconUsageData usage;
+  usage.png_data = std::move(png_data).value();
 
   // We need to make up a URL for the favicon. We use a version of the page's
   // URL so that we can be sure it will not collide.
