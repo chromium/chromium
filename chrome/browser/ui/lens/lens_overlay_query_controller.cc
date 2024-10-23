@@ -1032,7 +1032,11 @@ void LensOverlayQueryController::InteractionRequestDataReady(
 }
 
 void LensOverlayQueryController::TryPerformInteractionRequest(int sequence_id) {
-  CHECK(latest_interaction_request_data_->sequence_id() == sequence_id);
+  if (!IsCurrentInteractionSequence(sequence_id)) {
+    // Ignore superseded request.
+    return;
+  }
+
   if (!latest_interaction_request_data_->request_ ||
       !latest_interaction_request_data_->request_headers_) {
     // Exit early since not all request data is ready.
