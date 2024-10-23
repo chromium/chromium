@@ -553,8 +553,7 @@ void DownloadManagerImpl::Shutdown() {
   // file.
   for (const auto& it : downloads_by_guid_) {
     download::DownloadItemImpl* download = it.second;
-    if (download != nullptr &&
-        download->GetState() == download::DownloadItem::IN_PROGRESS) {
+    if (download->GetState() == download::DownloadItem::IN_PROGRESS) {
       download->Cancel(false);
       if (delegate_) {
         delegate_->OnDownloadCanceledAtShutdown(download);
@@ -562,8 +561,8 @@ void DownloadManagerImpl::Shutdown() {
     }
   }
 
-  downloads_.clear();
   downloads_by_guid_.clear();
+  downloads_.clear();
 
   // We'll have nothing more to report to the observers after this point.
   observers_.Clear();
@@ -688,8 +687,9 @@ void DownloadManagerImpl::StartDownloadItem(
     download::InProgressDownloadManager::StartDownloadItemCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  download::DownloadItemImpl* download =
+      static_cast<download::DownloadItemImpl*>(GetDownloadByGuid(info->guid));
   if (!info->is_new_download) {
-    download::DownloadItemImpl* download = downloads_by_guid_[info->guid];
     if (!download || download->GetState() == download::DownloadItem::CANCELLED)
       download = nullptr;
     std::move(callback).Run(std::move(info), download, base::FilePath(),
@@ -697,7 +697,7 @@ void DownloadManagerImpl::StartDownloadItem(
     OnDownloadStarted(download, std::move(on_started));
   } else {
     // If the download already in system, it can only be resumed.
-    if (!info->guid.empty() && GetDownloadByGuid(info->guid)) {
+    if (!info->guid.empty() && download) {
       LOG(WARNING) << "A download with the same GUID already exists, the new "
                       "request is ignored.";
       return;
@@ -722,9 +722,6 @@ void DownloadManagerImpl::OnNewDownloadIdRetrieved(
     } else {
       for (const auto& iter : downloads_by_guid_) {
         download::DownloadItem* item = iter.second;
-        if (!item) {
-          continue;
-        }
         if (item->GetFileExternallyRemoved() ||
             item->GetState() != download::DownloadItem::COMPLETE) {
           continue;
@@ -827,9 +824,7 @@ void DownloadManagerImpl::StartDownload(
 void DownloadManagerImpl::CheckForHistoryFilesRemoval() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& it : downloads_by_guid_) {
-    download::DownloadItemImpl* item = it.second;
-    if (item != nullptr)
-      CheckForFileRemoval(item);
+    CheckForFileRemoval(it.second);
   }
 }
 
@@ -1038,8 +1033,7 @@ int DownloadManagerImpl::RemoveDownloadsByURLAndTime(
     // Increment done here to protect against invalidation below.
     ++it;
 
-    if (download != nullptr &&
-        download->GetState() != download::DownloadItem::IN_PROGRESS &&
+    if (download->GetState() != download::DownloadItem::IN_PROGRESS &&
         url_filter.Run(download->GetURL()) &&
         download->GetStartTime() >= remove_begin &&
         (remove_end.is_null() || download->GetStartTime() < remove_end)) {
@@ -1272,9 +1266,9 @@ bool DownloadManagerImpl::IsManagerInitialized() {
 int DownloadManagerImpl::InProgressCount() {
   int count = 0;
   for (const auto& it : downloads_by_guid_) {
-    if (it.second != nullptr &&
-        it.second->GetState() == download::DownloadItem::IN_PROGRESS)
+    if (it.second->GetState() == download::DownloadItem::IN_PROGRESS) {
       ++count;
+    }
   }
   return count;
 }
@@ -1283,13 +1277,12 @@ int DownloadManagerImpl::BlockingShutdownCount() {
   int count = 0;
   for (const auto& it : downloads_by_guid_) {
     download::DownloadItemImpl* download = it.second;
-    if (download != nullptr) {
-      if (download->IsTransient())
-        continue;
-      if (download->GetState() == download::DownloadItem::IN_PROGRESS &&
-          !download->IsDangerous() && !download->IsInsecure()) {
-        ++count;
-      }
+    if (download->IsTransient()) {
+      continue;
+    }
+    if (download->GetState() == download::DownloadItem::IN_PROGRESS &&
+        !download->IsDangerous() && !download->IsInsecure()) {
+      ++count;
     }
   }
   return count;
@@ -1314,9 +1307,9 @@ download::DownloadItem* DownloadManagerImpl::GetDownloadByGuid(
 
 void DownloadManagerImpl::GetAllDownloads(
     download::SimpleDownloadManager::DownloadVector* downloads) {
-  for (const auto& it : downloads_by_guid_)
-    if (it.second != nullptr)
-      downloads->push_back(it.second);
+  for (const auto& it : downloads_by_guid_) {
+    downloads->push_back(it.second);
+  }
 }
 
 void DownloadManagerImpl::GetUninitializedActiveDownloadsIfAny(
