@@ -89,6 +89,11 @@ using testing::Pair;
 using testing::StartsWith;
 using testing::UnorderedElementsAre;
 
+using PathAndHeaderMapMatchers = std::initializer_list<testing::Matcher<
+    std::pair<std::string, net::test_server::HttpRequest::HeaderMap>>>;
+using HeaderMapMatchers = std::initializer_list<
+    testing::Matcher<std::pair<std::string, std::string>>>;
+
 namespace {
 
 constexpr char kHostA[] = "a.test";
@@ -3114,6 +3119,27 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
                   Pair(net::HttpRequestHeaders::kCookie, "cross-site=a.test"),
                   Pair(kSecFetchStorageAccess, "active"))));
   EXPECT_EQ(retry_path_fetch_count_, 2);
+
+  EXPECT_THAT(
+      ObservedRequestHeaders(),
+      IsSupersetOf<PathAndHeaderMapMatchers>({
+          // The top-level page and the `fetch` call both omit the header.
+          Pair("/iframe.html",
+               AllOf(Contains(Pair("Host", StartsWith(kHostA))),
+                     Not(Contains(Key(kSecFetchStorageAccess))))),
+          Pair("/empty.html",
+               AllOf(Contains(Pair("Host", StartsWith(kHostB))),
+                     Not(Contains(Key(kSecFetchStorageAccess))))),
+          // The iframe's subresource fetch includes the header.
+          Pair(kRetryPath, IsSupersetOf<HeaderMapMatchers>({
+                               Pair("Host", StartsWith(kHostA)),
+                               Pair(kSecFetchStorageAccess, "inactive"),
+                           })),
+          Pair(kRetryPath, IsSupersetOf<HeaderMapMatchers>({
+                               Pair("Host", StartsWith(kHostA)),
+                               Pair(kSecFetchStorageAccess, "active"),
+                           })),
+      }));
 }
 
 // Regression test for https://crbug.com/352722603. Same as
@@ -3136,6 +3162,27 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
                   Pair(net::HttpRequestHeaders::kCookie, "cross-site=a.test"),
                   Pair(kSecFetchStorageAccess, "active"))));
   EXPECT_EQ(retry_path_fetch_count_, 2);
+
+  EXPECT_THAT(
+      ObservedRequestHeaders(),
+      IsSupersetOf<PathAndHeaderMapMatchers>({
+          // The top-level page and the `fetch` call both omit the header.
+          Pair("/iframe.html",
+               AllOf(Contains(Pair("Host", StartsWith(kHostA))),
+                     Not(Contains(Key(kSecFetchStorageAccess))))),
+          Pair("/empty.html",
+               AllOf(Contains(Pair("Host", StartsWith(kHostB))),
+                     Not(Contains(Key(kSecFetchStorageAccess))))),
+          // The iframe's subresource fetch includes the header.
+          Pair(kRetryPath, IsSupersetOf<HeaderMapMatchers>({
+                               Pair("Host", StartsWith(kHostA)),
+                               Pair(kSecFetchStorageAccess, "inactive"),
+                           })),
+          Pair(kRetryPath, IsSupersetOf<HeaderMapMatchers>({
+                               Pair("Host", StartsWith(kHostA)),
+                               Pair(kSecFetchStorageAccess, "active"),
+                           })),
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, LoadHeader) {
@@ -3188,19 +3235,15 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
   ASSERT_TRUE(content::ExecJs(
       GetFrame(), content::JsReplace("fetch($1, {'credentials': 'omit'})",
                                      GetURL(kHostB))));
-  using C = std::initializer_list<testing::Matcher<
-      std::pair<std::string, net::test_server::HttpRequest::HeaderMap>>>;
-  using HM = std::initializer_list<
-      testing::Matcher<std::pair<std::string, std::string>>>;
   EXPECT_THAT(
       ObservedRequestHeaders(),
-      IsSupersetOf<C>({
+      IsSupersetOf<PathAndHeaderMapMatchers>({
           // The top-level page and the `fetch` call both omit the header.
           Pair("/iframe.html", Not(Contains(Key(kSecFetchStorageAccess)))),
           Pair("/", AllOf(Contains(Pair("Host", StartsWith(kHostB))),
                           Not(Contains(Key(kSecFetchStorageAccess))))),
           // The iframe subresource fetch includes the header.
-          Pair("/", IsSupersetOf<HM>({
+          Pair("/", IsSupersetOf<HeaderMapMatchers>({
                         Pair("Host", StartsWith(kHostB)),
                         Pair(kSecFetchStorageAccess, "none"),
                     })),
@@ -3212,10 +3255,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, RequestHeadersNone) {
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(GetURL(kHostB));
-  using C = std::initializer_list<
-      testing::Matcher<std::pair<std::string, std::string>>>;
   EXPECT_THAT(ObservedRequestHeaders(),
-              Contains(Pair("/", IsSupersetOf<C>({
+              Contains(Pair("/", IsSupersetOf<HeaderMapMatchers>({
                                      Pair("Host", StartsWith(kHostB)),
                                      Pair(kSecFetchStorageAccess, "none"),
                                  }))));
@@ -3236,10 +3277,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
 
   // Top-level subresource fetches also include the "inactive" header.
   EXPECT_EQ(CookiesFromFetch(GetPrimaryMainFrame(), kHostB), "None");
-  using C = std::initializer_list<testing::Matcher<
-      std::pair<std::string, net::test_server::HttpRequest::HeaderMap>>>;
   EXPECT_THAT(ObservedRequestHeaders(),
-              IsSupersetOf<C>({
+              IsSupersetOf<PathAndHeaderMapMatchers>({
                   Pair("/", Contains(Pair(kSecFetchStorageAccess, "none"))),
                   Pair("/echocookieswithcors",
                        Contains(Pair(kSecFetchStorageAccess, "inactive"))),
@@ -3269,10 +3308,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
 
   // Subresource fetches from the embed include the "inactive" header.
   EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostB), "None");
-  using C = std::initializer_list<testing::Matcher<
-      std::pair<std::string, net::test_server::HttpRequest::HeaderMap>>>;
   EXPECT_THAT(ObservedRequestHeaders(),
-              IsSupersetOf<C>({
+              IsSupersetOf<PathAndHeaderMapMatchers>({
                   Pair("/", Contains(Pair(kSecFetchStorageAccess, "none"))),
                   Pair("/echocookieswithcors",
                        Contains(Pair(kSecFetchStorageAccess, "inactive"))),
