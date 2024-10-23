@@ -835,11 +835,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="4" label="Other"/>
 </enum>
 
-<enum name="DevToolsColorPickerOpenedFrom">
-  <int value="0" label="Sources panel"/>
-  <int value="1" label="Styles pane"/>
-</enum>
-
 <enum name="DevToolsCSSHintShown">
   <int value="0" label="Other"/>
   <int value="1" label="AlignContent"/>
