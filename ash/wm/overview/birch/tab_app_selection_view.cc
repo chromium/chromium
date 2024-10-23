@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
@@ -326,19 +327,29 @@ class UserFeedbackView : public views::BoxLayoutView {
         AddChildView(std::make_unique<views::BoxLayoutView>());
     thumb_buttons_container->SetOrientation(
         views::BoxLayout::Orientation::kHorizontal);
-    thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
-        base::BindOnce(&UserFeedbackView::OnThumbUpButtonPressed,
-                       base::Unretained(this)),
-        IconButton::Type::kMediumFloating, &kThumbUpIcon,
-        l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_THUMB_UP_ACCESSIBLE_NAME),
-        /*is_togglable=*/false, /*has_border=*/false));
-    thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
-        base::BindOnce(&UserFeedbackView::OnThumbDownButtonPressed,
-                       base::Unretained(this)),
-        IconButton::Type::kMediumFloating, &kThumbDownIcon,
-        l10n_util::GetStringUTF16(
-            IDS_ASH_BIRCH_CORAL_THUMB_DOWN_ACCESSIBLE_NAME),
-        /*is_togglable=*/false, /*has_border=*/false));
+    auto* thumb_up_button =
+        thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
+            base::BindOnce(&UserFeedbackView::OnThumbUpButtonPressed,
+                           base::Unretained(this)),
+            IconButton::Type::kMediumFloating, &kThumbUpIcon,
+            l10n_util::GetStringUTF16(
+                IDS_ASH_BIRCH_CORAL_THUMB_UP_ACCESSIBLE_NAME),
+            /*is_togglable=*/false, /*has_border=*/false));
+    StyleUtil::SetUpInkDropForButton(thumb_up_button, gfx::Insets(),
+                                     /*highlight_on_hover=*/true,
+                                     /*highlight_on_focus=*/false);
+
+    auto* thumb_down_button =
+        thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
+            base::BindOnce(&UserFeedbackView::OnThumbDownButtonPressed,
+                           base::Unretained(this)),
+            IconButton::Type::kMediumFloating, &kThumbDownIcon,
+            l10n_util::GetStringUTF16(
+                IDS_ASH_BIRCH_CORAL_THUMB_DOWN_ACCESSIBLE_NAME),
+            /*is_togglable=*/false, /*has_border=*/false));
+    StyleUtil::SetUpInkDropForButton(thumb_down_button, gfx::Insets(),
+                                     /*highlight_on_hover=*/true,
+                                     /*highlight_on_focus=*/false);
   }
 
   UserFeedbackView(const UserFeedbackView&) = delete;
