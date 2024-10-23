@@ -157,7 +157,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
            IsA<HTMLTemplateElement>(element) ||
            IsA<HTMLNoScriptElement>(element) ||
            IsA<HTMLButtonElement>(element) || IsA<HTMLDivElement>(element) ||
-           IsA<HTMLSpanElement>(element);
+           IsA<HTMLSpanElement>(element) ||
+           IsA<HTMLSelectedOptionElement>(element);
   }
   Member<HTMLSelectElement> select_;
   Member<MutationObserver> observer_;
