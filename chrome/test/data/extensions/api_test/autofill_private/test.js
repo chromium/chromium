@@ -809,6 +809,19 @@ var availableTests = [
     chrome.test.succeed();
   },
 
+  function triggerAnnotationsBootstrapping_ExpectTrue() {
+    chrome.autofillPrivate.triggerAnnotationsBootstrapping(function(success) {
+      chrome.test.assertTrue(success, 'Expected bootstrapping to succeed');
+      chrome.test.succeed();
+    });
+  },
+
+  function triggerAnnotationsBootstrapping_ExpectFalse() {
+    chrome.autofillPrivate.triggerAnnotationsBootstrapping(function(success) {
+      chrome.test.assertFalse(success, 'Expected bootstrapping to fail');
+      chrome.test.succeed();
+    });
+  },
 ];
 
 /** @const */
@@ -859,6 +872,10 @@ var TESTS_FOR_CONFIG = {
   'addVirtualCard': ['addVirtualCard'],
   'removeVirtualCard': ['removeVirtualCard'],
   'setAutofillSyncToggleEnabled': ['setAutofillSyncToggleEnabled'],
+  'TriggerAnnotationsBootstrapping_Success':
+      ['triggerAnnotationsBootstrapping_ExpectTrue'],
+  'TriggerAnnotationsBootstrapping_Failure':
+      ['triggerAnnotationsBootstrapping_ExpectFalse'],
 };
 
 var testConfig = window.location.search.substring(1);

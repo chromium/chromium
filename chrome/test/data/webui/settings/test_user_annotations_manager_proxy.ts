@@ -7,14 +7,16 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy
     implements UserAnnotationsManagerProxy {
-  private entries: chrome.autofillPrivate.UserAnnotationsEntry[] = [];
-  private eligible: boolean = true;
+  private entries_: chrome.autofillPrivate.UserAnnotationsEntry[] = [];
+  private entriesBootstrapped_: boolean = false;
+  private eligible_: boolean = true;
 
   constructor() {
     super([
       'getEntries',
       'deleteEntry',
       'deleteAllEntries',
+      'triggerBootstrapping',
       'hasEntries',
       'isUserEligible',
       'predictionImprovementsIphFeatureUsed',
@@ -22,16 +24,20 @@ export class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy
   }
 
   setEntries(entries: chrome.autofillPrivate.UserAnnotationsEntry[]): void {
-    this.entries = entries;
+    this.entries_ = entries;
+  }
+
+  setEntriesBootstrapped(entriesBootstrapped: boolean): void {
+    this.entriesBootstrapped_ = entriesBootstrapped;
   }
 
   setEligibility(isEligible: boolean): void {
-    this.eligible = isEligible;
+    this.eligible_ = isEligible;
   }
 
   getEntries(): Promise<chrome.autofillPrivate.UserAnnotationsEntry[]> {
     this.methodCalled('getEntries');
-    return Promise.resolve(this.entries);
+    return Promise.resolve(this.entries_.slice());
   }
 
   deleteEntry(entryId: number): void {
@@ -42,14 +48,19 @@ export class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy
     this.methodCalled('deleteAllEntries');
   }
 
+  triggerBootstrapping(): Promise<boolean> {
+    this.methodCalled('triggerBootstrapping');
+    return Promise.resolve(this.entriesBootstrapped_);
+  }
+
   hasEntries(): Promise<boolean> {
     this.methodCalled('hasEntries');
-    return Promise.resolve(this.entries.length > 0);
+    return Promise.resolve(this.entries_.length > 0);
   }
 
   isUserEligible(): Promise<boolean> {
     this.methodCalled('isUserEligible');
-    return Promise.resolve(this.eligible);
+    return Promise.resolve(this.eligible_);
   }
 
   predictionImprovementsIphFeatureUsed(): void {

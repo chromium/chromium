@@ -432,5 +432,34 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddVirtualCard) {
   EXPECT_TRUE(RunAutofillSubtest("addVirtualCard")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       TriggerAnnotationsBootstrapping_Success) {
+  autofill::TestPersonalDataManager* test_personal_data_manager =
+      static_cast<autofill::TestPersonalDataManager*>(
+          autofill_client()->GetPersonalDataManager());
+  autofill::TestAddressDataManager& test_address_data_manager =
+      test_personal_data_manager->test_address_data_manager();
+
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
+  test_address_data_manager.AddProfile(profile);
+
+  EXPECT_TRUE(RunAutofillSubtest("TriggerAnnotationsBootstrapping_Success"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       TriggerAnnotationsBootstrapping_Failure) {
+  autofill::TestPersonalDataManager* test_personal_data_manager =
+      static_cast<autofill::TestPersonalDataManager*>(
+          autofill_client()->GetPersonalDataManager());
+  autofill::TestAddressDataManager& test_address_data_manager =
+      test_personal_data_manager->test_address_data_manager();
+
+  test_address_data_manager.ClearProfiles();
+
+  EXPECT_TRUE(RunAutofillSubtest("TriggerAnnotationsBootstrapping_Failure"))
+      << message_;
+}
+
 }  // namespace
 }  // namespace extensions
