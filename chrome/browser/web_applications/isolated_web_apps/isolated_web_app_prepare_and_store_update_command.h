@@ -209,8 +209,6 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data_;
 
   bool same_version_update_allowed_by_key_rotation_ = false;
-  // Key Rotation data for this IWA.
-  std::optional<std::vector<uint8_t>> rotated_key_;
 
   std::optional<IwaSourceWithModeAndFileOp> update_source_;
   std::optional<IwaSourceWithMode> destination_location_;

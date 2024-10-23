@@ -164,7 +164,6 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
     case KeyRotationLookupResult::kKeyFound: {
       KeyRotationData data =
           GetKeyRotationData(url_info_.web_bundle_id(), isolation_data);
-      rotated_key_ = *data.rotated_key;
       if (!data.current_installation_has_rk) {
         same_version_update_allowed_by_key_rotation_ = true;
       }
@@ -247,19 +246,13 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CreateStoragePartition(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (integrity_block) {
+    // Given that the bundle trust check has completed successfully, we may
+    // safely assume that `integrity_block_data_` contains the rotated key if
+    // there is one for this `url_info_.web_bundle_id()`.
     integrity_block_data_ =
         IsolatedWebAppIntegrityBlockData::FromIntegrityBlock(*integrity_block);
-    if (rotated_key_ && !integrity_block_data_->HasPublicKey(*rotated_key_)) {
-      ReportFailure(
-          "The update's integrity block data doesn't contain the required "
-          "public key as instructed by the key distribution component -- the "
-          "update won't succeed.");
-      return;
-    }
   }
 
-  // TODO(cmfcmf): Maybe we should log somewhere when the storage partition is
-  // unexpectedly missing?
   command_helper_->CreateStoragePartitionIfNotPresent(profile());
   std::move(next_step_callback).Run();
 }
