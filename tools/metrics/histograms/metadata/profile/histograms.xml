@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Guest.ForcedByPolicy" enum="BooleanForced"
-    expires_after="2024-10-27">
+    expires_after="2025-01-27">
   <owner>arabm@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
