@@ -85,6 +85,9 @@ bool TouchToFillController::Show(
       OnDismiss();
       return false;
     case DisplayTarget::kShowNoPasskeysSheet:
+      if (!GetNativeView()->GetWindowAndroid()) {
+        return false;  // Chrome exits and can't show a sheet anymore.
+      }
       if (!no_passkeys_bridge_) {
         no_passkeys_bridge_ = std::make_unique<NoPasskeysBottomSheetBridge>();
       }

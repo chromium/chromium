@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/android/window_android.h"
 
 namespace {
 
@@ -24,7 +23,7 @@ class MockJniDelegate : public JniDelegate {
   MockJniDelegate() = default;
   ~MockJniDelegate() override = default;
 
-  MOCK_METHOD((void), Create, (ui::WindowAndroid*), (override));
+  MOCK_METHOD((void), Create, (ui::WindowAndroid&), (override));
   MOCK_METHOD((void), Show, (const std::string&), (override));
   MOCK_METHOD((void), Dismiss, (), (override));
 };
