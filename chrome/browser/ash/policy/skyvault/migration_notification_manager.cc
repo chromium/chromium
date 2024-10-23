@@ -18,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
@@ -157,21 +158,18 @@ void MigrationNotificationManager::ShowMigrationCompletedNotification(
 
 void MigrationNotificationManager::ShowMigrationErrorNotification(
     CloudProvider provider,
-    const base::FilePath& destination_path,
+    const std::string& folder_name,
+    const base::FilePath& error_log_path,
     std::map<base::FilePath, MigrationUploadError> errors) {
-  // TODO(aidazolic): Pass error log path.
-  const base::FilePath error_log_path = base::FilePath();
-
   std::u16string provider_str = CloudProviderToString(provider);
 
-  std::u16string folder_name = destination_path.BaseName().AsUTF16Unsafe();
   std::u16string title = base::ReplaceStringPlaceholders(
       l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_TITLE),
       provider_str,
       /*offset=*/nullptr);
   std::u16string message = base::ReplaceStringPlaceholders(
       l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_MESSAGE),
-      {folder_name, provider_str},
+      {base::UTF8ToUTF16(folder_name), provider_str},
       /*offsets=*/nullptr);
   std::u16string button =
       l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_BUTTON);

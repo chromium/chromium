@@ -153,6 +153,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // happens.
   CloudProvider cloud_provider_ = CloudProvider::kNotSpecified;
 
+  // The name of the device-unique upload root folder on Drive
+  std::string upload_root_;
+
   // The time at which the migration will start automatically.
   base::Time migration_start_time_;
 

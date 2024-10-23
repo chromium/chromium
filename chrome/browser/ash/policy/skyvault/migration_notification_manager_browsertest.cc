@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -110,8 +111,9 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
                        ShowMigrationErrorNotification) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->ShowMigrationErrorNotification(CloudProvider(), base::FilePath(),
-                                            /*errors=*/{});
+  manager()->ShowMigrationErrorNotification(
+      CloudProvider(), kDestinationDirName, base::FilePath(),
+      /*errors=*/{});
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
   manager()->CloseAll();

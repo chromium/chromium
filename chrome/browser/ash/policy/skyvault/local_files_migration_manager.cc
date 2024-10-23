@@ -79,9 +79,9 @@ std::vector<base::FilePath> GetMyFilesContents(Profile* profile) {
   return files;
 }
 
-// Generates the destination directory name, combining the "ChromeOS device"
-// prefix with a unique identifier of the device.
-std::string GenerateDestinationDirName() {
+// Generates a device-unique name for the root folder that all files are
+// uploaded to.
+std::string GenerateUploadRootName() {
   std::optional<std::string_view> id =
       ash::system::StatisticsProvider::GetInstance()->GetMachineID();
   return std::string(kDestinationDirName) + " " + std::string(id.value_or(""));
@@ -391,8 +391,8 @@ void LocalFilesMigrationManager::StartMigration(
     return;
   }
 
-  coordinator_->Run(cloud_provider_, std::move(files),
-                    GenerateDestinationDirName(),
+  upload_root_ = GenerateUploadRootName();
+  coordinator_->Run(cloud_provider_, std::move(files), upload_root_,
                     base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
                                    weak_factory_.GetWeakPtr()));
 }
@@ -431,11 +431,11 @@ void LocalFilesMigrationManager::ProcessErrors(
     std::map<base::FilePath, MigrationUploadError> errors) {
   CHECK(state_ == State::kFailure);
   CHECK(!errors.empty());
-  // TODO(b/354709404): Get destination folder path in drive.
-  const base::FilePath destination_path = base::FilePath();
-  // TODO(b/351971781): Process retryable errors/show correct message.
+  // TODO(351971781): Process retryable errors/show correct message.
+  // TODO(351972769): Create an error log and pass the path.
   notification_manager_->ShowMigrationErrorNotification(
-      cloud_provider_, destination_path, std::move(errors));
+      cloud_provider_, upload_root_, /*error_log_path=*/base::FilePath(),
+      std::move(errors));
 }
 
 void LocalFilesMigrationManager::CleanupLocalFiles() {
