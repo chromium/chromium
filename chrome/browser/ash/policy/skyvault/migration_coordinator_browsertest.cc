@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
@@ -256,6 +257,11 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, CancelUpload) {
 
 class GoogleDriveMigrationCoordinatorTest : public SkyvaultGoogleDriveTest {
  public:
+  // Possible final states of the file sync
+  enum class SyncStatus {
+    kCompleted,
+    kFailure,
+  };
   GoogleDriveMigrationCoordinatorTest() = default;
 
   GoogleDriveMigrationCoordinatorTest(
@@ -274,21 +280,38 @@ class GoogleDriveMigrationCoordinatorTest : public SkyvaultGoogleDriveTest {
   }
 
  protected:
-  bool fail_sync_ = false;
+  SyncStatus sync_status_ = SyncStatus::kCompleted;
+  // Invoked when the copy is in progress.
+  base::RepeatingClosure on_transfer_in_progress_callback_;
 
  private:
   // IOTaskController::Observer:
   void OnIOTaskStatus(
       const file_manager::io_task::ProgressStatus& status) override {
-    // Wait for the copy task to complete before starting the Drive sync.
     auto it = source_files_.find(status.sources[0].url.path());
-    if (status.type == file_manager::io_task::OperationType::kCopy &&
-        status.sources.size() == 1 && it != source_files_.end() &&
-        status.state == file_manager::io_task::State::kSuccess) {
-      if (fail_sync_) {
-        SimulateDriveUploadFailure(it->second);
-      } else {
-        SimulateDriveUploadCompleted(it->second);
+    if (status.type != file_manager::io_task::OperationType::kCopy ||
+        status.sources.size() != 1 || it == source_files_.end()) {
+      return;
+    }
+
+    // Invoke in progress callback if needed.
+    if (status.state == file_manager::io_task::State::kQueued ||
+        status.state == file_manager::io_task::State::kInProgress) {
+      if (on_transfer_in_progress_callback_) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(on_transfer_in_progress_callback_));
+        return;
+      }
+    }
+    // Wait for the copy task to complete before starting the Drive sync.
+    if (status.state == file_manager::io_task::State::kSuccess) {
+      switch (sync_status_) {
+        case SyncStatus::kCompleted:
+          SimulateDriveUploadCompleted(it->second);
+          break;
+        case SyncStatus::kFailure:
+          SimulateDriveUploadFailure(it->second);
+          break;
       }
     }
   }
@@ -326,6 +349,8 @@ class GoogleDriveMigrationCoordinatorTest : public SkyvaultGoogleDriveTest {
     drivefs_delegate().FlushForTesting();
   }
 
+  // Simulates a failed upload of the file to Drive by sending a series of fake
+  // signals to the DriveFs delegate.
   void SimulateDriveUploadFailure(const FileInfo& info) {
     // Simulate server sync events.
     drivefs::mojom::SyncingStatusPtr status =
@@ -402,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, SuccessfulUpload) {
 IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, FailedUpload) {
   SetUpObservers();
   SetUpMyFiles();
-  fail_sync_ = true;
+  sync_status_ = SyncStatus::kFailure;
 
   const std::string file = "text.txt";
   base::FilePath file_path = SetUpSourceFile(file, my_files_dir());
@@ -425,6 +450,33 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, FailedUpload) {
   ASSERT_EQ(MigrationUploadError::kCopyFailed, error->second);
   // The path should be populated by the time sync starts.
   EXPECT_EQ(drive_root_dir().Append(kDestinationDirName), upload_root_path);
+
+  // Check that the file hasn't been moved to Google Drive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(file)));
+    CheckPathNotFoundOnDrive(
+        observed_relative_drive_path(source_files_.find(file_path)->second));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, CancelUpload) {
+  SetUpObservers();
+  SetUpMyFiles();
+
+  const std::string file = "video_long.ogv";
+  base::FilePath file_path = SetUpSourceFile(file, my_files_dir());
+
+  MigrationCoordinator coordinator(profile());
+  base::RunLoop run_loop;
+  coordinator.SetCancelledCallbackForTesting(
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+
+  on_transfer_in_progress_callback_ =
+      base::BindLambdaForTesting([&coordinator] { coordinator.Cancel(); });
+  coordinator.Run(CloudProvider::kGoogleDrive, {file_path}, kDestinationDirName,
+                  base::DoNothing());
+  run_loop.Run();
 
   // Check that the file hasn't been moved to Google Drive.
   {

@@ -141,11 +141,11 @@ void DriveSkyvaultUploader::Run() {
 
 void DriveSkyvaultUploader::Cancel() {
   cancelled_ = true;
-  if (observed_copy_task_id_.has_value()) {
-    io_task_controller_->Cancel(observed_copy_task_id_.value());
-  }
+  // If delete task has started, copy must have finished.
   if (observed_delete_task_id_.has_value()) {
     io_task_controller_->Cancel(observed_delete_task_id_.value());
+  } else if (observed_copy_task_id_.has_value()) {
+    io_task_controller_->Cancel(observed_copy_task_id_.value());
   }
 }
 
@@ -297,7 +297,6 @@ void DriveSkyvaultUploader::OnCopyStatus(
       return;
     case file_manager::io_task::State::kSuccess:
       DCHECK_EQ(status.outputs.size(), 1u);
-      observed_copy_task_id_.reset();
       return;
     case file_manager::io_task::State::kCancelled:
       OnEndCopy(MigrationUploadError::kCancelled);
@@ -321,15 +320,12 @@ void DriveSkyvaultUploader::OnDeleteStatus(
     case file_manager::io_task::State::kCancelled:
       // Don't override errors occurred during the copy.
       error_ = error_.value_or(MigrationUploadError::kCancelled);
-      observed_delete_task_id_.reset();
       break;
     case file_manager::io_task::State::kError:
       // Don't override errors occurred during the copy.
       error_ = error_.value_or(MigrationUploadError::kDeleteFailed);
-      observed_delete_task_id_.reset();
       break;
     case file_manager::io_task::State::kSuccess:
-      observed_delete_task_id_.reset();
       break;
     default:
       return;
