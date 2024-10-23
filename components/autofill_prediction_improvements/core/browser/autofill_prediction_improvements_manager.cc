@@ -482,13 +482,14 @@ AutofillPredictionImprovementsManager::GetSuggestions(
 void AutofillPredictionImprovementsManager::RetrievePredictions(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
-    UpdateSuggestionsCallback update_suggestions_callback) {
+    UpdateSuggestionsCallback update_suggestions_callback,
+    bool update_to_loading_suggestion) {
   if (prediction_retrieval_state_ ==
       PredictionRetrievalState::kIsLoadingPredictions) {
     return;
   }
   update_suggestions_callback_ = std::move(update_suggestions_callback);
-  if (!kTriggerAutomatically.Get()) {
+  if (update_to_loading_suggestion) {
     UpdateSuggestions({CreateLoadingSuggestion()});
   }
   prediction_retrieval_state_ = PredictionRetrievalState::kIsLoadingPredictions;
@@ -546,7 +547,7 @@ void AutofillPredictionImprovementsManager::
   switch (prediction_retrieval_state_) {
     case PredictionRetrievalState::kDoneSuccess:
       // TODO(crbug.com/365512352): CHECK that `cache_` should not be null here.
-      if (cache_ && cache_->empty()) {
+      if (cache_ && !cache_->contains(trigger_field.global_id())) {
         OnFailedToGenerateSuggestions();
       } else {
         UpdateSuggestions(
@@ -619,8 +620,15 @@ void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
+  // Reset the manager's state. This is necessary because the trigger suggestion
+  // may have been shown as a last resort after a failed prediction retrieval.
+  // In this case, the manager might contain stale state (e.g. error state,
+  // previous predictions) that needs to be cleared before starting a new
+  // retrieval.
+  Reset();
   RetrievePredictions(form, trigger_field,
-                      std::move(update_suggestions_callback));
+                      std::move(update_suggestions_callback),
+                      /*update_to_loading_suggestion=*/true);
 }
 
 void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
@@ -633,7 +641,8 @@ void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
       prediction_retrieval_state_ !=
           PredictionRetrievalState::kIsLoadingPredictions) {
     RetrievePredictions(form, trigger_field,
-                        std::move(update_suggestions_callback));
+                        std::move(update_suggestions_callback),
+                        /*update_to_loading_suggestion=*/false);
   } else if (prediction_retrieval_state_ ==
              PredictionRetrievalState::kIsLoadingPredictions) {
     // Update the `update_suggestions_callback_` to the current instance. This

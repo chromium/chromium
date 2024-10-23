@@ -143,7 +143,8 @@ class AutofillPredictionImprovementsManager
   void RetrievePredictions(
       const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field,
-      UpdateSuggestionsCallback update_suggestions_callback);
+      UpdateSuggestionsCallback update_suggestions_callback,
+      bool update_to_loading_suggestion);
 
   void OnReceivedAXTree(const autofill::FormData& form,
                         const autofill::FormFieldData& trigger_field,
