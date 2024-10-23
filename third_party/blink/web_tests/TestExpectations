@@ -8258,3 +8258,6 @@ crbug.com/374978346 [ Linux ] virtual/document-isolation-policy/external/wpt/htm
 
 # Gardener 2024-10-23
 crbug.com/375006417 [ Linux ] external/wpt/fledge/tentative/trusted-scoring-signals.https.window.html?50-last [ Failure Pass Timeout ]
+
+# Gardener 2024-10-24
+crbug.com/375264650 [ Win ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/csp-script-src-self.html?target_hint=_blank [ Failure Pass ]
