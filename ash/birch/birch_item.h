@@ -92,9 +92,7 @@ class ASH_EXPORT BirchItem {
   virtual std::string ToString() const = 0;
 
   // Perform the action associated with this item (e.g. open a document).
-  // `is_post_login` is true if the chip was in a post-login overview session as
-  // opposed to an in-session overview session.
-  virtual void PerformAction(bool is_post_login) = 0;
+  virtual void PerformAction() = 0;
 
   // Loads the icon for this image. This may invoke the callback immediately
   // (e.g. with a local icon) or there may be a delay for a network fetch.
@@ -176,7 +174,7 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void PerformAddonAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
   BirchAddonType GetAddonType() const override;
@@ -235,7 +233,7 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& file_url() const { return file_url_; }
@@ -272,7 +270,7 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const base::Time& timestamp() const { return timestamp_; }
@@ -314,7 +312,7 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& url() const { return url_; }
@@ -352,7 +350,7 @@ class ASH_EXPORT BirchLastActiveItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& page_url() const { return page_url_; }
@@ -376,7 +374,7 @@ class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& page_url() const { return page_url_; }
@@ -406,7 +404,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const std::u16string& guid() const { return guid_; }
@@ -448,7 +446,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& source_url() const { return source_url_; }
@@ -481,7 +479,7 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
   std::u16string GetAccessibleName() const override;
   void PerformAddonAction() override;
@@ -512,7 +510,7 @@ class ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const base::Time& first_seen() const { return first_seen_; }

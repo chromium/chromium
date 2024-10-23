@@ -85,9 +85,11 @@ void OnAllFaviconsRetrievedCoral(
 
 BirchCoralItem::BirchCoralItem(const std::u16string& coral_title,
                                const std::u16string& coral_text,
+                               CoralSource source,
                                int group_id)
-    : BirchItem(coral_title, coral_text), group_id_(group_id) {
-}
+    : BirchItem(coral_title, coral_text),
+      source_(source),
+      group_id_(group_id) {}
 
 BirchCoralItem::BirchCoralItem(BirchCoralItem&&) = default;
 
@@ -110,17 +112,21 @@ std::string BirchCoralItem::ToString() const {
   return root.DebugString();
 }
 
-void BirchCoralItem::PerformAction(bool is_post_login) {
+void BirchCoralItem::PerformAction() {
   coral::mojom::GroupPtr group =
       BirchCoralProvider::Get()->ExtractGroupById(group_id_);
 
   // TODO(http://b/365839465): Handle post-login case.
-  if (is_post_login) {
-    Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
-    return;
+  switch (source_) {
+    case CoralSource::kPostLogin:
+      Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
+      break;
+    case CoralSource::kInSession:
+      Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));
+      break;
+    case CoralSource::kUnknown:
+      NOTREACHED() << "Invalid response with unknown source.";
   }
-
-  Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));
 }
 
 // TODO(b/362530155): Consider refactoring icon loading logic into

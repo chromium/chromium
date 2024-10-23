@@ -304,9 +304,8 @@ void BirchChipButton::Init(BirchItem* item) {
   title_->SetText(item_->title());
   subtitle_->SetText(item_->subtitle());
 
-  SetCallback(base::BindRepeating(
-      &BirchItem::PerformAction, base::Unretained(item_),
-      /*is_post_login=*/BirchBarController::Get()->is_informed_restore()));
+  SetCallback(
+      base::BindRepeating(&BirchItem::PerformAction, base::Unretained(item_)));
 
   const auto addon_type = item_->GetAddonType();
   // Add add-ons according to the add-on type.

@@ -401,6 +401,7 @@ component("ash") {
     "birch/birch_ranker.h",
     "birch/birch_weather_provider.cc",
     "birch/birch_weather_provider.h",
+    "birch/coral_constants.h",
     "birch/coral_item_remover.cc",
     "birch/coral_item_remover.h",
     "bluetooth_devices_observer.cc",

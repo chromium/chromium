@@ -532,7 +532,8 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
       SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
   std::vector<BirchCoralItem> coral_item_list;
-  coral_item_list.emplace_back(u"title", u"subtext", /*group_id=*/0);
+  coral_item_list.emplace_back(u"title", u"subtext", CoralSource::kInSession,
+                               /*group_id=*/0);
   model->SetCoralItems(coral_item_list);
 
   ASSERT_TRUE(model->IsDataFresh());
@@ -1081,7 +1082,8 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
       SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
   std::vector<BirchCoralItem> coral_item_list;
-  coral_item_list.emplace_back(u"title", u"subtext", /*group_id=*/0);
+  coral_item_list.emplace_back(u"title", u"subtext", CoralSource::kInSession,
+                               /*group_id=*/0);
   model->SetCoralItems(coral_item_list);
 
   EXPECT_TRUE(model->IsDataFresh());
@@ -1469,8 +1471,10 @@ TEST_F(BirchModelTest, RemoveAndFilterCoralItem) {
   item_remover->FilterRemovedItems(&content_items);
   ASSERT_EQ(4u, content_items.size());
 
-  BirchCoralItem coral_item0(u"Coral Title", u"Coral Text", /*group_id=*/0);
-  BirchCoralItem coral_item1(u"Coral Title", u"Coral Text", /*group_id=*/1);
+  BirchCoralItem coral_item0(u"Coral Title", u"Coral Text",
+                             CoralSource::kInSession, /*group_id=*/0);
+  BirchCoralItem coral_item1(u"Coral Title", u"Coral Text",
+                             CoralSource::kInSession, /*group_id=*/1);
   model->SetCoralItems({coral_item0, coral_item1});
 
   model->RemoveItem(&coral_item1);

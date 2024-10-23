@@ -294,7 +294,7 @@ std::string BirchCalendarItem::ToString() const {
   return ss.str();
 }
 
-void BirchCalendarItem::PerformAction(bool is_post_login) {
+void BirchCalendarItem::PerformAction() {
   if (!calendar_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for calendar item";
     return;
@@ -427,7 +427,7 @@ std::string BirchAttachmentItem::ToString() const {
   return ss.str();
 }
 
-void BirchAttachmentItem::PerformAction(bool is_post_login) {
+void BirchAttachmentItem::PerformAction() {
   if (!file_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for attachment item";
   }
@@ -498,7 +498,7 @@ std::string BirchFileItem::ToString() const {
   return ss.str();
 }
 
-void BirchFileItem::PerformAction(bool is_post_login) {
+void BirchFileItem::PerformAction() {
   RecordActionMetrics();
   NewWindowDelegate::GetPrimary()->OpenFile(file_path_);
 }
@@ -559,7 +559,7 @@ std::string BirchWeatherItem::ToString() const {
   return ss.str();
 }
 
-void BirchWeatherItem::PerformAction(bool is_post_login) {
+void BirchWeatherItem::PerformAction() {
   RecordActionMetrics();
   // TODO(jamescook): Localize the query string.
   GURL url("https://google.com/search?q=weather");
@@ -588,7 +588,7 @@ std::u16string BirchWeatherItem::GetAccessibleName() const {
 
 void BirchWeatherItem::PerformAddonAction() {
   // Perform same action as the item.
-  PerformAction(/*is_post_login=*/false);
+  PerformAction();
 }
 
 BirchAddonType BirchWeatherItem::GetAddonType() const {
@@ -669,7 +669,7 @@ std::string BirchTabItem::ToString() const {
   return ss.str();
 }
 
-void BirchTabItem::PerformAction(bool is_post_login) {
+void BirchTabItem::PerformAction() {
   if (!url_.is_valid()) {
     LOG(ERROR) << "No valid URL for tab item";
     return;
@@ -741,7 +741,7 @@ std::string BirchLastActiveItem::ToString() const {
   return ss.str();
 }
 
-void BirchLastActiveItem::PerformAction(bool is_post_login) {
+void BirchLastActiveItem::PerformAction() {
   if (!page_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for last active item";
     return;
@@ -815,7 +815,7 @@ std::string BirchMostVisitedItem::ToString() const {
   return ss.str();
 }
 
-void BirchMostVisitedItem::PerformAction(bool is_post_login) {
+void BirchMostVisitedItem::PerformAction() {
   if (!page_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for most visited item";
     return;
@@ -881,7 +881,7 @@ std::string BirchSelfShareItem::ToString() const {
   return ss.str();
 }
 
-void BirchSelfShareItem::PerformAction(bool is_post_login) {
+void BirchSelfShareItem::PerformAction() {
   if (!url_.is_valid()) {
     LOG(ERROR) << "No valid URL for self "
                   "share item";
@@ -966,7 +966,7 @@ std::string BirchLostMediaItem::ToString() const {
   return ss.str();
 }
 
-void BirchLostMediaItem::PerformAction(bool is_post_login) {
+void BirchLostMediaItem::PerformAction() {
   // This needs to be called before running `activation_callback_` because
   // running the callback may cause the item to be deleted.
   RecordActionMetrics();
@@ -1016,7 +1016,7 @@ std::string BirchReleaseNotesItem::ToString() const {
   return ss.str();
 }
 
-void BirchReleaseNotesItem::PerformAction(bool is_post_login) {
+void BirchReleaseNotesItem::PerformAction() {
   if (!url_.is_valid()) {
     LOG(ERROR) << "No valid URL for release notes item";
     return;

@@ -125,10 +125,10 @@ void CoralController::GenerateContentGroups(
   for (size_t i = 0; i < items_in_request; i++) {
     group_request->entities.push_back(request.content()[i]->Clone());
   }
-  coral_service->Group(
-      std::move(group_request), std::move(title_observer),
-      base::BindOnce(&CoralController::HandleGroupResult,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  coral_service->Group(std::move(group_request), std::move(title_observer),
+                       base::BindOnce(&CoralController::HandleGroupResult,
+                                      weak_factory_.GetWeakPtr(),
+                                      request.source(), std::move(callback)));
 }
 
 void CoralController::CacheEmbeddings(const CoralRequest& request,
@@ -173,7 +173,8 @@ CoralController::CoralService* CoralController::EnsureCoralService() {
   return coral_service_ ? coral_service_.get() : nullptr;
 }
 
-void CoralController::HandleGroupResult(CoralResponseCallback callback,
+void CoralController::HandleGroupResult(CoralSource source,
+                                        CoralResponseCallback callback,
                                         coral::mojom::GroupResultPtr result) {
   if (result->is_error()) {
     LOG(ERROR) << "Coral group request failed with CoralError code: "
@@ -184,6 +185,7 @@ void CoralController::HandleGroupResult(CoralResponseCallback callback,
   coral::mojom::GroupResponsePtr group_response =
       std::move(result->get_response());
   auto response = std::make_unique<CoralResponse>();
+  response->set_source(source);
   response->set_groups(std::move(group_response->groups));
   std::move(callback).Run(std::move(response));
 }

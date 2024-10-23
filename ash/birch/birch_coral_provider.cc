@@ -255,6 +255,9 @@ void BirchCoralProvider::RequestBirchDataFetch() {
     for (const auto& group : fake_response_->groups()) {
       groups.push_back(group->Clone());
     }
+    fake_response_copy->set_source(HasValidPostLoginData()
+                                       ? CoralSource::kPostLogin
+                                       : CoralSource::kInSession);
     fake_response_copy->set_groups(std::move(groups));
     HandleCoralResponse(std::move(fake_response_copy));
     return;
@@ -333,6 +336,7 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
     }
   }
 
+  request_.set_source(CoralSource::kPostLogin);
   request_.set_content(std::move(tab_app_data));
   // TODO(zxdan): Change `mojo::NullRemote()` to `BindRemote()` when we
   // can update BirchModel on title updates.
@@ -358,6 +362,7 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
     active_tab_app_data.push_back(coral::mojom::Entity::NewApp(std::move(app)));
   }
   FilterCoralContentItems(&active_tab_app_data);
+  request_.set_source(CoralSource::kInSession);
   request_.set_content(std::move(active_tab_app_data));
   // TODO(zxdan): Change `mojo::NullRemote()` to `BindRemote()` when we
   // can update BirchModel on title updates.
@@ -368,7 +373,8 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
 }
 
 bool BirchCoralProvider::HasValidPostLoginResponse() {
-  return response_ && response_->groups().size() > 0 &&
+  return response_ && response_->source() == CoralSource::kPostLogin &&
+         response_->groups().size() > 0 &&
          !post_login_response_timestamp_.is_null() &&
          base::Time::Now() - post_login_response_timestamp_ <
              kPostLoginClusterLifespan;
@@ -413,7 +419,7 @@ void BirchCoralProvider::HandleCoralResponse(
     // TODO(zxdan): Support nullopt title for async title generation.
     items.emplace_back(base::UTF8ToUTF16(response_->groups()[i]->title.value_or(
                            std::string())),
-                       /*subtitle=*/std::u16string(),
+                       /*subtitle=*/std::u16string(), response_->source(),
                        /*group_id=*/int(i));
   }
   Shell::Get()->birch_model()->SetCoralItems(items);

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/birch/coral_constants.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
@@ -28,15 +29,21 @@ class ASH_EXPORT CoralRequest {
   CoralRequest& operator=(const CoralRequest&) = delete;
   ~CoralRequest();
 
+  void set_source(CoralSource source) { source_ = source; }
+
   void set_content(std::vector<ContentItem>&& content) {
     content_ = std::move(content);
   }
+
+  CoralSource source() const { return source_; }
 
   const std::vector<ContentItem>& content() const { return content_; }
 
   std::string ToString() const;
 
  private:
+  CoralSource source_ = CoralSource::kUnknown;
+
   // Tab/app content with arbitrary ordering.
   std::vector<ContentItem> content_;
 };
@@ -51,12 +58,17 @@ class ASH_EXPORT CoralResponse {
   CoralResponse& operator=(const CoralResponse&) = delete;
   ~CoralResponse();
 
+  void set_source(CoralSource source) { source_ = source; }
+
   void set_groups(std::vector<Group>&& groups) { groups_ = std::move(groups); }
+
+  CoralSource source() const { return source_; }
 
   const std::vector<Group>& groups() const { return groups_; }
   std::vector<Group>& groups() { return groups_; }
 
  private:
+  CoralSource source_ = CoralSource::kUnknown;
   std::vector<Group> groups_;
 };
 
@@ -109,7 +121,8 @@ class ASH_EXPORT CoralController {
   CoralService* EnsureCoralService();
 
   // Used as the callback of mojom::CoralService::Group.
-  void HandleGroupResult(CoralResponseCallback callback,
+  void HandleGroupResult(CoralSource source,
+                         CoralResponseCallback callback,
                          coral::mojom::GroupResultPtr result);
 
   // Used as the callback of mojom::CoralService::CacheEmbeddings. `callback` is

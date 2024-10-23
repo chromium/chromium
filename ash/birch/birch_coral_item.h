@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/birch/birch_item.h"
+#include "ash/birch/coral_constants.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
@@ -19,6 +20,7 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
  public:
   BirchCoralItem(const std::u16string& coral_title,
                  const std::u16string& coral_text,
+                 CoralSource source,
                  int group_id);
   BirchCoralItem(BirchCoralItem&&);
   BirchCoralItem(const BirchCoralItem&);
@@ -31,7 +33,7 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
   BirchAddonType GetAddonType() const override;
   std::u16string GetAddonAccessibleName() const override;
@@ -49,6 +51,7 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
       const std::string& app_id,
       base::OnceCallback<void(const ui::ImageModel&)> barrier_callback) const;
 
+  CoralSource source_;
   int group_id_;
 };
 
