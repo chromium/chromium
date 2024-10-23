@@ -140,7 +140,9 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
   MOCK_METHOD(void,
               FillSuggestion,
-              (const std::u16string&, const std::u16string&),
+              (const std::u16string&,
+               const std::u16string&,
+               base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
               PreviewSuggestion,
@@ -416,12 +418,12 @@ TEST_F(PasswordAutofillManagerTest, FillSuggestion) {
   InitializePasswordAutofillManager(&client, nullptr);
 
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(test_username_, test_password_));
+              FillSuggestion(test_username_, test_password_, _));
   EXPECT_TRUE(
       password_autofill_manager_->FillSuggestionForTest(test_username_));
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
-  EXPECT_CALL(*client.mock_driver(), FillSuggestion(_, _)).Times(0);
+  EXPECT_CALL(*client.mock_driver(), FillSuggestion(_, _, _)).Times(0);
   EXPECT_FALSE(
       password_autofill_manager_->FillSuggestionForTest(kInvalidUsername));
 
@@ -486,7 +488,7 @@ TEST_F(PasswordAutofillManagerTest, ExternalDelegatePasswordSuggestions) {
       kTestFavicon));
 
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(test_username_, test_password_));
+              FillSuggestion(test_username_, test_password_, _));
   // Accepting a suggestion should trigger a call to hide the popup.
   EXPECT_CALL(autofill_client,
               HideAutofillSuggestions(
@@ -553,7 +555,7 @@ TEST_F(PasswordAutofillManagerTest,
   // When selecting the account-stored credential, make sure the filled
   // password belongs to the selected credential (and not to the first match).
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(test_username_, duplicate.password_value));
+              FillSuggestion(test_username_, duplicate.password_value, _));
   EXPECT_CALL(autofill_client,
               HideAutofillSuggestions(
                   autofill::SuggestionHidingReason::kAcceptSuggestion));
@@ -1132,7 +1134,7 @@ TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
 
   // Check that fill of the empty username works.
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(std::u16string(), test_password_));
+              FillSuggestion(std::u16string(), test_password_, _));
   EXPECT_CALL(autofill_client,
               HideAutofillSuggestions(
                   autofill::SuggestionHidingReason::kAcceptSuggestion));
@@ -1442,7 +1444,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
   // Suggestions should always be filled if the authenticator is not available
   // or it cannot be used.
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(test_username_, test_password_));
+              FillSuggestion(test_username_, test_password_, _));
 
   EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(false));
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1478,7 +1480,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
 
   // The suggestion should be filled if the authentication is successful.
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(test_username_, test_password_));
+              FillSuggestion(test_username_, test_password_, _));
 
   // Accepting a suggestion should trigger a call to hide the popup.
   EXPECT_CALL(autofill_client,
@@ -1529,7 +1531,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
 
   // The suggestion should not be filled if the authentication fails.
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(test_username_, test_password_))
+              FillSuggestion(test_username_, test_password_, _))
       .Times(0);
   // Accepting a suggestion should trigger a call to hide the popup.
   EXPECT_CALL(autofill_client,
@@ -1576,7 +1578,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(test_username_, test_password_))
+              FillSuggestion(test_username_, test_password_, _))
       .Times(0);
 
   // The authenticator exists and is available.
@@ -1621,7 +1623,7 @@ TEST_F(PasswordAutofillManagerTest,
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(test_username_, test_password_))
+              FillSuggestion(test_username_, test_password_, _))
       .Times(0);
 
   // The authenticator exists and is available.
@@ -1667,7 +1669,7 @@ TEST_F(PasswordAutofillManagerTest,
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(test_username_, test_password_))
+              FillSuggestion(test_username_, test_password_, _))
       .Times(0);
 
   // The authenticator exists and is available.
@@ -1765,7 +1767,7 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
 
   // Simulate successful authentication and expect successful filling.
   EXPECT_CALL(*client.mock_driver(),
-              FillSuggestion(test_username_, test_password_));
+              FillSuggestion(test_username_, test_password_, _));
   std::move(auth_callback).Run(true);
 
   // Verify reported metrics.

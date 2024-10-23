@@ -319,8 +319,19 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
       !local_password_migration::ShouldShowWarning(profile) &&
       !access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
           prefs, /*called_at_startup=*/false));
-  filler_->FillUsernameAndPassword(credential.username(),
-                                   credential.password());
+  filler_->FillUsernameAndPassword(
+      credential.username(), credential.password(),
+      base::BindOnce(
+          &TouchToFillControllerAutofillDelegate::OnFillingCredentialComplete,
+          base::Unretained(this), credential.username()));
+}
+
+void TouchToFillControllerAutofillDelegate::OnFillingCredentialComplete(
+    const std::u16string& username,
+    bool triggered_submission) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
   if (access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
           prefs, /*called_at_startup=*/false)) {
     access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
@@ -333,11 +344,9 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
     ShowPasswordMigrationWarningIfNeeded();
   }
 
-  if (ShouldTriggerSubmission()) {
-    password_client_->StartSubmissionTrackingAfterTouchToFill(
-        credential.username());
+  if (triggered_submission) {
+    password_client_->StartSubmissionTrackingAfterTouchToFill(username);
   }
-
   CleanUpFillerAndReportOutcome(TouchToFillOutcome::kCredentialFilled,
                                 /*show_virtual_keyboard=*/false);
   std::move(action_complete_).Run();

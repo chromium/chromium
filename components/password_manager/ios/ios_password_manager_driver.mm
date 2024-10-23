@@ -109,8 +109,10 @@ void IOSPasswordManagerDriver::GeneratedPasswordAccepted(
   NOTIMPLEMENTED();
 }
 
-void IOSPasswordManagerDriver::FillSuggestion(const std::u16string& username,
-                                              const std::u16string& password) {
+void IOSPasswordManagerDriver::FillSuggestion(
+    const std::u16string& username,
+    const std::u16string& password,
+    base::OnceCallback<void(bool)> success_callback) {
   NOTIMPLEMENTED();
 }
 

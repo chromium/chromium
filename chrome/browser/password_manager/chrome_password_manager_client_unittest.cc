@@ -257,8 +257,10 @@ class FakePasswordAutofillAgent
   void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) override {}
 
-  void FillPasswordSuggestion(const std::u16string& username,
-                              const std::u16string& password) override {}
+  void FillPasswordSuggestion(
+      const std::u16string& username,
+      const std::u16string& password,
+      base::OnceCallback<void(bool)> success_callback) override {}
 
   void FillPasswordSuggestionById(autofill::FieldRendererId username_element_id,
                                   autofill::FieldRendererId password_element_id,

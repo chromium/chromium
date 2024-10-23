@@ -109,7 +109,9 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (override));
   MOCK_METHOD(void,
               FillSuggestion,
-              (const std::u16string&, const std::u16string&),
+              (const std::u16string&,
+               const std::u16string&,
+               base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
               FillSuggestionById,

@@ -239,9 +239,11 @@ void ContentPasswordManagerDriver::FillField(const std::u16string& value) {
 
 void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
-    const std::u16string& password) {
+    const std::u16string& password,
+    base::OnceCallback<void(bool)> success_callback) {
   LogFilledFieldType();
-  GetPasswordAutofillAgent()->FillPasswordSuggestion(username, password);
+  GetPasswordAutofillAgent()->FillPasswordSuggestion(
+      username, password, std::move(success_callback));
 }
 
 void ContentPasswordManagerDriver::FillSuggestionById(

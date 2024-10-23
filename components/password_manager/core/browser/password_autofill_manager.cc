@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -588,7 +589,7 @@ bool PasswordAutofillManager::FillSuggestion(const std::u16string& username,
             .IsValidAndroidFacetURI();
     metrics_util::LogFilledPasswordFromAndroidApp(is_android_credential);
     password_manager_driver_->FillSuggestion(
-        username, password_and_meta_data.password_value);
+        username, password_and_meta_data.password_value, base::DoNothing());
     return true;
   }
   return false;

@@ -25,8 +25,10 @@ class PasswordCredentialFillerImpl final : public PasswordCredentialFiller {
       delete;
   ~PasswordCredentialFillerImpl() override;
 
-  void FillUsernameAndPassword(const std::u16string& username,
-                               const std::u16string& password) override;
+  void FillUsernameAndPassword(
+      const std::u16string& username,
+      const std::u16string& password,
+      base::OnceCallback<void(bool)> success_callback) override;
 
   void UpdateTriggerSubmission(bool new_value) override;
 
@@ -41,6 +43,9 @@ class PasswordCredentialFillerImpl final : public PasswordCredentialFiller {
   base::WeakPtr<PasswordCredentialFiller> AsWeakPtr() override;
 
  private:
+  void TryTriggerSubmission(base::OnceCallback<void(bool)> callback,
+                            const std::u16string& username,
+                            bool was_filling_successful);
   // Driver supplied by the client.
   base::WeakPtr<PasswordManagerDriver> driver_;
 

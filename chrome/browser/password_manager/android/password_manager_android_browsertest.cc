@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -158,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
   ChromePasswordManagerClient::FromWebContents(GetActiveWebContents())
       ->StartSubmissionTrackingAfterTouchToFill(u"username");
 
-  driver->FillSuggestion(u"username", u"password");
+  driver->FillSuggestion(u"username", u"password", base::DoNothing());
   driver->TriggerFormSubmission();
 
   ASSERT_TRUE(observer.Wait());

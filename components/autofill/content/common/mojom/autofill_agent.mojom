@@ -102,7 +102,8 @@ interface PasswordAutofillAgent {
 
   // Fills the username and password with with given values.
   FillPasswordSuggestion(
-      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password);
+      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password)
+         => (bool success);
 
   // Similar to FillPasswordSuggestion, but is also provided the
   // FieldRendererIds of the elements to be filled.

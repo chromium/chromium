@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_DRIVER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_DRIVER_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
@@ -30,7 +31,8 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   void GeneratedPasswordAccepted(const std::u16string& password) override;
   void FocusNextFieldAfterPasswords() override;
   void FillSuggestion(const std::u16string& username,
-                      const std::u16string& password) override;
+                      const std::u16string& password,
+                      base::OnceCallback<void(bool)> success_callback) override;
   void FillSuggestionById(autofill::FieldRendererId username_element_id,
                           autofill::FieldRendererId password_element_id,
                           const std::u16string& username,
