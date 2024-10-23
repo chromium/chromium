@@ -51,34 +51,42 @@ class CORE_EXPORT CachedMatchedProperties final
       std::pair<UntracedMember<CSSPropertyValueSet>, MatchedProperties::Data>>
       matched_properties;
 
-  // Note that we don't cache the original ComputedStyle instance. It may be
-  // further modified. The ComputedStyle in the cache is really just a holder
-  // for the substructures and never used as-is.
-  Member<const ComputedStyle> computed_style;
-  Member<const ComputedStyle> parent_computed_style;
-  unsigned last_used;
+  struct Entry {
+    DISALLOW_NEW();
+
+   public:
+    Entry(const ComputedStyle* computed_style_arg,
+          const ComputedStyle* parent_computed_style_arg,
+          unsigned last_used_arg)
+        : computed_style(computed_style_arg),
+          parent_computed_style(parent_computed_style_arg),
+          last_used(last_used_arg) {}
+
+    // Note that we don't cache the original ComputedStyle instance. It may be
+    // further modified. The ComputedStyle in the cache is really just a holder
+    // for the substructures and never used as-is.
+    Member<const ComputedStyle> computed_style;
+    Member<const ComputedStyle> parent_computed_style;
+    unsigned last_used;
+
+    bool DependenciesEqual(const StyleResolverState&) const;
+
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(computed_style);
+      visitor->Trace(parent_computed_style);
+    }
+  };
+
+  HeapVector<Entry, 4> entries;
 
   CachedMatchedProperties(const ComputedStyle* style,
                           const ComputedStyle* parent_style,
                           const MatchedPropertiesVector&,
                           unsigned clock);
 
-  void Set(const ComputedStyle* style,
-           const ComputedStyle* parent_style,
-           unsigned clock) {
-    computed_style = style;
-    parent_computed_style = parent_style;
-    last_used = clock;
-  }
-
   void Clear();
 
-  bool DependenciesEqual(const StyleResolverState&) const;
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(computed_style);
-    visitor->Trace(parent_computed_style);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(entries); }
 
   bool CorrespondsTo(const MatchedPropertiesVector& lookup_properties) const;
   void RefreshKey(const MatchedPropertiesVector& lookup_properties);
@@ -113,7 +121,8 @@ class CORE_EXPORT MatchedPropertiesCache {
     unsigned hash_;
   };
 
-  const CachedMatchedProperties* Find(const Key&, const StyleResolverState&);
+  const CachedMatchedProperties::Entry* Find(const Key&,
+                                             const StyleResolverState&);
   void Add(const Key&, const ComputedStyle*, const ComputedStyle* parent_style);
 
   void Clear();
@@ -140,7 +149,13 @@ class CORE_EXPORT MatchedPropertiesCache {
 
   void CleanMatchedPropertiesCache(const LivenessBroker&);
 
+  // Erase all MPC entries where the given predicate returns true,
+  // and updates the counter. Removes all keys that have no entries left.
+  template <class Predicate>
+  void EraseEntriesIf(Predicate&& pred);
+
   Cache cache_;
+  unsigned cache_entries_ = 0;
 
   // Virtual clock for LRU purposes (last_used in each CachedMatchedProperties).
   // If this wraps (more than four billion lookups or inserts), we will evict
@@ -152,5 +167,16 @@ class CORE_EXPORT MatchedPropertiesCache {
 std::ostream& operator<<(std::ostream&, MatchedPropertiesCache::Key&);
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct VectorTraits<blink::CachedMatchedProperties::Entry>
+    : VectorTraitsBase<blink::CachedMatchedProperties::Entry> {
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+  static constexpr bool kCanTraceConcurrently = true;
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCHED_PROPERTIES_CACHE_H_

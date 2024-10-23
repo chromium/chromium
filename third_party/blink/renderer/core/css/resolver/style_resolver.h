@@ -317,42 +317,25 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
     STACK_ALLOCATED();
 
    public:
-    bool is_inherited_cache_hit;
-    bool is_non_inherited_cache_hit;
+    bool is_hit;
     MatchedPropertiesCache::Key key;
-    const CachedMatchedProperties* cached_matched_properties;
+    const CachedMatchedProperties::Entry* cached_matched_properties;
 
-    CacheSuccess(bool is_inherited_cache_hit,
-                 bool is_non_inherited_cache_hit,
-                 MatchedPropertiesCache::Key key,
-                 const CachedMatchedProperties* cached_matched_properties)
-        : is_inherited_cache_hit(is_inherited_cache_hit),
-          is_non_inherited_cache_hit(is_non_inherited_cache_hit),
-          key(key),
-          cached_matched_properties(cached_matched_properties) {}
+    CacheSuccess(
+        MatchedPropertiesCache::Key key,
+        const CachedMatchedProperties::Entry* cached_matched_properties)
+        : key(key), cached_matched_properties(cached_matched_properties) {}
 
-    bool IsFullCacheHit() const {
-      return is_inherited_cache_hit && is_non_inherited_cache_hit;
-    }
-    bool ShouldApplyInheritedOnly() const {
-      return is_non_inherited_cache_hit && !is_inherited_cache_hit;
-    }
-    void SetFailed() {
-      is_inherited_cache_hit = false;
-      is_non_inherited_cache_hit = false;
-    }
-    bool IsUsableAfterApplyInheritedOnly(const ComputedStyleBuilder&) const;
+    bool IsHit() const { return cached_matched_properties; }
   };
 
   CacheSuccess ApplyMatchedCache(StyleResolverState&,
                                  const StyleRequest&,
                                  const MatchResult&);
   void MaybeAddToMatchedPropertiesCache(StyleResolverState&,
-                                        const CacheSuccess&);
+                                        const MatchedPropertiesCache::Key&);
 
-  void ApplyPropertiesFromCascade(StyleResolverState&,
-                                  StyleCascade& cascade,
-                                  CacheSuccess cache_success);
+  void ApplyPropertiesFromCascade(StyleResolverState&, StyleCascade& cascade);
 
   bool ApplyAnimatedStyle(StyleResolverState&, StyleCascade&);
   void ApplyAnchorData(StyleResolverState&);

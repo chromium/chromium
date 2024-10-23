@@ -1710,9 +1710,9 @@ void StyleResolver::ApplyBaseStyleNoCache(
     state.StyleBuilder().SetIsEnsuredOutsideFlatTree();
   }
 
-  if (!cache_success.IsFullCacheHit()) {
-    ApplyPropertiesFromCascade(state, cascade, cache_success);
-    MaybeAddToMatchedPropertiesCache(state, cache_success);
+  if (!cache_success.IsHit()) {
+    ApplyPropertiesFromCascade(state, cascade);
+    MaybeAddToMatchedPropertiesCache(state, cache_success.key);
   }
 
   // TODO(crbug.com/1024156): do this for CustomHighlightNames too, so we
@@ -2475,17 +2475,6 @@ void StyleResolver::ClearResizedForViewportUnits() {
   was_viewport_resized_ = false;
 }
 
-bool StyleResolver::CacheSuccess::IsUsableAfterApplyInheritedOnly(
-    const ComputedStyleBuilder& builder) const {
-  const ComputedStyle* cached_style =
-      cached_matched_properties->computed_style.Get();
-  return cached_style->EffectiveZoom() == builder.EffectiveZoom() &&
-         cached_style->GetFontDescription() == builder.GetFontDescription() &&
-         base::ValuesEquivalent(cached_style->InheritedVariables(),
-                                builder.InheritedVariables()) &&
-         cached_style->LineHeight() == builder.LineHeight();
-}
-
 StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     StyleResolverState& state,
     const StyleRequest& style_request,
@@ -2519,38 +2508,17 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     can_use_cache = false;
   }
 
-  bool is_inherited_cache_hit = false;
-  bool is_non_inherited_cache_hit = false;
-  const CachedMatchedProperties* cached_matched_properties =
+  const CachedMatchedProperties::Entry* cached_matched_properties =
       can_use_cache ? matched_properties_cache_.Find(key, state) : nullptr;
-  // We use a different initial_style for <img> elements to match the overrides
-  // in html.css. This avoids allocation overhead from copy-on-write when
-  // these properties are set only via UA styles. The overhead shows up on
-  // MotionMark, which stress-tests this code. See crbug.com/1369454 for
-  // details.
-  const ComputedStyle& initial_style = IsA<HTMLImageElement>(element)
-                                           ? *initial_style_for_img_
-                                           : *initial_style_;
 
   if (cached_matched_properties) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_hit, 1);
 
-    is_inherited_cache_hit = state.ParentStyle()->InheritedDataShared(
-        *cached_matched_properties->parent_computed_style);
-    is_non_inherited_cache_hit =
-        !IsForcedColorsModeEnabled() || is_inherited_cache_hit;
-
     const ComputedStyle* parent_style =
-        is_inherited_cache_hit ? cached_matched_properties->computed_style.Get()
-                               : state.ParentStyle();
-    const ComputedStyle& source_for_noninherited =
-        is_non_inherited_cache_hit
-            ? *cached_matched_properties->computed_style.Get()
-            : initial_style;
+        cached_matched_properties->computed_style.Get();
 
-    InitStyle(element, style_request, source_for_noninherited, parent_style,
-              state);
+    InitStyle(element, style_request, *parent_style, parent_style, state);
 
     if (cached_matched_properties->computed_style->CanAffectAnimations()) {
       // Need to set this flag from the cached ComputedStyle to make
@@ -2560,29 +2528,17 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
       state.StyleBuilder().SetCanAffectAnimations();
     }
 
-    // We can build up the style by copying non-inherited properties from an
-    // earlier style object built using the same exact style declarations. We
-    // then only need to apply the inherited properties, if any, as their values
-    // can depend on the element context. This is fast and saves memory by
-    // reusing the style data structures. Note that we cannot do this if the
-    // direct parent is a ShadowRoot.
-    if (is_inherited_cache_hit) {
-      INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
-                                    matched_property_cache_inherited_hit, 1);
-
-      // If the cache item parent style has identical inherited properties to
-      // the current parent style then the resulting style will be identical
-      // too. We copied the inherited properties over from the cache, so we
-      // are done.
-    }
-    if (is_non_inherited_cache_hit) {
-      // If the child style is a cache hit, we'll never reach StyleBuilder::
-      // ApplyProperty, hence we'll never set the flag on the parent.
-      // (We do the same thing for independently inherited properties in
-      // Element::RecalcOwnStyle().)
-      if (state.StyleBuilder().HasExplicitInheritance()) {
-        state.ParentStyle()->SetChildHasExplicitInheritance();
-      }
+    // If the cache item parent style has identical inherited properties to
+    // the current parent style then the resulting style will be identical
+    // too. We copied the inherited properties over from the cache, so we
+    // are done.
+    //
+    // If the child style is a cache hit, we'll never reach StyleBuilder::
+    // ApplyProperty, hence we'll never set the flag on the parent.
+    // (We do the same thing for independently inherited properties in
+    // Element::RecalcOwnStyle().)
+    if (state.StyleBuilder().HasExplicitInheritance()) {
+      state.ParentStyle()->SetChildHasExplicitInheritance();
     }
     state.UpdateFont();
   } else {
@@ -2590,6 +2546,15 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     // style and inheritance accounted for. We'll return a cache
     // miss, which will cause the caller to apply all the matched
     // properties on top of it.
+    //
+    // We use a different initial_style for <img> elements to match the
+    // overrides in html.css. This avoids allocation overhead from copy-on-write
+    // when these properties are set only via UA styles. The overhead shows up
+    // on MotionMark, which stress-tests this code. See crbug.com/1369454 for
+    // details.
+    const ComputedStyle& initial_style = IsA<HTMLImageElement>(element)
+                                             ? *initial_style_for_img_
+                                             : *initial_style_;
     InitStyle(element, style_request, initial_style, state.ParentStyle(),
               state);
   }
@@ -2601,29 +2566,18 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   // should remain unchanged.
   state.StyleBuilder().SetPseudoArgument(style_request.pseudo_argument);
 
-  return CacheSuccess(is_inherited_cache_hit, is_non_inherited_cache_hit, key,
-                      cached_matched_properties);
+  return CacheSuccess(key, cached_matched_properties);
 }
 
 void StyleResolver::MaybeAddToMatchedPropertiesCache(
     StyleResolverState& state,
-    const CacheSuccess& cache_success) {
+    const MatchedPropertiesCache::Key& key) {
   state.LoadPendingResources();
 
-  // NOTE: We replace everything that isn't a full cache hit. There are cases
-  // where this would be bad (e.g., every other element we style with the same
-  // key has a different parent computed style), but it seems a much more common
-  // case, if we don't replace elements giving partial hits, is that a
-  // bad entry gets stuck into the MPC and we _never_ get full hits again
-  // from there because it's never replaced. (Or, similarly, a partial
-  // hit where we have to reapply the inherited properties, or where we trash
-  // the “partner cache” in StyleInheritedVariables.)
-  if (cache_success.key.IsCacheable() &&
-      MatchedPropertiesCache::IsCacheable(state)) {
+  if (key.IsCacheable() && MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_added, 1);
-    matched_properties_cache_.Add(cache_success.key,
-                                  state.StyleBuilder().CloneStyle(),
+    matched_properties_cache_.Add(key, state.StyleBuilder().CloneStyle(),
                                   state.ParentStyle());
   }
 }
@@ -2816,33 +2770,7 @@ const ComputedStyle* StyleResolver::BeforeChangeStyleForTransitionUpdate(
 }
 
 void StyleResolver::ApplyPropertiesFromCascade(StyleResolverState& state,
-                                               StyleCascade& cascade,
-                                               CacheSuccess cache_success) {
-  auto apply = [&state, &cascade, &cache_success](CascadeFilter filter) {
-    if (cache_success.ShouldApplyInheritedOnly()) {
-      cascade.Apply(filter.Add(CSSProperty::kInherited, false));
-      if (!cache_success.IsUsableAfterApplyInheritedOnly(
-              state.StyleBuilder())) {
-        // After applying inherited properties, we discovered that
-        // we have changed properties that would affect application
-        // of inherited properties (essentially turning our partial
-        // hit into a cache miss). We need to back off and apply
-        // all non-inherited properties as well.
-        cascade.Apply(filter.Add(CSSProperty::kInherited, true));
-      }
-#if DCHECK_IS_ON()
-      // Verify that our application went as planned.
-      const ComputedStyle* applied_style = state.StyleBuilder().CloneStyle();
-      cascade.Apply(filter);
-      const ComputedStyle* correct_style = state.StyleBuilder().CloneStyle();
-      DCHECK_EQ(g_null_atom,
-                ComputeBaseComputedStyleDiff(applied_style, *correct_style));
-#endif
-    } else {
-      cascade.Apply(filter);
-    }
-  };
-
+                                               StyleCascade& cascade) {
   const ComputedStyle* old_style = nullptr;
   if (count_computed_style_bytes_) {
     old_style = state.StyleBuilder().CloneStyle();
@@ -2858,12 +2786,12 @@ void StyleResolver::ApplyPropertiesFromCascade(StyleResolverState& state,
   // while filtering out such properties. If the filter did reject
   // any legacy overlapping properties, we apply all overlapping properties
   // again to get the correct result.
-  apply(filter.Add(CSSProperty::kLegacyOverlapping, true));
+  cascade.Apply(filter.Add(CSSProperty::kLegacyOverlapping, true));
 
   if (state.RejectedLegacyOverlapping()) {
     const ComputedStyle* non_legacy_style = state.StyleBuilder().CloneStyle();
     // Re-apply all overlapping properties (both legacy and non-legacy).
-    apply(filter.Add(CSSProperty::kOverlapping, false));
+    cascade.Apply(filter.Add(CSSProperty::kOverlapping, false));
     UseCountLegacyOverlapping(GetDocument(), *non_legacy_style,
                               state.StyleBuilder());
   }

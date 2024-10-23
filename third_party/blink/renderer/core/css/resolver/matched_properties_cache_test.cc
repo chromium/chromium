@@ -60,7 +60,7 @@ class MatchedPropertiesCacheTestCache {
     cache_.Add(key.InnerKey(), &style, &parent_style);
   }
 
-  const CachedMatchedProperties* Find(
+  const CachedMatchedProperties::Entry* Find(
       const TestKey& key,
       const ComputedStyle& style,
       const ComputedStyle& parent_style,
@@ -134,12 +134,12 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredInDisplayNone) {
 
   TestKey key1("display:block", 1, GetDocument());
 
-  cache.Add(key1, style, parent);
-  EXPECT_TRUE(cache.Find(key1, style, parent));
-  EXPECT_TRUE(cache.Find(key1, style, *ensured_parent));
-
   cache.Add(key1, style, *ensured_parent);
   EXPECT_FALSE(cache.Find(key1, style, parent));
+  EXPECT_TRUE(cache.Find(key1, style, *ensured_parent));
+
+  cache.Add(key1, style, parent);
+  EXPECT_TRUE(cache.Find(key1, style, parent));
   EXPECT_TRUE(cache.Find(key1, style, *ensured_parent));
 }
 
@@ -156,12 +156,12 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTree) {
   StyleRecalcContext context;
   context.is_outside_flat_tree = true;
 
-  cache.Add(key1, style, parent);
-  EXPECT_TRUE(cache.Find(key1, style, parent));
-  EXPECT_TRUE(cache.Find(key1, *ensured_style, parent, &context));
-
   cache.Add(key1, *ensured_style, parent);
   EXPECT_FALSE(cache.Find(key1, style, parent));
+  EXPECT_TRUE(cache.Find(key1, *ensured_style, parent, &context));
+
+  cache.Add(key1, style, parent);
+  EXPECT_TRUE(cache.Find(key1, style, parent));
   EXPECT_TRUE(cache.Find(key1, *ensured_style, parent, &context));
 }
 
@@ -303,30 +303,6 @@ TEST_F(MatchedPropertiesCacheTest, VariableDependencyNoVars) {
   EXPECT_TRUE(cache.Find(key, *style_a, parent_a));
   EXPECT_TRUE(cache.Find(key, *style_b, parent_a));
   EXPECT_TRUE(cache.Find(key, *style_b, parent_b));
-}
-
-TEST_F(MatchedPropertiesCacheTest, NoVariableDependency) {
-  TestCache cache(GetDocument());
-
-  auto parent_builder_a = CreateStyleBuilder();
-  auto parent_builder_b = CreateStyleBuilder();
-  parent_builder_a.SetVariableData(AtomicString("--x"),
-                                   CreateVariableData("1px"), true);
-  parent_builder_b.SetVariableData(AtomicString("--x"),
-                                   CreateVariableData("2px"), true);
-  const auto* parent_a = parent_builder_a.TakeStyle();
-  const auto* parent_b = parent_builder_b.TakeStyle();
-  const auto& style_a = InitialStyle();
-  const auto& style_b = InitialStyle();
-
-  TestKey key("top:var(--x)", 1, GetDocument());
-
-  cache.Add(key, style_a, *parent_a);
-  // parent_a/b both have variables, but style_a/b is not marked as
-  // depending on them.
-  EXPECT_TRUE(cache.Find(key, style_a, *parent_a));
-  EXPECT_TRUE(cache.Find(key, style_b, *parent_a));
-  EXPECT_TRUE(cache.Find(key, style_b, *parent_b));
 }
 
 }  // namespace blink

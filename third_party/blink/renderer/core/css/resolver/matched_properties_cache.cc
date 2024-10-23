@@ -68,9 +68,7 @@ CachedMatchedProperties::CachedMatchedProperties(
     const ComputedStyle* parent_style,
     const MatchedPropertiesVector& properties,
     unsigned clock)
-    : computed_style(style),
-      parent_computed_style(parent_style),
-      last_used(clock) {
+    : entries({Entry{style, parent_style, clock}}) {
   matched_properties.ReserveInitialCapacity(properties.size());
   for (const auto& new_matched_properties : properties) {
     matched_properties.emplace_back(new_matched_properties.properties,
@@ -80,11 +78,10 @@ CachedMatchedProperties::CachedMatchedProperties(
 
 void CachedMatchedProperties::Clear() {
   matched_properties.clear();
-  computed_style = nullptr;
-  parent_computed_style = nullptr;
+  entries.clear();
 }
 
-bool CachedMatchedProperties::DependenciesEqual(
+bool CachedMatchedProperties::Entry::DependenciesEqual(
     const StyleResolverState& state) const {
   if (!state.ParentStyle()) {
     return false;
@@ -132,7 +129,7 @@ MatchedPropertiesCache::Key::Key(const MatchResult& result)
 MatchedPropertiesCache::Key::Key(const MatchResult& result, unsigned hash)
     : result_(result), hash_(hash) {}
 
-const CachedMatchedProperties* MatchedPropertiesCache::Find(
+const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
     const Key& key,
     const StyleResolverState& style_resolver_state) {
   // Matches the corresponding test in IsStyleCacheable().
@@ -153,35 +150,38 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
     cache_.erase(it);
     return nullptr;
   }
+  for (CachedMatchedProperties::Entry& entry : cache_item->entries) {
+    if (IsAtShadowBoundary(&style_resolver_state.GetElement()) &&
+        entry.parent_computed_style->UserModify() !=
+            ComputedStyleInitialValues::InitialUserModify()) {
+      // An element at a shadow boundary will reset UserModify() back to its
+      // initial value for inheritance. If the cached item was computed for an
+      // element not at a shadow boundary, the cached computed style will not
+      // have that reset, and we cannot use it as a cache hit unless the parent
+      // UserModify() is the initial value.
+      continue;
+    }
+    if (entry.DependenciesEqual(style_resolver_state) &&
+        style_resolver_state.ParentStyle()->InheritedDataShared(
+            *entry.parent_computed_style)) {
+      entry.last_used = clock_++;
 
-  if (IsAtShadowBoundary(&style_resolver_state.GetElement()) &&
-      cache_item->parent_computed_style->UserModify() !=
-          ComputedStyleInitialValues::InitialUserModify()) {
-    // An element at a shadow boundary will reset UserModify() back to its
-    // initial value for inheritance. If the cached item was computed for an
-    // element not at a shadow boundary, the cached computed style will not
-    // have that reset, and we cannot use it as a cache hit unless the parent
-    // UserModify() is the initial value.
-    return nullptr;
+      // Since we have a cache hit, refresh it using the most recent property
+      // sets (in case they have differing pointers but same content); the key
+      // is weak, and using more recently seen sets make it less likely that
+      // they will go away and GC the entry.
+      //
+      // Ideally, we would not be using weak pointers in the MPC at all,
+      // but CSSValues keep StyleImages alive (see
+      // StyleImageCacheTest.WeakReferenceGC), so if we used regular pointers,
+      // we'd need to find some other way of making sure these images do not
+      // live forever in the cache.
+      cache_item->RefreshKey(key.result_.GetMatchedProperties());
+
+      return &entry;
+    }
   }
-  if (!cache_item->DependenciesEqual(style_resolver_state)) {
-    return nullptr;
-  }
-  cache_item->last_used = clock_++;
-
-  // Since we have a cache hit, refresh it using the most recent property sets
-  // (in case they have differing pointers but same content); the key is weak,
-  // and using more recently seen sets make it less likely that they will go
-  // away and GC the entry.
-  //
-  // Ideally, we would not be using weak pointers in the MPC at all,
-  // but CSSValues keep StyleImages alive (see
-  // StyleImageCacheTest.WeakReferenceGC), so if we used regular pointers, we'd
-  // need to find some other way of making sure these images do not live forever
-  // in the cache.
-  cache_item->RefreshKey(key.result_.GetMatchedProperties());
-
-  return cache_item;
+  return nullptr;
 }
 
 bool CachedMatchedProperties::CorrespondsTo(
@@ -240,10 +240,9 @@ void MatchedPropertiesCache::Add(const Key& key,
     cache_item = MakeGarbageCollected<CachedMatchedProperties>(
         style, parent_style, key.result_.GetMatchedProperties(), clock_++);
   } else {
-    // Note that we don't need to update the properties; they were already
-    // verified to be correct in Find().
-    cache_item->Set(style, parent_style, clock_++);
+    cache_item->entries.emplace_back(style, parent_style, clock_++);
   }
+  ++cache_entries_;
 }
 
 void MatchedPropertiesCache::Clear() {
@@ -256,12 +255,12 @@ void MatchedPropertiesCache::Clear() {
     }
   }
   cache_.clear();
+  cache_entries_ = 0;
 }
 
 void MatchedPropertiesCache::ClearViewportDependent() {
-  cache_.erase_if([](const auto& entry_pair) {
-    CachedMatchedProperties* cache_item = entry_pair.value.Get();
-    return cache_item && cache_item->computed_style->HasViewportUnits();
+  EraseEntriesIf([](const CachedMatchedProperties::Entry& entry) {
+    return entry.computed_style->HasViewportUnits();
   });
 }
 
@@ -385,20 +384,46 @@ static inline bool ShouldRemoveMPCEntry(CachedMatchedProperties& value,
   return false;
 }
 
+// Erase all MPC entries where the given predicate returns true,
+// and updates the counter. Removes all keys that have no entries left.
+template <class Predicate>
+void MatchedPropertiesCache::EraseEntriesIf(Predicate&& pred) {
+  cache_.erase_if([inner_pred{std::forward<Predicate>(pred)},
+                   this](const auto& entry_pair) {
+    if (!entry_pair.value) {
+      return false;
+    }
+    HeapVector<CachedMatchedProperties::Entry, 4>& entries =
+        entry_pair.value->entries;
+    auto new_end = std::remove_if(entries.begin(), entries.end(), inner_pred);
+    cache_entries_ -= entries.end() - new_end;
+    if (new_end == entries.begin()) {
+      return true;
+    } else {
+      entries.erase(new_end, entries.end());
+      return false;
+    }
+  });
+}
+
 void MatchedPropertiesCache::CleanMatchedPropertiesCache(
     const LivenessBroker& info) {
   constexpr unsigned kCacheLimit = 500;
   constexpr unsigned kPruneCacheTarget = 300;
 
-  if (cache_.size() <= kCacheLimit) {
+  if (cache_entries_ <= kCacheLimit) {
     // Fast path with no LRU pruning.
-    cache_.erase_if([&info](const auto& entry_pair) {
+    cache_.erase_if([&info, this](const auto& entry_pair) {
       // A nullptr value indicates that the entry is currently being
       // created; see |MatchedPropertiesCache::Add|. Keep such entries.
       if (!entry_pair.value) {
         return false;
       }
-      return ShouldRemoveMPCEntry(*entry_pair.value, info);
+      if (ShouldRemoveMPCEntry(*entry_pair.value, info)) {
+        cache_entries_ -= entry_pair.value->entries.size();
+        return true;
+      }
+      return false;
     });
     // Allocation of Oilpan memory is forbidden during executing weak callbacks,
     // so the data structure will not be rehashed here (ShouldShrink() internal
@@ -416,18 +441,23 @@ void MatchedPropertiesCache::CleanMatchedPropertiesCache(
   // further (300 entries).
 
   Vector<unsigned> live_entries;
-  live_entries.ReserveInitialCapacity(cache_.size());
-  cache_.erase_if([&info, &live_entries](const auto& entry_pair) {
+  live_entries.ReserveInitialCapacity(cache_entries_);
+  cache_.erase_if([&info, &live_entries, this](const auto& entry_pair) {
     if (!entry_pair.value) {
       return false;
     }
     if (ShouldRemoveMPCEntry(*entry_pair.value, info)) {
+      cache_entries_ -= entry_pair.value->entries.size();
       return true;
     } else {
-      live_entries.emplace_back(entry_pair.value->last_used);
+      for (const auto& entry : entry_pair.value->entries) {
+        live_entries.emplace_back(entry.last_used);
+      }
       return false;
     }
   });
+
+  DCHECK_EQ(live_entries.size(), cache_entries_);
 
   // If removals didn't take us back under the pruning limit,
   // remove everything older than the 300th newest LRU entry.
@@ -439,9 +469,10 @@ void MatchedPropertiesCache::CleanMatchedPropertiesCache(
                      live_entries.end());
     unsigned min_last_used = live_entries[cutoff_idx];
 
-    cache_.erase_if([min_last_used](const auto& entry_pair) {
-      return entry_pair.value && entry_pair.value->last_used <= min_last_used;
-    });
+    EraseEntriesIf(
+        [min_last_used](const CachedMatchedProperties::Entry& entry) {
+          return entry.last_used <= min_last_used;
+        });
   }
 }
 
