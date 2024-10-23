@@ -277,8 +277,9 @@ TEST_F(WhatsNewHandlerTest, SurveyIsTriggeredWithOverride) {
   base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
   EXPECT_CALL(callback, Run).Times(1);
   EXPECT_CALL(*mock_hats_service(),
-              LaunchDelayedSurveyForWebContents(survey_override_id, _, _, _, _,
-                                                _, _, _, _, _))
+              LaunchDelayedSurveyForWebContents(
+                  kHatsSurveyTriggerWhatsNew, _, _, _, _, _, _, _,
+                  std::optional<std::string>(survey_override_id), _))
       .Times(1);
 
   handler_->GetServerUrl(false, callback.Get());
