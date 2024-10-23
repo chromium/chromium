@@ -45,6 +45,11 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
       RasterModeHint hint) = 0;
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
       RasterModeHint hint) = 0;
+  CanvasResourceProvider*
+  GetOrCreateResourceProviderWithCurrentRasterModeHint() {
+    return GetOrCreateCanvasResourceProvider(preferred_2d_raster_mode());
+  }
+
   bool IsComposited() const;
   bool IsResourceValid();
   gfx::Size Size() const { return size_; }

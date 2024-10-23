@@ -281,8 +281,11 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   // true, it means context is forced to be lost for testing purpose. Restore
   // the context.
   if (context_lost_mode_ == kSyntheticLostContext) {
+    // TODO(crbug.com/40280152): Eliminate this creation, which is superfluous
+    // with the below call.
     Canvas2DLayerBridge* bridge = canvas()->GetOrCreateCanvas2DLayerBridge();
-    if (bridge && bridge->GetOrCreateResourceProvider()) {
+    if (bridge &&
+        Host()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
       try_restore_context_event_timer_.Stop();
       DispatchContextRestoredEvent(nullptr);
       return;
@@ -359,7 +362,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
   CHECK(host);
 
   CanvasResourceProvider* provider =
-      canvas()->GetCanvas2DLayerBridge()->GetOrCreateResourceProvider();
+      canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint();
   if (provider == nullptr) {
     return false;
   }
@@ -507,7 +510,7 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     }
   } else {
     // If we have no provider, try creating one.
-    provider = bridge->GetOrCreateResourceProvider();
+    provider = canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint();
     if (provider == nullptr) [[unlikely]] {
       return nullptr;
     }
@@ -752,7 +755,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
   // make sure "hint" is properly taken into account.
-  if (!bridge->GetOrCreateResourceProvider()) {
+  if (!Host()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
     return nullptr;
   }
   Host()->FlushRecording(reason);
@@ -782,7 +785,7 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
 
   // Make sure surface is ready for painting: fix the rendering mode now
   // because it will be too late during the paint invalidation phase.
-  if (!canvas()->GetCanvas2DLayerBridge()->GetOrCreateResourceProvider()) {
+  if (!canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
     return;
   }
 
@@ -885,7 +888,9 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
   }
 
   if (page_is_visible && bridge->GetHibernationHandler().IsHibernating()) {
-    bridge->GetOrCreateResourceProvider();  // Rude awakening
+    element
+        ->GetOrCreateResourceProviderWithCurrentRasterModeHint();  // Rude
+                                                                   // awakening
   }
 }
 
