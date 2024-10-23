@@ -141,6 +141,27 @@ To update these copies of the updaters:
         script. The min version usually is different per-platform, since
         Chromium does not archive a version at every CL. After making these
         changes, 3pp will import the new versions within a few hours.
+    *   As an example, let us suppose that
+        [revision 1371769](https://crrev.com/1371769)
+        is the change that needs to be picked up for the checked-in version.
+        * Look up the chrome version by checking
+          [chromiumdash](https://chromiumdash.appspot.com/).
+        * It shows that version `132.0.6791.0` is the version `1371769` was
+          released with.
+        * Make sure the `updater` is shipping at a `version` higher than
+          `132.0.6791.0`
+          [here](https://versionhistory.googleapis.com/v1/chromium_updater/platforms/win/channels/canary/versions/all/releases?filter=endtime=none)
+          .
+        * Look up the chromium versions under
+          [commondatastorage](https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html)
+          , in the folders corresponding to `get_platform()` for each
+          `fetch.py`, for instance, the `Win`, `Win_x64`, and `Win_Arm64`
+          folders for the Windows `fetch.py` files, and look up a build with a
+          revision greater than `1371781`, corresponding to `r1371769`, and make
+          sure that the `updater.zip` file is present in those folders.
+        * Make changes to the `fetch.py` files based on the lookups, and send it
+          out for review.
+        * After the change lands, give it a few hours for the fetch to complete.
 3.  Update //DEPS to point to the new versions.
 
 ## Developing
