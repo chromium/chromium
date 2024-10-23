@@ -2561,7 +2561,9 @@ void InspectorDOMAgent::NodeCreated(Node* node) {
   }
 }
 
-void InspectorDOMAgent::UpdateScrollableFlag(Node* node) {
+void InspectorDOMAgent::UpdateScrollableFlag(
+    Node* node,
+    std::optional<bool> override_flag) {
   if (!node) {
     return;
   }
@@ -2570,7 +2572,9 @@ void InspectorDOMAgent::UpdateScrollableFlag(Node* node) {
   if (!nodeId) {
     return;
   }
-  GetFrontend()->scrollableFlagUpdated(nodeId, isNodeScrollable(node));
+  GetFrontend()->scrollableFlagUpdated(nodeId, override_flag.has_value()
+                                                   ? override_flag.value()
+                                                   : isNodeScrollable(node));
 }
 
 namespace {
