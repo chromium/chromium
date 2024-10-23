@@ -18,12 +18,15 @@
 
 #include "base/containers/span.h"
 #include "crypto/crypto_export.h"
+#include "crypto/hash.h"
 
 namespace crypto {
 
 // Simplify the interface and reduce includes by abstracting out the internals.
 class SymmetricKey;
 
+// TODO(https://issues.chromium.org/issues/374334448): Rework this interface and
+// delete much of it.
 class CRYPTO_EXPORT HMAC {
  public:
   // The set of supported hash functions. Extend as required.
@@ -107,6 +110,52 @@ class CRYPTO_EXPORT HMAC {
   bool initialized_;
   std::vector<unsigned char> key_;
 };
+
+namespace hmac {
+
+// Single-shot interfaces for working with HMACs. Unless your code needs to be
+// generic over hash kinds, you should use the convenience interfaces that are
+// named after a specific kind, since they allow compile-time error checking of
+// the hmac size.
+CRYPTO_EXPORT std::array<uint8_t, crypto::hash::kSha1Size> SignSha1(
+    base::span<const uint8_t> key,
+    base::span<const uint8_t> data);
+
+CRYPTO_EXPORT std::array<uint8_t, crypto::hash::kSha256Size> SignSha256(
+    base::span<const uint8_t> key,
+    base::span<const uint8_t> data);
+
+CRYPTO_EXPORT std::array<uint8_t, crypto::hash::kSha512Size> SignSha512(
+    base::span<const uint8_t> key,
+    base::span<const uint8_t> data);
+
+[[nodiscard]] CRYPTO_EXPORT bool VerifySha1(
+    base::span<const uint8_t> key,
+    base::span<const uint8_t> data,
+    base::span<const uint8_t, crypto::hash::kSha1Size> hmac);
+
+[[nodiscard]] CRYPTO_EXPORT bool VerifySha256(
+    base::span<const uint8_t> key,
+    base::span<const uint8_t> data,
+    base::span<const uint8_t, crypto::hash::kSha256Size> hmac);
+
+[[nodiscard]] CRYPTO_EXPORT bool VerifySha512(
+    base::span<const uint8_t> key,
+    base::span<const uint8_t> data,
+    base::span<const uint8_t, crypto::hash::kSha512Size> hmac);
+
+// If you need to be generic over hash types, you can instead use these, but you
+// must pass the correct size buffer for |hmac|:
+CRYPTO_EXPORT void Sign(crypto::hash::HashKind kind,
+                        base::span<const uint8_t> key,
+                        base::span<const uint8_t> data,
+                        base::span<uint8_t> hmac);
+[[nodiscard]] CRYPTO_EXPORT bool Verify(crypto::hash::HashKind kind,
+                                        base::span<const uint8_t> key,
+                                        base::span<const uint8_t> data,
+                                        base::span<const uint8_t> hmac);
+
+}  // namespace hmac
 
 }  // namespace crypto
 
